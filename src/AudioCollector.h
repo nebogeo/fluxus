@@ -32,11 +32,9 @@ public:
     ~FFT();
 	void Impulse2Freq(float *imp, float *out);
 private:	
-	fftw_plan m_PlanA;
-	fftw_plan m_PlanB;
+	fftw_plan m_Plan;
 	unsigned int m_FFTLength;
 	double *m_In;
-	double *m_Out;
 	fftw_complex *m_Spectrum;
 };
 
