@@ -19,43 +19,22 @@
 #include "GLEditor.h"
 
 GLEditor::GLEditor():
+m_PosX(0),
+m_PosY(0),
+m_PosZ(0),
+m_RotX(0),
+m_RotY(0),
+m_DisY(-10),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),
 m_Selection(false),
-m_ShiftState(false)
+m_ShiftState(false),
+m_OpenChars("([<{"),
+m_CloseChars(")]>}")
 { 
-	m_Text="(define (tree d)\n\
-	(push)\n\
-	(rotate (vector 0 30 0))\n\
-	(translate (vector 0 0.6 0))\n\
-	(scale (vector 0.8 0.8 0.8))\n\
-	(push)\n\
-	(scale (vector 0.2 1 0.2))\n\
-	(draw_cube)\n\
-	(pop)\n\
-	(if (eq? 0 d)\n\
-		1\n\
-		(begin	(rotate (vector 0 0 45))\n\
-			(tree (- d 1))\n\
-			(rotate (vector 0 0 -90))\n\
-			(tree (- d 1))))\n\
-	(pop))\n\
-\n\
-(show_axis 1)\n\
-(clear)\n\
-\n\
-(colour (vector 0.5 0.5 0.5))\n\
-(define (loop) (tree 8))\n\
-\n\
-(engine_callback \"(loop)\")"; 
-
-/*m_Text="(clear)\n\
-(show_axis 1)\n\
-(colour (vector 1 1 1))\n\
-(build_cube)\n";*/
-
-	ProcessTabs();
+	// mono font - yay!
+	m_CursorWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
 }
 
 GLEditor::~GLEditor() 
@@ -72,6 +51,16 @@ string GLEditor::GetText()
 {
 	if (m_Selection) return m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 	return m_Text;
+}
+
+void GLEditor::DrawCharBlock()
+{		
+	glBegin(GL_QUADS);
+	glVertex3f(0,-30,0);
+	glVertex3f(0,130,0);
+	glVertex3f(m_CursorWidth,130,0);
+	glVertex3f(m_CursorWidth,-30,0);				
+	glEnd();
 }
 
 void GLEditor::Render()
@@ -96,35 +85,51 @@ void GLEditor::Render()
 	glRotatef(-m_RotX,1,0,0);
 	
 	glPushMatrix();
+	
+	m_ParenthesesHighlight=-1;
+	
+	int type=0;
+	for (string::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
+	{
+		if (m_Text[m_Position]==*i) ParseOpenParentheses(m_Position,type);
+		type++;
+	}
+		
+	type=0;	
+	for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
+	{
+		if (m_Text[m_Position]==*i) ParseCloseParentheses(m_Position,type);
+		type++;
+	}
+	
 	float ypos=0;
 	float width;
-	float cursorwidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
+	bool drawncursor=false;
+	
 	for (unsigned int n=0; n<m_Text.size(); n++)
 	{
 		width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
-		if (m_Text[n]=='\n') width=cursorwidth;
+		if (m_Text[n]=='\n') width=m_CursorWidth;
 		
 		if (m_Position==n) // draw cursor
 		{ 
+			drawncursor=true;
 			glColor4f(1,0,0,0.5);
-			glBegin(GL_QUADS);
-			glVertex3f(0,-30,0);
-			glVertex3f(0,130,0);
-			glVertex3f(cursorwidth,130,0);
-			glVertex3f(cursorwidth,-30,0);				
-			glEnd();
+			DrawCharBlock();
+			glColor4f(0.7,0.7,0.7,1);
+		}
+		
+		if (m_ParenthesesHighlight==(int)n) // draw parentheses highlight
+		{ 
+			glColor4f(1,0,0,0.5);
+			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}
 		
 		if (m_Selection && n>=m_HighlightStart && n<m_HighlightEnd)
 		{ 
 			glColor4f(0,1,0,0.5);
-			glBegin(GL_QUADS);
-			glVertex3f(0,-30,0);
-			glVertex3f(0,130,0);
-			glVertex3f(width,130,0);
-			glVertex3f(width,-30,0);				
-			glEnd();
+			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}	
 		
@@ -140,6 +145,15 @@ void GLEditor::Render()
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
 		}
 	}
+	
+	// draw cursor if we have no text, or if we're at the end of the buffer
+	if (!drawncursor)
+	{
+		glColor4f(1,0,0,0.5);
+		DrawCharBlock();
+		glColor4f(0.7,0.7,0.7,1);
+	}
+	
 	glPopMatrix();
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
@@ -227,13 +241,19 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 				{
 					if (m_Selection)
 					{
-						m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart); 
-						m_Position-=m_HighlightEnd-m_HighlightStart;
+						if (!m_Text.empty())
+						{
+							m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart); 
+							m_Position-=m_HighlightEnd-m_HighlightStart;
+						}
 					}
 					else
 					{
-						m_Text.erase(m_Position-1,1); 
-						m_Position--; 
+						if (!m_Text.empty())
+						{
+							m_Text.erase(m_Position-1,1); 
+							m_Position--; 
+						}
 					}
 				}
 				break;
@@ -258,14 +278,14 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 	if (m_Position<0) m_Position=0;
 	if (m_Position>m_Text.size()) m_Position=m_Text.size()-1;
 	
-	if (!m_ShiftState && glutGetModifiers()&GLUT_ACTIVE_SHIFT)
+	if (key==0 && !m_ShiftState && glutGetModifiers()&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_HighlightStart=startpos;
 		m_ShiftState=true;
 		m_Selection=true;
 	}
 	
-	if (m_ShiftState && !glutGetModifiers()&GLUT_ACTIVE_SHIFT)
+	if (key==0 && m_ShiftState && !glutGetModifiers()&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_ShiftState=false;	
 		m_Selection=false;
@@ -350,4 +370,38 @@ unsigned int GLEditor::LineStart(int pos)
 unsigned int GLEditor::LineEnd(int pos)
 {
 	return m_Text.find("\n",pos);
+}
+
+void GLEditor::ParseOpenParentheses(int pos, int type)
+{
+	// looking for a close, so search forward
+	int stack=0;
+	pos++;
+	while(stack!=-1 && pos<(int)m_Text.size())
+	{
+		if (m_Text[pos]==m_OpenChars[type]) stack++;
+		if (m_Text[pos]==m_CloseChars[type]) stack--;
+		pos++;
+	}
+	if (stack==-1)
+	{
+		m_ParenthesesHighlight=pos-1;
+	}
+}
+
+void GLEditor::ParseCloseParentheses(int pos, int type)
+{
+	// looking for a open, so search backward
+	int stack=0;
+	pos--;
+	while(stack!=-1 && pos>0)
+	{
+		if (m_Text[pos]==m_CloseChars[type]) stack++;
+		if (m_Text[pos]==m_OpenChars[type]) stack--;
+		pos--;
+	}
+	if (stack==-1)
+	{
+		m_ParenthesesHighlight=pos+1;
+	}	
 }

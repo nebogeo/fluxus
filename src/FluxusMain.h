@@ -47,9 +47,11 @@ public:
     void ClearLifeforms() { m_Lifeforms.clear(); }
 
     string GetScriptFragment() { string temp=m_Script; m_Script=""; return temp; }
-    void Dump(const string &Text) {  }
+    void Dump(const string &Text) { cerr<<Text<<endl; }
     void ResetCamera();
-    void LoadScript(const string &Filename) { }
+    void LoadScript(const string &Filename);
+    void SetSaveName(const string &s) { m_SaveName=s; }
+    void SaveScript();
     void RunScript() {  }
 	void StartDumpFrames(const string &Filename);
 	void EndDumpFrames();
@@ -78,6 +80,7 @@ private:
 	int m_Width;
 	int m_Height;
 	string m_Script;
+	string m_SaveName;
 };
 
 };

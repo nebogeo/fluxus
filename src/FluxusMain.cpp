@@ -193,6 +193,52 @@ Lifeforms *FluxusMain::GetLifeforms(const string &name)
 	}
 	return NULL;
 }
+
+void FluxusMain::LoadScript(const string &Filename) 
+{ 
+	FILE *file=fopen(Filename.c_str(),"r");
+	if (file)
+	{
+		fseek(file,0,SEEK_END);
+		unsigned int size=ftell(file);
+		fseek(file,0,SEEK_SET);		
+		char *buffer = new char[size];
+		if (buffer)
+		{
+			fread(buffer,1,size,file);	
+			m_Editor.SetText(buffer);	
+		}
+		else
+		{
+			cerr<<"couldn't allocate buffer for load"<<endl;
+		}
+		
+		delete[] buffer;
+		fclose(file);
+	}
+	
+	m_SaveName=Filename; // just a precaution
+}
+
+void FluxusMain::SaveScript() 
+{ 
+	if (m_SaveName!="")
+	{
+		FILE *file=fopen(m_SaveName.c_str(),"w");
+		if (file)
+		{	
+			fwrite(m_Editor.GetText().c_str(),1,m_Editor.GetText().size(),file);	
+			fclose(file);
+		}
+		
+		Dump("Saved ["+m_SaveName+"]");
+	}
+	else
+	{
+		Dump("No save name set, not saved...");
+	}
+}
+
 //////////////////////////////////////////////////////////////////////
 
 /*void FFTWindow::draw()

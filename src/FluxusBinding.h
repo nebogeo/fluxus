@@ -113,6 +113,7 @@ public:
 	static SCM lifeform_maxspeed(SCM s_name, SCM s_obj);
 	static SCM save_frame(SCM s_name);
 	static SCM load(SCM s_name);
+	static SCM save_name(SCM s_name);
 	static SCM source(SCM s_name);
 	static SCM fluxface(SCM s_name, SCM x, SCM y);
 	static SCM clear_fluxface();

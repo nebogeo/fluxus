@@ -29,12 +29,14 @@ public:
 	void Reshape(unsigned int w,unsigned int h);
 
 	string GetText();
+	void SetText(const string& s) { m_Text=s; ProcessTabs(); }
 
 	float m_PosX,m_PosY,m_PosZ;
 	float m_RotX,m_RotY,m_DisY;
 
 private:
 
+	void DrawCharBlock();
 	void ProcessTabs();
 	int OffsetToCurrentLineStart();
 	int NextLineLength(int pos);
@@ -42,6 +44,8 @@ private:
 	int LineLength(int pos);
 	unsigned int LineStart(int pos);
 	unsigned int LineEnd(int pos);
+	void ParseOpenParentheses(int pos, int type);
+	void ParseCloseParentheses(int pos, int type);
 	
 	string m_Text;
 	string m_CopyBuffer;
@@ -52,7 +56,11 @@ private:
 	bool m_Selection;
 	bool m_ShiftState;
 	bool m_CtrlState;
-	
+	float m_CursorWidth;
+	int m_ParenthesesHighlight;
+	string m_OpenChars;
+	string m_CloseChars;
+
 	int m_Width;
 	int m_Height;
 };

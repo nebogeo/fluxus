@@ -41,10 +41,7 @@ SCM ErrorHandler (void *data, SCM tag, SCM throw_args)
 	binding->Fluxus->Dump(str);
 	binding->Fluxus->Dump("\n");
 	
-	cerr<<str<<endl;
-	
 	free(str);
-	//scm_init_guile();
 	return SCM_UNDEFINED;
 }
 
@@ -54,10 +51,8 @@ void DisplayCallback()
     if (fragment!="")
     {
     	gh_eval_str_with_catch(fragment.c_str(), (scm_t_catch_handler)ErrorHandler);
-		//cerr<<"evalling:"<<endl;
-		//cerr<<fragment<<endl;
     }
-
+	
 	binding->Fluxus->Render();
 	binding->FrameCount++;
 	
@@ -73,15 +68,23 @@ void KeyboardCallback(unsigned char key,int x, int y)
 {
 	binding->Fluxus->Handle(key, -1, -1, -1, x, y);
 	
-	if (key=='f') 
-	{
-		glutFullScreen();
-	}
+	//cerr<<(int)key<<endl;
 	
-	if (key=='w') 
+	if (glutGetModifiers()&GLUT_ACTIVE_CTRL)
 	{
-		glutReshapeWindow(640,480);
-		glutPositionWindow(100,100);
+		if (key==6) // f
+		{
+			glutFullScreen();
+		}
+		else if (key==23) // w
+		{
+			glutReshapeWindow(640,480);
+			glutPositionWindow(100,100);
+		}
+		else if (key==19) // s
+		{
+			binding->Fluxus->SaveScript();
+		}
 	}
 }
 

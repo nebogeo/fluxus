@@ -857,6 +857,15 @@ SCM FluxusBinding::load(SCM s_name)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::save_name(SCM s_name)
+{
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "name");	
+    size_t size=0;
+	char *name=gh_scm2newstr(s_name,&size);
+	Fluxus->SetSaveName(name);
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::source(SCM s_name)
 {
 	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "name");	
@@ -1032,6 +1041,7 @@ void FluxusBinding::RegisterProcs()
 	
 	// interpreter + misc
 	gh_new_procedure0_1("load",   load);
+	gh_new_procedure0_1("save_name",   save_name);
 	gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key_pressed",  key_pressed);
      gh_new_procedure("frame",       	frame,  	 0,0,0);

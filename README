@@ -6,6 +6,8 @@ succession of changes
 fluxus is a small realtime render engine for linux that generates animation from sound.
 fluxus is released under the GPL licence.
 
+see INSTALL for information on building
+
 help? see docs/examples, or dave@pawfal.org
 check the wiki at www.pawfal.org for more scripts
 
