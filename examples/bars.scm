@@ -1,9 +1,9 @@
 
 (define (bar c)
     (push)
-    (colour (vector 0 0 (gh c)))
+    (colour (vector 1 0 (gh c)))
     (translate (vector c 0 0))
-    (scale (vector 1 (* 5 (gh c)) 1))
+    (scale (vector 1 (+ 0.1 (* 5 (gh c))) 1))
     (draw-cube)
     (pop))
 
@@ -18,3 +18,4 @@
     (bars 0))
 
 (engine-callback "(render)")
+
