@@ -1,0 +1,49 @@
+0.5
+
+assert build error fixed
+"Insufficient GL support" error in fltk fixed
+texture loader only caches one copy of each texture
+much faster retained mode scenegraph lookups
+fullscreen mode ("f" or "w" in renderer window)
+fps clamping
+init $HOME/.fluxus.scm sourced on startup
+(start_framedump) (end_framedump) tiff framesave
+F5 without text selected executes all
+commandline script load
+(build_line)
+(random) changed to (flxrnd)
+(getharmonic) now wraps the harmonic no. so you always get something
+(source) loads and executes scripts
+(clear_fluxface) crash fixed
+fluxface bug fixes and tidy ups
+physics groundplane crash fixed
+(make_light) and light descriptions
+sphere builder fix
+parentheses highlighting - good idea for scheme ;)
+lock camera works again
+polybuilder turtle (normals not working yet, use wireframe hints)
+(collisions) allows you to turn off ode collisions - defaults off
+(process) for offline wavfile processing
+
+0.4
+split up into libfluxus, libfluxphysics and main app
+fixed newbie texturing errors - should be much faster
+added ambient and emmisive to the materials (shaded f+b)
+smoothed cylinders
+fixed spheres 
+fixed problem with fltk-gl depth buffer
+fixed active_sphere
+tex coords for spheres
+clear clears engine callback
+portaudio replacement for jack/oss
+
+0.3
+Jack support fixed
+
+0.2 
+gcc 3.2 compatibility
+added user guide to docs
+removed kdevelop project, simple makefile
+
+0.1 
+initial release

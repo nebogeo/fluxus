@@ -1,0 +1,16 @@
+requires:
+opengl     http://www.opengl.org
+fltk       http://www.fltk.org
+ode        http://opende.sourceforge.net/
+guile      http://www.gnu.org/software/guile/guile.html
+fftw       http://www.fftw.org/
+portaudio  http://www.portaudio.com/
+libsndfile http://www.mega-nerd.com/libsndfile/
+
+to build, just do the old:
+
+make 
+make install
+
+makefiles may have to be tweaked for location of libs, SCons version to 
+follow. built on slackware i386
