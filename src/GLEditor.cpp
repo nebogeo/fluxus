@@ -18,6 +18,14 @@
 #include <iostream>
 #include "GLEditor.h"
 
+#define GLEDITOR_DELETE 127
+#define GLEDITOR_BACKSPACE 8
+#define GLEDITOR_TAB 9
+#define GLEDITOR_RETURN 13
+#define GLEDITOR_CUT 24 
+#define GLEDITOR_COPY 3 
+#define GLEDITOR_PASTE 22 
+
 GLEditor::GLEditor():
 m_PosX(0),
 m_PosY(0),
@@ -243,15 +251,15 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 	{
 		switch (key)
 		{
-			case 24: // cut
+			case GLEDITOR_CUT: // cut
 				m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 				m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 				m_Selection=false;
 			break;
-			case 3: // copy
+			case GLEDITOR_COPY: // copy
 				m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 			break;
-			case 22: // paste
+			case GLEDITOR_PASTE: // paste
 				m_Text.insert(m_Position,m_CopyBuffer);
 				m_Selection=false;
 				m_Position+=m_CopyBuffer.size();
@@ -265,8 +273,8 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 		{	
 			switch(key)
 			{
-				case 127: m_Text.erase(m_Position,1); break; // delete
-				case 8: // backspace
+				case GLEDITOR_DELETE: m_Text.erase(m_Position,1); break; // delete
+				case GLEDITOR_BACKSPACE: // backspace
 				{
 					if (!m_Text.empty() && m_Position!=0)
 					{
@@ -283,13 +291,13 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 					}
 				}
 				break;
-				case 9: // tab
+				case GLEDITOR_TAB: // tab
 				{
 					m_Text.insert(m_Position,"    ");
 					m_Position+=4;
 				}
 				break;
-				case 13: key='\n'; // fallthrough (replacement of newline)
+				case GLEDITOR_RETURN: key='\n'; // fallthrough (replacement of newline)
 				default:
 					char temp[2];
 					temp[0]=(char)key;
