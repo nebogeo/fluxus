@@ -268,17 +268,14 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 				case 127: m_Text.erase(m_Position,1); break; // delete
 				case 8: // backspace
 				{
-					if (m_Selection)
+					if (!m_Text.empty() && m_Position!=0)
 					{
-						if (!m_Text.empty())
+						if (m_Selection)
 						{
 							m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart); 
-							m_Position-=m_HighlightEnd-m_HighlightStart;
+							m_Position-=m_HighlightEnd-m_HighlightStart;						
 						}
-					}
-					else
-					{
-						if (!m_Text.empty())
+						else
 						{
 							m_Text.erase(m_Position-1,1); 
 							m_Position--; 
