@@ -44,32 +44,17 @@ public:
 		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
 		
     int CreateJointBall(int Ob1, int Ob2, dVector Anchor);
+	int CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge);
+    int CreateJointSlider(int Ob1, int Ob2, dVector Hinge);
     int CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2]);
- 	
-	enum JointParamType
-	{
-		LoStop,
-		HiStop,
-		Vel,
-		FMax,
-		FMax2,
-		FudgeFactor,
-		Bounce,
-		CFM,
-		StopERP,
-		StopCFM,
-		SuspensionERP,
-		SuspensionCFM,
-		Vel2
-	};
 	
-    void SetJointParam(int ID, JointParamType Param, float Value);
+    void SetJointParam(int ID, const string &Param, float Value);
     int GetMaxObjectCount() { return m_MaxObjectCount; }
     void SetMaxObjectCount(int s) { m_MaxObjectCount=s; }
 
 private:
 
-	enum JointType {Ball,Hinge,Slider,Contact,Universal,Hinge2,Fixed,AMotor};
+	enum JointType {BallJoint,HingeJoint,SliderJoint,ContactJoint,UniversalJoint,Hinge2Joint,FixedJoint,AMotorJoint};
 
 	class Object
 	{

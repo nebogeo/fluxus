@@ -258,12 +258,21 @@ void Physics::Clear()
 		delete i->second;	
 	}
 	
+	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
+	{
+		delete i->second;	
+	}
+	
+	m_History.clear();
+
 	m_ObjectMap.clear();
 	if (m_GroundCreated) 
 	{
 		dGeomDestroy(m_Ground);
 		m_GroundCreated=false;
 	}
+	
+	m_NextJointID=0;
 }
 
 void Physics::UpdatePrimitives()
@@ -369,7 +378,66 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
-	NewJoint->Type=Hinge2;
+	NewJoint->Type=Hinge2Joint;
+	m_JointMap[m_NextJointID]=NewJoint;
+	m_NextJointID++;
+	return m_NextJointID-1;
+}
+
+int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
+{
+	map<int,Object*>::iterator i1 = m_ObjectMap.find(Ob1);
+	map<int,Object*>::iterator i2 = m_ObjectMap.find(Ob2);
+	
+	if (i1==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	if (i2==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	dJointID j = dJointCreateHinge(m_World,0);
+	dJointAttach (j,i1->second->Body,i2->second->Body);
+	dJointSetHingeAnchor(j,Anchor.x,Anchor.y,Anchor.z);
+	dJointSetHingeAxis(j,Hinge.x, Hinge.y, Hinge.z);
+	
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=HingeJoint;
+	m_JointMap[m_NextJointID]=NewJoint;
+	m_NextJointID++;
+	return m_NextJointID-1;
+}
+
+int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
+{
+	map<int,Object*>::iterator i1 = m_ObjectMap.find(Ob1);
+	map<int,Object*>::iterator i2 = m_ObjectMap.find(Ob2);
+	
+	if (i1==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	if (i2==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	dJointID j = dJointCreateSlider(m_World,0);
+	dJointAttach (j,i1->second->Body,i2->second->Body);
+	dJointSetSliderAxis(j,Hinge.x, Hinge.y, Hinge.z);
+	
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=SliderJoint;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -398,50 +466,51 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
-	NewJoint->Type=Ball;
+	NewJoint->Type=BallJoint;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
 }
 
-void Physics::SetJointParam(int ID, JointParamType Param, float Value)
-{
+void Physics::SetJointParam(int ID, const string &Param, float Value)
+{ 
 	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
 	if (i==m_JointMap.end())
 	{
 		cerr<<"Physics::SetJointParam : Joint ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
+
 	int p=-1;
-
-	switch (Param)
+	if (Param=="LoStop")             p=dParamLoStop;
+	else if (Param=="HiStop")        p=dParamHiStop;  		           
+	else if (Param=="Vel")           p=dParamVel;	           
+	else if (Param=="FMax")          p=dParamFMax;            
+	else if (Param=="FudgeFactor")   p=dParamFudgeFactor;        
+	else if (Param=="Bounce")        p=dParamBounce;           
+	else if (Param=="CFM")           p=dParamCFM;  	           
+ 	else if (Param=="StopERP")       p=dParamStopERP;            
+	else if (Param=="StopCFM")       p=dParamStopCFM;
+ 	else if (Param=="SuspensionERP") p=dParamSuspensionERP; 
+	else if (Param=="SuspensionCFM") p=dParamSuspensionCFM;
+	else if (Param=="Vel2")		     p=dParamVel2;
+	else if (Param=="FMax2")  	     p=dParamFMax2; 
+	else 
 	{
-	   	case LoStop        : p=dParamLoStop; break;
-	   	case HiStop        : p=dParamHiStop; break;
-	   	case Vel           : p=dParamVel; break;
-	   	case FMax          : p=dParamFMax; break;
-	   	case FudgeFactor   : p=dParamFudgeFactor; break;
-	   	case Bounce        : p=dParamBounce; break;
-	   	case CFM           : p=dParamCFM; break;
- 	   	case StopERP       : p=dParamStopERP; break;
-	   	case StopCFM       : p=dParamStopCFM; break;
- 	   	case SuspensionERP : p=dParamSuspensionERP; break;
-	   	case SuspensionCFM : p=dParamSuspensionCFM; break;
-	   	case Vel2          : p=dParamVel2; break;
-	   	case FMax2         : p=dParamFMax2; break;
-	   	default : cerr<<"unknown parameter "<<Param<<endl; return; break;
+		cerr<<"unknown parameter "<<Param<<endl;
+		return;
 	}
-
+	
 	switch (i->second->Type)
 	{
-		case Ball      : break; 	
-		case Hinge     : dJointSetHingeParam(i->second->Joint,p,Value); break;	
-		case Contact   : break;	
-		case Universal : break;	
-		case Hinge2    : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
-		case Fixed     : break;	
-		case AMotor    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
+		case BallJoint      : break; // no set param required	
+		case HingeJoint     : dJointSetHingeParam(i->second->Joint,p,Value); break;	
+		case SliderJoint    : dJointSetSliderParam(i->second->Joint,p,Value); break;	
+		case ContactJoint   : break;	// no set param required
+		case UniversalJoint : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
+		case Hinge2Joint    : dJointSetUniversalParam(i->second->Joint,p,Value); break;	
+		case FixedJoint     : break;	// no set param required
+		case AMotorJoint    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
 		default : cerr<<"unknown joint type "<<i->second->Type<<endl; return; break;	
 	} 	
 }

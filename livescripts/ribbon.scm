@@ -10,10 +10,10 @@
     ;(opacity 0.4)
     (texture (load-texture "water.png"))
     (translate (vector 0 t 0))
-    (scale (vector 0.5 0.8 0.5))
+    (scale (vector 0.7 1 0.2))
     (set! list (cons (build-cube) list))
     (active-box (car list))
-    (set-mass (car list) 0.01)
+    (set-mass (car list) 1)
     (pop))
 
 
@@ -29,7 +29,7 @@
         '()
         (begin
             (if (> (gh c) 0.5)
-                (kick (car l) (vector 0 (* (gh c) 0.02) 0)))
+                (kick (car l) (vector 0 (* (gh c) 0.1) 0)))
             (animate (cdr l) (+ 1 c)))))
 
 (ground-plane (vector 0 1 0) 0)
@@ -43,7 +43,7 @@
 (array 40)
 (link list 0)
 (desiredfps 1000)
-;(lock-camera (cadddr list))
+(lock-camera (cadddr list))
 ;(clear)
 ;(kick (car list) (vector 0 200 0))
 ;(blur 0.1)

@@ -53,10 +53,6 @@ if not GetOption('clean'):
 		print 'ERROR: glut must be installed!'
 		Exit(1)   
 
-	if not conf.CheckLibWithHeader('png', 'png.h', 'C',):
-		print 'ERROR: ode must be installed!'
-		Exit(1)   
-
 	if not conf.CheckLibWithHeader('sndfile', 'sndfile.h', 'C'):
 		print 'ERROR: sndfile must be installed!'
 		Exit(1)   

@@ -538,6 +538,67 @@ SCM FluxusBinding::surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s
 	return SCM_UNSPECIFIED;
 }
 
+
+SCM FluxusBinding::build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
+    SCM_ASSERT(SCM_NUMBERP(s_ob2),    s_ob2,    SCM_ARG2, "object 2");
+    SCM_ASSERT(SCM_VECTORP(s_anchor), s_anchor, SCM_ARG3, "anchor");
+    int name1=0;
+	name1=(int)gh_scm2double(s_ob1);
+	int name2=0;
+	name2=(int)gh_scm2double(s_ob2);	
+	float anchor[3];
+	gh_scm2floats(s_anchor,anchor);
+	return gh_double2scm(Fluxus->GetPhysics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
+}
+
+SCM FluxusBinding::build_hingejoint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
+    SCM_ASSERT(SCM_NUMBERP(s_ob2),    s_ob2,    SCM_ARG2, "object 2");
+    SCM_ASSERT(SCM_VECTORP(s_anchor), s_anchor, SCM_ARG3, "anchor");
+    SCM_ASSERT(SCM_VECTORP(s_hinge),  s_hinge,  SCM_ARG4, "hinge");
+
+    int name1=0;
+	name1=(int)gh_scm2double(s_ob1);
+	int name2=0;
+	name2=(int)gh_scm2double(s_ob2);
+	
+	float anchor[3];
+	gh_scm2floats(s_anchor,anchor);
+	
+	dVector Hinge;
+	float temp[3];
+	gh_scm2floats(s_hinge,temp);
+	Hinge.x=temp[0];
+	Hinge.y=temp[1];
+	Hinge.z=temp[2];
+	
+	return gh_double2scm(Fluxus->GetPhysics()->CreateJointHinge(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
+}
+
+SCM FluxusBinding::build_sliderjoint(SCM s_ob1, SCM s_ob2, SCM s_hinge)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
+    SCM_ASSERT(SCM_NUMBERP(s_ob2),    s_ob2,    SCM_ARG2, "object 2");
+    SCM_ASSERT(SCM_VECTORP(s_hinge),  s_hinge,  SCM_ARG3, "hinge");
+
+    int name1=0;
+	name1=(int)gh_scm2double(s_ob1);
+	int name2=0;
+	name2=(int)gh_scm2double(s_ob2);
+		
+	dVector Hinge;
+	float temp[3];
+	gh_scm2floats(s_hinge,temp);
+	Hinge.x=temp[0];
+	Hinge.y=temp[1];
+	Hinge.z=temp[2];
+	
+	return gh_double2scm(Fluxus->GetPhysics()->CreateJointSlider(name1, name2, Hinge));
+}
+
 SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge1, SCM s_hinge2)
 {
     SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
@@ -569,94 +630,19 @@ SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_h
 	return gh_double2scm(Fluxus->GetPhysics()->CreateJointHinge2(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
-SCM FluxusBinding::build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
-    SCM_ASSERT(SCM_NUMBERP(s_ob2),    s_ob2,    SCM_ARG2, "object 2");
-    SCM_ASSERT(SCM_VECTORP(s_anchor), s_anchor, SCM_ARG3, "anchor");
-    int name1=0;
-	name1=(int)gh_scm2double(s_ob1);
-	int name2=0;
-	name2=(int)gh_scm2double(s_ob2);	
-	float anchor[3];
-	gh_scm2floats(s_anchor,anchor);
-	return gh_double2scm(Fluxus->GetPhysics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
-}
-
-SCM FluxusBinding::joint_vel2(SCM s_joint, SCM s_value)
+SCM FluxusBinding::joint_param(SCM s_joint, SCM s_param, SCM s_value)
 {
     SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
+    SCM_ASSERT(SCM_STRINGP(s_param), s_param, SCM_ARG1, "param");
     SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
     int joint=0;
 	joint=(int)gh_scm2double(s_joint);
+	char *param=0;
+	size_t size=0;
+	param=gh_scm2newstr(s_param,&size);	
     double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::Vel2,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_fmax2(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::FMax2,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_fmax(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::FMax,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_histop(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::HiStop,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_lostop(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::LoStop,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_vel(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::Vel,v);
-	return SCM_UNSPECIFIED;
-}
-
-SCM FluxusBinding::joint_fudge(SCM s_joint, SCM s_value)
-{
-    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
-    SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
-    int joint=0;
-	joint=(int)gh_scm2double(s_joint);
-    double v = gh_scm2double(s_value);
-	Fluxus->GetPhysics()->SetJointParam(joint,Physics::FudgeFactor,v);
+	Fluxus->GetPhysics()->SetJointParam(joint,param,v);
+	free(param);
 	return SCM_UNSPECIFIED;
 }
 
@@ -1148,16 +1134,12 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("passive-sphere",  passive_sphere);
     gh_new_procedure0_1("passive-cylinder",passive_cylinder);
     gh_new_procedure0_2("ground-plane", ground_plane);
-    gh_new_procedure5_0("build-hinge2joint", build_hinge2joint);
+    gh_new_procedure4_0("build-hingejoint", build_hingejoint);
     gh_new_procedure3_0("build-balljoint", build_balljoint);
+    gh_new_procedure3_0("build-sliderjoint", build_sliderjoint);
+    gh_new_procedure5_0("build-hinge2joint", build_hinge2joint);
     gh_new_procedure4_0("surface-params", surface_params);
-    gh_new_procedure0_2("joint-vel2",   joint_vel2);
-    gh_new_procedure0_2("joint-fmax2",  joint_fmax2);
-    gh_new_procedure0_2("joint-fmax",   joint_fmax);
-    gh_new_procedure0_2("joint-histop", joint_histop);
-    gh_new_procedure0_2("joint-lostop", joint_lostop);
-    gh_new_procedure0_2("joint-vel",    joint_vel);
-    gh_new_procedure0_2("joint-fudge",  joint_fudge);
+    gh_new_procedure3_0("joint-param",  joint_param);
     gh_new_procedure0_2("set-mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
