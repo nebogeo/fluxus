@@ -32,10 +32,17 @@ public:
     ~FFT();
 	void Impulse2Freq(float *imp, float *out);
 private:	
+#ifndef __FFTWFLOAT__
 	fftw_plan m_Plan;
 	unsigned int m_FFTLength;
 	double *m_In;
 	fftw_complex *m_Spectrum;
+#else
+	fftwf_plan m_Plan;
+	unsigned int m_FFTLength;
+	float *m_In;
+	fftwf_complex *m_Spectrum;
+#endif
 };
 
 class AudioCollector

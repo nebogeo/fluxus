@@ -25,16 +25,32 @@ static int XRanges[NUM_BARS+1] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 
 
 FFT::FFT(int length) :
 m_FFTLength(length),
+#ifndef __FFTWFLOAT__
 m_In(new double[length]),
+#else
+m_In(new float[length]),
+#endif
+
+#ifndef __FFTWFLOAT__
 m_Spectrum(new fftw_complex[length])
 {
 	m_Plan = fftw_plan_dft_r2c_1d(m_FFTLength, m_In, m_Spectrum, FFTW_ESTIMATE);
 }
+#else
+m_Spectrum(new fftwf_complex[length])
+{
+	m_Plan = fftwf_plan_dft_r2c_1d(m_FFTLength, m_In, m_Spectrum, FFTW_ESTIMATE);
+}
+#endif
 
 FFT::~FFT()
 {
 	delete[] m_In;
+#ifndef __FFTWFLOAT__
 	fftw_destroy_plan(m_Plan);
+#else
+	fftwf_destroy_plan(m_Plan);
+#endif
 }
 
 void FFT::Impulse2Freq(float *imp, float *out)
@@ -46,7 +62,11 @@ void FFT::Impulse2Freq(float *imp, float *out)
     m_In[i] = imp[i];
   }
 
+#ifndef __FFTWFLOAT__
   fftw_execute(m_Plan);
+#else
+  fftwf_execute(m_Plan);
+#endif
 
   for (i=0; i<m_FFTLength; i++)
   {
