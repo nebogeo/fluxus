@@ -1,0 +1,38 @@
+This is an experimental binding of fluxus to python. 
+Intended as a simple sketchbook tool for games design rather than livecoded 
+visuals, as personally I think python is more suited to that than scheme is.
+
+I might flesh this out a little more in the future, but its highly labcoat stuff
+for now... feel free to expand.
+
+pyflux implements these commands so far:
+
+show_axis
+push  	   
+pop		   
+identity     
+apply		
+clear   
+grab    
+ungrab  
+translate
+rotate  
+scale   
+parent  
+clear_colour
+colour  
+opacity 
+load_texture
+texture		  
+build_cube	   
+build_plane	   
+build_cylinder  
+build_line	   
+build_sphere    
+ortho 		  
+persp 		  
+backfacecull    
+desiredfps	  
+print_scene_graph
+engine_callback 
+key_pressed	  
