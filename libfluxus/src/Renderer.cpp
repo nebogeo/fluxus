@@ -331,7 +331,7 @@ int Renderer::Select(int x, int y, int size)
 	int hits=glRenderMode(GL_RENDER);
 	unsigned int *ptr=IDs, numnames;
 	float minz,maxz,closest=1000000;
-	
+
 	// process the hit records
 	for (int n=0; n<hits; n++)
 	{
@@ -339,7 +339,7 @@ int Renderer::Select(int x, int y, int size)
 		ptr++;
 		minz = (float) *ptr++/0x7fffffff;
 		maxz = (float) *ptr++/0x7fffffff;
-		
+				
 		// find the closest one
 		if (closest>minz) 
 		{

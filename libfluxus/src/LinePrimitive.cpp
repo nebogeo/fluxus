@@ -79,6 +79,8 @@ dBoundingBox LinePrimitive::GetBoundingBox()
 
 void LinePrimitive::ApplyTransform(bool ScaleRotOnly)
 {
+	m_Start=GetState()->Transform.transform(m_Start);
+	m_End=GetState()->Transform.transform(m_End);
 }
 
 void LinePrimitive::SetStart(const dVertex &Vert, float width)

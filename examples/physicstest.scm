@@ -17,6 +17,7 @@
 		(line (- n 1))))
 
 (clear)
+(collisions 1)
 (ground_plane (vector 0 1 0) 0)
 (show_axis 1)
 (clear_colour (vector 0.5 0.6 0.9))

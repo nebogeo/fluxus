@@ -1,0 +1,31 @@
+(define col 0.1)
+
+(define (draw n)
+	(push)
+	(opacity 1)
+	(scale (vector 0.1 0.1 1))
+	(translate (vector n 0 0))
+	(colour (vector (* col (gh (+ n 1))) 
+					(* col (gh n) )
+					(* col (gh (- n 5)))))
+	(scale (vector 1 (* 10 (gh n) )1))
+	(draw_cube)
+	(pop)
+	(if (eq? n 0)
+		1
+		(begin
+		(push)
+		(draw (- n 1))
+		(pop)
+		(translate (vector 0 (* 5 (gh n)) 0))
+		(push)
+		(rotate (vector 120 0 0))
+		(draw (- n 1))
+		(pop))))
+
+(define (render)
+	(draw 5))
+(clear)
+(engine_callback "(render)")
+
+(blur 0.1)
