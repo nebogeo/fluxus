@@ -11,7 +11,7 @@
 	(scale (vector (* 1 (gh (+ n 1))) 
 					(* 1 (gh n) )
 					(* sc (gh n))))
-	(draw_cube)
+	(draw-cube)
 	(pop)
 	(if (eq? n 0)
 		1
@@ -28,5 +28,5 @@
 (define (render)
 	(draw 7))
 (clear)
-(engine_callback "(render)")
+(engine-callback "(render)")
 (blur 1)

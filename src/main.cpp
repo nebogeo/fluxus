@@ -31,17 +31,44 @@ using namespace fluxus;
 static const string INIT_FILE=".fluxus.scm";
 FluxusBinding *binding;
 
-SCM ErrorHandler (void *data, SCM tag, SCM throw_args)
+// copied from the guile source handler_message from throw.cpp
+// todo: replace with gl overlay error log
+SCM ErrorHandler (void *handler_data, SCM tag, SCM args)
 {
-	char *str=NULL;
-	size_t size=0;
-	str=gh_scm2newstr(gh_car(gh_cdr(throw_args)),&size);	
-	
-	//binding->Fluxus->Dump(string("Error in: \"")+string((char*)data)+string("\"\n"));
-	binding->Fluxus->Dump(str);
-	binding->Fluxus->Dump("\n");
-	
-	free(str);
+	char *prog_name = (char *) handler_data;
+	SCM p = scm_cur_errp;
+
+	if (scm_ilength (args) >= 3)
+	{
+		SCM stack   = scm_make_stack (SCM_BOOL_T, SCM_EOL);
+		SCM subr    = SCM_CAR (args);
+		SCM message = SCM_CADR (args);
+		SCM parts   = SCM_CADDR (args);
+		SCM rest    = SCM_CDDDR (args);
+
+		if (SCM_BACKTRACE_P && SCM_NFALSEP (stack))
+		{
+			scm_puts ("Backtrace:\n", p);
+			scm_display_backtrace (stack, p, SCM_UNDEFINED, SCM_UNDEFINED);
+			scm_newline (p);
+		}
+		scm_i_display_error (stack, p, subr, message, parts, rest);
+	}
+	else
+	{
+		if (! prog_name)
+		prog_name = "guile";
+
+		scm_puts (prog_name, p);
+		scm_puts (": ", p);
+
+		scm_puts ("uncaught throw to ", p);
+		scm_prin1 (tag, p, 0);
+		scm_puts (": ", p);
+		scm_prin1 (args, p, 1);
+		scm_putc ('\n', p);
+	}
+
 	return SCM_UNDEFINED;
 }
 
@@ -50,7 +77,7 @@ void DisplayCallback()
     string fragment = binding->Fluxus->GetScriptFragment();
     if (fragment!="")
     {
-    	gh_eval_str_with_catch(fragment.c_str(), (scm_t_catch_handler)ErrorHandler);
+    	gh_eval_str_with_catch(fragment.c_str(), ErrorHandler);
     }
 	
 	binding->Audio->GetFFT();
@@ -73,22 +100,28 @@ void KeyboardCallback(unsigned char key,int x, int y)
 	
 	if (glutGetModifiers()&GLUT_ACTIVE_CTRL)
 	{
-		if (key==6) // f
+		// pretty sure this is going to have to change...
+		switch(key)
 		{
-			glutFullScreen();
-		}
-		else if (key==23) // w
-		{
-			glutReshapeWindow(640,480);
-			glutPositionWindow(100,100);
-		}
-		else if (key==19) // s
-		{
-			binding->Fluxus->SaveScript();
-		}
-		else if (key==8) // h
-		{
-			binding->Fluxus->HideScript();
+			case 6: glutFullScreen(); break; // f	
+			case 23: // w
+			{
+				glutReshapeWindow(640,480);
+				glutPositionWindow(100,100);
+			} 
+			break;
+			case 19: binding->Fluxus->SaveScript(); break; // s			
+			case 8: binding->Fluxus->HideScript(); break; // h			
+			case 49: binding->Fluxus->SetCurrentEditor(0); break; // 1
+			case 0: binding->Fluxus->SetCurrentEditor(1); break; // 2
+			case 27: binding->Fluxus->SetCurrentEditor(2); break; // 3
+			case 28: binding->Fluxus->SetCurrentEditor(3); break; // 4
+			case 29: binding->Fluxus->SetCurrentEditor(4); break; // 5
+			case 30: binding->Fluxus->SetCurrentEditor(5); break; // 6
+			case 31: binding->Fluxus->SetCurrentEditor(6); break; // 7
+			case 127: binding->Fluxus->SetCurrentEditor(7); break; // 8
+			case 57: binding->Fluxus->SetCurrentEditor(8); break; // 9
+			case 48: binding->Fluxus->SetCurrentEditor(9); break; // 0
 		}
 	}
 	
@@ -162,7 +195,7 @@ int main(int argc, char *argv[])
 {
 	InitDada();
 	srand(time(NULL));
-		
+	
 	glutInitWindowSize(640,480) ;
   	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);

@@ -9,7 +9,7 @@
 					(* col (gh n) )
 					(* col (gh (- n 5)))))
 	(scale (vector 1 (* 10 (gh n) )1))
-	(draw_cube)
+	(draw-cube)
 	(pop)
 	(if (eq? n 0)
 		1
@@ -26,6 +26,6 @@
 (define (render)
 	(draw 5))
 (clear)
-(engine_callback "(render)")
+(engine-callback "(render)")
 
 (blur 0.1)

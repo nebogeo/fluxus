@@ -5,7 +5,7 @@
 	(scale #(0.8 0.8 0.8))
 	(push)
 	(scale #(0.2 1 0.2))
-	(draw_cube)
+	(draw-cube)
 	(pop)
 	(if (eq? 0 d)
 		1
@@ -15,10 +15,10 @@
 			(tree (- d 1))))
 	(pop))
 
-(show_axis 1)
+(show-axis 1)
 (clear)
 
 (colour #(0.5 0.5 0.5))
 (define (loop) (tree 8))
 
-(engine_callback "(loop)")
+(engine-callback "(loop)")

@@ -747,7 +747,9 @@ SCM FluxusBinding::engine_callback(SCM s_func)
 {
 	SCM_ASSERT(SCM_STRINGP(s_func), s_func, SCM_ARG1, "callback");
 	size_t size=0;
-	CallbackString=gh_scm2newstr(s_func,&size);
+	char *temp=gh_scm2newstr(s_func,&size);
+	CallbackString=temp;
+	free(temp);
     return SCM_UNSPECIFIED;
 }
 
@@ -879,6 +881,7 @@ SCM FluxusBinding::save_frame(SCM s_name)
 	char *name=gh_scm2newstr(s_name,&size);
 	ofstream out(name,ios::binary);
 	out<<*Fluxus->GetRenderer();
+	free(name);
     return SCM_UNSPECIFIED;
 }
 
@@ -888,6 +891,7 @@ SCM FluxusBinding::load(SCM s_name)
     size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
 	Fluxus->LoadScript(name);
+	free(name);
     return SCM_UNSPECIFIED;
 }
 
@@ -897,6 +901,7 @@ SCM FluxusBinding::save_name(SCM s_name)
     size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
 	Fluxus->SetSaveName(name);
+	free(name);
     return SCM_UNSPECIFIED;
 }
 
@@ -907,6 +912,7 @@ SCM FluxusBinding::source(SCM s_name)
 	char *name=gh_scm2newstr(s_name,&size);
 	Fluxus->LoadScript(name);
 	Fluxus->RunScript();
+	free(name);
     return SCM_UNSPECIFIED;
 }
 
@@ -993,6 +999,7 @@ SCM FluxusBinding::start_framedump(SCM s_name)
     size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
 	Fluxus->StartDumpFrames(name);
+	free(name);
     return SCM_UNSPECIFIED;
 }
 
@@ -1008,21 +1015,42 @@ SCM FluxusBinding::process(SCM s_wavname)
     size_t size=0;
 	char *wavname=gh_scm2newstr(s_wavname,&size);
 	Audio->Process(wavname);
+	free(wavname);
     return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::start_osc(SCM s_port)
+{
+	SCM_ASSERT(SCM_STRINGP(s_port), s_port, SCM_ARG1, "port");	
+    size_t size=0;
+	char *port=gh_scm2newstr(s_port,&size);
+	Fluxus->StartOSC(port);
+	free(port);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::from_osc(SCM s_token)
+{
+	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "name");	
+    size_t size=0;
+	char *name=gh_scm2newstr(s_token,&size);
+	SCM t=gh_double2scm(Fluxus->FromOSC(name));
+	free(name);
+	return t;
 }
 
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
-	gh_new_procedure("build_cube",      build_cube,  0,0,0);
-    gh_new_procedure("build_plane",     build_plane, 0,0,0);
-    gh_new_procedure0_2("build_cylinder", build_cylinder);
-    gh_new_procedure0_2("build_sphere", build_sphere);
-	gh_new_procedure4_0("build_line",   build_line);
-    gh_new_procedure("draw_cube",       draw_cube,     0,0,0);
-    gh_new_procedure("draw_plane",      draw_plane,    0,0,0);
-    gh_new_procedure("draw_sphere",     draw_sphere,   0,0,0);
-    gh_new_procedure("draw_cylinder",   draw_cylinder, 0,0,0);
+	gh_new_procedure("build-cube",      build_cube,  0,0,0);
+    gh_new_procedure("build-plane",     build_plane, 0,0,0);
+    gh_new_procedure0_2("build-cylinder", build_cylinder);
+    gh_new_procedure0_2("build-sphere", build_sphere);
+	gh_new_procedure4_0("build-line",   build_line);
+    gh_new_procedure("draw-cube",       draw_cube,     0,0,0);
+    gh_new_procedure("draw-plane",      draw_plane,    0,0,0);
+    gh_new_procedure("draw-sphere",     draw_sphere,   0,0,0);
+    gh_new_procedure("draw-cylinder",   draw_cylinder, 0,0,0);
 	gh_new_procedure0_1("destroy",      destroy);
 
 	// renderstate operations
@@ -1030,7 +1058,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure("pop",             pop,         0,0,0);
 	gh_new_procedure0_1("grab",         grab);
     gh_new_procedure("ungrab",          ungrab      ,0,0,0);
-    gh_new_procedure("print_scene_graph",print_scene_graph,0,0,0);
+    gh_new_procedure("print-scene-graph",print_scene_graph,0,0,0);
 	gh_new_procedure0_1("apply",        apply);
 	gh_new_procedure("identity",        flux_identity, 0,0,0);
     gh_new_procedure0_1("translate",    translate);
@@ -1043,96 +1071,98 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("emissive",     emissive);
 	gh_new_procedure0_1("shinyness",    shinyness);
 	gh_new_procedure0_1("texture",      texture);
-    gh_new_procedure("hint_solid",      hint_solid,       0,0,0);
-    gh_new_procedure("hint_wire",       hint_wire,        0,0,0);
-    gh_new_procedure("hint_normal",     hint_normal,      0,0,0);
-    gh_new_procedure("hint_points",     hint_points,      0,0,0);
-    gh_new_procedure("hint_anti_alias", hint_anti_alias,  0,0,0);
-    gh_new_procedure("hint_none",       hint_none,  0,0,0);
-	gh_new_procedure0_1("line_width",   line_width);
+    gh_new_procedure("hint-solid",      hint_solid,       0,0,0);
+    gh_new_procedure("hint-wire",       hint_wire,        0,0,0);
+    gh_new_procedure("hint-normal",     hint_normal,      0,0,0);
+    gh_new_procedure("hint-points",     hint_points,      0,0,0);
+    gh_new_procedure("hint-anti-alias", hint_anti_alias,  0,0,0);
+    gh_new_procedure("hint-none",       hint_none,  0,0,0);
+	gh_new_procedure0_1("line-width",   line_width);
     gh_new_procedure0_1("parent",       parent);
 	
 	// global state operations
 	gh_new_procedure("clear",           clear,       0,0,0);
 	gh_new_procedure("ortho",       	ortho,   	 0,0,0);
 	gh_new_procedure("persp",       	persp,   	 0,0,0);
-    gh_new_procedure("reset_camera",    reset_camera,0,0,0);
-	gh_new_procedure0_1("lock_camera",  lock_camera);
-	gh_new_procedure0_1("clear_colour",    clear_colour);	
-	gh_new_procedure0_1("clear_frame",     clear_frame);
+    gh_new_procedure("reset-camera",    reset_camera,0,0,0);
+	gh_new_procedure0_1("lock-camera",  lock_camera);
+	gh_new_procedure0_1("clear-colour",    clear_colour);	
+	gh_new_procedure0_1("clear-frame",     clear_frame);
 	gh_new_procedure0_1("blur",         blur);
-    gh_new_procedure0_1("show_axis",    show_axis);
+    gh_new_procedure0_1("show-axis",    show_axis);
 	gh_new_procedure0_1("backfacecull",    backfacecull);
-	gh_new_procedure0_1("load_texture", load_texture);
+	gh_new_procedure0_1("load-texture", load_texture);
 
 	// lights
-    gh_new_procedure0_1("make_light",         make_light);
-    gh_new_procedure("clear_lights",       clear_lights,       0,0,0);
-	gh_new_procedure0_2("light_ambient",   light_ambient);
-	gh_new_procedure0_2("light_diffuse",   light_diffuse);
-	gh_new_procedure0_2("light_specular",  light_specular);
-	gh_new_procedure0_2("light_position",  light_position);
+    gh_new_procedure0_1("make-light",         make_light);
+    gh_new_procedure("clear-lights",       clear_lights,       0,0,0);
+	gh_new_procedure0_2("light-ambient",   light_ambient);
+	gh_new_procedure0_2("light-diffuse",   light_diffuse);
+	gh_new_procedure0_2("light-specular",  light_specular);
+	gh_new_procedure0_2("light-position",  light_position);
 	
 	// interpreter + misc
 	gh_new_procedure0_1("load",   load);
-	gh_new_procedure0_1("save_name",   save_name);
+	gh_new_procedure0_1("save-name",   save_name);
 	gh_new_procedure0_1("source", source);
-	gh_new_procedure0_1("key_pressed",  key_pressed);
+	gh_new_procedure0_1("key-pressed",  key_pressed);
      gh_new_procedure("frame",       	frame,  	 0,0,0);
-   gh_new_procedure0_1("engine_callback", engine_callback);
+   gh_new_procedure0_1("engine-callback", engine_callback);
     gh_new_procedure("flxrnd",          srandom,     0,0,0);
 	gh_new_procedure0_1("desiredfps",          desiredfps);
-	gh_new_procedure0_1("start_framedump",     start_framedump);
-	gh_new_procedure("end_framedump",          end_framedump, 0,0,0);
+	gh_new_procedure0_1("start-framedump",     start_framedump);
+	gh_new_procedure("end-framedump",          end_framedump, 0,0,0);
 	
 	// audio
 	gh_new_procedure0_1("gain",   gain);	
-	gh_new_procedure0_1("get_harmonic", get_harmonic);
+	gh_new_procedure0_1("get-harmonic", get_harmonic);
 	gh_new_procedure0_1("gh",           get_harmonic);
 	gh_new_procedure0_1("process",   	process);
 	
 	// turtle
-	gh_new_procedure("turtle_vert",            turtle_vert,       0,0,0);
-	gh_new_procedure("turtle_build",           turtle_build,       0,0,0);
-	gh_new_procedure("turtle_reset",           turtle_reset,       0,0,0);
-	gh_new_procedure0_1("turtle_move",         turtle_move);
-	gh_new_procedure0_1("turtle_turn",         turtle_turn);
-	gh_new_procedure0_1("turtle_prim",         turtle_prim);
+	gh_new_procedure("turtle-vert",            turtle_vert,       0,0,0);
+	gh_new_procedure("turtle-build",           turtle_build,       0,0,0);
+	gh_new_procedure("turtle-reset",           turtle_reset,       0,0,0);
+	gh_new_procedure0_1("turtle-move",         turtle_move);
+	gh_new_procedure0_1("turtle-turn",         turtle_turn);
+	gh_new_procedure0_1("turtle-prim",         turtle_prim);
 	
 	// lifeforms	
-    gh_new_procedure0_1("make_lifeforms", make_lifeforms);
-    gh_new_procedure0_2("add_lifeform", add_lifeform);
-    gh_new_procedure0_2("lifeform_avoidance", lifeform_avoidance);
-    gh_new_procedure0_2("lifeform_flockcentering", lifeform_flockcentering);
-    gh_new_procedure0_2("lifeform_scenecentering", lifeform_scenecentering);
-    gh_new_procedure0_2("lifeform_inertia", lifeform_inertia);
-    gh_new_procedure0_2("lifeform_scenecentre", lifeform_scenecentre);
-    gh_new_procedure0_2("lifeform_maxspeed", lifeform_maxspeed);
+    gh_new_procedure0_1("make-lifeforms", make_lifeforms);
+    gh_new_procedure0_2("add-lifeform", add_lifeform);
+    gh_new_procedure0_2("lifeform-avoidance", lifeform_avoidance);
+    gh_new_procedure0_2("lifeform-flockcentering", lifeform_flockcentering);
+    gh_new_procedure0_2("lifeform-scenecentering", lifeform_scenecentering);
+    gh_new_procedure0_2("lifeform-inertia", lifeform_inertia);
+    gh_new_procedure0_2("lifeform-scenecentre", lifeform_scenecentre);
+    gh_new_procedure0_2("lifeform-maxspeed", lifeform_maxspeed);
 	
 	// physics
 	gh_new_procedure0_1("collisions", collisions);
 	gh_new_procedure0_1("gravity", gravity);
-	gh_new_procedure0_1("set_max_physical", set_max_physical);
-    gh_new_procedure0_1("active_box",     active_box);
-    gh_new_procedure0_1("active_sphere",  active_sphere);
-    gh_new_procedure0_1("active_cylinder",active_cylinder);
-    gh_new_procedure0_1("passive_box",     passive_box);
-    gh_new_procedure0_1("passive_sphere",  passive_sphere);
-    gh_new_procedure0_1("passive_cylinder",passive_cylinder);
-    gh_new_procedure0_2("ground_plane", ground_plane);
-    gh_new_procedure5_0("build_hinge2joint", build_hinge2joint);
-    gh_new_procedure3_0("build_balljoint", build_balljoint);
-    gh_new_procedure4_0("surface_params", surface_params);
-    gh_new_procedure0_2("joint_vel2",   joint_vel2);
-    gh_new_procedure0_2("joint_fmax2",  joint_fmax2);
-    gh_new_procedure0_2("joint_fmax",   joint_fmax);
-    gh_new_procedure0_2("joint_histop", joint_histop);
-    gh_new_procedure0_2("joint_lostop", joint_lostop);
-    gh_new_procedure0_2("joint_vel",    joint_vel);
-    gh_new_procedure0_2("joint_fudge",  joint_fudge);
-    gh_new_procedure0_2("set_mass",     set_mass);
+	gh_new_procedure0_1("set-max-physical", set_max_physical);
+    gh_new_procedure0_1("active-box",     active_box);
+    gh_new_procedure0_1("active-sphere",  active_sphere);
+    gh_new_procedure0_1("active-cylinder",active_cylinder);
+    gh_new_procedure0_1("passive-box",     passive_box);
+    gh_new_procedure0_1("passive-sphere",  passive_sphere);
+    gh_new_procedure0_1("passive-cylinder",passive_cylinder);
+    gh_new_procedure0_2("ground-plane", ground_plane);
+    gh_new_procedure5_0("build-hinge2joint", build_hinge2joint);
+    gh_new_procedure3_0("build-balljoint", build_balljoint);
+    gh_new_procedure4_0("surface-params", surface_params);
+    gh_new_procedure0_2("joint-vel2",   joint_vel2);
+    gh_new_procedure0_2("joint-fmax2",  joint_fmax2);
+    gh_new_procedure0_2("joint-fmax",   joint_fmax);
+    gh_new_procedure0_2("joint-histop", joint_histop);
+    gh_new_procedure0_2("joint-lostop", joint_lostop);
+    gh_new_procedure0_2("joint-vel",    joint_vel);
+    gh_new_procedure0_2("joint-fudge",  joint_fudge);
+    gh_new_procedure0_2("set-mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
 	
-	gh_new_procedure0_1("save_frame",   save_frame);
+	gh_new_procedure0_1("save-frame",   save_frame);
+	gh_new_procedure0_1("start-osc",    start_osc);
+	gh_new_procedure0_1("from-osc",     from_osc);
 }

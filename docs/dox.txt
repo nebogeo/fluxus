@@ -1,43 +1,50 @@
-<html><body bgcolor="#000000" text="#666666" link="#aaaaaa" vlink="#aaaaaa">
-<pre><code><b>
-fluxus 0.5 documentation
+Fluxus 0.6 documentation
 Copyright (C) 2005 Dave Griffiths
 
-<a href="#concepts">user guide</a>
-<a href="#concepts">concepts</a>
-	<a href="#renderstate">renderstate</a>
-	<a href="#immediateretained">immediate/retained mode</a>
-	<a href="#scenegraph">scenegraph</a>
-<a href="#fluxuscalls">fluxus script</a>
-	<a href="#primitives">primitives</a>
-	<a href="#renderstateops">renderstate operations</a>
-	<a href="#globalstateops">globalstate operations</a>
-	<a href="#lights">lights</a>
-	<a href="#interpreter functions + misc">interpreter functions + misc</a>
-	<a href="#audio">audio</a>
-	<a href="#turtle">turtle poly builder</a>
-	<a href="#fluxface">fluxface</a>
-	<a href="#lifeforms">lifeforms</a>
-	<a href="#physics">physics</a>
-	<a href="#flx">flx file streaming</a>
+Using the editor
 
-<a name="userguide">--------- user guide ---------
+Fluxus is a very simple application to use, but there are a few points to note. 
+Firstly, the only interface is the script editor and keyboard shortcuts.
 
-simply type, paste or load scripts into the green script editor window, press F5 to execute
-the script, or select a script fragment and press F5 to only execute that fragment. the 
-interpreter remains active throughout, so functions and variables can be manually changed by 
-re-executing them during rendering.
+Keyboard shortcuts
 
-<a name="concepts">--------- concepts ---------
-<a name="renderstate">renderstate
+ctrl-f : Fullscreen mode.
+ctrl-w : Windowed mode.
+ctrl-h : Hide/show the editor.
+ctrl-s : Save current script.
+ctrl-0 to 9 : Switch to selected workspace
+F1 : Mouse moves the scene camera.
+F2 : Mouse moves the editor camera.
+F5 : Execute the selected text, or all if none is selected.
 
-like opengl, fluxus is a state machine which has a renderstate you can modify to describe
+Getting started
+
+Scripts can be loaded by typing:
+
+(load "examples/bars.scm")
+
+and hitting F5. The script you just typed will be replaced by the loaded script.
+Scripts are saved by hitting ctrl-s - the filename is either set to the last loaded script, or
+overwritten by:
+
+(save-name "newsavename.scm")
+
+Worspaces can be switched between with ctrl and a number key. These are useful for writing 
+multiple scripts simultaneously. You can load, save and edit code in them independantly, but
+the renderer will only interpret one script at a time. Using F5 will execute the currently 
+displayed code.
+
+Fluxus Theory
+
+Render State
+
+Like OpenGL, fluxus is a state machine which has a renderstate you can modify to describe
 objects created later. for example:
 
 (colour (vector 1 0 0))
-(draw_cube)
+(draw-cube)
 (colour (vector 0 1 0))
-(draw_cube)
+(draw-cube)
 
 will draw a red cube, then a green cube
 states can also be stacked, for example:
@@ -45,50 +52,50 @@ states can also be stacked, for example:
 (colour (vector 1 0 0))
 (push)
 	(colour (vector 0 1 0))
-	(draw_cube)
+	(draw-cube)
 (pop)
-(draw_cube)
+(draw-cube)
 
-will draw a green, then a red cube
+will draw a green, then a red cube.
 
-<a name="immediateretained">immediate/retained mode
+Immediate/Retained mode
 
-both examples so far have used what is known as immediate mode, you have one state stack, the 
+Both examples so far have used what is known as immediate mode, you have one state stack, the 
 top of which is the current context, and everything is drawn once per frame. fluxus contains 
 a structure known as a scenegraph for storing objects and their render states.
 
-<a name="scenegraph">scenegraph
+scenegraph
 
-time for another example:
+Time for another example:
 
 (colour (vector 1 0 0))
-(build_cube)
+(build-cube)
 (colour (vector 0 1 0))
-(build_cube)
+(build-cube)
 
-the only difference between this and the first example is the use of (build_cube) instead of 
-(draw_cube). the build functions create a primitive object, copy the current renderstate and 
+The only difference between this and the first example is the use of (build-cube) instead of 
+(draw-cube). the build functions create a primitive object, copy the current renderstate and 
 add the information into the scenegraph in a container called a scenenode.
 
-the (build_*) functions return object ID's (just numbers really) which enable you to do things
+The (build-*) functions return object ID's (just numbers really) which enable you to do things
 to the scene node after it's been created. you can now specify objects like this:
 
-(define myob (build_cube))
+(define myob (build-cube))
 
-the cube will now be persistant in the scene until destroyed with
+The cube will now be persistant in the scene until destroyed with
 
 (destroy myob)
 
-if you want to modify a objects renderstate after it's been loaded into the scenegraph, you 
+If you want to modify a objects renderstate after it's been loaded into the scenegraph, you 
 can use the grab function to temporarially set the current context to that of the object. use
 ungrab to turn fluxus back into normal state stack mode. this allows you to animate objects 
 stored in the scenegraph, for instance:
 
 (colour (vector 1 1 1))
-(define obj1 (build_cube))
+(define obj1 (build-cube))
 (push)
 	(translate (vector 2 0 0))
-	(define obj2 (build_cube))
+	(define obj2 (build-cube))
 (pop)
 
 --->8---
@@ -103,26 +110,26 @@ stored in the scenegraph, for instance:
 (rotate (vector 0 0 1))
 (ungrab)
 
-if you call push or pop while an object is grabbed, it will still effect the state stack - 
+If you call push or pop while an object is grabbed, it will still effect the state stack - 
 it's probably a bad idea to do this.
 
-the scenegraph also enables you to parent objects to one another, using the renderstate's 
+The scenegraph also enables you to parent objects to one another, using the renderstate's 
 parent setting. this is only effective before an object is loaded into the scenegraph, setting
 it afterwards via a grabbed state will be ignored:
 
 (colour (vector 1 1 1))
-(define a (build_cube))
+(define a (build-cube))
 
 (push)
 	(parent a)
 	(translate (vector 0 2 0))
-	(define b (build_cube))
+	(define b (build-cube))
 (pop)
 
 (push)
 	(parent b)
 	(translate (vector 0 2 0))
-	(define c (build_cube))
+	(define c (build-cube))
 (pop)
 
 creates three cubes, all attached to each other in a chain. transforms for object a will be 
@@ -130,38 +137,38 @@ passed down to b and c, transforms on b will effect c blah.
 
 destroying a object in such a heirachy will in turn destroy all child objects parented to it.
 
-------- giving up control of objects --------
+------- Giving up control of objects --------
 
-sometimes you will want to hand over control of an object to a procedural system within 
+Sometimes you will want to hand over control of an object to a procedural system within 
 fluxus, (the physics and lifeforms are the only ones at the moment).
 objects have to be in the scenegraph for this to be possible, and modifications to the objects
 transform by grabbing it's state will not have any effect (I think). you may still change any 
 the state other than the tranform though.
 
-<a name="fluxuscalls">-------- fluxus script ---------------
+-------- Fluxus script ---------------
 
-this is an exhausive list of all the functionality within fluxus
+This is an exhausive list of all the functionality within fluxus
 
-<a name="primitives">-------- primitives --------
+-------- Primitives --------
 
-(build_cube)
-(build_plane)
-(build_cylinder slices stacks)
-(build_sphere slices stacks)
-(build_line startposvec startwidth endposvec endwidth)
+(build-cube)
+(build-plane)
+(build-cylinder slices stacks)
+(build-sphere slices stacks)
+(build-line startposvec startwidth endposvec endwidth)
 creates a geometry in the current render context, adds it to the scenegraph and returns the 
 object ID
 
-(draw_cube)
-(draw_plane)
-(draw_cylinder slices stacks)
-(draw_sphere slices stacks)
+(draw-cube)
+(draw-plane)
+(draw-cylinder slices stacks)
+(draw-sphere slices stacks)
 draws a cube in immediate mode to the current frame
 
 (destroy object)
 removes the object from the scenegraph
 
-<a name="renderstateops">--------- renderstate operations ---------
+--------- Renderstate operations ---------
 
 (push)
 (pop)
@@ -173,7 +180,7 @@ grabs the object's state and puts it in the current context so that all state
 modification calls (translate, rotate, colour etc) effect the specified object 
 rather than the state stack. ungrab turns the state modification back on.
 
-(print_scene_graph)
+(print-scene-graph)
 dumps the scene graph to stderr, for debugging purposes
 
 (apply object)
@@ -193,24 +200,24 @@ vertices of the geometry, and sets the transform to identity.
 (texture textureID)
 modify the current state.
 
-(hint_solid)
-(hint_wire)
-(hint_normal)
-(hint_points)
-(hint_anti_alias)
+(hint-solid)
+(hint-wire)
+(hint-normal)
+(hint-points)
+(hint-anti-alias)
 sets the render hint flags for the current state
 
-(hint_none)
+(hint-none)
 clears the render hint flags for the current state
 
-(line_width)
+(line-width)
 sets the linewidth for wireframe objects
 	
 (parent object)
 sets the parent flag in the state stack, so all subsequent objects in this state 
 are parented to object.	
 
-<a name="globalstateops">--------- globalstate operations ---------
+--------- Globalstate operations ---------
 
 (clear)
 clears the scene graph of all objects and empties the state stack
@@ -219,16 +226,16 @@ clears the scene graph of all objects and empties the state stack
 (persp)
 sets the projection type
 
-(reset_camera)
+(reset-camera)
 resets the camera matrix in case you get lost
 
-(lock_camera object)
+(lock-camera object)
 locks the camera to the object
 
-(clear_colour colvec)
+(clear-colour colvec)
 set the background clear colour
 
-(clear_frame 0/1)
+(clear-frame 0/1)
 enables/disables clearing
 
 (blur amount)
@@ -236,45 +243,42 @@ turns hackish motion blur on, just renders a transparent poly over the frame rat
 than clearing. the transparency is set by amount, setting amount to 0 turns this 
 feature off. 
 
-(show_axis bool)
+(show-axis bool)
 turns the origin axis display on or off
 
 (backfacecull 0/1)
 enables/disables backface culling
 
-(load_texture filename)
+(load-texture filename)
 loads the texture and returns the ID
 
-<a name="lights">-------- lights ----------
+-------- Lights ----------
 
-(make_light 0/1)
+(make-light 0/1)
 makes a new light. if the argument is true, then it's locked to the camera (in camera space) else
 it's in world space.
 
-(clear_lights) 
+(clear-lights) 
 destroys all lights
 
-(light_ambient light colvec)
-(light_diffuse light colvec)
-(light_specular light colvec)
-(light_position light colvec)
+(light-ambient light colvec)
+(light-diffuse light colvec)
+(light-specular light colvec)
+(light-position light colvec)
 sets the parameters for the light
 
-<a name="interpreter functions + misc">-------- interpreter functions + misc ----------
+-------- Interpreter functions + misc ----------
 
 (load filename)
-loads a script into the editor, better than the fileselector - as it doesn't stop the renderer
+loads a script into the editor
 
-(source filename)
-loads a script into the editor, and runs it
-
-(key_pressed keystr)
-returns true if key has been pressed
+(key-pressed keystr)
+returns true if key has been pressed - this can be problematic if the editor is showing
 	
 (frame)
 returns the frame number
 
-(engine_callback execute_text)
+(engine-callback execute-text)
 sets the engine callback script, this will be called once a frame in the engine loop. usually 
 a function call, so you can easily change the function.
 
@@ -285,19 +289,17 @@ returns a random float between 0 and 1 (used to be called (random))
 sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't
 seem to be entirely correct, but it does the job
 
-(start_framedump filename) 
-(end_framedump)
+(start-framedump filename) 
+(end-framedump)
 starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime
 use - see (process)
 
-<a name="audio">-------- audio ----------
-to see the fft levels window, use ctrl-f
-
+-------- Audio ----------
 (gain value)
 sets the gain level for the fft sound, usually quite small - 0.025 by default.
 	
 (gh harmonic)
-(get_harmonic harmonic)
+(get-harmonic harmonic)
 returns the contribution of the harmonic specified. the return value is normalised 
 between 0 and 1. the harmonic value can wrap, so you can use it in procedural ways without
 worrying about out of range errors.
@@ -306,95 +308,108 @@ worrying about out of range errors.
 this command temporarally disables the realtime reading of the input audio stream and reads a 
 wav file instead. for use with the framedump to process audio offline to make music videos.
 
-<a name="turtle">------- turtle poly builder ------
-the turtle polybuilder is an experimental way of building polygonal objects using a logo style
+-------- OSC support ----------
+OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia 
+applications. Fluxus support for OSC is very primitive - it only accepts messages with one float 
+argument, and allows this float to be queried in a script.
+
+(start-osc port)
+starts up the osc server, listening to the given port
+
+(from-osc name)
+returns the float value last sent with this name - ie, a message "/myvalue 0.4" is sent to fluxus:
+(from-osc "/myvalue") will now evaluate to 0.4. if a message has never been sent, the value defaults 
+to zero.
+
+------- Turtle poly builder ------
+The turtle polybuilder is an experimental way of building polygonal objects using a logo style
 turtle in 3D space. as you drive the turtle around you can place vertices and build shapes 
 procedurally
 
-(turtle_prim type)
+(turtle-prim type)
 starts a new primitive of the type specified:
 0: triangle strip
 1: quad list
 2: triangle list
 3: triangle fan
 
-(turtle_move distance)
+(turtle-move distance)
 moves the turtle forward in it's current orientation
 
-(turtle_turn anglevec)
+(turtle-turn anglevec)
 rotates the turtle's orientation with the supplied euler angles
 
-(turtle_vert)
+(turtle-vert)
 creates a new vertex in the current position
 
-(turtle_build)
+(turtle-build)
 builds the object with the vertex list defined and gives it to the renderer
 
-(turtle_reset) 
+(turtle-reset) 
 resets the current postion and rotation of the turtle
 
-<a name="fluxface">------- fluxface functions ------
-fluxface is a simple gui for executing bits of script on a keypress. use ctrl-i in the 
-render window to show the fluxface window
+------- Lifeforms ------
+Lifeforms are an easy way to create flocking systems using classic alife algorithms
 
-(clear_fluxface)
-removes all buttons
-
-(fluxface executetext x y)
-add a new button
-
-<a name="lifeforms">------- lifeforms ------
-lifeforms are an easy way to create flocking systems using classic alife algorithms
-
-(make_lifeforms name)
+(make-lifeforms name)
 makes a new lifeforms alife system
 
-(lifeform_avoidance name value)
-(lifeform_flockcentering name value)
-(lifeform_scenecentering name value)
-(lifeform_inertia name value)
-(lifeform_scenecentre name value)
-(lifeform_maxspeed name value)
+(lifeform-avoidance name value)
+(lifeform-flockcentering name value)
+(lifeform-scenecentering name value)
+(lifeform-inertia name value)
+(lifeform-scenecentre name value)
+(lifeform-maxspeed name value)
 sets global behaviour paramters for a lifeforms system
 
-(add_lifeform name object)
+(add-lifeform name object)
 gives control of the object to the named lifeforms system - uses the current transform in the 
 objects state to place the lifeform. parented objects should be moved too.
 
-<a name="physics">---------- physics -------------
-the physics system, based on the ode library
+---------- Physics -------------
+The physics system, based on the ode library
 
 (collisions 0/1)
 enables or disables collision detection. this is the cause of great slowness when doing physical
 particle systems, and also the cause of instability in the low level physics library. defaults
 to off.
 
-(active_box object)
-(active_sphere object)
-(active_cylinder object)
+(gravity gravvec)
+sets the strength and direction of gravity.
+
+(surface-params slip1 slip2 softerp softcfm)
+sets some global surface attributes that affect friction and bouncyness (see ode docs for more 
+info)
+
+(active-box object)
+(active-sphere object)
+(active-cylinder object)
 give the object to the physics system calculating and using a box/sphere/cylinder 
 as the bounding volume. as an active object, it will now be transformed by ode.
 
-(passive_box object)
-(passive_sphere object)
-(passive_cylinder object)
+(passive-box object)
+(passive-sphere object)
+(passive-cylinder object)
 give the object to the physics system calculating and using a box/sphere/cylinder 
 as the bounding volume. as a passive object, active objects will collide with it.
 
-(ground_plane planevec planeoffset)
+(set-mass object mass)
+sets the mass of an active object
+
+(ground-plane planevec planeoffset)
 create an infinite passive plane for use as the ground
 
-(build_hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)
-(build_balljoint object1 object2 anchorvec)
+(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)
+(build-balljoint object1 object2 anchorvec)
 builds hinges between two objects
 
-(joint_vel2 joint value)
-(joint_fmax2 joint value)
-(joint_fmax joint value)
-(joint_histop joint value)
-(joint_lostop joint value)
-(joint_vel joint value)
-(joint_fudge joint value)
+(joint-vel2 joint value)
+(joint-fmax2 joint value)
+(joint-fmax joint value)
+(joint-histop joint value)
+(joint-lostop joint value)
+(joint-vel joint value)
+(joint-fudge joint value)
 sets the joint paramater for joint - see the ode docs for more information
 	
 (kick object kickvec)
@@ -403,26 +418,9 @@ applies translation force kickvec to the object
 (twist object twistvec)
 applies rotational force twistvec to the object
 	
-(set_max_physical num)
+(set-max-physical num)
 sets the maximum number of objects the physics system can deal with. when the max level
 has been reached the oldest objects are destroyed.
 
-<a name="flx">------- flx functions ------
-flx files are binary representations of the entire render state and scenegraph, they can be 
-played back later by running fluxus with an flx filename argument.
 
-these functions are no longer supported due to the combination of (process) and 
-(start_framedump) superceding their functionality. however they will be left in
-as one day it might be nice to stream fluxus over a network...
 
-(save_frame filename)
-dump a single frame to a flx file
-
-(start_flx filename)
-start streaming continuous frames to an flx file
-
-(end_flx)
-stop streaming
-
-</code></pre>
-</body></html>

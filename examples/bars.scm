@@ -4,7 +4,7 @@
     (colour (vector 0 0 (gh c)))
     (translate (vector c 0 0))
     (scale (vector 1 (* 5 (gh c)) 1))
-    (draw_cube)
+    (draw-cube)
     (pop))
 
 (define (bars c)
@@ -17,4 +17,4 @@
 (define (render)
     (bars 0))
 
-(engine_callback "(render)")
+(engine-callback "(render)")

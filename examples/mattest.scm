@@ -6,7 +6,7 @@
 	(ambient (vector (flxrnd) (flxrnd) (flxrnd)))
 	(shinyness (*(flxrnd)100))
 	(scale (vector 0.5 0.5 0.5))
-	(build_sphere 10 20)
+	(build-sphere 10 20)
 	(pop))
 
 (define (line n)
@@ -25,7 +25,7 @@
 		1
 		(grid (- m 1) n)))
 
-(show_axis 1)
+(show-axis 1)
 (clear)
 (grid 10 10)
 

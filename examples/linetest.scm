@@ -5,13 +5,13 @@
 (define (draw)
 	(let ((newpoint (vector (*(flxrnd) 10)(*(flxrnd) 10)(*(flxrnd) 10)))
 		  (newwidth (*(flxrnd)0.1)))
-		(build_line point width newpoint newwidth)
+		(build-line point width newpoint newwidth)
 		(set! point newpoint)
 		(set! width newwidth)))
 
 
 (clear)
-(show_axis 1)
+(show-axis 1)
 (colour (vector 1 1 1))
 (blur 0.001)
 

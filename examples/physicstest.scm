@@ -5,8 +5,8 @@
     (ambient (vector (flxrnd) (flxrnd) (flxrnd)))
     (shinyness (*(flxrnd)100))
     (scale (vector 0.5 0.5 1.5))
-    (let ((ob (build_cube)))    
-        (active_box ob))
+    (let ((ob (build-cube)))    
+        (active-box ob))
     (pop))
 
 (define (line n)
@@ -19,9 +19,9 @@
 
 (clear)
 (collisions 1)
-(ground_plane (vector 0 1 0) 0)
-(show_axis 1)
-(clear_colour (vector 0.5 0.1 0.7))
+(ground-plane (vector 0 1 0) 0)
+(show-axis 1)
+(clear-colour (vector 0.5 0.1 0.7))
 (line 10)
 (desiredfps 500)
 

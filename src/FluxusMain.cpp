@@ -25,6 +25,7 @@ using namespace fluxus;
 FluxusMain::FluxusMain(int x, int y, int bufsize) :
 m_Physics(&m_Renderer),
 m_CameraMode(SCENE),
+m_CurrentEditor(0),
 m_Init(true),
 m_RotX(0),
 m_RotY(0),
@@ -34,7 +35,8 @@ m_DisY(-10),
 m_Frame(-1),
 m_Width(x),
 m_Height(y),
-m_HideScript(false)
+m_HideScript(false),
+m_OSCServer(NULL)
 {
 }
 
@@ -52,10 +54,10 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		if (special==GLUT_KEY_F1) m_CameraMode=SCENE;
 		if (special==GLUT_KEY_F2) m_CameraMode=EDITOR;
-		if (special==GLUT_KEY_F5) m_Script=m_Editor.GetText();
+		if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor].GetText();
 	
 		// the editor only takes keyboard events
-		if (!m_HideScript) m_Editor.Handle(button,key,special,state,x,y);
+		if (!m_HideScript) m_Editor[m_CurrentEditor].Handle(button,key,special,state,x,y);
 	}
 	else
 	{
@@ -109,19 +111,19 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				{
 					case 0:
 					{
-						m_Editor.m_RotY+=(x-m_LastMouseX)/4.0f;
-						m_Editor.m_RotX+=-(y-m_LastMouseY)/4.0f;
+						m_Editor[m_CurrentEditor].m_RotY+=(x-m_LastMouseX)/4.0f;
+						m_Editor[m_CurrentEditor].m_RotX+=-(y-m_LastMouseY)/4.0f;
 					}
 					break;
 					case 1:
 					{
-						m_Editor.m_PosX+=(x-m_LastMouseX);
-						m_Editor.m_PosY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor].m_PosX+=(x-m_LastMouseX);
+						m_Editor[m_CurrentEditor].m_PosY+=-(y-m_LastMouseY);
 					}
 					break;
 					case 2:
 					{
-						m_Editor.m_DisY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor].m_DisY+=-(y-m_LastMouseY);
 					}
 					break;
 				}
@@ -156,7 +158,11 @@ void FluxusMain::EndDumpFrames()
 
 void FluxusMain::Reshape(int width, int height)
 {
-	m_Editor.Reshape(width,height);
+	for(int n=0; n<NUM_EDITORS; n++)
+	{
+		m_Editor[n].Reshape(width,height);
+	}
+	
 	m_Renderer.SetResolution(width,height);
 	m_Width=width;
 	m_Height=height;
@@ -172,7 +178,7 @@ void FluxusMain::Render()
   	}
   	
 	m_Renderer.Render();
-	if (!m_HideScript) m_Editor.Render();
+	if (!m_HideScript) m_Editor[m_CurrentEditor].Render();
 	
 	if (m_Frame!=-1)
 	{
@@ -208,7 +214,7 @@ void FluxusMain::LoadScript(const string &Filename)
 		{
 			fread(buffer,1,size,file);	
 			buffer[size]='\0';
-			m_Editor.SetText(buffer);	
+			m_Editor[m_CurrentEditor].SetText(buffer);	
 		}
 		else
 		{
@@ -219,26 +225,46 @@ void FluxusMain::LoadScript(const string &Filename)
 		fclose(file);
 	}
 	
-	m_SaveName=Filename; // just a precaution
+	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
 }
 
 void FluxusMain::SaveScript() 
 { 
-	if (m_SaveName!="")
+	if (m_SaveName[m_CurrentEditor]!="")
 	{
-		FILE *file=fopen(m_SaveName.c_str(),"w");
+		FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
 		if (file)
 		{	
-			fwrite(m_Editor.GetText().c_str(),1,m_Editor.GetText().size(),file);	
+			fwrite(m_Editor[m_CurrentEditor].GetText().c_str(),1,m_Editor[m_CurrentEditor].GetText().size(),file);	
 			fclose(file);
 		}
 		
-		Dump("Saved ["+m_SaveName+"]");
+		Dump("Saved ["+m_SaveName[m_CurrentEditor]+"]");
 	}
 	else
 	{
 		Dump("No save name set, not saved...");
 	}
+}
+
+void FluxusMain::StartOSC(const string &port)
+{
+	if (!m_OSCServer)
+	{
+		m_OSCServer = new Server(port);
+		m_OSCServer->Run();
+	}
+	else
+	{
+		cerr<<"osc server already running..."<<endl;
+	}
+}
+
+float FluxusMain::FromOSC(const string &token) 
+{ 
+	if (m_OSCServer) return m_OSCServer->Get(token); 
+	cerr<<"osc server not running..."<<endl;
+	return 0;
 }
 
 //////////////////////////////////////////////////////////////////////

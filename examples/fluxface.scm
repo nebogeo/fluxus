@@ -1,4 +1,4 @@
-(clear_fluxface)
+(clear-fluxface)
 (fluxface "(source \"examples/clock.scm\")" 10 10)
 (fluxface "(source \"examples/flock.scm\")" 10 20)
 (fluxface "(source \"examples/grid.scm\")" 10 30)

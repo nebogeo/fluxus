@@ -57,8 +57,9 @@ bool PortAudioClient::Attach(const string &ClientName)
 	err = Pa_Initialize();
     if( err != paNoError ) 
  	{
-		cerr<<"Could not init PortAudioClient"<<endl;
+		cerr<<"Could not init PortAudioClient: "<<Pa_GetErrorText( err )<<endl;
 		Pa_Terminate();
+		return false;
 	}
 		
     err = Pa_OpenStream(&m_Client,

@@ -2,8 +2,8 @@
 
 (push)
 (colour (vector 1 1 1))
-(define a (build_cube))
+(define a (build-cube))
 (pop)
-(show_axis 1)
+(show-axis 1)
 
-(clear_colour (vector 0.8 0.8 0.8))
+(clear-colour (vector 0.8 0.8 0.8))

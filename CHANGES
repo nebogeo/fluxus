@@ -1,3 +1,18 @@
+0.6
+
+scons build system
+OSC support with (start-osc) and (from-osc)
+new physics commands: (gravity), (set-mass) and (surface-params)
+removed fltk
+removed fluxface
+Built in OpenGL editor
+multiple editor workspaces
+changed occurances of _ to - in scheme functions to match standard
+fftw3 support
+decent error reports from guile (still go to commandline)
+keyboard support improved
+more scripts, including a game.scm example
+
 0.5
 
 assert build error fixed

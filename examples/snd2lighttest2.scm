@@ -15,7 +15,7 @@
 	(scale (vector 0.5 (+(*(gh (+ d 5))0.9)0.8) 0.5))
 	(push)
 		(scale #(0.1 1 0.5))
-		(draw_cube)
+		(draw-cube)
 	(pop)
 	(if (eq? 0 d)
 		1
@@ -25,13 +25,13 @@
 			(tree (- d 1))))
 	(pop))
 
-(define (draw_loop)
+(define (draw-loop)
 	(colour #(0.1 0.1 0.1))
 	(opacity 0.5)
 	(tree 7))
 
 (clear)
 (blur 0.002)
-(show_axis 0)
-(clear_colour (vector 0.3 0.2 0.1))
-(engine_callback "(draw_loop)")
+(show-axis 0)
+(clear-colour (vector 0.3 0.2 0.1))
+(engine-callback "(draw-loop)")

@@ -19,6 +19,7 @@
 #include <fluxus/Physics.h>
 #include <fluxus/Lifeforms.h>
 #include "GLEditor.h"
+#include "OSCServer.h"
 
 using namespace fluxus;
 
@@ -27,6 +28,8 @@ using namespace fluxus;
 
 namespace fluxus
 {
+
+static const int NUM_EDITORS=10;
 
 class FluxusMain 
 {
@@ -50,12 +53,15 @@ public:
     void Dump(const string &Text) { cerr<<Text<<endl; }
     void ResetCamera();
     void LoadScript(const string &Filename);
-    void SetSaveName(const string &s) { m_SaveName=s; }
+    void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
     void SaveScript();
     void RunScript() {  }
 	void StartDumpFrames(const string &Filename);
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
+	void StartOSC(const string &port);
+	float FromOSC(const string &token);
+	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
 	
 protected:
 	Renderer m_Renderer;
@@ -67,7 +73,9 @@ private:
 	enum CameraMode{SCENE,EDITOR};
 	CameraMode m_CameraMode;
 	
-	GLEditor m_Editor;
+	GLEditor m_Editor[NUM_EDITORS];
+	int m_CurrentEditor;
+	string m_SaveName[NUM_EDITORS];
 
 	bool m_Init;
 	int m_LastMouseX;
@@ -81,8 +89,9 @@ private:
 	int m_Width;
 	int m_Height;
 	string m_Script;
-	string m_SaveName;
 	bool m_HideScript;
+	
+	Server *m_OSCServer;
 };
 
 };

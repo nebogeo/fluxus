@@ -17,7 +17,7 @@
 	(rotate (vector 0 0 (*(gh (- d 3))50)))
 	(push)
 		(scale #(0.2 0.3 0.2))
-		(draw_sphere)
+		(draw-sphere)
 	(pop)
 	(if (eq? depth d)
 		1
@@ -27,12 +27,12 @@
 			(tree (+ d 1))))
 	(pop))
 
-(define (draw_loop)
+(define (draw-loop)
 	(colour #(0.1 0.1 0.1))
 	(opacity 0.5)
 	(tree 0))
 
 (clear)
 (blur 0.001)
-(show_axis 0)
-(engine_callback "(draw_loop)")
+(show-axis 0)
+(engine-callback "(draw-loop)")

@@ -14,7 +14,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <rfftw.h>
 #include <limits.h>
 #include <iostream>
 #include <sndfile.h>
@@ -25,31 +24,38 @@ static const int MAX_FFT_LENGTH = 4096;
 static int XRanges[NUM_BARS+1] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
 FFT::FFT(int length) :
-m_FFTLength(length)
+m_FFTLength(length),
+m_In(new double[length]),
+m_Out(new double[length]),
+m_Spectrum(new fftw_complex[length])
 {
-	m_Plan=rfftw_create_plan(m_FFTLength, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE);
+	m_PlanA = fftw_plan_dft_r2c_1d(m_FFTLength, m_In, m_Spectrum, FFTW_PATIENT);
+	m_PlanB = fftw_plan_dft_c2r_1d(m_FFTLength, m_Spectrum, m_Out, FFTW_PATIENT);
 }
 
 FFT::~FFT()
 {
+	delete[] m_In;
+	delete[] m_Out;
+	fftw_destroy_plan(m_PlanA);
+	fftw_destroy_plan(m_PlanB);
 }
 
 void FFT::Impulse2Freq(float *imp, float *out)
 {
-  fftw_real impulse_time[MAX_FFT_LENGTH];
-  fftw_real freq[MAX_FFT_LENGTH];
   unsigned int i;
 
   for (i=0; i<m_FFTLength; i++)
   {
-    impulse_time[i] = imp[i];
+    m_In[i] = imp[i];
   }
 
-  rfftw_one(m_Plan, impulse_time, freq);
+  fftw_execute(m_PlanA);
+  fftw_execute(m_PlanB);
 
   for (i=0; i<m_FFTLength; i++)
   {
-    out[i] = freq[i];
+    out[i] = m_Out[i];
   }
 }
 

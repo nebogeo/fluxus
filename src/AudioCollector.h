@@ -14,7 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <rfftw.h>
+#include <fftw3.h>
 #include <pthread.h>
 #include <string>
 
@@ -32,8 +32,12 @@ public:
     ~FFT();
 	void Impulse2Freq(float *imp, float *out);
 private:	
-	rfftw_plan m_Plan;
+	fftw_plan m_PlanA;
+	fftw_plan m_PlanB;
 	unsigned int m_FFTLength;
+	double *m_In;
+	double *m_Out;
+	fftw_complex *m_Spectrum;
 };
 
 class AudioCollector

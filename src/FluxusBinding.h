@@ -137,5 +137,7 @@ public:
 	static SCM start_framedump(SCM s_name);
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);
+	static SCM start_osc(SCM s_port);
+	static SCM from_osc(SCM s_token);
 };
 #endif

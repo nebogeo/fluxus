@@ -15,7 +15,7 @@
 	(rotate (vector (* rot (gh (+ n 1))) 
 					(* rot (gh n) )
 					(* rot (gh (- n 5)))))
-	(draw_cube)
+	(draw-cube)
 	(pop)
 	(if (eq? n 0)
 		1
@@ -43,6 +43,6 @@
 	(pop))
 
 (clear)
-(clear_colour (vector 0 0 0))
-(engine_callback "(render)")
+(clear-colour (vector 0 0 0))
+(engine-callback "(render)")
 

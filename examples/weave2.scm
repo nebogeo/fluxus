@@ -11,7 +11,7 @@
 					(* sc (gh n) )
 					(* sc (gh (+ n 2)))))
 	(scale (vector 4 0.2 0.2))
-	(draw_cube)
+	(draw-cube)
 	(pop)
 	(if (eq? n 0)
 		1
@@ -40,6 +40,6 @@
 	(pop))
 
 (clear)
-(clear_colour (vector 0 0 0))
-(engine_callback "(render)")
+(clear-colour (vector 0 0 0))
+(engine-callback "(render)")
 
