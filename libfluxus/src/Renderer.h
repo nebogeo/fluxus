@@ -94,6 +94,7 @@ public:
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
 	dMatrix *GetCamera()                     { return &m_Camera; }
 	void LockCamera(int Prim);
+	void UnlockCamera()						 { m_LockedCamera=false; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r, float f, float b) 
 		{ m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Front=f; m_Back=b; m_Initialised=false; }

@@ -3,7 +3,7 @@ Install   	 = "/usr/local/bin"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
 IncludePaths = Split("/usr/local/include")
 	  
-Libs = Split("fluxus fluxphysics portaudio sndfile guile rfftw fftw ode png \
+Libs = Split("fluxus  portaudio sndfile guile rfftw fftw ode fluxphysics png \
 				glut tiff GL GLU z m Xi Xmu Xext X11 pthread")
 
 Source = Split("src/AudioCollector.cpp \

@@ -10,6 +10,7 @@ PolyPrimitive*  FluxusBinding::StaticCube=NULL;
 PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
 PolyPrimitive*  FluxusBinding::StaticCylinder=NULL;
+set<int>        FluxusBinding::m_KeySet;
 
 FluxusBinding::FluxusBinding(int w, int h) 
 {
@@ -133,8 +134,10 @@ SCM FluxusBinding::key_pressed(SCM s_key)
 	SCM_ASSERT(SCM_STRINGP(s_key), s_key, SCM_ARG1, "key");
 	char *key=0;
 	size_t size=0;
-	key=gh_scm2newstr(s_key,&size);	
-    double pressed = Fluxus->KeyPressed(key[0]);
+	key=gh_scm2newstr(s_key,&size);
+	double pressed;
+	if (m_KeySet.find(key[0])!=m_KeySet.end()) pressed=1;
+	else pressed=0;
     free(key);
     return gh_bool2scm((int)pressed);
 }
@@ -499,7 +502,7 @@ SCM FluxusBinding::active_sphere(SCM s_name)
 
 SCM FluxusBinding::passive_box(SCM s_name)
 {
-    SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "object name");
+    SCM_ASSERT(SCM_NUMBERP(s_name), s_name, SCM_ARG1, "object name");
 	int name=0;
 	name=(int)gh_scm2double(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::BOX);
@@ -508,7 +511,7 @@ SCM FluxusBinding::passive_box(SCM s_name)
 
 SCM FluxusBinding::passive_cylinder(SCM s_name)
 {
-    SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "object name");
+    SCM_ASSERT(SCM_NUMBERP(s_name), s_name, SCM_ARG1, "object name");
 	int name=0;
 	name=(int)gh_scm2double(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::CYLINDER);
@@ -517,11 +520,22 @@ SCM FluxusBinding::passive_cylinder(SCM s_name)
 
 SCM FluxusBinding::passive_sphere(SCM s_name)
 {
-    SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "object name");
+    SCM_ASSERT(SCM_NUMBERP(s_name), s_name, SCM_ARG1, "object name");
 	int name=0;
 	name=(int)gh_scm2double(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::SPHERE);
-   return SCM_UNSPECIFIED;
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s_softcfm)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_slip1),    s_slip1,    SCM_ARG1, "slip 1");
+	SCM_ASSERT(SCM_NUMBERP(s_slip2),    s_slip2,    SCM_ARG2, "slip 2");
+	SCM_ASSERT(SCM_NUMBERP(s_softerp),  s_softerp,  SCM_ARG3, "softerp");
+	SCM_ASSERT(SCM_NUMBERP(s_softcfm),  s_softcfm,  SCM_ARG4, "softcfm");
+	Fluxus->GetPhysics()->SetGlobalSurfaceParams((float)gh_scm2double(s_slip1),(float)gh_scm2double(s_slip2),
+		(float)gh_scm2double(s_softerp),(float)gh_scm2double(s_softcfm));
+	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge1, SCM s_hinge2)
@@ -651,6 +665,26 @@ SCM FluxusBinding::set_max_physical(SCM s_value)
     SCM_ASSERT(SCM_NUMBERP(s_value), s_value, SCM_ARG2, "value");
     double v = gh_scm2double(s_value);
     Fluxus->GetPhysics()->SetMaxObjectCount((int)v);
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::set_mass(SCM s_obj, SCM s_mass)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_obj), s_obj, SCM_ARG1, "object");
+    SCM_ASSERT(SCM_NUMBERP(s_mass), s_mass, SCM_ARG2, "mass");
+    int obj=0;
+	obj=(int)gh_scm2double(s_obj);
+    float mass=gh_scm2double(s_mass);
+	Fluxus->GetPhysics()->SetMass(obj,mass);
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::gravity(SCM s_vec)
+{
+	SCM_ASSERT(SCM_VECTORP(s_vec), s_vec, SCM_ARG2, "vector");
+	float vec[3];
+	gh_scm2floats(s_vec,vec);
+	Fluxus->GetPhysics()->SetGravity(dVector(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -1077,6 +1111,7 @@ void FluxusBinding::RegisterProcs()
 	
 	// physics
 	gh_new_procedure0_1("collisions", collisions);
+	gh_new_procedure0_1("gravity", gravity);
 	gh_new_procedure0_1("set_max_physical", set_max_physical);
     gh_new_procedure0_1("active_box",     active_box);
     gh_new_procedure0_1("active_sphere",  active_sphere);
@@ -1087,6 +1122,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("ground_plane", ground_plane);
     gh_new_procedure5_0("build_hinge2joint", build_hinge2joint);
     gh_new_procedure3_0("build_balljoint", build_balljoint);
+    gh_new_procedure4_0("surface_params", surface_params);
     gh_new_procedure0_2("joint_vel2",   joint_vel2);
     gh_new_procedure0_2("joint_fmax2",  joint_fmax2);
     gh_new_procedure0_2("joint_fmax",   joint_fmax);
@@ -1094,6 +1130,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("joint_lostop", joint_lostop);
     gh_new_procedure0_2("joint_vel",    joint_vel);
     gh_new_procedure0_2("joint_fudge",  joint_fudge);
+    gh_new_procedure0_2("set_mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
 	

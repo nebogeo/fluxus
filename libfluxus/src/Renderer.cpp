@@ -271,10 +271,10 @@ void Renderer::EndScene()
     #endif
 	
 	
-	if (m_StateStack.size()!=1)
-	{
-		cerr<<"State mismatch: stack size "<<m_StateStack.size()<<" at end scene"<<endl;
-	}
+	//if (m_StateStack.size()!=1)
+	//{
+	//	cerr<<"State mismatch: stack size "<<m_StateStack.size()<<" at end scene"<<endl;
+	//}
 }
 
 void Renderer::RenderLights(bool camera)

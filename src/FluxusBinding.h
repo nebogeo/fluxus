@@ -1,6 +1,7 @@
 #include <guile/gh.h>
 #include <fluxus/GraphicsUtils.h>
 #include <fluxus/LinePrimitive.h>
+#include <set>
 #include "AudioCollector.h"
 #include "TurtleBuilder.h"
 #include "FluxusMain.h"
@@ -26,6 +27,8 @@ public:
 	static PolyPrimitive* StaticPlane;
 	static PolyPrimitive* StaticSphere;
 	static PolyPrimitive* StaticCylinder;
+	
+	static set<int> m_KeySet;
 	
 	void RegisterProcs();
 
@@ -81,6 +84,7 @@ public:
 	static SCM passive_box(SCM s_name);
 	static SCM passive_cylinder(SCM s_name);
 	static SCM passive_sphere(SCM s_name);
+	static SCM surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s_softcfm);
 	static SCM build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge1, SCM s_hinge2);
 	static SCM build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor);
 	static SCM joint_vel2(SCM s_joint, SCM s_value);
@@ -91,8 +95,10 @@ public:
 	static SCM joint_vel(SCM s_joint, SCM s_value);
 	static SCM joint_fudge(SCM s_joint, SCM s_value);
 	static SCM set_max_physical(SCM s_value);
+	static SCM set_mass(SCM s_obj, SCM s_value);
 	static SCM kick(SCM s_obj, SCM s_vec);
 	static SCM twist(SCM s_obj, SCM s_vec);
+	static SCM gravity(SCM s_vec);
 	static SCM srandom();
 	static SCM get_harmonic(SCM s_harm);
 	static SCM load_texture(SCM s_name);

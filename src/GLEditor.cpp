@@ -31,7 +31,10 @@ m_HighlightEnd(0),
 m_Selection(false),
 m_ShiftState(false),
 m_OpenChars("([<{"),
-m_CloseChars(")]>}")
+m_CloseChars(")]>}"),
+m_VisibleLines(40),
+m_TopTextPosition(0),
+m_BottomTextPosition(0)
 { 
 	// mono font - yay!
 	m_CursorWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
@@ -106,10 +109,16 @@ void GLEditor::Render()
 	float width;
 	bool drawncursor=false;
 	
-	for (unsigned int n=0; n<m_Text.size(); n++)
+	unsigned int n=m_TopTextPosition;
+	unsigned int linecount=0;
+	while (n<m_Text.size() && linecount<m_VisibleLines)
 	{
 		width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
-		if (m_Text[n]=='\n') width=m_CursorWidth;
+		if (m_Text[n]=='\n') 
+		{
+			width=m_CursorWidth;
+			linecount++;
+		}
 		
 		if (m_Position==n) // draw cursor
 		{ 
@@ -144,7 +153,11 @@ void GLEditor::Render()
 		{
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
 		}
+		
+		n++;
 	}
+	
+	m_BottomTextPosition=n;
 	
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
@@ -184,7 +197,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 			case GLUT_KEY_END: 
 			{
 				m_Position=LineEnd(m_Position);
-				m_DesiredXPos=OffsetToCurrentLineStart(); 
+				m_DesiredXPos=OffsetToCurrentLineStart()+1; 
 			}
 			break;
 			case GLUT_KEY_HOME: 
@@ -195,16 +208,32 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 			break;
 			case GLUT_KEY_UP: 
 			{
-				unsigned int previouslinelength=PreviousLineLength(m_Position);
-				if (previouslinelength<m_DesiredXPos) m_Position=LineStart(m_Position)-1; // end of previous
-				else m_Position=LineStart(LineStart(m_Position)-1)+m_DesiredXPos; // start of previous+offset	
+				if ((int)m_Position>LineLength(0)) // if we're not on the first line
+				{
+					unsigned int previouslinelength=PreviousLineLength(m_Position);
+					if (previouslinelength<m_DesiredXPos) m_Position=LineStart(m_Position)-1; // end of previous
+					else m_Position=LineStart(LineStart(m_Position)-1)+m_DesiredXPos; // start of previous+offset	
+					
+					if (m_Position<m_TopTextPosition) m_TopTextPosition=LineStart(m_Position);
+				}
 			}
 			break;
 			case GLUT_KEY_DOWN: 
 			{
-				unsigned int nextlinelength=NextLineLength(m_Position);
-				if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
-				else m_Position=LineStart(LineEnd(m_Position)+1)+m_DesiredXPos; // start of next+offset
+				if (m_Position+LineLength(m_Position)<m_Text.size()) // if we're not on the last line
+				{
+					unsigned int nextlinelength=NextLineLength(m_Position);
+					if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
+					else m_Position=LineStart(LineEnd(m_Position)+1)+m_DesiredXPos; // start of next+offset
+
+					if (m_Position>m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+				}
+			}
+			break;
+			case GLUT_KEY_PAGE_UP: 
+			{
+				m_Position=0;
+				m_TopTextPosition=0;
 			}
 			break;
 		}
@@ -285,7 +314,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 		m_Selection=true;
 	}
 	
-	if (key==0 && m_ShiftState && !glutGetModifiers()&GLUT_ACTIVE_SHIFT)
+	if (key==0 && special!=GLUT_KEY_F5 && m_ShiftState && !glutGetModifiers()&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_ShiftState=false;	
 		m_Selection=false;

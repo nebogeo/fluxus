@@ -49,12 +49,16 @@ m_Renderer(r),
 m_MaxObjectCount(1000),
 m_GroundCreated(false),
 m_NextJointID(1),
-m_Collisions(false)
+m_Collisions(false),
+m_Slip1(0.9),
+m_Slip2(0.9),
+m_SoftErp(0.25),
+m_SoftCfm(0.15)
 {
 	m_World = dWorldCreate();
   	m_Space = dHashSpaceCreate(0);
   	m_ContactGroup = dJointGroupCreate(0);
-  	dWorldSetGravity(m_World,0,-1,0);
+  	dWorldSetGravity(m_World,0,-5,0);
 }
 
 Physics::~Physics()
@@ -64,12 +68,17 @@ Physics::~Physics()
 void Physics::Tick()
 {
 	dSpaceCollide(m_Space,this,&NearCallback);
-    dWorldStep(m_World,0.05);
+    dWorldQuickStep(m_World,0.05);
 	
     // remove all contact joints
     dJointGroupEmpty(m_ContactGroup);
 
     UpdatePrimitives();
+}
+
+void Physics::SetGravity(const dVector &g)
+{
+	dWorldSetGravity(m_World,g.x,g.y,g.z);
 }
 
 void Physics::GroundPlane(dVector ori, float off)
@@ -100,6 +109,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	
 	dVector Pos=ObState->Transform.gettranslate();
   	dBodySetPosition(Ob->Body,Pos.x,Pos.y,Pos.z);
+	dBodySetAutoDisableFlag(Ob->Body, 1);
 	
 	// need to apply transform to object here, so we are left with an identity in the
 	// state transform for the object, and the bounding volume will be correct etc.
@@ -207,6 +217,27 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
   	m_ObjectMap[ID]=Ob;
 }
 
+void Physics::SetMass(int ID, float mass)
+{
+	map<int,Object*>::iterator i = m_ObjectMap.find(ID);
+	if (i==m_ObjectMap.end())
+	{
+		cerr<<"Physics::SetMass : Object ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+	
+	if (i->second->Type!=ACTIVE)
+	{
+		cerr<<"Physics::SetMass : Object ["<<ID<<"] isn't active"<<endl;
+		return;
+	}
+	
+	dMass m;
+	dBodyGetMass(i->second->Body,&m);
+	dMassAdjust(&m,mass);
+	dBodySetMass(i->second->Body,&m);
+}
+
 void Physics::Free(int ID)
 {
 	map<int,Object*>::iterator i = m_ObjectMap.find(ID);
@@ -215,6 +246,7 @@ void Physics::Free(int ID)
 		cerr<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
+
 	delete i->second;	
 	m_ObjectMap.erase(i);
 }
@@ -301,10 +333,10 @@ void Physics::NearCallback_i(dGeomID o1, dGeomID o2)
 			{
 			  contact[i].surface.mode = dContactSlip1 | dContactSlip2 | dContactSoftERP | dContactSoftCFM | dContactApprox1;
 			  contact[i].surface.mu = dInfinity;
-			  contact[i].surface.slip1 = 0.9;
-			  contact[i].surface.slip2 = 0.9;
-			  contact[i].surface.soft_erp = 0.25;
-			  contact[i].surface.soft_cfm = 0.15;
+			  contact[i].surface.slip1 = m_Slip1;
+			  contact[i].surface.slip2 = m_Slip2;
+			  contact[i].surface.soft_erp = m_SoftErp;
+			  contact[i].surface.soft_cfm = m_SoftCfm;
 			  dJointID c = dJointCreateContact(m_World,m_ContactGroup,&contact[i]);
 			  dJointAttach(c,dGeomGetBody(contact[i].geom.g1),dGeomGetBody(contact[i].geom.g2));
 			}
@@ -335,9 +367,9 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	dJointSetHinge2Axis1 (j,Hinge[0].x, Hinge[0].y, Hinge[0].z);
 	dJointSetHinge2Axis2 (j,Hinge[1].x, Hinge[1].y, Hinge[1].z);
 	
-	JointObject NewJoint;
-	NewJoint.Joint=j;
-	NewJoint.Type=Hinge2;
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=Hinge2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -359,14 +391,14 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
-	
+
 	dJointID j = dJointCreateHinge2 (m_World,0);
 	dJointAttach (j,i1->second->Body,i2->second->Body);
 	dJointSetBallAnchor (j,Anchor.x,Anchor.y,Anchor.z);
-	
-	JointObject NewJoint;
-	NewJoint.Joint=j;
-	NewJoint.Type=Ball;
+
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=Ball;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -374,7 +406,7 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 
 void Physics::SetJointParam(int ID, JointParamType Param, float Value)
 {
-	map<int,JointObject>::iterator i = m_JointMap.find(ID);
+	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
 	if (i==m_JointMap.end())
 	{
 		cerr<<"Physics::SetJointParam : Joint ["<<ID<<"] doesn't exist"<<endl;
@@ -401,16 +433,16 @@ void Physics::SetJointParam(int ID, JointParamType Param, float Value)
 	   	default : cerr<<"unknown parameter "<<Param<<endl; return; break;
 	}
 
-	switch (i->second.Type)
+	switch (i->second->Type)
 	{
 		case Ball      : break; 	
-		case Hinge     : dJointSetHingeParam(i->second.Joint,p,Value); break;	
+		case Hinge     : dJointSetHingeParam(i->second->Joint,p,Value); break;	
 		case Contact   : break;	
 		case Universal : break;	
-		case Hinge2    : dJointSetHinge2Param(i->second.Joint,p,Value); break;	
+		case Hinge2    : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
 		case Fixed     : break;	
-		case AMotor    : dJointSetAMotorParam(i->second.Joint,p,Value); break;
-		default : cerr<<"unknown joint type "<<i->second.Type<<endl; return; break;	
+		case AMotor    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
+		default : cerr<<"unknown joint type "<<i->second->Type<<endl; return; break;	
 	} 	
 }
 

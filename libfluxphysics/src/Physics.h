@@ -37,8 +37,12 @@ public:
     void GroundPlane(dVector ori, float off);
     void Kick(int ID, dVector v);
     void Twist(int ID, dVector v);
+    void SetMass(int ID, float mass);
 	void SetCollisions(bool s) { m_Collisions=s; }
-
+	void SetGravity(const dVector &g);
+	void SetGlobalSurfaceParams(float slip1, float slip2, float softerp, float softcfm) 
+		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
+		
     int CreateJointBall(int Ob1, int Ob2, dVector Anchor);
     int CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2]);
  	
@@ -98,7 +102,7 @@ private:
 	
 	map<int,Object*>       m_ObjectMap;
 	map<int,dGeomID>       m_GroupMap;
-	map<int,JointObject>   m_JointMap;
+	map<int,JointObject*>  m_JointMap;
 	deque<int>             m_History;
 	
 	Renderer *m_Renderer;
@@ -107,6 +111,11 @@ private:
 	dJointGroupID m_ContactGroup;
 	int m_NextJointID;
 	bool m_Collisions;
+
+	float m_Slip1;
+	float m_Slip2;
+	float m_SoftErp;
+	float m_SoftCfm;
 };
 
 };

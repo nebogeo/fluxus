@@ -37,7 +37,7 @@ SCM ErrorHandler (void *data, SCM tag, SCM throw_args)
 	size_t size=0;
 	str=gh_scm2newstr(gh_car(gh_cdr(throw_args)),&size);	
 	
-	binding->Fluxus->Dump(string("Error in: \"")+string((char*)data)+string("\"\n"));
+	//binding->Fluxus->Dump(string("Error in: \"")+string((char*)data)+string("\"\n"));
 	binding->Fluxus->Dump(str);
 	binding->Fluxus->Dump("\n");
 	
@@ -53,6 +53,7 @@ void DisplayCallback()
     	gh_eval_str_with_catch(fragment.c_str(), (scm_t_catch_handler)ErrorHandler);
     }
 	
+	binding->Audio->GetFFT();
 	binding->Fluxus->Render();
 	binding->FrameCount++;
 	
@@ -85,12 +86,19 @@ void KeyboardCallback(unsigned char key,int x, int y)
 		{
 			binding->Fluxus->SaveScript();
 		}
+		else if (key==8) // h
+		{
+			binding->Fluxus->HideScript();
+		}
 	}
+	
+	binding->m_KeySet.insert(key);
 }
 
 void KeyboardUpCallback(unsigned char key,int x, int y)
 {
 	//binding->Fluxus->Handle(key, 0, 0, 1, x, y);
+	binding->m_KeySet.erase(key);
 }
 
 void SpecialKeyboardCallback(int key,int x, int y)
@@ -140,7 +148,8 @@ void inner_main(int argc, char **argv)
 	
 	if (argc>1)
 	{
-	    gh_eval_file_with_catch(argv[1],(scm_t_catch_handler)ErrorHandler);
+	    binding->Fluxus->LoadScript(argv[1]);
+		//gh_eval_file_with_catch(argv[1],(scm_t_catch_handler)ErrorHandler);
 	}
 	
 	glutMainLoop();

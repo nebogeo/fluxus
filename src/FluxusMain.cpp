@@ -33,7 +33,8 @@ m_PosY(0),
 m_DisY(-10),
 m_Frame(-1),
 m_Width(x),
-m_Height(y)
+m_Height(y),
+m_HideScript(false)
 {
 }
 
@@ -54,7 +55,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		if (special==GLUT_KEY_F5) m_Script=m_Editor.GetText();
 	
 		// the editor only takes keyboard events
-		m_Editor.Handle(button,key,special,state,x,y);
+		if (!m_HideScript) m_Editor.Handle(button,key,special,state,x,y);
 	}
 	else
 	{
@@ -171,7 +172,7 @@ void FluxusMain::Render()
   	}
   	
 	m_Renderer.Render();
-	m_Editor.Render();
+	if (!m_HideScript) m_Editor.Render();
 	
 	if (m_Frame!=-1)
 	{
@@ -202,10 +203,11 @@ void FluxusMain::LoadScript(const string &Filename)
 		fseek(file,0,SEEK_END);
 		unsigned int size=ftell(file);
 		fseek(file,0,SEEK_SET);		
-		char *buffer = new char[size];
+		char *buffer = new char[size+1];
 		if (buffer)
 		{
 			fread(buffer,1,size,file);	
+			buffer[size]='\0';
 			m_Editor.SetText(buffer);	
 		}
 		else

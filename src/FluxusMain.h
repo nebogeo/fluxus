@@ -55,7 +55,8 @@ public:
     void RunScript() {  }
 	void StartDumpFrames(const string &Filename);
 	void EndDumpFrames();
-
+	void HideScript() { m_HideScript=!m_HideScript; }
+	
 protected:
 	Renderer m_Renderer;
     Physics  m_Physics;
@@ -81,6 +82,7 @@ private:
 	int m_Height;
 	string m_Script;
 	string m_SaveName;
+	bool m_HideScript;
 };
 
 };

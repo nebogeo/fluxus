@@ -60,7 +60,10 @@ private:
 	int m_ParenthesesHighlight;
 	string m_OpenChars;
 	string m_CloseChars;
-
+	unsigned int m_VisibleLines;
+	unsigned int m_TopTextPosition;
+	unsigned int m_BottomTextPosition;
+	
 	int m_Width;
 	int m_Height;
 };
