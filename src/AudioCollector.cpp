@@ -77,7 +77,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 AudioCollector::AudioCollector(int BufferLength, int FFTBuffers) :
-m_Gain(0.025),
+m_Gain(1),
 m_FFT(BufferLength),
 m_FFTBuffers(FFTBuffers),
 m_JackBuffer(NULL),
@@ -159,9 +159,7 @@ float *AudioCollector::GetFFT()
 			Value += m_FFTBuffer[i];
 		}
 		Value*=Value;
-		Value*=m_Gain;
-		if (Value>1.0) Value=1.0;
-		if (Value<0.0) Value=0.0;
+		Value*=m_Gain*0.025;
 		
 		float Bias=1.5;
 		m_FFTOutput[n]=((m_FFTOutput[n]*Bias)+Value*(1/Bias))/2.0f;

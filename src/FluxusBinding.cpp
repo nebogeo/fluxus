@@ -31,7 +31,7 @@ FluxusBinding::FluxusBinding(int w, int h)
     StaticCylinder->Finalise();
 	
 	Audio = new AudioCollector(AUDIO_BUFFER_SIZE);
-	Fluxus = new FluxusMain(w,h,AUDIO_BUFFER_SIZE);
+	Fluxus = new FluxusMain(w,h);
 }
 
 FluxusBinding::~FluxusBinding()
@@ -149,6 +149,12 @@ SCM FluxusBinding::show_axis(SCM s_id)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::show_fps(SCM s_id)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "texture id");	
+    Fluxus->GetRenderer()->SetFPSDisplay(gh_scm2int(s_id));
+    return SCM_UNSPECIFIED;
+}
 SCM FluxusBinding::make_light(SCM cam)
 {
 	SCM_ASSERT(SCM_NUMBERP(cam), cam, SCM_ARG1, "camera locked");
@@ -630,6 +636,20 @@ SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_h
 	return gh_double2scm(Fluxus->GetPhysics()->CreateJointHinge2(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
+SCM FluxusBinding::build_amotorjoint(SCM s_ob1, SCM s_ob2, SCM s_axis)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "object 1");
+    SCM_ASSERT(SCM_NUMBERP(s_ob2),    s_ob2,    SCM_ARG2, "object 2");
+    SCM_ASSERT(SCM_VECTORP(s_axis),   s_axis,   SCM_ARG3, "axis");
+    int name1=0;
+	name1=(int)gh_scm2double(s_ob1);
+	int name2=0;
+	name2=(int)gh_scm2double(s_ob2);	
+	float axis[3];
+	gh_scm2floats(s_axis,axis);
+	return gh_double2scm(Fluxus->GetPhysics()->CreateJointAMotor(name1, name2, dVector(axis[0],axis[1],axis[2])));
+}
+
 SCM FluxusBinding::joint_param(SCM s_joint, SCM s_param, SCM s_value)
 {
     SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
@@ -643,6 +663,15 @@ SCM FluxusBinding::joint_param(SCM s_joint, SCM s_param, SCM s_value)
     double v = gh_scm2double(s_value);
 	Fluxus->GetPhysics()->SetJointParam(joint,param,v);
 	free(param);
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::joint_angle(SCM s_joint, SCM s_vel, SCM s_angle)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_joint), s_joint, SCM_ARG1, "joint");
+    SCM_ASSERT(SCM_NUMBERP(s_vel),   s_vel,   SCM_ARG1, "vel");
+    SCM_ASSERT(SCM_NUMBERP(s_angle), s_angle, SCM_ARG2, "angle");
+	Fluxus->GetPhysics()->SetJointAngle((int)gh_scm2double(s_joint),gh_scm2double(s_vel),gh_scm2double(s_angle));
 	return SCM_UNSPECIFIED;
 }
 
@@ -1076,6 +1105,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("clear-frame",     clear_frame);
 	gh_new_procedure0_1("blur",         blur);
     gh_new_procedure0_1("show-axis",    show_axis);
+    gh_new_procedure0_1("show-fps",     show_fps);
 	gh_new_procedure0_1("backfacecull",    backfacecull);
 	gh_new_procedure0_1("load-texture", load_texture);
 
@@ -1138,8 +1168,10 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure3_0("build-balljoint", build_balljoint);
     gh_new_procedure3_0("build-sliderjoint", build_sliderjoint);
     gh_new_procedure5_0("build-hinge2joint", build_hinge2joint);
+    gh_new_procedure3_0("build-amotorjoint", build_amotorjoint);
     gh_new_procedure4_0("surface-params", surface_params);
     gh_new_procedure3_0("joint-param",  joint_param);
+    gh_new_procedure3_0("joint-angle",  joint_angle);
     gh_new_procedure0_2("set-mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);

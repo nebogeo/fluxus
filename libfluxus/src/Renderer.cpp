@@ -26,14 +26,10 @@ using namespace fluxus;
 
 //#define DEBUG_TRACE
 
-#define FPS_DISPLAY
-
-#ifdef FPS_DISPLAY
 static const int FRAMES_PER_TIME = 10;
 static int TimeCounter = 0;
 static timeval StartTime;
 static float FPS;
-#endif
 
 static const int MAXLIGHTS = 8;
 
@@ -61,6 +57,7 @@ m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_LoadedFromFlx(false),
 m_Deadline(1/25.0f),
+m_FPSDisplay(false),
 EngineCallback(NULL)
 {
 	State InitialState;
@@ -185,15 +182,16 @@ void Renderer::BeginScene(bool PickMode)
 	}
 	
 	
-	#ifdef FPS_DISPLAY
-	PushState();
-	GetState()->Transform.translate(m_Up,m_Left,0);
-	GetState()->Colour=dColour(0,0,1);
-	char s[32];
-	sprintf(s,"%f fps",FPS);
-    DrawText(s);
-    PopState();
-	#endif
+	if (m_FPSDisplay)
+	{
+		PushState();
+		GetState()->Transform.translate(m_Up,m_Left,0);
+		GetState()->Colour=dColour(0,0,1);
+		char s[32];
+		sprintf(s,"%f fps",FPS);
+    	DrawText(s);
+    	PopState();
+	}
 	
 	RenderLights(true); // camera locked
 	
@@ -257,18 +255,19 @@ void Renderer::EndScene()
 	
 	PopState();
 	
-	#ifdef FPS_DISPLAY
-    if (!(TimeCounter%FRAMES_PER_TIME))
-    {
-    	timeval TimeNow;
-    	gettimeofday(&TimeNow,NULL);  	
-    	FPS = (TimeNow.tv_sec-StartTime.tv_sec)+(TimeNow.tv_usec-StartTime.tv_usec)*0.000001f;
-    	FPS/=(float)FRAMES_PER_TIME;
-    	FPS=1/FPS; 	
-    	gettimeofday(&StartTime,NULL);
-    }
-    TimeCounter++;
-    #endif
+	if (m_FPSDisplay)
+	{
+    	if (!(TimeCounter%FRAMES_PER_TIME))
+    	{
+    		timeval TimeNow;
+    		gettimeofday(&TimeNow,NULL);  	
+    		FPS = (TimeNow.tv_sec-StartTime.tv_sec)+(TimeNow.tv_usec-StartTime.tv_usec)*0.000001f;
+    		FPS/=(float)FRAMES_PER_TIME;
+    		FPS=1/FPS; 	
+    		gettimeofday(&StartTime,NULL);
+    	}
+    	TimeCounter++;
+	}
 	
 	
 	//if (m_StateStack.size()!=1)

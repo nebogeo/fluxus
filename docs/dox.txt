@@ -282,7 +282,7 @@ returns the frame number
 sets the engine callback script, this will be called once a frame in the engine loop. usually 
 a function call, so you can easily change the function.
 
-(flxrand)
+(flxrnd)
 returns a random float between 0 and 1 (used to be called (random))
 
 (desiredfps fps)
@@ -296,7 +296,7 @@ use - see (process)
 
 -------- Audio ----------
 (gain value)
-sets the gain level for the fft sound, usually quite small - 0.025 by default.
+sets the gain level for the fft sound, it's 1 by default.
 	
 (gh harmonic)
 (get-harmonic harmonic)

@@ -9,7 +9,7 @@
 #ifndef FLUXUS_BINDING
 #define FLUXUS_BINDING
 
-static const int AUDIO_BUFFER_SIZE = 512;
+static const int AUDIO_BUFFER_SIZE = 2048;
 
 class FluxusBinding
 {
@@ -43,6 +43,7 @@ public:
 	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM key_pressed(SCM s_key);
 	static SCM show_axis(SCM s_id);
+	static SCM show_fps(SCM s_id);
 	static SCM make_light(SCM cam);
 	static SCM clear_lights();
 	static SCM light_ambient(SCM id, SCM v);
@@ -89,7 +90,9 @@ public:
 	static SCM build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor);
 	static SCM build_sliderjoint(SCM s_ob1, SCM s_ob2, SCM s_hinge);
 	static SCM build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge1, SCM s_hinge2);
+	static SCM build_amotorjoint(SCM s_ob1, SCM s_ob2, SCM s_axis);
 	static SCM joint_param(SCM s_joint, SCM s_param, SCM s_value);
+	static SCM joint_angle(SCM s_joint, SCM s_vel, SCM s_angle);
 	static SCM set_max_physical(SCM s_value);
 	static SCM set_mass(SCM s_obj, SCM s_value);
 	static SCM kick(SCM s_obj, SCM s_vec);

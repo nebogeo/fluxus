@@ -257,15 +257,15 @@ void Physics::Clear()
 	{
 		delete i->second;	
 	}
+	m_ObjectMap.clear();
 	
 	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
 	{
 		delete i->second;	
 	}
+	m_JointMap.clear();
 	
 	m_History.clear();
-
-	m_ObjectMap.clear();
 	if (m_GroundCreated) 
 	{
 		dGeomDestroy(m_Ground);
@@ -443,6 +443,38 @@ int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
 	return m_NextJointID-1;
 }
 
+int Physics::CreateJointAMotor(int Ob1, int Ob2, dVector Axis)
+{
+	map<int,Object*>::iterator i1 = m_ObjectMap.find(Ob1);
+	map<int,Object*>::iterator i2 = m_ObjectMap.find(Ob2);
+	
+	if (i1==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJointAMotor : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	if (i2==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJointAMotor : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+
+	dJointID j = dJointCreateAMotor (m_World,0);
+	dJointAttach(j,i1->second->Body,i2->second->Body);
+
+	dJointSetAMotorMode(j,dAMotorUser);
+	dJointSetAMotorNumAxes(j,1);
+	dJointSetAMotorAxis(j, 0, 1, Axis.x, Axis.y, Axis.z);
+			  
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=AMotorJoint;
+	m_JointMap[m_NextJointID]=NewJoint;
+	m_NextJointID++;
+	return m_NextJointID-1;
+}
+
 int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 {
 	map<int,Object*>::iterator i1 = m_ObjectMap.find(Ob1);
@@ -470,6 +502,25 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
+}
+
+void Physics::SetJointAngle(int ID, float vel, float angle)
+{
+	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
+	if (i==m_JointMap.end())
+	{
+		cerr<<"Physics::SetDesiredHingeAngle : Joint ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+	
+	if (i->second->Type==HingeJoint)
+	{
+		float cur=dJointGetHingeAngle(i->second->Joint);
+		float diff=fabs(cur-angle);
+		vel*=diff; // add some damping
+		if (cur<angle) dJointSetHingeParam(i->second->Joint,dParamVel,vel);
+		else dJointSetHingeParam(i->second->Joint,dParamVel,-vel);
+	}
 }
 
 void Physics::SetJointParam(int ID, const string &Param, float Value)

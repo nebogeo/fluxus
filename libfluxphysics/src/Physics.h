@@ -47,8 +47,11 @@ public:
 	int CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge);
     int CreateJointSlider(int Ob1, int Ob2, dVector Hinge);
     int CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2]);
-	
+	int CreateJointAMotor(int Ob1, int Ob2, dVector Axis);
+
+	void SetJointAngle(int ID, float force, float angle); 
     void SetJointParam(int ID, const string &Param, float Value);
+
     int GetMaxObjectCount() { return m_MaxObjectCount; }
     void SetMaxObjectCount(int s) { m_MaxObjectCount=s; }
 

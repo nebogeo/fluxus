@@ -108,6 +108,7 @@ public:
 	// default to ccw
 	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
+	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
 	
 	typedef void (cb)();
 	void SetEngineCallback(cb *s)            { EngineCallback=s; }
@@ -183,6 +184,7 @@ private:
 	
 	timeval m_LastTime;
 	float m_Deadline;
+	bool m_FPSDisplay;
 	
 	map<string,LibraryEntry> m_CompiledLibrary;
 	

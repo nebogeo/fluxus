@@ -26,7 +26,7 @@ using namespace fluxus;
 
 ////////////////////////////////////////////////////////////////
 
-FluxusMain::FluxusMain(int x, int y, int bufsize) :
+FluxusMain::FluxusMain(int x, int y) :
 m_Physics(&m_Renderer),
 m_CameraMode(SCENE),
 m_CurrentEditor(0),
@@ -42,6 +42,7 @@ m_Height(y),
 m_HideScript(false),
 m_OSCServer(NULL)
 {
+	m_Renderer.SetDesiredFPS(100000);
 }
 
 void FluxusMain::ResetCamera()
