@@ -14,10 +14,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <fluxus/Renderer.h>
-#include <fluxus/PolyPrimitive.h>
-#include <fluxus/Physics.h>
-#include <fluxus/Lifeforms.h>
+#include <Renderer.h>
+#include <PolyPrimitive.h>
+#include <Physics.h>
+#include <Lifeforms.h>
 #include "GLEditor.h"
 #include "OSCServer.h"
 

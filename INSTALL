@@ -5,20 +5,11 @@ guile      http://www.gnu.org/software/guile/guile.html
 fftw       http://www.fftw.org/
 portaudio  http://www.portaudio.com/
 libsndfile http://www.mega-nerd.com/libsndfile/
+liblo      http://plugin.org.uk/liblo/
 
-to build:
+to build, type:
 
-cd libfluxus
 scons
 scons install
-
-cd libfluxphysics
-scons
-scons install
-
-in fluxus
-scons
-scons install
-
 
 

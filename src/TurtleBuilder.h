@@ -1,4 +1,4 @@
-#include "fluxus/PolyPrimitive.h"
+#include "PolyPrimitive.h"
 
 #ifndef N_TURTLE_BUILDER
 #define N_TURTLE_BUILDER

@@ -1,6 +1,6 @@
 #include <guile/gh.h>
-#include <fluxus/GraphicsUtils.h>
-#include <fluxus/LinePrimitive.h>
+#include <GraphicsUtils.h>
+#include <LinePrimitive.h>
 #include <set>
 #include "AudioCollector.h"
 #include "TurtleBuilder.h"

@@ -2,9 +2,9 @@ Target       = "libfluxphysics.so"
 Install   	 = "/usr/local/lib"
 IncInstall	 = "/usr/local/include/fluxus"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
-IncludePaths = Split("/usr/local/include")
+IncludePaths = Split("../libfluxus/src /usr/local/include")
 	  
-Libs = Split("fluxus ode")
+Libs = Split("ode")
 
 Source = Split("src/Physics.cpp")				
 Headers = Split("src/Physics.h")

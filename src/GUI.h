@@ -18,10 +18,10 @@
 #include <FL/Fl_Double_Window.h>
 #include <FL/Fl_Button.h>
 #include <FL/Fl_Menu_Button.h>
-#include <fluxus/Renderer.h>
-#include <fluxus/PolyPrimitive.h>
-#include <fluxus/Physics.h>
-#include <fluxus/Lifeforms.h>
+#include <Renderer.h>
+#include <PolyPrimitive.h>
+#include <Physics.h>
+#include <Lifeforms.h>
 #include "Fl_Code_Editor.h"
 
 namespace fluxus

@@ -17,7 +17,6 @@
 	(parent torso)
 	(set! arm1 (build-cube))
 	(set! arm2 (build-cube))
-	(texture (load-texture "smiley.png"))
 	(set! head (build-cube))
 	(pop))
 
