@@ -18,6 +18,9 @@
 #include <pthread.h>
 #include <string>
 
+#ifndef AUDIO_COLLECTOR
+#define AUDIO_COLLECTOR
+
 using namespace std;
 
 static const int NUM_BARS = 16;
@@ -73,3 +76,5 @@ private:
 	int    m_ProcessPos;
 	int	   m_ProcessLength;
 };
+
+#endif
