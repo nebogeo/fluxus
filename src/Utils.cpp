@@ -1,6 +1,10 @@
 #include <tiffio.h> 
 #include "Utils.h"
+#ifndef __APPLE__
 #include <GL/gl.h> 
+#else
+#include <OpenGL/gl.h>
+#endif 
 #include <stdlib.h> 
 
 int WriteTiff(char *filename, char *description,
