@@ -1061,7 +1061,7 @@ SCM FluxusBinding::get(SCM s_t, SCM s_i)
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		return gh_floats2fvect(Grabbed->GetData(gh_scm2char(s_t),gh_scm2int(s_i)),3); 
+		return gh_floats2fvect(Grabbed->GetData(gh_scm2char(s_t),gh_scm2int(s_i)).arr(),3); 
 	}
     return SCM_UNSPECIFIED;
 }
@@ -1077,7 +1077,7 @@ SCM FluxusBinding::set(SCM s_t, SCM s_i, SCM s_v)
 	{
 		dVector v;
 		gh_scm2floats(s_v,v.arr());
-		return gh_floats2fvect(Grabbed->SetData(gh_scm2char(s_t),gh_scm2int(s_i),v),3); 
+		Grabbed->SetData(gh_scm2char(s_t),gh_scm2int(s_i),v); 
 	}
     return SCM_UNSPECIFIED;
 }
@@ -1100,14 +1100,12 @@ SCM FluxusBinding::gettransform(SCM s_name)
 SCM FluxusBinding::vmul(SCM s_a, SCM s_b)
 {
 	SCM_ASSERT(SCM_VECTORP(s_a),  s_a,  SCM_ARG1, "vmul");
-	SCM_ASSERT(SCM_VECTORP(s_b),  s_b,  SCM_ARG2, "vmul");	
-	if (gh_vector_length(s_a)==3 && gh_vector_length(s_b)==3)
+	SCM_ASSERT(SCM_NUMBERP(s_b),  s_b,  SCM_ARG2, "vmul");	
+	if (gh_vector_length(s_a)==3)
 	{		
 		dVector a;
 		gh_scm2floats(s_a,a.arr());
-		dVector b;
-		gh_scm2floats(s_b,b.arr());
-		return gh_floats2fvect((a*b).arr(),3);
+		return gh_floats2fvect((a*gh_scm2double(s_b)).arr(),3);
 	}
 	return SCM_UNSPECIFIED;
 }
@@ -1148,15 +1146,13 @@ SCM FluxusBinding::vsub(SCM s_a, SCM s_b)
 SCM FluxusBinding::vdiv(SCM s_a, SCM s_b)
 {
 	SCM_ASSERT(SCM_VECTORP(s_a),  s_a,  SCM_ARG1, "vdiv");
-	SCM_ASSERT(SCM_VECTORP(s_b),  s_b,  SCM_ARG2, "vdiv");
+	SCM_ASSERT(SCM_NUMBERP(s_b),  s_b,  SCM_ARG2, "vdiv");
 		
-	if (gh_vector_length(s_a)==3 && gh_vector_length(s_b)==3)
+	if (gh_vector_length(s_a)==3)
 	{		
 		dVector a;
 		gh_scm2floats(s_a,a.arr());
-		dVector b;
-		gh_scm2floats(s_b,b.arr());
-		return gh_floats2fvect((a/b).arr(),3);
+		return gh_floats2fvect((a/gh_scm2double(s_b)).arr(),3);
 	}
 	return SCM_UNSPECIFIED;
 }
@@ -1234,7 +1230,7 @@ SCM FluxusBinding::mtranslate(SCM s_v)
 	if (gh_vector_length(s_v)==3)
 	{
 		dVector a;
-		gh_scm2floats(s_a,a.arr());
+		gh_scm2floats(s_v,a.arr());
 		dMatrix m;
 		m.translate(a.x,a.y,a.z);
 		return gh_floats2fvect(m.arr(),16);	
@@ -1249,9 +1245,9 @@ SCM FluxusBinding::mrotate(SCM s_v)
 	if (gh_vector_length(s_v)==3)
 	{
 		dVector a;
-		gh_scm2floats(s_a,a.arr());
+		gh_scm2floats(s_v,a.arr());
 		dMatrix m;
-		m.rot(a.x,a.y,a.z);
+		m.rotxyz(a.x,a.y,a.z);
 		return gh_floats2fvect(m.arr(),16);	
 	}	
 	return SCM_UNSPECIFIED;
@@ -1264,7 +1260,7 @@ SCM FluxusBinding::mscale(SCM s_v)
 	if (gh_vector_length(s_v)==3)
 	{
 		dVector a;
-		gh_scm2floats(s_a,a.arr());
+		gh_scm2floats(s_v,a.arr());
 		dMatrix m;
 		m.scale(a.x,a.y,a.z);
 		return gh_floats2fvect(m.arr(),16);	
@@ -1282,7 +1278,7 @@ SCM FluxusBinding::transform(SCM s_v, SCM s_m)
 		gh_scm2floats(s_v,v.arr());
 		dMatrix m;
 		gh_scm2floats(s_m,m.arr());
-		return gh_floats2fvect((v.transform(m)).arr(),3);
+		return gh_floats2fvect((m.transform(v)).arr(),3);
 	}
 	return SCM_UNSPECIFIED;
 }
@@ -1327,7 +1323,7 @@ SCM FluxusBinding::cross(SCM s_a, SCM s_b)
 		dVector b;
 		gh_scm2floats(s_b,b.arr());
 		
-		return gh_floats2fvect((a.cross(b)).arr());
+		return gh_floats2fvect((a.cross(b)).arr(),3);
 	}
 	return SCM_UNSPECIFIED;
 }
@@ -1460,7 +1456,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("from-osc",     from_osc);
 
 	// advanced prim editing
-	gh_new_procedure0_3("set", set);
+	gh_new_procedure3_0("set", set);
 	gh_new_procedure0_2("get", get);
 	gh_new_procedure("finalise", finalise, 0,0,0);
 
