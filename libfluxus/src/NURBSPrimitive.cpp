@@ -1,0 +1,178 @@
+// Copyright (C) 2005 Dave Griffiths
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+#include "Renderer.h"
+#include "NURBSPrimitive.h"
+#include "State.h"
+
+using namespace fluxus;
+	
+NURBSPrimitive::NURBSPrimitive() :
+m_Finalised(false),
+m_UOrder(0),
+m_VOrder(0),
+m_NumU(0),
+m_NumV(0),
+m_UKnots(NULL),
+m_VKnots(NULL),
+m_UMin(0.0f),
+m_UMax(0.0f),
+m_VMin(0.0f),
+m_VMax(0.0f),
+m_NumCVsU(0),
+m_NumCVsV(0),
+m_CVs(NULL),
+m_Tex(NULL),
+m_Stride(4)
+{
+	m_Surface = gluNewNurbsRenderer();
+	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
+	gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
+	gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
+	gluNurbsProperty(m_Surface, GLU_CULLING, GLU_TRUE);
+}
+
+NURBSPrimitive::~NURBSPrimitive()
+{
+	gluDeleteNurbsRenderer(m_Surface);
+	if (m_UKnots) free(m_UKnots);
+	if (m_VKnots) free(m_VKnots);
+	if (m_CVs) free(m_CVs);
+}
+
+void NURBSPrimitive::Finalise()
+{
+	// should check the vectors are all the right size etc
+	m_Finalised=true;
+}
+
+void NURBSPrimitive::Render()
+{
+	if (!m_Finalised) return;
+	
+	glEnable(GL_AUTO_NORMAL);
+	if (m_State.Hints & HINT_SOLID)
+	{
+		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
+	
+		gluBeginSurface(m_Surface);
+
+		if (m_Tex!=NULL)
+		{
+			gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
+		 						 m_VCVCount*2,2,
+								 *m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
+		}
+
+		gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
+		 						 m_VCVCount*2,2,
+								 *m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+
+		gluEndSurface(m_Surface);
+	}
+
+	if (m_State.Hints & HINT_WIRE)
+	{
+		glDisable(GL_LIGHTING);
+		glColor3f(0,1,0);
+		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
+
+		gluBeginSurface(m_Surface);
+		gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
+		 				m_VCVCount*2,2,
+						*m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+
+		gluEndSurface(m_Surface);
+
+		glColor3f(1,1,1);
+		glBegin(GL_POINTS);
+		for (int n=0; n<m_UCVCount*m_VCVCount*m_Stride; n+=m_Stride)
+		{
+			glVertex3f(m_CVVec[n],m_CVs[n+1],m_CVs[n+2]);
+		}
+		glEnd();
+		glEnable(GL_LIGHTING);
+	}
+
+	if (m_RenderFlags & RFLAG_NORMALS)
+	{
+		
+	}
+
+	glDisable(GL_AUTO_NORMAL);
+}
+
+void NURBSPrimitive::SetData(char t, unsigned int i, dVector v)
+{
+	/*if (i<m_VertVec.size())
+	{
+		switch (t):
+		{
+			case 'p': m_VertVec[i].point=v; break;
+			case 'n': m_VertVec[i].normal=v; break;
+			case 'c': m_VertVec[i].col=dColour(v.x,v.y,v.z); break;
+			case 't': m_VertVec[i].s=v.x; m_VertVec[i].t=v.y; break;
+			default break;
+		}
+	}*/
+}
+
+dVector NURBSPrimitive::GetData(char t, unsigned int i)
+{
+	/*if (i<m_VertVec.size())
+	{
+		switch (t):
+		{
+			case 'p': return m_VertVec[i].point; break;
+			case 'n': return m_VertVec[i].normal; break;
+			case 'c': return dVector(m_VertVec[i].col.r,m_VertVec[i].col.g,m_VertVec[i].col.b); break;
+			case 't': return dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
+			default break;
+		}
+	}*/
+	return dVector();
+}
+
+dBoundingBox NURBSPrimitive::GetBoundingBox()
+{	
+	dBoundingBox box;
+	for (vector<dVector>::iterator i=m_CVVec.begin();	i!=m_CVVec.end(); ++i)
+	{
+		box.expand(*i);
+	}
+	return box;
+}
+
+void NURBSPrimitive::ApplyTransform(bool ScaleRotOnly)
+{
+	if (!ScaleRotOnly)
+	{
+		for (vector<dVector>::iterator i=m_CVVec.begin(); i!=m_CVVec.end(); ++i)
+		{
+			*i=GetState()->Transform.transform(*i);
+		}
+	}
+	else
+	{
+		for (vector<dVector>::iterator i=m_CVVec.begin(); i!=m_CVVec.end(); ++i)
+		{
+			*i=GetState()->Transform.transform_no_trans(*i);
+		}
+	}
+	
+	GetState()->Transform.init();
+	Finalise();
+}
