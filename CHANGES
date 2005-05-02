@@ -1,3 +1,9 @@
+0.7
+
+operations for matrix and vector types in scheme
+primitive (set) and (get) for changing per vert values 
+(gettransform) returns object transform matrix in world space
+
 0.6
 
 scons build system

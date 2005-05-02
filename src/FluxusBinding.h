@@ -51,6 +51,7 @@ public:
 	static SCM light_specular(SCM id, SCM v);
 	static SCM light_position(SCM id, SCM v);
 	static SCM lock_camera(SCM s_ob);
+	static SCM gettransform(SCM s_name);
 	static SCM destroy(SCM s_name);
 	static SCM clear();
 	static SCM grab(SCM s_id);
@@ -138,5 +139,25 @@ public:
 	static SCM process(SCM s_wavname);
 	static SCM start_osc(SCM s_port);
 	static SCM from_osc(SCM s_token);
+	static SCM get(SCM s_t, SCM s_i);
+	static SCM set(SCM s_t, SCM s_i, SCM s_v);
+	static SCM finalise();
+		
+	static SCM vmul(SCM s_a, SCM s_b);
+	static SCM vadd(SCM s_a, SCM s_b);
+	static SCM vsub(SCM s_a, SCM s_b);
+	static SCM vdiv(SCM s_a, SCM s_b);
+	static SCM mmul(SCM s_a, SCM s_b);
+	static SCM madd(SCM s_a, SCM s_b);
+	static SCM msub(SCM s_a, SCM s_b);
+	static SCM mdiv(SCM s_a, SCM s_b);
+	static SCM mident();
+	static SCM mtranslate(SCM s_v);
+	static SCM mrotate(SCM s_v);
+	static SCM mscale(SCM s_v);
+	static SCM transform(SCM s_v, SCM s_m);
+	static SCM normalise(SCM s_v);
+	static SCM dot(SCM s_a, SCM s_b);
+	static SCM cross(SCM s_a, SCM s_b);
 };
 #endif

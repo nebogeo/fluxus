@@ -37,7 +37,9 @@ public:
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
-	
+	virtual void SetData(char t, unsigned int i, dVector v);
+	virtual dVector GetData(char t, unsigned int i);
+
 	void VertColours(bool s) { m_VertColours=s; }
 	
 protected:

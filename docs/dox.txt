@@ -168,6 +168,9 @@ draws a cube in immediate mode to the current frame
 (destroy object)
 removes the object from the scenegraph
 
+(gettransform object) 
+gets the global transform matrix in world space.
+
 --------- Renderstate operations ---------
 
 (push)
@@ -421,6 +424,51 @@ applies rotational force twistvec to the object
 (set-max-physical num)
 sets the maximum number of objects the physics system can deal with. when the max level
 has been reached the oldest objects are destroyed.
+
+----- Maths calls -----
+
+(vmul v v)
+(vadd v v)
+(vsub v v)
+(vdiv v v)
+(transform v m)
+(normalise v)
+(dot v v)
+(cross v v)
+vector operations
+
+(mmul m m)
+(madd m m)
+(msub m m)
+(mdiv m m)
+matrix operations (a matrix is a vector with size 16)
+
+(mident)
+(mtranslate v)
+(mrotate v)
+(mscale v)
+matrix calls (return matrices for you to use)
+
+----- Advanced primitive editing -----
+
+Data stored on the primitive to describe stuff like vertex position, colour etc can be 
+edited to achieve a number of deformations, or other operations. These operations are 
+called on the currently (grab)ed primitive.
+
+(get char index)
+(set char index vector)
+
+these operations are primitive dependant:
+
+Poly prim:
+"p" vertex position
+"n" vertex normal
+"c" vertex colour
+"t" vertex texture coords
+
+(finalise)
+optimises the data, and makes the operations visible to the (grab)ed primitive.
+
 
 
 

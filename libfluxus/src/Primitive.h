@@ -33,6 +33,12 @@ public:
 	virtual dBoundingBox GetBoundingBox()=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
     virtual string GetTypeName()    { return "Primitive"; }
+	
+	// for per vertex/cv/etc data manipulation
+	virtual void SetData(char t, unsigned int i, dVector v) {}
+	virtual dVector GetData(char t, unsigned int i) { return dVector(); }
+    virtual void Finalise() {} // setdata unfinalises some prims - use this to optimise again
+	
 	void RenderBoundingBox();
 	
 	void ApplyState()               { m_State.Apply(); }
@@ -42,6 +48,7 @@ public:
 	bool Hidden()      		        { return m_Hidden; }
 	void Hide(bool s)      		    { m_Hidden=s; }
 	State *GetState()               { return &m_State; }
+	
 	
 protected:
 	State m_State;
