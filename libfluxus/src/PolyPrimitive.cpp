@@ -173,7 +173,7 @@ void PolyPrimitive::SetData(char t, unsigned int i, dVector v)
 
 dVector PolyPrimitive::GetData(char t, unsigned int i)
 {
-	if (i<m_VertVec.size())
+	/*if (i<m_VertVec.size())
 	{
 		switch (t)
 		{
@@ -183,7 +183,7 @@ dVector PolyPrimitive::GetData(char t, unsigned int i)
 			case 't': return dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
 			default: break;
 		}
-	}
+	}*/
 	
 	return dVector();
 }

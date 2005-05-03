@@ -137,8 +137,9 @@ public:
 	static SCM process(SCM s_wavname);
 	static SCM start_osc(SCM s_port);
 	static SCM from_osc(SCM s_token);
-	static SCM get(SCM s_t, SCM s_i);
-	static SCM set(SCM s_t, SCM s_i, SCM s_v);
+	static SCM pdata_size();
+	static SCM pdata_get(SCM s_t, SCM s_i);
+	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);
 	static SCM finalise();
 		
 	static SCM vmul(SCM s_a, SCM s_b);

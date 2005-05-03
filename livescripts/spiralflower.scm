@@ -1,5 +1,5 @@
-(define col 2)
-(define sc 10)
+(define col 0.5)
+(define sc 1)
 
 (define (draw n)
     (opacity 1)
@@ -8,16 +8,16 @@
     (colour (vector (* col (gh (+ n 4))) 
                     (* col (gh n) )
                     (* col (gh (- n 3)))))
-    (scale (vector (* 5 (gh (+ n 1))) 
-                    (* 5 (gh n) )
-                    (* sc (gh n))))
+    (scale (vector (gh (+ n 1)) 
+                   (gh n) 
+                   (gh n)))
     (draw-cube)
     (pop)
     (if (eq? n 0)
         1
         (begin 
         (draw (- n 1))
-        (rotate (vector 0 (* 45 (gh 1)) 0))
+        (rotate (vector 0 (* 4 (gh 1)) 0))
         (draw (- n 1))
         
         )))
