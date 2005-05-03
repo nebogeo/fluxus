@@ -16,6 +16,8 @@
 
 #include "Renderer.h"
 #include "PolyPrimitive.h"
+#include "TextPrimitive.h"
+#include "NURBSPrimitive.h"
 
 #ifndef GRAPHICS_UTILS
 #define GRAPHICS_UTILS
@@ -27,6 +29,8 @@ void MakeCube(PolyPrimitive *p, float size = 1);
 void MakeCylinder(PolyPrimitive *p, float height, float radius, int hsegments, int rsegments);
 void MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegments);
 void MakePlane(PolyPrimitive *p);
+void MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int rsegments);
+void MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments);
 
 }
 

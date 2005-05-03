@@ -24,18 +24,8 @@ NURBSPrimitive::NURBSPrimitive() :
 m_Finalised(false),
 m_UOrder(0),
 m_VOrder(0),
-m_NumU(0),
-m_NumV(0),
-m_UKnots(NULL),
-m_VKnots(NULL),
-m_UMin(0.0f),
-m_UMax(0.0f),
-m_VMin(0.0f),
-m_VMax(0.0f),
-m_NumCVsU(0),
-m_NumCVsV(0),
-m_CVs(NULL),
-m_Tex(NULL),
+m_UCVCount(0),
+m_VCVCount(0),
 m_Stride(4)
 {
 	m_Surface = gluNewNurbsRenderer();
@@ -48,9 +38,6 @@ m_Stride(4)
 NURBSPrimitive::~NURBSPrimitive()
 {
 	gluDeleteNurbsRenderer(m_Surface);
-	if (m_UKnots) free(m_UKnots);
-	if (m_VKnots) free(m_VKnots);
-	if (m_CVs) free(m_CVs);
 }
 
 void NURBSPrimitive::Finalise()
@@ -70,16 +57,13 @@ void NURBSPrimitive::Render()
 	
 		gluBeginSurface(m_Surface);
 
-		if (m_Tex!=NULL)
-		{
-			gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
-		 						 m_VCVCount*2,2,
-								 *m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
-		}
+		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+		 						 m_VCVCount*4,4,
+								 m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
 
-		gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
-		 						 m_VCVCount*2,2,
-								 *m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+		 						 m_VCVCount*4,4,
+								 m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
 	}
@@ -91,25 +75,25 @@ void NURBSPrimitive::Render()
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
 
 		gluBeginSurface(m_Surface);
-		gluNurbsSurface(m_Surface,m_UKnotVec.size(),*m_UKnotVec.begin(),m_VKnotVec.size(),*m_VKnotVec.begin(),
-		 				m_VCVCount*2,2,
-						*m_CVVec.begin(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+		 				m_VCVCount*4,4,
+						m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
-
-		glColor3f(1,1,1);
-		glBegin(GL_POINTS);
-		for (int n=0; n<m_UCVCount*m_VCVCount*m_Stride; n+=m_Stride)
-		{
-			glVertex3f(m_CVVec[n],m_CVs[n+1],m_CVs[n+2]);
-		}
-		glEnd();
 		glEnable(GL_LIGHTING);
 	}
 
-	if (m_RenderFlags & RFLAG_NORMALS)
+	if (m_State.Hints & HINT_POINTS)
 	{
-		
+		glColor3f(1,1,1);
+		glDisable(GL_LIGHTING);
+		glBegin(GL_POINTS);
+		for (unsigned int n=0; n<m_CVVec.size(); n++)
+		{
+			glVertex3fv(m_CVVec[n].arr());
+		}
+		glEnd();
+		glEnable(GL_LIGHTING);
 	}
 
 	glDisable(GL_AUTO_NORMAL);

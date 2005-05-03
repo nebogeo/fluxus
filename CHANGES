@@ -1,8 +1,15 @@
 0.7
 
 operations for matrix and vector types in scheme
-primitive (set) and (get) for changing per vert values 
-(gettransform) returns object transform matrix in world space
+primitive (set) and (get) for changing per vert primitive values (pdata)
+(get-transform) returns object transform matrix in world space
+nurbs objects
+(hide)
+(draw-instance)
+(get-camera-transform)
+(make-nurbs-sphere) (make-burbs-plane)
+removed flocking stuff - should be a toplevel script
+more error checking
 
 0.6
 

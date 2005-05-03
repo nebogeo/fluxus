@@ -4,7 +4,7 @@ LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
 IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 	  
 Libs = Split("portaudio sndfile guile fftw3 ode png \
-			  glut tiff GL GLU z m Xi Xmu Xext X11 pthread lo")
+			  glut tiff GL GLU z m Xi Xmu Xext Xt SM ICE X11 pthread lo")
 
 Source = Split("src/AudioCollector.cpp \
 				src/FluxusMain.cpp \
@@ -22,6 +22,7 @@ Source = Split("src/AudioCollector.cpp \
 				libfluxus/src/TextPrimitive.cpp \
 				libfluxus/src/CompiledPrimitive.cpp \
 				libfluxus/src/LinePrimitive.cpp \
+				libfluxus/src/NURBSPrimitive.cpp \
 				libfluxus/src/Primitive.cpp \
 				libfluxus/src/Light.cpp \
 				libfluxus/src/Renderer.cpp \

@@ -33,14 +33,18 @@ public:
 	void RegisterProcs();
 
 	static SCM build_cube();
+	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_plane();
 	static SCM build_cylinder(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_line(SCM start, SCM swidth, SCM end, SCM ewidth);
+	static SCM build_text(SCM text);
+	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
+	static SCM build_nurbs_plane(SCM s_usegments, SCM s_vsegments);
+	static SCM draw_instance(SCM s_ob);
 	static SCM draw_cube();
 	static SCM draw_plane();
 	static SCM draw_sphere();
 	static SCM draw_cylinder();
-	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM key_pressed(SCM s_key);
 	static SCM show_axis(SCM s_id);
 	static SCM show_fps(SCM s_id);
@@ -52,10 +56,12 @@ public:
 	static SCM light_position(SCM id, SCM v);
 	static SCM lock_camera(SCM s_ob);
 	static SCM gettransform(SCM s_name);
+	static SCM getcameratransform(SCM s_name);
 	static SCM destroy(SCM s_name);
 	static SCM clear();
 	static SCM grab(SCM s_id);
 	static SCM ungrab();
+	static SCM hide(SCM s_b);
 	static SCM apply(SCM s_id);
 	static SCM opacity(SCM s_opac);
 	static SCM shinyness(SCM s_opac);
@@ -109,14 +115,6 @@ public:
 	static SCM frame();
 	static SCM reset_camera();
 	static SCM print_scene_graph();
-	static SCM make_lifeforms(SCM s_name);
-	static SCM add_lifeform(SCM s_name, SCM s_obj);
-	static SCM lifeform_avoidance(SCM s_name, SCM s_obj);
-	static SCM lifeform_flockcentering(SCM s_name, SCM s_obj);
-	static SCM lifeform_scenecentering(SCM s_name, SCM s_obj);
-	static SCM lifeform_inertia(SCM s_name, SCM s_obj);
-	static SCM lifeform_scenecentre(SCM s_name, SCM s_obj);
-	static SCM lifeform_maxspeed(SCM s_name, SCM s_obj);
 	static SCM save_frame(SCM s_name);
 	static SCM load(SCM s_name);
 	static SCM save_name(SCM s_name);

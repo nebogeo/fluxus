@@ -56,12 +56,6 @@ protected:
 	
 	int m_UOrder;
 	int m_VOrder;
-	
-	float m_UMin;
-	float m_UMax;
-	float m_VMin;
-	float m_VMax;
-
 	int    m_UCVCount;
 	int    m_VCVCount;
 	int    m_Stride;
