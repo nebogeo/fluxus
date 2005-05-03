@@ -29,7 +29,7 @@ public:
 	// charw,h are in _texture_ coords not pixels
 	TextPrimitive(float charw, float charh, int charstride, int wrapchars=0);
 	virtual ~TextPrimitive() {}
-	
+	virtual void Render();
 	virtual string GetTypeName() { return "TextPrimitive"; }
 	
 	void SetText(const string &s, float Width=10, float Height=10);

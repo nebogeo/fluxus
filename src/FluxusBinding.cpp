@@ -114,7 +114,7 @@ SCM FluxusBinding::build_text(SCM s_text)
 	char *text=gh_scm2newstr(s_text,&size);
 	
 	TextPrimitive *TextPrim = new TextPrimitive(15/256.0f,25/256.0f,17,40);
-	TextPrim->SetText(text,200,200);
+	TextPrim->SetText(text,20,-20);
 	
 	return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(TextPrim));
 }

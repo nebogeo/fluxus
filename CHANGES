@@ -7,9 +7,10 @@ nurbs objects
 (hide)
 (draw-instance)
 (get-camera-transform)
-(make-nurbs-sphere) (make-burbs-plane)
+(build-nurbs-sphere) (build-burbs-plane)
 removed flocking stuff - should be a toplevel script
 more error checking
+(build-text)
 
 0.6
 

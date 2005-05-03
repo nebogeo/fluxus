@@ -81,6 +81,13 @@ void TextPrimitive::SetText(const string &s, float Width, float Height)
 	Finalise();
 }
 
+void TextPrimitive::Render()
+{
+	glDisable(GL_CULL_FACE);
+	PolyPrimitive::Render();
+	glEnable(GL_CULL_FACE);
+}
+
 istream &fluxus::operator>>(istream &s, TextPrimitive &o)
 {
 	return s;

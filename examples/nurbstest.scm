@@ -1,8 +1,8 @@
 
 
 (clear)
-(texture (load-texture "green.png"))
+;(texture (load-texture "green.png"))
 (show-axis 0)
 (hint-points)
-(scale (vector 5 5 5))
-(build-nurbs-plane 10 10)
+(scale (vector 2 2 2))
+(build-nurbs-sphere 10 10)
