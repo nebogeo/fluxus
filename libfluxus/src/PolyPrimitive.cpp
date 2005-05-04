@@ -26,61 +26,40 @@ using namespace fluxus;
 PolyPrimitive::PolyPrimitive(Type t) :
 m_Type(t),
 m_VertColours(false),
-m_VertData(NULL),
-m_NormData(NULL),
-m_ColData(NULL),
-m_TexData(NULL),
-m_NumVerts(0)
+m_NumVerts(0),
+m_Finalised(false)
 {
 }
 
 PolyPrimitive::~PolyPrimitive()
 {
-	if (m_VertData!=NULL) delete[] m_VertData;
-	if (m_NormData!=NULL) delete[] m_NormData;	
-	if (m_ColData!=NULL) delete[] m_ColData;
-	if (m_TexData!=NULL) delete[] m_TexData;	
 }
+
+void PolyPrimitive::AddVertex(const dVertex &Vert) 
+{ 
+	m_VertData.push_back(Vert.point); 
+	m_NormData.push_back(Vert.normal); 
+	m_ColData.push_back(dVector(Vert.col.r, Vert.col.g, Vert.col.b)); 	
+	m_TexData.push_back(dVector(Vert.s, Vert.t, 0)); 
+}	
 
 void PolyPrimitive::Finalise()
 {
 	// fill the array with loaded verts
-	m_NumVerts=m_VertVec.size();
+	m_NumVerts=m_VertData.size();
 	
-	if (m_VertData!=NULL) delete[] m_VertData;
-	if (m_NormData!=NULL) delete[] m_NormData;	
-	if (m_ColData!=NULL) delete[] m_ColData;	
-	if (m_TexData!=NULL) delete[] m_TexData;	
-	m_VertData = new float[m_NumVerts*3];
-	m_NormData = new float[m_NumVerts*3];
-	m_ColData  = new float[m_NumVerts*4];
-	m_TexData  = new float[m_NumVerts*2];
-	
-	int Count=0,TexCount=0,ColCount=0;
-	for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
+	if (m_NumVerts==m_NormData.size() &&
+		m_NumVerts==m_ColData.size() &&
+		m_NumVerts==m_TexData.size()) 
 	{
-		m_NormData[Count]=i->normal.x;
-		m_VertData[Count]=i->point.x;
-		Count++;
-		m_NormData[Count]=i->normal.y;
-		m_VertData[Count]=i->point.y;
-		Count++;
-		m_NormData[Count]=i->normal.z;
-		m_VertData[Count]=i->point.z;
-		Count++;
-		
-		m_TexData[TexCount++]=i->s;
-		m_TexData[TexCount++]=i->t;
-		
-		m_ColData[ColCount++]=i->col.r;
-		m_ColData[ColCount++]=i->col.g;
-		m_ColData[ColCount++]=i->col.b;
-		m_ColData[ColCount++]=i->col.a;
+		m_Finalised=true;
 	}
 }
 
 void PolyPrimitive::Render()
 {
+	if (!m_Finalised) return;
+
 	int type=0;
 	switch (m_Type)
 	{
@@ -116,46 +95,30 @@ void PolyPrimitive::Render()
 		glColor3f(1,0,0);
 		glDisable(GL_LIGHTING);
 		glBegin(GL_LINES);
-		for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
+		for (unsigned int i=0; i<m_VertData.size(); i++)
 		{
-			glNormal3f(i->normal.x,i->normal.y,i->normal.z);
-			glVertex3f(i->point.x,i->point.y,i->point.z);
-			glVertex3f(i->point.x+i->normal.x,i->point.y+i->normal.y,i->point.z+i->normal.z);
+			glVertex3fv(m_VertData[i].arr());
+			glVertex3fv((m_VertData[i]+m_NormData[i]).arr());
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
 	
-	if (m_VertData!=NULL)
-	{
-		glVertexPointer(3,GL_FLOAT,0,(void*)m_VertData);
-		glNormalPointer(GL_FLOAT,0,(void*)m_NormData);
-		glTexCoordPointer(2,GL_FLOAT,0,(void*)m_TexData);
+	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData.begin()->arr());
+	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData.begin()->arr());
+	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData.begin()->arr());
 				
-		if (m_VertColours)
-		{
-			glEnableClientState(GL_COLOR_ARRAY);
-			glColorPointer(3,GL_FLOAT,0,(void*)m_ColData);
-		}
-		else
-		{
-			glDisableClientState(GL_COLOR_ARRAY);
-		}
-		
-		glDrawArrays(type,0,m_NumVerts);	
+	if (m_VertColours)
+	{
+		glEnableClientState(GL_COLOR_ARRAY);
+		glColorPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_ColData.begin()->arr());
 	}
 	else
 	{
-		glBegin(type);
-		for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
-		{
-			glNormal3f(i->normal.x,i->normal.y,i->normal.z);
-			if (m_VertColours) glColor4f(i->col.r,i->col.g,i->col.b,i->col.a);
-			glTexCoord2f(i->s,i->t);
-			glVertex3f(i->point.x,i->point.y,i->point.z);
-		}
-		glEnd();
+		glDisableClientState(GL_COLOR_ARRAY);
 	}
+		
+	glDrawArrays(type,0,m_NumVerts);	
 
 	if (m_VertColours) glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT || m_State.Hints & HINT_WIRE) glEnable(GL_LIGHTING);
@@ -163,14 +126,14 @@ void PolyPrimitive::Render()
 
 void PolyPrimitive::SetData(char t, unsigned int i, dVector v)
 {
-	if (i<m_VertVec.size())
+	if (i<m_VertData.size())
 	{
 		switch (t)
 		{
-			case 'p': m_VertVec[i].point=v; break;
-			case 'n': m_VertVec[i].normal=v; break;
-			case 'c': m_VertVec[i].col=dColour(v.x,v.y,v.z); break;
-			case 't': m_VertVec[i].s=v.x; m_VertVec[i].t=v.y; break;
+			case 'p': m_VertData[i]=v; break;
+			case 'n': m_NormData[i]=v; break;
+			case 'c': m_ColData[i]=v; break;
+			case 't': m_TexData[i]=v; break;
 			default: break;
 		}
 	}
@@ -179,14 +142,14 @@ void PolyPrimitive::SetData(char t, unsigned int i, dVector v)
 dVector PolyPrimitive::GetData(char t, unsigned int i)
 {
 	dVector ret;
-	if (i<m_VertVec.size())
+	if (i<m_VertData.size())
 	{
 		switch (t)
 		{
-			case 'p': ret=m_VertVec[i].point; break;
-			case 'n': ret=m_VertVec[i].normal; break;
-			case 'c': ret=dVector(m_VertVec[i].col.r,m_VertVec[i].col.g,m_VertVec[i].col.b); break;
-			case 't': ret=dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
+			case 'p': ret=m_VertData[i]; break;
+			case 'n': ret=m_NormData[i]; break;
+			case 'c': ret=m_ColData[i]; break;
+			case 't': ret=m_TexData[i]; break;
 			default: break;
 		}
 	}
@@ -194,12 +157,18 @@ dVector PolyPrimitive::GetData(char t, unsigned int i)
 	return ret;
 }
 
+void PolyPrimitive::RecalculateNormals()
+{
+	// todo - need different aproaches for TRISTRIP,QUADS,TRILIST,TRIFAN
+	// to smooth, or not?
+}
+
 dBoundingBox PolyPrimitive::GetBoundingBox()
 {	
 	dBoundingBox box;
-	for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
+	for (vector<dVector>::iterator i=m_VertData.begin(); i!=m_VertData.end(); ++i)
 	{
-		box.expand(i->point);
+		box.expand(*i);
 	}
 	return box;
 }
@@ -208,17 +177,17 @@ void PolyPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
+		for (vector<dVector>::iterator i=m_VertData.begin(); i!=m_VertData.end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
+		for (unsigned int i=0; i<m_VertData.size(); i++)
 		{
-			i->point=GetState()->Transform.transform_no_trans(i->point);
-			i->normal=GetState()->Transform.transform_no_trans(i->normal).normalise();
+			m_VertData[i]=GetState()->Transform.transform_no_trans(m_VertData[i]);
+			m_NormData[i]=GetState()->Transform.transform_no_trans(m_NormData[i]).normalise();
 		}
 	}
 	
@@ -226,45 +195,3 @@ void PolyPrimitive::ApplyTransform(bool ScaleRotOnly)
 	Finalise();
 }
 
-istream &fluxus::operator>>(istream &s, PolyPrimitive &o)
-{
-	s.ignore(3);
-	s>>o.m_State;	
-	s.ignore(3);
-	int t=0;
-	s.read((char*)&t,sizeof(int));
-	o.m_Type=(PolyPrimitive::Type)t;
-	s.read((char*)&o.m_NumVerts,sizeof(int));
-	o.m_VertData = new float[3*o.m_NumVerts];
-	s.read((char*)o.m_VertData,sizeof(float)*3*o.m_NumVerts);
-	o.m_NormData = new float[3*o.m_NumVerts];
-	s.read((char*)o.m_NormData,sizeof(float)*3*o.m_NumVerts);
-	o.m_TexData = new float[2*o.m_NumVerts];
-	s.read((char*)o.m_TexData,sizeof(float)*2*o.m_NumVerts);
-	s.read((char*)&o.m_VertColours,sizeof(bool));
-	if (o.m_VertColours)
-	{
-		o.m_ColData = new float[3*o.m_NumVerts];
-		s.read((char*)o.m_ColData,sizeof(float)*3*o.m_NumVerts);	
-	}
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, PolyPrimitive &o)
-{
-	s.write("pol",3);
-	s<<o.m_State;
-	s.write("pdt",3);
-	int t=o.m_Type;
-	s.write((char*)&t,sizeof(int));
-	s.write((char*)&o.m_NumVerts,sizeof(int));
-	s.write((char*)o.m_VertData,sizeof(float)*3*o.m_NumVerts);
-	s.write((char*)o.m_NormData,sizeof(float)*3*o.m_NumVerts);
-	s.write((char*)o.m_TexData,sizeof(float)*2*o.m_NumVerts);
-	s.write((char*)&o.m_VertColours,sizeof(bool));
-	if (o.m_VertColours)
-	{
-		s.write((char*)o.m_ColData,sizeof(float)*3*o.m_NumVerts);	
-	}
-	return s;
-}

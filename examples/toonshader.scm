@@ -29,8 +29,8 @@
     
 (define (toon n camerapos obpos)
     (set! v (vadd obpos (pdata-get "p" n))) ; vertex in worldspace 
-    (set! i (normalise (vsub v camerapos))) ; incident direction    
-    (pdata-set "t" n (vector (dot i (pdata-get "n" n)) 0 0)) ; set s to the facing ratio    
+    (set! i (vnormalise (vsub v camerapos))) ; incident direction    
+    (pdata-set "t" n (vector (vdot i (pdata-get "n" n)) 0 0)) ; set s to the facing ratio    
     (if (< n 0)
         0
         (toon (- n 1) camerapos obpos)))    
@@ -40,8 +40,8 @@
     (deform (pdata-size) points)
     (recalc-normals)
     (toon (pdata-size)
-        (transform (vector 0 0 0) (get-camera-transform))
-        (transform (vector 0 0 0) (get-transform ob)))
+        (vtransform (vector 0 0 0) (get-camera-transform))
+        (vtransform (vector 0 0 0) (get-transform ob)))
     (finalise)
     (ungrab))
 

@@ -70,6 +70,7 @@ public:
 	static SCM ambient(SCM s_vec);
 	static SCM emissive(SCM s_vec);
 	static SCM flux_identity();
+	static SCM concat(SCM s_m);
 	static SCM translate(SCM s_vec);
 	static SCM rotate(SCM s_vec);
 	static SCM scale(SCM s_vec);
@@ -148,6 +149,13 @@ public:
 	static SCM vadd(SCM s_a, SCM s_b);
 	static SCM vsub(SCM s_a, SCM s_b);
 	static SCM vdiv(SCM s_a, SCM s_b);
+	static SCM vtransform(SCM s_v, SCM s_m);
+	static SCM vtransform_rot(SCM s_v, SCM s_m);
+	static SCM vnormalise(SCM s_v);
+	static SCM vdot(SCM s_a, SCM s_b);
+	static SCM vmag(SCM s_a);
+	static SCM vdist(SCM s_a, SCM s_b);
+	static SCM vcross(SCM s_a, SCM s_b);
 	static SCM mmul(SCM s_a, SCM s_b);
 	static SCM madd(SCM s_a, SCM s_b);
 	static SCM msub(SCM s_a, SCM s_b);
@@ -156,9 +164,9 @@ public:
 	static SCM mtranslate(SCM s_v);
 	static SCM mrotate(SCM s_v);
 	static SCM mscale(SCM s_v);
-	static SCM transform(SCM s_v, SCM s_m);
-	static SCM normalise(SCM s_v);
-	static SCM dot(SCM s_a, SCM s_b);
-	static SCM cross(SCM s_a, SCM s_b);
+	static SCM mtranspose(SCM s_a);
+	static SCM minverse(SCM s_a);
+	static SCM maim(SCM s_a, SCM s_b);
+	
 };
 #endif

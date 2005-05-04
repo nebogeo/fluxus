@@ -31,13 +31,14 @@ public:
 	PolyPrimitive(Type t=TRISTRIP);
 	virtual  ~PolyPrimitive();
 	
-	virtual void AddVertex(const dVertex &Vert) { m_VertVec.push_back(Vert); }	
+	virtual void AddVertex(const dVertex &Vert);	
 	virtual void Render();
 	virtual void Finalise();
 	virtual dBoundingBox GetBoundingBox();
+	virtual void RecalculateNormals();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
-	virtual unsigned int GetDataSize() { return m_VertVec.size(); }	
+	virtual unsigned int GetDataSize() { return m_VertData.size(); }	
 	virtual void SetData(char t, unsigned int i, dVector v);
 	virtual dVector GetData(char t, unsigned int i);
 
@@ -47,19 +48,13 @@ protected:
 	
 	Type m_Type;
 	bool m_VertColours;
-	float *m_VertData;
-	float *m_NormData;
-	float *m_ColData;
-	float *m_TexData;
-	int m_NumVerts;
-	vector<dVertex> m_VertVec;
-	
-	friend istream &operator>>(istream &s, PolyPrimitive &o);
-	friend ostream &operator<<(ostream &s, PolyPrimitive &o);
+	vector<dVector> m_VertData;
+	vector<dVector> m_NormData;
+	vector<dVector> m_ColData;
+	vector<dVector> m_TexData;
+	unsigned int m_NumVerts;
+	bool m_Finalised;
 };
-
-istream &operator>>(istream &s, PolyPrimitive &o);
-ostream &operator<<(ostream &s, PolyPrimitive &o);
 
 };
 
