@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Renderer.h"
+#include "TexturePainter.h"
 #include "State.h"
 
 using namespace fluxus;
@@ -40,6 +41,16 @@ void State::Apply()
 	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,Colour.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,Specular.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&Shinyness);
+	
+	if (Texture>=0)
+	{ 
+		glEnable(GL_TEXTURE_2D);
+		TexturePainter::Get()->SetCurrent(Texture);
+	}
+	else
+	{
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 
 void State::Spew()

@@ -53,19 +53,8 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth)
 
 	glPushMatrix();		
 	node->Prim->ApplyState();
-	int Texture=node->Prim->GetState()->Texture;
 	glPushName(node->ID);
-	if (Texture>=0)
-	{ 
-		glEnable(GL_TEXTURE_2D);
-		m_TexturePainter.SetCurrent(Texture);
-		node->Prim->Render();
-		glDisable(GL_TEXTURE_2D);
-	}
-	else
-	{
-		node->Prim->Render();
-	}
+	node->Prim->Render();
 	glPopName();
     
 	depth++;

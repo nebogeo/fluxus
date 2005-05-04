@@ -72,6 +72,7 @@ EngineCallback(NULL)
 
 Renderer::~Renderer()
 {
+	TexturePainter::Shutdown();
 }
 
 /////////////////////////////////////	
@@ -222,8 +223,7 @@ void Renderer::Render()
 	if (EngineCallback) EngineCallback();
 	glPopMatrix();
 	m_World.Render();
-	RenderIMPrimitives();
-		
+	RenderIMPrimitives();	
 	EndScene();
 	
 	if (m_LoadedFromFlx) ClearIMPrimitives();
@@ -251,6 +251,9 @@ void Renderer::EndScene()
 	cerr<<"Renderer::EndScene"<<endl;
 	#endif
 	
+	// clear the texture, if the last primitive assigned one...
+	glDisable(GL_TEXTURE_2D);
+
 	if (m_ShowAxis) DrawAxes();
 	
 	PopState();

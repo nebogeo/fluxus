@@ -18,7 +18,6 @@
 #include "Tree.h"
 #include "Primitive.h"
 #include "State.h"
-#include "TexturePainter.h"
 
 using namespace std;
 
@@ -46,14 +45,12 @@ public:
 	~SceneGraph();
 
 	void Render();
-	unsigned int LoadTexture(const string &Filename) { return m_TexturePainter.LoadTexture(Filename); }
 	virtual void Clear();
 	void Detach(SceneNode *node);
 	dMatrix GetGlobalTransform(SceneNode *node);
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
 
 private:
-	TexturePainter m_TexturePainter;
 	void RenderWalk(SceneNode *node, int depth);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	

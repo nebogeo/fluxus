@@ -17,7 +17,9 @@ SCM gh_floats2scm(float *d, unsigned int len)
 {
 	double *t=(double*)malloc(sizeof(double)*len);
 	for (unsigned int i=0; i<len; i++) t[i]=d[i];
-	return gh_doubles2scm(t,len);
+	SCM ret=gh_doubles2scm(t,len);
+	free(t);
+	return ret;
 }
 
 FluxusBinding::FluxusBinding(int w, int h) 
@@ -1056,7 +1058,6 @@ SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
 	SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-get");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-get");
 	
-	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) 
 	{
@@ -1074,8 +1075,7 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
     SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-set");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-set");
 	SCM_ASSERT(SCM_VECTORP(s_v), s_v, SCM_ARG3, "pdata-set");	
-
-
+	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed && gh_vector_length(s_v)==3) 
 	{

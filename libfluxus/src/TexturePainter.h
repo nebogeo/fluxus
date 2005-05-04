@@ -39,13 +39,24 @@ public:
 class TexturePainter
 {
 public:
-	TexturePainter();
-	~TexturePainter();
+	static TexturePainter* Get()
+	{
+		if (m_Singleton==NULL) m_Singleton=new TexturePainter;
+		return m_Singleton;
+	}
+	
+	static void Shutdown()
+	{
+		if (m_Singleton!=NULL) delete m_Singleton;
+	}
 	
 	int LoadTexture(const string &Filename);
 	void SetCurrent(int id);
 	
 private:
+	TexturePainter();
+	~TexturePainter();
+	static TexturePainter *m_Singleton;
 
 	map<string,int> m_LoadedMap;
 	map<unsigned int,TextureDesc*> m_TextureMap;

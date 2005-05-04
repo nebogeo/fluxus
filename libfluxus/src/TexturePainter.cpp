@@ -20,6 +20,8 @@
 
 using namespace fluxus;
 
+TexturePainter *TexturePainter::m_Singleton=NULL;
+
 TexturePainter::TexturePainter() 
 {
 }

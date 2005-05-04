@@ -173,19 +173,20 @@ void PolyPrimitive::SetData(char t, unsigned int i, dVector v)
 
 dVector PolyPrimitive::GetData(char t, unsigned int i)
 {
-	/*if (i<m_VertVec.size())
+	dVector ret;
+	if (i<m_VertVec.size())
 	{
 		switch (t)
 		{
-			case 'p': return m_VertVec[i].point; break;
-			case 'n': return m_VertVec[i].normal; break;
-			case 'c': return dVector(m_VertVec[i].col.r,m_VertVec[i].col.g,m_VertVec[i].col.b); break;
-			case 't': return dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
+			case 'p': ret=m_VertVec[i].point; break;
+			case 'n': ret=m_VertVec[i].normal; break;
+			case 'c': ret=dVector(m_VertVec[i].col.r,m_VertVec[i].col.g,m_VertVec[i].col.b); break;
+			case 't': ret=dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
 			default: break;
 		}
-	}*/
+	}
 	
-	return dVector();
+	return ret;
 }
 
 dBoundingBox PolyPrimitive::GetBoundingBox()

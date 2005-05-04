@@ -57,10 +57,13 @@ void NURBSPrimitive::Render()
 	
 		gluBeginSurface(m_Surface);
 
-		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-		 						 m_VCVCount*4,4,
-								 m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
-
+		if (!m_STVec.empty())
+		{
+			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+			 						 m_VCVCount*4,4,
+									 m_STVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
+		}
+		
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
 		 						 m_VCVCount*4,4,
 								 m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
@@ -101,33 +104,24 @@ void NURBSPrimitive::Render()
 
 void NURBSPrimitive::SetData(char t, unsigned int i, dVector v)
 {
-	/*if (i<m_VertVec.size())
+	switch (t)
 	{
-		switch (t):
-		{
-			case 'p': m_VertVec[i].point=v; break;
-			case 'n': m_VertVec[i].normal=v; break;
-			case 'c': m_VertVec[i].col=dColour(v.x,v.y,v.z); break;
-			case 't': m_VertVec[i].s=v.x; m_VertVec[i].t=v.y; break;
-			default break;
-		}
-	}*/
+		case 'p': if (i<m_CVVec.size()) m_CVVec[i]=v; break;
+		case 't': if (i<m_STVec.size()) m_STVec[i]=v; break;
+		default: break;
+	}
 }
 
 dVector NURBSPrimitive::GetData(char t, unsigned int i)
 {
-	/*if (i<m_VertVec.size())
+	dVector ret;
+	switch (t)
 	{
-		switch (t):
-		{
-			case 'p': return m_VertVec[i].point; break;
-			case 'n': return m_VertVec[i].normal; break;
-			case 'c': return dVector(m_VertVec[i].col.r,m_VertVec[i].col.g,m_VertVec[i].col.b); break;
-			case 't': return dVector(m_VertVec[i].s,m_VertVec[i].t,0); break;
-			default break;
-		}
-	}*/
-	return dVector();
+		case 'p': if (i<m_CVVec.size()) ret=m_CVVec[i]; break;
+		case 't': if (i<m_STVec.size()) ret=m_STVec[i]; break;
+		default: break;
+	}
+	return ret;
 }
 
 dBoundingBox NURBSPrimitive::GetBoundingBox()

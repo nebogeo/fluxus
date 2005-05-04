@@ -22,6 +22,7 @@
 #include "string"
 #include "SceneGraph.h"
 #include "Light.h"
+#include "TexturePainter.h"
 
 #ifndef N_RENDERER
 #define N_RENDERER
@@ -98,7 +99,7 @@ public:
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r, float f, float b) 
 		{ m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Front=f; m_Back=b; m_Initialised=false; }
-	unsigned int LoadTexture(const string &Filename) { return m_World.LoadTexture(Filename); }
+	unsigned int LoadTexture(const string &Filename) { return TexturePainter::Get()->LoadTexture(Filename); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
