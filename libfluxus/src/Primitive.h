@@ -38,7 +38,8 @@ public:
 	virtual unsigned int GetDataSize() { return 0; }	
 	virtual void SetData(char t, unsigned int i, dVector v) {}
 	virtual dVector GetData(char t, unsigned int i) { return dVector(); }
-    virtual void Finalise() {} // setdata unfinalises some prims - use this to optimise again
+	virtual void RecalculateNormals() {}
+	virtual void Finalise() {} // setdata unfinalises some prims - use this to optimise again
 	
 	void RenderBoundingBox();
 	

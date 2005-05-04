@@ -207,6 +207,7 @@ void fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int
 		for (int i=0; i<rsegments; i++)
 		{			
 			p->AddCV(dVector(sin(i*radpersegment)*radius*scale,height,cos(i*radpersegment)*radius*scale));
+			p->AddN(dVector(sin(i*radpersegment)*scale,height,cos(i*radpersegment)*scale));
 			p->AddTex(dVector(i/(float)rsegments,j/(float)hsegments,0));
 		}
 	}
@@ -224,6 +225,7 @@ void fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
 		for (int i=0; i<usegments; i++)
 		{			
 			p->AddCV(dVector(i/(float)usegments,0,j/(float)vsegments));
+			p->AddN(dVector(0,1,0));
 			p->AddTex(dVector(i/(float)usegments,j/(float)vsegments,0));
 		}
 	}

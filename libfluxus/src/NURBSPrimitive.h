@@ -31,6 +31,7 @@ public:
 	
 	virtual void Render();
 	virtual void Finalise();
+	virtual void RecalculateNormals();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "NURBSPrimitive"; }
@@ -41,6 +42,7 @@ public:
 	/// Sets the order of the patches - call this first
 	void Init(int orderu, int orderv, int ucvs, int vcvs) { m_UOrder=orderu; m_VOrder=orderv; m_UCVCount=ucvs; m_VCVCount=vcvs; }
 	void AddCV(const dVector &CV) { m_CVVec.push_back(CV); }	
+	void AddN(const dVector &N) { m_NVec.push_back(N); }	
 	void AddTex(const dVector &ST) { m_STVec.push_back(ST); }	
 	void AddUKnot(float k) { m_UKnotVec.push_back(k); }	
 	void AddVKnot(float k) { m_VKnotVec.push_back(k); }	
@@ -52,14 +54,15 @@ protected:
 	
 	vector<dVector> m_CVVec;
 	vector<dVector> m_STVec;
+	vector<dVector> m_NVec;
 	vector<float> m_UKnotVec;
 	vector<float> m_VKnotVec;
 	
 	int m_UOrder;
 	int m_VOrder;
-	int    m_UCVCount;
-	int    m_VCVCount;
-	int    m_Stride;
+	int m_UCVCount;
+	int m_VCVCount;
+	int m_Stride;
 	
 	GLUnurbsObj *m_Surface;
 };

@@ -506,6 +506,14 @@ SCM FluxusBinding::hint_anti_alias()
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::hint_unlit()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_UNLIT;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_UNLIT;
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hint_none()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
@@ -1075,6 +1083,7 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
     SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-set");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-set");
 	SCM_ASSERT(SCM_VECTORP(s_v), s_v, SCM_ARG3, "pdata-set");	
+	SCM_ASSERT(SCM_VECTOR_LENGTH(s_v)==3, s_v, SCM_ARG3, "pdata-set");
 	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed && gh_vector_length(s_v)==3) 
@@ -1103,6 +1112,13 @@ SCM FluxusBinding::finalise()
 	return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::recalc_normals()
+{
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) Grabbed->RecalculateNormals();
+	return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hide(SCM s_b)
 {
     SCM_ASSERT(SCM_NUMBERP(s_b), s_b, SCM_ARG1, "hide");
@@ -1117,10 +1133,9 @@ SCM FluxusBinding::gettransform(SCM s_name)
 	return gh_floats2scm(Fluxus->GetRenderer()->GetGlobalTransform((int)gh_scm2double(s_name)).arr(),16);
 }
 
-SCM FluxusBinding::getcameratransform(SCM s_name)
+SCM FluxusBinding::getcameratransform()
 {
-	SCM_ASSERT(SCM_NUMBERP(s_name), s_name, SCM_ARG1, "getcameratransform");
-	return gh_floats2fvect(Fluxus->GetRenderer()->GetCamera()->arr(),16);
+	return gh_floats2scm(Fluxus->GetRenderer()->GetCamera()->inverse().arr(),16);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1330,7 +1345,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure("draw-cylinder",   draw_cylinder, 0,0,0);
 	gh_new_procedure0_1("destroy",      destroy);
 	gh_new_procedure0_1("get-transform", gettransform);
-	gh_new_procedure0_1("get-camera-transform", getcameratransform);
+	gh_new_procedure("get-camera-transform", getcameratransform, 0,0,0);
 
 	// renderstate operations
 	gh_new_procedure("push",            push,        0,0,0);
@@ -1356,6 +1371,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure("hint-points",     hint_points,      0,0,0);
     gh_new_procedure("hint-anti-alias", hint_anti_alias,  0,0,0);
     gh_new_procedure("hint-none",       hint_none,  0,0,0);
+    gh_new_procedure("hint-unlit",      hint_unlit,  0,0,0);
 	gh_new_procedure0_1("line-width",   line_width);
     gh_new_procedure0_1("parent",       parent);
 	gh_new_procedure0_1("hide",         hide);
@@ -1440,6 +1456,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("pdata-get", pdata_get);
 	gh_new_procedure("pdata-size", pdata_size, 0,0,0);
 	gh_new_procedure("finalise", finalise, 0,0,0);
+	gh_new_procedure("recalc-normals", recalc_normals, 0,0,0);
 
 	// maths
 	gh_new_procedure0_2("vmul", vmul);

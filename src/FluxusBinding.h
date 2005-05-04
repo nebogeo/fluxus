@@ -56,7 +56,7 @@ public:
 	static SCM light_position(SCM id, SCM v);
 	static SCM lock_camera(SCM s_ob);
 	static SCM gettransform(SCM s_name);
-	static SCM getcameratransform(SCM s_name);
+	static SCM getcameratransform();
 	static SCM destroy(SCM s_name);
 	static SCM clear();
 	static SCM grab(SCM s_id);
@@ -80,6 +80,7 @@ public:
 	static SCM hint_normal();
 	static SCM hint_points();
 	static SCM hint_anti_alias();
+	static SCM hint_unlit();
 	static SCM hint_none();
 	static SCM blur(SCM s_blur);
 	static SCM push();
@@ -141,6 +142,7 @@ public:
 	static SCM pdata_get(SCM s_t, SCM s_i);
 	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);
 	static SCM finalise();
+	static SCM recalc_normals();
 		
 	static SCM vmul(SCM s_a, SCM s_b);
 	static SCM vadd(SCM s_a, SCM s_b);

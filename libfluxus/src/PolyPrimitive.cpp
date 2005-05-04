@@ -94,6 +94,8 @@ void PolyPrimitive::Render()
 	{
 		glPolygonMode(GL_FRONT,GL_LINE);
 		glPolygonMode(GL_BACK,GL_LINE);
+		glColor3f(1,0,0);
+		glDisable(GL_LIGHTING);
 		if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
 		glLineWidth(m_State.LineWidth);
 	}
@@ -111,6 +113,8 @@ void PolyPrimitive::Render()
 	
 	if (m_State.Hints & HINT_NORMAL)
 	{
+		glColor3f(1,0,0);
+		glDisable(GL_LIGHTING);
 		glBegin(GL_LINES);
 		for (vector<dVertex>::iterator i=m_VertVec.begin();	i!=m_VertVec.end(); ++i)
 		{
@@ -119,6 +123,7 @@ void PolyPrimitive::Render()
 			glVertex3f(i->point.x+i->normal.x,i->point.y+i->normal.y,i->point.z+i->normal.z);
 		}
 		glEnd();
+		glEnable(GL_LIGHTING);
 	}
 	
 	if (m_VertData!=NULL)
@@ -153,7 +158,7 @@ void PolyPrimitive::Render()
 	}
 
 	if (m_VertColours) glDisable(GL_COLOR_MATERIAL);
-	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
+	if (m_State.Hints & HINT_UNLIT || m_State.Hints & HINT_WIRE) glEnable(GL_LIGHTING);
 }
 
 void PolyPrimitive::SetData(char t, unsigned int i, dVector v)

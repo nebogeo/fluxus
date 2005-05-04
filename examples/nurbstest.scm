@@ -9,8 +9,8 @@
 
 ; reads the points into a list
 (define (store n)
-	(set! points (cons (pdata-get "p" n) points))
-	(if (< n 0)
+    (set! points (cons (pdata-get "p" n) points))
+    (if (< n 0)
         0
         (store (- n 1)))) 
 
@@ -24,6 +24,7 @@
 (define (render)
     (grab ob)
     (deform (pdata-size) points)
+    (recalc-normals)
     (ungrab))
 
 (grab ob)

@@ -50,7 +50,8 @@ void NURBSPrimitive::Render()
 {
 	if (!m_Finalised) return;
 	
-	glEnable(GL_AUTO_NORMAL);
+	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
+	
 	if (m_State.Hints & HINT_SOLID)
 	{
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
@@ -62,6 +63,13 @@ void NURBSPrimitive::Render()
 			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
 			 						 m_VCVCount*4,4,
 									 m_STVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
+		}
+		
+		if (!m_NVec.empty())
+		{
+			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+			 						 m_VCVCount*4,4,
+									 m_NVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_NORMAL);
 		}
 		
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
@@ -88,7 +96,7 @@ void NURBSPrimitive::Render()
 
 	if (m_State.Hints & HINT_POINTS)
 	{
-		glColor3f(1,1,1);
+		glColor3f(0,0,1);
 		glDisable(GL_LIGHTING);
 		glBegin(GL_POINTS);
 		for (unsigned int n=0; n<m_CVVec.size(); n++)
@@ -98,8 +106,23 @@ void NURBSPrimitive::Render()
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
+	
+	if (m_State.Hints & HINT_NORMAL)
+	{
+		glColor3f(1,0,0);
+		glDisable(GL_LIGHTING);
+		glBegin(GL_LINES);
+		for (unsigned int i=0; i!=m_CVVec.size(); i++)
+		{
+			glVertex3fv(m_CVVec[i].arr());
+			glVertex3fv((m_CVVec[i]+m_NVec[i]).arr());
+		}
+		glEnd();
+		glEnable(GL_LIGHTING);
+	}
+	
+	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 
-	glDisable(GL_AUTO_NORMAL);
 }
 
 void NURBSPrimitive::SetData(char t, unsigned int i, dVector v)
@@ -107,6 +130,7 @@ void NURBSPrimitive::SetData(char t, unsigned int i, dVector v)
 	switch (t)
 	{
 		case 'p': if (i<m_CVVec.size()) m_CVVec[i]=v; break;
+		case 'n': if (i<m_NVec.size()) m_NVec[i]=v; break;
 		case 't': if (i<m_STVec.size()) m_STVec[i]=v; break;
 		default: break;
 	}
@@ -118,10 +142,47 @@ dVector NURBSPrimitive::GetData(char t, unsigned int i)
 	switch (t)
 	{
 		case 'p': if (i<m_CVVec.size()) ret=m_CVVec[i]; break;
+		case 'n': if (i<m_NVec.size()) ret=m_NVec[i]; break;
 		case 't': if (i<m_STVec.size()) ret=m_STVec[i]; break;
 		default: break;
 	}
 	return ret;
+}
+
+void NURBSPrimitive::RecalculateNormals()
+{
+	for (int n=0; n<(int)m_NVec.size(); n++)
+	{
+		int u=n-1;
+		bool flip=false;
+		if (n%m_VCVCount==0) 
+		{
+			u=n+1;
+			flip=true;
+		}
+		
+		int v=n-m_VCVCount;
+		
+		if (n<m_VCVCount) 
+		{
+			v=n+m_VCVCount;
+			flip=true;
+		}
+		
+		dVector a=m_CVVec[n]-m_CVVec[u];
+		dVector b=m_CVVec[v]-m_CVVec[n];
+		
+		a.normalise();
+		b.normalise();
+		m_NVec[n]=a.cross(b);
+		m_NVec[n].normalise();
+		
+		if (flip)
+		{
+			m_NVec[n]=-m_NVec[n];
+		}
+
+	}
 }
 
 dBoundingBox NURBSPrimitive::GetBoundingBox()
