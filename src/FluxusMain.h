@@ -60,7 +60,11 @@ public:
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void StartOSC(const string &port);
-	float FromOSC(const string &token);
+	char TypeFromOSC(const string &token, unsigned int index);
+	float NumberFromOSC(const string &token, unsigned int index);
+	string StringFromOSC(const string &token, unsigned int index);
+	string GetLastMsg();
+
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
 	
 protected:

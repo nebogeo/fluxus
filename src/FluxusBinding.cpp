@@ -568,12 +568,11 @@ SCM FluxusBinding::ground_plane(SCM s_ori, SCM s_off)
     SCM_ASSERT(SCM_VECTORP(s_ori), s_ori, SCM_ARG1, "ground_plane");
 	SCM_ASSERT(SCM_VECTOR_LENGTH(s_ori)==3, s_ori, SCM_ARG1, "ground_plane");
     SCM_ASSERT(SCM_NUMBERP(s_off), s_off, SCM_ARG2, "ground_plane");
-	SCM_ASSERT(SCM_VECTOR_LENGTH(s_off)==3, s_off, SCM_ARG2, "ground_plane");
     float ori[3];
 	gh_scm2floats(s_ori,ori);
 	float off = (float) gh_scm2double(s_off);
 	Fluxus->GetPhysics()->GroundPlane(dVector(ori[0],ori[1],ori[2]),off);
-	 return SCM_UNSPECIFIED;
+	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::active_box(SCM s_name)
@@ -801,7 +800,7 @@ SCM FluxusBinding::set_mass(SCM s_obj, SCM s_mass)
 
 SCM FluxusBinding::gravity(SCM s_vec)
 {
-	SCM_ASSERT(SCM_VECTORP(s_vec), s_vec, SCM_ARG2, "gravity");
+	SCM_ASSERT(SCM_VECTORP(s_vec), s_vec, SCM_ARG1, "gravity");
 	SCM_ASSERT(SCM_VECTOR_LENGTH(s_vec)==3, s_vec, SCM_ARG1, "gravity");
 	float vec[3];
 	gh_scm2floats(s_vec,vec);
@@ -1063,14 +1062,30 @@ SCM FluxusBinding::start_osc(SCM s_port)
     return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::from_osc(SCM s_token)
+SCM FluxusBinding::from_osc(SCM s_token, SCM s_index)
 {
 	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "from_osc");	
+    SCM_ASSERT(SCM_NUMBERP(s_index), s_index, SCM_ARG2, "from_osc");
     size_t size=0;
 	char *name=gh_scm2newstr(s_token,&size);
-	SCM t=gh_double2scm(Fluxus->FromOSC(name));
+	unsigned int index=(unsigned int)gh_scm2double(s_index);
+	char type = Fluxus->TypeFromOSC(name,index);
+	SCM ret;
+	if (type=='n') ret=gh_double2scm(Fluxus->NumberFromOSC(name,index));
+	else if (type=='s') 
+	{
+		string value=Fluxus->StringFromOSC(name,index);
+		ret=gh_str2scm(value.c_str(),value.size());	
+	}
+	else ret=SCM_UNSPECIFIED;
 	free(name);
-	return t;
+	return ret;
+}
+
+SCM FluxusBinding::peek_osc()
+{
+	string value=Fluxus->GetLastMsg();
+	return gh_str2scm(value.c_str(),value.size());	
 }
 
 SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
@@ -1532,8 +1547,9 @@ void FluxusBinding::RegisterProcs()
 	
 	gh_new_procedure0_1("save-frame",   save_frame);
 	gh_new_procedure0_1("start-osc",    start_osc);
-	gh_new_procedure0_1("from-osc",     from_osc);
-
+	gh_new_procedure0_2("from-osc",     from_osc);
+	gh_new_procedure("peek-osc", peek_osc, 0,0,0);
+	
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);
 	gh_new_procedure0_2("pdata-get", pdata_get);

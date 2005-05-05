@@ -1,5 +1,5 @@
  
-
+(show-fps 1)
 
 (clear)
 (define v (vector 0 0 0))
@@ -11,7 +11,7 @@
 (texture (load-texture "toon.png"))
 (shinyness 10)
 (specular (vector 1 1 1))
-(define ob (build-nurbs-sphere 20 40))
+(define ob (build-nurbs-sphere 10 20))
 
 ; reads the points into a list
 (define (store n)
@@ -21,7 +21,7 @@
         (store (- n 1))))
 
 (define (deform n p)
-    (set! v (vector (* 0.1 (sin (+ (*(frame)0.0) (*(vector-ref (car p) 1) 10.4)))) 0 0))
+    (set! v (vector (* 0.4 (sin (+ (*(frame)0.01) (*(vector-ref (car p) 1) 10.4)))) 0 0))
     (pdata-set "p" n (vadd v (car p)))
     (if (< n 0)
         0

@@ -1,7 +1,0 @@
-(clear-fluxface)
-(fluxface "(source \"examples/clock.scm\")" 10 10)
-(fluxface "(source \"examples/flock.scm\")" 10 20)
-(fluxface "(source \"examples/grid.scm\")" 10 30)
-(fluxface "(source \"examples/hierachyanim.scm\")" 10 40)
-(fluxface "(source \"examples/particles.scm\")" 10 50)
-(fluxface "(source \"examples/spin.scm\")" 10 60)

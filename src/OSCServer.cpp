@@ -23,9 +23,12 @@
 
 using namespace std;
 
+static const unsigned int MAX_MSGS_STORED=2048;
+
 bool Server::m_Exit=false;
-map<string,float> Server::m_Map;
+map<string,vector<OSCData*> > Server::m_Map;
 pthread_mutex_t* Server::m_Mutex;
+string Server::m_LastMsg="no message yet...";
 
 Server::Server(const string &Port)
 {
@@ -55,26 +58,48 @@ void Server::ErrorHandler(int num, const char *msg, const char *path)
 int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 		    int argc, void *data, void *user_data)
 {
-	// we only deal with simple one float messages for now
-	if (string(types)=="f")
+	if (m_Map.size()>MAX_MSGS_STORED)
 	{
-		pthread_mutex_lock(m_Mutex);
-		m_Map[path]=argv[0]->f;
-		pthread_mutex_unlock(m_Mutex);
+		// stop us filling up mem with messages! :)
+		m_Map.erase(m_Map.begin());
 	}
+	
+	// record the message name
+	pthread_mutex_lock(m_Mutex);
+	m_LastMsg=string(path)+" "+string(types);
+	pthread_mutex_unlock(m_Mutex);
+	
+	// put the data in a vector
+	vector<OSCData*> argsdata;
+	
+	for (unsigned int i=0; i<strlen(types); i++)
+	{
+		switch (types[i]) 
+		{
+			case 'f': argsdata.push_back(new OSCNumber(argv[i]->f)); break;
+			case 'i': argsdata.push_back(new OSCNumber(argv[i]->i)); break;
+			case 's': argsdata.push_back(new OSCString(&argv[i]->s)); break;
+			default : argsdata.push_back(new OSCData); break; // put in a null data type
+		}
+	}
+	
+	pthread_mutex_lock(m_Mutex);
+	m_Map[path]=argsdata;
+	pthread_mutex_unlock(m_Mutex);
 	
     return 1;
 }
 
-float Server::Get(const string &token) 
+bool Server::Get(const string &token, vector<OSCData*> &args) 
 { 
 	pthread_mutex_lock(m_Mutex);
-	map<string,float>::iterator i=m_Map.find(token);
+	map<string,vector<OSCData*> >::iterator i=m_Map.find(token);
 	if (i!=m_Map.end())
 	{
+		args = i->second;
 		pthread_mutex_unlock(m_Mutex);
-		return i->second;
+		return true;
 	}
 	pthread_mutex_unlock(m_Mutex);
-	return 0;
+	return false;
 }

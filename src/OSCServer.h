@@ -17,9 +17,35 @@
 #include <string>
 #include <lo/lo.h>
 #include <map>
+#include <vector>
 #include <pthread.h>
 
 using namespace std;
+
+class OSCData
+{
+	public:
+	virtual ~OSCData() {}
+	virtual char Type() { return '0'; }
+};
+
+class OSCNumber : public OSCData
+{
+	public:
+	OSCNumber(float s) { Value=s; }
+	virtual ~OSCNumber() {}
+	virtual char Type() { return 'n'; }
+	float Value;
+};
+
+class OSCString : public OSCData
+{
+	public:
+	OSCString(const string &s) { Value=s; }
+	virtual ~OSCString() {}
+	virtual char Type() { return 's'; }
+	string Value;
+};
 
 class Server
 {
@@ -28,14 +54,16 @@ public:
 	~Server();
 	
 	void Run();
-	float Get(const string &token);
-	
+	bool Get(const string &token, vector<OSCData*> &args);
+	string GetLastMsg() { return m_LastMsg; }
+
 private:
 
 	static int DefaultHandler(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
-	static void ErrorHandler(int num, const char *m, const char *path);
+	static void ErrorHandler(int num, const char *m, const char *path);	
 	
-	static map<string,float> m_Map;
+	static map<string,vector<OSCData*> > m_Map;
+	static string m_LastMsg;
 	
 	lo_server_thread m_Server;
 	static bool m_Exit;

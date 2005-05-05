@@ -138,7 +138,8 @@ public:
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);
 	static SCM start_osc(SCM s_port);
-	static SCM from_osc(SCM s_token);
+	static SCM from_osc(SCM s_token, SCM s_index);
+	static SCM peek_osc();
 	static SCM pdata_size();
 	static SCM pdata_get(SCM s_t, SCM s_i);
 	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);

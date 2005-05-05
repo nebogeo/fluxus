@@ -9,14 +9,14 @@
 (build-sphere 80 80)
 (pop)
 
-(define l1 (make-light))
+(define l1 (make-light 0))
 (light-diffuse l1 (vector 1 0 0))
 (light-position l1 (vector 10 0 0))
 
-(define l2 (make-light))
+(define l2 (make-light 0))
 (light-diffuse l2 (vector 0 1 0))
 (light-position l2 (vector 0 10 0))
 
-(define l3 (make-light))
+(define l3 (make-light 0))
 (light-diffuse l3 (vector 0 0 1))
 (light-position l3 (vector 0 0 10))

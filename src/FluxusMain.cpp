@@ -265,11 +265,72 @@ void FluxusMain::StartOSC(const string &port)
 	}
 }
 
-float FluxusMain::FromOSC(const string &token) 
+char FluxusMain::TypeFromOSC(const string &token, unsigned int index)
+{
+	if (!m_OSCServer) 
+	{
+		cerr<<"osc server not running..."<<endl;
+		return '0';
+	}
+	
+	vector<OSCData*> args;
+	if (m_OSCServer->Get(token,args))
+	{
+		if (index<args.size())
+		{
+			return args[index]->Type();
+		}
+	}
+	return '0';
+}
+
+float FluxusMain::NumberFromOSC(const string &token, unsigned int index) 
 { 
-	if (m_OSCServer) return m_OSCServer->Get(token); 
-	cerr<<"osc server not running..."<<endl;
+	if (!m_OSCServer) 
+	{
+		cerr<<"osc server not running..."<<endl;
+		return '0';
+	}
+	
+	vector<OSCData*> args;
+	if (m_OSCServer->Get(token,args))
+	{
+		if (index<args.size() && args[index]->Type()=='n')
+		{
+			return static_cast<OSCNumber*>(args[index])->Value;
+		}
+	}
 	return 0;
+}
+
+string FluxusMain::StringFromOSC(const string &token, unsigned int index) 
+{ 
+	if (!m_OSCServer) 
+	{
+		cerr<<"osc server not running..."<<endl;
+		return "";
+	}
+	
+	vector<OSCData*> args;
+	if (m_OSCServer->Get(token,args))
+	{
+		if (index<args.size() && args[index]->Type()=='s')
+		{
+			return static_cast<OSCString*>(args[index])->Value;
+		}
+	}
+	return "";
+}
+
+string FluxusMain::GetLastMsg() 
+{ 
+	if (!m_OSCServer) 
+	{
+		cerr<<"osc server not running..."<<endl;
+		return "";
+	}
+	
+	return m_OSCServer->GetLastMsg();
 }
 
 //////////////////////////////////////////////////////////////////////
