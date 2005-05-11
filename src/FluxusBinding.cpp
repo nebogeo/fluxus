@@ -11,6 +11,7 @@ PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
 PolyPrimitive*  FluxusBinding::StaticCylinder=NULL;
 set<int>        FluxusBinding::m_KeySet;
+int				FluxusBinding::GrabbedID=-1;
 
 // little helper function for making normal vectors (the guile api is annoying)
 SCM gh_floats2scm(float *d, unsigned int len)
@@ -317,13 +318,15 @@ SCM FluxusBinding::clear()
 SCM FluxusBinding::grab(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "id");
-	Fluxus->GetRenderer()->Grab((int)gh_scm2double(s_id));
+	GrabbedID=(int)gh_scm2double(s_id);
+	Fluxus->GetRenderer()->Grab(GrabbedID);
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::ungrab()
 {
 	Fluxus->GetRenderer()->UnGrab();
+	GrabbedID=-1;
 	return SCM_UNSPECIFIED;
 }
 
@@ -1154,13 +1157,12 @@ SCM FluxusBinding::hide(SCM s_b)
 	return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::gettransform(SCM s_name)
+SCM FluxusBinding::get_transform()
 {
-	SCM_ASSERT(SCM_NUMBERP(s_name), s_name, SCM_ARG1, "gettransform");
-	return gh_floats2scm(Fluxus->GetRenderer()->GetGlobalTransform((int)gh_scm2double(s_name)).arr(),16);
+	return gh_floats2scm(Fluxus->GetRenderer()->GetGlobalTransform(GrabbedID).arr(),16);
 }
 
-SCM FluxusBinding::getcameratransform()
+SCM FluxusBinding::get_camera_transform()
 {
 	return gh_floats2scm(Fluxus->GetRenderer()->GetCamera()->inverse().arr(),16);
 }
@@ -1441,8 +1443,8 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure("draw-sphere",     draw_sphere,   0,0,0);
     gh_new_procedure("draw-cylinder",   draw_cylinder, 0,0,0);
 	gh_new_procedure0_1("destroy",      destroy);
-	gh_new_procedure0_1("get-transform", gettransform);
-	gh_new_procedure("get-camera-transform", getcameratransform, 0,0,0);
+	gh_new_procedure("get-transform", get_transform, 0,0,0);
+	gh_new_procedure("get-camera-transform", get_camera_transform, 0,0,0);
 
 	// renderstate operations
 	gh_new_procedure("push",            push,        0,0,0);
@@ -1502,7 +1504,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key-pressed",  key_pressed);
      gh_new_procedure("frame",       	frame,  	 0,0,0);
-   gh_new_procedure0_1("engine-callback", engine_callback);
+   gh_new_procedure0_1("every-frame", engine_callback);
     gh_new_procedure("flxrnd",          srandom,     0,0,0);
 	gh_new_procedure0_1("desiredfps",          desiredfps);
 	gh_new_procedure0_1("start-framedump",     start_framedump);

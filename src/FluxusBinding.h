@@ -22,6 +22,7 @@ public:
 	static TurtleBuilder turtle;
 	static string CallbackString;
 	static long FrameCount;
+	static int GrabbedID;
 
 	static PolyPrimitive* StaticCube;
 	static PolyPrimitive* StaticPlane;
@@ -55,8 +56,8 @@ public:
 	static SCM light_specular(SCM id, SCM v);
 	static SCM light_position(SCM id, SCM v);
 	static SCM lock_camera(SCM s_ob);
-	static SCM gettransform(SCM s_name);
-	static SCM getcameratransform();
+	static SCM get_transform();
+	static SCM get_camera_transform();
 	static SCM destroy(SCM s_name);
 	static SCM clear();
 	static SCM grab(SCM s_id);

@@ -41,7 +41,7 @@
     (recalc-normals)
     (toon (pdata-size)
         (vtransform (vector 0 0 0) (get-camera-transform))
-        (vtransform (vector 0 0 0) (get-transform ob)))
+        (vtransform (vector 0 0 0) (get-transform)))
     (finalise)
     (ungrab))
 

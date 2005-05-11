@@ -2,7 +2,7 @@
 
 operations for matrix and vector types in scheme
 primitive (set) and (get) for changing per vert primitive values (pdata)
-(get-transform) returns object transform matrix in world space
+(get-transform) returns grabbed object transform matrix in world space
 nurbs objects
 (hide)
 (draw-instance)
@@ -11,6 +11,11 @@ nurbs objects
 removed flocking stuff - should be a toplevel script
 more error checking
 (build-text)
+new library of useful scheme code 
+	primitive operations (pop.scm)
+		(pop-deformer)
+		(pop-shade)
+(engine-callback) renamed to (every-frame)
 
 0.6
 

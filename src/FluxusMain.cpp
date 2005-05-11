@@ -214,10 +214,24 @@ void FluxusMain::LoadScript(const string &Filename)
 		fseek(file,0,SEEK_END);
 		unsigned int size=ftell(file);
 		fseek(file,0,SEEK_SET);		
+		
+		if (size<=0) 
+		{
+			fclose(file);
+			cerr<<"empty file: "<<Filename<<endl;
+			return;
+		}
+		
 		char *buffer = new char[size+1];
 		if (buffer)
 		{
-			fread(buffer,1,size,file);	
+			if (size!=fread(buffer,1,size,file))	
+			{
+				delete[] buffer;
+				fclose(file);
+				cerr<<"read error: "<<Filename<<endl;
+				return;
+			}			
 			buffer[size]='\0';
 			m_Editor[m_CurrentEditor].SetText(buffer);	
 		}
