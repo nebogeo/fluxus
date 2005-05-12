@@ -28,5 +28,5 @@
 (define (render)
 	(draw 7))
 (clear)
-(engine-callback "(render)")
+(every-frame "(render)")
 (blur 1)

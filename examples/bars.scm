@@ -17,5 +17,5 @@
 (define (render)
     (bars 0))
 
-(engine-callback "(render)")
+(every-frame "(render)")
 

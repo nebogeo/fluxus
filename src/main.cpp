@@ -81,9 +81,7 @@ void DisplayCallback()
     }
 	
 	binding->Audio->GetFFT();
-	binding->Fluxus->Render();
-	binding->FrameCount++;
-	
+	binding->Fluxus->Render();	
 	glutSwapBuffers();
 }
 

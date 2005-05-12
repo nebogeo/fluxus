@@ -47,6 +47,6 @@
 ;(clear)
 ;(kick (car list) (vector 0 200 0))
 ;(blur 0.1)
-(engine-callback "(animate list 0)")
+(every-frame "(animate list 0)")
 
 ;(twist (car list) (vector 1 0 0))

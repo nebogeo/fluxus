@@ -16,6 +16,13 @@ new library of useful scheme code
 		(pop-deformer)
 		(pop-shade)
 (engine-callback) renamed to (every-frame)
+(frame) removed and replaced with (time) and (delta)
+(line-width) fixed
+added: 
+(build-hingejoint)
+(build-sliderjoint)
+(build-amotorjoint)
+(joint-param)
 
 0.6
 

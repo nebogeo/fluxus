@@ -113,7 +113,7 @@
 (define (update)
     (animate joints 0))
 
-(engine-callback "(update)")
+(every-frame "(update)")
 
 
 

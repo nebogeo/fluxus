@@ -28,7 +28,7 @@
 (line-width 5)
 (clear)
 (ground-plane (vector 0 1 0) 0)	
-(engine-callback "(run-loop)")
+(every-frame "(run-loop)")
 
 (reset-camera)
 (show-axis 0)

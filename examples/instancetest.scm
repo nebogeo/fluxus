@@ -10,4 +10,4 @@
     (translate (vector 2 0 0))
     (draw-instance ob))
 
-(engine-callback "(render)")
+(every-frame "(render)")

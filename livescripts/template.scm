@@ -15,5 +15,5 @@
 (define (render)
 	(draw 10))
 (clear)
-(engine-callback "(render)")
+(every-frame "(render)")
 

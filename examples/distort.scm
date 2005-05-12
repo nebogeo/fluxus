@@ -12,7 +12,7 @@
 
 (define (whack-texcoords n)
     
-    (set! t (vector 0 (* 0.1 (sin (* (frame) 0.1))) 0))
+    (set! t (vector 0 (* 0.1 (sin (time))) 0))
     (pdata-set "t" n (vadd (pdata-get "t" n) t))
     (if (< n 0)
         0
@@ -24,5 +24,5 @@
     (finalise)
     (ungrab))
 
-(engine-callback "(render)")
+(every-frame "(render)")
  

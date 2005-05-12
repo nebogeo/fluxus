@@ -5,7 +5,6 @@ FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
 TurtleBuilder   FluxusBinding::turtle;
 string          FluxusBinding::CallbackString;
-long            FluxusBinding::FrameCount=0;
 PolyPrimitive*  FluxusBinding::StaticCube=NULL;
 PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
@@ -891,9 +890,14 @@ SCM FluxusBinding::persp()
     return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::frame()
+SCM FluxusBinding::time()
 {
-	return gh_double2scm(FrameCount);
+	return gh_double2scm(Fluxus->GetRenderer()->GetTime());
+}
+
+SCM FluxusBinding::delta()
+{
+	return gh_double2scm(Fluxus->GetRenderer()->GetDelta());
 }
 
 SCM FluxusBinding::reset_camera()
@@ -1499,16 +1503,17 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("light-position",  light_position);
 	
 	// interpreter + misc
-	gh_new_procedure0_1("load",   load);
-	gh_new_procedure0_1("save-name",   save_name);
+	gh_new_procedure0_1("load", load);
+	gh_new_procedure0_1("save-name", save_name);
 	gh_new_procedure0_1("source", source);
-	gh_new_procedure0_1("key-pressed",  key_pressed);
-     gh_new_procedure("frame",       	frame,  	 0,0,0);
-   gh_new_procedure0_1("every-frame", engine_callback);
-    gh_new_procedure("flxrnd",          srandom,     0,0,0);
-	gh_new_procedure0_1("desiredfps",          desiredfps);
-	gh_new_procedure0_1("start-framedump",     start_framedump);
-	gh_new_procedure("end-framedump",          end_framedump, 0,0,0);
+	gh_new_procedure0_1("key-pressed", key_pressed);
+    gh_new_procedure("time", time, 0,0,0);
+    gh_new_procedure("delta", delta, 0,0,0);
+    gh_new_procedure0_1("every-frame", engine_callback);
+    gh_new_procedure("flxrnd", srandom, 0,0,0);
+	gh_new_procedure0_1("desiredfps", desiredfps);
+	gh_new_procedure0_1("start-framedump", start_framedump);
+	gh_new_procedure("end-framedump", end_framedump, 0,0,0);
 	
 	// audio
 	gh_new_procedure0_1("gain",   gain);	
@@ -1547,7 +1552,6 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
 	
-	gh_new_procedure0_1("save-frame",   save_frame);
 	gh_new_procedure0_1("start-osc",    start_osc);
 	gh_new_procedure0_2("from-osc",     from_osc);
 	gh_new_procedure("peek-osc", peek_osc, 0,0,0);

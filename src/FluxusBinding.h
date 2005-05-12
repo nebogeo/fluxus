@@ -21,7 +21,6 @@ public:
 	static AudioCollector *Audio;
 	static TurtleBuilder turtle;
 	static string CallbackString;
-	static long FrameCount;
 	static int GrabbedID;
 
 	static PolyPrimitive* StaticCube;
@@ -115,7 +114,8 @@ public:
 	static SCM engine_callback(SCM s_func);
 	static SCM ortho();
 	static SCM persp();
-	static SCM frame();
+	static SCM time();
+	static SCM delta();
 	static SCM reset_camera();
 	static SCM print_scene_graph();
 	static SCM save_frame(SCM s_name);

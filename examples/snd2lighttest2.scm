@@ -34,4 +34,4 @@
 (blur 0.002)
 (show-axis 0)
 (clear-colour (vector 0.3 0.2 0.1))
-(engine-callback "(draw-loop)")
+(every-frame "(draw-loop)")

@@ -44,5 +44,5 @@
 
 (clear)
 (clear-colour (vector 0 0 0))
-(engine-callback "(render)")
+(every-frame "(render)")
 

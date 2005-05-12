@@ -38,4 +38,4 @@
 (clear)
 (line 10)
 (blur 0.1)
-(engine-callback "(update list 1 1)")
+(every-frame "(update list 1 1)")

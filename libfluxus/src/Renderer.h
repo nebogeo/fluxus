@@ -114,6 +114,9 @@ public:
 	typedef void (cb)();
 	void SetEngineCallback(cb *s)            { EngineCallback=s; }
 	
+	double GetTime()                         { return m_Time; }
+	double GetDelta()                        { return m_Delta; }
+	
 	struct LibraryEntry
 	{	
 		int ID;
@@ -186,6 +189,8 @@ private:
 	timeval m_LastTime;
 	float m_Deadline;
 	bool m_FPSDisplay;
+	double m_Time;
+	double m_Delta;
 	
 	map<string,LibraryEntry> m_CompiledLibrary;
 	

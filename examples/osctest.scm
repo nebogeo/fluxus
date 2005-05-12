@@ -12,4 +12,4 @@
 
 (start-osc "88000")
 
-(engine-callback "(osctest)")
+(every-frame "(osctest)")

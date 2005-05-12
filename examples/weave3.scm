@@ -42,5 +42,5 @@
 (clear)
 (blur 0.01)
 (clear-colour (vector 0 0 0))
-(engine-callback "(render)")
+(every-frame "(render)")
 

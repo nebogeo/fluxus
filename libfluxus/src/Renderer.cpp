@@ -58,6 +58,8 @@ m_FaceOrderClockwise(false),
 m_LoadedFromFlx(false),
 m_Deadline(1/25.0f),
 m_FPSDisplay(false),
+m_Time(0),
+m_Delta(0),
 EngineCallback(NULL)
 {
 	State InitialState;
@@ -230,19 +232,20 @@ void Renderer::Render()
 	
 	timeval ThisTime;
 	gettimeofday(&ThisTime,NULL);
-	float SecondsTaken=(ThisTime.tv_sec-m_LastTime.tv_sec)+
-					   (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
-	
-	if (SecondsTaken<m_Deadline)
+	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
+			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
+
+	if (m_Delta<m_Deadline)
 	{
 		//min 1 hz
-		if(m_Deadline-SecondsTaken<1.0f)
+		if(m_Deadline-m_Delta<1.0f)
 		{
-			usleep((int)((m_Deadline-SecondsTaken)*1000000));
+			usleep((int)((m_Deadline-m_Delta)*1000000));
 		}
 	}
 	
-	gettimeofday(&m_LastTime,NULL);
+	m_LastTime=ThisTime;
+	m_Time+=m_Delta;
 }
 
 void Renderer::EndScene()
@@ -562,13 +565,11 @@ void Renderer::DrawText(const string &Text)
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
 	glRasterPos3f(0.0, 0.0, -1.1);
-	glLineWidth(3);
 	for (unsigned int n=0; n<Text.length(); n++)
 	{
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, Text.c_str()[n]);
 		glTranslatef(1.0f,0.0f,0.0f);
 	}
-	glLineWidth(1);
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	//glEnable(GL_DEPTH_TEST);

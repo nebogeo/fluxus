@@ -69,21 +69,12 @@ void PolyPrimitive::Render()
 		case TRIFAN : type=GL_TRIANGLE_FAN; break;
 	}
 	
-	if (m_State.Hints & HINT_WIRE)
-	{
-		glPolygonMode(GL_FRONT,GL_LINE);
-		glPolygonMode(GL_BACK,GL_LINE);
-		glColor3f(1,0,0);
-		glDisable(GL_LIGHTING);
-		if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
-		glLineWidth(m_State.LineWidth);
-	}
-		
-	if (m_State.Hints & HINT_SOLID)
-	{
-		glPolygonMode(GL_FRONT,GL_FILL);
-	    if (m_State.Hints & HINT_AALIAS) glEnable(GL_POLYGON_SMOOTH);
-	}
+	
+	
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
+	else glDisable(GL_LINE_SMOOTH);		
+	
+	if (m_State.Hints & HINT_SOLID) glPolygonMode(GL_FRONT,GL_FILL);
 	
 	if (m_VertColours) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
@@ -102,6 +93,14 @@ void PolyPrimitive::Render()
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);
+	}
+	
+	if (m_State.Hints & HINT_WIRE)
+	{
+		glPolygonMode(GL_FRONT,GL_LINE);
+		glPolygonMode(GL_BACK,GL_LINE);
+		glColor3f(0,1,0);
+		glDisable(GL_LIGHTING);
 	}
 	
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData.begin()->arr());

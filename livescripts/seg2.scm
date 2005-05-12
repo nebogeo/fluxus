@@ -120,7 +120,7 @@
 
 (clear-colour (vector 0 0 1))
 
-(engine-callback "(update)")
+(every-frame "(update)")
 
 
 

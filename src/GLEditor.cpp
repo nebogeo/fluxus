@@ -90,6 +90,7 @@ void GLEditor::Render()
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
+	glLineWidth(1);
 	glLoadIdentity();
 	glTranslatef(-4,3,-5);
 	glColor4f(0.7,0.7,0.7,1);

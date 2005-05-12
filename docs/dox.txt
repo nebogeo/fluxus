@@ -1,12 +1,88 @@
-Fluxus 0.6 documentation
-Copyright (C) 2005 Dave Griffiths
+Fluxus manual v0.7 : (C) 2005 Dave Griffiths : dave@pawfal.org : www.pawfal.org
 
-Using the editor
+Contents
 
-Fluxus is a very simple application to use, but there are a few points to note. 
-Firstly, the only interface is the script editor and keyboard shortcuts.
+1.0  Introduction 
+2.0  Quickstart 
+3.0  User Manual 
+3.1      Camera control 
+3.2      Workspaces 
+3.3      Keyboard commands 
+3.4      Loading/Saving scripts 
+4.0  The Fluxus State Machine 
+4.1      The Scenegraph 
+5.0  Global options
+6.0  Primitives 
+6.1      Retained 
+6.2      Instancing 
+6.3      Built In Immediate Mode Primitives
+7.0  Lights
+8.0  The appearance of primitives
+8.1      Surface parameters
+8.2      Render hints
+9.0  Maths calls 
+10.0  Editing primitives 
+10.1      Types (incl pdata types availible) 
+11.0 Animation sources 
+11.1     Time
+11.2     Audio 
+11.3     OSC 
+12.0 Physics 
+13.0 Turtle builder 
+14.0 Examples 
+15.0 Index of all functions 
 
-Keyboard shortcuts
+--------------------------------------------------------------------------------------
+
+1.0  Introduction 
+
+Fluxus allows you to write Scheme scripts that create graphics live, interpreting audio and OSC input as a source of animation data. Fluxus also uses a fully featured physics library, which means you can script physical properties into objects and simulate them in realtime. Released for Linux under the GPL licence.
+
+The built in scheme code editor runs on top of the renderer, which means you can edit the scripts while they are running. This allows Fluxus to be used for livecoding performances, or simply as a fast feedback way of experimenting or learning about graphics and animation.
+
+Fluxus lends itself to procedural modelling and animation, there is no model import functionality, only simple primitives. There is an expermental procedural modelling tool however, and full support for texturing and basic material properties. 
+
+--------------------------------------------------------------------------------------
+
+2.0  Quickstart 
+
+For a quick introduction to fluxus, try entering the following command once you have started fluxus and see the red cursor in the top left of the screen.
+
+(build-cube)
+
+Now press f5 - the script will be executed, and a white cube should appear in the centre of the screen. Use the mouse and to move around the cube, pressing the buttons to get different movement controls.
+
+To animate this cube, it will have to be called a little differently:
+
+(define (render)
+    (colour (vector (gh 1) (gh 2) (gh 3)))
+    (draw-cube))
+
+(every-frame "(render)")
+
+Briefly, the (every-frame) function takes a fragment of script which is called once per frame by fluxus's internal engine. In this case it calls a function that sets the current colour using harmonics from the incoming sound with the (gh) - get harmonic - function; and draws a cube. Note that this time we use (draw-cube) not (build-cube). The difference will be explained below.
+
+If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound.
+
+--------------------------------------------------------------------------------------
+
+3.0  User Manual 
+
+Fluxus consists of one window containing a script editor rendered on top of the scene display render. The idea is that you only need the one window to build scripts, or play live. f5 is the key that runs the script when you are ready. Selecting some text (using shift) and pressing f5 will execute the selected text only. This is handy for reevaluating functions without running the whole script each time.
+
+3.1  Camera control 
+
+The camera is controlled by moving the mouse and pressing mouse buttons.
+
+Left mouse button: Rotate
+Middle mouse button: Move
+Right mouse button: Zoom
+
+3.2  Workspaces 
+
+The script editor allows you to edit 10 scripts simultaneously by using workspaces. To switch workspaces, use ctrl+number key. Only one can be run at once though, hitting f5 will execute the currently active workspace script. Scripts in different workspaces can be saved to different files, by using the (save-name) call in the different workspaces (see below).
+
+3.3  Keyboard commands 
 
 ctrl-f : Fullscreen mode.
 ctrl-w : Windowed mode.
@@ -17,7 +93,7 @@ F1 : Mouse moves the scene camera.
 F2 : Mouse moves the editor camera.
 F5 : Execute the selected text, or all if none is selected.
 
-Getting started
+3.4  Loading/Saving scripts 
 
 Scripts can be loaded by typing:
 
@@ -29,17 +105,11 @@ overwritten by:
 
 (save-name "newsavename.scm")
 
-Worspaces can be switched between with ctrl and a number key. These are useful for writing 
-multiple scripts simultaneously. You can load, save and edit code in them independantly, but
-the renderer will only interpret one script at a time. Using F5 will execute the currently 
-displayed code.
+--------------------------------------------------------------------------------------
 
-Fluxus Theory
+4.0  The Fluxus State Machine 
 
-Render State
-
-Like OpenGL, fluxus is a state machine which has a renderstate you can modify to describe
-objects created later. for example:
+Like OpenGL, fluxus is a state machine which has a renderstate you can modify to describe objects created later. for example:
 
 (colour (vector 1 0 0))
 (draw-cube)
@@ -58,13 +128,9 @@ states can also be stacked, for example:
 
 will draw a green, then a red cube.
 
-Immediate/Retained mode
+4.1  The Scenegraph 
 
-Both examples so far have used what is known as immediate mode, you have one state stack, the 
-top of which is the current context, and everything is drawn once per frame. fluxus contains 
-a structure known as a scenegraph for storing objects and their render states.
-
-scenegraph
+Both examples so far have used what is known as immediate mode, you have one state stack, the top of which is the current context, and everything is drawn once per frame. fluxus contains a structure known as a scenegraph for storing objects and their render states.
 
 Time for another example:
 
@@ -73,12 +139,9 @@ Time for another example:
 (colour (vector 0 1 0))
 (build-cube)
 
-The only difference between this and the first example is the use of (build-cube) instead of 
-(draw-cube). the build functions create a primitive object, copy the current renderstate and 
-add the information into the scenegraph in a container called a scenenode.
+The only difference between this and the first example is the use of (build-cube) instead of (draw-cube). the build functions create a primitive object, copy the current renderstate and add the information into the scenegraph in a container called a scenenode.
 
-The (build-*) functions return object ID's (just numbers really) which enable you to do things
-to the scene node after it's been created. you can now specify objects like this:
+The (build-*) functions return object ID's (just numbers really) which enable you to do things to the scene node after it's been created. you can now specify objects like this:
 
 (define myob (build-cube))
 
@@ -86,16 +149,13 @@ The cube will now be persistant in the scene until destroyed with
 
 (destroy myob)
 
-If you want to modify a objects renderstate after it's been loaded into the scenegraph, you 
-can use the grab function to temporarially set the current context to that of the object. use
-ungrab to turn fluxus back into normal state stack mode. this allows you to animate objects 
-stored in the scenegraph, for instance:
+If you want to modify a objects renderstate after it's been loaded into the scenegraph, you can use the grab function to temporarially set the current context to that of the object. use ungrab to turn fluxus back into normal state stack mode. this allows you to animate objects stored in the scenegraph, for instance:
 
 (colour (vector 1 1 1))
 (define obj1 (build-cube))
 (push)
-	(translate (vector 2 0 0))
-	(define obj2 (build-cube))
+    (translate (vector 2 0 0))
+    (define obj2 (build-cube))
 (pop)
 
 --->8---
@@ -110,117 +170,38 @@ stored in the scenegraph, for instance:
 (rotate (vector 0 0 1))
 (ungrab)
 
-If you call push or pop while an object is grabbed, it will still effect the state stack - 
-it's probably a bad idea to do this.
+If you call push or pop while an object is grabbed, it will still effect the state stack - it's probably a bad idea to do this.
 
-The scenegraph also enables you to parent objects to one another, using the renderstate's 
-parent setting. this is only effective before an object is loaded into the scenegraph, setting
-it afterwards via a grabbed state will be ignored:
+The scenegraph also enables you to parent objects to one another, using the renderstate's parent setting. this is only effective before an object is loaded into the scenegraph, setting it afterwards via a grabbed state will be ignored:
 
 (colour (vector 1 1 1))
 (define a (build-cube))
 
 (push)
-	(parent a)
-	(translate (vector 0 2 0))
-	(define b (build-cube))
+    (parent a)
+    (translate (vector 0 2 0))
+    (define b (build-cube))
 (pop)
 
 (push)
-	(parent b)
-	(translate (vector 0 2 0))
-	(define c (build-cube))
+    (parent b)
+    (translate (vector 0 2 0))
+    (define c (build-cube))
 (pop)
 
-creates three cubes, all attached to each other in a chain. transforms for object a will be 
-passed down to b and c, transforms on b will effect c blah.
+creates three cubes, all attached to each other in a chain. transforms for object a will be passed down to b and c, transforms on b will effect c blah.
 
-destroying a object in such a heirachy will in turn destroy all child objects parented to it.
+destroying a object in such a hierachy will in turn destroy all child objects parented to it.
 
-------- Giving up control of objects --------
+(apply obj)
 
-Sometimes you will want to hand over control of an object to a procedural system within 
-fluxus, (the physics and lifeforms are the only ones at the moment).
-objects have to be in the scenegraph for this to be possible, and modifications to the objects
-transform by grabbing it's state will not have any effect (I think). you may still change any 
-the state other than the tranform though.
+applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
 
--------- Fluxus script ---------------
+--------------------------------------------------------------------------------------
 
-This is an exhausive list of all the functionality within fluxus
+5.0  Global Options
 
--------- Primitives --------
-
-(build-cube)
-(build-plane)
-(build-cylinder slices stacks)
-(build-sphere slices stacks)
-(build-line startposvec startwidth endposvec endwidth)
-creates a geometry in the current render context, adds it to the scenegraph and returns the 
-object ID
-
-(draw-cube)
-(draw-plane)
-(draw-cylinder slices stacks)
-(draw-sphere slices stacks)
-draws a cube in immediate mode to the current frame
-
-(destroy object)
-removes the object from the scenegraph
-
-(gettransform object) 
-gets the global transform matrix in world space.
-
---------- Renderstate operations ---------
-
-(push)
-(pop)
-pushes and pops items off the state stack. push duplicates the current stack top
-
-(grab object)
-(ungrab)
-grabs the object's state and puts it in the current context so that all state 
-modification calls (translate, rotate, colour etc) effect the specified object 
-rather than the state stack. ungrab turns the state modification back on.
-
-(print-scene-graph)
-dumps the scene graph to stderr, for debugging purposes
-
-(apply object)
-applies the tranformation stored in the object's scene graph node directly to the 
-vertices of the geometry, and sets the transform to identity.
-
-(identity)
-(translate transvec)
-(scale scalevec)
-(rotate rotvec)
-(colour colvec)
-(opacity a)
-(specular colvec)
-(ambient colvec)
-(emissive colvec)
-(shinyness pow)
-(texture textureID)
-modify the current state.
-
-(hint-solid)
-(hint-wire)
-(hint-normal)
-(hint-points)
-(hint-anti-alias)
-sets the render hint flags for the current state
-
-(hint-none)
-clears the render hint flags for the current state
-
-(line-width)
-sets the linewidth for wireframe objects
-	
-(parent object)
-sets the parent flag in the state stack, so all subsequent objects in this state 
-are parented to object.	
-
---------- Globalstate operations ---------
+These commands affect the global state, and can be called at any time.
 
 (clear)
 clears the scene graph of all objects and empties the state stack
@@ -252,42 +233,6 @@ turns the origin axis display on or off
 (backfacecull 0/1)
 enables/disables backface culling
 
-(load-texture filename)
-loads the texture and returns the ID
-
--------- Lights ----------
-
-(make-light 0/1)
-makes a new light. if the argument is true, then it's locked to the camera (in camera space) else
-it's in world space.
-
-(clear-lights) 
-destroys all lights
-
-(light-ambient light colvec)
-(light-diffuse light colvec)
-(light-specular light colvec)
-(light-position light colvec)
-sets the parameters for the light
-
--------- Interpreter functions + misc ----------
-
-(load filename)
-loads a script into the editor
-
-(key-pressed keystr)
-returns true if key has been pressed - this can be problematic if the editor is showing
-	
-(frame)
-returns the frame number
-
-(engine-callback execute-text)
-sets the engine callback script, this will be called once a frame in the engine loop. usually 
-a function call, so you can easily change the function.
-
-(flxrnd)
-returns a random float between 0 and 1 (used to be called (random))
-
 (desiredfps fps)
 sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't
 seem to be entirely correct, but it does the job
@@ -297,37 +242,422 @@ seem to be entirely correct, but it does the job
 starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime
 use - see (process)
 
--------- Audio ----------
+--------------------------------------------------------------------------------------
+
+6.0  Primitives
+
+Primitives are objects that you can render. There isn't really much else in a fluxus scene, except lights, a camera and lots of primitives.
+
+6.1  Retained Mode
+    
+The normal way to create a primitive is to call it's build function and then use it's returned ID (either directly, or by grabbing) to modify it later. 
+
+(define myobj (build-cube))
+(grab myobj)
+(colour (vector 1 0 0))
+(ungrab) ; always remember to ungrab...		
+
+Here are all the primitives:
+
+(build-cube)
+a simple cube, texture mapped placement per face
+
+(build-sphere hsegments rsegments)
+a sphere with the resolution specified in verts, texture mapped in normal "world map" style
+
+(build-plane)
+a one poly plane, texture mapped as you'd expect
+
+(build-cylinder hsegments rsegments)
+a uncapped cylinder, texture map wrapped around
+
+(build-line vstart swidth vend ewidth)
+builds a single line from start to end in world space, with start and end widths. not sure how this is texture mapped
+
+(build-text text)
+builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
+
+(ascii 32 onwards)
+  ! " # $ % & ' ( ) * + ' - . / 
+0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+@ A B C D E F G H I J K L M N O
+P Q R S T U V W X Y Z [ \ ] ^ _
+` a b c d e f g h i j k l m n o
+p q r s t u v w x y z { | } ~
+
+the font assumed to be non proportional - there is an example font shipped with fluxus
+
+(build-nurbs-sphere hsegments rsegments)
+builds a tessalated nurbs plane, texture mapped in uv direction
+
+(build-nurbs-plane usegments vsegments)
+		
+6.2  Instancing 
+
+Sometimes retained mode primitives can be unwieldy to deal with. For instance, if you are rendering thousands of identical objects, or doing things with recursive graphics, where you are calling the same primitive in lots of different states - keeping track of all the IDs would be annoying to say the least.
+
+This is where instancing is helpful, all you call is:
+
+(draw-instance myobj)
+
+and it will redraw any given object in the current state (immediate mode).
+An example:
+
+(define myobj (build-nurbs-sphere 8 10)) ; make a sphere
+
+(define (render-spheres n)
+	(push)
+    (translate (vector n 0 0)) ; move in x
+	(draw-instance myob)       ; stamp down a copy
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies
+
+6.3  Built In Immediate Mode Primitives
+
+To make life even easier than having to instance primitives, there are some built in primitives that can be rendered at any time, without being built:
+
+(draw-cube)
+(draw-sphere)
+(draw-plane)
+(draw-cylinder)
+
+so the it makes the code above simpler:
+
+(define (render-spheres n)
+	(push)
+    (translate (vector n 0 0)) ; move in x
+	(draw-sphere)              ; render a new sphere
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies
+
+These built in primitives are very restricted in that you can't edit them (see next section) or change their resolution settings etc, but they are handy to use for quick scripts with simple shapes.
+
+--------------------------------------------------------------------------------------
+
+7.0 Lights
+
+Lights are needed to, err, light the scene. If there are none built, the default light is a white one attached to the camera.
+
+(make-light 0/1)
+makes a new light. if the argument is true, then it's locked to the camera (in camera space) else
+it's in world space. returns the light id
+
+(clear-lights) 
+destroys all lights
+
+(light-ambient id colvec)
+(light-diffuse id colvec)
+(light-specular id colvec)
+(light-position id vec)
+sets the parameters for the light
+
+--------------------------------------------------------------------------------------
+
+8.0  The appearance of primitives
+
+Now that we have primitives and lights for shading them, it's time to introduce the ways that you can modify the appearence of your primitives.
+
+8.1  Surface parameters
+
+These surface parameters can be treated exactly like the rest of the state items - transforms, (colour) etc. They can either be set using the state stack when building primitives, or set later using (grab)
+
+(opacity n)
+set the opacity value on the current state 
+
+(specular v)                        
+set the specular colour on the current state 
+
+(ambient v)                         
+set the ambient colour on the current state
+
+(emissive v)                        
+set the emissive colour on the current state
+
+(shinyness n)                       
+set the shinyness on the current state
+
+(texture n)                         
+set the texture on the current state, using a texture ID
+
+Textures are loaded using (load-texture filename), they are cached so they won't load more than once, so you can easily just call:
+
+(texture (load-texture "path/to/mytexture.png"))
+
+Textures have to be png format, and support alpha transparency.
+
+8.2  Render hints
+
+There are other miscellaneous options that can change the way a primitive is rendered. These options are called hints, as for some primitives they may not apply, or may do different things. They are mainly useful for debugging, or special cases - sometimes just for some fun.
+
+(hint-none)                         
+clear the current render hints
+
+(hint-solid)
+render solid - defaults to on
+
+(hint-wire)
+render wireframe representation
+
+(hint-normal)
+render normals, very handy
+
+(hint-points)
+render vertex or cv points
+
+(hint-anti-alias)
+render antialiased mode
+
+(hint-unlit)
+disable lighting
+
+Another option, which doens't really belong here, but affects the wireframe rendering, among others is
+
+(line-width n)
+
+which alters the line width for subsequent renders
+
+--------------------------------------------------------------------------------------
+
+9.0  Maths calls 
+
+For some operations, basic 3D types such as vectors (scheme vectors of size 3) and matrices (scheme vectors of size 16) will have to be processed and calculations operated on them. There is a basic maths library built into fluxus to do this for you.
+
+(vadd v v)
+(vsub v v)
+(vmul v number)
+(vdiv v number)
+simple operations on vectors
+
+(vtransform v m)
+transform the vector by the matrix m
+
+(vtransform-rot v m)
+transform the vector by the matrix m, ignoring the translation part (useful for normals)
+
+(vnormalise v)
+return a normalised version of vector v
+
+(vdot v v)
+returns the dot product from the two vectors
+
+(vmag v)
+returns the magnitude of the vector 
+
+(vdist v v)
+returns the distance between the two vectors - treated as points
+
+(vcross v v)
+returns the cross product vector of the two input vectors
+
+(madd m m)
+(msub m m)
+(mmul m m)
+(mdiv m m)
+simple operations on matrices
+
+(mident)
+returns the identity matrix
+
+(mtranslate v)
+returns a translation matrix 
+
+(mrotate v)
+returns a rotation matrix 
+
+(mscale v)
+returns a scale matrix 
+
+(mtranspose m)
+returns a transposed version of the input matrix (columns = rows)
+
+(minverse m)
+returns the inverted version of the input matrix, if it can't be inverted it will
+return the identity matrix (I think)
+
+(maim v v)
+returns a matrix aimed down the first vector, using the second vector as the up vector. may be buggy.
+
+--------------------------------------------------------------------------------------
+
+10.0  Editing primitives 
+
+Each primitive is made up of data that describes it's shape and surface properties. This data is created when you call the build function.
+
+For instance (build-sphere) creates a polygonal object with a spherical distribution of vertex point data, surface normals at every vertex and texture coordinates, so you can wrap a texture around the primitive. This data (primitive data, or pdata for short) can be read and written to by your scripts, using the following commands:
+
+(pdata-set typechar vertnumber vector)
+sets the data on the currently (grab)ed object to the input vector
+
+(pdata-get typechar vertnumber)
+returns the vector from the pdata on the currently (grab)ed object
+
+(pdata-size)
+returns the size of the pdata on the currently (grab)ed object (the number of verts)
+
+The type character is dependant on the primitive type we are rendering. This is given in detail below, but for polygonal objects we can change the "p" value to alter the vertex positions:
+
+so, some examples to make sense of this:
+
+(pdata-set "p" 0 (vector 0 0 0))
+
+sets the first point in the primitive to the origin (not all that useful)
+
+(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
+
+the same, but sets it to the original position + 1 in the x
+offsetting the position is more useful as it constitutes a deformation of the original point.
+
+So, to deform an entire object, you do something like the following:
+
+(define myobj (build-sphere))
+
+(define (deform n)
+    (pdata-set "p" n (vadd  (pdata-get "p" n) (vector 1 0 0))) ; move all the points in x
+    (if (< n 0)
+        0
+        (deform (- n 1))))
+	
+(grab myobj)
+(deform (pdata-size)) ; for every point
+(ungrab)
+
+10.1  Types 
+
+Cube, Sphere, Cylinder, Plane, Line, Text
+
+Positions:      "p"
+Normals:        "n"
+Texture coords: "t"
+Vertex colours: "c"
+
+NURBSSphere, NURBSCylinder, NURBSCurve
+
+Positions:      "p"
+Normals:        "n"
+Texture coords: "t"
+
+--------------------------------------------------------------------------------------
+
+11.0 Animation sources 
+
+Animation sources are taps into the outside world. 
+
+11.1 Time
+
+The simplest source of information to use for animation is (time), which returns the time in seconds since fluxus was started. This is good to use for animation, as it means your scripts will be frame rate independant - in other words the animation will look the same regardless of the machine it's running on, or the resolution etc.
+
+Another time related call is (delta) which returns the change in time since the last frame. Technically, all your incremental animation data, regardless of source, should be scaled by this factor, to maintain frame rate independance.
+
+11.2 Audio 
+
+Part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
+
 (gain value)
 sets the gain level for the fft sound, it's 1 by default.
 	
-(gh harmonic)
-(get-harmonic harmonic)
-returns the contribution of the harmonic specified. the return value is normalised 
-between 0 and 1. the harmonic value can wrap, so you can use it in procedural ways without
-worrying about out of range errors.
+(gh band)
+(get-harmonic band)
+returns the contribution of the harmonic specified. the harmonic band value wraps, so you can use without worrying about out of range errors.
 
 (process wavfilename)
-this command temporarally disables the realtime reading of the input audio stream and reads a 
-wav file instead. for use with the framedump to process audio offline to make music videos.
+this command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. for use with the framedump to process audio offline to make music videos.
 
--------- OSC support ----------
-OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia 
-applications. Fluxus support for OSC is very primitive - it only accepts messages with one float 
-argument, and allows this float to be queried in a script.
+11.3  OSC 
+
+OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia applications. 
 
 (start-osc port)
 starts up the osc server, listening to the given port
 
-(from-osc name)
-returns the float value last sent with this name - ie, a message "/myvalue 0.4" is sent to fluxus:
-(from-osc "/myvalue") will now evaluate to 0.4. if a message has never been sent, the value defaults 
-to zero.
+(from-osc name index)
+returns either a number or string value from the osc message last sent with this name - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
 
-------- Turtle poly builder ------
+(from-osc "/myvalue" 0) 
+
+will evaluate to 0.4. 
+
+(from-osc "/myvalue" 1) 
+
+will evaluate to "hello". 
+
+if a message has never been sent, the value defaults to zero, or a empty string.
+
+(peek-osc)
+this handy function returns the name, and format string of the last sent message to fluxus. you can then write something like:
+
+(display (peek-osc)) (newline)
+
+and fluxus will dump a list of all the messages being recieved to the commandline, use this to 
+figure out what messages to use, and the types you can use on the message.
+
+--------------------------------------------------------------------------------------
+
+12.0  Physics 
+
+The physics system, based on the ode library, allows you to program physical properties into objects and set them in motion. It's vital to read the ode documentation, which you've downloaded if you're running fluxus. There are full explanations of the joint types and parameters with handy diagrams - I'm not going to attempt to duplicate that here.
+
+(collisions 0/1)
+enables or disables collision detection. this is the cause of great slowness when doing physical particle systems, and also the cause of instability in the low level physics library. defaults to off.
+
+(gravity gravvec)
+sets the strength and direction of gravity.
+
+(surface-params slip1 slip2 softerp softcfm)
+sets some global surface attributes that affect friction and bouncyness 
+
+(active-box object)
+(active-sphere object)
+(active-cylinder object)
+give the object to the physics system calculating and using a box/sphere/cylinder as the bounding volume. as an active object, it will now be transformed by ode.
+
+(passive-box object)
+(passive-sphere object)
+(passive-cylinder object)
+give the object to the physics system calculating and using a box/sphere/cylinder as the bounding volume. as a passive object, active objects will collide with it.
+
+(set-mass object mass)
+sets the mass of an active object
+
+(ground-plane planevec planeoffset)
+create an infinite passive plane for use as the ground
+
+(build-hingejoint object1 object2 anchorvec hingevec)
+(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)
+(build-sliderjoint hingevec)
+(build-balljoint object1 object2 anchorvec)
+(build-amotorjoint axisvec)
+builds joints between two objects
+
+(joint-param joint param value)
+where param is one of the following:
+"HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM", "SuspensionERP", "SuspensionCFM", "Vel2", "FMax2"
+sets the joint paramater for joint 
+	
+(kick object kickvec)
+applies translation force kickvec to the object
+
+(twist object twistvec)
+applies rotational force twistvec to the object
+	
+(set-max-physical num)
+sets the maximum number of objects the physics system can deal with. when the max level
+has been reached the oldest objects are destroyed.
+
+--------------------------------------------------------------------------------------
+
+13.0 Turtle builder 
+
 The turtle polybuilder is an experimental way of building polygonal objects using a logo style
 turtle in 3D space. as you drive the turtle around you can place vertices and build shapes 
-procedurally
+procedurally.
 
 (turtle-prim type)
 starts a new primitive of the type specified:
@@ -351,124 +681,151 @@ builds the object with the vertex list defined and gives it to the renderer
 (turtle-reset) 
 resets the current postion and rotation of the turtle
 
-------- Lifeforms ------
-Lifeforms are an easy way to create flocking systems using classic alife algorithms
+--------------------------------------------------------------------------------------
 
-(make-lifeforms name)
-makes a new lifeforms alife system
+14.0 Examples 
 
-(lifeform-avoidance name value)
-(lifeform-flockcentering name value)
-(lifeform-scenecentering name value)
-(lifeform-inertia name value)
-(lifeform-scenecentre name value)
-(lifeform-maxspeed name value)
-sets global behaviour paramters for a lifeforms system
+--------------------------------------------------------------------------------------
 
-(add-lifeform name object)
-gives control of the object to the named lifeforms system - uses the current transform in the 
-objects state to place the lifeform. parented objects should be moved too.
+15.0 Index of all functions 
 
----------- Physics -------------
-The physics system, based on the ode library
+Types:
+n = number
+t = text
+v = vector 3
+m = vector 16
 
-(collisions 0/1)
-enables or disables collision detection. this is the cause of great slowness when doing physical
-particle systems, and also the cause of instability in the low level physics library. defaults
-to off.
-
-(gravity gravvec)
-sets the strength and direction of gravity.
-
-(surface-params slip1 slip2 softerp softcfm)
-sets some global surface attributes that affect friction and bouncyness (see ode docs for more 
-info)
-
-(active-box object)
-(active-sphere object)
-(active-cylinder object)
-give the object to the physics system calculating and using a box/sphere/cylinder 
-as the bounding volume. as an active object, it will now be transformed by ode.
-
-(passive-box object)
-(passive-sphere object)
-(passive-cylinder object)
-give the object to the physics system calculating and using a box/sphere/cylinder 
-as the bounding volume. as a passive object, active objects will collide with it.
-
-(set-mass object mass)
-sets the mass of an active object
-
-(ground-plane planevec planeoffset)
-create an infinite passive plane for use as the ground
-
-(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)
-(build-balljoint object1 object2 anchorvec)
-builds hinges between two objects
-
-(joint-vel2 joint value)
-(joint-fmax2 joint value)
-(joint-fmax joint value)
-(joint-histop joint value)
-(joint-lostop joint value)
-(joint-vel joint value)
-(joint-fudge joint value)
-sets the joint paramater for joint - see the ode docs for more information
-	
-(kick object kickvec)
-applies translation force kickvec to the object
-
-(twist object twistvec)
-applies rotational force twistvec to the object
-	
-(set-max-physical num)
-sets the maximum number of objects the physics system can deal with. when the max level
-has been reached the oldest objects are destroyed.
-
------ Maths calls -----
-
-(vmul v v)
-(vadd v v)
-(vsub v v)
-(vdiv v v)
-(transform v m)
-(normalise v)
-(dot v v)
-(cross v v)
-vector operations
-
-(mmul m m)
-(madd m m)
-(msub m m)
-(mdiv m m)
-matrix operations (a matrix is a vector with size 16)
-
-(mident)
-(mtranslate v)
-(mrotate v)
-(mscale v)
-matrix calls (return matrices for you to use)
-
------ Advanced primitive editing -----
-
-Data stored on the primitive to describe stuff like vertex position, colour etc can be 
-edited to achieve a number of deformations, or other operations. These operations are 
-called on the currently (grab)ed primitive.
-
-(get char index)
-(set char index vector)
-
-these operations are primitive dependant:
-
-Poly prim:
-"p" vertex position
-"n" vertex normal
-"c" vertex colour
-"t" vertex texture coords
-
-(finalise)
-optimises the data, and makes the operations visible to the (grab)ed primitive.
-
-
-
-
+(build-cube)                        returns the id for a cube primitive
+(build-sphere n n)                  returns the id for a sphere primitive
+(build-plane)                       returns the id for a plane primitive
+(build-cylinder)                    returns the id for a cylinder primitive
+(build-line v n v n)                returns the id for a line primitive
+(build-text t)                      returns the id for a text primitive
+(build-nurbs-sphere n n)            returns the id for a nurbs sphere primitive
+(build-nurbs-plane n n)             returns the id for a nurbs plane primitive
+(draw-instance n)        			draw an instance of a built object 
+(draw-cube)                         draw a cube
+(draw-plane)                        draw a plane
+(draw-sphere)                       draw a sphere
+(draw-cylinder)                     draw a cylinder
+(destroy n)                         delete the given object
+(get-transform)                     get the transform matrix of the grabbed primitive
+(get-camera-transform)              get the current camera transform
+(push)                              push the state stack
+(pop)                               pop the state stack
+(grab n)                            grab the given object's state
+(ungrab)                            back to normal state
+(print-scene-graph)                 dumps the scene graph to output (for debugging)
+(apply)                             apply the transform to the primitive's vertices
+(identity)                          set the current transform to identity
+(concat m)                          concatenate the matrix to the current state
+(translate v)                       translate the current state
+(scale v)                           scale the current state
+(rotate v)                          rotate the current state
+(colour v)                          set the colour on the current state
+(opacity n)                         set the opacity on the current state
+(specular v)                        set the specular colour on the current state 
+(ambient v)                         set the ambient colour on the current state
+(emissive v)                        set the emissive colour on the current state
+(shinyness n)                       set the shinyness on the current state
+(texture n)                         set the texture on the current state
+(hint-none)                         clear the current render hints 
+(hint-solid)                        hint the primitive to render solid
+(hint-wire)                         hint the primitive to render wireframe
+(hint-normal)                       hint the primitive to render normals
+(hint-points)                       hint the primitive to render points
+(hint-anti-alias)                   hint the primitive to render antialiased
+(hint-unlit)                        hint the primitive to render unlit
+(line-width)                        set the current line width
+(parent n)                          set the grabbed primitive to parent to the given object
+(hide)                              don't render the current grabbed object
+(clear)                             clear the scene of all primitives and lights (leaves the interpreter as is)
+(ortho)                             set the camera mode to orthographic
+(persp)                             set the camera mode to perspective
+(reset-camera)                      reset the camera transform - for when you get lost
+(lock-camera n)                     lock the camera to a given object
+(clear-colour v)                    set the background colour
+(clear-frame n)                     whether to clear the window or not
+(blur n)                            sets the opacity on a clearing polygon 
+(show-axis n)                       turns on or off the origin locator
+(show-fps n)                        turns on or off the fps counter
+(backfacecull n)                    turns on or off backface culling
+(load-texture t)                    loads the given texture from disk, and returns a texture id
+(make-light n)                      makes a light and returns the id, if given value is 1, attaches the light to the camera
+(clear-lights)                      remove all lights
+(light-ambient n v)                 set the ambient colour of a light
+(light-diffuse n v)                 set the diffuse colour of a light
+(light-specular n v)                set the specular colour of a light
+(light-position n v)                set the position of a light
+(load t)                            loads a script into the editor
+(save-name t)                       sets the current script name for this workspace
+(source t)                          loads a script into the editor, and executes it
+(key-pressed t)                     returns 1 if the key has been pressed this frame
+(time)                              returns time in seconds since fluxus startup
+(delta)                             returns time in seconds since the last frame
+(every-frame t)                     executes the fragment of script every frame
+(flxrnd)                            returns a random number from 0 to 1
+(desiredfps n)                      sets the fps the renderer will attempt to run at
+(start-framedump t)                 starts saving frame data to disk with the given name
+(end-framedump) 	                stops saving frames
+(gain n)  	                        sets the global gain level
+(get-harmonic n)                    gets the current harmonic band level from the fft 
+(gh n)                              gets the current harmonic band level from the fft 
+(process t)                         processes a wav file instead of the live input
+(turtle-vert)                       tells the turtle to start a new vertex
+(turtle-build)                      tells the turtle to build the primitive
+(turtle-reset)                      resets the turtle state
+(turtle-move n)                     move the turtle the given distance
+(turtle-turn v)                     turns the turtle in x,y,z
+(turtle-prim n)                     sets the poly primitive type for the turtle
+(collisions n)                      turns on/off collisions
+(gravity v)                         sets the gravity vector
+(set-max-physical n)                sets the maximum number of physical objects
+(active-box n)                      add primitive to the physics system as active with a box collision volume
+(active-sphere n)                   add primitive to the physics system as active with a sphere collision volume
+(active-cylinder n)                 add primitive to the physics system as active with a cylinder collision volume
+(passive-box n)                     add primitive to the physics system as passive with a box collision volume
+(passive-sphere n)                  add primitive to the physics system as passive with a sphere collision volume
+(passive-cylinder n)                add primitive to the physics system as passive with a cylinder collision volume
+(ground-plane v n)                  make a static infinite plane collision object
+(build-hingejoint n n v v)          build a hinge connecting two objects
+(build-balljoint n n v)             build a ball joint connecting two objects
+(build-sliderjoint n n v)           build a slider joint connecting two objects
+(build-hinge2joint n n v v v)       build a hinge2 joint connecting two objects
+(build-amotorjoint n n v)           build a angular motor joint connecting two objects
+(surface-params n n n n)            set the global surface parameters
+(joint-param n t n)                 set joint paramaters for the given joint
+(joint-angle n n n)                 set the desired angle on a joint
+(set-mass n n)                      set the mass of an object
+(kick n v)                          apply a translational force to an object  
+(twist n v)                         apply a rotational force to an object  
+(start-osc t)                       start receiving osc messages from given source
+(from-osc t n)                      get either a number or a string from given message and argument index
+(peek-osc)                          returns a string containing the last sent message and format
+(pdata-set t n v)                   sets the pdata item on the primitive
+(pdata-get t n)                     returns the vector containing the given pdata item
+(pdata-size)                        returns the amount of pdata (usually a vert count)
+(finalise)                          sets the primitive up for rendering
+(recalc-normals)                    recalculates normals based on vertex positions
+(vmul v n)                          multiply a vector by a number
+(vadd v v)                          add two vectors together
+(vsub v v)                          subtract two vectors 
+(vdiv v n)                          divide a vector by a number
+(vtransform v m)                    returns the vector in the given space
+(vtransform-rot v m)                returns the vector in the given space, without translation
+(vnormalise v)                      returns the normalised vector
+(vdot v v)                          returns the dot product of the two vectors
+(vmag v)                            returns the magnitude of the vector
+(vdist v v)                         returns the distance between the vectors (seen as points)
+(vcross v v)                        returns the cross product of the two vectors
+(mmul m m)                          multiply the two matrices
+(madd m m)                          add the two matrices
+(msub m m)                          subtract the two matrices
+(mdiv m m)                          divide the two matrices
+(mident)                            return an identity matrix
+(mtranslate v)                      return the translation as a matrix
+(mrotate v)                         return the rotation as a matrix
+(mscale v)                          return the scale as a matrix
+(mtranspose m)                      transpose the matrix
+(minverse m)                        inverse the matrix
+(maim v v)                          return an aimed matrix, with an up vector

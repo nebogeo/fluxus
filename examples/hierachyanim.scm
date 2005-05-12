@@ -66,4 +66,4 @@
 (build)
 (blur 0.1)
 (clear-colour (vector 1 1 1))
-(engine-callback "(animate)")
+(every-frame "(animate)")

@@ -30,7 +30,7 @@
 (line-width 5)
 (clear)
 (ground-plane (vector 0 1 0) 0)    
-(engine-callback "(run-loop)")
+(every-frame "(run-loop)")
 
 (show-axis 0)
 (clear-colour (vector 0 0 1))

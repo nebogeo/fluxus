@@ -43,4 +43,4 @@
 (grid 10 10)
 (blur 0.0)
 (display list)
-(engine-callback "(update list 1 1)")
+(every-frame "(update list 1 1)")

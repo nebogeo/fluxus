@@ -21,7 +21,7 @@
         (store (- n 1))))
 
 (define (deform n p)
-    (set! v (vector (* 0.4 (sin (+ (*(frame)0.01) (*(vector-ref (car p) 1) 10.4)))) 0 0))
+    (set! v (vector (* 0.4 (sin (+ (time) (*(vector-ref (car p) 1) 10.4)))) 0 0))
     (pdata-set "p" n (vadd v (car p)))
     (if (< n 0)
         0
@@ -49,7 +49,7 @@
 (store (pdata-size))
 (ungrab)
 
-(engine-callback "(render)")
+(every-frame "(render)")
     
 
 

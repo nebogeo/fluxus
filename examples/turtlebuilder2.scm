@@ -32,12 +32,12 @@
 
 ;;(turtle-reset)
 (backfacecull 0)
-(engine-callback "(run)")
+(every-frame "(run)")
 
 (define (run)
 	(clear)
 	(turtle-reset)
-	(engine-callback "(run)")
+	(every-frame "(run)")
 	(push)
 	(push)
 	(meta-shape 10)
