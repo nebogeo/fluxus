@@ -92,7 +92,7 @@ public:
 	void DrawText(const string &Text);
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
-	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
+	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; InitFeedback(); }
 	dMatrix *GetCamera()                     { return &m_Camera; }
 	void LockCamera(int Prim);
 	void UnlockCamera()						 { m_LockedCamera=false; }
@@ -110,7 +110,8 @@ public:
 	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
-	
+	void SetFeedBack(bool s)                 { m_FeedBack=s; }
+	void SetFeedBackMat(const dMatrix &s)    { m_FeedBackMat=s; }
 	typedef void (cb)();
 	void SetEngineCallback(cb *s)            { EngineCallback=s; }
 	
@@ -130,8 +131,10 @@ public:
 	void AddToLibrary(const string &name, Primitive *p);
 	bool GetFromLibrary(const string &name, LibraryEntry &li);
 
+
 private:
 	void RenderLights(bool camera);
+	void InitFeedback();
 	
 	bool  m_Initialised;
 	int   m_Width,m_Height;
@@ -150,6 +153,11 @@ private:
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
+	
+	bool m_FeedBack;
+	char *m_FeedBackData;
+	unsigned int m_FeedBackID;
+	dMatrix m_FeedBackMat;
 	
 	dMatrix m_Camera;
     deque<State> m_StateStack;

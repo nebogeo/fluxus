@@ -546,6 +546,25 @@ SCM FluxusBinding::blur(SCM s_blur)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::feedback(SCM s_fb)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_fb), s_fb, SCM_ARG1, "feedback");
+	double fb;
+	fb=gh_scm2double(s_fb);	
+	Fluxus->GetRenderer()->SetFeedBack(fb);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::feedback_transform(SCM s_a)
+{
+	SCM_ASSERT(SCM_VECTORP(s_a),  s_a,  SCM_ARG1, "feedback_transform");
+	SCM_ASSERT(SCM_VECTOR_LENGTH(s_a)==16,  s_a,  SCM_ARG1, "feedback_transform");
+	dMatrix m;
+	gh_scm2floats(s_a,m.arr());
+	Fluxus->GetRenderer()->SetFeedBackMat(m);
+	return SCM_UNSPECIFIED;	
+}
+
 SCM FluxusBinding::push()
 {
     Fluxus->GetRenderer()->PushState();
@@ -1489,6 +1508,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("clear-colour",    clear_colour);	
 	gh_new_procedure0_1("clear-frame",     clear_frame);
 	gh_new_procedure0_1("blur",         blur);
+	gh_new_procedure0_1("feedback",     feedback);
+	gh_new_procedure0_1("feedback-transform", feedback_transform);
     gh_new_procedure0_1("show-axis",    show_axis);
     gh_new_procedure0_1("show-fps",     show_fps);
 	gh_new_procedure0_1("backfacecull",    backfacecull);

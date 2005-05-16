@@ -4,7 +4,7 @@
 
 (clear)
 (push)
-(texture (load-texture "green.png"))
+(texture (load-texture "textures/green.png"))
 (define ob (build-cube))
 (pop)
 
@@ -26,7 +26,7 @@
 (define (render-instances n)
     (translate (vector 1 0 0))
     (rotate (vector 0 45 0))
-    (texture (load-texture "green.png"))
+    (texture (load-texture "textures/green.png"))
     (draw-instance ob)
     (if (eq? n 0)
         0

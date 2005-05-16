@@ -84,6 +84,8 @@ public:
 	static SCM hint_unlit();
 	static SCM hint_none();
 	static SCM blur(SCM s_blur);
+	static SCM feedback(SCM s_fb);
+	static SCM feedback_transform(SCM s_fb);
 	static SCM push();
 	static SCM pop();
 	static SCM collisions(SCM s);

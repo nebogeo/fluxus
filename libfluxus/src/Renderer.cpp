@@ -55,6 +55,9 @@ m_Front(1),
 m_Back(10000),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
+m_FeedBack(false),
+m_FeedBackData(NULL),
+m_FeedBackID(0),
 m_LoadedFromFlx(false),
 m_Deadline(1/25.0f),
 m_FPSDisplay(false),
@@ -70,6 +73,8 @@ EngineCallback(NULL)
 	light->SetPosition(dVector(0,0,0));
 	light->SetCameraLock(true);
 	AddLight(light);
+
+	InitFeedback();
 }
 
 Renderer::~Renderer()
@@ -151,7 +156,7 @@ void Renderer::BeginScene(bool PickMode)
 	if (m_ClearFrame)
 	{
 		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
-		if (m_MotionBlur) glClear(GL_DEPTH_BUFFER_BIT);
+		if (m_MotionBlur || m_FeedBack) glClear(GL_DEPTH_BUFFER_BIT);
 		else glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
 	}
 	
@@ -182,6 +187,35 @@ void Renderer::BeginScene(bool PickMode)
 		glPopMatrix();
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_COLOR_MATERIAL);
+	}
+	
+	if (m_FeedBack)
+	{       	
+		
+		glEnable(GL_TEXTURE_2D);
+		glDisable(GL_DEPTH_TEST);
+		glDisable(GL_LIGHTING);
+		glPolygonMode(GL_FRONT,GL_FILL);
+		glBindTexture(GL_TEXTURE_2D,m_FeedBackID);
+		
+		glPushMatrix();
+		glMultMatrixf(m_FeedBackMat.arr());
+		glTranslatef(0,0,-10);
+		glBegin(GL_QUADS);
+			glTexCoord2f(0,0);
+			glVertex3f(-10,-10,0);
+			glTexCoord2f(1,0);
+			glVertex3f(10,-10,0);
+			glTexCoord2f(1,1);
+			glVertex3f(10,10,0);
+			glTexCoord2f(0,1);
+			glVertex3f(-10,10,0);
+		glEnd();
+		glPopMatrix();
+		
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glDisable(GL_TEXTURE_2D);
 	}
 	
 	
@@ -275,6 +309,17 @@ void Renderer::EndScene()
     	TimeCounter++;
 	}
 	
+	if (m_FeedBack)
+	{  
+		// grab the display
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glReadPixels(0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_FeedBackData);
+		glDeleteTextures(1,&m_FeedBackID);
+		glGenTextures(1,&m_FeedBackID);
+		glBindTexture(GL_TEXTURE_2D,m_FeedBackID);
+		//glTexImage2D(GL_TEXTURE_2D, 0, 3, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_FeedBackData);
+		gluBuild2DMipmaps(GL_TEXTURE_2D,3,m_Width, m_Height,GL_RGB,GL_UNSIGNED_BYTE,m_FeedBackData);
+	}
 	
 	//if (m_StateStack.size()!=1)
 	//{
@@ -607,6 +652,13 @@ bool Renderer::GetFromLibrary(const string &name, Renderer::LibraryEntry &li)
 	
 	cerr<<name<<" doesn't exist in the library"<<endl;
 	return false;
+}
+
+void Renderer::InitFeedback()
+{
+	if (m_FeedBackData)	delete[] m_FeedBackData;
+	m_FeedBackData = new char[m_Width * m_Height * 3];
+	if (m_FeedBackID==0) glGenTextures(1,&m_FeedBackID);
 }
 
 // bugger
