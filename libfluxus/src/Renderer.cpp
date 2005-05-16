@@ -279,7 +279,7 @@ void Renderer::Render()
 	}
 	
 	m_LastTime=ThisTime;
-	m_Time+=m_Delta;
+	if (m_Delta>0) m_Time+=m_Delta;
 }
 
 void Renderer::EndScene()

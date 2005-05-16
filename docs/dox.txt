@@ -560,6 +560,9 @@ Another time related call is (delta) which returns the change in time since the 
 
 Part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
 
+(start-audio buffersize samplerate) 
+starts up the audio with the specified settings, you'll need to call this first, or put it into .fluxus.scm in your home directory to call it automatically at startup.
+
 (gain value)
 sets the gain level for the fft sound, it's 1 by default.
 	
@@ -829,3 +832,6 @@ m = vector 16
 (mtranspose m)                      transpose the matrix
 (minverse m)                        inverse the matrix
 (maim v v)                          return an aimed matrix, with an up vector
+(feedback n)                        switch on/off feedback
+(feedback-transform m)              sets the transform for the plane that the fb texture is rendered on
+(start-audio n n)                   starts up the audio processing with buffersize and samplerate

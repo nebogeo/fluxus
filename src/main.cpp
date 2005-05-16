@@ -80,7 +80,7 @@ void DisplayCallback()
     	gh_eval_str_with_catch(fragment.c_str(), ErrorHandler);
     }
 	
-	binding->Audio->GetFFT();
+	if (binding->Audio!=NULL) binding->Audio->GetFFT();
 	binding->Fluxus->Render();	
 	glutSwapBuffers();
 }

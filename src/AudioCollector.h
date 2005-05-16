@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#define __FFTWFLOAT__
 #include <fftw3.h>
 #include <pthread.h>
 #include <string>
@@ -48,7 +49,7 @@ private:
 class AudioCollector
 {
 public:
-	AudioCollector(int BufferLength, int FFTBuffers = 1);
+	AudioCollector(int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
 	~AudioCollector();
 	
 	float *GetFFT();

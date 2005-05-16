@@ -28,6 +28,7 @@ using namespace std;
 class PortAudioClient
 {
 public:
+	static void Initialise(unsigned int s, int bs) { m_SampleRate=s; m_BufferSize=bs; }
 	static PortAudioClient *Get()      { if(!m_Singleton) m_Singleton=new PortAudioClient; return m_Singleton; }
 	static void PackUpAndGoHome() { if(m_Singleton)  { delete m_Singleton; m_Singleton=NULL; } }
 	

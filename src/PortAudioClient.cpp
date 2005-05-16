@@ -21,7 +21,7 @@
 
 PortAudioClient*  PortAudioClient::m_Singleton  = NULL;
 bool              PortAudioClient::m_Attached   = false;
-long unsigned int PortAudioClient::m_BufferSize = 0;
+long unsigned int PortAudioClient::m_BufferSize = 256;
 long unsigned int PortAudioClient::m_SampleRate = 44100;
 void            (*PortAudioClient::RunCallback)(void*, unsigned int BufSize)=NULL;
 void             *PortAudioClient::RunContext   = NULL;	
@@ -72,7 +72,7 @@ bool PortAudioClient::Attach(const string &ClientName)
               paFloat32,      /* 32 bit floating point output */
               NULL,
               m_SampleRate,
-              256,
+              m_BufferSize,
               2,    /* number of buffers, if zero then use default minimum */
               paClipOff|paDitherOff, /* we won't output out of range samples so don't bother clipping them */
               Process,
@@ -118,7 +118,11 @@ int PortAudioClient::Process(void *inputBuffer, void *outputBuffer,
                            unsigned long framesPerBuffer,
                            PaTimestamp outTime, void *userData)
 {	
-	m_BufferSize=framesPerBuffer;
+	if (m_BufferSize!=framesPerBuffer)
+	{
+		cerr<<"eek: buffer size in process doesn't match init size..."<<endl;
+		return 0;
+	}
 
 	if(RunCallback&&RunContext)
 	{
@@ -129,7 +133,7 @@ int PortAudioClient::Process(void *inputBuffer, void *outputBuffer,
 	if (m_RightData && m_LeftData)
 	{
 		float *out = (float*)outputBuffer;
-		for (unsigned int n=0; n<m_BufferSize; n++)
+		for (unsigned int n=0; n<framesPerBuffer; n++)
 		{
 			*out=m_LeftData[n];
 			out++;
@@ -141,7 +145,7 @@ int PortAudioClient::Process(void *inputBuffer, void *outputBuffer,
 	if (m_RightInData && m_LeftInData)
 	{
 		float *in = (float*)inputBuffer;
-		for (unsigned int n=0; n<m_BufferSize; n++)
+		for (unsigned int n=0; n<framesPerBuffer; n++)
 		{
 			m_LeftInData[n]=*in;
 			in++;

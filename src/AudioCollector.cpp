@@ -76,7 +76,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AudioCollector::AudioCollector(int BufferLength, int FFTBuffers) :
+AudioCollector::AudioCollector(int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
 m_FFT(BufferLength),
 m_FFTBuffers(FFTBuffers),
@@ -100,6 +100,7 @@ m_ProcessPos(0)
 	pthread_mutex_init(m_Mutex,NULL);
 	
 	m_BufferLength=BufferLength;
+	PortAudioClient::Initialise(Samplerate,BufferLength);
 	PortAudioClient *Jack = PortAudioClient::Get();
 	Jack->SetCallback(AudioCallback,(void*)this);
 	Jack->Attach("fluxus");

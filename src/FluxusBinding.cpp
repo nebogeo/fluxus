@@ -40,13 +40,12 @@ FluxusBinding::FluxusBinding(int w, int h)
     MakeCylinder(StaticCylinder,1,1,5,10);
     StaticCylinder->Finalise();
 	
-	Audio = new AudioCollector(AUDIO_BUFFER_SIZE);
 	Fluxus = new FluxusMain(w,h);
 }
 
 FluxusBinding::~FluxusBinding()
 {
-	delete Audio;
+	if (Audio!=NULL) delete Audio;
 	delete Fluxus;
 }
 
@@ -860,10 +859,25 @@ SCM FluxusBinding::srandom()
 	return gh_double2scm(RandFloat());
 }
 
+SCM FluxusBinding::start_audio(SCM s_bs, SCM s_sr)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_bs), s_bs, SCM_ARG1, "start-audio");
+	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG2, "start-audio");
+	if (Audio==NULL)
+	{
+		Audio = new AudioCollector((unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
+	}
+	return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::get_harmonic(SCM s_harm)
 {
-	SCM_ASSERT(SCM_NUMBERP(s_harm), s_harm, SCM_ARG1, "get_harmonic");	
-    return gh_double2scm(Audio->GetHarmonic(gh_scm2int(s_harm)));
+	SCM_ASSERT(SCM_NUMBERP(s_harm), s_harm, SCM_ARG1, "get-harmonic");
+	if (Audio!=NULL)
+	{	
+    	return gh_double2scm(Audio->GetHarmonic((int)gh_scm2double(s_harm)));
+	}
+	return 0;
 }
 
 SCM FluxusBinding::load_texture(SCM s_name)
@@ -976,7 +990,10 @@ SCM FluxusBinding::source(SCM s_name)
 SCM FluxusBinding::gain(SCM s_gain)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_gain), s_gain, SCM_ARG1, "gain");	
-	Audio->SetGain(gh_scm2double(s_gain));
+	if (Audio!=NULL)
+	{	
+		Audio->SetGain(gh_scm2double(s_gain));
+	}
     return SCM_UNSPECIFIED;
 }
 
@@ -1073,7 +1090,10 @@ SCM FluxusBinding::process(SCM s_wavname)
 	SCM_ASSERT(SCM_STRINGP(s_wavname), s_wavname, SCM_ARG1, "process");	
     size_t size=0;
 	char *wavname=gh_scm2newstr(s_wavname,&size);
-	Audio->Process(wavname);
+	if (Audio!=NULL)
+	{	
+		Audio->Process(wavname);
+	}
 	free(wavname);
     return SCM_UNSPECIFIED;
 }
@@ -1537,7 +1557,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure("end-framedump", end_framedump, 0,0,0);
 	
 	// audio
-	gh_new_procedure0_1("gain",   gain);	
+	gh_new_procedure0_2("start-audio",  start_audio);	
+	gh_new_procedure0_1("gain",         gain);	
 	gh_new_procedure0_1("get-harmonic", get_harmonic);
 	gh_new_procedure0_1("gh",           get_harmonic);
 	gh_new_procedure0_1("process",   	process);

@@ -9,8 +9,6 @@
 #ifndef FLUXUS_BINDING
 #define FLUXUS_BINDING
 
-static const int AUDIO_BUFFER_SIZE = 2048;
-
 class FluxusBinding
 {
 public:
@@ -110,6 +108,7 @@ public:
 	static SCM twist(SCM s_obj, SCM s_vec);
 	static SCM gravity(SCM s_vec);
 	static SCM srandom();
+	static SCM start_audio(SCM s_bs, SCM s_sr);
 	static SCM get_harmonic(SCM s_harm);
 	static SCM load_texture(SCM s_name);
 	static SCM texture(SCM s_id);
