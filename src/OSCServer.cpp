@@ -29,6 +29,7 @@ bool Server::m_Exit=false;
 map<string,vector<OSCData*> > Server::m_Map;
 pthread_mutex_t* Server::m_Mutex;
 string Server::m_LastMsg="no message yet...";
+set<string> Server::m_MessageHistory;
 
 Server::Server(const string &Port)
 {
@@ -67,6 +68,7 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 	// record the message name
 	pthread_mutex_lock(m_Mutex);
 	m_LastMsg=string(path)+" "+string(types);
+	m_MessageHistory.insert(path);
 	pthread_mutex_unlock(m_Mutex);
 	
 	// put the data in a vector
@@ -102,4 +104,18 @@ bool Server::Get(const string &token, vector<OSCData*> &args)
 	}
 	pthread_mutex_unlock(m_Mutex);
 	return false;
+}
+
+bool Server::InHistory(const string &name) 
+{
+	if (m_MessageHistory.find(name)!=m_MessageHistory.end())
+	{
+		return true;
+	}
+	return false;
+}
+
+void Server::ClearHistory()
+{
+	m_MessageHistory.clear();
 }

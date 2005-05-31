@@ -176,6 +176,7 @@ void FluxusMain::Reshape(int width, int height)
 
 void FluxusMain::Render()
 {	
+	if (m_OSCServer!=NULL) m_OSCServer->ClearHistory();	
 	m_Physics.Tick();
   	for (map<string,Lifeforms*>::iterator i=m_Lifeforms.begin(); i!=m_Lifeforms.end(); i++)
   	{
@@ -334,6 +335,17 @@ string FluxusMain::StringFromOSC(const string &token, unsigned int index)
 		}
 	}
 	return "";
+}
+
+bool FluxusMain::MsgOSC(const string &token) 
+{ 
+	if (!m_OSCServer) 
+	{
+		cerr<<"osc server not running..."<<endl;
+		return "";
+	}
+		
+	return m_OSCServer->InHistory(token);	
 }
 
 string FluxusMain::GetLastMsg() 

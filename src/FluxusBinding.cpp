@@ -1134,6 +1134,14 @@ SCM FluxusBinding::peek_osc()
 	return gh_str2scm(value.c_str(),value.size());	
 }
 
+SCM FluxusBinding::msg_osc(SCM s_token)
+{
+	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "msg_osc");
+	size_t size=0;	
+ 	char *name=gh_scm2newstr(s_token,&size);
+	return gh_double2scm((double)Fluxus->MsgOSC(name));	
+}
+
 SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
 {
 	SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-get");
@@ -1597,6 +1605,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("start-osc",    start_osc);
 	gh_new_procedure0_2("from-osc",     from_osc);
 	gh_new_procedure("peek-osc", peek_osc, 0,0,0);
+	gh_new_procedure0_1("msg-osc", msg_osc);
 	
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);

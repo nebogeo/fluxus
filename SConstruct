@@ -3,7 +3,7 @@ Install   	 = "/usr/local/bin"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
 IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 	  
-Libs = Split("portaudio sndfile guile fftw3f ode png \
+Libs = Split("portaudio sndfile guile fftw3 ode png \
 			  glut tiff GL GLU z m Xi Xmu Xext Xt SM ICE X11 pthread lo")
 
 Source = Split("src/AudioCollector.cpp \
@@ -35,10 +35,6 @@ Source = Split("src/AudioCollector.cpp \
 
 env = Environment(CCFLAGS = '-pipe -Wall -O3 -ggdb -pg -ffast-math -Wno-unused -fPIC', LINKFLAGS='-pg')
 env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
-
-
-Libs = Split("portaudio sndfile guile fftw3 ode png \
-			  glut tiff GL GLU z m Xi Xmu Xext X11 pthread lo")
 
 if not GetOption('clean'):
 	print '--------------------------------------------------------'		

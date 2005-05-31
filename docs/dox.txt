@@ -580,6 +580,9 @@ OSC stands for Open Sound Control, and is a widely used protocol for passing dat
 (start-osc port)
 starts up the osc server, listening to the given port
 
+(msg-osc name)
+returns true if the message has been received since last frame
+
 (from-osc name index)
 returns either a number or string value from the osc message last sent with this name - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
 
@@ -600,6 +603,35 @@ this handy function returns the name, and format string of the last sent message
 
 and fluxus will dump a list of all the messages being recieved to the commandline, use this to 
 figure out what messages to use, and the types you can use on the message.
+
+An example of using osc to communicate between pd and fluxus:
+
+ -- osc.scm
+
+(define (test)
+    (push)
+    (translate (vector 1 0 (from-osc "/zzz" 0)))
+    (draw-cube)
+    (pop))
+
+(start-osc "6543")
+(engine-callback "(test)")
+
+--- EOF
+
+--- zzz.pd
+#N canvas 618 417 286 266 10;
+#X obj 58 161 sendOSC;
+#X msg 73 135 connect localhost 6543;
+#X msg 58 82 send /zzz \$1;
+#X floatatom 58 29 5 0 0 0 - - -;
+#X obj 58 54 / 100;
+#X obj 73 110 loadbang;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 4 0;
+#X connect 4 0 2 0;
+#X connect 5 0 1 0;
 
 --------------------------------------------------------------------------------------
 

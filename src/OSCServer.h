@@ -16,6 +16,7 @@
 
 #include <string>
 #include <lo/lo.h>
+#include <set>
 #include <map>
 #include <vector>
 #include <pthread.h>
@@ -56,6 +57,8 @@ public:
 	void Run();
 	bool Get(const string &token, vector<OSCData*> &args);
 	string GetLastMsg() { return m_LastMsg; }
+	void ClearHistory();
+	bool InHistory(const string &name);
 
 private:
 
@@ -64,6 +67,7 @@ private:
 	
 	static map<string,vector<OSCData*> > m_Map;
 	static string m_LastMsg;
+	static set<string> m_MessageHistory;
 	
 	lo_server_thread m_Server;
 	static bool m_Exit;
