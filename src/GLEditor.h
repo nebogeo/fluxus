@@ -48,7 +48,7 @@ private:
 	void ParseCloseParentheses(int pos, int type);
 	
 	string m_Text;
-	string m_CopyBuffer;
+	static string m_CopyBuffer;
 	unsigned int m_Position;
 	unsigned int m_HighlightStart;
 	unsigned int m_HighlightEnd;

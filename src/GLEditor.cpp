@@ -30,6 +30,9 @@
 #define GLEDITOR_COPY 3 
 #define GLEDITOR_PASTE 22 
 
+// static so we share between workspaces
+string GLEditor::m_CopyBuffer;
+
 GLEditor::GLEditor():
 m_PosX(0),
 m_PosY(0),
@@ -262,7 +265,10 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 				m_Selection=false;
 			break;
 			case GLEDITOR_COPY: // copy
-				m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+				if (m_Selection && m_HighlightEnd!=m_HighlightStart) 
+				{
+					m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+				}
 			break;
 			case GLEDITOR_PASTE: // paste
 				m_Text.insert(m_Position,m_CopyBuffer);
