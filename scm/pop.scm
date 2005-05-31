@@ -23,7 +23,7 @@
     (pop-deform-walk (pdata-size) vertlist deform-func))
 
 (define (pop-deform-walk count vertlist deform-func)
-    (pdata-set "p" count (vadd (car vertlist) (deform-func (car vertlist))))
+    (pdata-set "p" count (vadd (car vertlist) (deform-func count (car vertlist))))
     (if (< count 0)
         0
         (pop-deform-walk (- count 1) (cdr vertlist) deform-func)))    
@@ -32,8 +32,8 @@
 ; deformers - deformer functions take a point and output the deformed 
 ;             point
  
-(define (pop-wave-deformer p)
-    (vector (* 0.1 (sin (+ (time) (*(vector-ref p 1) 10.4)))) 0 0))
+(define (pop-wave-deformer n p)
+    (vector (* 0.2 (sin (+ (* (time) 10) (*(vector-ref p 1) 23)))) 0 0))
 
 ;--------------------------------------------------------------------
 ;--------------------------------------------------------------------
@@ -53,6 +53,9 @@
 
 ;--------------------------------------------------------------------
 ; shaders are called once per vertex
+
+(define v (vector 0 0 0))
+(define i (vector 0 0 0))
 
 (define (pop-toon-shader n camerapos obpos)
     (set! v (vadd obpos (pdata-get "p" n))) ; vertex in worldspace 

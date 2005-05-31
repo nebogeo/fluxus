@@ -28,7 +28,7 @@ using namespace std;
 class PortAudioClient
 {
 public:
-	static void Initialise(unsigned int s, int bs) { m_SampleRate=s; m_BufferSize=bs; }
+	static void Initialise(int d, unsigned int s, int bs) { m_Device=d; m_SampleRate=s; m_BufferSize=bs; }
 	static PortAudioClient *Get()      { if(!m_Singleton) m_Singleton=new PortAudioClient; return m_Singleton; }
 	static void PackUpAndGoHome() { if(m_Singleton)  { delete m_Singleton; m_Singleton=NULL; } }
 	
@@ -53,6 +53,7 @@ private:
 	static PortAudioStream*   m_Client;	
 	static long unsigned int  m_BufferSize;
 	static long unsigned int  m_SampleRate;	
+	static unsigned int       m_Device;
 	static bool               m_Attached;
 	
 	static float *m_RightData;

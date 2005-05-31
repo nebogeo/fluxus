@@ -7,11 +7,16 @@
 (define t (vector 0 0 0))
 (define points '())
 
+(clear-colour (vector 0 0 1))
+
+;(hint-none)
 (hint-unlit)
-(texture (load-texture "toon.png"))
+(hint-wire)
+(line-width 4)
+(texture (load-texture "textures/toon.png"))
 (shinyness 10)
 (specular (vector 1 1 1))
-(define ob (build-nurbs-sphere 10 20))
+(define ob (build-nurbs-sphere 6 8))
 
 ; reads the points into a list
 (define (store n)
@@ -22,6 +27,7 @@
 
 (define (deform n p)
     (set! v (vector (* 0.4 (sin (+ (time) (*(vector-ref (car p) 1) 10.4)))) 0 0))
+    (set! v (vmul v (* (gh n) 0.1)))
     (pdata-set "p" n (vadd v (car p)))
     (if (< n 0)
         0
@@ -43,7 +49,17 @@
         (vtransform (vector 0 0 0) (get-camera-transform))
         (vtransform (vector 0 0 0) (get-transform)))
     (finalise)
-    (ungrab))
+    (ungrab)
+
+    ;(render-instances -1)
+)
+
+(define (render-instances n)
+    (translate (vector 1 0 0))
+    (draw-instance ob)
+    (if (< n 0)
+        0
+        (render-instances (- n 1))))
 
 (grab ob)
 (store (pdata-size))

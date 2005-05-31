@@ -33,7 +33,7 @@ Source = Split("src/AudioCollector.cpp \
 				libfluxus/src/dada.cpp \
 				libfluxphysics/src/Physics.cpp")					
 
-env = Environment(CCFLAGS = '-pipe -Wall -O3 -ggdb -pg -ffast-math -Wno-unused -fPIC', LINKFLAGS='-pg')
+env = Environment(CCFLAGS = '-pipe -Wall -O3 -ffast-math -Wno-unused -fPIC', LINKFLAGS='-pg')
 env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
 
 if not GetOption('clean'):

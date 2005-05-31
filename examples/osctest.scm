@@ -4,12 +4,8 @@
 
 (define (osctest)
     (destroy out)
-    (set! out (build-text (peek-osc)))
-    (display (from-osc "/float" 0)) (newline)
-    (display (from-osc "/astring" 0)) (newline)
-    (display (from-osc "/test" 0)) (newline)
-    (display (from-osc "/test" 1)) (newline))
+    (set! out (build-text (peek-osc))))
 
-(start-osc "88000")
+(start-osc "88001")
 
 (every-frame "(osctest)")

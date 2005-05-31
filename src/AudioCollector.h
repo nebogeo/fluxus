@@ -49,7 +49,7 @@ private:
 class AudioCollector
 {
 public:
-	AudioCollector(int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
+	AudioCollector(int Device, int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
 	~AudioCollector();
 	
 	float *GetFFT();

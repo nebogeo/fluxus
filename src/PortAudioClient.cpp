@@ -23,6 +23,7 @@ PortAudioClient*  PortAudioClient::m_Singleton  = NULL;
 bool              PortAudioClient::m_Attached   = false;
 long unsigned int PortAudioClient::m_BufferSize = 256;
 long unsigned int PortAudioClient::m_SampleRate = 44100;
+unsigned int      PortAudioClient::m_Device = 0;
 void            (*PortAudioClient::RunCallback)(void*, unsigned int BufSize)=NULL;
 void             *PortAudioClient::RunContext   = NULL;	
 PortAudioStream  *PortAudioClient::m_Client     = NULL;
@@ -63,7 +64,7 @@ bool PortAudioClient::Attach(const string &ClientName)
 	}
 		
     err = Pa_OpenStream(&m_Client,
-              Pa_GetDefaultInputDeviceID(),
+              m_Device,
               2,            
               paFloat32,  /* 32 bit floating point input */
               NULL,

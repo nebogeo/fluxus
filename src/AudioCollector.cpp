@@ -76,7 +76,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AudioCollector::AudioCollector(int BufferLength, unsigned int Samplerate, int FFTBuffers) :
+AudioCollector::AudioCollector(int Device, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
 m_FFT(BufferLength),
 m_FFTBuffers(FFTBuffers),
@@ -87,20 +87,26 @@ m_Processing(false),
 m_ProcessPos(0)
 {
 	m_BufferLength = BufferLength;
+	
 	m_Buffer = new float[BufferLength];
+	memset(m_Buffer,0,BufferLength*sizeof(float));
+	
 	m_FFTBuffer = new float[BufferLength*m_FFTBuffers];
+	memset(m_FFTBuffer,0,BufferLength*sizeof(float));
+	
 	m_JackBuffer = new float[BufferLength];
+	memset(m_JackBuffer,0,BufferLength*sizeof(float));
+	
 	m_AudioBuffer = new float[BufferLength];
+	memset(m_AudioBuffer,0,BufferLength*sizeof(float));
+	
 	m_FFTOutput = new float[NUM_BARS];
 	for (int n=0; n<NUM_BARS; n++) m_FFTOutput[n]=0;
-	m_BufferLength=BufferLength;
-
-	m_JackBuffer = new float[BufferLength];
+	
 	m_Mutex = new pthread_mutex_t;
 	pthread_mutex_init(m_Mutex,NULL);
 	
-	m_BufferLength=BufferLength;
-	PortAudioClient::Initialise(Samplerate,BufferLength);
+	PortAudioClient::Initialise(Device,Samplerate,BufferLength);
 	PortAudioClient *Jack = PortAudioClient::Get();
 	Jack->SetCallback(AudioCallback,(void*)this);
 	Jack->Attach("fluxus");

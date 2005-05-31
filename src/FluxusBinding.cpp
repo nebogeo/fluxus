@@ -208,14 +208,14 @@ SCM FluxusBinding::key_pressed(SCM s_key)
 SCM FluxusBinding::show_axis(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "show_axis");	
-    Fluxus->GetRenderer()->ShowAxis(gh_scm2int(s_id));
+    Fluxus->GetRenderer()->ShowAxis(gh_scm2double(s_id));
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::show_fps(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "show_fps");	
-    Fluxus->GetRenderer()->SetFPSDisplay(gh_scm2int(s_id));
+    Fluxus->GetRenderer()->SetFPSDisplay(gh_scm2double(s_id));
     return SCM_UNSPECIFIED;
 }
 SCM FluxusBinding::make_light(SCM cam)
@@ -859,25 +859,26 @@ SCM FluxusBinding::srandom()
 	return gh_double2scm(RandFloat());
 }
 
-SCM FluxusBinding::start_audio(SCM s_bs, SCM s_sr)
+SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
 {
-	SCM_ASSERT(SCM_NUMBERP(s_bs), s_bs, SCM_ARG1, "start-audio");
-	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG2, "start-audio");
+	SCM_ASSERT(SCM_NUMBERP(s_dev), s_dev, SCM_ARG1, "start-audio");
+	SCM_ASSERT(SCM_NUMBERP(s_bs), s_bs, SCM_ARG2, "start-audio");
+	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG3, "start-audio");
 	if (Audio==NULL)
 	{
-		Audio = new AudioCollector((unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
+		Audio = new AudioCollector((int)gh_scm2double(s_dev),(unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
 	}
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::get_harmonic(SCM s_harm)
 {
-	SCM_ASSERT(SCM_NUMBERP(s_harm), s_harm, SCM_ARG1, "get-harmonic");
+	SCM_ASSERT(SCM_NUMBERP(s_harm), s_harm, SCM_ARG1, "get_harmonic");	
 	if (Audio!=NULL)
 	{	
     	return gh_double2scm(Audio->GetHarmonic((int)gh_scm2double(s_harm)));
 	}
-	return 0;
+	return gh_double2scm(0);
 }
 
 SCM FluxusBinding::load_texture(SCM s_name)
@@ -896,7 +897,7 @@ SCM FluxusBinding::load_texture(SCM s_name)
 SCM FluxusBinding::texture(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "texture");	
-    Fluxus->GetRenderer()->GetState()->Texture=gh_scm2int(s_id);
+    Fluxus->GetRenderer()->GetState()->Texture=(int)gh_scm2double(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1565,7 +1566,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure("end-framedump", end_framedump, 0,0,0);
 	
 	// audio
-	gh_new_procedure0_2("start-audio",  start_audio);	
+	gh_new_procedure3_0("start-audio",  start_audio);	
 	gh_new_procedure0_1("gain",         gain);	
 	gh_new_procedure0_1("get-harmonic", get_harmonic);
 	gh_new_procedure0_1("gh",           get_harmonic);
