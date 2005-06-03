@@ -1140,7 +1140,7 @@ SCM FluxusBinding::msg_osc(SCM s_token)
 	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "msg_osc");
 	size_t size=0;	
  	char *name=gh_scm2newstr(s_token,&size);
-	return gh_double2scm((double)Fluxus->MsgOSC(name));	
+	return gh_bool2scm(Fluxus->MsgOSC(name));	
 }
 
 SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)

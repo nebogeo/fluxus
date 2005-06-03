@@ -67,7 +67,8 @@ public:
 	string GetLastMsg();
 
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
-	
+	void ClearOSCHistory();
+
 protected:
 	Renderer m_Renderer;
     Physics  m_Physics;
