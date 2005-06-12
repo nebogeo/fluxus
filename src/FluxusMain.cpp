@@ -58,8 +58,18 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	if (key!=0 || special!=-1) 
 	{
 		if (special==GLUT_KEY_F1) m_CameraMode=SCENE;
-		if (special==GLUT_KEY_F2) m_CameraMode=EDITOR;
-		if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor].GetText();
+		else if (special==GLUT_KEY_F2) m_CameraMode=EDITOR;
+		else if (special==GLUT_KEY_F3) ResetCamera();
+		else if (special==GLUT_KEY_F4) m_Editor[m_CurrentEditor].Reset();
+		else if (special==GLUT_KEY_F9) 
+		{
+			m_Editor[m_CurrentEditor].m_TextColourRed=rand()%1000/1000.0f;
+			m_Editor[m_CurrentEditor].m_TextColourBlue=rand()%1000/1000.0f;
+			m_Editor[m_CurrentEditor].m_TextColourGreen=rand()%1000/1000.0f;
+		}	
+		else if (special==GLUT_KEY_F10) m_Editor[m_CurrentEditor].m_TextWidth--;
+		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor].m_TextWidth++;
+		else if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor].GetText();
 	
 		// the editor only takes keyboard events
 		if (!m_HideScript) m_Editor[m_CurrentEditor].Handle(button,key,special,state,x,y);
@@ -248,6 +258,10 @@ void FluxusMain::LoadScript(const string &Filename)
 		delete[] buffer;
 		fclose(file);
 	}
+	else
+	{
+		cerr<<"couldn't load: "<<Filename<<endl;
+	}
 	
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
 }
@@ -284,7 +298,7 @@ void FluxusMain::StartOSC(const string &port)
 	}
 }
 
-char FluxusMain::TypeFromOSC(const string &token, unsigned int index)
+char FluxusMain::TypeFromOSC(unsigned int index)
 {
 	if (!m_OSCServer) 
 	{
@@ -293,7 +307,7 @@ char FluxusMain::TypeFromOSC(const string &token, unsigned int index)
 	}
 	
 	vector<OSCData*> args;
-	if (m_OSCServer->Get(token,args))
+	if (m_OSCServer->GetArgs(args))
 	{
 		if (index<args.size())
 		{
@@ -303,7 +317,7 @@ char FluxusMain::TypeFromOSC(const string &token, unsigned int index)
 	return '0';
 }
 
-float FluxusMain::NumberFromOSC(const string &token, unsigned int index) 
+float FluxusMain::NumberFromOSC(unsigned int index) 
 { 
 	if (!m_OSCServer) 
 	{
@@ -312,7 +326,7 @@ float FluxusMain::NumberFromOSC(const string &token, unsigned int index)
 	}
 	
 	vector<OSCData*> args;
-	if (m_OSCServer->Get(token,args))
+	if (m_OSCServer->GetArgs(args))
 	{
 		if (index<args.size() && args[index]->Type()=='n')
 		{
@@ -322,7 +336,7 @@ float FluxusMain::NumberFromOSC(const string &token, unsigned int index)
 	return 0;
 }
 
-string FluxusMain::StringFromOSC(const string &token, unsigned int index) 
+string FluxusMain::StringFromOSC(unsigned int index) 
 { 
 	if (!m_OSCServer) 
 	{
@@ -331,7 +345,7 @@ string FluxusMain::StringFromOSC(const string &token, unsigned int index)
 	}
 	
 	vector<OSCData*> args;
-	if (m_OSCServer->Get(token,args))
+	if (m_OSCServer->GetArgs(args))
 	{
 		if (index<args.size() && args[index]->Type()=='s')
 		{
@@ -349,7 +363,7 @@ bool FluxusMain::MsgOSC(const string &token)
 		return "";
 	}
 	
-	return m_OSCServer->InHistory(token);	
+	return m_OSCServer->SetMsg(token);	
 }
 
 string FluxusMain::GetLastMsg() 

@@ -93,7 +93,12 @@ ctrl-s : Save current script.
 ctrl-0 to 9 : Switch to selected workspace
 F1 : Mouse moves the scene camera.
 F2 : Mouse moves the editor camera.
+F3 : Resets the scene camera.
+F4 : Resets the editor camera.
 F5 : Execute the selected text, or all if none is selected.
+F9 : Randomise the text colour
+F10 : Make text thinner
+F11 : Make text thicker
 
 3.4  Loading/Saving scripts 
 
@@ -582,29 +587,29 @@ OSC stands for Open Sound Control, and is a widely used protocol for passing dat
 (start-osc port)
 starts up the osc server, listening to the given port
 
-(msg-osc name)
-returns true if the message has been received since last frame
+(osc-msg name)
+returns true if the message has been received since last frame, and sets the current source to this message if it has been received
 
-(from-osc name index)
-returns either a number or string value from the osc message last sent with this name - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
+(osc index)
+returns either a number or string value from the current osc message source - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
 
-(from-osc "/myvalue" 0) 
+(osc-msg "/myvalue")
+(osc 0) 
 
 will evaluate to 0.4. 
 
-(from-osc "/myvalue" 1) 
+(osc 1) 
 
-will evaluate to "hello". 
+will then evaluate to "hello". 
 
 if a message has never been sent, the value defaults to zero, or a empty string.
 
-(peek-osc)
-this handy function returns the name, and format string of the last sent message to fluxus. you can then write something like:
+(osc-peek)
+this handy function returns the name, and format string and number/string arguments of the last sent message as a string. you can then write something like:
 
-(display (peek-osc)) (newline)
+(display (osc-peek)) (newline)
 
-and fluxus will dump a list of all the messages being recieved to the commandline, use this to 
-figure out what messages to use, and the types you can use on the message.
+and fluxus will dump a list of all the messages being recieved to the commandline, use this to figure out what messages to use, and the types you can use on the message.
 
 An example of using osc to communicate between pd and fluxus:
 
@@ -612,7 +617,8 @@ An example of using osc to communicate between pd and fluxus:
 
 (define (test)
     (push)
-    (translate (vector 1 0 (from-osc "/zzz" 0)))
+	(osc-msg "/zzz")
+    (translate (vector 1 0 (osc 0)))
     (draw-cube)
     (pop))
 

@@ -1,5 +1,6 @@
 0.7
 
+overhauled the osc support (osc-msg) (osc) (osc-peek)
 operations for matrix and vector types in scheme
 primitive (set) and (get) for changing per vert primitive values (pdata)
 (get-transform) returns grabbed object transform matrix in world space
@@ -25,6 +26,7 @@ added:
 (joint-param)
 big document update
 loads more scripts, including live ones
+more editor features
 
 0.6
 

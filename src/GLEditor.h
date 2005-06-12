@@ -30,10 +30,15 @@ public:
 
 	string GetText();
 	void SetText(const string& s) { m_Text=s; ProcessTabs(); }
-
+	void Reset();
+	
 	float m_PosX,m_PosY,m_PosZ;
 	float m_RotX,m_RotY,m_DisY;
-
+	float m_TextWidth;
+	float m_TextColourRed;
+	float m_TextColourGreen;
+	float m_TextColourBlue;
+	
 private:
 
 	void DrawCharBlock();

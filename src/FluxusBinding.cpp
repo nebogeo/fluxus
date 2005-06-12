@@ -1109,38 +1109,35 @@ SCM FluxusBinding::start_osc(SCM s_port)
     return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::from_osc(SCM s_token, SCM s_index)
-{
-	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "from_osc");	
-    SCM_ASSERT(SCM_NUMBERP(s_index), s_index, SCM_ARG2, "from_osc");
-    size_t size=0;
-	char *name=gh_scm2newstr(s_token,&size);
-	unsigned int index=(unsigned int)gh_scm2double(s_index);
-	char type = Fluxus->TypeFromOSC(name,index);
-	SCM ret;
-	if (type=='n') ret=gh_double2scm(Fluxus->NumberFromOSC(name,index));
-	else if (type=='s') 
-	{
-		string value=Fluxus->StringFromOSC(name,index);
-		ret=gh_str2scm(value.c_str(),value.size());	
-	}
-	else ret=SCM_UNSPECIFIED;
-	free(name);
-	return ret;
-}
-
-SCM FluxusBinding::peek_osc()
-{
-	string value=Fluxus->GetLastMsg();
-	return gh_str2scm(value.c_str(),value.size());	
-}
-
-SCM FluxusBinding::msg_osc(SCM s_token)
+SCM FluxusBinding::osc_msg(SCM s_token)
 {
 	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "msg_osc");
 	size_t size=0;	
  	char *name=gh_scm2newstr(s_token,&size);
 	return gh_bool2scm(Fluxus->MsgOSC(name));	
+}
+
+SCM FluxusBinding::osc(SCM s_index)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_index), s_index, SCM_ARG2, "osc");
+ 
+	unsigned int index=(unsigned int)gh_scm2double(s_index);
+	char type = Fluxus->TypeFromOSC(index);
+	SCM ret;
+	if (type=='n') ret=gh_double2scm(Fluxus->NumberFromOSC(index));
+	else if (type=='s') 
+	{
+		string value=Fluxus->StringFromOSC(index);
+		ret=gh_str2scm(value.c_str(),value.size());	
+	}
+	else ret=SCM_UNSPECIFIED;
+	return ret;
+}
+
+SCM FluxusBinding::osc_peek()
+{
+	string value=Fluxus->GetLastMsg();
+	return gh_str2scm(value.c_str(),value.size());	
 }
 
 SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
@@ -1604,9 +1601,9 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("twist",        twist);
 	
 	gh_new_procedure0_1("start-osc",    start_osc);
-	gh_new_procedure0_2("from-osc",     from_osc);
-	gh_new_procedure("peek-osc", peek_osc, 0,0,0);
-	gh_new_procedure0_1("msg-osc", msg_osc);
+	gh_new_procedure0_1("osc",          osc);
+	gh_new_procedure("osc-peek",        osc_peek, 0,0,0);
+	gh_new_procedure0_1("osc-msg",      osc_msg);
 	
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);

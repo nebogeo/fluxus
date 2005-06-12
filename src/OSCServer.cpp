@@ -67,20 +67,33 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 	
 	// record the message name
 	pthread_mutex_lock(m_Mutex);
-	m_LastMsg=string(path)+" "+string(types);
+	m_LastMsg=string(path)+" "+string(types)+" ";
 	m_MessageHistory.insert(path);
 	pthread_mutex_unlock(m_Mutex);
 	
 	// put the data in a vector
 	vector<OSCData*> argsdata;
+	char buf[256];
 	
 	for (unsigned int i=0; i<strlen(types); i++)
 	{
 		switch (types[i]) 
 		{
-			case 'f': argsdata.push_back(new OSCNumber(argv[i]->f)); break;
-			case 'i': argsdata.push_back(new OSCNumber(argv[i]->i)); break;
-			case 's': argsdata.push_back(new OSCString(&argv[i]->s)); break;
+			case 'f': 
+			{
+				argsdata.push_back(new OSCNumber(argv[i]->f)); 
+				snprintf(buf,256,"%f",argv[i]->f);
+				m_LastMsg+=string(buf)+" "; 
+			}
+			break;
+			case 'i': 
+			{
+				argsdata.push_back(new OSCNumber(argv[i]->i)); 
+				snprintf(buf,256,"%i",argv[i]->i);
+				m_LastMsg+=string(buf)+" "; 			
+			}
+			break;
+			case 's': argsdata.push_back(new OSCString(&argv[i]->s)); m_LastMsg+=string(&argv[i]->s)+" "; break;
 			default : argsdata.push_back(new OSCData); break; // put in a null data type
 		}
 	}
@@ -92,24 +105,28 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
     return 1;
 }
 
-bool Server::Get(const string &token, vector<OSCData*> &args) 
+bool Server::GetArgs(vector<OSCData*> &args) 
 { 
-	pthread_mutex_lock(m_Mutex);
-	map<string,vector<OSCData*> >::iterator i=m_Map.find(token);
-	if (i!=m_Map.end())
+	if (m_CurrentOSCMsg!="")
 	{
-		args = i->second;
+		pthread_mutex_lock(m_Mutex);
+		map<string,vector<OSCData*> >::iterator i=m_Map.find(m_CurrentOSCMsg);
+		if (i!=m_Map.end())
+		{
+			args = i->second;
+			pthread_mutex_unlock(m_Mutex);
+			return true;
+		}
 		pthread_mutex_unlock(m_Mutex);
-		return true;
 	}
-	pthread_mutex_unlock(m_Mutex);
 	return false;
 }
 
-bool Server::InHistory(const string &name) 
+bool Server::SetMsg(const string &name) 
 {
 	if (m_MessageHistory.find(name)!=m_MessageHistory.end())
 	{
+		m_CurrentOSCMsg=name;
 		return true;
 	}
 	return false;

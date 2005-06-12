@@ -60,9 +60,9 @@ public:
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void StartOSC(const string &port);
-	char TypeFromOSC(const string &token, unsigned int index);
-	float NumberFromOSC(const string &token, unsigned int index);
-	string StringFromOSC(const string &token, unsigned int index);
+	char TypeFromOSC(unsigned int index);
+	float NumberFromOSC(unsigned int index);
+	string StringFromOSC(unsigned int index);
 	bool MsgOSC(const string &token);
 	string GetLastMsg();
 

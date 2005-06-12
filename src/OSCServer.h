@@ -55,10 +55,10 @@ public:
 	~Server();
 	
 	void Run();
-	bool Get(const string &token, vector<OSCData*> &args);
+	bool SetMsg(const string &name);
+	bool GetArgs(vector<OSCData*> &args);
 	string GetLastMsg() { return m_LastMsg; }
 	void ClearHistory();
-	bool InHistory(const string &name);
 
 private:
 
@@ -72,4 +72,5 @@ private:
 	lo_server_thread m_Server;
 	static bool m_Exit;
 	static pthread_mutex_t* m_Mutex;
+	string m_CurrentOSCMsg;
 };

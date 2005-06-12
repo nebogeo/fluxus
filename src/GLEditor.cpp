@@ -40,6 +40,10 @@ m_PosZ(0),
 m_RotX(0),
 m_RotY(0),
 m_DisY(-10),
+m_TextWidth(1),
+m_TextColourRed(1),
+m_TextColourGreen(1),
+m_TextColourBlue(1),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),
@@ -57,6 +61,16 @@ m_BottomTextPosition(0)
 
 GLEditor::~GLEditor() 
 {
+}
+
+void GLEditor::Reset()
+{
+	m_PosX=m_PosY=m_PosZ=m_RotX=m_RotY=0;
+	m_DisY=-10;
+	m_TextWidth=1;
+	m_TextColourRed=1;
+	m_TextColourGreen=1;
+	m_TextColourBlue=1;
 }
 
 void GLEditor::Reshape(unsigned int w,unsigned int h)
@@ -93,7 +107,7 @@ void GLEditor::Render()
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
-	glLineWidth(1);
+	glLineWidth(m_TextWidth);
 	glLoadIdentity();
 	glTranslatef(-4,3,-5);
 	glColor4f(0.7,0.7,0.7,1);
@@ -167,6 +181,7 @@ void GLEditor::Render()
 		}
 		else 
 		{
+			glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
 			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
 		}
 		

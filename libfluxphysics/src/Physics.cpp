@@ -558,8 +558,8 @@ void Physics::SetJointParam(int ID, const string &Param, float Value)
 		case HingeJoint     : dJointSetHingeParam(i->second->Joint,p,Value); break;	
 		case SliderJoint    : dJointSetSliderParam(i->second->Joint,p,Value); break;	
 		case ContactJoint   : break;	// no set param required
-		case UniversalJoint : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
-		case Hinge2Joint    : dJointSetUniversalParam(i->second->Joint,p,Value); break;	
+		case UniversalJoint : dJointSetUniversalParam(i->second->Joint,p,Value); break;	
+		case Hinge2Joint    : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
 		case FixedJoint     : break;	// no set param required
 		case AMotorJoint    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
 		default : cerr<<"unknown joint type "<<i->second->Type<<endl; return; break;	
