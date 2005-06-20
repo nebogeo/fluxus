@@ -11,7 +11,7 @@
 
 ;(hint-none)
 (hint-unlit)
-(hint-wire)
+;(hint-wire)
 (line-width 4)
 (texture (load-texture "textures/toon.png"))
 (shinyness 10)

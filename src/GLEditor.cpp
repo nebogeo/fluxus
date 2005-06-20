@@ -108,6 +108,7 @@ void GLEditor::Render()
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
 	glLineWidth(m_TextWidth);
+	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glLoadIdentity();
 	glTranslatef(-4,3,-5);
 	glColor4f(0.7,0.7,0.7,1);
@@ -323,6 +324,8 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 					m_Position+=4;
 				}
 				break;
+				case 172: break; // ignore ¬
+				case 163: break; // ignore £
 				case GLEDITOR_RETURN: key='\n'; // fallthrough (replacement of newline)
 				default:
 					char temp[2];

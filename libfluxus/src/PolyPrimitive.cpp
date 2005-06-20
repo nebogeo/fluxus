@@ -129,10 +129,10 @@ void PolyPrimitive::SetData(char t, unsigned int i, dVector v)
 	{
 		switch (t)
 		{
-			case 'p': m_VertData[i]=v; break;
-			case 'n': m_NormData[i]=v; break;
-			case 'c': m_ColData[i]=v; break;
-			case 't': m_TexData[i]=v; break;
+			case 'p': if (i<m_VertData.size()) m_VertData[i]=v; break;
+			case 'n': if (i<m_NormData.size()) m_NormData[i]=v; break;
+			case 'c': if (i<m_ColData.size()) m_ColData[i]=v; break;
+			case 't': if (i<m_TexData.size()) m_TexData[i]=v; break;
 			default: break;
 		}
 	}
@@ -145,10 +145,10 @@ dVector PolyPrimitive::GetData(char t, unsigned int i)
 	{
 		switch (t)
 		{
-			case 'p': ret=m_VertData[i]; break;
-			case 'n': ret=m_NormData[i]; break;
-			case 'c': ret=m_ColData[i]; break;
-			case 't': ret=m_TexData[i]; break;
+			case 'p': if (i<m_VertData.size()) ret=m_VertData[i]; break;
+			case 'n': if (i<m_NormData.size()) ret=m_NormData[i]; break;
+			case 'c': if (i<m_ColData.size()) ret=m_ColData[i]; break;
+			case 't': if (i<m_TexData.size()) ret=m_TexData[i]; break;
 			default: break;
 		}
 	}

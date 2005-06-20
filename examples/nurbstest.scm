@@ -5,7 +5,10 @@
 (define v (vector 0 0 0))
 (define t (vector 0 0 0))
 (define points '())
+(hint-wire)
+
 (define ob (build-nurbs-sphere 8 10))
+
 
 ; reads the points into a list
 (define (store n)
@@ -15,7 +18,7 @@
         (store (- n 1)))) 
 
 (define (deform n p)
-    (set! v (vector (* 1 (sin (+ (time) (*(vector-ref (car p) 1) 5.4)))) 0 0))
+    (set! v (vector (* 0.2 (sin (+ (* (time) 2) (*(vector-ref (car p) 1) 5.4)))) 0 0))
     (pdata-set "p" n (vadd v (car p)))
     (if (< n 0)
         0
