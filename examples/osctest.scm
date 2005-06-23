@@ -4,7 +4,7 @@
 
 (define (osctest)
     (destroy out)
-    (set! out (build-text (peek-osc))))
+    (set! out (build-text (osc-peek))))
 
 (start-osc "88001")
 

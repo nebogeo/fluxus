@@ -1,4 +1,4 @@
-Fluxus manual v0.7 : (C) 2005 Dave Griffiths : dave@pawfal.org : www.pawfal.org
+Fluxus manual v0.7 : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 Contents
 

@@ -1,5 +1,8 @@
+Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
+
+fluxus is a dependancy heavy application
+
 requires:
-opengl     http://www.opengl.org
 ode        http://opende.sourceforge.net/
 guile      http://www.gnu.org/software/guile/guile.html
 fftw       http://www.fftw.org/
@@ -7,9 +10,12 @@ portaudio  http://www.portaudio.com/
 libsndfile http://www.mega-nerd.com/libsndfile/
 liblo      http://plugin.org.uk/liblo/
 
+and if that's not enough, you'll also need scons (http://www.scons.org/) to build fluxus
+
 to build, type:
 
 scons
-scons install
+scons install (as root)
+
 
 

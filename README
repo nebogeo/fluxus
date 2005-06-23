@@ -1,14 +1,18 @@
-(fluxus)
+Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 act of a flowing; a continuous moving on or passing by, as of a flowing stream; a continuous 
 succession of changes
 
 fluxus is a small realtime render engine for linux that generates animation from sound.
-fluxus is released under the GPL licence.
+released under the GPL licence (see COPYING)
 
 see INSTALL for information on building
 
-help? see docs and examples, or dave@pawfal.org
-check the wiki at www.pawfal.org for more scripts
+contents
+
+doc/dox.txt : documentation on the application and scripting language
+examples/   : a loose collection of example scripts, tests and live scripts I've used
+scm/        : a set of util scheme code for various tasks (not much here yet)
+textures/   : some textures used in the examples
 
 www.pawfal.org/nebogeo
