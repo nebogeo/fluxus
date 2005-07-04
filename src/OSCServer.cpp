@@ -23,6 +23,26 @@
 
 using namespace std;
 
+void Client::Send(const string &msg, const vector<OSCData*> &args)
+{
+	lo_address oscaddr=lo_address_new_from_url(m_Destination.c_str());
+	lo_message oscmsg=lo_message_new();
+
+	for (vector<OSCData*>::const_iterator i=args.begin(); i!=args.end(); i++)
+	{					
+		switch((*i)->Type())
+		{
+			case 's': lo_message_add_string(oscmsg,static_cast<OSCString*>(*i)->Value.c_str()); break;
+			case 'n': lo_message_add_float(oscmsg,static_cast<OSCNumber*>(*i)->Value); break;
+			default: break;
+		}
+	} 
+	lo_send_message(oscaddr, msg.c_str(), oscmsg);
+	lo_address_free(oscaddr);
+	lo_message_free(oscmsg);
+}
+	
+
 static const unsigned int MAX_MSGS_STORED=2048;
 
 bool Server::m_Exit=false;

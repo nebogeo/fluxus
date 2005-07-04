@@ -31,6 +31,10 @@ m_Physics(&m_Renderer),
 m_CameraMode(SCENE),
 m_CurrentEditor(0),
 m_Init(true),
+m_LastMouseX(0),
+m_LastMouseY(0),
+m_LastButton(0),
+m_CurButton(0),
 m_RotX(0),
 m_RotY(0),
 m_PosX(0),
@@ -40,7 +44,8 @@ m_Frame(-1),
 m_Width(x),
 m_Height(y),
 m_HideScript(false),
-m_OSCServer(NULL)
+m_OSCServer(NULL),
+m_OSCClient(NULL)
 {
 	m_Renderer.SetDesiredFPS(100000);
 }
@@ -54,7 +59,7 @@ void FluxusMain::ResetCamera()
 void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y) 
 {
 	//cerr<<"key:"<<key<<" button:"<<button<<" special:"<<special<<" state:"<<state<<" x:"<<x<<" y:"<<y<<endl;
-
+	
 	if (key!=0 || special!=-1) 
 	{
 		if (special==GLUT_KEY_F1) m_CameraMode=SCENE;
@@ -76,6 +81,9 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	}
 	else
 	{
+		if (state==0) m_CurButton=button+1; // button on
+		else if (state==1) m_CurButton=0; // button off			
+	
 		if (m_CameraMode==SCENE)
 		{
 			// mouse event then?
@@ -192,11 +200,7 @@ void FluxusMain::ClearOSCHistory()
 void FluxusMain::Render()
 {		
 	m_Physics.Tick();
-  	for (map<string,Lifeforms*>::iterator i=m_Lifeforms.begin(); i!=m_Lifeforms.end(); i++)
-  	{
-  		i->second->Update();
-  	}
-  	
+ 	
 	m_Renderer.Render();
 	if (!m_HideScript) m_Editor[m_CurrentEditor].Render();
 	
@@ -209,16 +213,6 @@ void FluxusMain::Render()
 		//  MAC RLE ----------------------------------------------------^
 		m_Frame++;
 	}
-}
-
-Lifeforms *FluxusMain::GetLifeforms(const string &name)
-{
-	map<string,Lifeforms*>::iterator i=m_Lifeforms.find(name);
-	if (i!=m_Lifeforms.end())
-	{
-		return i->second;
-	}
-	return NULL;
 }
 
 void FluxusMain::LoadScript(const string &Filename) 
@@ -375,6 +369,27 @@ string FluxusMain::GetLastMsg()
 	}
 	
 	return m_OSCServer->GetLastMsg();
+}
+
+void FluxusMain::StartOSCClient(const string &port)
+{
+	if (!m_OSCClient)
+	{
+		m_OSCClient = new Client();
+	}
+	
+	m_OSCClient->SetDestination(port.c_str());
+}
+
+void FluxusMain::SendOSC(const string &msg, const vector<OSCData*> &args)
+{
+	if (!m_OSCClient) 
+	{
+		cerr<<"osc client not running... (you need to set the osc destination)"<<endl;
+		return;
+	}
+	
+	m_OSCClient->Send(msg,args);
 }
 
 //////////////////////////////////////////////////////////////////////

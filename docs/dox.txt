@@ -21,16 +21,17 @@ Contents
 8.1      Surface parameters
 8.2      Render hints
 9.0  Maths calls 
-10.0  Editing primitives 
+10.0 Editing primitives 
 10.1      Types (incl pdata types availible) 
-11.0 Animation sources 
-11.1     Time
-11.2     Audio 
-11.3     OSC 
-12.0 Physics 
-13.0 Turtle builder 
-14.0 Examples 
-15.0 Index of all functions 
+11.0 User input
+12.0 Animation sources 
+12.1     Time
+12.2     Audio 
+12.3     OSC 
+13.0 Physics 
+14.0 Turtle builder 
+15.0 Examples 
+16.0 Index of all functions 
 
 --------------------------------------------------------------------------------------
 
@@ -553,17 +554,32 @@ Texture coords: "t"
 
 --------------------------------------------------------------------------------------
 
-11.0 Animation sources 
+11.0 User Input 
+
+Fluxus can also be used to build interactive applications, and allows user input to be read by scripts.
+
+(key-pressed t)                     
+returns true if the key has been pressed this frame
+
+(mouse-button b)                     
+returns true if the corresponding mouse button has been pressed this frame.
+
+(mouse-over)
+returns the id of the object the mouse is currently over
+
+--------------------------------------------------------------------------------------
+
+12.0 Animation sources 
 
 Animation sources are taps into the outside world. 
 
-11.1 Time
+12.1 Time
 
 The simplest source of information to use for animation is (time), which returns the time in seconds since fluxus was started. This is good to use for animation, as it means your scripts will be frame rate independant - in other words the animation will look the same regardless of the machine it's running on, or the resolution etc.
 
 Another time related call is (delta) which returns the change in time since the last frame. Technically, all your incremental animation data, regardless of source, should be scaled by this factor, to maintain frame rate independance.
 
-11.2 Audio 
+12.2 Audio 
 
 Part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
 
@@ -582,9 +598,9 @@ this command temporarally disables the realtime reading of the input audio strea
 
 11.3  OSC 
 
-OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia applications. 
+OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia applications. Fluxus can send or receive messages.
 
-(start-osc port)
+(osc-source port)
 starts up the osc server, listening to the given port
 
 (osc-msg name)
@@ -641,9 +657,22 @@ An example of using osc to communicate between pd and fluxus:
 #X connect 4 0 2 0;
 #X connect 5 0 1 0;
 
+OSC messages can also be sent with fluxus.
+
+(osc-destination port)
+starts up the osc client, which will send messages to the given port. 
+NOTE: due to the current implementation of the osc library fluxus uses, there will be a crash if the port is not fully specified, use strings like "osc.udp://localhost:4444" and it all seems to work fine
+
+(osc-send name argslist)
+sends a message with the argument list as the osc data. only supports numbers (which are converted to floats) and strings as data, ie:
+
+(osc-send "/hello" '(1 2 "three"))
+
+will send the message out to the current osc destination
+
 --------------------------------------------------------------------------------------
 
-12.0  Physics 
+13.0  Physics 
 
 The physics system, based on the ode library, allows you to program physical properties into objects and set them in motion. It's vital to read the ode documentation, which you've downloaded if you're running fluxus. There are full explanations of the joint types and parameters with handy diagrams - I'm not going to attempt to duplicate that here.
 
@@ -696,7 +725,7 @@ has been reached the oldest objects are destroyed.
 
 --------------------------------------------------------------------------------------
 
-13.0 Turtle builder 
+14.0 Turtle builder 
 
 The turtle polybuilder is an experimental way of building polygonal objects using a logo style
 turtle in 3D space. as you drive the turtle around you can place vertices and build shapes 
@@ -726,11 +755,11 @@ resets the current postion and rotation of the turtle
 
 --------------------------------------------------------------------------------------
 
-14.0 Examples 
+15.0 Examples 
 
 --------------------------------------------------------------------------------------
 
-15.0 Index of all functions 
+16.0 Index of all functions 
 
 Types:
 n = number

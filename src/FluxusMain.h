@@ -17,7 +17,6 @@
 #include <Renderer.h>
 #include <PolyPrimitive.h>
 #include <Physics.h>
-#include <Lifeforms.h>
 #include "GLEditor.h"
 #include "OSCServer.h"
 
@@ -45,9 +44,6 @@ public:
 	
 	Renderer *GetRenderer() { return &m_Renderer; }
 	Physics *GetPhysics() { return &m_Physics; }
-	void AddLifeforms(const string &name) { m_Lifeforms[name]=new Lifeforms; m_Lifeforms[name]->RegisterRenderer(&m_Renderer);}
-	Lifeforms *GetLifeforms(const string &name);
-    void ClearLifeforms() { m_Lifeforms.clear(); }
 
     string GetScriptFragment() { string temp=m_Script; m_Script=""; return temp; }
     void Dump(const string &Text) { cerr<<Text<<endl; }
@@ -65,16 +61,20 @@ public:
 	string StringFromOSC(unsigned int index);
 	bool MsgOSC(const string &token);
 	string GetLastMsg();
+	void StartOSCClient(const string &port);
+	void SendOSC(const string &msg, const vector<OSCData*> &args);
 
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
 	void ClearOSCHistory();
+	
+	float GetMouseX() { return m_LastMouseX; }
+	float GetMouseY() { return m_LastMouseY; }
+	int GetMouseButton() { return m_CurButton; }
 
 protected:
 	Renderer m_Renderer;
     Physics  m_Physics;
-
-    map<string,Lifeforms*> m_Lifeforms;
-
+	
 private:
 	enum CameraMode{SCENE,EDITOR};
 	CameraMode m_CameraMode;
@@ -87,6 +87,7 @@ private:
 	int m_LastMouseX;
 	int m_LastMouseY;
 	int m_LastButton;
+	int m_CurButton;
 	float m_RotX,m_RotY,m_PosX,m_PosY,m_DisY;
 	dVector m_Pos;
 	dVector m_Dir;
@@ -98,6 +99,7 @@ private:
 	bool m_HideScript;
 	
 	Server *m_OSCServer;
+	Client *m_OSCClient;
 };
 
 };

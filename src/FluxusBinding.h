@@ -139,10 +139,12 @@ public:
 	static SCM start_framedump(SCM s_name);
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);
-	static SCM start_osc(SCM s_port);
+	static SCM osc_source(SCM s_port);
 	static SCM osc_msg(SCM s_token);
 	static SCM osc(SCM s_index);
+	static SCM osc_destination(SCM s_port);
 	static SCM osc_peek();
+	static SCM osc_send(SCM s_msg, SCM s_argslist);
 	static SCM pdata_size();
 	static SCM pdata_get(SCM s_t, SCM s_i);
 	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);
@@ -171,6 +173,10 @@ public:
 	static SCM mtranspose(SCM s_a);
 	static SCM minverse(SCM s_a);
 	static SCM maim(SCM s_a, SCM s_b);
+	
+	static SCM mouse_over();
+	static SCM mouse_button(SCM s_b);
+
 	
 };
 #endif

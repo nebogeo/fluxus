@@ -48,6 +48,19 @@ class OSCString : public OSCData
 	string Value;
 };
 
+class Client
+{
+public:
+	Client() {}
+	~Client() {}
+	void SetDestination(const string &Port) { m_Destination=Port; }	
+	void Send(const string &msg,const vector<OSCData*> &args);
+	
+private:
+	string m_Destination;
+	
+};
+
 class Server
 {
 public:

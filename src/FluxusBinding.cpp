@@ -308,7 +308,6 @@ SCM FluxusBinding::clear()
 {
 	Fluxus->GetRenderer()->Clear();
 	Fluxus->GetPhysics()->Clear();
-	Fluxus->ClearLifeforms();
 	CallbackString="";
 	return SCM_UNSPECIFIED;
 }
@@ -1099,9 +1098,9 @@ SCM FluxusBinding::process(SCM s_wavname)
     return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::start_osc(SCM s_port)
+SCM FluxusBinding::osc_source(SCM s_port)
 {
-	SCM_ASSERT(SCM_STRINGP(s_port), s_port, SCM_ARG1, "start_osc");	
+	SCM_ASSERT(SCM_STRINGP(s_port), s_port, SCM_ARG1, "osc_source");	
     size_t size=0;
 	char *port=gh_scm2newstr(s_port,&size);
 	Fluxus->StartOSC(port);
@@ -1134,10 +1133,58 @@ SCM FluxusBinding::osc(SCM s_index)
 	return ret;
 }
 
+SCM FluxusBinding::osc_destination(SCM s_port)
+{
+	SCM_ASSERT(SCM_STRINGP(s_port), s_port, SCM_ARG1, "osc_source");	
+    size_t size=0;
+	char *port=gh_scm2newstr(s_port,&size);
+	Fluxus->StartOSCClient(port);
+	free(port);
+    return SCM_UNSPECIFIED;
+}
+
+
 SCM FluxusBinding::osc_peek()
 {
 	string value=Fluxus->GetLastMsg();
 	return gh_str2scm(value.c_str(),value.size());	
+}
+
+SCM FluxusBinding::osc_send(SCM s_msg, SCM s_arglist)
+{
+	SCM_ASSERT(SCM_STRINGP(s_msg), s_msg, SCM_ARG1, "osc-send");	
+	// todo: fix this...
+	//SCM_ASSERT(SCM_LISTP(s_arglist), s_arglist, SCM_ARG2, "osc-send");
+    size_t size=0;
+	char *msg=gh_scm2newstr(s_msg,&size);
+	
+	// vectors seem easier to handle than lists with this api
+	SCM argvec = gh_list_to_vector(s_arglist);
+	
+	vector<OSCData*> oscargs;
+	for (unsigned int n=0; n<gh_vector_length(argvec); n++)
+	{
+		SCM arg=gh_vector_ref(argvec, gh_int2scm(n));
+		
+		if (gh_number_p(arg))
+		{
+			oscargs.push_back(new OSCNumber(gh_scm2double(arg)));
+		}
+		else if (gh_string_p(arg))
+		{
+			char *argstring=gh_scm2newstr(arg,&size);
+			oscargs.push_back(new OSCString(argstring));
+			free(argstring);
+		}
+		else
+		{
+			cerr<<"osc-send has found an argument type it can't send, numbers and strings only"<<endl;
+		}
+	}
+
+	Fluxus->SendOSC(msg,oscargs);
+	free(msg);
+    return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
@@ -1475,6 +1522,18 @@ SCM FluxusBinding::maim(SCM s_a, SCM s_b)
 	return gh_floats2scm(m.arr(),16);
 }
 
+SCM FluxusBinding::mouse_over()
+{
+	return gh_double2scm(Fluxus->GetRenderer()->Select((int)Fluxus->GetMouseX(),(int)Fluxus->GetMouseY(),5));
+}
+
+SCM FluxusBinding::mouse_button(SCM s_b)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_b),  s_b,  SCM_ARG1, "mouse-button");
+	int but=(int)gh_scm2double(s_b);		
+	return gh_bool2scm(Fluxus->GetMouseButton()==but);
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
@@ -1554,6 +1613,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("save-name", save_name);
 	gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key-pressed", key_pressed);
+	gh_new_procedure("mouse-over", mouse_over, 0,0,0);
+	gh_new_procedure0_1("mouse-button", mouse_button);
     gh_new_procedure("time", time, 0,0,0);
     gh_new_procedure("delta", delta, 0,0,0);
     gh_new_procedure0_1("every-frame", engine_callback);
@@ -1600,10 +1661,12 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
 	
-	gh_new_procedure0_1("start-osc",    start_osc);
+	gh_new_procedure0_1("osc-source",   osc_source);
 	gh_new_procedure0_1("osc",          osc);
 	gh_new_procedure("osc-peek",        osc_peek, 0,0,0);
 	gh_new_procedure0_1("osc-msg",      osc_msg);
+	gh_new_procedure0_1("osc-destination",    osc_destination);
+	gh_new_procedure0_2("osc-send",     osc_send);
 	
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);
