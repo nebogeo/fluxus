@@ -1,6 +1,7 @@
 #include <guile/gh.h>
 #include <GraphicsUtils.h>
 #include <LinePrimitive.h>
+#include <ParticlePrimitive.h>
 #include <set>
 #include "AudioCollector.h"
 #include "TurtleBuilder.h"
@@ -38,6 +39,7 @@ public:
 	static SCM build_text(SCM text);
 	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_nurbs_plane(SCM s_usegments, SCM s_vsegments);
+	static SCM build_particles(SCM s_count);
 	static SCM draw_instance(SCM s_ob);
 	static SCM draw_cube();
 	static SCM draw_plane();
@@ -74,6 +76,7 @@ public:
 	static SCM scale(SCM s_vec);
 	static SCM parent(SCM s_p);
 	static SCM line_width(SCM s_p);
+	static SCM point_width(SCM s_p);
 	static SCM hint_solid();
 	static SCM hint_wire();
 	static SCM hint_normal();

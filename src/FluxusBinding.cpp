@@ -127,7 +127,7 @@ SCM FluxusBinding::build_text(SCM s_text)
 	
 	return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(TextPrim));
 }
-
+	
 SCM FluxusBinding::build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_hsegments), s_hsegments, SCM_ARG1, "build_nurbs_sphere");
@@ -155,6 +155,20 @@ SCM FluxusBinding::build_nurbs_plane(SCM s_usegments, SCM s_vsegments)
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, (int)usegments, (int)vsegments);
     Prim->Finalise();    	
+    return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
+SCM FluxusBinding::build_particles(SCM s_count)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_count), s_count, SCM_ARG1, "build_particles");
+	ParticlePrimitive *Prim = new ParticlePrimitive;
+	int count=(int)gh_scm2double(s_count);
+	for (int i=0; i<count; i++)
+	{
+		Prim->AddParticle(dVector(RandFloat(),RandFloat(),RandFloat()),
+						  dColour(RandFloat(),RandFloat(),RandFloat()));
+	}
+	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
@@ -475,6 +489,15 @@ SCM FluxusBinding::line_width(SCM s_p)
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
     if (Grabbed) Grabbed->GetState()->LineWidth=gh_scm2double(s_p);
     else Fluxus->GetRenderer()->GetState()->LineWidth=gh_scm2double(s_p);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::point_width(SCM s_p)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_p), s_p, SCM_ARG1, "point_width");
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->PointWidth=gh_scm2double(s_p);
+    else Fluxus->GetRenderer()->GetState()->PointWidth=gh_scm2double(s_p);
     return SCM_UNSPECIFIED;
 }
 
@@ -1545,6 +1568,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("build-text",   build_text);
 	gh_new_procedure0_2("build-nurbs-sphere", build_nurbs_sphere);
 	gh_new_procedure0_2("build-nurbs-plane", build_nurbs_plane);
+	gh_new_procedure0_1("build-particles", build_particles);
 	gh_new_procedure0_1("draw-instance", draw_instance);
     gh_new_procedure("draw-cube",       draw_cube,     0,0,0);
     gh_new_procedure("draw-plane",      draw_plane,    0,0,0);
@@ -1581,6 +1605,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure("hint-none",       hint_none,  0,0,0);
     gh_new_procedure("hint-unlit",      hint_unlit,  0,0,0);
 	gh_new_procedure0_1("line-width",   line_width);
+	gh_new_procedure0_1("point-width",  point_width);
     gh_new_procedure0_1("parent",       parent);
 	gh_new_procedure0_1("hide",         hide);
 	

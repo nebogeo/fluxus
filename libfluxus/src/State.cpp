@@ -42,6 +42,7 @@ void State::Apply()
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SPECULAR,Specular.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&Shinyness);
 	glLineWidth(LineWidth);
+	glPointSize(PointWidth);
 	
 	if (Texture>=0)
 	{ 

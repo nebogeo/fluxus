@@ -61,6 +61,7 @@ public:
 	int Parent;
 	int Hints;
 	float LineWidth;
+	float PointWidth;
 	
 	dMatrix Transform;
 	
