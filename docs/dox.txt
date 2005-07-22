@@ -300,6 +300,9 @@ builds a tessalated nurbs plane, texture mapped in uv direction
 
 (build-nurbs-plane usegments vsegments)
 		
+(build-particles num)
+builds a particles primitive with num points randomly dispersed around the unit cube, and with random colours. use the pdata functions to edit the postions and colours. by default particles are square, turn on (hint-anti-alias) to make them circular.
+		
 6.2  Instancing 
 
 Sometimes retained mode primitives can be unwieldy to deal with. For instance, if you are rendering thousands of identical objects, or doing things with recursive graphics, where you are calling the same primitive in lots of different states - keeping track of all the IDs would be annoying to say the least.
@@ -775,6 +778,7 @@ m = vector 16
 (build-text t)                      returns the id for a text primitive
 (build-nurbs-sphere n n)            returns the id for a nurbs sphere primitive
 (build-nurbs-plane n n)             returns the id for a nurbs plane primitive
+(build-particles n)                 returns the id for a particles primitive
 (draw-instance n)        			draw an instance of a built object 
 (draw-cube)                         draw a cube
 (draw-plane)                        draw a plane
@@ -809,6 +813,7 @@ m = vector 16
 (hint-anti-alias)                   hint the primitive to render antialiased
 (hint-unlit)                        hint the primitive to render unlit
 (line-width)                        set the current line width
+(point-width)                       set the current point width
 (parent n)                          set the grabbed primitive to parent to the given object
 (hide)                              don't render the current grabbed object
 (clear)                             clear the scene of all primitives and lights (leaves the interpreter as is)
@@ -833,6 +838,8 @@ m = vector 16
 (save-name t)                       sets the current script name for this workspace
 (source t)                          loads a script into the editor, and executes it
 (key-pressed t)                     returns 1 if the key has been pressed this frame
+(mouse-button b)                    returns true if the corresponding mouse button has been pressed this frame.
+(mouse-over)                        returns the id of the object the mouse is currently over
 (time)                              returns time in seconds since fluxus startup
 (delta)                             returns time in seconds since the last frame
 (every-frame t)                     executes the fragment of script every frame
@@ -871,9 +878,12 @@ m = vector 16
 (set-mass n n)                      set the mass of an object
 (kick n v)                          apply a translational force to an object  
 (twist n v)                         apply a rotational force to an object  
-(start-osc t)                       start receiving osc messages from given source
-(from-osc t n)                      get either a number or a string from given message and argument index
-(peek-osc)                          returns a string containing the last sent message and format
+(osc-source port)                   starts up the osc server, listening to the given port
+(osc-msg name)                      and sets the current message and returns true if it was received last frame
+(osc index)                         returns the argument from the current message
+(osc-peek)                          returns a string containing the last sent message and format
+(osc-destination port)              starts up the osc client, which will send messages to the given port. 
+(osc-send name argslist)            sends an osc message
 (pdata-set t n v)                   sets the pdata item on the primitive
 (pdata-get t n)                     returns the vector containing the given pdata item
 (pdata-size)                        returns the amount of pdata (usually a vert count)
