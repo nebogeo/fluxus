@@ -67,15 +67,13 @@ void PolyPrimitive::Render()
 		case QUADS : type=GL_QUADS; break;
 		case TRILIST : type=GL_TRIANGLES; break;
 		case TRIFAN : type=GL_TRIANGLE_FAN; break;
+		case POLYGON : type=GL_POLYGON; break;
 	}
-	
 	
 	
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	else glDisable(GL_LINE_SMOOTH);		
-	
-	if (m_State.Hints & HINT_SOLID) glPolygonMode(GL_FRONT,GL_FILL);
-	
+
 	if (m_VertColours) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_POINTS) glPolygonMode(GL_FRONT,GL_POINTS);
@@ -95,14 +93,6 @@ void PolyPrimitive::Render()
 		glEnable(GL_LIGHTING);
 	}
 	
-	if (m_State.Hints & HINT_WIRE)
-	{
-		glPolygonMode(GL_FRONT,GL_LINE);
-		glPolygonMode(GL_BACK,GL_LINE);
-		glColor3f(0,1,0);
-		glDisable(GL_LIGHTING);
-	}
-	
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData.begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData.begin()->arr());
 	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData.begin()->arr());
@@ -116,11 +106,21 @@ void PolyPrimitive::Render()
 	{
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
-		
+	
 	glDrawArrays(type,0,m_NumVerts);	
-
+	
+	if (m_State.Hints & HINT_WIRE)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+		glColor3f(0,0,0);
+		glDisable(GL_LIGHTING);	
+		glDrawArrays(type,0,m_NumVerts);	
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glEnable(GL_LIGHTING);
+	}
+		
 	if (m_VertColours) glDisable(GL_COLOR_MATERIAL);
-	if (m_State.Hints & HINT_UNLIT || m_State.Hints & HINT_WIRE) glEnable(GL_LIGHTING);
+	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 
 void PolyPrimitive::SetData(char t, unsigned int i, dVector v)

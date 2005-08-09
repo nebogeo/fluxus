@@ -26,7 +26,7 @@ namespace fluxus
 class PolyPrimitive : public Primitive
 {
 public:
-	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN};
+	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN,POLYGON};
 	
 	PolyPrimitive(Type t=TRISTRIP);
 	virtual  ~PolyPrimitive();
