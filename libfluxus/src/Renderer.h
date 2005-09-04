@@ -156,7 +156,7 @@ private:
 	
 	bool m_FeedBack;
 	char *m_FeedBackData;
-	unsigned int m_FeedBackID;
+	GLuint m_FeedBackID;
 	dMatrix m_FeedBackMat;
 	
 	dMatrix m_Camera;

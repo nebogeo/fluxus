@@ -104,7 +104,7 @@ void Renderer::BeginScene(bool PickMode)
 		
   		if (PickMode) 
 		{ 	
-			int viewport[4]={0,0,m_Width,m_Height};
+			GLint viewport[4]={0,0,m_Width,m_Height};
 			gluPickMatrix(m_SelectInfo.x,m_Height-m_SelectInfo.y,
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
 		}
@@ -362,8 +362,8 @@ int Renderer::Select(int x, int y, int size)
 	static const int SELECT_SIZE=512;
 	unsigned int IDs[SELECT_SIZE];
 	memset(IDs,0,SELECT_SIZE);
-	int ID=0;
-	glSelectBuffer(SELECT_SIZE,IDs);
+	GLuint ID=0;
+	glSelectBuffer(SELECT_SIZE,(GLuint*)IDs);
 	glRenderMode(GL_SELECT);
 	glInitNames();
 	

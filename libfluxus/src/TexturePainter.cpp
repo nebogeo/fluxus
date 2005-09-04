@@ -39,7 +39,7 @@ int TexturePainter::LoadTexture(const string &Filename)
 		return i->second;
 	}
 	
-	unsigned int ID=0;
+	GLuint ID=0;
 	
 	char *ImageData;
     TextureDesc *desc = new TextureDesc;
