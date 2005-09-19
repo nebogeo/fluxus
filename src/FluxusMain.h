@@ -19,6 +19,7 @@
 #include <Physics.h>
 #include "GLEditor.h"
 #include "OSCServer.h"
+#include "Recorder.h"
 
 using namespace fluxus;
 
@@ -74,8 +75,11 @@ public:
 protected:
 	Renderer m_Renderer;
     Physics  m_Physics;
+	EventRecorder m_Recorder;
 	
 private:
+	void HandleImpl(unsigned char key, int button, int special, int state, int x, int y);
+	
 	enum CameraMode{SCENE,EDITOR};
 	CameraMode m_CameraMode;
 	

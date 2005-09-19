@@ -6,13 +6,13 @@
 (clear)
 (push)
 (texture (load-texture "driller.png"))
-(define ob (build-sphere))
+(define ob (build-sphere 10 10))
 (pop)
 
 
 (define (whack-texcoords n)
     
-    (set! t (vector 0 (* 0.1 (sin (time))) 0))
+    (set! t (vector (* 0.05 (cos (* 0.4 (+ n (time))))) (* 0.02 (sin (* 0.4 (time)))) 0))
     (pdata-set "t" n (vadd (pdata-get "t" n) t))
     (if (< n 0)
         0
@@ -23,6 +23,8 @@
     (whack-texcoords (pdata-size))
     (finalise)
     (ungrab))
+
+(start-framedump "test")
 
 (every-frame "(render)")
  

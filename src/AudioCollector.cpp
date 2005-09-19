@@ -168,7 +168,7 @@ float *AudioCollector::GetFFT()
 		Value*=Value;
 		Value*=m_Gain*0.025;
 		
-		float Bias=1.5;
+		float Bias=0.5;
 		m_FFTOutput[n]=((m_FFTOutput[n]*Bias)+Value*(1/Bias))/2.0f;
 	}
 	

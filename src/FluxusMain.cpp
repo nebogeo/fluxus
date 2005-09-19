@@ -58,6 +58,22 @@ void FluxusMain::ResetCamera()
 
 void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y) 
 {
+	if (special==GLUT_KEY_F5) { m_Recorder.SetMode(EventRecorder::RECORD); cerr<<"record"<<endl; }
+	if (special==GLUT_KEY_F6) { m_Recorder.SetMode(EventRecorder::PLAYBACK); cerr<<"play"<<endl; }
+	if (special==GLUT_KEY_F7) { m_Recorder.Reset(); cerr<<"reset"<<endl; }
+	if (special==GLUT_KEY_F8) { m_Recorder.ResetClock(); cerr<<"reset clock"<<endl; }
+	
+	do
+	{
+		HandleImpl(key, button, special, state, x, y);
+	}
+	while(m_Recorder.Update(key, button, special, state, x, y));
+	
+	m_Recorder.UpdateClock();
+}
+
+void FluxusMain::HandleImpl(unsigned char key, int button, int special, int state, int x, int y) 
+{
 	//cerr<<"key:"<<key<<" button:"<<button<<" special:"<<special<<" state:"<<state<<" x:"<<x<<" y:"<<y<<endl;
 	
 	if (key!=0 || special!=-1) 

@@ -14,6 +14,7 @@ Source = Split("src/AudioCollector.cpp \
 				src/GLEditor.cpp \
 				src/Utils.cpp \
 				src/OSCServer.cpp \
+				src/Recorder.cpp \
 				src/main.cpp \
 				libfluxus/src/GraphicsUtils.cpp \
 				libfluxus/src/Lifeforms.cpp \

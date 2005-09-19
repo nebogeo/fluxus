@@ -49,5 +49,6 @@ int WriteTiff(char *filename, char *description,
     p += width * sizeof(GLubyte) * 3;
   }
   TIFFClose(file);
+  free(image);
   return 0;
 }	
