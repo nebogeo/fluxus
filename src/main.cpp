@@ -74,7 +74,10 @@ SCM ErrorHandler (void *handler_data, SCM tag, SCM args)
 
 void DisplayCallback()
 {
-    string fragment = binding->Fluxus->GetScriptFragment();
+	// ticks the input handler for the recording code...
+	binding->Fluxus->Handle(0, -1, -1, -1, 0, 0);
+    
+	string fragment = binding->Fluxus->GetScriptFragment();
     if (fragment!="")
     {
     	gh_eval_str_with_catch(fragment.c_str(), ErrorHandler);

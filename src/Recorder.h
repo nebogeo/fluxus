@@ -55,9 +55,11 @@ public:
 	enum Mode{OFF,RECORD,PLAYBACK};
 
 	void SetMode(Mode mode) { m_Mode=mode; }
+	Mode GetMode() { return m_Mode; }
 	
-	// if update returns true, there may be further events, call it repeatedly until it returns false
-	bool Update(unsigned char &key, int &button, int &special, int &state, int &x, int &y);	
+	bool Get(vector<Event> &events);
+	void Record(Event &event);
+
 	void Reset();
 	void ResetClock();
 	void UpdateClock();
@@ -67,8 +69,6 @@ public:
 	void Load(const string &filename);
 	
 private:
-	bool Get(Event &event);
-	void Record(Event &event);
 	
 	Mode m_Mode;
 	timeval m_LastTime;

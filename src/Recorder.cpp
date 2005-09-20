@@ -32,43 +32,18 @@ EventRecorder::~EventRecorder()
 {
 }
 
-bool EventRecorder::Update(unsigned char &key, int &button, int &special, int &state, int &x, int &y)
+bool EventRecorder::Get(vector<Event> &events)
 {
-	if (m_Mode==RECORD)
-	{
-		cerr<<"save event"<<endl;
-		Event event(key, button, special, state, x, y);
-		Record(event);
-	}
-	else if (m_Mode==PLAYBACK)
-	{
-		Event event;
-		if (Get(event))
-		{
-			cerr<<"got event"<<endl;
-			key=event.Key;
-			button=event.Button;
-			special=event.Special;
-			state=event.State;
-			x=event.X;
-			y=event.Y;
-			return true;
-		}
-	}
-	return false;
-}
-
-bool EventRecorder::Get(Event &event)
-{
+	bool found=false;
 	for (vector<Event>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
 	{
 		if (i->Time>m_LastTimeSeconds && i->Time<=m_TimeSeconds)
 		{
-			event=*i;
-			return true;
+			events.push_back(*i);
+			found=true;
 		}		
 	}
-	return false;
+	return found;
 }
 
 void EventRecorder::Record(Event &event)
@@ -103,7 +78,7 @@ void EventRecorder::IncClock(double delta)
 {
 	m_LastTimeSeconds=m_TimeSeconds;
 	if (delta>0 && delta<1000) m_TimeSeconds+=delta;
-	cerr<<m_TimeSeconds<<" "<<delta<<endl;
+	//cerr<<m_TimeSeconds<<" "<<delta<<endl;
 }
 
 void EventRecorder::Save(const string &filename)
