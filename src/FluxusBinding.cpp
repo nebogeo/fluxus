@@ -1557,6 +1557,26 @@ SCM FluxusBinding::mouse_button(SCM s_b)
 	return gh_bool2scm(Fluxus->GetMouseButton()==but);
 }
 
+SCM FluxusBinding::load_recorded_code(SCM s_name)
+{
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "load-recorded-code");	
+    size_t size=0;
+	char *name=gh_scm2newstr(s_name,&size);
+	Fluxus->LoadRecordedCode(name);
+	free(name);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::save_recorded_code(SCM s_name)
+{
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "save-recorded-code");	
+    size_t size=0;
+	char *name=gh_scm2newstr(s_name,&size);
+	Fluxus->SaveRecordedCode(name);
+	free(name);
+    return SCM_UNSPECIFIED;
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
@@ -1647,6 +1667,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("desiredfps", desiredfps);
 	gh_new_procedure0_1("start-framedump", start_framedump);
 	gh_new_procedure("end-framedump", end_framedump, 0,0,0);
+	gh_new_procedure0_1("load-code", load_recorded_code);
+	gh_new_procedure0_1("save-code", save_recorded_code);
 	
 	// audio
 	gh_new_procedure3_0("start-audio",  start_audio);	

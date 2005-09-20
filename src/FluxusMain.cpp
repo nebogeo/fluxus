@@ -56,11 +56,35 @@ void FluxusMain::ResetCamera()
 	m_DisY=-10;
 }
 
+void FluxusMain::TickRecorder()
+{ 
+	if (m_Recorder.GetMode()==EventRecorder::PLAYBACK)
+	{
+		vector<Event> events;
+		m_Recorder.Get(events);
+		for (vector<Event>::iterator i=events.begin(); i!=events.end(); i++)
+		{
+			HandleImpl(i->Key, i->Button, i->Special, i->State, i->X, i->Y);
+		}
+	}
+	
+	m_Recorder.UpdateClock();
+}
+
 void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y) 
 {
-	if (special==GLUT_KEY_F5) { m_Recorder.SetMode(EventRecorder::RECORD); cerr<<"record"<<endl; }
-	else if (special==GLUT_KEY_F6) { m_Recorder.SetMode(EventRecorder::PLAYBACK); cerr<<"play"<<endl; }
-	else if (special==GLUT_KEY_F7) { m_Recorder.Reset(); cerr<<"reset"<<endl; }
+	if (special==GLUT_KEY_F6) 
+	{ 
+		if (m_Recorder.GetMode()==EventRecorder::OFF)
+		{
+			m_Recorder.SetMode(EventRecorder::PLAYBACK); cerr<<"play"<<endl; 
+		}
+		else if (m_Recorder.GetMode()==EventRecorder::PLAYBACK)
+		{
+			m_Recorder.SetMode(EventRecorder::RECORD); cerr<<"record"<<endl; 
+		}
+	}
+	else if (special==GLUT_KEY_F7) { m_Recorder.SetMode(EventRecorder::OFF);; cerr<<"off"<<endl; }
 	else if (special==GLUT_KEY_F8) { m_Recorder.ResetClock(); cerr<<"reset clock"<<endl; }
 	else 
 	{
@@ -68,21 +92,9 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		{
 			Event event(key, button, special, state, x, y);
 			m_Recorder.Record(event);
-			HandleImpl(key, button, special, state, x, y);
 		}
-		else if (m_Recorder.GetMode()==EventRecorder::PLAYBACK)
-		{
-			vector<Event> events;
-			m_Recorder.Get(events);
-			for (vector<Event>::iterator i=events.begin(); i!=events.end(); i++)
-			{
-				HandleImpl(i->Key, i->Button, i->Special, i->State, i->X, i->Y);
-			}
-		}
-		else
-		{
-			HandleImpl(key, button, special, state, x, y);
-		}		
+		
+		HandleImpl(key, button, special, state, x, y);
 	}
 	
 	m_Recorder.UpdateClock();

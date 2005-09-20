@@ -74,8 +74,7 @@ SCM ErrorHandler (void *handler_data, SCM tag, SCM args)
 
 void DisplayCallback()
 {
-	// ticks the input handler for the recording code...
-	binding->Fluxus->Handle(0, -1, -1, -1, 0, 0);
+	binding->Fluxus->TickRecorder();
     
 	string fragment = binding->Fluxus->GetScriptFragment();
     if (fragment!="")

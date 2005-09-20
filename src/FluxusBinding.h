@@ -180,6 +180,8 @@ public:
 	static SCM mouse_over();
 	static SCM mouse_button(SCM s_b);
 
+	static SCM load_recorded_code(SCM s_name);
+	static SCM save_recorded_code(SCM s_name);
 	
 };
 #endif

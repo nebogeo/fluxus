@@ -1058,3 +1058,5 @@ m = vector 16
 (feedback n)                        switch on/off feedback
 (feedback-transform m)              sets the transform for the plane that the fb texture is rendered on
 (start-audio n n)                   starts up the audio processing with buffersize and samplerate
+(load-code filename)                loads a saved livecode recording
+(save-code filename)                saves a livecode recording

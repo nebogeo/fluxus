@@ -41,6 +41,8 @@ public:
 	void Render();
 	void Reshape(int width, int height);
 	
+	void TickRecorder();
+	
 	bool KeyPressed(char b);
 	
 	Renderer *GetRenderer() { return &m_Renderer; }
@@ -71,6 +73,9 @@ public:
 	float GetMouseX() { return m_LastMouseX; }
 	float GetMouseY() { return m_LastMouseY; }
 	int GetMouseButton() { return m_CurButton; }
+ 
+    void LoadRecordedCode(const string &Filename) { m_Recorder.Load(Filename); }
+    void SaveRecordedCode(const string &Filename) { m_Recorder.Save(Filename); }
 
 protected:
 	Renderer m_Renderer;
