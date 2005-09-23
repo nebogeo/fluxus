@@ -14,4 +14,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-int WriteTiff(char *filename, char *description, int x, int y, int width, int height, int compression);
+#ifndef __APPLE__
+#include <GL/gl.h> 
+#else
+#include <OpenGL/gl.h>
+#endif 
+#include <stdlib.h> 
+
+GLubyte *GetScreenBuffer(int x, int y, int &width, int &height, int super=1);
+int WriteTiff(char *filename, char *description, int x, int y, int width, int height, int compression, int super=1);
+int WriteJPG(char *filename, char *description, int x, int y, int width, int height, int quality, int super=1);

@@ -297,11 +297,13 @@ void GUI::Render()
   	m_Renderer.Render();
 	
 	if (m_Frame!=-1)
-	{
+	{ 
 		char Fnum[5];
 		snprintf(Fnum,5,"%04d",m_Frame);
-		string Filename=m_FrameName+"-"+string(Fnum)+".tif";
-		WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,w(),h(),1);
+		string Filename=m_FrameName+"-"+string(Fnum)+".jpg";
+		//string Filename=m_FrameName+"-"+string(Fnum)+".tif";
+		WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,w(),h(),95,1);
+		//WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,w(),h(),1);
 		//  MAC RLE ----------------------------------------------------^
 		m_Frame++;
 	}

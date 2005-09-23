@@ -309,6 +309,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 						{
 							m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart); 
 							m_Position-=m_HighlightEnd-m_HighlightStart;						
+							m_Selection=false;
 						}
 						else
 						{
