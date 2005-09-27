@@ -25,7 +25,7 @@ public:
 	~GLEditor();
 	
 	void Render();
-	void Handle(int button, int key, int special, int state, int x, int y);
+	void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	void Reshape(unsigned int w,unsigned int h);
 
 	string GetText();

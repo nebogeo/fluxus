@@ -889,6 +889,7 @@ SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
 	if (Audio==NULL)
 	{
 		Audio = new AudioCollector((int)gh_scm2double(s_dev),(unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
+		Fluxus->SetAudio(Audio);
 	}
 	return SCM_UNSPECIFIED;
 }

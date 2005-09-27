@@ -88,7 +88,7 @@ void EventRecorder::Save(const string &filename)
 	os<<m_EventVec.size()<<endl;
 	for (vector<Event>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
 	{
-		os<<i->Time<<" "<<(int)i->Key<<" "<<i->Button<<" "<<i->Special<<" "<<i->State<<" "<<i->X<<" "<<i->Y<<endl;
+		os<<i->Time<<" "<<(int)i->Key<<" "<<i->Button<<" "<<i->Special<<" "<<i->State<<" "<<i->X<<" "<<i->Y<<" "<<i->Mod<<endl;
 	}
 	
 	os.close();		
@@ -114,6 +114,7 @@ void EventRecorder::Load(const string &filename)
 		is>>event.State;
 		is>>event.X;
 		is>>event.Y;
+		is>>event.Mod;
 			
 		m_EventVec.push_back(event);
 		count++;

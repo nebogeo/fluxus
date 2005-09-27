@@ -94,7 +94,7 @@ void ReshapeCallback(int width, int height)
 
 void KeyboardCallback(unsigned char key,int x, int y)
 {
-	binding->Fluxus->Handle(key, -1, -1, -1, x, y);
+	binding->Fluxus->Handle(key, -1, -1, -1, x, y, glutGetModifiers());
 	
 	//cerr<<(int)key<<endl;
 	
@@ -136,7 +136,7 @@ void KeyboardUpCallback(unsigned char key,int x, int y)
 
 void SpecialKeyboardCallback(int key,int x, int y)
 {
-	binding->Fluxus->Handle(0, -1, key, -1, x, y);
+	binding->Fluxus->Handle(0, -1, key, -1, x, y, glutGetModifiers());
 }
 
 void SpecialKeyboardUpCallback(int key,int x, int y)
@@ -146,12 +146,12 @@ void SpecialKeyboardUpCallback(int key,int x, int y)
 
 void MouseCallback(int button, int state, int x, int y)
 {
-	binding->Fluxus->Handle(0, button, -1, state, x, y);
+	binding->Fluxus->Handle(0, button, -1, state, x, y, glutGetModifiers());
 }
 
 void MotionCallback(int x, int y)
 {
-	binding->Fluxus->Handle(0, -1, -1, -1, x, y);
+	binding->Fluxus->Handle(0, -1, -1, -1, x, y, glutGetModifiers());
 }
 
 void IdleCallback()

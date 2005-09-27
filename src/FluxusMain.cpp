@@ -28,6 +28,7 @@ using namespace fluxus;
 
 FluxusMain::FluxusMain(int x, int y) :
 m_Physics(&m_Renderer),
+m_Audio(NULL),
 m_CameraMode(SCENE),
 m_CurrentEditor(0),
 m_Init(true),
@@ -64,14 +65,21 @@ void FluxusMain::TickRecorder()
 		m_Recorder.Get(events);
 		for (vector<Event>::iterator i=events.begin(); i!=events.end(); i++)
 		{
-			HandleImpl(i->Key, i->Button, i->Special, i->State, i->X, i->Y);
+			HandleImpl(i->Key, i->Button, i->Special, i->State, i->X, i->Y, i->Mod);
 		}
 	}
 	
-	m_Recorder.UpdateClock();
+	if (m_Audio && m_Audio->IsProcessing())
+	{
+		m_Recorder.IncClock(m_Audio->BufferTime());
+	}
+	else
+	{
+		m_Recorder.UpdateClock();
+	}
 }
 
-void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y) 
+void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y, int mod) 
 {
 	if (special==GLUT_KEY_F6) 
 	{ 
@@ -90,17 +98,15 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		if (m_Recorder.GetMode()==EventRecorder::RECORD)
 		{
-			Event event(key, button, special, state, x, y);
+			Event event(key, button, special, state, x, y, mod);
 			m_Recorder.Record(event);
 		}
 		
-		HandleImpl(key, button, special, state, x, y);
+		HandleImpl(key, button, special, state, x, y, mod);
 	}
-	
-	m_Recorder.UpdateClock();
 }
 
-void FluxusMain::HandleImpl(unsigned char key, int button, int special, int state, int x, int y) 
+void FluxusMain::HandleImpl(unsigned char key, int button, int special, int state, int x, int y, int mod) 
 {
 	//cerr<<"key:"<<key<<" button:"<<button<<" special:"<<special<<" state:"<<state<<" x:"<<x<<" y:"<<y<<endl;
 	
@@ -121,7 +127,7 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 		else if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor].GetText();
 	
 		// the editor only takes keyboard events
-		if (!m_HideScript) m_Editor[m_CurrentEditor].Handle(button,key,special,state,x,y);
+		if (!m_HideScript) m_Editor[m_CurrentEditor].Handle(button,key,special,state,x,y,mod);
 	}
 	else
 	{

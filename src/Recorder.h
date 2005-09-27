@@ -25,14 +25,15 @@ namespace fluxus
 class Event
 {
 public:
-	Event(unsigned char key, int button, int special, int state, int x, int y) :
+	Event(unsigned char key, int button, int special, int state, int x, int y, int mod) :
 	Time(0),
 	Key(key),
 	Button(button),
 	Special(special),
 	State(state),
 	X(x),
-	Y(y)
+	Y(y),
+	Mod(mod)
 	{}
 	
 	Event() {}
@@ -44,6 +45,7 @@ public:
 	int State;
 	int X;
 	int Y;
+	int Mod;
 };
 
 class EventRecorder

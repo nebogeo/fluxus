@@ -87,6 +87,8 @@ m_Processing(false),
 m_ProcessPos(0)
 {
 	m_BufferLength = BufferLength;
+	m_Samplerate = Samplerate;
+	m_BufferTime = m_BufferLength/(float)m_Samplerate;
 	
 	m_Buffer = new float[BufferLength];
 	memset(m_Buffer,0,BufferLength*sizeof(float));

@@ -206,7 +206,7 @@ void GLEditor::Render()
 	glEnable(GL_CULL_FACE);
 }
 
-void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
+void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
 {	
 	unsigned int startpos=m_Position;
 	
@@ -271,7 +271,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 		}
 	}	
 		
-	if (glutGetModifiers()&GLUT_ACTIVE_CTRL)
+	if (mod&GLUT_ACTIVE_CTRL)
 	{
 		switch (key)
 		{
@@ -342,14 +342,14 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y)
 	if (m_Position<0) m_Position=0;
 	if (m_Position>m_Text.size()) m_Position=m_Text.size()-1;
 	
-	if (key==0 && !m_ShiftState && glutGetModifiers()&GLUT_ACTIVE_SHIFT)
+	if (key==0 && !m_ShiftState && mod&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_HighlightStart=startpos;
 		m_ShiftState=true;
 		m_Selection=true;
 	}
 	
-	if (key==0 && special!=GLUT_KEY_F5 && m_ShiftState && !glutGetModifiers()&GLUT_ACTIVE_SHIFT)
+	if (key==0 && special!=GLUT_KEY_F5 && m_ShiftState && !mod&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_ShiftState=false;	
 		m_Selection=false;

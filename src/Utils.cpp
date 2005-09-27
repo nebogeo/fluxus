@@ -15,7 +15,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <tiffio.h> 
-#include <jpeglib.h>
+extern "C"
+{
+#include <jpeglib.h>	
+}
 #include "Utils.h"
 #include <iostream>
 
@@ -150,6 +153,7 @@ int WriteJPG(char *filename, char *description, int x, int y, int width, int hei
  	fclose(outfile);
 
 	jpeg_destroy_compress(&cinfo);
+	free(image);
 	
 	return 0;
 }	

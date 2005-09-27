@@ -58,6 +58,8 @@ public:
     bool  IsConnected();
     void  SetGain(float s) { m_Gain=s; }
     void  Process(const string &filename);
+	bool  IsProcessing() { return m_Processing; }
+	float BufferTime() { return m_BufferTime; }
 
 private:
 
@@ -65,7 +67,8 @@ private:
 	static void AudioCallback(void *, unsigned int);
 
 	float m_Gain;
-	
+	unsigned int m_Samplerate;
+	float m_BufferTime;
 	int m_BufferLength;
 	FFT m_FFT;
 	pthread_mutex_t* m_Mutex;
