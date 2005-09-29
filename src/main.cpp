@@ -146,12 +146,12 @@ void SpecialKeyboardUpCallback(int key,int x, int y)
 
 void MouseCallback(int button, int state, int x, int y)
 {
-	binding->Fluxus->Handle(0, button, -1, state, x, y, glutGetModifiers());
+	binding->Fluxus->Handle(0, button, -1, state, x, y, 0);
 }
 
 void MotionCallback(int x, int y)
 {
-	binding->Fluxus->Handle(0, -1, -1, -1, x, y, glutGetModifiers());
+	binding->Fluxus->Handle(0, -1, -1, -1, x, y, 0);
 }
 
 void IdleCallback()
