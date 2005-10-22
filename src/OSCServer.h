@@ -30,12 +30,21 @@ class OSCData
 	virtual char Type() { return '0'; }
 };
 
-class OSCNumber : public OSCData
+class OSCInt : public OSCData
 {
 	public:
-	OSCNumber(float s) { Value=s; }
-	virtual ~OSCNumber() {}
-	virtual char Type() { return 'n'; }
+	OSCInt(int s) { Value=s; }
+	virtual ~OSCInt() {}
+	virtual char Type() { return 'i'; }
+	int Value;
+};
+
+class OSCFloat : public OSCData
+{
+	public:
+	OSCFloat(float s) { Value=s; }
+	virtual ~OSCFloat() {}
+	virtual char Type() { return 'f'; }
 	float Value;
 };
 
@@ -53,12 +62,11 @@ class Client
 public:
 	Client() {}
 	~Client() {}
-	void SetDestination(const string &Port) { m_Destination=Port; }	
+	void SetDestination(const string &Port) { m_Destination=lo_address_new_from_url(Port.c_str()); }	
 	void Send(const string &msg,const vector<OSCData*> &args);
 	
 private:
-	string m_Destination;
-	
+	lo_address m_Destination;
 };
 
 class Server

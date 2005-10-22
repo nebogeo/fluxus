@@ -25,20 +25,20 @@ using namespace std;
 
 void Client::Send(const string &msg, const vector<OSCData*> &args)
 {
-	lo_address oscaddr=lo_address_new_from_url(m_Destination.c_str());
 	lo_message oscmsg=lo_message_new();
-
+		
 	for (vector<OSCData*>::const_iterator i=args.begin(); i!=args.end(); i++)
 	{					
 		switch((*i)->Type())
 		{
 			case 's': lo_message_add_string(oscmsg,static_cast<OSCString*>(*i)->Value.c_str()); break;
-			case 'n': lo_message_add_float(oscmsg,static_cast<OSCNumber*>(*i)->Value); break;
+			case 'f': lo_message_add_float(oscmsg,static_cast<OSCFloat*>(*i)->Value); break;
+			case 'i': lo_message_add_int32(oscmsg,static_cast<OSCInt*>(*i)->Value); break;
 			default: break;
 		}
 	} 
-	lo_send_message(oscaddr, msg.c_str(), oscmsg);
-	lo_address_free(oscaddr);
+	
+	lo_send_message(m_Destination, msg.c_str(), oscmsg);
 	lo_message_free(oscmsg);
 }
 	
@@ -101,14 +101,14 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 		{
 			case 'f': 
 			{
-				argsdata.push_back(new OSCNumber(argv[i]->f)); 
+				argsdata.push_back(new OSCFloat(argv[i]->f)); 
 				snprintf(buf,256,"%f",argv[i]->f);
 				m_LastMsg+=string(buf)+" "; 
 			}
 			break;
 			case 'i': 
 			{
-				argsdata.push_back(new OSCNumber(argv[i]->i)); 
+				argsdata.push_back(new OSCInt(argv[i]->i)); 
 				snprintf(buf,256,"%i",argv[i]->i);
 				m_LastMsg+=string(buf)+" "; 			
 			}

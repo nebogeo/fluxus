@@ -377,9 +377,16 @@ float FluxusMain::NumberFromOSC(unsigned int index)
 	vector<OSCData*> args;
 	if (m_OSCServer->GetArgs(args))
 	{
-		if (index<args.size() && args[index]->Type()=='n')
+		if (index<args.size())
 		{
-			return static_cast<OSCNumber*>(args[index])->Value;
+			if (args[index]->Type()=='i')
+			{
+				return (float)static_cast<OSCInt*>(args[index])->Value;
+			}
+			else if (args[index]->Type()=='f')
+			{
+				return static_cast<OSCFloat*>(args[index])->Value;
+			}
 		}
 	}
 	return 0;

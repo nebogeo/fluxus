@@ -787,9 +787,11 @@ will be a crash if the port is not fully specified, use strings like
 sends a message with the argument list as the osc data. only supports numbers 
 (which are converted to floats) and strings as data, ie:
 
-(osc-send "/hello" '(1 2 "three"))
+(osc-send "/hello" "fis" '(1 2 "three"))
 
-will send the message out to the current osc destination
+will send the message out to the current osc destination, the type string 
+allows fluxus to convert the numbers correctly using "f" for float, or "i" for
+int.
 
 --------------------------------------------------------------------------------------
 
@@ -864,6 +866,9 @@ applies rotational force twistvec to the object
 (set-max-physical num)
 sets the maximum number of objects the physics system can deal with. when the 
 max level has been reached the oldest objects are destroyed.
+
+(has-collided)                      
+returns true if the grabbed object collided in the last frame
 
 --------------------------------------------------------------------------------------
 
@@ -1022,6 +1027,7 @@ m = vector 16
 (set-mass n n)                      set the mass of an object
 (kick n v)                          apply a translational force to an object  
 (twist n v)                         apply a rotational force to an object  
+(has-collided)                      returns true if the grabbed object collided in the last frame
 (osc-source port)                   starts up the osc server, listening to the given port
 (osc-msg name)                      and sets the current message and returns true if it was received last frame
 (osc index)                         returns the argument from the current message

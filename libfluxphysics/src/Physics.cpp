@@ -67,6 +67,8 @@ Physics::~Physics()
 	
 void Physics::Tick()
 {
+	m_CollisionRecord.clear();
+
 	dSpaceCollide(m_Space,this,&NearCallback);
     dWorldQuickStep(m_World,0.05);
 	
@@ -335,19 +337,23 @@ void Physics::NearCallback_i(dGeomID o1, dGeomID o2)
   		const int N = 10;
 		dContact contact[N];
 
-		int n = dCollide (o1,o2,N,&contact[0].geom,sizeof(dContact));
+		int n = dCollide(o1,o2,N,&contact[0].geom,sizeof(dContact));
 		if (n > 0)
 		{
 			for (int i=0; i<n; i++)
 			{
-			  contact[i].surface.mode = dContactSlip1 | dContactSlip2 | dContactSoftERP | dContactSoftCFM | dContactApprox1;
-			  contact[i].surface.mu = dInfinity;
-			  contact[i].surface.slip1 = m_Slip1;
-			  contact[i].surface.slip2 = m_Slip2;
-			  contact[i].surface.soft_erp = m_SoftErp;
-			  contact[i].surface.soft_cfm = m_SoftCfm;
-			  dJointID c = dJointCreateContact(m_World,m_ContactGroup,&contact[i]);
-			  dJointAttach(c,dGeomGetBody(contact[i].geom.g1),dGeomGetBody(contact[i].geom.g2));
+				contact[i].surface.mode = dContactSlip1 | dContactSlip2 | dContactSoftERP | dContactSoftCFM | dContactApprox1;
+				contact[i].surface.mu = dInfinity;
+				contact[i].surface.slip1 = m_Slip1;
+				contact[i].surface.slip2 = m_Slip2;
+				contact[i].surface.soft_erp = m_SoftErp;
+				contact[i].surface.soft_cfm = m_SoftCfm;
+				dJointID c = dJointCreateContact(m_World,m_ContactGroup,&contact[i]);
+				dBodyID geom1 = dGeomGetBody(contact[i].geom.g1);
+				dBodyID geom2 = dGeomGetBody(contact[i].geom.g2);
+				dJointAttach(c,geom1,geom2);
+				m_CollisionRecord.insert(geom1);
+				m_CollisionRecord.insert(geom2);
 			}
 		}
 	}
@@ -370,11 +376,11 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 		return 0;
 	}
 	
-	dJointID j = dJointCreateHinge2 (m_World,0);
-	dJointAttach (j,i1->second->Body,i2->second->Body);
-	dJointSetHinge2Anchor (j,Anchor.x,Anchor.y,Anchor.z);
-	dJointSetHinge2Axis1 (j,Hinge[0].x, Hinge[0].y, Hinge[0].z);
-	dJointSetHinge2Axis2 (j,Hinge[1].x, Hinge[1].y, Hinge[1].z);
+	dJointID j = dJointCreateHinge2(m_World,0);
+	dJointAttach(j,i1->second->Body,i2->second->Body);
+	dJointSetHinge2Anchor(j,Anchor.x,Anchor.y,Anchor.z);
+	dJointSetHinge2Axis1(j,Hinge[0].x, Hinge[0].y, Hinge[0].z);
+	dJointSetHinge2Axis2(j,Hinge[1].x, Hinge[1].y, Hinge[1].z);
 	
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
@@ -564,5 +570,22 @@ void Physics::SetJointParam(int ID, const string &Param, float Value)
 		case AMotorJoint    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
 		default : cerr<<"unknown joint type "<<i->second->Type<<endl; return; break;	
 	} 	
+}
+
+bool Physics::HasCollided(int Ob)
+{
+	map<int,Object*>::iterator i = m_ObjectMap.find(Ob);
+	if (i==m_ObjectMap.end())
+	{
+		cerr<<"Physics::HasCollided : Object ["<<Ob<<"] doesn't exist"<<endl;
+		return false;
+	}
+	
+	if (m_CollisionRecord.find(i->second->Body)!=m_CollisionRecord.end())
+	{
+		return true;
+	}
+	
+	return false;
 }
 

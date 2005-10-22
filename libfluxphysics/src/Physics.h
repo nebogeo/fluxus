@@ -16,6 +16,7 @@
 
 #include <ode/ode.h>
 #include <Renderer.h>
+#include <set>
 
 namespace fluxus
 {
@@ -55,6 +56,8 @@ public:
     int GetMaxObjectCount() { return m_MaxObjectCount; }
     void SetMaxObjectCount(int s) { m_MaxObjectCount=s; }
 
+	bool HasCollided(int Ob);
+	
 private:
 
 	enum JointType {BallJoint,HingeJoint,SliderJoint,ContactJoint,UniversalJoint,Hinge2Joint,FixedJoint,AMotorJoint};
@@ -92,6 +95,7 @@ private:
 	map<int,dGeomID>       m_GroupMap;
 	map<int,JointObject*>  m_JointMap;
 	deque<int>             m_History;
+	set<dBodyID>		   m_CollisionRecord;
 	
 	Renderer *m_Renderer;
 	int m_MaxObjectCount;

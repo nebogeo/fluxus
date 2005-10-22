@@ -686,7 +686,6 @@ SCM FluxusBinding::surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s
 	return SCM_UNSPECIFIED;
 }
 
-
 SCM FluxusBinding::build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor)
 {
     SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "build_balljoint");
@@ -883,6 +882,12 @@ SCM FluxusBinding::twist(SCM s_obj, SCM s_vec)
 SCM FluxusBinding::srandom()
 {
 	return gh_double2scm(RandFloat());
+}
+
+SCM FluxusBinding::has_collided()
+{
+	if (GrabbedID!=-1) return gh_bool2scm(Fluxus->GetPhysics()->HasCollided(GrabbedID));
+	return gh_bool2scm(false);
 }
 
 SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
@@ -1188,13 +1193,15 @@ SCM FluxusBinding::osc_peek()
 	return gh_str2scm(value.c_str(),value.size());	
 }
 
-SCM FluxusBinding::osc_send(SCM s_msg, SCM s_arglist)
+SCM FluxusBinding::osc_send(SCM s_msg, SCM s_types, SCM s_arglist)
 {
 	SCM_ASSERT(SCM_STRINGP(s_msg), s_msg, SCM_ARG1, "osc-send");	
+	SCM_ASSERT(SCM_STRINGP(s_types), s_types, SCM_ARG2, "osc-send");	
 	// todo: fix this...
 	//SCM_ASSERT(SCM_LISTP(s_arglist), s_arglist, SCM_ARG2, "osc-send");
-    size_t size=0;
+    size_t size=0, typesize=0;
 	char *msg=gh_scm2newstr(s_msg,&size);
+	char *types=gh_scm2newstr(s_types,&typesize);
 	
 	// vectors seem easier to handle than lists with this api
 	SCM argvec = gh_list_to_vector(s_arglist);
@@ -1203,10 +1210,14 @@ SCM FluxusBinding::osc_send(SCM s_msg, SCM s_arglist)
 	for (unsigned int n=0; n<gh_vector_length(argvec); n++)
 	{
 		SCM arg=gh_vector_ref(argvec, gh_int2scm(n));
-		
-		if (gh_number_p(arg))
+
+		if (gh_number_p(arg) || gh_exact_p(arg) || gh_inexact_p(arg))
 		{
-			oscargs.push_back(new OSCNumber(gh_scm2double(arg)));
+			if (n<typesize)
+			{
+				if (types[n]=='f') oscargs.push_back(new OSCFloat(gh_scm2double(arg)));
+				else if (types[n]=='i') oscargs.push_back(new OSCInt((int)gh_scm2double(arg)));
+			}
 		}
 		else if (gh_string_p(arg))
 		{
@@ -1723,13 +1734,14 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("set-mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
+	gh_new_procedure("has-collided",    has_collided, 0,0,0);
 	
 	gh_new_procedure0_1("osc-source",   osc_source);
 	gh_new_procedure0_1("osc",          osc);
 	gh_new_procedure("osc-peek",        osc_peek, 0,0,0);
 	gh_new_procedure0_1("osc-msg",      osc_msg);
 	gh_new_procedure0_1("osc-destination",    osc_destination);
-	gh_new_procedure0_2("osc-send",     osc_send);
+	gh_new_procedure3_0("osc-send",     osc_send);
 	
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);

@@ -1,16 +1,17 @@
+
+(define l '())
+
 (define (sphere)
     (push)
-    (colour (vector (flxrnd) (flxrnd) (flxrnd)))    
-    (specular (vector (flxrnd) (flxrnd) (flxrnd)))
-    (ambient (vector (flxrnd) (flxrnd) (flxrnd)))
-    (shinyness (*(flxrnd)100))
+    (colour (vector 1 1 1))    
     (scale (vector 0.5 0.5 1.5))
-    (let ((ob (build-cube)))    
+    (let ((ob (build-cube)))
+        (set! l (cons ob l))    
         (active-box ob))
     (pop))
 
 (define (line n)
-    (rotate (vector 0 (* (flxrnd) 90) 0))
+    ;(rotate (vector 0 (* (flxrnd) 90) 0))
     (translate (vector (* 0.01 (flxrnd)) (+ 1 (* 0.01 (flxrnd))) (* 0.001 (flxrnd)) ))
     (sphere)
     (if (eq? 0 n)
@@ -22,7 +23,19 @@
 (ground-plane (vector 0 1 0) 0)
 (show-axis 1)
 (clear-colour (vector 0.5 0.1 0.7))
-(line 10)
+(line 20)
 (desiredfps 500)
+(gravity (vector 0 -0.1 0))
+
+(define (render l)
+    (grab (car l))
+    (if (has-collided)
+        (colour (vector (flxrnd) 0 0)))
+    (ungrab)
+    (if (eq? (cdr l) '())
+        0
+        (render (cdr l))))
+
+(every-frame "(render l)")
 
     

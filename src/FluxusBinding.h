@@ -110,6 +110,7 @@ public:
 	static SCM kick(SCM s_obj, SCM s_vec);
 	static SCM twist(SCM s_obj, SCM s_vec);
 	static SCM gravity(SCM s_vec);
+	static SCM has_collided();
 	static SCM srandom();
 	static SCM start_audio(SCM s_dev, SCM s_bs, SCM s_sr);
 	static SCM get_harmonic(SCM s_harm);
@@ -148,7 +149,7 @@ public:
 	static SCM osc(SCM s_index);
 	static SCM osc_destination(SCM s_port);
 	static SCM osc_peek();
-	static SCM osc_send(SCM s_msg, SCM s_argslist);
+	static SCM osc_send(SCM s_msg, SCM s_types, SCM s_argslist);
 	static SCM pdata_size();
 	static SCM pdata_get(SCM s_t, SCM s_i);
 	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);
