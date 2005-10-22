@@ -57,6 +57,7 @@ public:
     float GetHarmonic(int h);
     bool  IsConnected();
     void  SetGain(float s) { m_Gain=s; }
+    void  SetSmoothingBias(float s) { if (s<2 && s>0) m_SmoothingBias=s; }
     void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
@@ -67,9 +68,10 @@ private:
 	static void AudioCallback(void *, unsigned int);
 
 	float m_Gain;
+	float m_SmoothingBias;
 	unsigned int m_Samplerate;
 	float m_BufferTime;
-	int m_BufferLength;
+	unsigned int m_BufferLength;
 	FFT m_FFT;
 	pthread_mutex_t* m_Mutex;
 	float *m_Buffer;
@@ -86,8 +88,8 @@ private:
 	float  m_OneOverSHRT_MAX;
 	bool   m_Processing;
 	float *m_ProcessBuffer;
-	int    m_ProcessPos;
-	int	   m_ProcessLength;
+	unsigned int m_ProcessPos;
+	unsigned int m_ProcessLength;
 };
 
 #endif

@@ -129,6 +129,7 @@ public:
 	static SCM fluxface(SCM s_name, SCM x, SCM y);
 	static SCM clear_fluxface();
 	static SCM gain(SCM s_gain);
+	static SCM smoothing_bias(SCM s_gain);
 	static SCM backfacecull(SCM s);
 	static SCM desiredfps(SCM s);
 	static SCM clear_colour(SCM s_vec);

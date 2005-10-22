@@ -588,12 +588,16 @@ SCM FluxusBinding::feedback_transform(SCM s_a)
 
 SCM FluxusBinding::push()
 {
+	// clear the grabbed object just in case
+	GrabbedID=-1;
     Fluxus->GetRenderer()->PushState();
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::pop()
 {
+	// clear the grabbed object just in case
+	GrabbedID=-1;
     Fluxus->GetRenderer()->PopState();
     return SCM_UNSPECIFIED;
 }
@@ -1017,6 +1021,16 @@ SCM FluxusBinding::gain(SCM s_gain)
 	if (Audio!=NULL)
 	{	
 		Audio->SetGain(gh_scm2double(s_gain));
+	}
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::smoothing_bias(SCM s_gain)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_gain), s_gain, SCM_ARG1, "smoothing-bias");	
+	if (Audio!=NULL)
+	{	
+		Audio->SetSmoothingBias(gh_scm2double(s_gain));
 	}
     return SCM_UNSPECIFIED;
 }
@@ -1673,6 +1687,7 @@ void FluxusBinding::RegisterProcs()
 	
 	// audio
 	gh_new_procedure3_0("start-audio",  start_audio);	
+	gh_new_procedure0_1("smoothing-bias", smoothing_bias);	
 	gh_new_procedure0_1("gain",         gain);	
 	gh_new_procedure0_1("get-harmonic", get_harmonic);
 	gh_new_procedure0_1("gh",           get_harmonic);

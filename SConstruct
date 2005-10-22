@@ -3,13 +3,13 @@ Install   	 = "/usr/local/bin"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
 IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 	  
-Libs = Split("portaudio sndfile guile fftw3 ode png \
+Libs = Split("jack sndfile guile fftw3 ode png \
 			  glut tiff GL GLU z m Xi Xmu Xext Xt SM ICE X11 pthread lo jpeg")
 
 Source = Split("src/AudioCollector.cpp \
 				src/FluxusMain.cpp \
 				src/FluxusBinding.cpp \
-				src/PortAudioClient.cpp \
+				src/JackClient.cpp \
 				src/TurtleBuilder.cpp \
 				src/GLEditor.cpp \
 				src/Utils.cpp \
@@ -72,8 +72,8 @@ if not GetOption('clean'):
 		print 'ERROR: guile must be installed!'
 		Exit(1)   
 
-	if not conf.CheckLibWithHeader('portaudio', 'portaudio.h', 'C'):
-		print 'ERROR: portaudio must be installed!'
+	if not conf.CheckLibWithHeader('jack', 'jack/jack.h', 'C'):
+		print 'ERROR: jack must be installed!'
 		Exit(1)   
 
 	env = conf.Finish()	

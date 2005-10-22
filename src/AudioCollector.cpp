@@ -18,7 +18,7 @@
 #include <iostream>
 #include <sndfile.h>
 #include "AudioCollector.h"
-#include "PortAudioClient.h"
+#include "JackClient.h"
 
 static const int MAX_FFT_LENGTH = 4096;
 static int XRanges[NUM_BARS+1] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
@@ -78,6 +78,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 AudioCollector::AudioCollector(int Device, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
+m_SmoothingBias(1.2),
 m_FFT(BufferLength),
 m_FFTBuffers(FFTBuffers),
 m_JackBuffer(NULL),
@@ -108,24 +109,24 @@ m_ProcessPos(0)
 	m_Mutex = new pthread_mutex_t;
 	pthread_mutex_init(m_Mutex,NULL);
 	
-	PortAudioClient::Initialise(Device,Samplerate,BufferLength);
-	PortAudioClient *Jack = PortAudioClient::Get();
+	JackClient *Jack = JackClient::Get();
 	Jack->SetCallback(AudioCallback,(void*)this);
 	Jack->Attach("fluxus");
 	if (Jack->IsAttached())
 	{	
-		Jack->SetInputs(m_JackBuffer,m_JackBuffer);
+		int id=Jack->AddInputPort();
+		Jack->SetInputBuf(id,m_JackBuffer);
 	}
 }
 
 AudioCollector::~AudioCollector()
 {
-	PortAudioClient::Get()->Detach();
+	JackClient::Get()->Detach();
 }
 
 bool AudioCollector::IsConnected()
 {
-	return PortAudioClient::Get()->IsAttached();
+	return JackClient::Get()->IsAttached();
 }
 
 float AudioCollector::GetHarmonic(int h)
@@ -169,9 +170,7 @@ float *AudioCollector::GetFFT()
 		}
 		Value*=Value;
 		Value*=m_Gain*0.025;
-		
-		float Bias=0.5;
-		m_FFTOutput[n]=((m_FFTOutput[n]*Bias)+Value*(1/Bias))/2.0f;
+		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1/m_SmoothingBias))/2.0f;
 	}
 	
 	/*for (int n=1; n<NUM_BARS-1; n++)
@@ -225,7 +224,7 @@ void AudioCollector::Process(const string &filename)
 
 void AudioCollector::AudioCallback_i(unsigned int Size)
 {
-	if (!pthread_mutex_trylock(m_Mutex))
+	if (Size<=m_BufferLength && !pthread_mutex_trylock(m_Mutex))
 	{
 		memcpy((void*)m_Buffer,(void*)m_JackBuffer,m_BufferLength*sizeof(float));
 		pthread_mutex_unlock(m_Mutex);

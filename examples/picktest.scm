@@ -1,17 +1,9 @@
 
 (clear)
 
-(define f (load-texture "textures/font2.png"))
-
 (define (build n)
     (translate (vector 1.1 0 0))
-    (let ((id (build-cube)))
-        (push)
-        (translate (vector 0 1 0))
-        (scale (vector 0.2 0.2 0.2))
-        (texture f)
-        (build-text (number->string id))
-        (pop))
+    (build-cube)
     (if (< n 0)
         0
         (build (- n 1))))
