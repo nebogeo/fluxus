@@ -103,7 +103,7 @@ void Renderer::BeginScene(bool PickMode)
   		glLoadIdentity();
 		
   		if (PickMode) 
-		{ 	
+		{ 		
 			GLint viewport[4]={0,0,m_Width,m_Height};
 			gluPickMatrix(m_SelectInfo.x,m_Height-m_SelectInfo.y,
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
@@ -371,12 +371,17 @@ int Renderer::Select(int x, int y, int size)
 	m_SelectInfo.y=y;
 	m_SelectInfo.size=size;
 	
+	// the problem here is that select is called mid-scene, so we have to set up for 
+	// picking mode here...
 	BeginScene(true);
-	glMultMatrixf(m_Camera.arr());
-	m_World.Render();
-	EndScene();
 	
+	// render the scene for picking
+	m_World.Render();
+	
+	// ... and reset the scene back here so we can carry on afterwards as if nothing
+	// has happened...
 	m_Initialised=false;
+	BeginScene();
 	
 	int hits=glRenderMode(GL_RENDER);
 	unsigned int *ptr=IDs, numnames;

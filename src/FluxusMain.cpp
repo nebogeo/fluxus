@@ -256,11 +256,14 @@ void FluxusMain::Render()
 	
 	if (m_Frame!=-1)
 	{
-		char Fnum[5];
-		snprintf(Fnum,5,"%04d",m_Frame);
+		char Fnum[7];
+		snprintf(Fnum,7,"%06d",m_Frame);
 		string Filename=m_FrameName+"-"+string(Fnum)+".jpg";
+		
+		cerr<<Filename<<endl;
+		
 		//string Filename=m_FrameName+"-"+string(Fnum)+".tif";
-		WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,95,2);
+		WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,80,1);
 		//WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
 		//  MAC RLE -----------------------------------------------------------^
 		m_Frame++;

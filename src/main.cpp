@@ -197,11 +197,11 @@ int main(int argc, char *argv[])
 	InitDada();
 	srand(time(NULL));
 	
-	glutInitWindowSize(640,480) ;
+	glutInitWindowSize(768,576) ;
   	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
   	glutCreateWindow("fluxus");
-	binding = new FluxusBinding(640,480);
+	binding = new FluxusBinding(768,576);
 	glutDisplayFunc(DisplayCallback);
 	glutReshapeFunc(ReshapeCallback);
 	glutKeyboardFunc(KeyboardCallback);
