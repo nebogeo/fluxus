@@ -5,6 +5,7 @@
     (push)
     (colour (vector 1 1 1))    
     (scale (vector 0.5 0.5 1.5))
+    (translate (vmul (vector (flxrnd)(flxrnd)(flxrnd)) 10))
     (let ((ob (build-cube)))
         (set! l (cons ob l))    
         (active-box ob))
@@ -25,12 +26,14 @@
 (clear-colour (vector 0.5 0.1 0.7))
 (line 20)
 (desiredfps 500)
-(gravity (vector 0 -0.1 0))
+(gravity (vector 0 -1 0))
 
 (define (render l)
     (grab (car l))
-    (if (has-collided)
-        (colour (vector (flxrnd) 0 0)))
+    (if (has-collided (car l))
+        (begin
+        (colour (vector (flxrnd) 0 0))
+        (kick (car l) (vector 0 0.3 0))))
     (ungrab)
     (if (eq? (cdr l) '())
         0

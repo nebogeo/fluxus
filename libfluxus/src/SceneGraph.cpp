@@ -29,18 +29,18 @@ SceneGraph::~SceneGraph()
 {
 }
 
-void SceneGraph::Render()
+void SceneGraph::Render(Mode rendermode)
 {
 	//RenderWalk((SceneNode*)m_Root,0);
 	
 	// render all the children of the root
 	for (vector<Node*>::iterator i=m_Root->Children.begin(); i!=m_Root->Children.end(); ++i)
 	{
-		RenderWalk((SceneNode*)*i,0);
+		RenderWalk((SceneNode*)*i,0,rendermode);
 	}
 }
 
-void SceneGraph::RenderWalk(SceneNode *node, int depth)
+void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 {
 	// max gl matrix stack is 32 
 	/*if (depth>=30)
@@ -50,7 +50,8 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth)
 	}*/
 	
 	if (node->Prim->Hidden()) return;
-
+	if (rendermode==SELECT && !node->Prim->IsSelectable()) return;
+	
 	glPushMatrix();		
 	node->Prim->ApplyState();
 	glPushName(node->ID);
@@ -61,7 +62,7 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth)
 
 	for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
 	{
-		RenderWalk((SceneNode*)*i,depth);
+		RenderWalk((SceneNode*)*i,depth,rendermode);
 	}
 	glPopMatrix();
 }
@@ -134,60 +135,4 @@ void SceneGraph::Clear()
 	Tree::Clear();
 	SceneNode *root = new SceneNode(NULL);
 	AddNode(0,root);
-}
-
-istream &fluxus::operator>>(istream &s, SceneNode &o)
-{
-	s.ignore(3);
-	bool PrimExists = false;
-	s.read((char*)&PrimExists,sizeof(bool));
-	if (PrimExists)
-	{
-		o.Prim = new PolyPrimitive;
-		s>>*(PolyPrimitive*)o.Prim;
-	}
-	int num=0;
-	s.read((char*)&num,sizeof(int));
-	for (int n=0; n<num; n++)
-	{
-		SceneNode* newnode = new SceneNode(NULL);
-		s>>*newnode;
-		o.Children.push_back(newnode);
-	}
-	
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, SceneNode &o)
-{
-	s.write("sgn",3);
-	bool PrimExists = o.Prim;
-	s.write((char*)&PrimExists,sizeof(bool));
-	if (o.Prim)
-	{
-		s<<*(PolyPrimitive*)o.Prim;
-	}
-	int num=o.Children.size();
-	s.write((char*)&num,sizeof(int));
-	for (vector<Node*>::iterator i=o.Children.begin(); i!=o.Children.end(); ++i)
-	{
-		s<<*((SceneNode*)*i);
-	}
-	
-	return s;
-}
-
-istream &fluxus::operator>>(istream &s, SceneGraph &o)
-{
-	s.ignore(3);
-	o.m_Root = new SceneNode(NULL);
-	s>>*(SceneNode*)o.m_Root;
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, SceneGraph &o)
-{
-	s.write("sgh",3);
-	s<<*(SceneNode*)o.m_Root;
-	return s;
 }

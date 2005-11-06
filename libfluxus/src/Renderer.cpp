@@ -55,6 +55,9 @@ m_Front(1),
 m_Back(10000),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
+m_FogDensity(0), 
+m_FogStart(0),
+m_FogEnd(100),
 m_FeedBack(false),
 m_FeedBackData(NULL),
 m_FeedBackID(0),
@@ -140,6 +143,21 @@ void Renderer::BeginScene(bool PickMode)
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
 		
+		if (m_FogDensity>0)
+		{
+			glEnable(GL_FOG);
+			glFogf(GL_FOG_MODE, GL_EXP);
+			glFogfv(GL_FOG_COLOR, m_FogColour.arr());
+			glFogf(GL_FOG_DENSITY, m_FogDensity);
+			glFogf(GL_FOG_HINT, GL_DONT_CARE);
+			glFogf(GL_FOG_START, m_FogStart);
+			glFogf(GL_FOG_END, m_FogEnd);
+		}
+		else
+		{
+			glDisable(GL_FOG);
+		}	
+			
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL,GL_SEPARATE_SPECULAR_COLOR);
 	
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -218,6 +236,7 @@ void Renderer::BeginScene(bool PickMode)
 		glDisable(GL_TEXTURE_2D);
 	}
 	
+
 	
 	if (m_FPSDisplay)
 	{
@@ -376,7 +395,7 @@ int Renderer::Select(int x, int y, int size)
 	BeginScene(true);
 	
 	// render the scene for picking
-	m_World.Render();
+	m_World.Render(SceneGraph::SELECT);
 	
 	// ... and reset the scene back here so we can carry on afterwards as if nothing
 	// has happened...
@@ -423,6 +442,7 @@ void Renderer::Clear()
 {
 	m_World.Clear();
 	m_StateStack.clear();
+	UnGrab();
 	
 	State InitialState;
 	m_StateStack.push_back(InitialState);
@@ -444,8 +464,12 @@ Primitive *Renderer::GetPrimitive(int ID)
 
 void Renderer::RemovePrimitive(int ID)
 {
-	Node *node=m_World.FindNode(ID);
-	if (node) m_World.RemoveNode(node);
+	SceneNode *node = (SceneNode*)m_World.FindNode(ID);
+	if (node!=NULL)
+	{
+		if (node->Prim==m_Grabbed) UnGrab();
+		m_World.RemoveNode(node);
+	}
 }
 
 void Renderer::DetachPrimitive(int ID)
@@ -666,50 +690,3 @@ void Renderer::InitFeedback()
 	if (m_FeedBackID==0) glGenTextures(1,&m_FeedBackID);
 }
 
-// bugger
-#include "PolyPrimitive.h"
-
-istream &fluxus::operator>>(istream &s, Renderer &o)
-{
-	o.m_LoadedFromFlx=true;
-	s.ignore(3);
-	State newstate;
-	s>>newstate;
-	o.m_StateStack.clear();
-	o.m_StateStack.push_back(newstate);
-	s.read((char*)o.m_Camera.arr(),sizeof(float)*16);
-	s>>o.m_World;
-	
-	s.ignore(3);
-	int NumIP=0;
-	s.read((char*)&NumIP,sizeof(int));
-	for(int n=0; n<NumIP; n++)
-	{
-		Renderer::IMItem *newitem = new Renderer::IMItem;
-		newitem->m_Primitive = new PolyPrimitive;
-		s>>newitem->m_State;
-		s>>*(PolyPrimitive*)newitem->m_Primitive;
-		o.m_IMRecord.push_back(newitem);
-	}
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, Renderer &o)
-{
-	s.write("flx",3);
-	s<<*o.GetState();
-	s.write((char*)o.m_Camera.arr(),sizeof(float)*16);
-	s<<o.m_World;
-	
-	// time to save the immediate mode stuff we've drawn this frame
-	s.write("imp",3);
-	int NumIP=o.m_IMRecord.size();
-	s.write((char*)&NumIP,sizeof(int));
-	for(vector<Renderer::IMItem*>::iterator i=o.m_IMRecord.begin(); i!=o.m_IMRecord.end(); ++i)
-	{
-		 s<<(*i)->m_State;
-		 s<<*(PolyPrimitive*)(*i)->m_Primitive;
-	}
-	
-	return s;
-}

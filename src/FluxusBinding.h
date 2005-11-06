@@ -62,6 +62,7 @@ public:
 	static SCM grab(SCM s_id);
 	static SCM ungrab();
 	static SCM hide(SCM s_b);
+	static SCM selectable(SCM s_b);
 	static SCM apply(SCM s_id);
 	static SCM opacity(SCM s_opac);
 	static SCM shinyness(SCM s_opac);
@@ -85,6 +86,7 @@ public:
 	static SCM hint_unlit();
 	static SCM hint_none();
 	static SCM blur(SCM s_blur);
+	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
 	static SCM feedback(SCM s_fb);
 	static SCM feedback_transform(SCM s_fb);
 	static SCM push();
@@ -110,7 +112,7 @@ public:
 	static SCM kick(SCM s_obj, SCM s_vec);
 	static SCM twist(SCM s_obj, SCM s_vec);
 	static SCM gravity(SCM s_vec);
-	static SCM has_collided();
+	static SCM has_collided(SCM s_id);
 	static SCM srandom();
 	static SCM start_audio(SCM s_dev, SCM s_bs, SCM s_sr);
 	static SCM get_harmonic(SCM s_harm);
@@ -123,7 +125,6 @@ public:
 	static SCM delta();
 	static SCM reset_camera();
 	static SCM print_scene_graph();
-	static SCM save_frame(SCM s_name);
 	static SCM load(SCM s_name);
 	static SCM save_name(SCM s_name);
 	static SCM source(SCM s_name);
@@ -150,11 +151,15 @@ public:
 	static SCM osc_destination(SCM s_port);
 	static SCM osc_peek();
 	static SCM osc_send(SCM s_msg, SCM s_types, SCM s_argslist);
+
 	static SCM pdata_size();
 	static SCM pdata_get(SCM s_t, SCM s_i);
 	static SCM pdata_set(SCM s_t, SCM s_i, SCM s_v);
+	static SCM pdata_add(SCM s_name, SCM s_type);
+	static SCM pdata_copy(SCM s_s, SCM s_d);
 	static SCM finalise();
 	static SCM recalc_normals();
+	static SCM pdata_op(SCM s_op, SCM s_pd, SCM s_oper);
 		
 	static SCM vmul(SCM s_a, SCM s_b);
 	static SCM vadd(SCM s_a, SCM s_b);

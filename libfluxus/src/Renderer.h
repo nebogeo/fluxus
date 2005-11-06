@@ -114,6 +114,8 @@ public:
 	void SetFeedBackMat(const dMatrix &s)    { m_FeedBackMat=s; }
 	typedef void (cb)();
 	void SetEngineCallback(cb *s)            { EngineCallback=s; }
+	void SetFog(const dColour &c, float d, float s, float e)    
+		{ m_FogColour=c; m_FogDensity=d; m_FogStart=s; m_FogEnd=e; m_Initialised=false; }
 	
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
@@ -153,6 +155,10 @@ private:
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
+	dColour m_FogColour; 
+	float m_FogDensity; 
+	float m_FogStart; 
+	float m_FogEnd;
 	
 	bool m_FeedBack;
 	char *m_FeedBackData;
@@ -203,13 +209,7 @@ private:
 	map<string,LibraryEntry> m_CompiledLibrary;
 	
     cb *EngineCallback;
-
-    friend istream &operator>>(istream &s, Renderer &o);
-	friend ostream &operator<<(ostream &s, Renderer &o);
 };
-
-istream &operator>>(istream &s, Renderer &o);
-ostream &operator<<(ostream &s, Renderer &o);
 	
 };
 

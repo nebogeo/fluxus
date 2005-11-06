@@ -44,22 +44,18 @@ public:
 	SceneGraph();
 	~SceneGraph();
 
-	void Render();
+	enum Mode{RENDER,SELECT};
+
+	void Render(Mode rendermode=RENDER);
 	virtual void Clear();
 	void Detach(SceneNode *node);
 	dMatrix GetGlobalTransform(SceneNode *node);
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
 
 private:
-	void RenderWalk(SceneNode *node, int depth);
+	void RenderWalk(SceneNode *node, int depth, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
-	
-	friend istream &operator>>(istream &s, SceneGraph &o);
-	friend ostream &operator<<(ostream &s, SceneGraph &o);
 };
-
-istream &operator>>(istream &s, SceneGraph &o);
-ostream &operator<<(ostream &s, SceneGraph &o);
 
 }
 

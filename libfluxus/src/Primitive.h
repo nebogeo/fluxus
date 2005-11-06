@@ -15,8 +15,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <string>
+#include <map>
 #include <assert.h>
 #include "State.h"
+#include "PDataContainer.h"
 
 #ifndef N_PRIM
 #define N_PRIM
@@ -24,20 +26,16 @@
 namespace fluxus
 {
 
-class Primitive
+class Primitive : public PDataContainer
 {
 public:
-	Primitive() : m_IsPhysical(false),m_Hidden(false) {}
-	virtual ~Primitive() {}
+	Primitive() : m_IsPhysical(false),m_Hidden(false),m_Selectable(true) {}
+	virtual ~Primitive();
 	virtual void Render()=0;
 	virtual dBoundingBox GetBoundingBox()=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
     virtual string GetTypeName()    { return "Primitive"; }
-	
-	// for per vertex/cv/etc data manipulation
-	virtual unsigned int GetDataSize() { return 0; }	
-	virtual void SetData(char t, unsigned int i, dVector v) {}
-	virtual dVector GetData(char t, unsigned int i) { return dVector(); }
+		
 	virtual void RecalculateNormals() {}
 	virtual void Finalise() {} // setdata unfinalises some prims - use this to optimise again
 	
@@ -49,22 +47,19 @@ public:
 	bool IsPhysicalHint()           { return m_IsPhysical; }
 	bool Hidden()      		        { return m_Hidden; }
 	void Hide(bool s)      		    { m_Hidden=s; }
+	bool IsSelectable()      		{ return m_Selectable; }
+	void Selectable(bool s)      	{ m_Selectable=s; }
 	State *GetState()               { return &m_State; }
-	
 	
 protected:
 	State m_State;
 	
 private:
+	
 	bool  m_IsPhysical;
 	bool  m_Hidden;
-	
-	friend istream &operator>>(istream &s, Primitive &o);
-	friend ostream &operator<<(ostream &s, Primitive &o);
+	bool  m_Selectable;
 };
-
-istream &operator>>(istream &s, Primitive &o);
-ostream &operator<<(ostream &s, Primitive &o);
 
 };
 

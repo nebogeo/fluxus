@@ -22,6 +22,12 @@ using namespace fluxus;
 	
 ParticlePrimitive::ParticlePrimitive() 
 {
+	AddData("p",new TypedPData<dVector>);
+	AddData("c",new TypedPData<dColour>);
+	
+	// direct access for speed
+	m_VertData=GetDataVec<dVector>("p");
+	m_ColData=GetDataVec<dColour>("c");
 }
 
 ParticlePrimitive::~ParticlePrimitive()
@@ -44,10 +50,10 @@ void ParticlePrimitive::Render()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	
-	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData.begin()->arr());
-	glColorPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_ColData.begin()->arr());
+	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
+	glColorPointer(4,GL_FLOAT,sizeof(dColour),(void*)m_ColData->begin()->arr());
 
-	glDrawArrays(GL_POINTS,0,m_VertData.size());
+	glDrawArrays(GL_POINTS,0,m_VertData->size());
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
@@ -56,50 +62,10 @@ void ParticlePrimitive::Render()
 	glEnable(GL_LIGHTING);
 }
 
-void ParticlePrimitive::SetData(char t, unsigned int i, dVector v)
-{
-	switch (t)
-	{
-		case 'p': if (i<m_VertData.size()) m_VertData[i]=v; break;
-		case 'c': 
-		{
-			if (i<m_ColData.size()) 
-			{
-				m_ColData[i].r=v.x;
-				m_ColData[i].g=v.y;
-				m_ColData[i].b=v.z;
-			}
-		}
-		break;
-		default: break;
-	}
-}
-
-dVector ParticlePrimitive::GetData(char t, unsigned int i)
-{
-	dVector ret;
-	switch (t)
-	{
-		case 'p': if (i<m_VertData.size()) ret=m_VertData[i]; break;
-		case 'c': 
-		{
-			if (i<m_ColData.size())
-			{
-				ret.x=m_ColData[i].r; 
-				ret.y=m_ColData[i].g; 
-				ret.z=m_ColData[i].b; 
-			}
-		}
-		break;
-		default: break;
-	}
-	return ret;
-}
-
 dBoundingBox ParticlePrimitive::GetBoundingBox()
 {	
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_VertData.begin();	i!=m_VertData.end(); ++i)
+	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
 		box.expand(*i);
 	}
@@ -110,14 +76,14 @@ void ParticlePrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_VertData.begin(); i!=m_VertData.end(); ++i)
+		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVector>::iterator i=m_VertData.begin(); i!=m_VertData.end(); ++i)
+		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}

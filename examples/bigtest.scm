@@ -1,6 +1,6 @@
 
 ;8.8
-(start-audio 2048 44100)
+;(start-audio 2048 44100)
 (clear)
 
 (reset-camera)

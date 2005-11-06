@@ -5,7 +5,6 @@
 (define v (vector 0 0 0))
 (define i (vector 0 0 0))
 (define t (vector 0 0 0))
-(define points '())
 
 (clear-colour (vector 0 0 1))
 
@@ -17,21 +16,17 @@
 (shinyness 10)
 (specular (vector 1 1 1))
 (define ob (build-nurbs-sphere 6 8))
+(grab ob)
+(pdata-copy "p" "pref")
+(ungrab)
 
-; reads the points into a list
-(define (store n)
-    (set! points (cons (pdata-get "p" n) points))
+(define (deform n)
+    (set! v (vector (* 2 (sin (+ (time) (*(vector-ref (pdata-get "pref" n) 1) 10.4)))) 0 0))
+    (set! v (vmul v (* (sin (time)) 0.5)))
+    (pdata-set "p" n (vadd v (pdata-get "pref" n)))
     (if (< n 0)
         0
-        (store (- n 1))))
-
-(define (deform n p)
-    (set! v (vector (* 0.4 (sin (+ (time) (*(vector-ref (car p) 1) 10.4)))) 0 0))
-    (set! v (vmul v (* (gh n) 0.1)))
-    (pdata-set "p" n (vadd v (car p)))
-    (if (< n 0)
-        0
-        (deform (- n 1) (cdr p))))    
+        (deform (- n 1))))    
     
 (define (toon n camerapos obpos)
     (set! v (vadd obpos (pdata-get "p" n))) ; vertex in worldspace 
@@ -43,7 +38,7 @@
 
 (define (render)
     (grab ob)
-    (deform (pdata-size) points)
+    (deform (pdata-size))
     (recalc-normals)
     (toon (pdata-size)
         (vtransform (vector 0 0 0) (get-camera-transform))
@@ -61,9 +56,6 @@
         0
         (render-instances (- n 1))))
 
-(grab ob)
-(store (pdata-size))
-(ungrab)
 
 (every-frame "(render)")
     

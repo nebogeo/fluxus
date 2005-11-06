@@ -219,8 +219,8 @@ for instance:
 (rotate (vector 0 0 1))
 (ungrab)
 
-If you call push or pop while an object is grabbed, it will still effect the 
-state stack - it's probably a bad idea to do this.
+Do not call push or pop while an object is grabbed, it will have no effect - 
+fluxus will print out a warning in this case.
 
 The scenegraph also enables you to parent objects to one another, using the 
 renderstate's parent setting. this is only effective before an object is loaded 
@@ -867,7 +867,7 @@ applies rotational force twistvec to the object
 sets the maximum number of objects the physics system can deal with. when the 
 max level has been reached the oldest objects are destroyed.
 
-(has-collided)                      
+(has-collided id)                      
 returns true if the grabbed object collided in the last frame
 
 --------------------------------------------------------------------------------------

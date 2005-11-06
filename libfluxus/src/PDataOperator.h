@@ -14,45 +14,23 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Renderer.h"
-#include "Primitive.h"
 
-#ifndef N_POLYPRIM
-#define N_POLYPRIM
+#include "PData.h"
+
+#ifndef N_PDATA_OPERATOR
+#define N_PDATA_OPERATOR
+
+using namespace std;
 
 namespace fluxus
 {
 
-class PolyPrimitive : public Primitive
+class PDataOperator
 {
 public:
-	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN,POLYGON};
-	
-	PolyPrimitive(Type t=TRISTRIP);
-	virtual  ~PolyPrimitive();
-	
-	virtual void AddVertex(const dVertex &Vert);	
-	virtual void Render();
-	virtual void Finalise();
-	virtual dBoundingBox GetBoundingBox();
-	virtual void RecalculateNormals();
-	virtual void ApplyTransform(bool ScaleRotOnly=false);
-	virtual string GetTypeName() { return "PolyPrimitive"; }
-
-	void VertColours(bool s) { m_VertColours=s; }
-	
-protected:
-	
-	Type m_Type;
-	bool m_VertColours;
-	vector<dVector> *m_VertData;
-	vector<dVector> *m_NormData;
-	vector<dColour> *m_ColData;
-	vector<dVector> *m_TexData;
-	unsigned int m_NumVerts;
-	bool m_Finalised;
+	PDataOperator() {}
 };
 
-};
+}
 
 #endif

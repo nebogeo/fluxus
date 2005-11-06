@@ -88,10 +88,10 @@ string GLEditor::GetText()
 void GLEditor::DrawCharBlock()
 {		
 	glBegin(GL_QUADS);
-	glVertex3f(0,-30,0);
-	glVertex3f(0,130,0);
-	glVertex3f(m_CursorWidth,130,0);
 	glVertex3f(m_CursorWidth,-30,0);				
+	glVertex3f(m_CursorWidth,130,0);
+	glVertex3f(0,130,0);
+	glVertex3f(0,-30,0);
 	glEnd();
 }
 
@@ -106,7 +106,6 @@ void GLEditor::Render()
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
 	glLineWidth(m_TextWidth);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glLoadIdentity();
@@ -203,7 +202,6 @@ void GLEditor::Render()
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)

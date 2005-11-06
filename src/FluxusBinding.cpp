@@ -1,3 +1,19 @@
+// Copyright (C) 2005 Dave Griffiths
+//
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 #include <fstream>
 #include "FluxusBinding.h"
 
@@ -165,8 +181,7 @@ SCM FluxusBinding::build_particles(SCM s_count)
 	int count=(int)gh_scm2double(s_count);
 	for (int i=0; i<count; i++)
 	{
-		Prim->AddParticle(dVector(RandFloat(),RandFloat(),RandFloat()),
-						  dColour(RandFloat(),RandFloat(),RandFloat()));
+		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0));
 	}
 	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
@@ -567,6 +582,19 @@ SCM FluxusBinding::blur(SCM s_blur)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e)
+{
+    SCM_ASSERT(SCM_VECTORP(s_col), s_col, SCM_ARG1, "fog");
+	SCM_ASSERT(SCM_VECTOR_LENGTH(s_col)==3, s_col, SCM_ARG1, "fog");
+    SCM_ASSERT(SCM_NUMBERP(s_d), s_d, SCM_ARG2, "fog");
+    SCM_ASSERT(SCM_NUMBERP(s_s), s_s, SCM_ARG3, "fog");
+    SCM_ASSERT(SCM_NUMBERP(s_e), s_e, SCM_ARG4, "fog");
+	dColour c;
+	gh_scm2floats(s_col,c.arr());
+	Fluxus->GetRenderer()->SetFog(c,gh_scm2double(s_d),gh_scm2double(s_s),gh_scm2double(s_e));
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::feedback(SCM s_fb)
 {
     SCM_ASSERT(SCM_NUMBERP(s_fb), s_fb, SCM_ARG1, "feedback");
@@ -588,16 +616,24 @@ SCM FluxusBinding::feedback_transform(SCM s_a)
 
 SCM FluxusBinding::push()
 {
-	// clear the grabbed object just in case
-	GrabbedID=-1;
+	if (GrabbedID!=-1)
+	{
+		cerr<<"error: can't (push) while an object is (grab)bed"<<endl;
+		return SCM_UNSPECIFIED;
+	}
+	
     Fluxus->GetRenderer()->PushState();
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::pop()
 {
-	// clear the grabbed object just in case
-	GrabbedID=-1;
+	if (GrabbedID!=-1)
+	{
+		cerr<<"error: can't (pop) while an object is (grab)bed"<<endl;
+		return SCM_UNSPECIFIED;
+	}
+
     Fluxus->GetRenderer()->PopState();
     return SCM_UNSPECIFIED;
 }
@@ -884,10 +920,10 @@ SCM FluxusBinding::srandom()
 	return gh_double2scm(RandFloat());
 }
 
-SCM FluxusBinding::has_collided()
+SCM FluxusBinding::has_collided(SCM s_id)
 {
-	if (GrabbedID!=-1) return gh_bool2scm(Fluxus->GetPhysics()->HasCollided(GrabbedID));
-	return gh_bool2scm(false);
+	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "has-collided");
+	return gh_bool2scm(Fluxus->GetPhysics()->HasCollided((int)gh_scm2double(s_id)));
 }
 
 SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
@@ -976,17 +1012,6 @@ SCM FluxusBinding::print_scene_graph()
 {
 	Fluxus->GetRenderer()->PrintSceneGraph();
 	return SCM_UNSPECIFIED;
-}
-	
-SCM FluxusBinding::save_frame(SCM s_name)
-{
-	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "save_frame");	
-    size_t size=0;
-	char *name=gh_scm2newstr(s_name,&size);
-	ofstream out(name,ios::binary);
-	out<<*Fluxus->GetRenderer();
-	free(name);
-    return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::load(SCM s_name)
@@ -1241,13 +1266,35 @@ SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
 	SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-get");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-get");
 	
-    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		size_t size=0;
-		char *type=gh_scm2newstr(s_t,&size);
-		SCM ret=gh_floats2scm(Grabbed->GetData(type[0],(int)gh_scm2double(s_i)).arr(),3); 
-		free(type);
+		size_t ssize=0;
+		char *name=gh_scm2newstr(s_t,&ssize);
+		unsigned int index=(int)gh_scm2double(s_i);
+		unsigned int size;
+		char type;
+		SCM ret=gh_floats2scm(dVector().arr(),3);
+		
+		if (Grabbed->GetDataInfo(name,type,size))
+		{
+			if (index<size)
+			{
+				if (type=='v')	
+				{
+					ret=gh_floats2scm(Grabbed->GetData<dVector>(name,index).arr(),3); 
+				}
+				else if (type=='c')	
+				{
+					ret=gh_floats2scm(Grabbed->GetData<dColour>(name,index).arr(),3); 
+				}
+				else if (type=='m')	
+				{
+					ret=gh_floats2scm(Grabbed->GetData<dMatrix>(name,index).arr(),16); 
+				}
+			}
+		}
+		free(name); 
 		return ret;
 	}
     return SCM_UNSPECIFIED;
@@ -1258,25 +1305,236 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
     SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-set");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-set");
 	SCM_ASSERT(SCM_VECTORP(s_v), s_v, SCM_ARG3, "pdata-set");	
-	SCM_ASSERT(SCM_VECTOR_LENGTH(s_v)==3, s_v, SCM_ARG3, "pdata-set");
+	//SCM_ASSERT(SCM_VECTOR_LENGTH(s_v)==3, s_v, SCM_ARG3, "pdata-set");
 	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
-	if (Grabbed && gh_vector_length(s_v)==3) 
+	if (Grabbed) 
 	{
-		size_t size=0;
-		char *type=gh_scm2newstr(s_t,&size);
-		dVector v;
-		gh_scm2floats(s_v,v.arr());
-		Grabbed->SetData(type[0],(int)gh_scm2double(s_i),v);
-		free(type); 
+		size_t ssize=0;
+		char *name=gh_scm2newstr(s_t,&ssize);
+		unsigned int index=(int)gh_scm2double(s_i);
+		unsigned int size;
+		char type;
+		
+		if (Grabbed->GetDataInfo(name,type,size))
+		{
+			if (index<size)
+			{
+				if (type=='v')	
+				{
+					dVector v;
+					gh_scm2floats(s_v,v.arr());
+					Grabbed->SetData<dVector>(name,index,v);
+				}
+				else if (type=='c')	
+				{
+					dColour c;
+					gh_scm2floats(s_v,c.arr());
+					Grabbed->SetData<dColour>(name,index,c);
+				}
+				else if (type=='m')	
+				{
+					dMatrix m;
+					gh_scm2floats(s_v,m.arr());
+					Grabbed->SetData<dMatrix>(name,index,m);
+				}
+			}
+		}
+		free(name); 
 	}
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::pdata_add(SCM s_name, SCM s_type)
+{
+    SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "pdata-add");
+    SCM_ASSERT(SCM_STRINGP(s_type), s_type, SCM_ARG2, "pdata-add");
+	
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) 
+	{
+		size_t ssize=0;
+		char *names=gh_scm2newstr(s_name,&ssize);
+		char *types=gh_scm2newstr(s_type,&ssize);
+		char type=0;
+		unsigned int size=0;
+		
+		PData *ptr=NULL;
+		Grabbed->GetDataInfo("p", type, size);
+		
+		switch (types[0])
+		{
+			case 'v': ptr = new TypedPData<dVector>; ((TypedPData<dVector>*)ptr)->m_Data.resize(size); break;
+			case 'c': ptr = new TypedPData<dColour>; ((TypedPData<dColour>*)ptr)->m_Data.resize(size); break;
+			case 'f': ptr = new TypedPData<float>; ((TypedPData<float>*)ptr)->m_Data.resize(size); break;
+			case 'm': ptr = new TypedPData<dMatrix>; ((TypedPData<dMatrix>*)ptr)->m_Data.resize(size); break;
+			default : cerr<<"pdata-new: unknown type "<<types[0]<<endl; break;
+		}
+		
+		if (ptr)
+		{
+			Grabbed->AddData(names,ptr);
+		}
+		
+		free(names);
+		free(types);
+	}
+	
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::pdata_op(SCM s_op, SCM s_pd, SCM s_oper)
+{
+    SCM_ASSERT(SCM_STRINGP(s_op), s_op, SCM_ARG1, "pdata-op");
+    SCM_ASSERT(SCM_STRINGP(s_pd), s_pd, SCM_ARG2, "pdata-op");
+	PData *ret=NULL;
+	
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) 
+	{
+		size_t ssize=0;
+		char *op=gh_scm2newstr(s_op,&ssize);
+		char *pd=gh_scm2newstr(s_pd,&ssize);
+		PData *ret;
+		
+		// find out what the inputs are, and call the corresponding function
+		if (gh_string_p(s_oper))
+		{
+			char *operand=gh_scm2newstr(s_oper,&ssize);
+			
+			PData* pd2 = Grabbed->GetDataRaw(operand);
+			
+			TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(pd2);	
+			if (data) ret = Grabbed->DataOp(op, pd, data);
+			else
+			{
+				TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(pd2);
+				if (data) ret = Grabbed->DataOp(op, pd, data);
+				else 
+				{
+					TypedPData<float> *data = dynamic_cast<TypedPData<float>*>(pd2);
+					if (data) ret = Grabbed->DataOp(op, pd, data);
+					else 
+					{
+						TypedPData<dMatrix> *data = dynamic_cast<TypedPData<dMatrix>*>(pd2);
+						if (data) ret = Grabbed->DataOp(op, pd, data);
+					}
+				}
+			}
+			free(operand);
+		}
+		else if (gh_number_p(s_oper))
+		{
+			ret = Grabbed->DataOp(op, pd, (float)gh_scm2double(s_oper));
+		}
+		else if (gh_vector_p(s_oper))
+		{
+			switch (gh_vector_length(s_oper))
+			{
+				case 3:
+				{
+					dVector v;
+					gh_scm2floats(s_oper,v.arr());
+					ret = Grabbed->DataOp(op, pd, v);
+				}
+				break;
+				case 4:
+				{
+					dColour v;
+					gh_scm2floats(s_oper,v.arr());
+					ret = Grabbed->DataOp(op, pd, v);
+				}
+				break;
+				case 16:
+				{
+					dMatrix v;
+					gh_scm2floats(s_oper,v.arr());
+					ret = Grabbed->DataOp(op, pd, v);
+				}
+				break;	
+			}
+		}
+		
+		free(op);
+		free(pd);
+	}
+	
+	// convert the return data
+	if (ret!=NULL)
+	{
+		TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(ret);	
+		if (data) return gh_floats2scm(data->m_Data[0].arr(),3);
+		else
+		{
+			TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(ret);
+			if (data) return gh_floats2scm(data->m_Data[0].arr(),4);
+			else 
+			{
+				TypedPData<float> *data = dynamic_cast<TypedPData<float>*>(ret);
+				if (data) return gh_double2scm(data->m_Data[0]);
+				else 
+				{
+					TypedPData<dMatrix> *data = dynamic_cast<TypedPData<dMatrix>*>(ret);
+					if (data) return gh_floats2scm(data->m_Data[0].arr(),16);
+				}
+			}
+		}
+	}
+	
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::pdata_copy(SCM s_s, SCM s_d)
+{
+    SCM_ASSERT(SCM_STRINGP(s_s), s_s, SCM_ARG1, "pdata-copy");
+    SCM_ASSERT(SCM_STRINGP(s_d), s_d, SCM_ARG2, "pdata-copy");
+	
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) 
+	{
+		size_t ssize=0;
+		char *source=gh_scm2newstr(s_s,&ssize);
+		char *dest=gh_scm2newstr(s_d,&ssize);
+		Grabbed->CopyData(source,dest);
+		free(source);
+		free(dest);
+	}
+	
+	return SCM_UNSPECIFIED;
+}
+/*
+SCM FluxusBinding::pdata_op(SCM s_op, SCM s_pd, SCM s_other)
+{
+    SCM_ASSERT(SCM_STRINGP(s_op), s_op, SCM_ARG1, "pdata-op");
+    SCM_ASSERT(SCM_STRINGP(s_pd), s_pd, SCM_ARG2, "pdata-op");
+	
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) 
+	{
+		size_t ssize=0;
+		char *op=gh_scm2newstr(s_op,&ssize);
+		string opstr(op);
+		
+		
+		free(op);
+	}
+	
+	return SCM_UNSPECIFIED;
+}*/
+
 SCM FluxusBinding::pdata_size()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
-	if (Grabbed) return gh_double2scm(Grabbed->GetDataSize());
+	if (Grabbed) 
+	{
+		char type;
+		unsigned int size;
+		// all prims have a p - this might have to be changed if we 
+		// ever support data of size other than vertex - but it will 
+		// only have to be changed here...
+		Grabbed->GetDataInfo("p", type, size);
+		return gh_double2scm(size);
+	}
     return SCM_UNSPECIFIED;
 }
 
@@ -1299,6 +1557,14 @@ SCM FluxusBinding::hide(SCM s_b)
     SCM_ASSERT(SCM_NUMBERP(s_b), s_b, SCM_ARG1, "hide");
 	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) Grabbed->Hide(gh_scm2double(s_b));
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::selectable(SCM s_b)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_b), s_b, SCM_ARG1, "selectable");
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
+	if (Grabbed) Grabbed->Selectable(gh_scm2double(s_b));
 	return SCM_UNSPECIFIED;
 }
 
@@ -1654,6 +1920,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("point-width",  point_width);
     gh_new_procedure0_1("parent",       parent);
 	gh_new_procedure0_1("hide",         hide);
+	gh_new_procedure0_1("selectable",   selectable);
 	
 	// global state operations
 	gh_new_procedure("clear",           clear,       0,0,0);
@@ -1670,6 +1937,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("show-fps",     show_fps);
 	gh_new_procedure0_1("backfacecull",    backfacecull);
 	gh_new_procedure0_1("load-texture", load_texture);
+	gh_new_procedure4_0("fog", fog);
 
 	// lights
     gh_new_procedure0_1("make-light",         make_light);
@@ -1734,7 +2002,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("set-mass",     set_mass);
     gh_new_procedure0_2("kick",         kick);
     gh_new_procedure0_2("twist",        twist);
-	gh_new_procedure("has-collided",    has_collided, 0,0,0);
+	gh_new_procedure0_1("has-collided", has_collided);
 	
 	gh_new_procedure0_1("osc-source",   osc_source);
 	gh_new_procedure0_1("osc",          osc);
@@ -1747,6 +2015,9 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure3_0("pdata-set", pdata_set);
 	gh_new_procedure0_2("pdata-get", pdata_get);
 	gh_new_procedure("pdata-size", pdata_size, 0,0,0);
+	gh_new_procedure0_2("pdata-add", pdata_add);
+	gh_new_procedure0_2("pdata-copy", pdata_copy);
+	gh_new_procedure3_0("pdata-op", pdata_op);	
 	gh_new_procedure("finalise", finalise, 0,0,0);
 	gh_new_procedure("recalc-normals", recalc_normals, 0,0,0);
 

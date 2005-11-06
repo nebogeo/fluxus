@@ -16,8 +16,12 @@
 
 #include "Primitive.h"                      	
 
-using namespace fluxus;                  	
-
+using namespace fluxus; 
+               
+Primitive::~Primitive()
+{
+}		   
+			   	
 void Primitive::RenderBoundingBox()
 {
 	dBoundingBox b = GetBoundingBox();
@@ -36,14 +40,3 @@ void Primitive::RenderBoundingBox()
 	glEnd();
 }
 
-istream &fluxus::operator>>(istream &s, Primitive &o)
-{
-	s>>o.m_State;
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, Primitive &o)
-{
-	s<<o.m_State;
-	return s;
-}

@@ -12,8 +12,12 @@
     (if (mouse-button 1)
         (begin
         (grab (mouse-over))
-        (rotate (vector 1 0 0))
-        (colour (vector (flxrnd)(flxrnd)(flxrnd)))
+        (scale (vector 1 1.1 1))
+        (ungrab)))
+    (if (mouse-button 2)
+        (begin
+        (grab (mouse-over))
+        (scale (vector 1 0,9 1))
         (ungrab))))
 
 

@@ -26,8 +26,17 @@ m_UOrder(0),
 m_VOrder(0),
 m_UCVCount(0),
 m_VCVCount(0),
-m_Stride(4)
+m_Stride(sizeof(dVector)/sizeof(float))
 {
+	AddData("p",new TypedPData<dVector>);
+	AddData("t",new TypedPData<dVector>);
+	AddData("n",new TypedPData<dVector>);
+	
+	// direct access for speed
+	m_CVVec=GetDataVec<dVector>("p");
+	m_STVec=GetDataVec<dVector>("t");
+	m_NVec=GetDataVec<dVector>("n");
+
 	m_Surface = gluNewNurbsRenderer();
 	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
 	gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
@@ -61,23 +70,23 @@ void NURBSPrimitive::Render()
 	
 		gluBeginSurface(m_Surface);
 
-		if (!m_STVec.empty())
+		if (!m_STVec->empty())
 		{
 			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-			 						 m_VCVCount*4,4,
-									 m_STVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
+			 						 m_VCVCount*m_Stride,m_Stride,
+									 m_STVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
 		}
 		
-		if (!m_NVec.empty())
+		if (!m_NVec->empty())
 		{
 			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-			 						 m_VCVCount*4,4,
-									 m_NVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_NORMAL);
+			 						 m_VCVCount*m_Stride,m_Stride,
+									 m_NVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_NORMAL);
 		}
 		
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-		 						 m_VCVCount*4,4,
-								 m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+		 						 m_VCVCount*m_Stride,m_Stride,
+								 m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
 	}
@@ -90,8 +99,8 @@ void NURBSPrimitive::Render()
 
 		gluBeginSurface(m_Surface);
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-		 				m_VCVCount*4,4,
-						m_CVVec.begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+		 				m_VCVCount*m_Stride,m_Stride,
+						m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
 		glEnable(GL_LIGHTING);
@@ -102,9 +111,9 @@ void NURBSPrimitive::Render()
 		glColor3f(0,0,1);
 		glDisable(GL_LIGHTING);
 		glBegin(GL_POINTS);
-		for (unsigned int n=0; n<m_CVVec.size(); n++)
+		for (unsigned int n=0; n<m_CVVec->size(); n++)
 		{
-			glVertex3fv(m_CVVec[n].arr());
+			glVertex3fv((*m_CVVec)[n].arr());
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);
@@ -115,10 +124,10 @@ void NURBSPrimitive::Render()
 		glColor3f(1,0,0);
 		glDisable(GL_LIGHTING);
 		glBegin(GL_LINES);
-		for (unsigned int i=0; i!=m_CVVec.size(); i++)
+		for (unsigned int i=0; i!=m_CVVec->size(); i++)
 		{
-			glVertex3fv(m_CVVec[i].arr());
-			glVertex3fv((m_CVVec[i]+m_NVec[i]).arr());
+			glVertex3fv((*m_CVVec)[i].arr());
+			glVertex3fv(((*m_CVVec)[i]+(*m_NVec)[i]).arr());
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);
@@ -128,33 +137,9 @@ void NURBSPrimitive::Render()
 
 }
 
-void NURBSPrimitive::SetData(char t, unsigned int i, dVector v)
-{
-	switch (t)
-	{
-		case 'p': if (i<m_CVVec.size()) m_CVVec[i]=v; break;
-		case 'n': if (i<m_NVec.size()) m_NVec[i]=v; break;
-		case 't': if (i<m_STVec.size()) m_STVec[i]=v; break;
-		default: break;
-	}
-}
-
-dVector NURBSPrimitive::GetData(char t, unsigned int i)
-{
-	dVector ret;
-	switch (t)
-	{
-		case 'p': if (i<m_CVVec.size()) ret=m_CVVec[i]; break;
-		case 'n': if (i<m_NVec.size()) ret=m_NVec[i]; break;
-		case 't': if (i<m_STVec.size()) ret=m_STVec[i]; break;
-		default: break;
-	}
-	return ret;
-}
-
 void NURBSPrimitive::RecalculateNormals()
 {
-	for (int n=0; n<(int)m_NVec.size(); n++)
+	for (int n=0; n<(int)m_NVec->size(); n++)
 	{
 		int u=n-1;
 		bool flip=false;
@@ -172,17 +157,17 @@ void NURBSPrimitive::RecalculateNormals()
 			flip=true;
 		}
 		
-		dVector a=m_CVVec[n]-m_CVVec[u];
-		dVector b=m_CVVec[v]-m_CVVec[n];
+		dVector a=(*m_CVVec)[n]-(*m_CVVec)[u];
+		dVector b=(*m_CVVec)[v]-(*m_CVVec)[n];
 		
 		a.normalise();
 		b.normalise();
-		m_NVec[n]=a.cross(b);
-		m_NVec[n].normalise();
+		(*m_NVec)[n]=a.cross(b);
+		(*m_NVec)[n].normalise();
 		
 		if (flip)
 		{
-			m_NVec[n]=-m_NVec[n];
+			(*m_NVec)[n]=-(*m_NVec)[n];
 		}
 
 	}
@@ -191,7 +176,7 @@ void NURBSPrimitive::RecalculateNormals()
 dBoundingBox NURBSPrimitive::GetBoundingBox()
 {	
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_CVVec.begin();	i!=m_CVVec.end(); ++i)
+	for (vector<dVector>::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
 	{
 		box.expand(*i);
 	}
@@ -202,14 +187,14 @@ void NURBSPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_CVVec.begin(); i!=m_CVVec.end(); ++i)
+		for (vector<dVector>::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVector>::iterator i=m_CVVec.begin(); i!=m_CVVec.end(); ++i)
+		for (vector<dVector>::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
 		{
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}

@@ -6,16 +6,10 @@ IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 Libs = Split("jack sndfile guile fftw3 ode png \
 			  glut tiff GL GLU z m Xi Xmu Xext Xt SM ICE X11 pthread lo jpeg")
 
-Source = Split("src/AudioCollector.cpp \
-				src/FluxusMain.cpp \
-				src/FluxusBinding.cpp \
-				src/JackClient.cpp \
-				src/TurtleBuilder.cpp \
-				src/GLEditor.cpp \
-				src/Utils.cpp \
-				src/OSCServer.cpp \
-				src/Recorder.cpp \
-				src/main.cpp \
+Source = Split("libfluxus/src/PData.cpp \
+				libfluxus/src/PDataOperator.cpp \
+				libfluxus/src/PDataContainer.cpp \
+				libfluxus/src/PDataArithmetic.cpp \
 				libfluxus/src/GraphicsUtils.cpp \
 				libfluxus/src/Lifeforms.cpp \
 				libfluxus/src/PNGLoader.cpp \
@@ -33,7 +27,17 @@ Source = Split("src/AudioCollector.cpp \
 				libfluxus/src/TexturePainter.cpp \
 				libfluxus/src/Tree.cpp \
 				libfluxus/src/dada.cpp \
-				libfluxphysics/src/Physics.cpp")					
+				libfluxphysics/src/Physics.cpp \
+				src/AudioCollector.cpp \
+				src/FluxusMain.cpp \
+				src/FluxusBinding.cpp \
+				src/JackClient.cpp \
+				src/TurtleBuilder.cpp \
+				src/GLEditor.cpp \
+				src/Utils.cpp \
+				src/OSCServer.cpp \
+				src/Recorder.cpp \
+				src/main.cpp")					
 
 env = Environment(CCFLAGS = '-pipe -Wall -O3 -ffast-math -Wno-unused -fPIC')
 env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
