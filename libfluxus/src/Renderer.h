@@ -99,7 +99,7 @@ public:
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r, float f, float b) 
 		{ m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Front=f; m_Back=b; m_Initialised=false; }
-	unsigned int LoadTexture(const string &Filename) { return TexturePainter::Get()->LoadTexture(Filename); }
+	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
@@ -119,6 +119,7 @@ public:
 	
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
+
 	
 	struct LibraryEntry
 	{	

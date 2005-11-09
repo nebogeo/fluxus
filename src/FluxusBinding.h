@@ -78,6 +78,7 @@ public:
 	static SCM parent(SCM s_p);
 	static SCM line_width(SCM s_p);
 	static SCM point_width(SCM s_p);
+	static SCM blend_mode(SCM s_s, SCM s_d);
 	static SCM hint_solid();
 	static SCM hint_wire();
 	static SCM hint_normal();
@@ -117,6 +118,7 @@ public:
 	static SCM start_audio(SCM s_dev, SCM s_bs, SCM s_sr);
 	static SCM get_harmonic(SCM s_harm);
 	static SCM load_texture(SCM s_name);
+	static SCM force_load_texture(SCM s_name);
 	static SCM texture(SCM s_id);
 	static SCM engine_callback(SCM s_func);
 	static SCM ortho();

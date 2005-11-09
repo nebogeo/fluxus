@@ -45,16 +45,3 @@ void CompiledPrimitive::ApplyTransform(bool ScaleRotOnly)
 	cerr<<"cannot ApplyTransform to compiled prims"<<endl;
 }
 
-istream &fluxus::operator>>(istream &s, CompiledPrimitive &o)
-{
-	s.ignore(3);
-	s>>o.m_State;	
-	return s;
-}
-
-ostream &fluxus::operator<<(ostream &s, CompiledPrimitive &o)
-{
-	s.write("com",3);
-	s<<o.m_State;
-	return s;
-}

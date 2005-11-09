@@ -106,6 +106,7 @@ void GLEditor::Render()
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
+   	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	glLineWidth(m_TextWidth);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	glLoadIdentity();

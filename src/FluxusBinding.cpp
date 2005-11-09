@@ -516,6 +516,23 @@ SCM FluxusBinding::point_width(SCM s_p)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::blend_mode(SCM s_s, SCM s_d)
+{
+    SCM_ASSERT(SCM_STRINGP(s_s), s_s, SCM_ARG1, "blend_mode");
+    SCM_ASSERT(SCM_STRINGP(s_d), s_d, SCM_ARG2, "blend_mode");
+	
+	size_t size=0;
+	char *s=gh_scm2newstr(s_s,&size);	
+	char *d=gh_scm2newstr(s_s,&size);	
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->SetBlendMode(s,d);
+    else Fluxus->GetRenderer()->GetState()->SetBlendMode(s,d);
+	free(s);
+	free(d);
+	
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hint_solid()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
@@ -951,12 +968,25 @@ SCM FluxusBinding::get_harmonic(SCM s_harm)
 
 SCM FluxusBinding::load_texture(SCM s_name)
 {
-	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "load_texture");
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "load-texture");
 	char *name=0;
 	size_t size=0;
 	name=gh_scm2newstr(s_name,&size);	
 	
 	int id=Fluxus->GetRenderer()->LoadTexture(name);
+
+    free(name);
+    return gh_int2scm(id);
+}
+
+SCM FluxusBinding::force_load_texture(SCM s_name)
+{
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "force-load-texture");
+	char *name=0;
+	size_t size=0;
+	name=gh_scm2newstr(s_name,&size);	
+	
+	int id=Fluxus->GetRenderer()->LoadTexture(name,true);
 
     free(name);
     return gh_int2scm(id);
@@ -1918,6 +1948,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure("hint-unlit",      hint_unlit,  0,0,0);
 	gh_new_procedure0_1("line-width",   line_width);
 	gh_new_procedure0_1("point-width",  point_width);
+	gh_new_procedure0_2("blend-mode",   blend_mode);
     gh_new_procedure0_1("parent",       parent);
 	gh_new_procedure0_1("hide",         hide);
 	gh_new_procedure0_1("selectable",   selectable);
@@ -1937,6 +1968,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("show-fps",     show_fps);
 	gh_new_procedure0_1("backfacecull",    backfacecull);
 	gh_new_procedure0_1("load-texture", load_texture);
+	gh_new_procedure0_1("force-load-texture", force_load_texture);
 	gh_new_procedure4_0("fog", fog);
 
 	// lights

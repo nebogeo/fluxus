@@ -30,14 +30,24 @@ TexturePainter::~TexturePainter()
 {
 }
 
-int TexturePainter::LoadTexture(const string &Filename)
+int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 {
 	// see if we've loaded this one already
 	map<string,int>::iterator i=m_LoadedMap.find(Filename);
 	if (i!=m_LoadedMap.end())
 	{
-		return i->second;
+		if (!ignorecache)
+		{
+			return i->second;
+		}
+		else
+		{
+			// remove the old texture
+			glDeleteTextures(1,(GLuint*)&i->second);
+			delete m_TextureMap[i->second];
+		}
 	}
+	
 	
 	GLuint ID=0;
 	

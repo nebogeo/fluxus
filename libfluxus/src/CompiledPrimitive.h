@@ -37,13 +37,7 @@ public:
 protected:
 	int m_ID;
 	dBoundingBox m_BBox;
-	
-	friend istream &operator>>(istream &s, CompiledPrimitive &o);
-	friend ostream &operator<<(ostream &s, CompiledPrimitive &o);
 };
-
-istream &operator>>(istream &s, CompiledPrimitive &o);
-ostream &operator<<(ostream &s, CompiledPrimitive &o);
 
 };
 

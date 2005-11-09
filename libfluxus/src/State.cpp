@@ -27,7 +27,10 @@ Opacity(1.0f),
 Texture(-1),
 Parent(1),
 Hints(HINT_SOLID),
-LineWidth(1)
+LineWidth(1),
+PointWidth(1),
+SourceBlend(GL_SRC_ALPHA),
+DestinationBlend(GL_ONE_MINUS_SRC_ALPHA)
 {
 }
 
@@ -43,6 +46,7 @@ void State::Apply()
 	glMaterialfv(GL_FRONT_AND_BACK,GL_SHININESS,&Shinyness);
 	glLineWidth(LineWidth);
 	glPointSize(PointWidth);
+	glBlendFunc(SourceBlend,DestinationBlend);
 	
 	if (Texture>=0)
 	{ 
@@ -69,37 +73,30 @@ void State::Spew()
 		<<"LineWidth: "<<LineWidth<<endl
 		<<"Transform: "<<Transform<<endl;
 }
-
-istream &fluxus::operator>>(istream &s, State &o)
+	
+void State::SetBlendMode(string s, string d)
 {
-	s.ignore(3);
-	s.read((char*)o.Colour.arr(),sizeof(float)*4);
-	s.read((char*)o.Specular.arr(),sizeof(float)*4);
-	s.read((char*)o.Emissive.arr(),sizeof(float)*4);
-	s.read((char*)o.Ambient.arr(),sizeof(float)*4);
-	s.read((char*)o.Transform.arr(),sizeof(float)*16);
-	s.read((char*)&o.Shinyness,sizeof(float));
-	s.read((char*)&o.Opacity,sizeof(float));
-	s.read((char*)&o.Texture,sizeof(int));
-	s.read((char*)&o.Parent,sizeof(int));
-	s.read((char*)&o.Hints,sizeof(int));
-	s.read((char*)&o.LineWidth,sizeof(float));	
-	return s;
+	// Zzzzz
+	if (s=="zero") SourceBlend=GL_ZERO;
+	else if (s=="one") SourceBlend=GL_ONE;
+	else if (s=="dst-color") SourceBlend=GL_DST_COLOR;  
+	else if (s=="one-minus-dst-color") SourceBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (s=="src-alpha") SourceBlend=GL_SRC_ALPHA;		   
+	else if (s=="one-minus-src-alpha") SourceBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (s=="dst-alpha") SourceBlend=GL_DST_ALPHA;
+	else if (s=="one-minus-dst-alpha") SourceBlend=GL_ONE_MINUS_DST_ALPHA;
+	else if (s=="src-alpha-saturate") SourceBlend=GL_SRC_ALPHA_SATURATE;
+	else cerr<<"source blend mode not recognised"<<endl;
+	
+	if (d=="zero") DestinationBlend=GL_ZERO;
+	else if (d=="one") DestinationBlend=GL_ONE;
+	else if (d=="dst-color") DestinationBlend=GL_DST_COLOR;  
+	else if (d=="one-minus-dst-color") DestinationBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (d=="src-alpha") DestinationBlend=GL_SRC_ALPHA;		   
+	else if (d=="one-minus-src-alpha") DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (d=="dst-alpha") DestinationBlend=GL_DST_ALPHA;
+	else if (d=="one-minus-dst-alpha") DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
+	else cerr<<"source blend mode not recognised"<<endl;
 }
 
-ostream &fluxus::operator<<(ostream &s, State &o)
-{
-	s.write("sta",3); 	
-	s.write((char*)o.Colour.arr(),sizeof(float)*4);
-	s.write((char*)o.Specular.arr(),sizeof(float)*4);
-	s.write((char*)o.Emissive.arr(),sizeof(float)*4);
-	s.write((char*)o.Ambient.arr(),sizeof(float)*4);
-	s.write((char*)o.Transform.arr(),sizeof(float)*16);
-	s.write((char*)&o.Shinyness,sizeof(float));
-	s.write((char*)&o.Opacity,sizeof(float));
-	s.write((char*)&o.Texture,sizeof(int));
-	s.write((char*)&o.Parent,sizeof(int));
-	s.write((char*)&o.Hints,sizeof(int));
-	s.write((char*)&o.LineWidth,sizeof(float));
-	return s;
-}
+

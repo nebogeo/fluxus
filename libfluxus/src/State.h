@@ -63,14 +63,14 @@ public:
 	float LineWidth;
 	float PointWidth;
 	
-	dMatrix Transform;
+	int SourceBlend;
+	int DestinationBlend;
 	
-	friend istream &operator>>(istream &s, State &o);
-	friend ostream &operator<<(ostream &s, State &o);
+	void SetBlendMode(string s, string d);
+	
+	dMatrix Transform;
 };
 
-istream &operator>>(istream &is, State &o);
-ostream &operator<<(ostream &is, State &o);
 };
 
 #endif

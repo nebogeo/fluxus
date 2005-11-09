@@ -50,7 +50,7 @@ public:
 		if (m_Singleton!=NULL) delete m_Singleton;
 	}
 	
-	int LoadTexture(const string &Filename);
+	int LoadTexture(const string &Filename, bool ignorecache=false);
 	void SetCurrent(int id);
 	
 private:

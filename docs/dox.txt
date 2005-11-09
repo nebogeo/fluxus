@@ -476,6 +476,29 @@ won't load more than once, so you can easily just call:
 
 Textures have to be png format, and support alpha transparency.
 
+(line-width n)
+
+alters the line width in pixels
+
+(point-width n)
+
+alters the point width in pixels
+
+(blend-mode src dest)
+
+sets the blend mode for the primitive, src and dest are strings of the 
+following type:
+
+zero
+one
+dst-color  
+one-minus-dst-color
+src-alpha		   
+one-minus-src-alpha
+dst-alpha
+one-minus-dst-alpha
+src-alpha-saturate (src only)
+
 8.2  Render hints
 
 There are other miscellaneous options that can change the way a primitive is 
@@ -506,10 +529,6 @@ disable lighting
 
 Another option, which doens't really belong here, but affects the wireframe 
 rendering, among others is
-
-(line-width n)
-
-which alters the line width for subsequent renders
 
 --------------------------------------------------------------------------------------
 
@@ -965,6 +984,7 @@ m = vector 16
 (point-width)                       set the current point width
 (parent n)                          set the grabbed primitive to parent to the given object
 (hide)                              don't render the current grabbed object
+(selectable bool)                   whether an object is selectable by (mouse-over)
 (clear)                             clear the scene of all primitives and lights (leaves the interpreter as is)
 (ortho)                             set the camera mode to orthographic
 (persp)                             set the camera mode to perspective
@@ -973,6 +993,7 @@ m = vector 16
 (clear-colour v)                    set the background colour
 (clear-frame n)                     whether to clear the window or not
 (blur n)                            sets the opacity on a clearing polygon 
+(fog colour density start end)      sets global fog (density to 0 to disable)
 (show-axis n)                       turns on or off the origin locator
 (show-fps n)                        turns on or off the fps counter
 (backfacecull n)                    turns on or off backface culling
