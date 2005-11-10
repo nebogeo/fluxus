@@ -1,0 +1,56 @@
+/*
+ *
+  Style Sheet for fluxus docs  
+ *
+ */
+
+/* general bits & bobs */
+hdr
+{
+	background-color:black;
+	color: white; 
+	font-family: courier-new, monospace;
+	font-size: 8px;  
+	margin-left: 2px;
+	margin-right: 18px;
+}
+
+body
+{
+	white-space: pre;
+	background-color:white;
+	color: black; 
+	font-family: courier-new, monospace;
+	font-size: 12px;  
+	margin-left: 6px;
+	margin-right: 18px;
+}
+
+h1 { font-size: 20px; }
+
+c 
+{
+	color: #000088; 
+	font-size: 12px;  
+}
+
+/* link */
+a
+{
+	text-decoration: none;  
+	color: #ff0000;
+}
+
+/* link mouse-over */
+a:hover
+{
+	color: black;
+	background: #ff0000;
+}
+
+/* active link */
+a:active
+{
+	color: green;
+}
+

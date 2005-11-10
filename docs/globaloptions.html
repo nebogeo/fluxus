@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr>Fluxus manual v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>5.0  Global Options</h1>
+These commands affect the global state, and can be called at any time.
+
+<c>(clear)</c>
+clears the scene graph of all objects and empties the state stack
+
+<c>(ortho)</c>
+(persp)</c>
+sets the projection type
+
+<c>(reset-camera)</c>
+resets the camera matrix in case you get lost
+
+<c>(lock-camera object)</c>
+locks the camera to the object
+
+<c>(clear-colour colvec)</c>
+set the background clear colour
+
+<c>(clear-frame 0/1)</c>
+enables/disables clearing
+
+<c>(blur amount)</c>
+turns hackish motion blur on, just renders a transparent poly over the frame 
+rather than clearing. the transparency is set by amount, setting amount to 0 
+turns this feature off. 
+
+<c>(show-axis bool)</c>
+turns the origin axis display on or off
+
+<c>(backfacecull 0/1)</c>
+enables/disables backface culling
+
+<c>(desiredfps fps)</c>
+sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. 
+this value doesn't seem to be entirely correct, but it does the job
+
+<c>(start-framedump filename) </c>
+<c>(end-framedump)</c>
+starts and stops writing tiff frame images to disk. will be quite slow - and 
+unsuitable for realtime use - see (process)

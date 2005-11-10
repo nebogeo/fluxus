@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr>Fluxus manual v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>2.0  Quickstart</h1>
+For a quick introduction to fluxus, try entering the following command once you 
+have started fluxus and see the red cursor in the top left of the screen.
+
+<c>(build-cube)</c>
+
+Now press f5 - the script will be executed, and a white cube should appear in 
+the centre of the screen. Use the mouse and to move around the cube, pressing 
+the buttons to get different movement controls.
+
+To animate this cube, it will have to be called a little differently:
+
+<c>(start-audio 0 256 44100) 
+
+(define (render)
+    (colour (vector (gh 1) (gh 2) (gh 3)))
+    (draw-cube))
+
+(every-frame "(render)")</c>
+
+Briefly, the <c>(every-frame)</c> function takes a fragment of script which is called 
+once per frame by fluxus's internal engine. In this case it calls a function 
+that sets the current colour using harmonics from the incoming sound with the 
+<c>(gh)</c> - get harmonic - function; and draws a cube. Note that this time we use 
+<c>(draw-cube)</c> not <c>(build-cube)</c>. The difference will be explained below.
+
+If everything goes as planned, and the audio is connected with some input - 
+the cube will flash in a colourful manner along with the sound.
+
+</body>
+</html>
