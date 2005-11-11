@@ -1902,9 +1902,9 @@ SCM FluxusBinding::save_recorded_code(SCM s_name)
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
-	gh_new_procedure("build-cube",      build_cube,  0,0,0);
+	gh_new_procedure0_0("build-cube",      build_cube);
     gh_new_procedure0_2("build-sphere", build_sphere);
-    gh_new_procedure("build-plane",     build_plane, 0,0,0);
+    gh_new_procedure0_0("build-plane",     build_plane);
     gh_new_procedure0_2("build-cylinder", build_cylinder);
 	gh_new_procedure4_0("build-line",   build_line);
 	gh_new_procedure0_1("build-text",   build_text);
@@ -1912,22 +1912,22 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("build-nurbs-plane", build_nurbs_plane);
 	gh_new_procedure0_1("build-particles", build_particles);
 	gh_new_procedure0_1("draw-instance", draw_instance);
-    gh_new_procedure("draw-cube",       draw_cube,     0,0,0);
-    gh_new_procedure("draw-plane",      draw_plane,    0,0,0);
-    gh_new_procedure("draw-sphere",     draw_sphere,   0,0,0);
-    gh_new_procedure("draw-cylinder",   draw_cylinder, 0,0,0);
+    gh_new_procedure0_0("draw-cube",       draw_cube);
+    gh_new_procedure0_0("draw-plane",      draw_plane);
+    gh_new_procedure0_0("draw-sphere",     draw_sphere);
+    gh_new_procedure0_0("draw-cylinder",   draw_cylinder);
 	gh_new_procedure0_1("destroy",      destroy);
-	gh_new_procedure("get-transform", get_transform, 0,0,0);
-	gh_new_procedure("get-camera-transform", get_camera_transform, 0,0,0);
+	gh_new_procedure0_0("get-transform", get_transform);
+	gh_new_procedure0_0("get-camera-transform", get_camera_transform);
 
 	// renderstate operations
-	gh_new_procedure("push",            push,        0,0,0);
-	gh_new_procedure("pop",             pop,         0,0,0);
+	gh_new_procedure0_0("push",            push);
+	gh_new_procedure0_0("pop",             pop);
 	gh_new_procedure0_1("grab",         grab);
-    gh_new_procedure("ungrab",          ungrab      ,0,0,0);
-    gh_new_procedure("print-scene-graph",print_scene_graph,0,0,0);
+    gh_new_procedure0_0("ungrab",          ungrab);
+    gh_new_procedure0_0("print-scene-graph",print_scene_graph);
 	gh_new_procedure0_1("apply",        apply);
-	gh_new_procedure("identity",        flux_identity, 0,0,0);
+	gh_new_procedure0_0("identity",        flux_identity);
 	gh_new_procedure0_1("concat",          concat);
     gh_new_procedure0_1("translate",    translate);
     gh_new_procedure0_1("scale",        scale);
@@ -1939,13 +1939,13 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("emissive",     emissive);
 	gh_new_procedure0_1("shinyness",    shinyness);
 	gh_new_procedure0_1("texture",      texture);
-    gh_new_procedure("hint-solid",      hint_solid,       0,0,0);
-    gh_new_procedure("hint-wire",       hint_wire,        0,0,0);
-    gh_new_procedure("hint-normal",     hint_normal,      0,0,0);
-    gh_new_procedure("hint-points",     hint_points,      0,0,0);
-    gh_new_procedure("hint-anti-alias", hint_anti_alias,  0,0,0);
-    gh_new_procedure("hint-none",       hint_none,  0,0,0);
-    gh_new_procedure("hint-unlit",      hint_unlit,  0,0,0);
+    gh_new_procedure0_0("hint-solid",      hint_solid);
+    gh_new_procedure0_0("hint-wire",       hint_wire);
+    gh_new_procedure0_0("hint-normal",     hint_normal);
+    gh_new_procedure0_0("hint-points",     hint_points);
+    gh_new_procedure0_0("hint-anti-alias", hint_anti_alias);
+    gh_new_procedure0_0("hint-none",       hint_none);
+    gh_new_procedure0_0("hint-unlit",      hint_unlit);
 	gh_new_procedure0_1("line-width",   line_width);
 	gh_new_procedure0_1("point-width",  point_width);
 	gh_new_procedure0_2("blend-mode",   blend_mode);
@@ -1954,10 +1954,10 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("selectable",   selectable);
 	
 	// global state operations
-	gh_new_procedure("clear",           clear,       0,0,0);
-	gh_new_procedure("ortho",       	ortho,   	 0,0,0);
-	gh_new_procedure("persp",       	persp,   	 0,0,0);
-    gh_new_procedure("reset-camera",    reset_camera,0,0,0);
+	gh_new_procedure0_0("clear",           clear);
+	gh_new_procedure0_0("ortho",       	ortho);
+	gh_new_procedure0_0("persp",       	persp);
+    gh_new_procedure0_0("reset-camera",    reset_camera);
 	gh_new_procedure0_1("lock-camera",  lock_camera);
 	gh_new_procedure0_1("clear-colour",    clear_colour);	
 	gh_new_procedure0_1("clear-frame",     clear_frame);
@@ -1973,7 +1973,7 @@ void FluxusBinding::RegisterProcs()
 
 	// lights
     gh_new_procedure0_1("make-light",         make_light);
-    gh_new_procedure("clear-lights",       clear_lights,       0,0,0);
+    gh_new_procedure0_0("clear-lights",       clear_lights);
 	gh_new_procedure0_2("light-ambient",   light_ambient);
 	gh_new_procedure0_2("light-diffuse",   light_diffuse);
 	gh_new_procedure0_2("light-specular",  light_specular);
@@ -1984,15 +1984,15 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("save-name", save_name);
 	gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key-pressed", key_pressed);
-	gh_new_procedure("mouse-over", mouse_over, 0,0,0);
+	gh_new_procedure0_0("mouse-over", mouse_over);
 	gh_new_procedure0_1("mouse-button", mouse_button);
-    gh_new_procedure("time", time, 0,0,0);
-    gh_new_procedure("delta", delta, 0,0,0);
+    gh_new_procedure0_0("time", time);
+    gh_new_procedure0_0("delta", delta);
     gh_new_procedure0_1("every-frame", engine_callback);
-    gh_new_procedure("flxrnd", srandom, 0,0,0);
+    gh_new_procedure0_0("flxrnd", srandom);
 	gh_new_procedure0_1("desiredfps", desiredfps);
 	gh_new_procedure0_1("start-framedump", start_framedump);
-	gh_new_procedure("end-framedump", end_framedump, 0,0,0);
+	gh_new_procedure0_0("end-framedump", end_framedump);
 	gh_new_procedure0_1("load-code", load_recorded_code);
 	gh_new_procedure0_1("save-code", save_recorded_code);
 	
@@ -2005,9 +2005,9 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("process",   	process);
 	
 	// turtle
-	gh_new_procedure("turtle-vert",            turtle_vert,       0,0,0);
-	gh_new_procedure("turtle-build",           turtle_build,       0,0,0);
-	gh_new_procedure("turtle-reset",           turtle_reset,       0,0,0);
+	gh_new_procedure0_0("turtle-vert",            turtle_vert);
+	gh_new_procedure0_0("turtle-build",           turtle_build);
+	gh_new_procedure0_0("turtle-reset",           turtle_reset);
 	gh_new_procedure0_1("turtle-move",         turtle_move);
 	gh_new_procedure0_1("turtle-turn",         turtle_turn);
 	gh_new_procedure0_1("turtle-prim",         turtle_prim);
@@ -2038,7 +2038,7 @@ void FluxusBinding::RegisterProcs()
 	
 	gh_new_procedure0_1("osc-source",   osc_source);
 	gh_new_procedure0_1("osc",          osc);
-	gh_new_procedure("osc-peek",        osc_peek, 0,0,0);
+	gh_new_procedure0_0("osc-peek",        osc_peek);
 	gh_new_procedure0_1("osc-msg",      osc_msg);
 	gh_new_procedure0_1("osc-destination",    osc_destination);
 	gh_new_procedure3_0("osc-send",     osc_send);
@@ -2046,13 +2046,13 @@ void FluxusBinding::RegisterProcs()
 	// advanced prim editing
 	gh_new_procedure3_0("pdata-set", pdata_set);
 	gh_new_procedure0_2("pdata-get", pdata_get);
-	gh_new_procedure("pdata-size", pdata_size, 0,0,0);
+	gh_new_procedure0_0("pdata-size", pdata_size);
 	gh_new_procedure0_2("pdata-add", pdata_add);
 	gh_new_procedure0_2("pdata-copy", pdata_copy);
 	gh_new_procedure3_0("pdata-op", pdata_op);	
-	gh_new_procedure("finalise", finalise, 0,0,0);
-	gh_new_procedure("recalc-normals", recalc_normals, 0,0,0);
-
+	gh_new_procedure0_0("finalise", finalise);
+	gh_new_procedure0_0("recalc-normals", recalc_normals);
+	
 	// maths
 	gh_new_procedure0_2("vmul", vmul);
 	gh_new_procedure0_2("vadd", vadd);
@@ -2069,7 +2069,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("madd", madd);
 	gh_new_procedure0_2("msub", msub);
 	gh_new_procedure0_2("mdiv", mdiv);
-	gh_new_procedure("mident",  mident, 0,0,0);
+	gh_new_procedure0_0("mident",  mident);
 	gh_new_procedure0_1("mtranslate", mtranslate);	
 	gh_new_procedure0_1("mrotate", mrotate);	
 	gh_new_procedure0_1("mscale", mscale);
