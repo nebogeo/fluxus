@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr>Fluxus manual v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>16.1 Index of all functions by topic</h1> 
+
+Types:
+<c>n</c> = number
+<c>t</c> = text
+<c>v</c> = vector 3
+<c>m</c> = vector 16
+
+<table>
+<th colspan=2 align=left>aproximately related by topic</th>
+<tr><td><c>(build-cube)</c></td><td> returns the id for a cube primitive </td></tr>
+<tr><td><c>(build-sphere n n)</c></td><td> returns the id for a sphere primitive </td></tr>
+<tr><td><c>(build-plane)</c></td><td> returns the id for a plane primitive </td></tr>
+<tr><td><c>(build-cylinder n n)</c></td><td> returns the id for a cylinder primitive </td></tr>
+<tr><td><c>(build-line v n v n)</c></td><td> returns the id for a line primitive </td></tr>
+<tr><td><c>(build-text t)</c></td><td> returns the id for a text primitive </td></tr>
+<tr><td><c>(build-nurbs-sphere n n)</c></td><td> returns the id for a nurbs sphere primitive </td></tr>
+<tr><td><c>(build-nurbs-plane n n)</c></td><td> returns the id for a nurbs plane primitive </td></tr>
+<tr><td><c>(build-particles n)</c></td><td> returns the id for a particles primitive </td></tr>
+<tr><td><c>(draw-instance n)</c></td><td> draw an instance of a built object </td></tr>
+<tr><td><c>(draw-cube)</c></td><td> draw a cube </td></tr>
+<tr><td><c>(draw-plane)</c></td><td> draw a plane </td></tr>
+<tr><td><c>(draw-sphere)</c></td><td> draw a sphere </td></tr>
+<tr><td><c>(draw-cylinder)</c></td><td> draw a cylinder </td></tr>
+<tr><td><c>(destroy n)</c></td><td> delete the given object </td></tr>
+<tr><td><c>(get-transform)</c></td><td> get the transform matrix of the grabbed primitive </td></tr>
+<tr><td><c>(get-camera-transform)</c></td><td> get the current camera transform </td></tr>
+<tr><td><c>(push)</c></td><td> push the state stack </td></tr>
+<tr><td><c>(pop)</c></td><td> pop the state stack </td></tr>
+<tr><td><c>(grab n)</c></td><td> grab the given object's state </td></tr>
+<tr><td><c>(ungrab)</c></td><td> back to normal state </td></tr>
+<tr><td><c>(print-scene-graph)</c></td><td> dumps the scene graph to output (for debugging) </td></tr>
+<tr><td><c>(apply)</c></td><td> apply the transform to the primitive's vertices </td></tr>
+<tr><td><c>(identity)</c></td><td> set the current transform to identity </td></tr>
+<tr><td><c>(concat m)</c></td><td> concatenate the matrix to the current state </td></tr>
+<tr><td><c>(translate v)</c></td><td> translate the current state </td></tr>
+<tr><td><c>(scale v)</c></td><td> scale the current state </td></tr>
+<tr><td><c>(rotate v)</c></td><td> rotate the current state </td></tr>
+<tr><td><c>(colour v)</c></td><td> set the colour on the current state </td></tr>
+<tr><td><c>(opacity n)</c></td><td> set the opacity on the current state </td></tr>
+<tr><td><c>(specular v)</c></td><td> set the specular colour on the current state </td></tr>
+<tr><td><c>(ambient v)</c></td><td> set the ambient colour on the current state </td></tr>
+<tr><td><c>(emissive v)</c></td><td> set the emissive colour on the current state </td></tr>
+<tr><td><c>(shinyness n)</c></td><td> set the shinyness on the current state </td></tr>
+<tr><td><c>(texture n)</c></td><td> set the texture on the current state </td></tr>
+<tr><td><c>(hint-none)</c></td><td> clear the current render hints </td></tr>
+<tr><td><c>(hint-solid)</c></td><td> hint the primitive to render solid </td></tr>
+<tr><td><c>(hint-wire)</c></td><td> hint the primitive to render wireframe </td></tr>
+<tr><td><c>(hint-normal)</c></td><td> hint the primitive to render normals </td></tr>
+<tr><td><c>(hint-points)</c></td><td> hint the primitive to render points </td></tr>
+<tr><td><c>(hint-anti-alias)</c></td><td> hint the primitive to render antialiased </td></tr>
+<tr><td><c>(hint-unlit)</c></td><td> hint the primitive to render unlit </td></tr>
+<tr><td><c>(line-width)</c></td><td> set the current line width </td></tr>
+<tr><td><c>(point-width)</c></td><td> set the current point width </td></tr>
+<tr><td><c>(parent n)</c></td><td> set the grabbed primitive to parent to the given object </td></tr>
+<tr><td><c>(hide)</c></td><td> don't render the current grabbed object </td></tr>
+<tr><td><c>(selectable bool)</c></td><td> whether an object is selectable by (mouse-over) </td></tr>
+<tr><td><c>(clear)</c></td><td> clear the scene of all primitives and lights (leaves the interpreter as is</td><tr> 
+<tr><td><c>(ortho)</c></td><td> set the camera mode to orthographic </td></tr>
+<tr><td><c>(persp)</c></td><td> set the camera mode to perspective </td></tr>
+<tr><td><c>(reset-camera)</c></td><td> reset the camera transform - for when you get lost </td></tr>
+<tr><td><c>(lock-camera n)</c></td><td> lock the camera to a given object </td></tr>
+<tr><td><c>(clear-colour v)</c></td><td> set the background colour </td></tr>
+<tr><td><c>(clear-frame n)</c></td><td> whether to clear the window or not </td></tr>
+<tr><td><c>(blur n)</c></td><td> sets the opacity on a clearing polygon </td></tr>
+<tr><td><c>(fog colour density start end)</c></td><td> sets global fog (density to 0 to disable)</td><tr> 
+<tr><td><c>(show-axis n)</c></td><td> turns on or off the origin locator </td></tr>
+<tr><td><c>(show-fps n)</c></td><td> turns on or off the fps counter </td></tr>
+<tr><td><c>(backfacecull n)</c></td><td> turns on or off backface culling </td></tr>
+<tr><td><c>(load-texture t)</c></td><td> loads the given texture from disk, and returns a texture id </td></tr>
+<tr><td><c>(make-light n)</c></td><td> makes a light and returns the id, if given value is 1, attaches the light to the camera </td></tr>
+<tr><td><c>(clear-lights)</c></td><td> remove all lights </td></tr>
+<tr><td><c>(light-ambient n v)</c></td><td> set the ambient colour of a light </td></tr>
+<tr><td><c>(light-diffuse n v)</c></td><td> set the diffuse colour of a light </td></tr>
+<tr><td><c>(light-specular n v)</c></td><td> set the specular colour of a light </td></tr>
+<tr><td><c>(light-position n v)</c></td><td> set the position of a light </td></tr>
+<tr><td><c>(load t)</c></td><td> loads a script into the editor </td></tr>
+<tr><td><c>(save-name t)</c></td><td> sets the current script name for this workspace </td></tr>
+<tr><td><c>(source t)</c></td><td> loads a script into the editor, and executes it </td></tr>
+<tr><td><c>(key-pressed t)</c></td><td> returns 1 if the key has been pressed this frame </td></tr>
+<tr><td><c>(mouse-button b)</c></td><td> returns true if the corresponding mouse button has been pressed this frame. </td></tr>
+<tr><td><c>(mouse-over)</c></td><td> returns the id of the object the mouse is currently over </td></tr>
+<tr><td><c>(time)</c></td><td> returns time in seconds since fluxus startup </td></tr>
+<tr><td><c>(delta)</c></td><td> returns time in seconds since the last frame </td></tr>
+<tr><td><c>(every-frame t)</c></td><td> executes the fragment of script every frame </td></tr>
+<tr><td><c>(flxrnd)</c></td><td> returns a random number from 0 to 1 </td></tr>
+<tr><td><c>(desiredfps n)</c></td><td> sets the fps the renderer will attempt to run at </td></tr>
+<tr><td><c>(start-framedump t)</c></td><td> starts saving frame data to disk with the given name </td></tr>
+<tr><td><c>(end-framedump)</c></td><td> stops saving frames </td></tr>
+<tr><td><c>(gain n)</c></td><td> sets the global gain level </td></tr>
+<tr><td><c>(get-harmonic n)</c></td><td> gets the current harmonic band level from the fft </td></tr>
+<tr><td><c>(gh n)</c></td><td> gets the current harmonic band level from the fft </td></tr>
+<tr><td><c>(process t)</c></td><td> processes a wav file instead of the live input </td></tr>
+<tr><td><c>(turtle-vert)</c></td><td> tells the turtle to start a new vertex </td></tr>
+<tr><td><c>(turtle-build)</c></td><td> tells the turtle to build the primitive </td></tr>
+<tr><td><c>(turtle-reset)</c></td><td> resets the turtle state </td></tr>
+<tr><td><c>(turtle-move n)</c></td><td> move the turtle the given distance </td></tr>
+<tr><td><c>(turtle-turn v)</c></td><td> turns the turtle in x,y,z </td></tr>
+<tr><td><c>(turtle-prim n)</c></td><td> sets the poly primitive type for the turtle </td></tr>
+<tr><td><c>(collisions n)</c></td><td> turns on/off collisions </td></tr>
+<tr><td><c>(gravity v)</c></td><td> sets the gravity vector </td></tr>
+<tr><td><c>(set-max-physical n)</c></td><td> sets the maximum number of physical objects </td></tr>
+<tr><td><c>(active-box n)</c></td><td> add primitive to the physics system as active with a box collision volume </td></tr>
+<tr><td><c>(active-sphere n)</c></td><td> add primitive to the physics system as active with a sphere collision volume </td></tr>
+<tr><td><c>(active-cylinder n)</c></td><td> add primitive to the physics system as active with a cylinder collision volume </td></tr>
+<tr><td><c>(passive-box n)</c></td><td> add primitive to the physics system as passive with a box collision volume </td></tr>
+<tr><td><c>(passive-sphere n)</c></td><td> add primitive to the physics system as passive with a sphere collision volume </td></tr>
+<tr><td><c>(passive-cylinder n)</c></td><td> add primitive to the physics system as passive with a cylinder collision volume </td></tr>
+<tr><td><c>(ground-plane v n)</c></td><td> make a static infinite plane collision object </td></tr>
+<tr><td><c>(build-hingejoint n n v v)</c></td><td> build a hinge connecting two objects </td></tr>
+<tr><td><c>(build-balljoint n n v)</c></td><td> build a ball joint connecting two objects </td></tr>
+<tr><td><c>(build-sliderjoint n n v)</c></td><td> build a slider joint connecting two objects </td></tr>
+<tr><td><c>(build-hinge2joint n n v v v)</c></td><td> build a hinge2 joint connecting two objects </td></tr>
+<tr><td><c>(build-amotorjoint n n v)</c></td><td> build a angular motor joint connecting two objects </td></tr>
+<tr><td><c>(surface-params n n n n)</c></td><td> set the global surface parameters </td></tr>
+<tr><td><c>(joint-param n t n)</c></td><td> set joint paramaters for the given joint </td></tr>
+<tr><td><c>(joint-angle n n n)</c></td><td> set the desired angle on a joint </td></tr>
+<tr><td><c>(set-mass n n)</c></td><td> set the mass of an object </td></tr>
+<tr><td><c>(kick n v)</c></td><td> apply a translational force to an object </td></tr>
+<tr><td><c>(twist n v)</c></td><td> apply a rotational force to an object </td></tr>
+<tr><td><c>(has-collided)</c></td><td> returns true if the grabbed object collided in the last frame </td></tr>
+<tr><td><c>(osc-source port)</c></td><td> starts up the osc server, listening to the given port </td></tr>
+<tr><td><c>(osc-msg name)</c></td><td> and sets the current message and returns true if it was received last frame </td></tr>
+<tr><td><c>(osc index)</c></td><td> returns the argument from the current message </td></tr>
+<tr><td><c>(osc-peek)</c></td><td> returns a string containing the last sent message and format </td></tr>
+<tr><td><c>(osc-destination port)</c></td><td> starts up the osc client, which will send messages to the given port. </td></tr>
+<tr><td><c>(osc-send name argslist)</c></td><td> sends an osc message </td></tr>
+<tr><td><c>(pdata-set t n v)</c></td><td> sets the pdata item on the primitive </td></tr>
+<tr><td><c>(pdata-get t n)</c></td><td> returns the vector containing the given pdata item </td></tr>
+<tr><td><c>(pdata-size)</c></td><td> returns the amount of pdata (usually a vert count) </td></tr>
+<tr><td><c>(finalise)</c></td><td> sets the primitive up for rendering </td></tr>
+<tr><td><c>(recalc-normals)</c></td><td> recalculates normals based on vertex positions </td></tr>
+<tr><td><c>(vmul v n)</c></td><td> multiply a vector by a number </td></tr>
+<tr><td><c>(vadd v v)</c></td><td> add two vectors together </td></tr>
+<tr><td><c>(vsub v v)</c></td><td> subtract two vectors </td></tr>
+<tr><td><c>(vdiv v n)</c></td><td> divide a vector by a number </td></tr>
+<tr><td><c>(vtransform v m)</c></td><td> returns the vector in the given space </td></tr>
+<tr><td><c>(vtransform-rot v m)</c></td><td> returns the vector in the given space, without translation </td></tr>
+<tr><td><c>(vnormalise v)</c></td><td> returns the normalised vector </td></tr>
+<tr><td><c>(vdot v v)</c></td><td> returns the dot product of the two vectors </td></tr>
+<tr><td><c>(vmag v)</c></td><td> returns the magnitude of the vector </td></tr>
+<tr><td><c>(vdist v v)</c></td><td> returns the distance between the vectors (seen as points) </td></tr>
+<tr><td><c>(vcross v v)</c></td><td> returns the cross product of the two vectors </td></tr>
+<tr><td><c>(mmul m m)</c></td><td> multiply the two matrices </td></tr>
+<tr><td><c>(madd m m)</c></td><td> add the two matrices </td></tr>
+<tr><td><c>(msub m m)</c></td><td> subtract the two matrices </td></tr>
+<tr><td><c>(mdiv m m)</c></td><td> divide the two matrices </td></tr>
+<tr><td><c>(mident)</c></td><td> return an identity matrix </td></tr>
+<tr><td><c>(mtranslate v)</c></td><td> return the translation as a matrix </td></tr>
+<tr><td><c>(mrotate v)</c></td><td> return the rotation as a matrix </td></tr>
+<tr><td><c>(mscale v)</c></td><td> return the scale as a matrix </td></tr>
+<tr><td><c>(mtranspose m)</c></td><td> transpose the matrix </td></tr>
+<tr><td><c>(minverse m)</c></td><td> inverse the matrix </td></tr>
+<tr><td><c>(maim v v)</c></td><td> return an aimed matrix, with an up vector </td></tr>
+<tr><td><c>(feedback n)</c></td><td> switch on/off feedback </td></tr>
+<tr><td><c>(feedback-transform m)</c></td><td> sets the transform for the plane that the fb texture is rendered on </td></tr>
+<tr><td><c>(start-audio n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
+<tr><td><c>(load-code filename)</c></td><td> loads a saved livecode recording </td></tr>
+<tr><td><c>(save-code filename)</c></td><td> saves a livecode recording </td></tr> 
+</table>
+
+</body>
+</html>
