@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>8.0  The appearance of primitives</h1>
+Now that we have primitives and lights for shading them, it's time to introduce 
+the ways that you can modify the appearence of your primitives.
+
+<big>8.1  Surface parameters</big>
+
+These surface parameters can be treated exactly like the rest of the state 
+items - transforms, (colour) etc. They can either be set using the state stack 
+when building primitives, or set later using (grab)
+
+<img src="images/materials.png">
+some spheres with random materials over a textured plane
+
+<c>(opacity n)</c>
+set the opacity value on the current state 
+
+<c>(specular v) </c>                       
+set the specular colour on the current state 
+
+<c>(ambient v)</c>                         
+set the ambient colour on the current state
+
+<c>(emissive v)</c>                        
+set the emissive colour on the current state
+
+<c>(shinyness n)</c>                       
+set the shinyness on the current state
+
+<c>(texture n)</c>                         
+set the texture on the current state, using a texture ID
+
+Textures are loaded using (load-texture filename), they are cached so they 
+won't load more than once, so you can easily just call:
+
+<c>(texture (load-texture "path/to/mytexture.png"))</c>
+
+Textures have to be png format, and support alpha transparency.
+
+<c>(line-width n)</c>
+
+alters the line width in pixels
+
+<c>(point-width n)</c>
+
+alters the point width in pixels
+
+<c>(blend-mode src dest)</c>
+
+sets the blend mode for the primitive's alpha blending function, src and dest 
+are strings of the following type:
+
+zero
+one
+dst-color  
+one-minus-dst-color
+src-alpha		   
+one-minus-src-alpha
+dst-alpha
+one-minus-dst-alpha
+src-alpha-saturate (src only)
+
+<big>8.2  Render hints</big>
+
+There are other miscellaneous options that can change the way a primitive is 
+rendered. These options are called hints, as for some primitives they may not 
+apply, or may do different things. They are mainly useful for debugging, or 
+special cases - sometimes just for some fun.
+
+<img src="images/hints.png">
+a poly sphere with normals, wireframe and solid hints, and line width set to
+4 pixels
+
+<c>(hint-none)</c>                         
+clear the current render hints
+
+<c>(hint-solid)</c>
+render solid - defaults to on
+
+<c>(hint-wire)</c>
+render wireframe representation
+
+<c>(hint-normal)</c>
+render normals, very handy
+
+<c>(hint-points)</c>
+render vertex or cv points
+
+<c>(hint-anti-alias)</c>
+render antialiased mode
+
+<c>(hint-unlit)</c>
+disable lighting
+
+

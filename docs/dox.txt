@@ -527,9 +527,6 @@ render antialiased mode
 (hint-unlit)
 disable lighting
 
-Another option, which doens't really belong here, but affects the wireframe 
-rendering, among others is
-
 --------------------------------------------------------------------------------------
 
 9.0  Maths calls 

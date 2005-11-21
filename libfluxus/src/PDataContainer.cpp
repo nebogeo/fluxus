@@ -63,14 +63,13 @@ void PDataContainer::AddData(const string &name, PData* pd)
 
 void PDataContainer::CopyData(const string &name, string newname)
 {
-	map<string,PData*>::iterator i=m_PData.find(newname);
-	if (i!=m_PData.end())
-	{
-		cerr<<"Primitive::CopyData: pdata: "<<newname<<" already exists"<<endl;
-		return;
-	}
+	//map<string,PData*>::iterator i=m_PData.find(newname);
+	//if (i!=m_PData.end())
+	//{
+		
+	//}
 	
-	i=m_PData.find(name);
+	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
 		cerr<<"Primitive::CopyData: pdata: "<<name<<" doesn't exists"<<endl;

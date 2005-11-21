@@ -1,20 +1,26 @@
 (colour (vector 1 1 1))
 
+(blur 0.1)
+
 (define (poly n)
-    (turtle-prim 1)
+    (turtle-prim 4)
     (turtle-vert)
-    (turtle-move 10)
-    (turtle-turn (vector 0 90 0))
+    (turtle-move 1)
+    (turtle-turn (vector 0 (* (sin (* (+ n (* (time) 0.1)) 0.4)) 40) 0))
     (turtle-vert)
-    (turtle-move 10)
-    (turtle-turn (vector 0 (* (sin (* 0.1 (time))) 4) 0))
+    (turtle-move 1)
+    (turtle-turn (vector 0 (* (sin (* 0.2 (time))) 4) 0))
     (turtle-vert)
-    (turtle-move 10)
+    (turtle-move 1)
     (turtle-vert)
-    (turtle-turn (vector (* (sin (* 0.1 (time))) 2) 0 0))
+    (turtle-turn (vector (* (sin (* 0.3 (time))) 2) 0 0))
     ;(hint-none)
     (hint-wire)
+    (hint-unlit)
+    (colour (vector (abs (cos (* (time) 0.5))) 0 (abs (sin (* n 0.2)))))
+    (line-width 2)
     (turtle-build))
+
 
 (define (shape n a)
     (poly n)
@@ -25,7 +31,7 @@
 
 (define (meta-shape nn)
     (rotate (vector 0 40 0)) 
-    (shape 100 100)
+    (shape 20 10)
     (if (eq? nn 0)
         1
         (meta-shape (- nn 1))))
@@ -43,7 +49,8 @@
     (meta-shape 10)
     (pop))
 
-(clear-colour #(0.3 0.3 0.3))
+(clear-colour #(0.8 0.3 0.3))
+;(clear-colour #(0 0 0))
 (blur 0)
 (show-axis 0)
 (shape 10 10)

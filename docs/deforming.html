@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>10.0  Deforming primitives</h1>
+Each primitive is made up of data that describes it's shape and surface 
+properties. This data is created when you call the build function.
+
+For instance (build-sphere) creates a polygonal object with a spherical 
+distribution of vertex point data, surface normals at every vertex and texture 
+coordinates, so you can wrap a texture around the primitive. This data 
+(primitive data, or pdata for short) can be read and written to by your 
+scripts, using the following commands:
+
+(pdata-set typechar vertnumber vector)
+sets the data on the currently (grab)ed object to the input vector
+
+(pdata-get typechar vertnumber)
+returns the vector from the pdata on the currently (grab)ed object
+
+(pdata-size)
+returns the size of the pdata on the currently (grab)ed object (the number of 
+verts)
+
+The type character is dependant on the primitive type we are rendering. This is 
+given in detail below, but for polygonal objects we can change the "p" value to 
+alter the vertex positions:
+
+so, some examples to make sense of this:
+
+(pdata-set "p" 0 (vector 0 0 0))
+
+sets the first point in the primitive to the origin (not all that useful)
+
+(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
+
+the same, but sets it to the original position + 1 in the x
+offsetting the position is more useful as it constitutes a deformation of the 
+original point.
+
+So, to deform an entire object, you do something like the following:
+
+(define myobj (build-sphere))
+
+(define (deform n)
+    (pdata-set "p" n (vadd  (pdata-get "p" n) (vector 1 0 0))) ; move all the points in x
+    (if (< n 0)
+        0
+        (deform (- n 1))))
+	
+(grab myobj)
+(deform (pdata-size)) ; for every point
+(ungrab)
+
+10.1  Types 
+
+Cube, Sphere, Cylinder, Plane, Line, Text
+
+Positions:      "p"
+Normals:        "n"
+Texture coords: "t"
+Vertex colours: "c"
+
+NURBSSphere, NURBSCylinder, NURBSCurve
+
+Positions:      "p"
+Normals:        "n"
+Texture coords: "t"
+

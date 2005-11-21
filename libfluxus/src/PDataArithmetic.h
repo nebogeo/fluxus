@@ -84,6 +84,62 @@ PData *MultOperator::Operate(TypedPData<dVector> *a, TypedPData<float> *b);
 template<>
 PData *MultOperator::Operate(TypedPData<dVector> *a, TypedPData<dVector> *b);
 
+class SineOperator : public PDataOperator
+{
+public:
+	SineOperator() {}
+	
+	template <class S, class T>
+	static PData *Operate(TypedPData<S> *a, T b)
+	{
+		cerr<<"SineOperator has no operator for types: "<<typeid(a).name()<<" and "	
+			<<typeid(b).name()<<endl;
+		return NULL;
+	}
+	
+};
+
+template<>
+PData *SineOperator::Operate(TypedPData<float> *a, TypedPData<float> *b);
+
+class CosineOperator : public PDataOperator
+{
+public:
+	CosineOperator() {}
+	
+	template <class S, class T>
+	static PData *Operate(TypedPData<S> *a, T b)
+	{
+		cerr<<"CosineOperator has no operator for types: "<<typeid(a).name()<<" and "	
+			<<typeid(b).name()<<endl;
+		return NULL;
+	}
+	
+};
+
+template<>
+PData *CosineOperator::Operate(TypedPData<float> *a, TypedPData<float> *b);
+
+class ClosestOperator : public PDataOperator
+{
+public:
+	ClosestOperator() {}
+	
+	template <class S, class T>
+	static PData *Operate(TypedPData<S> *a, T b)
+	{
+		cerr<<"ClosestOperator has no operator for types: "<<typeid(a).name()<<" and "	
+			<<typeid(b).name()<<endl;
+		return NULL;
+	}
+	
+};
+
+template<>
+PData *ClosestOperator::Operate(TypedPData<dVector> *a, dVector *b);
+template<>
+PData *ClosestOperator::Operate(TypedPData<dVector> *a, float b);
+
 }
 
 #endif

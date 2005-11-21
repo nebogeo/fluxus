@@ -142,3 +142,75 @@ PData *MultOperator::Operate(TypedPData<dVector> *a, TypedPData<dVector> *b)
 	return NULL;
 }
 
+///////////////////////////////////////////////////////
+
+template <>
+PData *SineOperator::Operate(TypedPData<float> *a, TypedPData<float> *b)
+{
+	for (unsigned int i=0; i<a->Size(); i++)
+	{
+		a->m_Data[i]=sin(b->m_Data[i]);
+	}
+	return NULL;
+}
+
+///////////////////////////////////////////////////////
+
+template <>
+PData *CosineOperator::Operate(TypedPData<float> *a, TypedPData<float> *b)
+{
+	for (unsigned int i=0; i<a->Size(); i++)
+	{	
+		a->m_Data[i]=cos(b->m_Data[i]);	
+	}
+	return NULL;
+}
+
+///////////////////////////////////////////////////////
+
+template <>
+PData *ClosestOperator::Operate(TypedPData<dVector> *a, dVector b)
+{
+	float closestdist=999999;
+	dVector closest;
+	for (unsigned int i=0; i<a->Size(); i++)
+	{	
+		float dist = a->m_Data[i].dist(b);	
+		if (dist<closestdist)
+		{
+			closestdist=dist;
+			closest=a->m_Data[i];
+		}
+		
+	}
+	
+	TypedPData<dVector> *ret = new TypedPData<dVector>;
+	ret->m_Data.push_back(closest);
+	return ret;
+}
+
+template <>
+PData *ClosestOperator::Operate(TypedPData<dVector> *a, float b)
+{
+	// use the float as the index
+	unsigned int index=(unsigned int)b;
+	float closestdist=999999;
+	dVector closest;
+	for (unsigned int i=0; i<a->Size(); i++)
+	{	
+		if (i!=index)
+		{
+			float dist = a->m_Data[i].dist(a->m_Data[index]);	
+			if (dist<closestdist)
+			{
+				closestdist=dist;
+				closest=a->m_Data[i];
+			}
+		}
+	}
+	
+	TypedPData<dVector> *ret = new TypedPData<dVector>;
+	ret->m_Data.push_back(closest);
+	return ret;
+}
+

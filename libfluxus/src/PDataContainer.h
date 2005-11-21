@@ -132,6 +132,9 @@ PData *PDataContainer::FindOperate(const string &name, TypedPData<S> *a, T b)
 {
 	if (name=="+") return AddOperator::Operate<S,T>(a,b);
 	else if (name=="*") return MultOperator::Operate<S,T>(a,b);
+	else if (name=="closest") return ClosestOperator::Operate<S,T>(a,b);
+	else if (name=="sin") return SineOperator::Operate<S,T>(a,b);
+	else if (name=="cos") return CosineOperator::Operate<S,T>(a,b);
 	
 	cerr<<"operator "<<name<<" not found"<<endl;
 	return NULL;

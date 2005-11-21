@@ -106,13 +106,13 @@ void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hseg
 			n.normalise();
 			n2.normalise();
 			
-			p->AddVertex(dVertex(dVector(point2.x,j*heightpersegment,point2.z),n2));			
-			p->AddVertex(dVertex(dVector(point.x,(j+1)*heightpersegment,point.z),n));
-			p->AddVertex(dVertex(dVector(point.x,j*heightpersegment,point.z),n));
+			p->AddVertex(dVertex(dVector(point2.x,j*heightpersegment,point2.z),n2,i/(float)rsegments,j*heightpersegment));			
+			p->AddVertex(dVertex(dVector(point.x,(j+1)*heightpersegment,point.z),n,i/(float)rsegments,(j+1)*heightpersegment));
+			p->AddVertex(dVertex(dVector(point.x,j*heightpersegment,point.z),n,i/(float)rsegments,j*heightpersegment));
 			
-			p->AddVertex(dVertex(dVector(point2.x,j*heightpersegment,point2.z),n2));
-			p->AddVertex(dVertex(dVector(point2.x,(j+1)*heightpersegment,point2.z),n2));
-			p->AddVertex(dVertex(dVector(point.x,(j+1)*heightpersegment,point.z),n));
+			p->AddVertex(dVertex(dVector(point2.x,j*heightpersegment,point2.z),n2,i/(float)rsegments,j*heightpersegment));
+			p->AddVertex(dVertex(dVector(point2.x,(j+1)*heightpersegment,point2.z),n2,i/(float)rsegments,(j+1)*heightpersegment));
+			p->AddVertex(dVertex(dVector(point.x,(j+1)*heightpersegment,point.z),n,i/(float)rsegments,(j+1)*heightpersegment));
 		}
 	}
 	
@@ -124,9 +124,9 @@ void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hseg
 	{
 		dVector point(sin(i*radpersegment)*radius,0,cos(i*radpersegment)*radius);
 		dVector point2(sin((i+1)*radpersegment)*radius,0,cos((i+1)*radpersegment)*radius);		
-		p->AddVertex(dVertex(dVector(point2.x,centre.y,point2.z),normal));
-		p->AddVertex(dVertex(dVector(point.x,centre.y,point.z),normal));
-		p->AddVertex(dVertex(centre,normal));			
+		p->AddVertex(dVertex(dVector(point2.x,centre.y,point2.z),normal,0,i/(float)rsegments));
+		p->AddVertex(dVertex(dVector(point.x,centre.y,point.z),normal,0,i/(float)rsegments));
+		p->AddVertex(dVertex(centre,normal,0,0));			
 	}
 		
 	centre=dVector(0,height,0);
@@ -135,9 +135,9 @@ void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hseg
 	{
 		dVector point(sin(i*radpersegment)*radius,0,cos(i*radpersegment)*radius);
 		dVector point2(sin((i+1)*radpersegment)*radius,0,cos((i+1)*radpersegment)*radius);
-		p->AddVertex(dVertex(centre,normal));			
-		p->AddVertex(dVertex(dVector(point.x,centre.y,point.z),normal));
-		p->AddVertex(dVertex(dVector(point2.x,centre.y,point2.z),normal));
+		p->AddVertex(dVertex(centre,normal,1,1));			
+		p->AddVertex(dVertex(dVector(point.x,centre.y,point.z),normal,1,i/(float)rsegments));
+		p->AddVertex(dVertex(dVector(point2.x,centre.y,point2.z),normal,1,i/(float)rsegments));
 	}	
 }
 

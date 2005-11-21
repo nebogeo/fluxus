@@ -1425,7 +1425,6 @@ SCM FluxusBinding::pdata_op(SCM s_op, SCM s_pd, SCM s_oper)
 		size_t ssize=0;
 		char *op=gh_scm2newstr(s_op,&ssize);
 		char *pd=gh_scm2newstr(s_pd,&ssize);
-		PData *ret;
 		
 		// find out what the inputs are, and call the corresponding function
 		if (gh_string_p(s_oper))
@@ -1488,24 +1487,44 @@ SCM FluxusBinding::pdata_op(SCM s_op, SCM s_pd, SCM s_oper)
 		free(op);
 		free(pd);
 	}
-	
+		
 	// convert the return data
 	if (ret!=NULL)
 	{
 		TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(ret);	
-		if (data) return gh_floats2scm(data->m_Data[0].arr(),3);
+		if (data) 
+		{
+			dVector r = data->m_Data[0];
+			delete ret;
+			return gh_floats2scm(r.arr(),3);
+		}
 		else
 		{
 			TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(ret);
-			if (data) return gh_floats2scm(data->m_Data[0].arr(),4);
+			if (data) 
+			{
+				dColour r = data->m_Data[0];
+				delete ret;
+				return gh_floats2scm(r.arr(),4);
+			}
 			else 
 			{
 				TypedPData<float> *data = dynamic_cast<TypedPData<float>*>(ret);
-				if (data) return gh_double2scm(data->m_Data[0]);
+				if (data) 
+				{		
+					float r = data->m_Data[0];
+					delete ret;
+					return gh_double2scm(r);
+				}
 				else 
 				{
 					TypedPData<dMatrix> *data = dynamic_cast<TypedPData<dMatrix>*>(ret);
-					if (data) return gh_floats2scm(data->m_Data[0].arr(),16);
+					if (data) 
+					{
+						dMatrix r = data->m_Data[0];
+						delete ret;
+						return gh_floats2scm(r.arr(),16);
+					}
 				}
 			}
 		}

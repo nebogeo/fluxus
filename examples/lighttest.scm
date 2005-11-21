@@ -5,7 +5,7 @@
 (specular (vector 1 1 1))
 (shinyness 50)
 (scale (vector 5 5 5))
-(texture (load-texture "pawfal.png"))
+(texture (load-texture "textures/green.png"))
 (build-sphere 80 80)
 (pop)
 

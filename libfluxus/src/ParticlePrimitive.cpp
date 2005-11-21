@@ -43,21 +43,25 @@ void ParticlePrimitive::Render()
 	glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
 
-	if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);		
-	else glDisable(GL_POINT_SMOOTH);	
-	
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glColorPointer(4,GL_FLOAT,sizeof(dColour),(void*)m_ColData->begin()->arr());
+	
+	//glEnable(GL_BLEND);
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);	
+	
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);	
+	else glDisable(GL_POINT_SMOOTH);	
 
 	glDrawArrays(GL_POINTS,0,m_VertData->size());
 
 	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
 	glEnable(GL_LIGHTING);
 }
