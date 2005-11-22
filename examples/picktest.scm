@@ -17,7 +17,7 @@
     (if (mouse-button 2)
         (begin
         (grab (mouse-over))
-        (scale (vector 1 0,9 1))
+        (scale (vector 1 0.9 1))
         (ungrab))))
 
 
