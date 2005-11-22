@@ -578,6 +578,7 @@ void Renderer::PopState()
 
 void Renderer::DrawAxes()
 {
+	glLineWidth(1);
     glDisable(GL_DEPTH_TEST);
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);

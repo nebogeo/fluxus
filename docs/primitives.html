@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>6.0  Primitives</h1>
+Primitives are objects that you can render. There isn't really much else in a 
+fluxus scene, except lights, a camera and lots of primitives.
+
+<big>6.1  Retained Mode</big>
+    
+The normal way to create a primitive is to call it's build function and then 
+use it's returned ID (either directly, or by grabbing) to modify it later. 
+
+<c>(define myobj (build-cube))
+(grab myobj)
+(colour (vector 1 0 0))
+(ungrab) ; always remember to ungrab...	</c>
+
+Here are all the primitives:
+
+<c>(build-cube)</c>
+a simple cube, texture mapped placement per face
+
+<img src="images/cube.png">
+
+<c>(build-sphere hsegments rsegments)</c>
+a sphere with the resolution specified in verts, texture mapped in normal 
+"world map" style
+
+<img src="images/sphere.png">
+
+<c>(build-plane)</c>
+a one poly plane, texture mapped as you'd expect
+
+<img src="images/plane.png">
+
+<c>(build-cylinder hsegments rsegments)</c>
+a capped cylinder, texture map wrapped around
+
+<img src="images/cylinder.png">
+
+<c>(build-line vstart swidth vend ewidth)</c>
+builds a single line from start to end in world space, with start and end 
+widths. the geometry is constantly camera facing and is texture mapped so the 
+texture is stretched along each line segment. if used in lit mode, the normals 
+are faked to approximate a circular cross section.
+
+<img src="images/line.png">
+
+<c>(build-text text)</c>
+builds a sequence of planes, texture mapped so that a font texture can be used 
+to display text. might also be useful for more abstract things. the texture 
+map should be drawn as follows:
+
+(ascii 32 onwards)
+  ! " # $ % & ' ( ) * + ' - . / 
+0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+@ A B C D E F G H I J K L M N O
+P Q R S T U V W X Y Z [ \ ] ^ _
+` a b c d e f g h i j k l m n o
+p q r s t u v w x y z { | } ~
+
+the font assumed to be non proportional - there is an example font shipped with 
+fluxus
+
+<img src="images/text.png">
+ok, so this isn't a very good font texture :)
+
+(build-nurbs-sphere hsegments rsegments)
+builds a tessalated nurbs sphere, texture mapped in the same fashion as the poly
+sphere
+<img src="images/nurbs-sphere.png">
+a nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
+
+(build-nurbs-plane usegments vsegments)
+builds a tessalated nurbs plane, texture mapped in uv direction
+<img src="images/nurbs-plane.png">
+a nurbs patch plane, again with a control vertex tweaked
+		
+(build-particles num)
+builds a particles primitive containing num points, all initially set to the 
+origin. you use the pdata functions to edit the postions and colours. by 
+default particles are square, turn on (hint-anti-alias) to make them circular.
+<img src="images/particles.png">
+		
+<big>6.2  Instancing</big>
+
+Sometimes retained mode primitives can be unwieldy to deal with. For instance, 
+if you are rendering thousands of identical objects, or doing things with 
+recursive graphics, where you are calling the same primitive in lots of 
+different states - keeping track of all the IDs would be annoying to say the 
+least.
+
+This is where instancing is helpful, all you call is:
+
+<c>(draw-instance myobj)</c>
+
+and it will redraw any given object in the current state (immediate mode).
+An example:
+
+<c>(define myobj (build-nurbs-sphere 8 10)) ; make a sphere
+
+(define (render-spheres n)
+	(push)
+	(translate (vector n 0 0)) ; move in x
+	(draw-instance myob)       ; stamp down a copy
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies</c>
+
+<big>6.3  Built In Immediate Mode Primitives</big>
+
+To make life even easier than having to instance primitives, there are some 
+built in primitives that can be rendered at any time, without being built:
+
+<c>(draw-cube)
+(draw-sphere)
+(draw-plane)
+(draw-cylinder)</c>
+
+so the it makes the code above simpler:
+
+<c>(define (render-spheres n)
+	(push)
+    (translate (vector n 0 0)) ; move in x
+	(draw-sphere)              ; render a new sphere
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies</c>
+
+These built in primitives are very restricted in that you can't edit them 
+or change their resolution settings etc, but they are handy to use for quick 
+scripts with simple shapes.
+

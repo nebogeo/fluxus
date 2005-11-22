@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+<h1>9.0  Maths calls</h1>
+For some operations, basic 3D types such as vectors (scheme vectors of size 3) 
+and matrices (scheme vectors of size 16) will have to be processed and 
+calculations operated on them. There is a basic maths library built into 
+fluxus to do this for you.
+
+<c>(vadd v v)
+(vsub v v)
+(vmul v number)
+(vdiv v number)</c>
+simple operations on vectors
+
+<c>(vtransform v m)</c>
+transform the vector by the matrix m
+
+<c>(vtransform-rot v m)</c>
+transform the vector by the matrix m, ignoring the translation part (useful for 
+normals)
+
+<c>(vnormalise v)</c>
+return a normalised version of vector v
+
+<c>(vdot v v)</c>
+returns the dot product from the two vectors
+
+<c>(vmag v)</c>
+returns the magnitude of the vector 
+
+<c>(vdist v v)</c>
+returns the distance between the two vectors - treated as points
+
+<c>(vcross v v)</c>
+returns the cross product vector of the two input vectors
+
+<c>(madd m m)
+(msub m m)
+(mmul m m)
+(mdiv m m)</c>
+simple operations on matrices
+
+<c>(mident)</c>
+returns the identity matrix
+
+<c>(mtranslate v)</c>
+returns a translation matrix 
+
+<c>(mrotate v)</c>
+returns a rotation matrix 
+
+<c>(mscale v)</c>
+returns a scale matrix 
+
+<c>(mtranspose m)</c>
+returns a transposed version of the input matrix (columns = rows)
+
+<c>(minverse m)</c>
+returns the inverted version of the input matrix, if it can't be inverted it 
+will return the identity matrix (I think)
+
+<c>(maim v v)</c>
+returns a matrix aimed down the first vector, using the second vector as the 
+up vector. may be buggy.

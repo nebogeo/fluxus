@@ -3,36 +3,42 @@
 <hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
 
 <h1>10.0  Deforming primitives</h1>
-Each primitive is made up of data that describes it's shape and surface 
-properties. This data is created when you call the build function.
+Deformation in this chapter signifies various operations. It can involve 
+changing the shape of a primitive in a way not possible via a transform (ie 
+bending, warping etc) or modifying texture coordinates or colours to achieve a
+per-vertex effect. (Deformation in this way is also the only way to get particle
+primitives to do anything interesting).
 
-For instance (build-sphere) creates a polygonal object with a spherical 
+Each primitive is made up of arrays of data that describe it's shape and surface 
+properties. The data is always stored per-vertex, and is created when you call 
+the build function. 
+
+For instance <c>(build-sphere)</c> creates a polygonal object with a spherical 
 distribution of vertex point data, surface normals at every vertex and texture 
 coordinates, so you can wrap a texture around the primitive. This data 
 (primitive data, or pdata for short) can be read and written to by your 
 scripts, using the following commands:
 
-(pdata-set typechar vertnumber vector)
+<c>(pdata-set name vertnumber vector)</c>
 sets the data on the currently (grab)ed object to the input vector
 
-(pdata-get typechar vertnumber)
+<c>(pdata-get name vertnumber)</c>
 returns the vector from the pdata on the currently (grab)ed object
 
-(pdata-size)
+<c>(pdata-size)</c>
 returns the size of the pdata on the currently (grab)ed object (the number of 
 verts)
 
-The type character is dependant on the primitive type we are rendering. This is 
-given in detail below, but for polygonal objects we can change the "p" value to 
-alter the vertex positions:
+The name describes the data we want to access, for instance "p" contains 
+the vertex positions:
 
 so, some examples to make sense of this:
 
-(pdata-set "p" 0 (vector 0 0 0))
+<c>(pdata-set "p" 0 (vector 0 0 0))</c>
 
 sets the first point in the primitive to the origin (not all that useful)
 
-(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
+<c>(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))</c>
 
 the same, but sets it to the original position + 1 in the x
 offsetting the position is more useful as it constitutes a deformation of the 
@@ -40,30 +46,155 @@ original point.
 
 So, to deform an entire object, you do something like the following:
 
-(define myobj (build-sphere))
+<c>(hint-unlit)
+(hint-wire)
+(line-width 4)
+(define myobj (build-sphere 10 10))
 
 (define (deform n)
-    (pdata-set "p" n (vadd  (pdata-get "p" n) (vector 1 0 0))) ; move all the points in x
+    (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
+        (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
     (if (< n 0)
         0
         (deform (- n 1))))
-	
+    
 (grab myobj)
 (deform (pdata-size)) ; for every point
-(ungrab)
+(ungrab)</c>
 
-10.1  Types 
+<img src="images/deform.png">
+a sphere with randomly jittered vertices
 
-Cube, Sphere, Cylinder, Plane, Line, Text
+<big>10.1 Built in PData</big>
+
+Pdata automatically created for you depends on the type of the primtive.
+
+Polygonal based primtives (Cube, Sphere, Cylinder, Plane, Text)
 
 Positions:      "p"
 Normals:        "n"
 Texture coords: "t"
 Vertex colours: "c"
 
-NURBSSphere, NURBSCylinder, NURBSCurve
+NURBS based primitives (NURBSSphere, NURBSPlane)
 
 Positions:      "p"
 Normals:        "n"
 Texture coords: "t"
 
+Particle primtives
+
+Positions:      "p"
+Colours:        "c"
+
+The line primitive is not currently supported.
+
+<big>10.2 User PData</big>
+
+As well as the standard information that exists in primitives, fluxus also allows 
+you to add your own per vertex data to the primitive. User pdata can be written 
+or read in the same way as the built in pdata types.
+
+<c>(pdata-add name type)</c>
+where name is a string with the name you wish to call it, and type is a one 
+character string consisting of:
+
+f : float data
+v : vector data 
+c : colour data
+m : matrix data
+
+<c>(pdata-copy source destination)</c>
+this will copy a array of pdata, or overwrite an existing one with if it already 
+exists.
+
+So, adding your own storage for data on primitives means you can use it as a fast
+way of reading and writing data, even if the data doesn't directly affect the 
+primitive.
+
+<c>(define particle-count 1000)
+
+(define (init n)                                       ; setup our pdata arrays
+    (pdata-set "vel" n (vmul (vsub (vector (flxrnd) (flxrnd) (flxrnd)) 
+        (vector 0.5 0.5 0.5)) 0.1))                    ; randomise the velocity
+    (pdata-set "c" n (vector (flxrnd) (flxrnd) 1))     ; randomise the colour
+    (if (< n 0)
+        0
+        (init (- n 1))))
+
+(define (update n)
+    (pdata-set "vel" n (vadd (pdata-get "vel" n) (vector 0 -0.001 0))) ; add some gravity
+    (pdata-set "p" n (vadd (pdata-get "p" n) (pdata-get "vel" n)))     ; add velocity to the position
+    (if (< n 0)
+        0
+        (update (- n 1))))
+
+(define (render)
+    (grab ob)
+    (update (pdata-size))                              ; update the particles
+    (ungrab))
+
+; setup the scene
+(clear)
+(show-fps 1)
+(point-width 4)
+(hint-anti-alias)
+
+; build our particle primitive
+(define ob (build-particles particle-count))
+
+(grab ob)
+(pdata-add "vel" "v") ; add the velocity user pdata of type vector
+(init (pdata-size))   ; initialise the pdata arrays
+(ungrab)
+(blur 0.1)
+
+(every-frame "(render)")</c>
+
+<img src="images/explosion.png">
+a particle explosion. finally - particles are useful for something
+
+<big>10.3 PData Operations</big>
+
+Pdata Operations are a optimisation which takes advantage of the nature of 
+these storage arrays to allow you to process them with a single call to the 
+scheme interpreter. This makes deforming primitive much faster as looping in 
+the scheme interpreter is slow, and it also simplifies your scheme code.
+
+<c>(pdata-op operation pdata operand)</c>
+where operation is a string identifier for the intended operation (listed below)
+and pdata is the name of the target pdata to operate on, and operand is either
+a single data (a scheme number or vector (length 3,4 or 16)) or a name of another 
+pdata array.
+
+If the <c>(update)</c> and <c>(render)</c> functions in the script above are 
+changed to the following:
+
+<c>(define (update)
+	(pdata-op "+" "vel" (vector 0 -0.002 0)) ; add this vector to all the velocities
+    (pdata-op "+" "p" "vel")) ; add all the velocities to all the positions
+
+(define (render)
+    (grab ob)
+    (update)
+    (ungrab))</c>
+	
+On my machine, this script runs over 6 times faster than the first version. 
+
+<c>(pdata-op)</c> can also return information to your script from certain 
+functions called on entire pdata arrays. 
+
+Pdata operations
+
+"+"       : addition
+"*"       : multiplication
+"sin"     : writes the sine of one float pdata array into another
+"cos"     : writes the cosine of one float pdata array into another
+"closest" : treats the vector pdata as positions, and if given a single vector, 
+            returns the closest position to it - or if given a float, uses it as a 
+			index into the pdata array, and returns the nearest position.
+
+For most pdata operations, the vast majority of the combinations of input types 
+(scheme number, the vectors or pdata types) will not be supported, you will 
+receive a rather criptic runtime warning message if this is the case.
+		
