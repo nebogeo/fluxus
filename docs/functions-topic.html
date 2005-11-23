@@ -101,6 +101,10 @@ Types:
 <tr><td><c>(turtle-move n)</c></td><td> move the turtle the given distance </td></tr>
 <tr><td><c>(turtle-turn v)</c></td><td> turns the turtle in x,y,z </td></tr>
 <tr><td><c>(turtle-prim n)</c></td><td> sets the poly primitive type for the turtle </td></tr>
+</table>
+
+<table>
+<th colspan=2 align=left>physical simulacra</th>
 <tr><td><c>(collisions n)</c></td><td> turns on/off collisions </td></tr>
 <tr><td><c>(gravity v)</c></td><td> sets the gravity vector </td></tr>
 <tr><td><c>(set-max-physical n)</c></td><td> sets the maximum number of physical objects </td></tr>
@@ -123,12 +127,20 @@ Types:
 <tr><td><c>(kick n v)</c></td><td> apply a translational force to an object </td></tr>
 <tr><td><c>(twist n v)</c></td><td> apply a rotational force to an object </td></tr>
 <tr><td><c>(has-collided)</c></td><td> returns true if the grabbed object collided in the last frame </td></tr>
+</table>
+
+<table>
+<th colspan=2 align=left>OSC & networking</th>
 <tr><td><c>(osc-source port)</c></td><td> starts up the osc server, listening to the given port </td></tr>
 <tr><td><c>(osc-msg name)</c></td><td> and sets the current message and returns true if it was received last frame </td></tr>
 <tr><td><c>(osc index)</c></td><td> returns the argument from the current message </td></tr>
 <tr><td><c>(osc-peek)</c></td><td> returns a string containing the last sent message and format </td></tr>
 <tr><td><c>(osc-destination port)</c></td><td> starts up the osc client, which will send messages to the given port. </td></tr>
 <tr><td><c>(osc-send name argslist)</c></td><td> sends an osc message </td></tr>
+</table>
+
+<table>
+<th colspan=2 align=left>pdata and matricies</th>
 <tr><td><c>(pdata-set t n v)</c></td><td> sets the pdata item on the primitive </td></tr>
 <tr><td><c>(pdata-get t n)</c></td><td> returns the vector containing the given pdata item </td></tr>
 <tr><td><c>(pdata-size)</c></td><td> returns the amount of pdata (usually a vert count) </td></tr>
@@ -156,6 +168,10 @@ Types:
 <tr><td><c>(mtranspose m)</c></td><td> transpose the matrix </td></tr>
 <tr><td><c>(minverse m)</c></td><td> inverse the matrix </td></tr>
 <tr><td><c>(maim v v)</c></td><td> return an aimed matrix, with an up vector </td></tr>
+</table>
+
+<table>
+<th colspan=2 align=left>...</th>
 <tr><td><c>(feedback n)</c></td><td> switch on/off feedback </td></tr>
 <tr><td><c>(feedback-transform m)</c></td><td> sets the transform for the plane that the fb texture is rendered on </td></tr>
 <tr><td><c>(start-audio n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
