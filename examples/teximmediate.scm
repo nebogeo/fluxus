@@ -1,7 +1,7 @@
 (define (render)
-	(push)
-	(texture (load-texture "green.png"))
-	(draw-cube)
-	(pop))
-	
+    (push)
+    (texture (load-texture "textures/green.png"))
+    (draw-cube)
+    (pop))
+    
 (every-frame "(render)")

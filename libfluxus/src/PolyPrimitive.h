@@ -45,6 +45,7 @@ protected:
 	
 	Type m_Type;
 	bool m_VertColours;
+		
 	vector<dVector> *m_VertData;
 	vector<dVector> *m_NormData;
 	vector<dColour> *m_ColData;

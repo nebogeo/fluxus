@@ -215,7 +215,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		{
 			case GLUT_KEY_RIGHT: 
 			{
-				m_Position++; 
+				if (!m_Text.empty()) m_Position++; 
 				m_DesiredXPos=OffsetToCurrentLineStart(); 
 			}
 			break;
@@ -339,7 +339,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 	}
 			
 	if (m_Position<0) m_Position=0;
-	if (m_Position>m_Text.size()) m_Position=m_Text.size()-1;
+	if (m_Position>m_Text.size()) m_Position=m_Text.size();
 	
 	if (key==0 && !m_ShiftState && mod&GLUT_ACTIVE_SHIFT)
 	{ 
@@ -356,12 +356,12 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 	
 	if (m_ShiftState) m_HighlightEnd=m_Position;	
 	
-	//cerr<<"----------------"<<endl;
-	//cerr<<PreviousLineLength(m_Position)<<endl;
-	//cerr<<LineLength(m_Position)<<endl;
-	//cerr<<NextLineLength(m_Position)<<endl;
-	//cerr<<OffsetToCurrentLineStart()<<endl;
-	//cerr<<"----------------"<<endl;
+	/*cerr<<"----------------"<<endl;
+	cerr<<PreviousLineLength(m_Position)<<endl;
+	cerr<<LineLength(m_Position)<<endl;
+	cerr<<NextLineLength(m_Position)<<endl;
+	cerr<<OffsetToCurrentLineStart()<<endl;
+	cerr<<"----------------"<<endl;*/
 	
 }
 
@@ -407,22 +407,20 @@ int GLEditor::PreviousLineLength(int pos)
 int GLEditor::LineLength(int pos)
 {
 	unsigned int linestart=LineStart(pos);
-	unsigned int lineend=LineEnd(pos);
-		
-	// if we're not on the last line
-	if (lineend!=string::npos) return lineend-linestart;
-	
-	// if we are, use the total length position
-	return m_Text.size()-linestart;
+	unsigned int lineend=LineEnd(pos);		
+	return lineend-linestart;
 }
 
 unsigned int GLEditor::LineStart(int pos)
 {
-	unsigned int linestart=0;
-	
-	// if it's not the first char, take one off in case we're over the newline
-	if (pos>0) linestart=m_Text.rfind("\n",pos-1);
-	else linestart=m_Text.rfind("\n",pos);
+	unsigned int linestart=string::npos;
+
+	if (pos>0) 
+	{
+		// take one off if we're over a newline
+		if (m_Text[pos]=='\n') linestart=m_Text.rfind("\n",pos-1);
+		else linestart=m_Text.rfind("\n",pos);
+	}
 	
 	if (linestart!=string::npos) linestart++; // move the start off the newline
 	else linestart=0; // if are on the first line, set the start to 0
@@ -432,7 +430,10 @@ unsigned int GLEditor::LineStart(int pos)
 
 unsigned int GLEditor::LineEnd(int pos)
 {
-	return m_Text.find("\n",pos);
+	if (m_Text.empty()) return 0;
+	unsigned int end = m_Text.find("\n",pos);
+	if (end==string::npos) end=m_Text.size()-1;
+	return end;
 }
 
 void GLEditor::ParseOpenParentheses(int pos, int type)
