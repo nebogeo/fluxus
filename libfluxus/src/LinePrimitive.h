@@ -38,6 +38,10 @@ public:
 	void SetStart(const dVertex &Vert, float width);
 	void SetEnd(const dVertex &Vert, float width);
 
+protected:
+
+	virtual void PDataDirty() {}
+
 private:
 	dVertex m_Start;
 	dVertex m_End;

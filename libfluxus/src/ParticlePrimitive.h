@@ -37,6 +37,10 @@ public:
 	void AddParticle(const dVector &v, const dColour &c) 
 		{ m_VertData->push_back(v); m_ColData->push_back(c);}
 
+protected:
+
+	virtual void PDataDirty();
+
 private:
 
 	vector<dVector> *m_VertData;

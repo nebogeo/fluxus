@@ -189,7 +189,8 @@ void GLEditor::Render()
 		n++;
 	}
 	
-	m_BottomTextPosition=n;
+	if (linecount>=m_VisibleLines-1) m_BottomTextPosition=n;
+	else m_BottomTextPosition=m_Text.size()+1;
 	
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
@@ -257,7 +258,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
 					else m_Position=LineStart(LineEnd(m_Position)+1)+m_DesiredXPos; // start of next+offset
 
-					if (m_Position>m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+					if (m_Position>=m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
 				}
 			}
 			break;
@@ -333,6 +334,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					temp[1]='\0';
 					m_Text.insert(m_Position,string(temp));
 					m_Position++;
+					if (key=='\n' && m_Position>m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
 				break;
 			}
 		}

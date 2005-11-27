@@ -26,12 +26,17 @@ ParticlePrimitive::ParticlePrimitive()
 	AddData("c",new TypedPData<dColour>);
 	
 	// direct access for speed
-	m_VertData=GetDataVec<dVector>("p");
-	m_ColData=GetDataVec<dColour>("c");
+	PDataDirty();
 }
 
 ParticlePrimitive::~ParticlePrimitive()
 {
+}
+
+void ParticlePrimitive::PDataDirty()
+{	
+	m_VertData=GetDataVec<dVector>("p");
+	m_ColData=GetDataVec<dColour>("c");
 }
 
 void ParticlePrimitive::Finalise()
@@ -42,27 +47,70 @@ void ParticlePrimitive::Render()
 {
 	glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
+	
+	if (m_State.Hints & HINT_POINTS)
+	{
+		glDisableClientState(GL_NORMAL_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+	
+		glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
+		glColorPointer(4,GL_FLOAT,sizeof(dColour),(void*)m_ColData->begin()->arr());
+	
+		//glEnable(GL_BLEND);
+	    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		//glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);	
+	
+		if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);	
+		else glDisable(GL_POINT_SMOOTH);	
 
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	
-	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
-	glColorPointer(4,GL_FLOAT,sizeof(dColour),(void*)m_ColData->begin()->arr());
-	
-	//glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);	
-	
-	if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);	
-	else glDisable(GL_POINT_SMOOTH);	
+		glDrawArrays(GL_POINTS,0,m_VertData->size());
 
-	glDrawArrays(GL_POINTS,0,m_VertData->size());
-
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisableClientState(GL_COLOR_ARRAY);
+		glEnableClientState(GL_NORMAL_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	}
+	else
+	{
+		dMatrix ModelView;
+		glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
 	
+		dVector CameraDir(0,0,1);
+		CameraDir=ModelView.inverse().transform_no_trans(CameraDir);
+		CameraDir.normalise();
+		
+		dVector up(0,1,0);
+		dVector across=up.cross(CameraDir);
+		across.normalise();
+		dVector down=across.cross(CameraDir);
+		down.normalise();
+		across*=0.01;
+		down*=0.01;
+		dVector diag(down+across);
+		
+		glBegin(GL_QUADS);
+		for (unsigned int n=0; n<m_VertData->size(); n++)
+		{
+			glTexCoord2f(0,0);
+			glVertex3fv((*m_VertData)[n].arr());
+			glTexCoord2f(1,0);
+			glVertex3fv(((*m_VertData)[n]+across).arr());
+			glTexCoord2f(1,1);
+			glVertex3fv(((*m_VertData)[n]+diag).arr());
+			glTexCoord2f(0,1);
+			glVertex3fv(((*m_VertData)[n]+down).arr());
+			
+			/*glTexCoord2f(0,0);
+			glVertex3fv((*m_VertData)[n].arr());
+			glTexCoord2f(1,0);
+			glVertex3fv(((*m_VertData)[n]+dVector(1,0,0)).arr());
+			glTexCoord2f(1,1);
+			glVertex3fv(((*m_VertData)[n]+dVector(1,1,0)).arr());
+			glTexCoord2f(0,1);
+			glVertex3fv(((*m_VertData)[n]+dVector(0,1,0)).arr());*/
+		}
+		glEnd();
+	}
 	glEnable(GL_LIGHTING);
 }
 

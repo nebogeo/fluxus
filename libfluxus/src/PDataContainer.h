@@ -37,7 +37,7 @@ class PDataContainer
 {
 public:
 	PDataContainer() {}
-	~PDataContainer() 
+	virtual ~PDataContainer() 
 	{
 		for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
 		{
@@ -56,8 +56,14 @@ public:
 	template<class T> T    GetData(const string &name, unsigned int index);
 	template<class T> PData *DataOp(const string &op, const string &name, T operand);
 	PData* GetDataRaw(const string &name);
+	void SetDataRaw(const string &name, PData* pd);
 	template <class S, class T> PData *FindOperate(const string &name, TypedPData<S> *a, T b);
 
+protected:
+
+	// called when a named pdata mapping changes 
+	virtual void PDataDirty() = 0;
+	
 private:
 	// todo: replace with a hashmap
 	map<string,PData*> m_PData;

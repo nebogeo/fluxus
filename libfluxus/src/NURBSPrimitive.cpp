@@ -33,9 +33,7 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	AddData("n",new TypedPData<dVector>);
 	
 	// direct access for speed
-	m_CVVec=GetDataVec<dVector>("p");
-	m_STVec=GetDataVec<dVector>("t");
-	m_NVec=GetDataVec<dVector>("n");
+	PDataDirty();
 
 	m_Surface = gluNewNurbsRenderer();
 	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
@@ -44,9 +42,18 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	gluNurbsProperty(m_Surface, GLU_CULLING, GLU_TRUE);
 }
 
+
 NURBSPrimitive::~NURBSPrimitive()
 {
 	gluDeleteNurbsRenderer(m_Surface);
+}
+
+void NURBSPrimitive::PDataDirty()
+{
+	// reset pointers
+	m_CVVec=GetDataVec<dVector>("p");
+	m_STVec=GetDataVec<dVector>("t");
+	m_NVec=GetDataVec<dVector>("n");
 }
 
 void NURBSPrimitive::Finalise()

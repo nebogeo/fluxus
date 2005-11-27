@@ -88,6 +88,25 @@ void fluxus::MakePlane(PolyPrimitive *p)
     p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,-1),0,0));
 }
 
+void fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
+{
+	float usegsize=1/(float)xsegs;
+	float vsegsize=1/(float)ysegs;
+	
+	for (int x=0; x<xsegs; x++)
+	{
+		for (int y=0; y<ysegs; y++)
+		{
+			float u=x/(float)xsegs;
+			float v=y/(float)ysegs;	
+    		p->AddVertex(dVertex(dVector(u,v,0),dVector(0,0,1),u,v));
+    		p->AddVertex(dVertex(dVector(u+usegsize,v,0),dVector(0,0,1),u+usegsize,v));
+    		p->AddVertex(dVertex(dVector(u+usegsize,v+vsegsize,0),dVector(0,0,1),u+usegsize,v+vsegsize));
+    		p->AddVertex(dVertex(dVector(u,v+vsegsize,0),dVector(0,0,1),u,v+vsegsize));
+		}
+	}
+}
+
 void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hsegments, int rsegments)
 {
 	float heightpersegment = height/hsegments;

@@ -47,6 +47,8 @@ public:
 	
 protected:
 	
+	virtual void PDataDirty();
+
 	bool m_Finalised;
 	
 	vector<dVector> *m_CVVec;

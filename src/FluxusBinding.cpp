@@ -96,6 +96,17 @@ SCM FluxusBinding::build_plane()
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
 }
 
+SCM FluxusBinding::build_plane(SCM s_xsegments, SCM s_ysegments)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_xsegments), s_xsegments, SCM_ARG1, "build-plane");
+	SCM_ASSERT(SCM_NUMBERP(s_ysegments), s_ysegments, SCM_ARG2, "build-plane");
+
+	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
+    MakePlane(PlanePrim,(int)gh_scm2double(s_xsegments),(int)gh_scm2double(s_ysegments));
+    PlanePrim->Finalise();    	
+    return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
+}
+
 SCM FluxusBinding::build_cylinder(SCM s_hsegments, SCM s_rsegments)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_hsegments), s_hsegments, SCM_ARG1, "build_cylinder");
@@ -1924,6 +1935,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_0("build-cube",      build_cube);
     gh_new_procedure0_2("build-sphere", build_sphere);
     gh_new_procedure0_0("build-plane",     build_plane);
+    gh_new_procedure0_2("build-seg-plane",     build_plane);
     gh_new_procedure0_2("build-cylinder", build_cylinder);
 	gh_new_procedure4_0("build-line",   build_line);
 	gh_new_procedure0_1("build-text",   build_text);

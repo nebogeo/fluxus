@@ -63,13 +63,13 @@ void PDataContainer::AddData(const string &name, PData* pd)
 
 void PDataContainer::CopyData(const string &name, string newname)
 {
-	//map<string,PData*>::iterator i=m_PData.find(newname);
-	//if (i!=m_PData.end())
-	//{
-		
-	//}
+	map<string,PData*>::iterator i=m_PData.find(newname);
+	if (i!=m_PData.end())
+	{
+		delete i->second;
+	}
 	
-	map<string,PData*>::iterator i=m_PData.find(name);
+	i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
 		cerr<<"Primitive::CopyData: pdata: "<<name<<" doesn't exists"<<endl;
@@ -77,6 +77,8 @@ void PDataContainer::CopyData(const string &name, string newname)
 	}
 	
 	m_PData[newname]=i->second->Copy();
+	
+	PDataDirty();
 }
 
 void PDataContainer::RemoveDataVec(const string &name)
@@ -102,4 +104,17 @@ PData* PDataContainer::GetDataRaw(const string &name)
 	}
 	
 	return i->second;
+}
+
+void PDataContainer::SetDataRaw(const string &name, PData* pd)
+{
+	map<string,PData*>::iterator i=m_PData.find(name);
+	if (i==m_PData.end())
+	{
+		cerr<<"Primitive::SetDataRaw: pdata: "<<name<<" doesn't exist"<<endl;
+		return;
+	}
+	delete i->second;
+	i->second = pd;
+	PDataDirty();
 }

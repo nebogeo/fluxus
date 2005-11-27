@@ -34,6 +34,7 @@ public:
 	static SCM build_cube();
 	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_plane();
+	static SCM build_plane(SCM s_xsegments, SCM s_ysegments);
 	static SCM build_cylinder(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_line(SCM start, SCM swidth, SCM end, SCM ewidth);
 	static SCM build_text(SCM text);
