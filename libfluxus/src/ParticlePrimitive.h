@@ -34,8 +34,8 @@ public:
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "ParticlePrimitive"; }
 	
-	void AddParticle(const dVector &v, const dColour &c) 
-		{ m_VertData->push_back(v); m_ColData->push_back(c);}
+	void AddParticle(const dVector &v, const dColour &c, const dVector &s) 
+		{ m_VertData->push_back(v); m_ColData->push_back(c); m_SizeData->push_back(s); }
 
 protected:
 
@@ -45,6 +45,7 @@ private:
 
 	vector<dVector> *m_VertData;
 	vector<dColour> *m_ColData;
+	vector<dVector> *m_SizeData;
 };
 
 }

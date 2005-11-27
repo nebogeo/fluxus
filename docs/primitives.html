@@ -79,10 +79,13 @@ a nurbs patch plane, again with a control vertex tweaked
 		
 (build-particles num)
 builds a particles primitive containing num points, all initially set to the 
-origin. you use the pdata functions to edit the postions and colours. by 
-default particles are square, turn on (hint-anti-alias) to make them circular.
+origin. you use the pdata functions to edit the postions, colours and sizes. 
+particles come in two flavors, gl points, which are fast, and camera facing 
+sprites which may be textured, can be individually scaled and are therefore 
+slower to render. by default gl point particles are square, turn on 
+(hint-anti-alias) to make them circular.
 <img src="images/particles.png">
-		
+
 <big>6.2  Instancing</big>
 
 Sometimes retained mode primitives can be unwieldy to deal with. For instance, 

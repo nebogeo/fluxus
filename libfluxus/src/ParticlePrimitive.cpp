@@ -24,9 +24,17 @@ ParticlePrimitive::ParticlePrimitive()
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("c",new TypedPData<dColour>);
+	AddData("s",new TypedPData<dVector>);
 	
 	// direct access for speed
 	PDataDirty();
+	
+	for (unsigned int n=0; n<m_SizeData->size(); n++)
+	{
+		(*m_SizeData)[n].x=0.01;
+		(*m_SizeData)[n].y=0.01;
+	}
+	
 }
 
 ParticlePrimitive::~ParticlePrimitive()
@@ -37,6 +45,7 @@ void ParticlePrimitive::PDataDirty()
 {	
 	m_VertData=GetDataVec<dVector>("p");
 	m_ColData=GetDataVec<dColour>("c");
+	m_SizeData=GetDataVec<dVector>("s");
 }
 
 void ParticlePrimitive::Finalise()
@@ -70,7 +79,8 @@ void ParticlePrimitive::Render()
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-	else
+	
+	if (m_State.Hints & HINT_SOLID)
 	{
 		dMatrix ModelView;
 		glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
@@ -84,30 +94,20 @@ void ParticlePrimitive::Render()
 		across.normalise();
 		dVector down=across.cross(CameraDir);
 		down.normalise();
-		across*=0.01;
-		down*=0.01;
-		dVector diag(down+across);
 		
 		glBegin(GL_QUADS);
 		for (unsigned int n=0; n<m_VertData->size(); n++)
 		{
+			dVector scaledacross(across*(*m_SizeData)[n].x);
+			dVector scaledown(down*(*m_SizeData)[n].y);
 			glTexCoord2f(0,0);
 			glVertex3fv((*m_VertData)[n].arr());
 			glTexCoord2f(1,0);
-			glVertex3fv(((*m_VertData)[n]+across).arr());
+			glVertex3fv(((*m_VertData)[n]+scaledacross).arr());
 			glTexCoord2f(1,1);
-			glVertex3fv(((*m_VertData)[n]+diag).arr());
+			glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
 			glTexCoord2f(0,1);
-			glVertex3fv(((*m_VertData)[n]+down).arr());
-			
-			/*glTexCoord2f(0,0);
-			glVertex3fv((*m_VertData)[n].arr());
-			glTexCoord2f(1,0);
-			glVertex3fv(((*m_VertData)[n]+dVector(1,0,0)).arr());
-			glTexCoord2f(1,1);
-			glVertex3fv(((*m_VertData)[n]+dVector(1,1,0)).arr());
-			glTexCoord2f(0,1);
-			glVertex3fv(((*m_VertData)[n]+dVector(0,1,0)).arr());*/
+			glVertex3fv(((*m_VertData)[n]+scaledown).arr());
 		}
 		glEnd();
 	}

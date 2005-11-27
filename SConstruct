@@ -39,7 +39,7 @@ Source = Split("libfluxus/src/PData.cpp \
 				src/Recorder.cpp \
 				src/main.cpp")					
 
-env = Environment(CCFLAGS = '-pipe -Wall -O3 -ffast-math -Wno-unused -fPIC')
+env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC')
 env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
 
 if not GetOption('clean'):
