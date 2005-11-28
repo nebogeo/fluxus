@@ -3,16 +3,20 @@
 <hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
 
 <h1>4.0  The Fluxus State Machine</h1>
-Like OpenGL, fluxus is a state machine which has a renderstate you can modify 
-to describe objects created later. for example:
+The state machine is the key to understanding how fluxus works, all it really 
+means is that you can call functions which change the current context which has
+an effect on subsequent functions. This is a very efficient way of describing 
+things, and is built on top of the OpenGl api, which works in a similar way. 
+For example, in a function called every frame:
 
 <c>(colour (vector 1 0 0))
 (draw-cube)
 (colour (vector 0 1 0))
 (draw-cube)</c>
 
-will draw a red cube, then a green cube
-states can also be stacked, for example:
+will draw a red cube, then a green cube (in this case, you can think of the 
+<c>(colour)</c> call as changing a pen colour before drawing something).
+States can also be stacked, for example:
 
 <c>(colour (vector 1 0 0))
 (push)
@@ -21,7 +25,10 @@ states can also be stacked, for example:
 (pop)
 (draw-cube)</c>
 
-will draw a green, then a red cube.
+will draw a green, then a red cube. the <c>(push)</c> command stores the current
+state, and adds a copy to the top of the stack. <c>(pop)</c> retrieves the 
+previous state and deletes the current one (so changes to the state between the 
+push and the pop are lost)
 
 <big>4.1  The Scenegraph </big>
 
