@@ -33,7 +33,6 @@ public:
 	
 	virtual void AddVertex(const dVertex &Vert);	
 	virtual void Render();
-	virtual void Finalise();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
@@ -52,8 +51,6 @@ protected:
 	vector<dVector> *m_NormData;
 	vector<dColour> *m_ColData;
 	vector<dVector> *m_TexData;
-	unsigned int m_NumVerts;
-	bool m_Finalised;
 };
 
 };

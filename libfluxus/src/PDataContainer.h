@@ -36,14 +36,8 @@ namespace fluxus
 class PDataContainer
 {
 public:
-	PDataContainer() {}
-	virtual ~PDataContainer() 
-	{
-		for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
-		{
-			delete i->second;
-		}
-	}
+	PDataContainer();
+	virtual ~PDataContainer(); 
 	
 	void AddData(const string &name, PData* pd);
 	void CopyData(const string &name, string newname);
@@ -58,6 +52,8 @@ public:
 	PData* GetDataRaw(const string &name);
 	void SetDataRaw(const string &name, PData* pd);
 	template <class S, class T> PData *FindOperate(const string &name, TypedPData<S> *a, T b);
+	// erases all current data
+	void Resize(unsigned int size);
 
 protected:
 

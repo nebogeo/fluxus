@@ -42,3 +42,14 @@ this value doesn't seem to be entirely correct, but it does the job.
 <c>(end-framedump)</c>
 starts and stops writing tiff frame images to disk. will be quite slow - and 
 unsuitable for realtime use - see <c>(process)</c>
+
+<c>(fog colour density start end)</c>
+sets the global fogging parameters.
+
+<c>(feedback 0|1)</c>
+turns on a background plane which is textured with the previous frame, for those wacky 70's video 
+effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and 
+buggy and prone to crashing!
+
+<c>(feedback-transform matrix)</c>
+sets a transform for the feedback plane

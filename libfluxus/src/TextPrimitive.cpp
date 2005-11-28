@@ -77,8 +77,6 @@ void TextPrimitive::SetText(const string &s, float Width, float Height)
 			x+=w;
 		}
 	}
-		
-	Finalise();
 }
 
 void TextPrimitive::Render()

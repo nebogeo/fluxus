@@ -21,7 +21,6 @@
 using namespace fluxus;
 	
 NURBSPrimitive::NURBSPrimitive() :
-m_Finalised(false),
 m_UOrder(0),
 m_VOrder(0),
 m_UCVCount(0),
@@ -56,16 +55,8 @@ void NURBSPrimitive::PDataDirty()
 	m_NVec=GetDataVec<dVector>("n");
 }
 
-void NURBSPrimitive::Finalise()
-{
-	// should check the vectors are all the right size etc
-	m_Finalised=true;
-}
-
 void NURBSPrimitive::Render()
-{
-	if (!m_Finalised) return;
-	
+{	
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
@@ -208,5 +199,4 @@ void NURBSPrimitive::ApplyTransform(bool ScaleRotOnly)
 	}
 	
 	GetState()->Transform.init();
-	Finalise();
 }

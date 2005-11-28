@@ -29,7 +29,6 @@ public:
 	virtual ~ParticlePrimitive();
 	
 	virtual void Render();
-	virtual void Finalise();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "ParticlePrimitive"; }

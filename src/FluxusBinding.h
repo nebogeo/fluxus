@@ -31,6 +31,7 @@ public:
 	
 	void RegisterProcs();
 
+	static SCM build_polygons(SCM s_size, SCM s_type);
 	static SCM build_cube();
 	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_plane();
@@ -38,6 +39,7 @@ public:
 	static SCM build_cylinder(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_line(SCM start, SCM swidth, SCM end, SCM ewidth);
 	static SCM build_text(SCM text);
+	static SCM build_nurbs(SCM s_size);
 	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_nurbs_plane(SCM s_usegments, SCM s_vsegments);
 	static SCM build_particles(SCM s_count);

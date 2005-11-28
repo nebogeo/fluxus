@@ -42,19 +42,15 @@ FluxusBinding::FluxusBinding(int w, int h)
 {
 	StaticCube = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(StaticCube);
-    StaticCube->Finalise();
 
 	StaticPlane = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(StaticCube);
-    StaticPlane->Finalise();
 
 	StaticSphere = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(StaticSphere,1,5,10);
-    StaticSphere->Finalise();
 
 	StaticCylinder = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(StaticCylinder,1,1,5,10);
-    StaticCylinder->Finalise();
 	
 	Fluxus = new FluxusMain(w,h);
 }
@@ -65,11 +61,29 @@ FluxusBinding::~FluxusBinding()
 	delete Fluxus;
 }
 
+SCM FluxusBinding::build_polygons(SCM s_size, SCM s_type)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_size), s_size, SCM_ARG1, "build-polygons");
+	SCM_ASSERT(SCM_NUMBERP(s_type), s_type, SCM_ARG2, "build-polygons");
+	
+	PolyPrimitive *Prim = new PolyPrimitive((PolyPrimitive::Type)(int)gh_scm2double(s_type));
+	Prim->Resize((int)gh_scm2double(s_size));
+    return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
+SCM FluxusBinding::build_nurbs(SCM s_size)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_size), s_size, SCM_ARG1, "build-nurbs");
+	
+	NURBSPrimitive *Prim = new NURBSPrimitive();
+	Prim->Resize((int)gh_scm2double(s_size));
+    return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
 SCM FluxusBinding::build_cube()
 {
 	PolyPrimitive *BoxPrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(BoxPrim);
-    BoxPrim->Finalise();
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(BoxPrim));
 }
 
@@ -84,7 +98,6 @@ SCM FluxusBinding::build_sphere(SCM s_hsegments, SCM s_rsegments)
 	
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(SphPrim, 1, (int)hsegments, (int)rsegments);
-    SphPrim->Finalise();    	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
 }
 
@@ -92,7 +105,6 @@ SCM FluxusBinding::build_plane()
 {
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(PlanePrim);
-    PlanePrim->Finalise();    	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
 }
 
@@ -103,7 +115,6 @@ SCM FluxusBinding::build_plane(SCM s_xsegments, SCM s_ysegments)
 
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(PlanePrim,(int)gh_scm2double(s_xsegments),(int)gh_scm2double(s_ysegments));
-    PlanePrim->Finalise();    	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
 }
 
@@ -118,7 +129,6 @@ SCM FluxusBinding::build_cylinder(SCM s_hsegments, SCM s_rsegments)
 
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(CylPrim, 1, 1, (int)hsegments, (int)rsegments);
-    CylPrim->Finalise();    	
 
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(CylPrim));
 }
@@ -166,7 +176,6 @@ SCM FluxusBinding::build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments)
 	
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
     MakeNURBSSphere(SphPrim, 1, (int)hsegments, (int)rsegments);
-    SphPrim->Finalise();    	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
 }
 
@@ -181,7 +190,6 @@ SCM FluxusBinding::build_nurbs_plane(SCM s_usegments, SCM s_vsegments)
 	
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, (int)usegments, (int)vsegments);
-    Prim->Finalise();    	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
@@ -1600,8 +1608,6 @@ SCM FluxusBinding::pdata_size()
 
 SCM FluxusBinding::finalise()
 {
-	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
-	if (Grabbed) Grabbed->Finalise();
 	return SCM_UNSPECIFIED;
 }
 
@@ -1932,6 +1938,7 @@ SCM FluxusBinding::save_recorded_code(SCM s_name)
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
+	gh_new_procedure0_2("build-polygons",  build_polygons);
 	gh_new_procedure0_0("build-cube",      build_cube);
     gh_new_procedure0_2("build-sphere", build_sphere);
     gh_new_procedure0_0("build-plane",     build_plane);
@@ -1939,6 +1946,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_2("build-cylinder", build_cylinder);
 	gh_new_procedure4_0("build-line",   build_line);
 	gh_new_procedure0_1("build-text",   build_text);
+	gh_new_procedure0_1("build-nurbs",  build_nurbs);
 	gh_new_procedure0_2("build-nurbs-sphere", build_nurbs_sphere);
 	gh_new_procedure0_2("build-nurbs-plane", build_nurbs_plane);
 	gh_new_procedure0_1("build-particles", build_particles);

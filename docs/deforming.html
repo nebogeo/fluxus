@@ -65,6 +65,18 @@ So, to deform an entire object, you do something like the following:
 <img src="images/deform.png">
 a sphere with randomly jittered vertices
 
+when deforming geometry, moving the positions of the vertices is not usually enough, 
+the normals will need to be updated for the lighting to work correctly. 
+
+<c>(recalc-normals)</c>
+will regenerate the normals for polygon and nurbs primitives based on the vertex 
+positions. not particually fast (it is better to deform the normals in your 
+script if you can) and only works on poly primitives of type QUADS and TRILIST.
+
+when working on polygon primitives it will cache certain results, so it will be
+a lot slower on the first calculation than subsequent calls on the same 
+primitive.
+
 <big>10.1 Built in PData</big>
 
 Pdata automatically created for you depends on the type of the primtive.
@@ -199,3 +211,10 @@ For most pdata operations, the vast majority of the combinations of input types
 (scheme number, the vectors or pdata types) will not be supported, you will 
 receive a rather criptic runtime warning message if this is the case.
 		
+<big>10.4 Using PData to build your own primitives</big>
+
+The function (build_polygons) allows you to build empty primitives which you 
+can use to either build more types of procedural shapes than fluxus supports 
+natively, or for loading model data from disk. Once these primitives have been 
+constructed they can be treated in exactly the same way as any other primitive,
+ie pdata can be added or modified, and you can use (recalc-normals) etc.

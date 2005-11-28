@@ -257,7 +257,6 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					unsigned int nextlinelength=NextLineLength(m_Position);
 					if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
 					else m_Position=LineStart(LineEnd(m_Position)+1)+m_DesiredXPos; // start of next+offset
-
 					if (m_Position>=m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
 				}
 			}
@@ -270,6 +269,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 			break;
 		}
 	}	
+		
 		
 	if (mod&GLUT_ACTIVE_CTRL)
 	{
@@ -327,7 +327,8 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				break;
 				case 172: break; // ignore ¬
 				case 163: break; // ignore £
-				case GLEDITOR_RETURN: key='\n'; // fallthrough (replacement of newline)
+				case GLEDITOR_RETURN: 
+					key='\n'; // fallthrough (replacement of newline)
 				default:
 					char temp[2];
 					temp[0]=(char)key;
@@ -357,7 +358,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 	}
 	
 	if (m_ShiftState) m_HighlightEnd=m_Position;	
-	
+		
 	/*cerr<<"----------------"<<endl;
 	cerr<<PreviousLineLength(m_Position)<<endl;
 	cerr<<LineLength(m_Position)<<endl;

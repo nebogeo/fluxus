@@ -30,7 +30,6 @@ public:
 	virtual  ~NURBSPrimitive();
 	
 	virtual void Render();
-	virtual void Finalise();
 	virtual void RecalculateNormals();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
@@ -48,8 +47,6 @@ public:
 protected:
 	
 	virtual void PDataDirty();
-
-	bool m_Finalised;
 	
 	vector<dVector> *m_CVVec;
 	vector<dVector> *m_STVec;

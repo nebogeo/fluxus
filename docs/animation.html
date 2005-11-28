@@ -45,6 +45,12 @@ this command temporarally disables the realtime reading of the input audio
 stream and reads a wav file instead. for use with the framedump to process 
 audio offline to make music videos.
 
+<c>(smoothing-bias b)</c>
+a kind of weighted average for the harmonic bands which smooth them out over 
+time. this setting was hardcoded before (to 1.5) but the best setting really 
+depends on the quality of the music, and the buffer sizes, and ranges from 
+0 -> 2. it's obvious if you give it a try with the bars.scm script
+
 <big>11.3  OSC</big> 
 
 OSC stands for Open Sound Control, and is a widely used protocol for passing 

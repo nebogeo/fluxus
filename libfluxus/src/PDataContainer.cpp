@@ -18,6 +18,26 @@
 
 using namespace fluxus;
 
+PDataContainer::PDataContainer() 
+{
+}
+
+PDataContainer::~PDataContainer() 
+{
+	for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
+	{
+		delete i->second;
+	}
+}
+	
+void PDataContainer::Resize(unsigned int size)
+{
+	for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
+	{
+		i->second->Resize(size);
+	}
+}
+
 bool PDataContainer::GetDataInfo(const string &name, char &type, unsigned int &size)
 {
 	map<string,PData*>::iterator i=m_PData.find(name);

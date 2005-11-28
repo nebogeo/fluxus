@@ -64,3 +64,18 @@ will return the identity matrix (I think)
 <c>(maim v v)</c>
 returns a matrix aimed down the first vector, using the second vector as the 
 up vector. may be buggy.
+
+the following functions return the transform matrices for primitives and the 
+camera. these are really useful for a number of tasks, eg to get the position
+of a transformed object, use something like:
+<c>(grab myobject)
+(define position (vtransform (vector 0 0 0) (get-transform)))
+(ungrab)</c>
+
+<c>(get-transform)</c>
+gets the transform matrix of the grabbed primitive
+
+<c>(get-camera-transform)</c>
+gets the current camera transform matrix 
+
+

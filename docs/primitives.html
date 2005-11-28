@@ -66,18 +66,18 @@ fluxus
 <img src="images/text.png">
 ok, so this isn't a very good font texture :)
 
-(build-nurbs-sphere hsegments rsegments)
+<c>(build-nurbs-sphere hsegments rsegments)</c>
 builds a tessalated nurbs sphere, texture mapped in the same fashion as the poly
 sphere
 <img src="images/nurbs-sphere.png">
 a nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
 
-(build-nurbs-plane usegments vsegments)
+<c>(build-nurbs-plane usegments vsegments)</c>
 builds a tessalated nurbs plane, texture mapped in uv direction
 <img src="images/nurbs-plane.png">
 a nurbs patch plane, again with a control vertex tweaked
 		
-(build-particles num)
+<c>(build-particles num)</c>
 builds a particles primitive containing num points, all initially set to the 
 origin. you use the pdata functions to edit the postions, colours and sizes. 
 particles come in two flavors, gl points, which are fast, and camera facing 
@@ -85,6 +85,20 @@ sprites which may be textured, can be individually scaled and are therefore
 slower to render. by default gl point particles are square, turn on 
 (hint-anti-alias) to make them circular.
 <img src="images/particles.png">
+
+<c>(build-polygons size type)</c>
+builds a raw polygon primitive with size vertices (everything set to zero). 
+type is a number that refers to the way the vertices are interpreted to build
+polygons, and can be one of the following:
+
+0=TRISTRIP
+1=QUADS
+2=TRILIST
+3=TRIFAN
+4=POLYGON
+
+use pdata-set to build the primitive as you wish (see deforming for more 
+info)
 
 <big>6.2  Instancing</big>
 

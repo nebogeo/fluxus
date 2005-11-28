@@ -22,7 +22,6 @@ int TurtleBuilder::Build(Renderer *renderer)
 	if (m_CurrentPrim && !m_Built) 
 	{
 		m_Built=true;
-		m_CurrentPrim->Finalise();
 		return renderer->AddPrimitive(m_CurrentPrim);
 	}
 	return -1;

@@ -33,6 +33,7 @@ public:
 	virtual ~PData() {}
 	virtual PData *Copy()=0;
 	virtual unsigned int Size()=0;
+	virtual void Resize(unsigned int size)=0;
 };
 
 template<class T>
@@ -51,6 +52,11 @@ public:
 	virtual unsigned int Size()
 	{
 		return m_Data.size();
+	}
+
+	virtual void Resize(unsigned int size)
+	{
+		m_Data.resize(size);
 	}
 
 	vector<T> m_Data;

@@ -25,9 +25,7 @@ using namespace fluxus;
 	
 PolyPrimitive::PolyPrimitive(Type t) :
 m_Type(t),
-m_VertColours(false),
-m_NumVerts(0),
-m_Finalised(false)
+m_VertColours(false)
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("n",new TypedPData<dVector>);
@@ -59,22 +57,8 @@ void PolyPrimitive::AddVertex(const dVertex &Vert)
 	m_TexData->push_back(dVector(Vert.s, Vert.t, 0)); 
 }	
 
-void PolyPrimitive::Finalise()
-{
-	// fill the array with loaded verts
-	m_NumVerts=m_VertData->size();
-	
-	if (m_NumVerts==m_NormData->size() &&
-		m_NumVerts==m_ColData->size() &&
-		m_NumVerts==m_TexData->size()) 
-	{
-		m_Finalised=true;
-	}
-}
-
 void PolyPrimitive::Render()
 {
-	if (!m_Finalised) return;
 
 	int type=0;
 	switch (m_Type)
@@ -85,7 +69,6 @@ void PolyPrimitive::Render()
 		case TRIFAN : type=GL_TRIANGLE_FAN; break;
 		case POLYGON : type=GL_POLYGON; break;
 	}
-	
 	
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	else glDisable(GL_LINE_SMOOTH);		
@@ -125,7 +108,7 @@ void PolyPrimitive::Render()
 	
 	if (m_State.Hints & HINT_SOLID)
 	{
-		glDrawArrays(type,0,m_NumVerts);
+		glDrawArrays(type,0,m_VertData->size());
 	}	
 	
 	if (m_State.Hints & HINT_WIRE)
@@ -133,7 +116,7 @@ void PolyPrimitive::Render()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glColor3f(0,0,0);
 		glDisable(GL_LIGHTING);	
-		glDrawArrays(type,0,m_NumVerts);	
+		glDrawArrays(type,0,m_VertData->size());	
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 	}
@@ -246,6 +229,5 @@ void PolyPrimitive::ApplyTransform(bool ScaleRotOnly)
 	}
 	
 	GetState()->Transform.init();
-	Finalise();
 }
 

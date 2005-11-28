@@ -37,7 +37,6 @@ public:
     virtual string GetTypeName()    { return "Primitive"; }
 		
 	virtual void RecalculateNormals() {}
-	virtual void Finalise() {} // setdata unfinalises some prims - use this to optimise again
 	
 	void RenderBoundingBox();
 	

@@ -48,10 +48,6 @@ void ParticlePrimitive::PDataDirty()
 	m_SizeData=GetDataVec<dVector>("s");
 }
 
-void ParticlePrimitive::Finalise()
-{
-}
-
 void ParticlePrimitive::Render()
 {
 	glDisable(GL_LIGHTING);
@@ -142,5 +138,4 @@ void ParticlePrimitive::ApplyTransform(bool ScaleRotOnly)
 	}
 	
 	GetState()->Transform.init();
-	Finalise();
 }
