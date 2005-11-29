@@ -136,7 +136,7 @@ public:
 };
 
 template<>
-PData *ClosestOperator::Operate(TypedPData<dVector> *a, dVector *b);
+PData *ClosestOperator::Operate(TypedPData<dVector> *a, dVector b);
 template<>
 PData *ClosestOperator::Operate(TypedPData<dVector> *a, float b);
 
