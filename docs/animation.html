@@ -100,8 +100,8 @@ An example of using osc to communicate between pd and fluxus:
     (draw-cube)
     (pop))
 
-(start-osc "6543")
-(engine-callback "(test)")</c>
+(osc-source "6543")
+(every-frame "(test)")</c>
 
 --- EOF
 

@@ -1,20 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
-<hdr>Fluxus manual v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
 
 <h1>13.0  Physics</h1>
 
-The physics system, based on the ode library, allows you to add physical
-properties to objects and set them in motion. Since ODE is designed for
-rigid-body simulations, structures are described in terms of objects, joints and
-forces. 
-
- - simple interactions
- - joints are treated like objects, {ie. set! etc+}
- - forces for joints
- - environmental forces
- - twists & kicks
- - hints for reducing computation {eg. max-physical, collisions, ..}
+The physics system used in fluxus is based on the ode library, which allows you
+to add physical properties to objects and set them in motion. Since ODE is
+designed for rigid-body simulations, structures are described in terms of
+objects, joints and forces.
 
 A much more comprehensive explanation of these concepts can be found in the ODE
 documentation, which you have probably downloaded if you have compiled fluxus,
@@ -30,14 +23,12 @@ low level physics library. defaults to off.
 
 sets the strength and direction of gravity.
 
+
 <c>(surface-params slip1 slip2 softerp softcfm)</c>
 
-sets some global surface attributes that affect friction and bouncyness 
+sets some global surface attributes that affect friction and bouncyness. see
+section 7.3.7 of the ODE docs for an explanation of these parameters 
 
-- see ode-v0.5.pdf sectiosn 3.7,3.8 and 7.3.7
-- slip1&2 > mu & mu2 ?
-- softerp > how 'soft' the surface appears [0..1]
-- softcfm > sloppy [0..1]
 
 <c>(active-box object)</c>
 <c>(active-sphere object)</c>
@@ -47,6 +38,7 @@ enable the object to be acted upon by the physics system, using a box, sphere or
 cylinder as the bounding volume. as an active object, it will be transformed by
 ode.
 
+
 <c>(passive-box object)</c>
 <c>(passive-sphere object)</c>
 <c>(passive-cylinder object)</c>
@@ -55,11 +47,16 @@ enable the object to be acted upon by the physics system, using a box, sphere or
 cylinder as the bounding volume. as a passive object, active objects will
 collide with it, but it will not be transformed.
 
+
 <c>(set-mass object mass)</c>
+
 sets the mass of an active object
 
+
 <c>(ground-plane planevec planeoffset)</c>
+
 create an infinite passive plane for use as the 'ground'
+
 
 <c>(build-hingejoint object1 object2 anchorvec hingevec)</c>
 <c>(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)</c>
@@ -67,51 +64,43 @@ create an infinite passive plane for use as the 'ground'
 <c>(build-balljoint object1 object2 anchorvec)</c>
 <c>(build-amotorjoint axisvec)</c>
 
-create joints to connect two objects (see the ode docs for a detailed
-description of the differences between the joint types). ode considers joints to
-be a constraint that is enforced between two objects. when creating a joint, it
-is important to have the two primitives being joined in the desired positions
-before creating the joint.
-
-"In real life a joint is something like a hinge, that is used to connect two
-objects. In ODE a joint is very similar: It is a relationship that is enforced
-between two bodies so that they can only have certain positions and orientations
-relative to each other. This relationship is called a constraint - the words
-joint and constraint are often used interchangeably." -- ode.docs
+These functions will create joints to connect two objects (see the ode docs for
+a detailed description of the differences between the joint types). ode
+considers joints to be a constraint that is enforced between two objects. when
+creating a joint, it is important to have the two primitives being joined in the
+desired positions before creating the joint. joints can be created, modified and
+indexed in a similar way to other primitives.
 
 
 <c>(joint-param joint param value)</c>
-where param is one of the following:
-"HiStop", 
-"Vel", 
-"FMax", 
-"FudgeFactor", 
-"Bounce", 
-"CFM", 
-"StopERP", 
-"StopCFM", 
-"SuspensionERP", 
-"SuspensionCFM", 
-"Vel2", 
-"FMax2"
-sets the joint paramater for joint 
-	
+
+sets the joint parameter for a joint where <c>param</c> is one of the following:
+"HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM",
+"SuspensionERP", "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE
+docs for an explanation of each of these parameters, and which joint
+types they apply to.
+
+
 <c>(joint-angle joint velocity angle)</c>
 
 set the angle of the joint, with a given velocity {?}
 
+
 <c>(kick object kickvec)</c>
 
-applies translation force kickvec to the object
+applies translation force <c>kickvec</c> to the object
+
 
 <c>(twist object twistvec)</c>
 
-applies rotational force twistvec to the object
+applies rotational force <c>twistvec</c> to the object
+
 	
 <c>(set-max-physical num)</c>
 
 sets the maximum number of objects the physics system can deal with. when the 
 max level has been reached the oldest objects are destroyed.
+
 
 <c>(has-collided id)</c>                      
 
