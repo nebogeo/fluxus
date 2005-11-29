@@ -111,7 +111,8 @@ void KeyboardCallback(unsigned char key,int x, int y)
 			} 
 			break;
 			case 19: binding->Fluxus->SaveScript(); break; // s			
-			case 8: binding->Fluxus->HideScript(); break; // h			
+			case 8: binding->Fluxus->HideScript(); break; // h
+#ifndef __APPLE__
 			case 49: binding->Fluxus->SetCurrentEditor(0); break; // 1
 			case 0: binding->Fluxus->SetCurrentEditor(1); break; // 2
 			case 27: binding->Fluxus->SetCurrentEditor(2); break; // 3
@@ -122,6 +123,18 @@ void KeyboardCallback(unsigned char key,int x, int y)
 			case 127: binding->Fluxus->SetCurrentEditor(7); break; // 8
 			case 57: binding->Fluxus->SetCurrentEditor(8); break; // 9
 			case 48: binding->Fluxus->SetCurrentEditor(9); break; // 0
+#else
+			case 49: binding->Fluxus->SetCurrentEditor(0); break; // 1
+			case 50: binding->Fluxus->SetCurrentEditor(1); break; // 2
+			case 51: binding->Fluxus->SetCurrentEditor(2); break; // 3
+			case 52: binding->Fluxus->SetCurrentEditor(3); break; // 4
+			case 53: binding->Fluxus->SetCurrentEditor(4); break; // 5
+			case 54: binding->Fluxus->SetCurrentEditor(5); break; // 6
+			case 55: binding->Fluxus->SetCurrentEditor(6); break; // 7
+			case 56: binding->Fluxus->SetCurrentEditor(7); break; // 8
+			case 57: binding->Fluxus->SetCurrentEditor(8); break; // 9
+			case 48: binding->Fluxus->SetCurrentEditor(9); break; // 0
+#endif
 		}
 	}
 	
