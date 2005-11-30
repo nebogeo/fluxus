@@ -28,13 +28,6 @@ ParticlePrimitive::ParticlePrimitive()
 	
 	// direct access for speed
 	PDataDirty();
-	
-	for (unsigned int n=0; n<m_SizeData->size(); n++)
-	{
-		(*m_SizeData)[n].x=0.01;
-		(*m_SizeData)[n].y=0.01;
-	}
-	
 }
 
 ParticlePrimitive::~ParticlePrimitive()
@@ -80,12 +73,14 @@ void ParticlePrimitive::Render()
 	{
 		dMatrix ModelView;
 		glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
-	
+		ModelView = ModelView.inverse();
+		
 		dVector CameraDir(0,0,1);
-		CameraDir=ModelView.inverse().transform_no_trans(CameraDir);
+		CameraDir=ModelView.transform_no_trans(CameraDir);
 		CameraDir.normalise();
 		
 		dVector up(0,1,0);
+		up = ModelView.transform(up);
 		dVector across=up.cross(CameraDir);
 		across.normalise();
 		dVector down=across.cross(CameraDir);
@@ -98,12 +93,12 @@ void ParticlePrimitive::Render()
 			dVector scaledown(down*(*m_SizeData)[n].y);
 			glTexCoord2f(0,0);
 			glVertex3fv((*m_VertData)[n].arr());
-			glTexCoord2f(1,0);
-			glVertex3fv(((*m_VertData)[n]+scaledacross).arr());
-			glTexCoord2f(1,1);
-			glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
 			glTexCoord2f(0,1);
 			glVertex3fv(((*m_VertData)[n]+scaledown).arr());
+			glTexCoord2f(1,1);
+			glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
+			glTexCoord2f(1,0);
+			glVertex3fv(((*m_VertData)[n]+scaledacross).arr());
 		}
 		glEnd();
 	}

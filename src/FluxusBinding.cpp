@@ -200,7 +200,7 @@ SCM FluxusBinding::build_particles(SCM s_count)
 	int count=(int)gh_scm2double(s_count);
 	for (int i=0; i<count; i++)
 	{
-		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.01,0.01,0.01));
+		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
 	
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
