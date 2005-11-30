@@ -80,11 +80,17 @@ a nurbs patch plane, again with a control vertex tweaked
 <c>(build-particles num)</c>
 builds a particles primitive containing num points, all initially set to the 
 origin. you use the pdata functions to edit the postions, colours and sizes. 
-particles come in two flavors, gl points, which are fast, and camera facing 
-sprites which may be textured, can be individually scaled and are therefore 
-slower to render. by default gl point particles are square, turn on 
-(hint-anti-alias) to make them circular.
+particles come in two flavors, camera facing sprites, which are the default, can 
+be textured and individually scaled; and points (when <c>(hint-points)</c> is set),
+which cannot be textured but are much faster to render, as they are hardware 
+supported gl points. by default these point particles are square, turn on 
+<c>(hint-anti-alias)</c> to make them circular.
+
+<img src="images/sprites.png">
+happy textured sprites
+
 <img src="images/particles.png">
+point particles
 
 <c>(build-polygons size type)</c>
 builds a raw polygon primitive with size vertices (everything set to zero). 

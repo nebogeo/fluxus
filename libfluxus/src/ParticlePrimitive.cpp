@@ -91,6 +91,7 @@ void ParticlePrimitive::Render()
 		{
 			dVector scaledacross(across*(*m_SizeData)[n].x);
 			dVector scaledown(down*(*m_SizeData)[n].y);
+			glColor3fv((*m_ColData)[n].arr());
 			glTexCoord2f(0,0);
 			glVertex3fv((*m_VertData)[n].arr());
 			glTexCoord2f(0,1);
