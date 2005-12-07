@@ -10,9 +10,9 @@ see INSTALL for information on building
 
 contents
 
-doc/dox.txt : documentation on the application and scripting language
-examples/   : a loose collection of example scripts, tests and live scripts I've used
-scm/        : a set of util scheme code for various tasks (not much here yet)
-textures/   : some textures used in the examples
+doc/index.html : documentation on the application and scripting language
+examples/      : a loose collection of example scripts, tests and live scripts I've used
+scm/           : a set of util scheme code for various tasks (not much here yet)
+textures/      : some textures used in the examples
 
-www.pawfal.org/nebogeo
+www.pawfal.org/dave

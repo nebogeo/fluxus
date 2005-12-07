@@ -22,9 +22,6 @@
 
 using namespace std;
 
-// todo:
-// sin/cos nearest divide minus 
-
 namespace fluxus
 {
 

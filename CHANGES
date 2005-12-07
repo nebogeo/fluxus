@@ -1,5 +1,47 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.8
+
+* fixed object picking (mouse-over)
+* framedump 
+    * memory leak fixed
+    * outputs jpg files rather than tiff
+    * uses 6 character frame no filenames (so we can save over 6 minutes
+of animation :)
+* no more portaudio! fluxus now uses jack directly. 
+* (smoothing-bias) a kind of weighted average for the harmonic bands
+which smooth them out over time. this setting was hardcoded before (to
+1.5) but the best setting really depends on the quality of the music,
+and ranges from 0 -> 2. it's obvious if you give it a try with the
+bars.scm script
+* (oscsend) now takes a type string, so you can differenciate between
+floats and ints in a message
+* (has-collided) returns true if the currently grabbed object collided
+with another object in the last update
+* (pdata-op "operator" a b) a one call operator for pdata - performs
+operation on all values in the pdata array at once. speeds up rendering
+of a particle system of 5000 particles from 20fps (looping through each
+particle in scheme the old way), to running at 60fps using pdata-op on
+my old laptop.
+* (grab)/(ungrab) fixed properly - calling (push) or (pop) when an
+object is grabbed will cause it to be ungrabbed and print a warning
+* polys can be now be rendered in wireframe only (seems this wasn't
+working before)
+* (fog colour density start end) sets global fog (density to 0 to
+disable)
+* (selectable bool) whether an object is selectable by (mouse-over)
+* (blend-mode src dest)
+* (force-load-texture texturefilename)
+* (build-seg-plane) takes x,y tesselation values and builds a poly plane
+* added a new mode to the particle primitive so you can render textured
+sprites (I'll be expanding it a little more to allow different sized
+sprites etc)
+* (recalc-normals) works for polygons, and smoothes the normals
+* lots of fixes to the editor
+* some misc bugs fixes with gl state
+* html documentation with pics (cheers to Nik for helping out)
+
+
 0.7
 
 overhauled the osc support (osc-msg) (osc) (osc-peek)

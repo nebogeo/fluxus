@@ -6,7 +6,7 @@ requires:
 ode        http://opende.sourceforge.net/
 guile      http://www.gnu.org/software/guile/guile.html
 fftw       http://www.fftw.org/
-portaudio  http://www.portaudio.com/
+jack       http://jackit.sourceforge.net/
 libsndfile http://www.mega-nerd.com/libsndfile/
 liblo      http://plugin.org.uk/liblo/
 
