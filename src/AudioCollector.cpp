@@ -76,7 +76,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AudioCollector::AudioCollector(int Device, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
+AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
 m_SmoothingBias(1.2),
 m_FFT(BufferLength),
@@ -116,6 +116,7 @@ m_ProcessPos(0)
 	{	
 		int id=Jack->AddInputPort();
 		Jack->SetInputBuf(id,m_JackBuffer);
+		Jack->ConnectInput(id, port);
 	}
 }
 

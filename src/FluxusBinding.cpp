@@ -964,13 +964,17 @@ SCM FluxusBinding::has_collided(SCM s_id)
 
 SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
 {
-	SCM_ASSERT(SCM_NUMBERP(s_dev), s_dev, SCM_ARG1, "start-audio");
+	SCM_ASSERT(SCM_STRINGP(s_dev), s_dev, SCM_ARG1, "start-audio");
 	SCM_ASSERT(SCM_NUMBERP(s_bs), s_bs, SCM_ARG2, "start-audio");
 	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG3, "start-audio");
 	if (Audio==NULL)
 	{
-		Audio = new AudioCollector((int)gh_scm2double(s_dev),(unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
+		char *name=0;
+		size_t size=0;
+		name=gh_scm2newstr(s_dev,&size);		
+		Audio = new AudioCollector(name,(unsigned int)gh_scm2double(s_bs),(int)gh_scm2double(s_sr));
 		Fluxus->SetAudio(Audio);
+		free(name);
 	}
 	return SCM_UNSPECIFIED;
 }
