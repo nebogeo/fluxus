@@ -154,6 +154,7 @@ private:
 	bool m_ClearZBuffer;
 	bool m_DepthTest;
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
+	float m_OrthUp,m_OrthDown,m_OrthLeft,m_OrthRight;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
 	dColour m_FogColour; 

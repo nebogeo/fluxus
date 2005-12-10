@@ -53,6 +53,10 @@ m_Left(-0.75),
 m_Right(0.75),
 m_Front(1),
 m_Back(10000),
+m_OrthUp(-5.5),
+m_OrthDown(5.5),
+m_OrthLeft(-5.5),
+m_OrthRight(5.5),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_FogDensity(0), 
@@ -112,7 +116,7 @@ void Renderer::BeginScene(bool PickMode)
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
 		}
 		
-  		if (m_Ortho) glOrtho(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
+  		if (m_Ortho) glOrtho(m_OrthUp,m_OrthDown,m_OrthLeft,m_OrthRight,m_Front,m_Back);
   		else glFrustum(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
 		
     	glEnable(GL_BLEND);
