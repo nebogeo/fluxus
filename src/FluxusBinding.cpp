@@ -1244,7 +1244,7 @@ SCM FluxusBinding::osc(SCM s_index)
 	unsigned int index=(unsigned int)gh_scm2double(s_index);
 	char type = Fluxus->TypeFromOSC(index);
 	SCM ret;
-	if (type=='n') ret=gh_double2scm(Fluxus->NumberFromOSC(index));
+	if (type=='f' || type=='i') ret=gh_double2scm(Fluxus->NumberFromOSC(index));
 	else if (type=='s') 
 	{
 		string value=Fluxus->StringFromOSC(index);
