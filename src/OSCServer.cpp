@@ -118,6 +118,17 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 		}
 	}
 	
+	map<string,vector<OSCData*> >::iterator i=m_Map.find(path);
+	
+	if(i!=m_Map.end())
+	{
+		// delete the old message arguments
+		for (vector<OSCData*>::iterator arg=i->second.begin(); arg!=i->second.end(); arg++)
+		{
+			delete *arg;
+		}
+	}
+	
 	pthread_mutex_lock(m_Mutex);
 	m_Map[path]=argsdata;
 	pthread_mutex_unlock(m_Mutex);
