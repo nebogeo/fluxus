@@ -132,7 +132,7 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 	pthread_mutex_lock(m_Mutex);
 	m_Map[path]=argsdata;
 	pthread_mutex_unlock(m_Mutex);
-	
+		
     return 1;
 }
 

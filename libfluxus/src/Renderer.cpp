@@ -200,7 +200,7 @@ void Renderer::BeginScene(bool PickMode)
 		glPushMatrix();
 		glTranslatef(0,0,-10);
 		glBegin(GL_QUADS);
-			glColor4f(0,0,0,m_Fade);
+			glColor4f(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_Fade);
 			glVertex3f(-10,-10,0);
 			glVertex3f(10,-10,0);
 			glVertex3f(10,10,0);
