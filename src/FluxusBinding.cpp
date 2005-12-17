@@ -1234,7 +1234,9 @@ SCM FluxusBinding::osc_msg(SCM s_token)
 	SCM_ASSERT(SCM_STRINGP(s_token), s_token, SCM_ARG1, "msg_osc");
 	size_t size=0;	
  	char *name=gh_scm2newstr(s_token,&size);
-	return gh_bool2scm(Fluxus->MsgOSC(name));	
+	bool ret=Fluxus->MsgOSC(name);
+	free(name);
+	return gh_bool2scm(ret);	
 }
 
 SCM FluxusBinding::osc(SCM s_index)
