@@ -16,6 +16,7 @@
 
 #include <fstream>
 #include "FluxusBinding.h"
+#include "SearchPaths.h"
 
 FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
@@ -1092,8 +1093,7 @@ SCM FluxusBinding::source(SCM s_name)
 	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "source");	
     size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
-	Fluxus->LoadScript(name);
-	Fluxus->RunScript();
+	Fluxus->SourceScript(name);
 	free(name);
     return SCM_UNSPECIFIED;
 }
@@ -1941,6 +1941,30 @@ SCM FluxusBinding::save_recorded_code(SCM s_name)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::searchpaths(SCM s_list)
+{
+	// todo: fix this...
+	//SCM_ASSERT(SCM_LISTP(s_list), s_list, SCM_ARG1, "searchpaths");
+ 	
+	// vectors seem easier to handle than lists with this api
+	SCM vec = gh_list_to_vector(s_list);
+	size_t size=0;
+	
+	for (unsigned int n=0; n<gh_vector_length(vec); n++)
+	{
+		SCM arg=gh_vector_ref(vec, gh_int2scm(n));
+
+		if (gh_string_p(arg))
+		{
+			char *argstring=gh_scm2newstr(arg,&size);
+			SearchPaths::Get()->AddPath(argstring);
+			free(argstring);
+		}
+	}
+
+    return SCM_UNSPECIFIED;
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
@@ -2121,4 +2145,6 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("mtranspose", mtranspose);
 	gh_new_procedure0_1("minverse", minverse);
 	gh_new_procedure0_2("maim", maim);
+
+	gh_new_procedure0_1("searchpaths", searchpaths);
 }

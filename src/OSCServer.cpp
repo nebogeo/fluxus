@@ -20,7 +20,6 @@
 #include <iostream>
 
 #include "OSCServer.h"
-
 using namespace std;
 
 void Client::Send(const string &msg, const vector<OSCData*> &args)
@@ -44,12 +43,12 @@ void Client::Send(const string &msg, const vector<OSCData*> &args)
 	
 
 static const unsigned int MAX_MSGS_STORED=2048;
+static const unsigned int DATA_PER_MESSAGE=256;
 
 bool Server::m_Exit=false;
-map<string,vector<OSCData*> > Server::m_Map;
+map<string,list<Server::MsgData*> > Server::m_Map;
 pthread_mutex_t* Server::m_Mutex;
 string Server::m_LastMsg="no message yet...";
-set<string> Server::m_MessageHistory;
 
 Server::Server(const string &Port)
 {
@@ -83,12 +82,12 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 	{
 		// stop us filling up mem with messages! :)
 		m_Map.erase(m_Map.begin());
+		// todo - this is a potential mem leak...
 	}
 	
 	// record the message name
 	pthread_mutex_lock(m_Mutex);
 	m_LastMsg=string(path)+" "+string(types)+" ";
-	m_MessageHistory.insert(path);
 	pthread_mutex_unlock(m_Mutex);
 	
 	// put the data in a vector
@@ -118,19 +117,8 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 		}
 	}
 	
-	map<string,vector<OSCData*> >::iterator i=m_Map.find(path);
-	
-	if(i!=m_Map.end())
-	{
-		// delete the old message arguments
-		for (vector<OSCData*>::iterator arg=i->second.begin(); arg!=i->second.end(); arg++)
-		{
-			delete *arg;
-		}
-	}
-	
 	pthread_mutex_lock(m_Mutex);
-	m_Map[path]=argsdata;
+	if (m_Map[path].size()<DATA_PER_MESSAGE) m_Map[path].push_back(new MsgData(argsdata));
 	pthread_mutex_unlock(m_Mutex);
 		
     return 1;
@@ -141,29 +129,37 @@ bool Server::GetArgs(vector<OSCData*> &args)
 	if (m_CurrentOSCMsg!="")
 	{
 		pthread_mutex_lock(m_Mutex);
-		map<string,vector<OSCData*> >::iterator i=m_Map.find(m_CurrentOSCMsg);
-		if (i!=m_Map.end())
-		{
-			args = i->second;
-			pthread_mutex_unlock(m_Mutex);
-			return true;
-		}
+		args = (*m_CurrentOSCData)->m_Data;
 		pthread_mutex_unlock(m_Mutex);
+		return true;
 	}
 	return false;
 }
 
 bool Server::SetMsg(const string &name) 
 {
-	if (m_MessageHistory.find(name)!=m_MessageHistory.end())
+	if (m_CurrentOSCMsg!="")
+	{
+		// get rid of the old data
+		delete *m_CurrentOSCData;
+		m_Map[m_CurrentOSCMsg].erase(m_CurrentOSCData);
+	}
+	
+	m_CurrentOSCMsg="";
+	map<string,list<MsgData*> >::iterator i=m_Map.find(name);
+	if (i!=m_Map.end() && !i->second.empty())
 	{
 		m_CurrentOSCMsg=name;
+		m_CurrentOSCData=i->second.begin();
 		return true;
 	}
 	return false;
 }
 
-void Server::ClearHistory()
+Server::MsgData::~MsgData() 
 {
-	m_MessageHistory.clear();
+	for (vector<OSCData*>::iterator arg=m_Data.begin(); arg!=m_Data.end(); arg++)
+	{
+		delete *arg;
+	}
 }

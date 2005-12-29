@@ -178,7 +178,6 @@ void EngineCallback()
     {
         gh_eval_str_with_catch(binding->CallbackString.c_str(), (scm_t_catch_handler)ErrorHandler);
     }
-	binding->Fluxus->ClearOSCHistory();
 }
 
 char *Script;

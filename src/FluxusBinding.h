@@ -194,6 +194,7 @@ public:
 
 	static SCM load_recorded_code(SCM s_name);
 	static SCM save_recorded_code(SCM s_name);
-	
+	static SCM searchpaths(SCM s_list);
+
 };
 #endif

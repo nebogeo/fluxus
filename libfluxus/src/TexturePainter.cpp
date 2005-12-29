@@ -17,6 +17,7 @@
 #include "State.h"
 #include "TexturePainter.h"
 #include "PNGLoader.h"
+#include "SearchPaths.h"
 
 using namespace fluxus;
 
@@ -32,8 +33,10 @@ TexturePainter::~TexturePainter()
 
 int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 {
+	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
+	
 	// see if we've loaded this one already
-	map<string,int>::iterator i=m_LoadedMap.find(Filename);
+	map<string,int>::iterator i=m_LoadedMap.find(Fullpath);
 	if (i!=m_LoadedMap.end())
 	{
 		if (!ignorecache)
@@ -53,7 +56,7 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 	
 	char *ImageData;
     TextureDesc *desc = new TextureDesc;
-    ImageData=PNGLoader::Load(Filename,desc->Width,desc->Height,desc->Format);
+    ImageData=PNGLoader::Load(Fullpath,desc->Width,desc->Height,desc->Format);
 	
 	if (ImageData!=NULL)
     {
@@ -74,7 +77,7 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 			
 			if (width!=desc->Width || height!=desc->Height) 
 	  		{
-				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Filename<<"]"<<endl;
+				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Fullpath<<"]"<<endl;
 			}
 			else
 			{
@@ -95,7 +98,7 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 			
 			if (width!=desc->Width || height!=desc->Height) 
 	  		{
-				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Filename<<"]"<<endl;
+				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Fullpath<<"]"<<endl;
 			}
 			else
 			{
@@ -105,11 +108,11 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 		delete[] ImageData;
 		
 		m_TextureMap[ID]=desc;
-		m_LoadedMap[Filename]=ID;
+		m_LoadedMap[Fullpath]=ID;
 		return ID;
 	}
 	
-	m_LoadedMap[Filename]=-1;
+	m_LoadedMap[Fullpath]=-1;
     return -1;
 }
 

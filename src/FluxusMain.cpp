@@ -242,11 +242,6 @@ void FluxusMain::Reshape(int width, int height)
 	m_Init=true;
 }
 
-void FluxusMain::ClearOSCHistory()
-{
-	if (m_OSCServer!=NULL) m_OSCServer->ClearHistory();
-}
-
 void FluxusMain::Render()
 {		
 	m_Physics.Tick();
@@ -272,7 +267,9 @@ void FluxusMain::Render()
 
 void FluxusMain::LoadScript(const string &Filename) 
 { 
-	FILE *file=fopen(Filename.c_str(),"r");
+	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
+
+	FILE *file=fopen(Fullpath.c_str(),"r");
 	if (file)
 	{
 		fseek(file,0,SEEK_END);
@@ -282,7 +279,7 @@ void FluxusMain::LoadScript(const string &Filename)
 		if (size<=0) 
 		{
 			fclose(file);
-			cerr<<"empty file: "<<Filename<<endl;
+			cerr<<"empty file: "<<Fullpath<<endl;
 			return;
 		}
 		
@@ -293,7 +290,7 @@ void FluxusMain::LoadScript(const string &Filename)
 			{
 				delete[] buffer;
 				fclose(file);
-				cerr<<"read error: "<<Filename<<endl;
+				cerr<<"read error: "<<Fullpath<<endl;
 				return;
 			}			
 			buffer[size]='\0';
@@ -309,10 +306,19 @@ void FluxusMain::LoadScript(const string &Filename)
 	}
 	else
 	{
-		cerr<<"couldn't load: "<<Filename<<endl;
+		cerr<<"couldn't load: "<<Fullpath<<endl;
 	}
 	
-	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
+	m_SaveName[m_CurrentEditor]=Fullpath; // just a precaution
+}
+
+// bad - need to move the interpreter around
+#include <guile/gh.h>
+
+void FluxusMain::SourceScript(const string &Filename) 
+{ 
+	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
+	gh_eval_file(Fullpath.c_str());
 }
 
 void FluxusMain::SaveScript() 

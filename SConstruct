@@ -27,6 +27,7 @@ Source = Split("libfluxus/src/PData.cpp \
 				libfluxus/src/TexturePainter.cpp \
 				libfluxus/src/Tree.cpp \
 				libfluxus/src/dada.cpp \
+				libfluxus/src/SearchPaths.cpp \
 				libfluxphysics/src/Physics.cpp \
 				src/AudioCollector.cpp \
 				src/FluxusMain.cpp \

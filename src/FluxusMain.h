@@ -17,6 +17,7 @@
 #include <Renderer.h>
 #include <PolyPrimitive.h>
 #include <Physics.h>
+#include <SearchPaths.h>
 #include "GLEditor.h"
 #include "OSCServer.h"
 #include "Recorder.h"
@@ -53,9 +54,9 @@ public:
     void Dump(const string &Text) { cerr<<Text<<endl; }
     void ResetCamera();
     void LoadScript(const string &Filename);
+    void SourceScript(const string &Filename);
     void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
     void SaveScript();
-    void RunScript() {  }
 	void StartDumpFrames(const string &Filename);
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
@@ -69,7 +70,6 @@ public:
 	void SendOSC(const string &msg, const vector<OSCData*> &args);
 
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
-	void ClearOSCHistory();
 	
 	float GetMouseX() { return m_LastMouseX; }
 	float GetMouseY() { return m_LastMouseY; }

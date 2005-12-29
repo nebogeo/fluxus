@@ -22,8 +22,14 @@
 #include <iostream>
 #include "GLEditor.h"
 
+#ifndef __APPLE__
 #define GLEDITOR_DELETE 127
 #define GLEDITOR_BACKSPACE 8
+#else
+#define GLEDITOR_DELETE 8
+#define GLEDITOR_BACKSPACE 127
+#endif
+
 #define GLEDITOR_TAB 9
 #define GLEDITOR_RETURN 13
 #define GLEDITOR_CUT 24 
@@ -145,10 +151,19 @@ void GLEditor::Render()
 	while (n<m_Text.size() && linecount<m_VisibleLines)
 	{
 		width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
+		
 		if (m_Text[n]=='\n') 
 		{
 			width=m_CursorWidth;
 			linecount++;
+		}
+		else if (width==0) // bad character
+		{
+			width=m_CursorWidth;
+			glColor4f(1,1,0,0.5);
+			DrawCharBlock();
+			glColor4f(0.7,0.7,0.7,1);
+			glTranslatef(width,0,0);
 		}
 		
 		if (m_Position==n) // draw cursor
@@ -276,12 +291,15 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		switch (key)
 		{
 			case GLEDITOR_CUT: // cut
-				m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
-				m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
-				m_Selection=false;
+				if (m_Selection && m_HighlightEnd>m_HighlightStart) 
+				{
+					m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+					m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+					m_Selection=false;
+				}
 			break;
 			case GLEDITOR_COPY: // copy
-				if (m_Selection && m_HighlightEnd!=m_HighlightStart) 
+				if (m_Selection && m_HighlightEnd>m_HighlightStart) 
 				{
 					m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 				}
@@ -325,8 +343,8 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					m_Position+=4;
 				}
 				break;
-				case 172: break; // ignore ¬
-				case 163: break; // ignore £
+				//case 172: break; // ignore ¬
+				//case 163: break; // ignore £
 				case GLEDITOR_RETURN: 
 					key='\n'; // fallthrough (replacement of newline)
 				default:

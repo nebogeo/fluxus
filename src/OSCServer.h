@@ -18,6 +18,7 @@
 #include <lo/lo.h>
 #include <set>
 #include <map>
+#include <list>
 #include <vector>
 #include <pthread.h>
 
@@ -79,19 +80,26 @@ public:
 	bool SetMsg(const string &name);
 	bool GetArgs(vector<OSCData*> &args);
 	string GetLastMsg() { return m_LastMsg; }
-	void ClearHistory();
 
 private:
 
 	static int DefaultHandler(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 	static void ErrorHandler(int num, const char *m, const char *path);	
 	
-	static map<string,vector<OSCData*> > m_Map;
+	class MsgData
+	{
+	public:
+		MsgData(vector<OSCData*> a) : m_Data(a) {}
+		~MsgData();
+		vector<OSCData*> m_Data;
+	};
+	
+	static map<string,list<MsgData*> > m_Map;
 	static string m_LastMsg;
-	static set<string> m_MessageHistory;
 	
 	lo_server_thread m_Server;
 	static bool m_Exit;
 	static pthread_mutex_t* m_Mutex;
 	string m_CurrentOSCMsg;
+	list<MsgData*>::iterator m_CurrentOSCData;
 };
