@@ -66,6 +66,8 @@ public:
 	int SourceBlend;
 	int DestinationBlend;
 	
+	dColour WireColour;
+	
 	void SetBlendMode(string s, string d);
 	
 	dMatrix Transform;

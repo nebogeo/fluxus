@@ -70,6 +70,7 @@ public:
 	static SCM opacity(SCM s_opac);
 	static SCM shinyness(SCM s_opac);
 	static SCM colour(SCM s_vec);
+	static SCM wire_colour(SCM s_vec);
 	static SCM specular(SCM s_vec);
 	static SCM ambient(SCM s_vec);
 	static SCM emissive(SCM s_vec);

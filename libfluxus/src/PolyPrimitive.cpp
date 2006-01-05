@@ -114,7 +114,7 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_WIRE)
 	{
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		glColor3f(0,0,0);
+		glColor3fv(m_State.WireColour.arr());
 		glDisable(GL_LIGHTING);	
 		glDrawArrays(type,0,m_VertData->size());	
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);

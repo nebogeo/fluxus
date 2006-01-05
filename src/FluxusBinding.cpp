@@ -413,6 +413,18 @@ SCM FluxusBinding::colour(SCM s_vec)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::wire_colour(SCM s_vec)
+{
+    SCM_ASSERT(SCM_VECTORP(s_vec), s_vec, SCM_ARG1, "wire-colour");
+	SCM_ASSERT(SCM_VECTOR_LENGTH(s_vec)==3, s_vec, SCM_ARG1, "wire-colour");
+	float col[3];
+	gh_scm2floats(s_vec,col);
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->WireColour=dColour(col[0],col[1],col[2]);
+    else Fluxus->GetRenderer()->GetState()->WireColour=dColour(col[0],col[1],col[2]);
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::specular(SCM s_vec)
 {
     SCM_ASSERT(SCM_VECTORP(s_vec), s_vec, SCM_ARG1, "specular");
@@ -2002,6 +2014,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("scale",        scale);
     gh_new_procedure0_1("rotate",       rotate);
     gh_new_procedure0_1("colour",       colour);
+    gh_new_procedure0_1("wire-colour",  wire_colour);
     gh_new_procedure0_1("opacity",      opacity);
     gh_new_procedure0_1("specular",     specular);
     gh_new_procedure0_1("ambient",      ambient);
