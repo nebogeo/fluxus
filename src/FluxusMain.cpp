@@ -273,13 +273,20 @@ void FluxusMain::LoadScript(const string &Filename)
 	if (file)
 	{
 		fseek(file,0,SEEK_END);
-		unsigned int size=ftell(file);
+		long size=ftell(file);
 		fseek(file,0,SEEK_SET);		
 		
-		if (size<=0) 
+		if (size==0) 
 		{
 			fclose(file);
 			cerr<<"empty file: "<<Fullpath<<endl;
+			return;
+		}
+
+		if (size<0) 
+		{
+			fclose(file);
+			cerr<<"error loading file: "<<Fullpath<<" size: "<<size<<"??"<<endl;
 			return;
 		}
 		
