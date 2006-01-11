@@ -112,6 +112,7 @@ void GLEditor::Render()
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_LINE_STIPPLE);
    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	glLineWidth(m_TextWidth);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -219,6 +220,7 @@ void GLEditor::Render()
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_LINE_STIPPLE);
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
@@ -388,7 +390,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 
 void GLEditor::ProcessTabs()
 {
-	unsigned int pos=m_Text.find("\t",0);
+	size_t pos=m_Text.find("\t",0);
 	while (pos!=string::npos)
 	{
 		m_Text.erase(pos,1);
@@ -405,7 +407,7 @@ int GLEditor::OffsetToCurrentLineStart()
 
 int GLEditor::NextLineLength(int pos)
 {
-	unsigned int nextlinestart=m_Text.find("\n",m_Position);
+	size_t nextlinestart=m_Text.find("\n",m_Position);
 	if (nextlinestart!=string::npos)
 	{	
 		return LineLength(nextlinestart+1);
@@ -416,7 +418,7 @@ int GLEditor::NextLineLength(int pos)
 
 int GLEditor::PreviousLineLength(int pos)
 {
-	unsigned int previouslineend=string::npos;
+	size_t previouslineend=string::npos;
 	if (pos>0) previouslineend=m_Text.rfind("\n",pos-1);
 	if (previouslineend!=string::npos)
 	{	
@@ -452,7 +454,7 @@ unsigned int GLEditor::LineStart(int pos)
 unsigned int GLEditor::LineEnd(int pos)
 {
 	if (m_Text.empty()) return 0;
-	unsigned int end = m_Text.find("\n",pos);
+	size_t end = m_Text.find("\n",pos);
 	if (end==string::npos) end=m_Text.size()-1;
 	return end;
 }
