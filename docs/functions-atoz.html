@@ -5,10 +5,11 @@
 <h1>16.2 Alphabetical Index of all functions</h1> 
 
 Types:
-<c>n</c> = number
-<c>t</c> = text
-<c>v</c> = vector 3
-<c>m</c> = vector 16
+<c>n</c> = number 
+<c>s</c> = string
+<c>v</c> = vector of 3 numbers
+<c>m</c> = vector of 16 numbers
+<c>b</c> = boolean value
 
 <table>
 <th colspan=2 align=left>alphabetical</th>
@@ -32,7 +33,7 @@ Types:
 <tr><td><c>(build-plane)</c></td><td> returns the id for a plane primitive </td></tr>
 <tr><td><c>(build-sliderjoint n n v)</c></td><td> build a slider joint connecting two objects </td></tr>
 <tr><td><c>(build-sphere n n)</c></td><td> returns the id for a sphere primitive </td></tr>
-<tr><td><c>(build-text t)</c></td><td> returns the id for a text primitive </td></tr>
+<tr><td><c>(build-text s)</c></td><td> returns the id for a text primitive </td></tr>
 <tr><td><c>(clear)</c></td><td> clear the scene of all primitives and lights (leaves the interpreter as is</td><tr> 
 <tr><td><c>(clear-colour v)</c></td><td> set the background colour </td></tr>
 <tr><td><c>(clear-frame n)</c></td><td> whether to clear the window or not </td></tr>
@@ -50,7 +51,7 @@ Types:
 <tr><td><c>(draw-sphere)</c></td><td> draw a sphere </td></tr>
 <tr><td><c>(emissive v)</c></td><td> set the emissive colour on the current state </td></tr>
 <tr><td><c>(end-framedump)</c></td><td> stops saving frames </td></tr>
-<tr><td><c>(every-frame t)</c></td><td> executes the fragment of script every frame </td></tr>
+<tr><td><c>(every-frame s)</c></td><td> executes the fragment of script every frame </td></tr>
 <tr><td><c>(feedback n)</c></td><td> switch on/off feedback </td></tr>
 <tr><td><c>(feedback-transform m)</c></td><td> sets the transform for the plane that the fb texture is rendered on </td></tr>
 <tr><td><c>(finalise)</c></td><td> sets the primitive up for rendering </td></tr>
@@ -75,17 +76,17 @@ Types:
 <tr><td><c>(hint-wire)</c></td><td> hint the primitive to render wireframe </td></tr>
 <tr><td><c>(identity)</c></td><td> set the current transform to identity </td></tr>
 <tr><td><c>(joint-angle n n n)</c></td><td> set the desired angle on a joint </td></tr>
-<tr><td><c>(joint-param n t n)</c></td><td> set joint paramaters for the given joint </td></tr>
-<tr><td><c>(key-pressed t)</c></td><td> returns 1 if the key has been pressed this frame </td></tr>
+<tr><td><c>(joint-param n s n)</c></td><td> set joint paramaters for the given joint </td></tr>
+<tr><td><c>(key-pressed s)</c></td><td> returns 1 if the key has been pressed this frame </td></tr>
 <tr><td><c>(kick n v)</c></td><td> apply a translational force to an object </td></tr>
 <tr><td><c>(light-ambient n v)</c></td><td> set the ambient colour of a light </td></tr>
 <tr><td><c>(light-diffuse n v)</c></td><td> set the diffuse colour of a light </td></tr>
 <tr><td><c>(light-position n v)</c></td><td> set the position of a light </td></tr>
 <tr><td><c>(light-specular n v)</c></td><td> set the specular colour of a light </td></tr>
 <tr><td><c>(line-width)</c></td><td> set the current line width </td></tr>
-<tr><td><c>(load t)</c></td><td> loads a script into the editor </td></tr>
-<tr><td><c>(load-code filename)</c></td><td> loads a saved livecode recording </td></tr>
-<tr><td><c>(load-texture t)</c></td><td> loads the given texture from disk, and returns a texture id </td></tr>
+<tr><td><c>(load s)</c></td><td> loads a script into the editor </td></tr>
+<tr><td><c>(load-code s)</c></td><td> loads a saved livecode recording </td></tr>
+<tr><td><c>(load-texture s)</c></td><td> loads the given texture from disk, and returns a texture id </td></tr>
 <tr><td><c>(lock-camera n)</c></td><td> lock the camera to a given object </td></tr>
 <tr><td><c>(madd m m)</c></td><td> add the two matrices </td></tr>
 <tr><td><c>(maim v v)</c></td><td> return an aimed matrix, with an up vector </td></tr>
@@ -103,9 +104,9 @@ Types:
 <tr><td><c>(mtranspose m)</c></td><td> transpose the matrix </td></tr>
 <tr><td><c>(opacity n)</c></td><td> set the opacity on the current state </td></tr>
 <tr><td><c>(ortho)</c></td><td> set the camera mode to orthographic </td></tr>
-<tr><td><c>(osc index)</c></td><td> returns the argument from the current message </td></tr>
-<tr><td><c>(osc-destination port)</c></td><td> starts up the osc client, which will send messages to the given port. </td></tr>
-<tr><td><c>(osc-msg name)</c></td><td> and sets the current message and returns true if it was received last frame </td></tr>
+<tr><td><c>(osc n)</c></td><td> returns the nth argument from the current message </td></tr>
+<tr><td><c>(osc-destination n)</c></td><td> starts up the osc client, which will send messages to the given port. </td></tr>
+<tr><td><c>(osc-msg s)</c></td><td> sets the current message with the given address and returns true if it was received last frame </td></tr>
 <tr><td><c>(osc-peek)</c></td><td> returns a string containing the last sent message and format </td></tr>
 <tr><td><c>(osc-send name argslist)</c></td><td> sends an osc message </td></tr>
 <tr><td><c>(osc-source port)</c></td><td> starts up the osc server, listening to the given port </td></tr>
@@ -113,31 +114,32 @@ Types:
 <tr><td><c>(passive-box n)</c></td><td> add primitive to the physics system as passive with a box collision volume </td></tr>
 <tr><td><c>(passive-cylinder n)</c></td><td> add primitive to the physics system as passive with a cylinder collision volume </td></tr>
 <tr><td><c>(passive-sphere n)</c></td><td> add primitive to the physics system as passive with a sphere collision volume </td></tr>
-<tr><td><c>(pdata-get t n)</c></td><td> returns the vector containing the given pdata item </td></tr>
-<tr><td><c>(pdata-set t n v)</c></td><td> sets the pdata item on the primitive </td></tr>
+<tr><td><c>(pdata-get s n)</c></td><td> returns the vector containing the given pdata item </td></tr>
+<tr><td><c>(pdata-set s n v)</c></td><td> sets the pdata item on the primitive </td></tr>
 <tr><td><c>(pdata-size)</c></td><td> returns the amount of pdata (usually a vert count) </td></tr>
 <tr><td><c>(persp)</c></td><td> set the camera mode to perspective </td></tr>
 <tr><td><c>(point-width)</c></td><td> set the current point width </td></tr>
 <tr><td><c>(pop)</c></td><td> pop the state stack </td></tr>
 <tr><td><c>(print-scene-graph)</c></td><td> dumps the scene graph to output (for debugging) </td></tr>
-<tr><td><c>(process t)</c></td><td> processes a wav file instead of the live input </td></tr>
+<tr><td><c>(process s)</c></td><td> processes a wav file instead of the live input </td></tr>
 <tr><td><c>(push)</c></td><td> push the state stack </td></tr>
 <tr><td><c>(recalc-normals)</c></td><td> recalculates normals based on vertex positions </td></tr>
 <tr><td><c>(reset-camera)</c></td><td> reset the camera transform - for when you get lost </td></tr>
 <tr><td><c>(rotate v)</c></td><td> rotate the current state </td></tr>
-<tr><td><c>(save-code filename)</c></td><td> saves a livecode recording </td></tr> 
-<tr><td><c>(save-name t)</c></td><td> sets the current script name for this workspace </td></tr>
+<tr><td><c>(save-code s)</c></td><td> saves a livecode recording to a given file</td></tr> 
+<tr><td><c>(save-name s)</c></td><td> sets the current script name for this workspace </td></tr>
 <tr><td><c>(scale v)</c></td><td> scale the current state </td></tr>
-<tr><td><c>(selectable bool)</c></td><td> whether an object is selectable by (mouse-over) </td></tr>
+<tr><td><c>(searchpaths l)</c></td><td> sets the directories in which fluxus will search for files to the given list of paths</td></tr>
+<tr><td><c>(selectable b)</c></td><td> whether an object is selectable by (mouse-over) </td></tr>
 <tr><td><c>(set-mass n n)</c></td><td> set the mass of an object </td></tr>
 <tr><td><c>(set-max-physical n)</c></td><td> sets the maximum number of physical objects </td></tr>
 <tr><td><c>(shinyness n)</c></td><td> set the shinyness on the current state </td></tr>
 <tr><td><c>(show-axis n)</c></td><td> turns on or off the origin locator </td></tr>
 <tr><td><c>(show-fps n)</c></td><td> turns on or off the fps counter </td></tr>
-<tr><td><c>(source t)</c></td><td> loads a script into the editor, and executes it </td></tr>
+<tr><td><c>(source s)</c></td><td> loads a script into the editor, and executes it </td></tr>
 <tr><td><c>(specular v)</c></td><td> set the specular colour on the current state </td></tr>
-<tr><td><c>(start-audio n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
-<tr><td><c>(start-framedump t)</c></td><td> starts saving frame data to disk with the given name </td></tr>
+<tr><td><c>(start-audio s n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
+<tr><td><c>(start-framedump s)</c></td><td> starts saving frame data to disk with the given name </td></tr>
 <tr><td><c>(surface-params n n n n)</c></td><td> set the global surface parameters </td></tr>
 <tr><td><c>(texture n)</c></td><td> set the texture on the current state </td></tr>
 <tr><td><c>(time)</c></td><td> returns time in seconds since fluxus startup </td></tr>
