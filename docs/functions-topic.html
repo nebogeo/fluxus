@@ -5,10 +5,11 @@
 <h1>16.1 Index of all functions by topic</h1> 
 
 Types:
-<c>n</c> = number
-<c>t</c> = text
-<c>v</c> = vector 3
-<c>m</c> = vector 16
+<c>n</c> = number 
+<c>s</c> = string
+<c>v</c> = vector of 3 numbers
+<c>m</c> = vector of 16 numbers
+<c>b</c> = boolean value
 
 <table>
 <th colspan=2 align=left>aproximately related by topic</th>
@@ -17,7 +18,7 @@ Types:
 <tr><td><c>(build-plane)</c></td><td> returns the id for a plane primitive </td></tr>
 <tr><td><c>(build-cylinder n n)</c></td><td> returns the id for a cylinder primitive </td></tr>
 <tr><td><c>(build-line v n v n)</c></td><td> returns the id for a line primitive </td></tr>
-<tr><td><c>(build-text t)</c></td><td> returns the id for a text primitive </td></tr>
+<tr><td><c>(build-text s)</c></td><td> returns the id for a text primitive </td></tr>
 <tr><td><c>(build-nurbs-sphere n n)</c></td><td> returns the id for a nurbs sphere primitive </td></tr>
 <tr><td><c>(build-nurbs-plane n n)</c></td><td> returns the id for a nurbs plane primitive </td></tr>
 <tr><td><c>(build-particles n)</c></td><td> returns the id for a particles primitive </td></tr>
@@ -58,7 +59,7 @@ Types:
 <tr><td><c>(point-width)</c></td><td> set the current point width </td></tr>
 <tr><td><c>(parent n)</c></td><td> set the grabbed primitive to parent to the given object </td></tr>
 <tr><td><c>(hide)</c></td><td> don't render the current grabbed object </td></tr>
-<tr><td><c>(selectable bool)</c></td><td> whether an object is selectable by (mouse-over) </td></tr>
+<tr><td><c>(selectable b)</c></td><td> whether an object is selectable by (mouse-over) </td></tr>
 <tr><td><c>(clear)</c></td><td> clear the scene of all primitives and lights (leaves the interpreter as is</td><tr> 
 <tr><td><c>(ortho)</c></td><td> set the camera mode to orthographic </td></tr>
 <tr><td><c>(persp)</c></td><td> set the camera mode to perspective </td></tr>
@@ -174,7 +175,7 @@ Types:
 <th colspan=2 align=left>...</th>
 <tr><td><c>(feedback n)</c></td><td> switch on/off feedback </td></tr>
 <tr><td><c>(feedback-transform m)</c></td><td> sets the transform for the plane that the fb texture is rendered on </td></tr>
-<tr><td><c>(start-audio n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
+<tr><td><c>(start-audio s n n)</c></td><td> starts up the audio processing using the given jack channel, buffersize and samplerate </td></tr>
 <tr><td><c>(load-code filename)</c></td><td> loads a saved livecode recording </td></tr>
 <tr><td><c>(save-code filename)</c></td><td> saves a livecode recording </td></tr> 
 </table>
