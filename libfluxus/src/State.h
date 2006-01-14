@@ -33,14 +33,15 @@
 namespace fluxus
 {
 
-#define HINT_NONE   0x0000
-#define HINT_SOLID  0x0001
-#define HINT_WIRE   0x0002
-#define HINT_NORMAL 0x0004
-#define HINT_POINTS 0x0008
-#define HINT_AALIAS 0x0010
-#define HINT_BOUND  0x0020
-#define HINT_UNLIT  0x0040
+#define HINT_NONE     0x0000
+#define HINT_SOLID    0x0001
+#define HINT_WIRE     0x0002
+#define HINT_NORMAL   0x0004
+#define HINT_POINTS   0x0008
+#define HINT_AALIAS   0x0010
+#define HINT_BOUND    0x0020
+#define HINT_UNLIT    0x0040
+#define HINT_VERTCOLS 0x0080
 
 class State
 {

@@ -22,6 +22,13 @@
 #include "OSCServer.h"
 using namespace std;
 
+void Client::SetDestination(const string &Port) 
+{ 
+	if (m_Initialised) lo_address_free(m_Destination);
+	m_Destination=lo_address_new_from_url(Port.c_str()); 
+	m_Initialised=true;
+}	
+
 void Client::Send(const string &msg, const vector<OSCData*> &args)
 {
 	lo_message oscmsg=lo_message_new();

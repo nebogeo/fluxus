@@ -61,13 +61,14 @@ class OSCString : public OSCData
 class Client
 {
 public:
-	Client() {}
+	Client() : m_Initialised(false) {}
 	~Client() {}
-	void SetDestination(const string &Port) { m_Destination=lo_address_new_from_url(Port.c_str()); }	
+	void SetDestination(const string &Port);	
 	void Send(const string &msg,const vector<OSCData*> &args);
 	
 private:
 	lo_address m_Destination;
+	bool m_Initialised;
 };
 
 class Server

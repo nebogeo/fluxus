@@ -89,6 +89,7 @@ public:
 	static SCM hint_points();
 	static SCM hint_anti_alias();
 	static SCM hint_unlit();
+	static SCM hint_vertcols();
 	static SCM hint_none();
 	static SCM blur(SCM s_blur);
 	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
@@ -148,6 +149,8 @@ public:
 	static SCM turtle_move(SCM dist);
 	static SCM turtle_turn(SCM s_vec);
 	static SCM turtle_reset();
+	static SCM turtle_push();
+	static SCM turtle_pop();
 	static SCM start_framedump(SCM s_name);
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);

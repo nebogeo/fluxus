@@ -293,7 +293,7 @@ void FluxusMain::LoadScript(const string &Filename)
 		char *buffer = new char[size+1];
 		if (buffer)
 		{
-			if (size!=fread(buffer,1,size,file))	
+			if (size!=(long)fread(buffer,1,size,file))	
 			{
 				delete[] buffer;
 				fclose(file);

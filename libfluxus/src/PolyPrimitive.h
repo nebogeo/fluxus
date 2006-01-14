@@ -37,15 +37,12 @@ public:
 	virtual void RecalculateNormals();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
-
-	void VertColours(bool s) { m_VertColours=s; }
 	
 protected:
 
 	virtual void PDataDirty();
 	
 	Type m_Type;
-	bool m_VertColours;
 	vector<vector<int> > m_ConnectedVerts;
 	vector<dVector> *m_VertData;
 	vector<dVector> *m_NormData;

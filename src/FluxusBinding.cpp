@@ -613,6 +613,14 @@ SCM FluxusBinding::hint_unlit()
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::hint_vertcols()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_VERTCOLS;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_VERTCOLS;
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hint_none()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
@@ -1183,6 +1191,18 @@ SCM FluxusBinding::turtle_move(SCM dist)
 {
 	SCM_ASSERT(SCM_NUMBERP(dist), dist, SCM_ARG1, "turtle_move");
 	turtle.Move(gh_scm2double(dist));
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::turtle_push()
+{
+	turtle.Push();
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::turtle_pop()
+{
+	turtle.Pop();
 	return SCM_UNSPECIFIED;
 }
 
@@ -2028,6 +2048,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_0("hint-anti-alias", hint_anti_alias);
     gh_new_procedure0_0("hint-none",       hint_none);
     gh_new_procedure0_0("hint-unlit",      hint_unlit);
+    gh_new_procedure0_0("hint-vertcols",   hint_vertcols);
 	gh_new_procedure0_1("line-width",   line_width);
 	gh_new_procedure0_1("point-width",  point_width);
 	gh_new_procedure0_2("blend-mode",   blend_mode);
@@ -2090,6 +2111,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_0("turtle-vert",            turtle_vert);
 	gh_new_procedure0_0("turtle-build",           turtle_build);
 	gh_new_procedure0_0("turtle-reset",           turtle_reset);
+	gh_new_procedure0_0("turtle-push",           turtle_push);
+	gh_new_procedure0_0("turtle-pop",           turtle_pop);
 	gh_new_procedure0_1("turtle-move",         turtle_move);
 	gh_new_procedure0_1("turtle-turn",         turtle_turn);
 	gh_new_procedure0_1("turtle-prim",         turtle_prim);

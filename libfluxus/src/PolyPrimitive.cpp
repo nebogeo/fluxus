@@ -24,8 +24,7 @@
 using namespace fluxus;
 	
 PolyPrimitive::PolyPrimitive(Type t) :
-m_Type(t),
-m_VertColours(false)
+m_Type(t)
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("n",new TypedPData<dVector>);
@@ -73,7 +72,7 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	else glDisable(GL_LINE_SMOOTH);		
 
-	if (m_VertColours) glEnable(GL_COLOR_MATERIAL);
+	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_POINTS) glPolygonMode(GL_FRONT,GL_POINTS);
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
@@ -96,7 +95,7 @@ void PolyPrimitive::Render()
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 				
-	if (m_VertColours)
+	if (m_State.Hints & HINT_VERTCOLS)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
 		glColorPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_ColData->begin()->arr());
@@ -121,7 +120,7 @@ void PolyPrimitive::Render()
 		glEnable(GL_LIGHTING);
 	}
 		
-	if (m_VertColours) glDisable(GL_COLOR_MATERIAL);
+	if (m_State.Hints & HINT_VERTCOLS) glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 
