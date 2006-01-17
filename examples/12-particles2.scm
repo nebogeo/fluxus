@@ -1,3 +1,5 @@
+; a fancier example using textured planes - another example of the 
+; problems with alpha blending and drawing order unfortunately
 
 (define col (vector (flxrnd) (flxrnd) (flxrnd)))
 (clear-colour (vector 0 0.5 0.5))

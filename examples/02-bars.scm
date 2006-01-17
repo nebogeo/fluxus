@@ -1,4 +1,5 @@
 
+; draw a bar, using c as the harmonic to look up
 (define (bar c)
     (push)
     (colour (vector 1 0 (gh c)))
@@ -7,6 +8,7 @@
     (draw-cube)
     (pop))
 
+; draw 16 bars, loop recursively
 (define (bars c)
     (bar c)
     (if (eq? c 16)

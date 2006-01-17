@@ -3,14 +3,14 @@
 (collisions 1)
 (desiredfps 1000)
 (gravity (vector 0 -1 0))
-(define list '())
+(define objs '())
 
 (define (add t)
     (push)
     (translate (vector 0 t 0))
     (scale (vector 0.7 1 0.2))
-    (set! list (cons (build-cube) list))
-    (active-box (car list))
+    (set! objs (cons (build-cube) objs))
+    (active-box (car objs))
     (pop))
 
 (define (link l c)
@@ -27,5 +27,5 @@
 
 (ground-plane (vector 0 1 0) 0)
 (array 40)
-(link list 0)
+(link objs 0)
 
