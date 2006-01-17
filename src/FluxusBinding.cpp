@@ -258,6 +258,7 @@ SCM FluxusBinding::show_axis(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "show_axis");	
     Fluxus->GetRenderer()->ShowAxis(gh_scm2double(s_id));
+    Fluxus->ShowLocators(gh_scm2double(s_id));
     return SCM_UNSPECIFIED;
 }
 
@@ -792,6 +793,14 @@ SCM FluxusBinding::build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor)
 	float anchor[3];
 	gh_scm2floats(s_anchor,anchor);
 	return gh_double2scm(Fluxus->GetPhysics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
+}
+
+SCM FluxusBinding::build_fixedjoint(SCM s_ob1)
+{
+    SCM_ASSERT(SCM_NUMBERP(s_ob1),    s_ob1,    SCM_ARG1, "build_fixedjoint");
+    int name1=0;
+	name1=(int)gh_scm2double(s_ob1);
+	return gh_double2scm(Fluxus->GetPhysics()->CreateJointFixed(name1));
 }
 
 SCM FluxusBinding::build_hingejoint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge)
@@ -1674,7 +1683,12 @@ SCM FluxusBinding::selectable(SCM s_b)
 
 SCM FluxusBinding::get_transform()
 {
-	return gh_floats2scm(Fluxus->GetRenderer()->GetGlobalTransform(GrabbedID).arr(),16);
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) 
+	{
+		return gh_floats2scm(Fluxus->GetRenderer()->GetGlobalTransform(GrabbedID).arr(),16);
+	}
+	return gh_floats2scm(Fluxus->GetRenderer()->GetState()->Transform.arr(),16);
 }
 
 SCM FluxusBinding::get_camera_transform()
@@ -2128,6 +2142,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("passive-sphere",  passive_sphere);
     gh_new_procedure0_1("passive-cylinder",passive_cylinder);
     gh_new_procedure0_2("ground-plane", ground_plane);
+    gh_new_procedure0_1("build-fixedjoint", build_fixedjoint);
     gh_new_procedure4_0("build-hingejoint", build_hingejoint);
     gh_new_procedure3_0("build-balljoint", build_balljoint);
     gh_new_procedure3_0("build-sliderjoint", build_sliderjoint);

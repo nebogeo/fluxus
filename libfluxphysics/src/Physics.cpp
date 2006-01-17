@@ -78,6 +78,86 @@ void Physics::Tick()
     UpdatePrimitives();
 }
 
+void Physics::DrawLocator(dVector3 pos)
+{
+	float scale=0.5;
+	glBegin(GL_LINES);			
+	glVertex3f(pos[0]-scale,pos[1],pos[2]);
+	glVertex3f(pos[0]+scale,pos[1],pos[2]);
+	glVertex3f(pos[0],pos[1]-scale,pos[2]);
+	glVertex3f(pos[0],pos[1]+scale,pos[2]);
+	glVertex3f(pos[0],pos[1],pos[2]-scale);
+	glVertex3f(pos[0],pos[1],pos[2]+scale);
+	glEnd();
+}
+
+void Physics::DrawAxis(dVector3 pos, dVector3 dir)
+{
+	float scale=1;
+	glBegin(GL_LINES);			
+	glVertex3f(pos[0],pos[1],pos[2]);
+	glVertex3f(pos[0]+dir[0],pos[1]+dir[1],pos[2]+dir[2]);
+	glEnd();
+}
+
+void Physics::Render()
+{
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	
+	for (map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); i++)
+	{
+		switch (i->second->Type)
+		{
+			case BallJoint      : 
+			{ 
+				dVector3 pos;
+				dJointGetBallAnchor(i->second->Joint, pos);
+				glColor3f(1,0,0);
+				DrawLocator(pos);
+			}
+			break;
+			case HingeJoint     : 
+			{
+				dVector3 pos;
+				dJointGetHingeAnchor(i->second->Joint, pos);
+				glColor3f(1,0,0);
+				DrawLocator(pos);
+				dJointGetHingeAnchor2(i->second->Joint, pos);
+				DrawLocator(pos);
+				dVector3 axis;
+				dJointGetHingeAxis(i->second->Joint, axis);
+				glColor3f(0,1,0);
+				DrawAxis(pos,axis);
+			}
+			break;	
+			case SliderJoint :   break;
+			case ContactJoint   : break;	// no set param required
+			case UniversalJoint : break;	
+			case Hinge2Joint   : 
+			{
+				dVector3 pos;
+				dJointGetHinge2Anchor(i->second->Joint, pos);
+				glColor3f(1,0,0);
+				DrawLocator(pos);
+				dJointGetHinge2Anchor2(i->second->Joint, pos);
+				DrawLocator(pos);
+				dVector3 axis;
+				dJointGetHinge2Axis1(i->second->Joint, axis);
+				glColor3f(0,1,0);
+				DrawAxis(pos,axis);
+				dJointGetHinge2Axis2(i->second->Joint, axis);
+				DrawAxis(pos,axis);
+			}
+			break;
+			case FixedJoint     : break;	// no set param required
+			case AMotorJoint    : break;
+		} 	
+	}	
+	glEnable(GL_LIGHTING);
+	glEnable(GL_DEPTH_TEST);
+}
+
 void Physics::SetGravity(const dVector &g)
 {
 	dWorldSetGravity(m_World,g.x,g.y,g.z);
@@ -189,6 +269,10 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	// can't undo this.	
 	Ob->Prim->ApplyTransform(false);  	
   	
+	// this tells ode to attach joints to the static environment if they are attached
+	// to this joint
+	Ob->Body = 0;
+	
   	switch (Bound)
   	{
   		case BOX:
@@ -366,16 +450,22 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointHinge2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointHinge2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
+	if (i1->second->Body==0 || i2->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointHinge2 : cant connect passive objects"<<endl;
+		return 0;
+	}
+
 	dJointID j = dJointCreateHinge2(m_World,0);
 	dJointAttach(j,i1->second->Body,i2->second->Body);
 	dJointSetHinge2Anchor(j,Anchor.x,Anchor.y,Anchor.z);
@@ -397,13 +487,19 @@ int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointHinge : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointHinge : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	if (i1->second->Body==0 || i2->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointHinge : cant connect passive objects"<<endl;
 		return 0;
 	}
 	
@@ -420,6 +516,34 @@ int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
 	return m_NextJointID-1;
 }
 
+int Physics::CreateJointFixed(int Ob)
+{
+	map<int,Object*>::iterator i = m_ObjectMap.find(Ob);
+	
+	if (i==m_ObjectMap.end())
+	{
+		cerr<<"Physics::CreateJointFixed : Object ["<<Ob<<"] doesn't exist"<<endl;
+		return 0;
+	}
+	
+	if (i->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointFixed : can't connect passive objects"<<endl;
+		return 0;
+	}
+
+	dJointID j = dJointCreateFixed(m_World,0);
+	dJointAttach (j,0,i->second->Body);
+	dJointSetFixed(j);
+	
+	JointObject *NewJoint = new JointObject;
+	NewJoint->Joint=j;
+	NewJoint->Type=FixedJoint;
+	m_JointMap[m_NextJointID]=NewJoint;
+	m_NextJointID++;
+	return m_NextJointID-1;
+}
+
 int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
 {
 	map<int,Object*>::iterator i1 = m_ObjectMap.find(Ob1);
@@ -427,13 +551,19 @@ int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointSlider : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointSlider : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+
+	if (i1->second->Body==0 || i2->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointSlider : cant connect passive objects"<<endl;
 		return 0;
 	}
 	
@@ -466,6 +596,12 @@ int Physics::CreateJointAMotor(int Ob1, int Ob2, dVector Axis)
 		return 0;
 	}
 
+	if (i1->second->Body==0 || i2->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointAMotor : cant connect passive objects"<<endl;
+		return 0;
+	}
+
 	dJointID j = dJointCreateAMotor (m_World,0);
 	dJointAttach(j,i1->second->Body,i2->second->Body);
 
@@ -488,13 +624,19 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointBall : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJoint2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		cerr<<"Physics::CreateJointBall : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		return 0;
+	}
+
+	if (i1->second->Body==0 || i2->second->Body==0)
+	{
+		cerr<<"Physics::CreateJointBall : cant connect passive objects"<<endl;
 		return 0;
 	}
 
@@ -515,7 +657,7 @@ void Physics::SetJointAngle(int ID, float vel, float angle)
 	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
 	if (i==m_JointMap.end())
 	{
-		cerr<<"Physics::SetDesiredHingeAngle : Joint ["<<ID<<"] doesn't exist"<<endl;
+		cerr<<"Physics::SetJointAngle : Joint ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 	

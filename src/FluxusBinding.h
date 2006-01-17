@@ -106,6 +106,7 @@ public:
 	static SCM passive_cylinder(SCM s_name);
 	static SCM passive_sphere(SCM s_name);
 	static SCM surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s_softcfm);
+	static SCM build_fixedjoint(SCM s_ob1);
 	static SCM build_hingejoint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge);
 	static SCM build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor);
 	static SCM build_sliderjoint(SCM s_ob1, SCM s_ob2, SCM s_hinge);

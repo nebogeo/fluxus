@@ -30,6 +30,8 @@ public:
 	enum BoundingType {BOX,CYLINDER,SPHERE};
 	enum ObjectType {ACTIVE,PASSIVE};
     void Tick();
+	// just for visualisation of joints
+   	void Render();
 	void MakeActive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	void MakePassive(int ID,float MassBoundingType, BoundingType Bound=BOX);
     void Free(int ID);
@@ -44,6 +46,7 @@ public:
 	void SetGlobalSurfaceParams(float slip1, float slip2, float softerp, float softcfm) 
 		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
 		
+    int CreateJointFixed(int Ob1);
     int CreateJointBall(int Ob1, int Ob2, dVector Anchor);
 	int CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge);
     int CreateJointSlider(int Ob1, int Ob2, dVector Hinge);
@@ -59,6 +62,9 @@ public:
 	bool HasCollided(int Ob);
 	
 private:
+	// helpers that use ode types for convienience, and so it can be built with double support
+	void DrawLocator(dVector3 pos);
+	void DrawAxis(dVector3 pos, dVector3 dir);
 
 	enum JointType {BallJoint,HingeJoint,SliderJoint,ContactJoint,UniversalJoint,Hinge2Joint,FixedJoint,AMotorJoint};
 

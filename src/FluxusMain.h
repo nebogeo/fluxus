@@ -68,7 +68,7 @@ public:
 	string GetLastMsg();
 	void StartOSCClient(const string &port);
 	void SendOSC(const string &msg, const vector<OSCData*> &args);
-
+	void ShowLocators(bool s) { m_ShowLocators=s; }
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
 	
 	float GetMouseX() { return m_LastMouseX; }
@@ -102,6 +102,7 @@ private:
 	int m_LastButton;
 	int m_CurButton;
 	float m_RotX,m_RotY,m_PosX,m_PosY,m_DisY;
+	bool m_ShowLocators;
 	dVector m_Pos;
 	dVector m_Dir;
 	int m_Frame;

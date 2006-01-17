@@ -41,6 +41,7 @@ m_RotY(0),
 m_PosX(0),
 m_PosY(0),
 m_DisY(-10),
+m_ShowLocators(false),
 m_Frame(-1),
 m_Width(x),
 m_Height(y),
@@ -245,8 +246,8 @@ void FluxusMain::Reshape(int width, int height)
 void FluxusMain::Render()
 {		
 	m_Physics.Tick();
- 	
 	m_Renderer.Render();
+ 	if (m_ShowLocators) m_Physics.Render();
 	if (!m_HideScript) m_Editor[m_CurrentEditor].Render();
 	
 	if (m_Frame!=-1)
