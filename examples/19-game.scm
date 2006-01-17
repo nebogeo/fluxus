@@ -97,7 +97,7 @@
         (translate (vector (rand-range -60 60) 0 (rand-range -60 60)))
         ;(rotate (vector (rand-range 0 360) (rand-range 0 360) (rand-range 0 360)))
         (scale (vector (rand-range 1 5) (rand-range 1 5) (rand-range 1 5)))
-        (passive-box (build-cube))
+        (active-box (build-cube))
     (pop)
     (if (zero? n)
         1
@@ -107,7 +107,7 @@
     
 
 (push)
-(texture (load-texture "track.png"))
+(texture (load-texture "textures/track.png"))
 (hint-unlit)
 (translate (vector 0 -0.5 0))
 (scale (vector 100 1 100))
@@ -133,10 +133,10 @@
     (if (key-pressed "a")
         (set! speed (- speed 0.3)))
     (if (key-pressed "o")
-        (set! steer (- steer 0.5)))
+        (set! steer (- steer 0.1)))
     (if (key-pressed "p")
-        (set! steer (+ steer 0.5)))
+        (set! steer (+ steer 0.1)))
     
-    (set! steer (* steer 0.8)))
+    (set! steer (* steer 0.9)))
     
 (every-frame "(run-loop)")

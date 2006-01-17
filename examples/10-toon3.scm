@@ -15,7 +15,7 @@
 (texture (load-texture "textures/toon.png"))
 (shinyness 10)
 (specular (vector 1 1 1))
-(define ob (build-nurbs-sphere 6 8))
+(define ob (build-nurbs-sphere 10 20))
 (grab ob)
 (pdata-copy "p" "pref")
 (ungrab)
