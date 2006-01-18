@@ -1,3 +1,7 @@
+; an example of a simple driving game
+; not much explanation here, but the majority of the code is involved
+; with connecting the various bits of the car together
+
 (clear)
 (colour (vector 1 1 1))
 (collisions 1)

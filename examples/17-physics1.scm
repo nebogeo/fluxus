@@ -1,8 +1,15 @@
+; a simple use of physics without collisions
+; you need audio to see this work, it's a favorite of mine :)
+
+; global control constants
 (define speed 10)
 (define rotsp 2)
 
 (collisions 0)
 
+; create a cube of dimensions and colour specified by the audio, add it to the
+; physics system, give it some movement via kick and twist, also controlled by
+; the incoming sound
 (define (spawn)
     (push)
         (opacity 1)
@@ -19,19 +26,14 @@
                               (* (- (gh 15) 0.5) rotsp) )))
     (pop))
 
-(ground-plane (vector 0 1 0) 0)
+(clear)
+(clear-colour (vector 0 0 1))
+; this is a simple way to get the physics system to take ownership of the objects and
+; delete them for you, when you've added more than this number to the system
 (set-max-physical 200)
-(blur 0)
 
 (define (run-loop)    
      (spawn))
-    ;(if (> (gh 10) 0.2) (spawn)))
 
-(line-width 5)
-(clear)
-(ground-plane (vector 0 1 0) 0)    
 (every-frame "(run-loop)")
 
-(show-axis 0)
-(clear-colour (vector 0 0 1))
-(blur 0)

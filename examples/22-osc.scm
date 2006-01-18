@@ -6,6 +6,6 @@
     (destroy out)
     (set! out (build-text (osc-peek))))
 
-(osc-source "88001")
+(osc-source "4444")
 
 (every-frame "(osctest)")

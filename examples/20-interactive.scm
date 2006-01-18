@@ -1,6 +1,7 @@
-
-
-
+; how to set up:
+; * a contained physics system
+; * mouse interactivity
+; * feedback from the physics system
 
 (clear)
 
@@ -64,14 +65,9 @@
 
 
 (define obs '())
-(define col (vector 0 0.8 0.5))
-(clear-colour col)
-(fog col 0.05 0 1)
+(clear-colour (vector 0 0.8 0.5))
 (backfacecull 0)
-(colour (vector 1 1 1))
 (line-width 3)
-(specular (vector 0 0 0))
-(shinyness 100)
 
 (collisions 1)
 (surface-params 0.4 0 3 5)
