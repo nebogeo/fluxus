@@ -3,8 +3,8 @@
 ; add a small vector on to the existing texture coordinates
 (define (deform n)
     (pdata-set "t" n (vadd 
-		(vector 0.0005 (* (sin n) 0.01) 0) ; small vector
-        (pdata-get "t" n)))		           ; original coordinate
+        (vector (* (sin n) 0.001) (* (cos n) 0.001) 0) ; small vector
+        (pdata-get "t" n)))                   ; original coordinate
     (if (< n 1)
         0
         (deform (- n 1))))

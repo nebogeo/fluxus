@@ -11,7 +11,8 @@
 
 (hint-unlit)
 (line-width 4)
-(texture (load-texture "textures/toon.png"))
+(texture (load-texture "textures/gradient.png"))
+(colour (vector 0.5 0.5 1))
 (define ob (build-nurbs-sphere 10 20))
 (grab ob)
 ; more reference geometry for the deformation
@@ -21,8 +22,8 @@
 ; some sinewave deformation with time
 (define (deform n)
     (let ((v (vector (* 2 (sin (+ (time) (* (vector-ref (pdata-get "pref" n) 1) 10.4)))) 0 0)))
-	    (set! v (vmul v (* (sin (time)) 0.5)))
-	    (pdata-set "p" n (vadd v (pdata-get "pref" n))))
+        (set! v (vmul v (* (sin (time)) 0.5)))
+        (pdata-set "p" n (vadd v (pdata-get "pref" n))))
     (if (< n 0)
         0
         (deform (- n 1))))    
@@ -33,8 +34,8 @@
 ; in worldspace.
 (define (toon n camerapos obpos)
     (let ((v (vadd obpos (pdata-get "p" n))))                           ; find the vertex in worldspace 
-    	(let ((i (vnormalise (vsub v camerapos))))                      ; incident direction (normalised)
-		    (pdata-set "t" n (vector (vdot i (pdata-get "n" n)) 0 0)))) ; set s to the facing ratio (i dot n) 
+        (let ((i (vnormalise (vsub v camerapos))))                      ; incident direction (normalised)
+            (pdata-set "t" n (vector (vdot i (pdata-get "n" n)) 0 0)))) ; set s to the facing ratio (i dot n) 
     (if (< n 0)
         0
         (toon (- n 1) camerapos obpos)))    
@@ -44,11 +45,11 @@
     (deform (pdata-size))
     (recalc-normals)
     (toon (pdata-size)
-		; transforming a vector gets that vector "into" the space of the transform, so 0,0,0 in camera
-		; space is the camera position...
+        ; transforming a vector gets that vector "into" the space of the transform, so 0,0,0 in camera
+        ; space is the camera position...
         (vtransform (vector 0 0 0) (get-camera-transform)) ; gets the eye position
-		
-		; and 0,0,0 in object space is the object position
+        
+        ; and 0,0,0 in object space is the object position
         (vtransform (vector 0 0 0) (get-transform))) ; gets the object position
     (ungrab))
 

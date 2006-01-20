@@ -12,7 +12,7 @@
     (push)
     (opacity 0.05)
     (colour (vector 1 1 1))
-    (texture (load-texture "textures/test.png"))
+    (texture (load-texture "textures/green.png"))
 ; uncomment the line below to play with some of the blendmodes
 ;    (blend-mode "one-minus-src-alpha" "src-alpha")
     (set! objs (cons (build-plane) objs))

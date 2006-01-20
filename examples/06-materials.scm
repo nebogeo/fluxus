@@ -5,7 +5,7 @@
     (push)
     (opacity (flxrnd))
     (colour (vector (flxrnd) (flxrnd) (flxrnd)))    
-	; emissive tends to take over somewhat, try it 
+    ; emissive tends to take over somewhat, try it 
     ;(emissive (vector (flxrnd) (flxrnd) (flxrnd)))    
     (specular (vector (flxrnd) (flxrnd) (flxrnd)))
     (ambient (vector (flxrnd) (flxrnd) (flxrnd)))
@@ -40,7 +40,6 @@
 
 ; put a plane in to show the transparency better
 (push)
-(texture (load-texture "textures/test.png"))
 (scale (vector 12 12 12))
 (translate (vector 0.5 0.5 0))
 (build-plane)

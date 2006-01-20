@@ -1,16 +1,30 @@
 ; a script adapted from a live one I use
-
-; some textures to use
-; todo - get some new textures
-(define texnames '("mech/1.png" "mech/2.png" "mech/3.png" "mech/4.png" "mech/5.png"
-    "mech/6.png" "mech/7.png" "mech/8.png" "mech/9.png" "mech/10.png"
-    "mech/11.png" "mech/12.png" "mech/13.png" "mech/14.png" "mech/15.png"))
+; just a simple textured plane thing that animates to sound
+; it's better when you use textures that acually look good of course...
 
 ; constants
 (define tr 8)
 (define sc 1)
 (define zpos 0)
 (define t 0)
+(define texture-location "textures/")
+
+; a function to put filenames of all the png images in a directory into a list
+; this is a useful function, as new textures added to the texture location will
+; be automatically picked up by the script without any modifications
+(define get-textures
+	(lambda (d l)
+		(let ((ret (readdir d)))
+			(cond ((not (string? ret))
+				(closedir d)
+				l)
+				((if (and (> (string-length ret) 4)
+						(string=? (substring ret (- (string-length ret) 4)) ".png"))
+					(set! l (append l (list ret))))
+				(get-textures d l))))))
+
+; a list of all the textures
+(define texnames (get-textures (opendir texture-location) '()))
 
 ; a list to hold the objects
 (define elements '())
@@ -19,7 +33,7 @@
 (define (add-element tex)
     (push)
     (opacity 1) 
-    (texture (load-texture tex))
+    (texture (load-texture (string-append texture-location tex)))
     (translate (vector (* tr (flxrnd)) (* tr (flxrnd)) zpos))
     (set! zpos (+ 0.01 zpos))
     (set! t (* sc (flxrnd)))
