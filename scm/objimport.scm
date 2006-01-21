@@ -154,7 +154,8 @@
         (grab shape)
         (make-vertices vertices 0) ; set the data
         (recalc-normals)           
-        (ungrab))))
+        (ungrab)
+		shape)))
 
 ; print out the vert data
 (define dump 

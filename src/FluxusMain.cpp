@@ -331,21 +331,20 @@ void FluxusMain::SourceScript(const string &Filename)
 
 void FluxusMain::SaveScript() 
 { 
-	if (m_SaveName[m_CurrentEditor]!="")
-	{
-		FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
-		if (file)
-		{	
-			fwrite(m_Editor[m_CurrentEditor].GetText().c_str(),1,m_Editor[m_CurrentEditor].GetText().size(),file);	
-			fclose(file);
-		}
-		
-		Dump("Saved ["+m_SaveName[m_CurrentEditor]+"]");
+	if (m_SaveName[m_CurrentEditor]=="") 
+	{	
+		m_SaveName[m_CurrentEditor]="temp.scm";
 	}
-	else
-	{
-		Dump("No save name set, not saved...");
+	
+	FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
+	if (file)
+	{	
+		fwrite(m_Editor[m_CurrentEditor].GetText().c_str(),1,m_Editor[m_CurrentEditor].GetText().size(),file);	
+		fclose(file);
 	}
+	
+	Dump("Saved ["+m_SaveName[m_CurrentEditor]+"]");
+	
 }
 
 void FluxusMain::StartOSC(const string &port)
