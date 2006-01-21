@@ -19,7 +19,6 @@
 (define (toon-light n)
     (let ((lighting (vdot (pdata-get "n" n) dirlight)))
         (if (< lighting 0) (set! lighting 0.1))      ; reverse facing polys are nearly black
-        (if (> lighting 0.95) (set! lighting 0.95))  ; clamp fully facing polys (texture wraps)
         (pdata-set "t" n (vector lighting 0 0)))     ; set the s texture coordinate
     (if (< n 1)
         0
@@ -29,7 +28,7 @@
 (define (deform n a s)
     (pdata-set "p" n (vadd (pdata-get "p" n) 
         (vmul (pdata-get "n" n)
-	        (* (sin (* (vector-ref (pdata-get "p" n) 1) s)) a))))
+            (* (sin (* (vector-ref (pdata-get "p" n) 1) s)) a))))
     (if (< n 1)
         0
         (deform (- n 1) a s)))
@@ -38,7 +37,7 @@
 (define (deform-plane n)
     (pdata-set "p" n (vadd (pdata-get "p" n) 
         (vmul (pdata-get "n" n)
-	        (* (sin (* (vdist (vector 5 0 5) (pdata-get "p" n)) 3)) 0.5))))
+            (* (sin (* (vdist (vector 5 0 5) (pdata-get "p" n)) 3)) 0.5))))
     (if (< n 1)
         0
         (deform-plane (- n 1))))

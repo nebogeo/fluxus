@@ -14,8 +14,9 @@
 (push)
 (colour (vector 0.5 0.5 0.5))
 (scale (vector 100 100 100))
-(translate (vector -0.1 0 -0.1))
-(texture (load-texture "textures/scribblefont.png"))
+(rotate (vector 90 0 0))
+(translate (vector -0.4 -0.2 -0.4))
+(texture (load-texture "textures/transp.png"))
 ; make a new nurbs plane
 (define p (build-nurbs-plane 5 5))
 (pop)
@@ -25,5 +26,6 @@
     (deform (pdata-size))
     (ungrab))
 
+(blur 0.01)
 (every-frame "(render)")
 

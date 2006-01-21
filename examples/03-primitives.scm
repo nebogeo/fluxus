@@ -1,11 +1,11 @@
 ; exhaustively render all the primitives that fluxus supports
 
 (clear)
-
+(clear-colour (vector 0.5 0.5 0.5))
 (define tex (load-texture "textures/test.png"))
 
 ; poly cube
-(clear-colour (vector 1 1 1))
+;(clear-colour (vector 1 1 1))
 (texture tex)
 (build-cube)
 
@@ -56,7 +56,10 @@
 (scale (vector 0.5 0.5 0.5))
 (let ((ob (build-nurbs-sphere 10 20)))
 ; tweak a vertex to prove it's curvy
-(pdata-set "p" 1 (vector 1 0 0)))
+(grab ob)
+(pdata-set "p" 95 (vector -1 1 1)))
+(recalc-normals)
+(ungrab)
 (pop)
 
 ; nurbs plane
@@ -70,17 +73,41 @@
 (scale (vector 0.5 0.5 0.5))
 (let ((ob (build-nurbs-plane 10 10)))
 ; tweak a vertex to prove it's curvy
-(pdata-set "p" 1 (vector 0 1 0)))
+(grab ob)
+(pdata-set "p" 45 (vector 0.4 1 0.4)))
+(recalc-normals)
+(ungrab)
 (pop)
 
 ; particles
 (translate (vector 1.5 -0.5 0))
 (push)
+(hint-none)
+(hint-points)
 (point-width 10)
+;(texture (load-texture "textures/transp.png"))
 ; a function to init the particle points and colours
 (define (particle-init n)
     (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd)))
-    (pdata-set "c" n (vector (flxrnd) (flxrnd) (flxrnd)))
+    (if (< n 1)
+        0
+        (particle-init (- n 1))))
+(hint-anti-alias)
+(define particles (build-particles 100))
+(pop)
+(grab particles)
+(particle-init (pdata-size))
+(ungrab)
+
+; particles
+(translate (vector 1.5 0 0))
+(push)
+(point-width 10)
+;(texture (load-texture "textures/transp.png"))
+; a function to init the particle points and colours
+(define (particle-init n)
+    (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd)))
+    (pdata-set "c" n (vector 1 1 1))
     (if (< n 1)
         0
         (particle-init (- n 1))))

@@ -30,6 +30,8 @@
 
 (clear)
 (show-fps 1)
+;(hint-none)
+;(hint-points)
 (point-width 4)
 (hint-anti-alias)
 

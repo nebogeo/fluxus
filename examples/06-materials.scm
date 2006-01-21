@@ -40,8 +40,9 @@
 
 ; put a plane in to show the transparency better
 (push)
+(texture (load-texture "textures/test.png"))
 (scale (vector 12 12 12))
-(translate (vector 0.5 0.5 0))
+(translate (vector 0.5 0.5 -0.05))
 (build-plane)
 (pop)
 
