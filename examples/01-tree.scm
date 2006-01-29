@@ -30,7 +30,7 @@
             (tree (- n 1))))
     (pop))
 
-(define (loop) (tree 10))
+(define (loop) (tree 9))
 
 (every-frame "(loop)")
 

@@ -1,5 +1,6 @@
 ; an example of texture coordinate mangling
 
+
 ; add a small vector on to the existing texture coordinates
 (define (deform n)
     (pdata-set "t" n (vadd 
@@ -26,6 +27,6 @@
     (deform (pdata-size))
     (ungrab))
 
-(blur 0.01)
+(blur 0)
 (every-frame "(render)")
 
