@@ -101,6 +101,7 @@ public:
 		{ m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Front=f; m_Back=b; m_Initialised=false; }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
+	void ShowCursor(bool s);
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
 	void SetClearZBuffer(bool s)             { m_ClearZBuffer=s; }

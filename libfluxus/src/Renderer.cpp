@@ -695,3 +695,15 @@ void Renderer::InitFeedback()
 	if (m_FeedBackID==0) glGenTextures(1,&m_FeedBackID);
 }
 
+void Renderer::ShowCursor(bool s)
+{
+	if (s)
+	{
+		glutSetCursor(GLUT_CURSOR_INHERIT); 
+	}
+	else 
+	{
+		glutSetCursor(GLUT_CURSOR_NONE); 
+	}
+
+}

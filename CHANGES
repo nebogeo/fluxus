@@ -1,5 +1,14 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.9
+
+...
+* hide mouse on ctrl m
+* save with text highlighted now safe (saves all rather than selection)
+* (full-path) searches the searchpaths and returns a fullpath, or the filename 
+if not found
+* (hint-box) renders object bounding box
+
 0.8
 
 * fixed object picking (mouse-over)

@@ -188,16 +188,27 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	Ob->Body = dBodyCreate(m_World);
 	
 	State *ObState=Ob->Prim->GetState();
+  	
+	// get position
+ 	dVector Pos=ObState->Transform.gettranslate();
 	
-	dVector Pos=ObState->Transform.gettranslate();
-  	dBodySetPosition(Ob->Body,Pos.x,Pos.y,Pos.z);
-	dBodySetAutoDisableFlag(Ob->Body, 1);
+	// extract the rotation from the state
+	//dMatrix rotation = ObState->Transform;
+	//rotation.remove_scale();
+	//dVector zero(0,0,0);
+	//rotation.settranslate(zero);
 	
+	// remove the rotation 
+	//ObState->Transform*=rotation.inverse();
+		
 	// need to apply transform to object here, so we are left with an identity in the
-	// state transform for the object, and the bounding volume will be correct etc.
+	// state transform for the object, and the bounding volume will be correct.
 	// can't undo this.	
 	Ob->Prim->ApplyTransform(true);  	
-  	
+	
+	// get the bounding box from the fluxus object
+	
+	
   	switch (Bound)
   	{
   		case BOX:
@@ -231,7 +242,29 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  			Ob->Bound = dCreateCCylinder(m_Space,Radius,Height);	
         }
  	}
-  	dGeomSetBody (Ob->Bound,Ob->Body);
+	
+	// set position into ode body
+  	dBodySetPosition(Ob->Body,Pos.x,Pos.y,Pos.z);
+	
+	// set rotation into ode body
+	/*dMatrix3 rot;
+	rot[0]=rotation.m[0][0];
+	rot[1]=rotation.m[1][0];
+	rot[2]=rotation.m[2][0];
+
+	rot[3]=rotation.m[0][1];
+	rot[4]=rotation.m[1][1];
+	rot[5]=rotation.m[2][1];
+
+	rot[6]=rotation.m[0][2];
+	rot[7]=rotation.m[1][2];
+	rot[8]=rotation.m[2][2];
+	
+  	dBodySetRotation(Ob->Body,rot);*/
+	
+	dBodySetAutoDisableFlag(Ob->Body, 1);
+	
+ 	dGeomSetBody (Ob->Bound,Ob->Body);
 	  	
   	m_ObjectMap[ID]=Ob;
   	m_History.push_back(ID);

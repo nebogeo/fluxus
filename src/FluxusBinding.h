@@ -90,6 +90,7 @@ public:
 	static SCM hint_anti_alias();
 	static SCM hint_unlit();
 	static SCM hint_vertcols();
+	static SCM hint_box();
 	static SCM hint_none();
 	static SCM blur(SCM s_blur);
 	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
@@ -200,6 +201,7 @@ public:
 	static SCM load_recorded_code(SCM s_name);
 	static SCM save_recorded_code(SCM s_name);
 	static SCM searchpaths(SCM s_list);
+	static SCM full_path(SCM s_filename);
 
 };
 #endif

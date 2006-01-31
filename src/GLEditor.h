@@ -29,6 +29,7 @@ public:
 	void Reshape(unsigned int w,unsigned int h);
 
 	string GetText();
+	string GetAllText() { return m_Text; }
 	void SetText(const string& s) { m_Text=s; ProcessTabs(); }
 	void Reset();
 	

@@ -622,6 +622,14 @@ SCM FluxusBinding::hint_vertcols()
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::hint_box()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_BOUND;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_BOUND;
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hint_none()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
@@ -2011,6 +2019,16 @@ SCM FluxusBinding::searchpaths(SCM s_list)
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::full_path(SCM s_filename)
+{
+	SCM_ASSERT(SCM_STRINGP(s_filename), s_filename, SCM_ARG1, "full-path");	
+    size_t size=0;
+	char *name=gh_scm2newstr(s_filename,&size);
+	string fullpath = SearchPaths::Get()->GetFullPath(name);
+	free(name);
+	return gh_str2scm(fullpath.c_str(),fullpath.length());
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
@@ -2063,6 +2081,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_0("hint-none",       hint_none);
     gh_new_procedure0_0("hint-unlit",      hint_unlit);
     gh_new_procedure0_0("hint-vertcols",   hint_vertcols);
+    gh_new_procedure0_0("hint-box",   hint_box);
 	gh_new_procedure0_1("line-width",   line_width);
 	gh_new_procedure0_1("point-width",  point_width);
 	gh_new_procedure0_2("blend-mode",   blend_mode);
@@ -2198,4 +2217,5 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("maim", maim);
 
 	gh_new_procedure0_1("searchpaths", searchpaths);
+	gh_new_procedure0_1("full-path", full_path);
 }

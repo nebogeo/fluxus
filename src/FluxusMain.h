@@ -60,6 +60,7 @@ public:
 	void StartDumpFrames(const string &Filename);
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
+	void HideCursor() { m_ShowCursor=!m_ShowCursor; m_Renderer.ShowCursor(m_ShowCursor); }
 	void StartOSC(const string &port);
 	char TypeFromOSC(unsigned int index);
 	float NumberFromOSC(unsigned int index);
@@ -111,7 +112,8 @@ private:
 	int m_Height;
 	string m_Script;
 	bool m_HideScript;
-	
+	bool m_ShowCursor;
+
 	Server *m_OSCServer;
 	Client *m_OSCClient;
 };

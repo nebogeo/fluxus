@@ -95,9 +95,7 @@ void ReshapeCallback(int width, int height)
 void KeyboardCallback(unsigned char key,int x, int y)
 {
 	binding->Fluxus->Handle(key, -1, -1, -1, x, y, glutGetModifiers());
-	
-	//cerr<<(int)key<<endl;
-	
+		
 	if (glutGetModifiers()&GLUT_ACTIVE_CTRL)
 	{
 		// pretty sure this is going to have to change...
@@ -112,6 +110,7 @@ void KeyboardCallback(unsigned char key,int x, int y)
 			break;
 			case 19: binding->Fluxus->SaveScript(); break; // s			
 			case 8: binding->Fluxus->HideScript(); break; // h
+			case 13: binding->Fluxus->HideCursor(); break; // m
 #ifndef __APPLE__
 			case 49: binding->Fluxus->SetCurrentEditor(0); break; // 1
 			case 0: binding->Fluxus->SetCurrentEditor(1); break; // 2
@@ -223,7 +222,7 @@ int main(int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
-		
+	
     gh_enter(argc, argv, inner_main);
     
 	return 0;
