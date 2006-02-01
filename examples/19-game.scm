@@ -15,9 +15,10 @@
 
 (define wheel-mass 0.1)
 (gravity (vector 0 -2 0))
-(surface-params 0.1 0.1 0.5 0.3)
+(surface-params 0.6 0.7 0.3 0.2)
 
 (push)
+    (translate (vector 0 10 0))
     (define (build-wheel)
         (colour (vector 0.4 0.2 0.0))
         (scale (vector wheel-rad wheel-rad wheel-rad))
@@ -62,10 +63,10 @@
     ;    (set-mass front-left-wheel wheel-mass)
     ;(pop)
     
-    (define back-right-joint (build-hinge2joint car-body back-right-wheel (vector 1.1 2 1.5) (vector 0 1 0) (vector 1 0 0)))
-    (define back-left-joint (build-hinge2joint car-body back-left-wheel (vector -1.1 2 1.5) (vector 0 1 0) (vector 1 0 0)))
-    (define front-right-joint (build-hinge2joint car-body front-right-wheel (vector 0 1 -1.5) (vector 0 1 0) (vector 1 0 0)))
-    ;(define front-left-joint (build-hinge2joint car-body front-left-wheel (vector -1.1 1 -1.5) (vector 0 1 0) (vector 1 0 0)))
+    (define back-right-joint (build-hinge2joint car-body back-right-wheel (vector 1.1 12 1.5) (vector 0 1 0) (vector 1 0 0)))
+    (define back-left-joint (build-hinge2joint car-body back-left-wheel (vector -1.1 12 1.5) (vector 0 1 0) (vector 1 0 0)))
+    (define front-right-joint (build-hinge2joint car-body front-right-wheel (vector 0 11 -1.5) (vector 0 1 0) (vector 1 0 0)))
+    ;(define front-left-joint (build-hinge2joint car-body front-left-wheel (vector -1.1 11 -1.5) (vector 0 1 0) (vector 1 0 0)))
     
     (joint-param back-left-joint "SuspensionERP" 0.4)       
     (joint-param back-left-joint "SuspensionCFM" 0.8)       
@@ -84,7 +85,7 @@
 (define (update)
     
     (joint-param front-right-joint "Vel2" speed)
-    (joint-param front-right-joint "FMax2" 0.1)
+    (joint-param front-right-joint "FMax2" 0.2)
     
     (joint-param front-right-joint "Vel" steer)
     (joint-param front-right-joint "FMax" 0.2)
@@ -98,10 +99,10 @@
 (define (build-terrain n)
     (push)
         (colour (vector (flxrnd) (flxrnd) (flxrnd)))
-        (translate (vector (rand-range -60 60) 0 (rand-range -60 60)))
-        ;(rotate (vector (rand-range 0 360) (rand-range 0 360) (rand-range 0 360)))
-        (scale (vector (rand-range 1 5) (rand-range 1 5) (rand-range 1 5)))
-        (active-box (build-cube))
+        (translate (vector (rand-range -150 150) 0 (rand-range -150 150)))
+        (scale (vector (rand-range 1 50) (rand-range 0 10) (rand-range 1 50)))
+        (rotate (vector (rand-range -15 15) (rand-range -15 15) (rand-range -15 15)))
+        (passive-box (build-cube))
     (pop)
     (if (zero? n)
         1
@@ -114,10 +115,11 @@
 (texture (load-texture "textures/track.png"))
 (hint-unlit)
 (translate (vector 0 -0.5 0))
-(scale (vector 100 1 100))
+(scale (vector 300 1 300))
 (build-cube)
 (pop)
 (ground-plane (vector 0 1 0) 0.5)
+(gravity (vector 0 -1 0))
 
 (lock-camera car-body)
 
@@ -137,9 +139,9 @@
     (if (key-pressed "a")
         (set! speed (- speed 0.3)))
     (if (key-pressed "o")
-        (set! steer (- steer 0.1)))
+        (set! steer (- steer 0.03)))
     (if (key-pressed "p")
-        (set! steer (+ steer 0.1)))
+        (set! steer (+ steer 0.03)))
     
     (set! steer (* steer 0.9)))
     

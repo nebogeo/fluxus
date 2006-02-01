@@ -193,13 +193,13 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	dVector Pos=ObState->Transform.gettranslate();
 	
 	// extract the rotation from the state
-	//dMatrix rotation = ObState->Transform;
-	//rotation.remove_scale();
-	//dVector zero(0,0,0);
-	//rotation.settranslate(zero);
+	dMatrix rotation = ObState->Transform;
+	rotation.remove_scale();
+	dVector zero(0,0,0);
+	rotation.settranslate(zero);
 	
 	// remove the rotation 
-	//ObState->Transform*=rotation.inverse();
+	ObState->Transform*=rotation.inverse();
 		
 	// need to apply transform to object here, so we are left with an identity in the
 	// state transform for the object, and the bounding volume will be correct.
@@ -207,8 +207,6 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	Ob->Prim->ApplyTransform(true);  	
 	
 	// get the bounding box from the fluxus object
-	
-	
   	switch (Bound)
   	{
   		case BOX:
@@ -243,28 +241,36 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
         }
  	}
 	
-	// set position into ode body
-  	dBodySetPosition(Ob->Body,Pos.x,Pos.y,Pos.z);
-	
 	// set rotation into ode body
-	/*dMatrix3 rot;
+	dMatrix4 rot;
 	rot[0]=rotation.m[0][0];
 	rot[1]=rotation.m[1][0];
 	rot[2]=rotation.m[2][0];
+	rot[3]=rotation.m[3][0];
+	
+	rot[4]=rotation.m[0][1];
+	rot[5]=rotation.m[1][1];
+	rot[6]=rotation.m[2][1];
+	rot[7]=rotation.m[3][1];
+	
+	rot[8]=rotation.m[0][2];
+	rot[9]=rotation.m[1][2];
+	rot[10]=rotation.m[2][2];
+	rot[11]=rotation.m[3][2];
 
-	rot[3]=rotation.m[0][1];
-	rot[4]=rotation.m[1][1];
-	rot[5]=rotation.m[2][1];
+	rot[12]=rotation.m[0][3];
+	rot[13]=rotation.m[1][3];
+	rot[14]=rotation.m[2][3];
+	rot[15]=rotation.m[3][3];
+	
+  	dBodySetRotation(Ob->Body,rot);
+	
+	// set position into ode body
+  	dBodySetPosition(Ob->Body,Pos.x,Pos.y,Pos.z);
 
-	rot[6]=rotation.m[0][2];
-	rot[7]=rotation.m[1][2];
-	rot[8]=rotation.m[2][2];
-	
-  	dBodySetRotation(Ob->Body,rot);*/
-	
-	dBodySetAutoDisableFlag(Ob->Body, 1);
-	
  	dGeomSetBody (Ob->Bound,Ob->Body);
+	
+	dBodySetAutoDisableFlag(Ob->Body, 1);	
 	  	
   	m_ObjectMap[ID]=Ob;
   	m_History.push_back(ID);
@@ -295,13 +301,27 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	
 	State *ObState=Ob->Prim->GetState();
 	
-	dVector Pos=ObState->Transform.gettranslate();
-  	
+ 	// get position
+ 	dVector Pos=ObState->Transform.gettranslate();
+	
+	// extract the rotation from the state
+	dMatrix rotation = ObState->Transform;
+	rotation.remove_scale();
+	dVector zero(0,0,0);
+	rotation.settranslate(zero);
+	
+	// remove the rotation 
+	ObState->Transform*=rotation.inverse();
+	ObState->Transform.settranslate(zero);
+	
   	// need to apply transform to object here, so we are left with an identity in the
 	// state transform for the object, and the bounding volume will be correct etc.
 	// can't undo this.	
-	Ob->Prim->ApplyTransform(false);  	
-  	
+	Ob->Prim->ApplyTransform(false);  
+	
+ 	ObState->Transform=rotation;
+ 	ObState->Transform.settranslate(Pos);
+	
 	// this tells ode to attach joints to the static environment if they are attached
 	// to this joint
 	Ob->Body = 0;
@@ -330,8 +350,32 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
  			Ob->Bound = dCreateCCylinder(m_Space,Radius,Height);	
         }
  	}
-  	
+	
+  	// set rotation into ode body
+	dMatrix4 rot;
+	rot[0]=rotation.m[0][0];
+	rot[1]=rotation.m[1][0];
+	rot[2]=rotation.m[2][0];
+	rot[3]=rotation.m[3][0];
+	
+	rot[4]=rotation.m[0][1];
+	rot[5]=rotation.m[1][1];
+	rot[6]=rotation.m[2][1];
+	rot[7]=rotation.m[3][1];
+	
+	rot[8]=rotation.m[0][2];
+	rot[9]=rotation.m[1][2];
+	rot[10]=rotation.m[2][2];
+	rot[11]=rotation.m[3][2];
+
+	rot[12]=rotation.m[0][3];
+	rot[13]=rotation.m[1][3];
+	rot[14]=rotation.m[2][3];
+	rot[15]=rotation.m[3][3];
+	
   	dGeomSetPosition(Ob->Bound,Pos.x,Pos.y,Pos.z);
+  	dGeomSetRotation(Ob->Bound,rot);
+
   	
   	m_ObjectMap[ID]=Ob;
 }
