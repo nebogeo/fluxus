@@ -61,7 +61,11 @@ starts up the osc server, listening to the given port
 
 <c>(osc-msg name)</c>
 returns true if the message has been received since last frame, and sets the 
-current source to this message if it has been received
+current source to this message if it has been received. 
+
+calling it repeatedly returns every message recieved in the last frame. you need to 
+call it in a loop until it returns false, and all messages have been read - or your 
+script will lag behind the data source.
 
 <c>(osc index)</c>
 returns either a number or string value from the current osc message source - 

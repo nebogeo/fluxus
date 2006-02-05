@@ -94,7 +94,24 @@ void PolyPrimitive::Render()
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
-				
+	
+	if (m_State.Hints & HINT_MULTITEX)
+	{
+		for (int n=1; n<MAX_TEXTURES; n++)
+		{
+			char name[3]; 
+			snprintf(name,3,"t%d",n);
+			TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
+			if (tex!=NULL)
+			{	
+				glClientActiveTexture(GL_TEXTURE0+n);
+				glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
+			}
+		}
+		
+		glClientActiveTexture(GL_TEXTURE0);
+	}
+	
 	if (m_State.Hints & HINT_VERTCOLS)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);

@@ -21,6 +21,7 @@
 #endif
 #include <iostream>
 #include "GLEditor.h"
+#include "TexturePainter.h"
 
 #ifndef __APPLE__
 #define GLEDITOR_DELETE 127
@@ -35,6 +36,8 @@
 #define GLEDITOR_CUT 24 
 #define GLEDITOR_COPY 3 
 #define GLEDITOR_PASTE 22 
+
+using namespace fluxus;
 
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
@@ -103,11 +106,14 @@ void GLEditor::DrawCharBlock()
 
 void GLEditor::Render()
 {
-	/*glViewport(0,0,m_Width,m_Height);
 	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 	glLoadIdentity();
-	gluPerspective(40.0, (GLfloat) m_Width/(GLfloat) m_Height, 0.1, 10000.0);
-	glMatrixMode(GL_MODELVIEW);*/
+	//gluPerspective(40.0, (GLfloat) m_Width/(GLfloat) m_Height, 0.1, 10000.0);
+	glFrustum(-1,1,-0.75,0.75,1,10);
+	glMatrixMode(GL_MODELVIEW);
+
+	TexturePainter::Get()->DisableAll();
 
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
@@ -220,7 +226,12 @@ void GLEditor::Render()
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_LINE_STIPPLE);
+	//glEnable(GL_LINE_STIPPLE);	
+	
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)

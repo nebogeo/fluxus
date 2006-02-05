@@ -630,6 +630,14 @@ SCM FluxusBinding::hint_box()
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::hint_multitex()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_MULTITEX;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_MULTITEX;
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::hint_none()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
@@ -1056,7 +1064,15 @@ SCM FluxusBinding::force_load_texture(SCM s_name)
 SCM FluxusBinding::texture(SCM s_id)
 {
 	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "texture");	
-    Fluxus->GetRenderer()->GetState()->Texture=(int)gh_scm2double(s_id);
+    Fluxus->GetRenderer()->GetState()->Textures[0]=(int)gh_scm2double(s_id);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::multitexture(SCM s_t, SCM s_id)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_t), s_t, SCM_ARG1, "multitexture");	
+	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG2, "multitexture");	
+    Fluxus->GetRenderer()->GetState()->Textures[(int)gh_scm2double(s_t)]=(int)gh_scm2double(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1067,6 +1083,27 @@ SCM FluxusBinding::engine_callback(SCM s_func)
 	char *temp=gh_scm2newstr(s_func,&size);
 	CallbackString=temp;
 	free(temp);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::frustum(SCM s_u, SCM s_d, SCM s_l, SCM s_r)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_u), s_u, SCM_ARG1, "frustum");
+	SCM_ASSERT(SCM_NUMBERP(s_d), s_d, SCM_ARG2, "frustum");
+	SCM_ASSERT(SCM_NUMBERP(s_l), s_l, SCM_ARG3, "frustum");
+	SCM_ASSERT(SCM_NUMBERP(s_r), s_r, SCM_ARG4, "frustum");
+	
+	Fluxus->GetRenderer()->SetFrustum(gh_scm2double(s_u),gh_scm2double(s_d),
+									  gh_scm2double(s_l),gh_scm2double(s_r));
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::clip(SCM s_f, SCM s_b)
+{
+	SCM_ASSERT(SCM_NUMBERP(s_f), s_f, SCM_ARG1, "clip");
+	SCM_ASSERT(SCM_NUMBERP(s_b), s_b, SCM_ARG2, "clip");
+	
+	Fluxus->GetRenderer()->SetClip(gh_scm2double(s_f),gh_scm2double(s_b));
     return SCM_UNSPECIFIED;
 }
 
@@ -2073,6 +2110,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("emissive",     emissive);
 	gh_new_procedure0_1("shinyness",    shinyness);
 	gh_new_procedure0_1("texture",      texture);
+	gh_new_procedure0_2("multitexture", multitexture);
     gh_new_procedure0_0("hint-solid",      hint_solid);
     gh_new_procedure0_0("hint-wire",       hint_wire);
     gh_new_procedure0_0("hint-normal",     hint_normal);
@@ -2081,7 +2119,8 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_0("hint-none",       hint_none);
     gh_new_procedure0_0("hint-unlit",      hint_unlit);
     gh_new_procedure0_0("hint-vertcols",   hint_vertcols);
-    gh_new_procedure0_0("hint-box",   hint_box);
+    gh_new_procedure0_0("hint-box",   	   hint_box);
+    gh_new_procedure0_0("hint-multitex",   hint_multitex);
 	gh_new_procedure0_1("line-width",   line_width);
 	gh_new_procedure0_1("point-width",  point_width);
 	gh_new_procedure0_2("blend-mode",   blend_mode);
@@ -2093,6 +2132,8 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_0("clear",           clear);
 	gh_new_procedure0_0("ortho",       	ortho);
 	gh_new_procedure0_0("persp",       	persp);
+	gh_new_procedure4_0("frustum",      frustum);
+	gh_new_procedure0_2("clip",         clip);
     gh_new_procedure0_0("reset-camera",    reset_camera);
 	gh_new_procedure0_1("lock-camera",  lock_camera);
 	gh_new_procedure0_1("clear-colour",    clear_colour);	

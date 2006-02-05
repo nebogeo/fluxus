@@ -13,6 +13,9 @@ A much more comprehensive explanation of these concepts can be found in the ODE
 documentation, which you have probably downloaded if you have compiled fluxus,
 or can be found at <a href="http://ode.org/ode-docs.html">http://ode.org/ode-docs.html</a> 
 
+To help with debugging joints, try using (show-axis 1), which will render locators showing
+you positions and axes of joints that have positional information.
+
 <c>(collisions 0|1)</c>
 
 enables or disables collision detection. this is the cause of great slowness 
@@ -57,7 +60,7 @@ sets the mass of an active object
 
 create an infinite passive plane for use as the 'ground'
 
-
+<c>(build-fixedjoint object)</c>
 <c>(build-hingejoint object1 object2 anchorvec hingevec)</c>
 <c>(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)</c>
 <c>(build-sliderjoint object1 object2 hingevec)</c>
@@ -69,7 +72,8 @@ a detailed description of the differences between the joint types). ode
 considers joints to be a constraint that is enforced between two objects. when
 creating a joint, it is important to have the two primitives being joined in the
 desired positions before creating the joint. joints can be created, modified and
-indexed in a similar way to other primitives.
+indexed in a similar way to other primitives. The fixed joint attaches a object to
+the static environment.
 
 
 <c>(joint-param joint param value)</c>

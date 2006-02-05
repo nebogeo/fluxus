@@ -20,6 +20,7 @@ Types:
 <tr><td><c>(apply)</c></td><td> apply the transform to the primitive's vertices </td></tr>
 <tr><td><c>(backfacecull n)</c></td><td> turns on or off backface culling </td></tr>
 <tr><td><c>(blur n)</c></td><td> sets the opacity on a clearing polygon </td></tr>
+<tr><td><c>(build-fixedjoint n)</c></td><td> build a fixed joint connecting two objects </td></tr>
 <tr><td><c>(build-amotorjoint n n v)</c></td><td> build a angular motor joint connecting two objects </td></tr>
 <tr><td><c>(build-balljoint n n v)</c></td><td> build a ball joint connecting two objects </td></tr>
 <tr><td><c>(build-cube)</c></td><td> returns the id for a cube primitive </td></tr>
@@ -38,6 +39,7 @@ Types:
 <tr><td><c>(clear-colour v)</c></td><td> set the background colour </td></tr>
 <tr><td><c>(clear-frame n)</c></td><td> whether to clear the window or not </td></tr>
 <tr><td><c>(clear-lights)</c></td><td> remove all lights </td></tr>
+<tr><td><c>(clip front back)</c></td><td> sets the clipping plane positions, defaults to 1 10000</td></tr>
 <tr><td><c>(collisions n)</c></td><td> turns on/off collisions </td></tr>
 <tr><td><c>(colour v)</c></td><td> set the colour on the current state </td></tr>
 <tr><td><c>(concat m)</c></td><td> concatenate the matrix to the current state </td></tr>
@@ -57,6 +59,8 @@ Types:
 <tr><td><c>(finalise)</c></td><td> sets the primitive up for rendering </td></tr>
 <tr><td><c>(flxrnd)</c></td><td> returns a random number from 0 to 1 </td></tr>
 <tr><td><c>(fog colour density start end)</c></td><td> sets global fog (density to 0 to disable)</td><tr> 
+<tr><td><c>(frustum top bottom left right)</c></td><td> sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1</td><tr> 
+<tr><td><c>(fullpath filename)</c></td><td> returns the full path to the file, using the searchpaths </td></tr>
 <tr><td><c>(gain n)</c></td><td> sets the global gain level </td></tr>
 <tr><td><c>(get-camera-transform)</c></td><td> get the current camera transform </td></tr>
 <tr><td><c>(get-harmonic n)</c></td><td> gets the current harmonic band level from the fft </td></tr>
@@ -74,6 +78,9 @@ Types:
 <tr><td><c>(hint-solid)</c></td><td> hint the primitive to render solid </td></tr>
 <tr><td><c>(hint-unlit)</c></td><td> hint the primitive to render unlit </td></tr>
 <tr><td><c>(hint-wire)</c></td><td> hint the primitive to render wireframe </td></tr>
+<tr><td><c>(hint-box)</c></td><td> hint the primitive to render the object bounding box </td></tr>
+<tr><td><c>(hint-vertcols)</c></td><td> uses vertex colours for the object, switches off colour materials from (colour) command</td></tr>
+
 <tr><td><c>(identity)</c></td><td> set the current transform to identity </td></tr>
 <tr><td><c>(joint-angle n n n)</c></td><td> set the desired angle on a joint </td></tr>
 <tr><td><c>(joint-param n s n)</c></td><td> set joint paramaters for the given joint </td></tr>
@@ -163,6 +170,7 @@ Types:
 <tr><td><c>(vsub v v)</c></td><td> subtract two vectors </td></tr>
 <tr><td><c>(vtransform v m)</c></td><td> returns the vector in the given space </td></tr>
 <tr><td><c>(vtransform-rot v m)</c></td><td> returns the vector in the given space, without translation </td></tr>
+<tr><td><c>(wire-colour v)</c></td><td> set the wireframe colour on the current state </td></tr>
 </table>
 
 </body>

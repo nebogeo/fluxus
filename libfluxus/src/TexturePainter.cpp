@@ -31,6 +31,25 @@ TexturePainter::~TexturePainter()
 {
 }
 
+void TexturePainter::Initialise()
+{
+	for (int c=0; c<MAX_TEXTURES; c++)
+	{
+		glActiveTexture(GL_TEXTURE0+c);
+		glClientActiveTexture(GL_TEXTURE0+c);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    	glMatrixMode(GL_TEXTURE);
+    	glLoadIdentity();
+	}
+	glClientActiveTexture(GL_TEXTURE0);
+}
+
 int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
@@ -116,18 +135,40 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
     return -1;
 }
 
-void TexturePainter::SetCurrent(int id)
+bool TexturePainter::SetCurrent(int *ids)
 {
-	map<unsigned int,TextureDesc*>::iterator i=m_TextureMap.find(id);
-	if (i==m_TextureMap.end())
+	bool ret=false;
+	
+	for (int c=0; c<MAX_TEXTURES; c++)
 	{
-		cerr<<"TexturePainter::SetCurrent : Could not find texture "<<id<<endl;
-		return;
+		glActiveTexture(GL_TEXTURE0+c);
+		
+		map<unsigned int,TextureDesc*>::iterator i=m_TextureMap.find(ids[c]);
+		if (i!=m_TextureMap.end())
+		{
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,ids[c]);
+			if (c==0) glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+			ret=true;
+		}
+		else
+		{
+			glDisable(GL_TEXTURE_2D);
+		}
 	}
 	
-	glBindTexture(GL_TEXTURE_2D,id);
+	return ret;
 }
-	
+
+void TexturePainter::DisableAll()
+{
+	for (int c=0; c<MAX_TEXTURES; c++)
+	{
+		glActiveTexture(GL_TEXTURE0+c);
+		glDisable(GL_TEXTURE_2D);
+	}
+}
 
 
 

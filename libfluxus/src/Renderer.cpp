@@ -53,10 +53,7 @@ m_Left(-0.75),
 m_Right(0.75),
 m_Front(1),
 m_Back(10000),
-m_OrthUp(-5.5),
-m_OrthDown(5.5),
-m_OrthLeft(-5.5),
-m_OrthRight(5.5),
+m_OrthZoom(1.0f),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_FogDensity(0), 
@@ -116,7 +113,7 @@ void Renderer::BeginScene(bool PickMode)
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
 		}
 		
-  		if (m_Ortho) glOrtho(m_OrthUp,m_OrthDown,m_OrthLeft,m_OrthRight,m_Front,m_Back);
+  		if (m_Ortho) glOrtho(m_Down*m_OrthZoom,m_Up*m_OrthZoom,m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Front,m_Back);
   		else glFrustum(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
 		
     	glEnable(GL_BLEND);
@@ -146,7 +143,7 @@ void Renderer::BeginScene(bool PickMode)
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
-		
+
 		if (m_FogDensity>0)
 		{
 			glEnable(GL_FOG);
@@ -164,13 +161,7 @@ void Renderer::BeginScene(bool PickMode)
 			
 		glLightModeli(GL_LIGHT_MODEL_COLOR_CONTROL,GL_SEPARATE_SPECULAR_COLOR);
 	
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-    	glMatrixMode(GL_TEXTURE);
-    	glLoadIdentity();
+    	TexturePainter::Get()->Initialise();
     	
     	m_Initialised=true;
 	}

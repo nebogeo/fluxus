@@ -92,6 +92,7 @@ public:
 	static SCM hint_vertcols();
 	static SCM hint_box();
 	static SCM hint_none();
+	static SCM hint_multitex();
 	static SCM blur(SCM s_blur);
 	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
 	static SCM feedback(SCM s_fb);
@@ -127,9 +128,12 @@ public:
 	static SCM load_texture(SCM s_name);
 	static SCM force_load_texture(SCM s_name);
 	static SCM texture(SCM s_id);
+	static SCM multitexture(SCM s_t, SCM s_id);
 	static SCM engine_callback(SCM s_func);
 	static SCM ortho();
 	static SCM persp();
+	static SCM frustum(SCM s_u, SCM s_d, SCM s_l, SCM s_r);
+	static SCM clip(SCM s_f, SCM s_b);
 	static SCM time();
 	static SCM delta();
 	static SCM reset_camera();

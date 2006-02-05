@@ -11,6 +11,13 @@ clears the scene graph of all objects and empties the state stack.
 <c>(ortho)</c> or <c>(persp)</c>
 sets the projection type to either othographic or perspective projection.
 
+<c>(frustum top bottom left right)</c>
+sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 
+0.75 -1 1
+
+<c>(clip front back)</c>
+sets the clipping plane positions, defaults to 1 10000
+
 <c>(reset-camera)</c>
 resets the camera matrix in case you get lost.
 
@@ -53,3 +60,10 @@ buggy and prone to crashing!
 
 <c>(feedback-transform matrix)</c>
 sets a transform for the feedback plane
+
+<c>(searchpaths l)</c>
+sets the directories in which fluxus will search for files (textures and scripts) to the given 
+list of paths, in order
+
+<c>(fullpath filename)</c>
+returns the full path to the file, using the searchpaths

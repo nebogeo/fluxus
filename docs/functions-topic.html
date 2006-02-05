@@ -42,6 +42,7 @@ Types:
 <tr><td><c>(scale v)</c></td><td> scale the current state </td></tr>
 <tr><td><c>(rotate v)</c></td><td> rotate the current state </td></tr>
 <tr><td><c>(colour v)</c></td><td> set the colour on the current state </td></tr>
+<tr><td><c>(wire-colour v)</c></td><td> set the wireframe colour on the current state </td></tr>
 <tr><td><c>(opacity n)</c></td><td> set the opacity on the current state </td></tr>
 <tr><td><c>(specular v)</c></td><td> set the specular colour on the current state </td></tr>
 <tr><td><c>(ambient v)</c></td><td> set the ambient colour on the current state </td></tr>
@@ -55,6 +56,8 @@ Types:
 <tr><td><c>(hint-points)</c></td><td> hint the primitive to render points </td></tr>
 <tr><td><c>(hint-anti-alias)</c></td><td> hint the primitive to render antialiased </td></tr>
 <tr><td><c>(hint-unlit)</c></td><td> hint the primitive to render unlit </td></tr>
+<tr><td><c>(hint-box)</c></td><td> hint the primitive to render the object bounding box </td></tr>
+<tr><td><c>(hint-vertcols)</c></td><td> uses vertex colours for the object, switches off colour materials from (colour) command</td></tr>
 <tr><td><c>(line-width)</c></td><td> set the current line width </td></tr>
 <tr><td><c>(point-width)</c></td><td> set the current point width </td></tr>
 <tr><td><c>(parent n)</c></td><td> set the grabbed primitive to parent to the given object </td></tr>
@@ -63,6 +66,9 @@ Types:
 <tr><td><c>(clear)</c></td><td> clear the scene of all primitives and lights (leaves the interpreter as is</td><tr> 
 <tr><td><c>(ortho)</c></td><td> set the camera mode to orthographic </td></tr>
 <tr><td><c>(persp)</c></td><td> set the camera mode to perspective </td></tr>
+<tr><td><c>(frustum top bottom left right)</c></td><td> sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1</td></tr>
+<tr><td><c>(clip front back)</c></td><td> sets the clipping plane positions, defaults to 1 10000</td></tr>
+<tr><td><c>(reset-camera)</c> resets the camera matrix in case you get lost.
 <tr><td><c>(reset-camera)</c></td><td> reset the camera transform - for when you get lost </td></tr>
 <tr><td><c>(lock-camera n)</c></td><td> lock the camera to a given object </td></tr>
 <tr><td><c>(clear-colour v)</c></td><td> set the background colour </td></tr>
@@ -102,6 +108,8 @@ Types:
 <tr><td><c>(turtle-move n)</c></td><td> move the turtle the given distance </td></tr>
 <tr><td><c>(turtle-turn v)</c></td><td> turns the turtle in x,y,z </td></tr>
 <tr><td><c>(turtle-prim n)</c></td><td> sets the poly primitive type for the turtle </td></tr>
+<tr><td><c>(searchpaths l)</c></td><td> sets the directories in which fluxus will search for files to the given list of paths</td></tr>
+<tr><td><c>(fullpath filename)</c></td><td> returns the full path to the file, using the searchpaths </td></tr>
 </table>
 
 <table>
@@ -116,6 +124,7 @@ Types:
 <tr><td><c>(passive-sphere n)</c></td><td> add primitive to the physics system as passive with a sphere collision volume </td></tr>
 <tr><td><c>(passive-cylinder n)</c></td><td> add primitive to the physics system as passive with a cylinder collision volume </td></tr>
 <tr><td><c>(ground-plane v n)</c></td><td> make a static infinite plane collision object </td></tr>
+<tr><td><c>(build-fixedjoint n)</c></td><td> build a fixed joint connecting two objects </td></tr>
 <tr><td><c>(build-hingejoint n n v v)</c></td><td> build a hinge connecting two objects </td></tr>
 <tr><td><c>(build-balljoint n n v)</c></td><td> build a ball joint connecting two objects </td></tr>
 <tr><td><c>(build-sliderjoint n n v)</c></td><td> build a slider joint connecting two objects </td></tr>

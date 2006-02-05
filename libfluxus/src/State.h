@@ -42,6 +42,9 @@ namespace fluxus
 #define HINT_BOUND    0x0020
 #define HINT_UNLIT    0x0040
 #define HINT_VERTCOLS 0x0080
+#define HINT_MULTITEX 0x0100
+
+#define MAX_TEXTURES  8
 
 class State
 {
@@ -57,7 +60,7 @@ public:
 	dColour Ambient;
 	float Shinyness;
 	float Opacity;
-	int Texture;
+	int Textures[MAX_TEXTURES];
 	
 	int Parent;
 	int Hints;

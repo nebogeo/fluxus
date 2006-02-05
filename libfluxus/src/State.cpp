@@ -24,7 +24,6 @@ State::State() :
 Colour(1,1,1),
 Shinyness(1.0f),
 Opacity(1.0f),
-Texture(-1),
 Parent(1),
 Hints(HINT_SOLID),
 LineWidth(1),
@@ -32,6 +31,10 @@ PointWidth(1),
 SourceBlend(GL_SRC_ALPHA),
 DestinationBlend(GL_ONE_MINUS_SRC_ALPHA)
 {
+	for (int c=0; c<MAX_TEXTURES; c++)
+	{
+		Textures[c]=-1;
+	}
 }
 
 void State::Apply()
@@ -47,16 +50,8 @@ void State::Apply()
 	glLineWidth(LineWidth);
 	glPointSize(PointWidth);
 	glBlendFunc(SourceBlend,DestinationBlend);
-	
-	if (Texture>=0)
-	{ 
-		glEnable(GL_TEXTURE_2D);
-		TexturePainter::Get()->SetCurrent(Texture);
-	}
-	else
-	{
-		glDisable(GL_TEXTURE_2D);
-	}
+
+	TexturePainter::Get()->SetCurrent(Textures);
 }
 
 void State::Spew()
@@ -67,7 +62,7 @@ void State::Spew()
 		<<"Emissive: "<<Emissive<<endl
 		<<"Shinyness: "<<Shinyness<<endl
 		<<"Opacity: "<<Opacity<<endl
-		<<"Texture: "<<Texture<<endl
+		<<"Texture: "<<Textures[0]<<endl
 		<<"Parent: "<<Parent<<endl
 		<<"Hints: "<<Hints<<endl
 		<<"LineWidth: "<<LineWidth<<endl

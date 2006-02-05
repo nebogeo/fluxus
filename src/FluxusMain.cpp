@@ -210,6 +210,7 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 		
 	m_Renderer.GetCamera()->init();
 	m_Renderer.GetCamera()->translate(m_PosX,m_PosY,m_DisY);
+	m_Renderer.SetOrthoZoom(m_DisY);
 	m_Renderer.GetCamera()->roty(-m_RotY);
 	m_Renderer.GetCamera()->rotx(-m_RotX);
 }

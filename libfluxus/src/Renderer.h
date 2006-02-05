@@ -97,8 +97,9 @@ public:
 	void LockCamera(int Prim);
 	void UnlockCamera()						 { m_LockedCamera=false; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
-	void SetFrustum(float u, float d, float l, float r, float f, float b) 
-		{ m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Front=f; m_Back=b; m_Initialised=false; }
+	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
+	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
+	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void ShowCursor(bool s);
@@ -155,7 +156,7 @@ private:
 	bool m_ClearZBuffer;
 	bool m_DepthTest;
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
-	float m_OrthUp,m_OrthDown,m_OrthLeft,m_OrthRight;
+	float m_OrthZoom;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
 	dColour m_FogColour; 
