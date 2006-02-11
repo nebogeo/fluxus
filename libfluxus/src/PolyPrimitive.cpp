@@ -58,12 +58,18 @@ void PolyPrimitive::AddVertex(const dVertex &Vert)
 
 void PolyPrimitive::Render()
 {
-
+	// some drivers crash if they don't get enough data for a primitive...
+	if (m_VertData->size()<3) return; 
+	
 	int type=0;
 	switch (m_Type)
 	{
 		case TRISTRIP : type=GL_TRIANGLE_STRIP; break;
-		case QUADS : type=GL_QUADS; break;
+		case QUADS : 
+			// some drivers crash if they don't get enough data for a primitive...
+			if (m_VertData->size()<4) return; 
+			type=GL_QUADS; 	
+		break;
 		case TRILIST : type=GL_TRIANGLES; break;
 		case TRIFAN : type=GL_TRIANGLE_FAN; break;
 		case POLYGON : type=GL_POLYGON; break;
