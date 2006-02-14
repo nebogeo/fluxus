@@ -1,4 +1,4 @@
-; this is another example of a different rendering technique, not toonshading style
+; this is another example of a different rendering technique, not toonshading styleb
 ; lighting, but similar approach which can be used to find edges
 
 ; instead of doing a lighting calculation, we figure out the viewing angle (the direction from the
@@ -23,11 +23,11 @@
 (hint-unlit)
 (rotate (vector 180 90 0))
 (scale (vector -10 -10 -10))
-;(build-sphere 6 6)
+(build-sphere 6 6)
 (pop)
 
 (colour (vector 0.5 0.5 1))
-(define ob (build-nurbs-sphere 12 12))
+(define ob (build-nurbs-sphere 15 15))
 (grab ob)
 ; more reference geometry for the deformation
 (pdata-copy "p" "pref")

@@ -83,22 +83,27 @@ Pdata automatically created for you depends on the type of the primtive.
 
 Polygonal based primtives (Cube, Sphere, Cylinder, Plane, Text)
 
-Positions:      "p"
-Normals:        "n"
-Texture coords: "t"
-Vertex colours: "c"
+Positions:      "p" vector
+Normals:        "n" vector
+Texture coords: "t" vector
+Vertex colours: "c" colour
 
 NURBS based primitives (NURBSSphere, NURBSPlane)
 
-Positions:      "p"
-Normals:        "n"
-Texture coords: "t"
+Positions:      "p" vector
+Normals:        "n" vector
+Texture coords: "t" vector
 
 Particle primtives
 
-Positions:      "p"
-Colours:        "c"
-Sizes:          "s"
+Positions:      "p" vector
+Colours:        "c" colour
+Sizes:          "s" vector
+
+Line primtives
+
+Positions:      "p" vector
+Width:          "w" float 
 
 The line primitive is not currently supported.
 

@@ -37,7 +37,7 @@ public:
 	static SCM build_plane();
 	static SCM build_plane(SCM s_xsegments, SCM s_ysegments);
 	static SCM build_cylinder(SCM s_hsegments, SCM s_rsegments);
-	static SCM build_line(SCM start, SCM swidth, SCM end, SCM ewidth);
+	static SCM build_line(SCM s_numpoints);
 	static SCM build_text(SCM text);
 	static SCM build_nurbs(SCM s_size);
 	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
@@ -157,7 +157,7 @@ public:
 	static SCM turtle_reset();
 	static SCM turtle_push();
 	static SCM turtle_pop();
-	static SCM start_framedump(SCM s_name);
+	static SCM start_framedump(SCM s_name, SCM s_type);
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);
 	static SCM osc_source(SCM s_port);

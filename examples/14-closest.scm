@@ -10,7 +10,7 @@
 	(hint-none)
 	(hint-wire)
 	(define s (build-sphere 50 50))
-	(apply s)
+	(apply-transform s)
 (pop)
 
 ; build the orbiting object

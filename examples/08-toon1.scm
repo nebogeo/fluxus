@@ -67,7 +67,7 @@
 (colour (vector (flxrnd)(flxrnd)(flxrnd)))
 (translate (vector 0 -1 0))
 (let ((s (build-seg-plane 20 20)))
-    (apply s)
+    (apply-transform s)
     (grab s)
     (deform-plane (pdata-size))
     (recalc-normals)

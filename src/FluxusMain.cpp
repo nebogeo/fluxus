@@ -221,10 +221,11 @@ bool FluxusMain::KeyPressed(char b)
 	return false;
 }
 
-void FluxusMain::StartDumpFrames(const string &Filename)
+void FluxusMain::StartDumpFrames(const string &Filename, const string &Type)
 {
 	m_Frame=0;
 	m_FrameName = Filename;
+	m_FrameType = Type;
 }
 
 void FluxusMain::EndDumpFrames()
@@ -256,14 +257,20 @@ void FluxusMain::Render()
 	{
 		char Fnum[7];
 		snprintf(Fnum,7,"%06d",m_Frame);
-		string Filename=m_FrameName+"-"+string(Fnum)+".jpg";
 		
-		cerr<<Filename<<endl;
+		if (m_FrameType=="jpg")
+		{
+			string Filename=m_FrameName+"-"+string(Fnum)+".jpg";
+			WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,80,1);
+			cerr<<Filename<<endl;
+		}
+		else if (m_FrameType=="tif")
+		{
+			string Filename=m_FrameName+"-"+string(Fnum)+".tif";
+			WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
+			cerr<<Filename<<endl;
+		}
 		
-		//string Filename=m_FrameName+"-"+string(Fnum)+".tif";
-		WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,80,1);
-		//WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
-		//  MAC RLE -----------------------------------------------------------^
 		m_Frame++;
 	}
 }

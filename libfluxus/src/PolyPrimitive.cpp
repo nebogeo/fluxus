@@ -239,6 +239,7 @@ void PolyPrimitive::ApplyTransform(bool ScaleRotOnly)
 		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
+			// why not normals?
 		}
 	}
 	else

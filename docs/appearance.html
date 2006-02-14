@@ -43,6 +43,15 @@ won't load more than once, so you can easily just call:
 
 Textures have to be png format, and support alpha transparency.
 
+<c>(multitexture n t)</c>  (only on poly prims at the moment)                       
+set the texture on the current state, using a texture ID n to multitexture t. 
+multitexturing allows you to apply different textures and coordinates to the 
+same object at once. t is a number from 0 to 7. texture 0 is the default one
+(which uses the pdata "t" for it's texture coords) multitexture n looks for 
+pdata "tn" - ie multitexture 1 looks for "t1". you need to add these 
+yourself using (pdata-add) or (pdata-copy). see <a href="deforming.html">deforming</a> for
+more info.
+
 <c>(line-width n)</c>
 
 alters the line width in pixels
@@ -104,4 +113,7 @@ renders the object's bounding box
 <c>(hint-vertcols)</c>
 uses vertex colours for the object, switches off colour materials from (colour) 
 command
+
+<c>(hint-multitex)</c>
+turns on multitexturing - only works on poly primitives at the moment
 

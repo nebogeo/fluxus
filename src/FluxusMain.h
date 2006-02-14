@@ -57,7 +57,7 @@ public:
     void SourceScript(const string &Filename);
     void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
     void SaveScript();
-	void StartDumpFrames(const string &Filename);
+	void StartDumpFrames(const string &Filename, const string &Type);
 	void EndDumpFrames();
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void HideCursor() { m_ShowCursor=!m_ShowCursor; m_Renderer.ShowCursor(m_ShowCursor); }
@@ -108,6 +108,7 @@ private:
 	dVector m_Dir;
 	int m_Frame;
 	string m_FrameName;
+	string m_FrameType;
 	int m_Width;
 	int m_Height;
 	string m_Script;

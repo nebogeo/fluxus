@@ -17,7 +17,7 @@
 ; uncomment the line below to play with some of the blendmodes
     ;(blend-mode "src-alpha" "src-color")
     (set! objs (cons (build-plane) objs))
-    (apply (car objs))
+    (apply-transform (car objs))
     (pop))
 
 

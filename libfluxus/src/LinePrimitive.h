@@ -30,23 +30,18 @@ public:
 	virtual ~LinePrimitive();
 	
 	virtual void Render();
-	virtual void Finalise();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "LinePrimitive"; }
 
-	void SetStart(const dVertex &Vert, float width);
-	void SetEnd(const dVertex &Vert, float width);
-
 protected:
 
-	virtual void PDataDirty() {}
+	virtual void PDataDirty();
 
 private:
-	dVertex m_Start;
-	dVertex m_End;
-	float m_StartWidth;
-	float m_EndWidth;
+
+	vector<dVector> *m_VertData;
+	vector<float> *m_WidthData;
 };
 
 }

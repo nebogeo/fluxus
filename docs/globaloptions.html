@@ -45,10 +45,11 @@ enables/disables backface culling.
 sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. 
 this value doesn't seem to be entirely correct, but it does the job.
 
-<c>(start-framedump filename) </c>
+<c>(start-framedump filename type) </c>
 <c>(end-framedump)</c>
 starts and stops writing tiff frame images to disk. will be quite slow - and 
-unsuitable for realtime use - see <c>(process)</c>
+unsuitable for realtime use - see <c>(process)</c> type can be one of "tif" or
+"jpg".
 
 <c>(fog colour density start end)</c>
 sets the global fogging parameters.

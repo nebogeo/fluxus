@@ -17,7 +17,7 @@ Types:
 <tr><td><c>(active-cylinder n)</c></td><td> add primitive to the physics system as active with a cylinder collision volume </td></tr>
 <tr><td><c>(active-sphere n)</c></td><td> add primitive to the physics system as active with a sphere collision volume </td></tr>
 <tr><td><c>(ambient v)</c></td><td> set the ambient colour on the current state </td></tr>
-<tr><td><c>(apply)</c></td><td> apply the transform to the primitive's vertices </td></tr>
+<tr><td><c>(apply-transform)</c></td><td> apply the transform to the primitive's vertices </td></tr>
 <tr><td><c>(backfacecull n)</c></td><td> turns on or off backface culling </td></tr>
 <tr><td><c>(blur n)</c></td><td> sets the opacity on a clearing polygon </td></tr>
 <tr><td><c>(build-fixedjoint n)</c></td><td> build a fixed joint connecting two objects </td></tr>
@@ -27,7 +27,7 @@ Types:
 <tr><td><c>(build-cylinder n n)</c></td><td> returns the id for a cylinder primitive </td></tr>
 <tr><td><c>(build-hinge2joint n n v v v)</c></td><td> build a hinge2 joint connecting two objects </td></tr>
 <tr><td><c>(build-hingejoint n n v v)</c></td><td> build a hinge connecting two objects </td></tr>
-<tr><td><c>(build-line v n v n)</c></td><td> returns the id for a line primitive </td></tr>
+<tr><td><c>(build-line n)</c></td><td> returns the id for a line primitive </td></tr>
 <tr><td><c>(build-nurbs-plane n n)</c></td><td> returns the id for a nurbs plane primitive </td></tr>
 <tr><td><c>(build-nurbs-sphere n n)</c></td><td> returns the id for a nurbs sphere primitive </td></tr>
 <tr><td><c>(build-particles n)</c></td><td> returns the id for a particles primitive </td></tr>
@@ -80,6 +80,7 @@ Types:
 <tr><td><c>(hint-wire)</c></td><td> hint the primitive to render wireframe </td></tr>
 <tr><td><c>(hint-box)</c></td><td> hint the primitive to render the object bounding box </td></tr>
 <tr><td><c>(hint-vertcols)</c></td><td> uses vertex colours for the object, switches off colour materials from (colour) command</td></tr>
+<tr><td><c>(hint-multitex)</c></td><td> hint to use multitexturing</td></tr>
 
 <tr><td><c>(identity)</c></td><td> set the current transform to identity </td></tr>
 <tr><td><c>(joint-angle n n n)</c></td><td> set the desired angle on a joint </td></tr>
@@ -91,7 +92,7 @@ Types:
 <tr><td><c>(light-position n v)</c></td><td> set the position of a light </td></tr>
 <tr><td><c>(light-specular n v)</c></td><td> set the specular colour of a light </td></tr>
 <tr><td><c>(line-width)</c></td><td> set the current line width </td></tr>
-<tr><td><c>(load s)</c></td><td> loads a script into the editor </td></tr>
+<tr><td><c>(edit s)</c></td><td> loads a script into the editor </td></tr>
 <tr><td><c>(load-code s)</c></td><td> loads a saved livecode recording </td></tr>
 <tr><td><c>(load-texture s)</c></td><td> loads the given texture from disk, and returns a texture id </td></tr>
 <tr><td><c>(lock-camera n)</c></td><td> lock the camera to a given object </td></tr>
@@ -143,12 +144,12 @@ Types:
 <tr><td><c>(shinyness n)</c></td><td> set the shinyness on the current state </td></tr>
 <tr><td><c>(show-axis n)</c></td><td> turns on or off the origin locator </td></tr>
 <tr><td><c>(show-fps n)</c></td><td> turns on or off the fps counter </td></tr>
-<tr><td><c>(source s)</c></td><td> loads a script into the editor, and executes it </td></tr>
 <tr><td><c>(specular v)</c></td><td> set the specular colour on the current state </td></tr>
 <tr><td><c>(start-audio s n n)</c></td><td> starts up the audio processing with buffersize and samplerate </td></tr>
 <tr><td><c>(start-framedump s)</c></td><td> starts saving frame data to disk with the given name </td></tr>
 <tr><td><c>(surface-params n n n n)</c></td><td> set the global surface parameters </td></tr>
 <tr><td><c>(texture n)</c></td><td> set the texture on the current state </td></tr>
+<tr><td><c>(multitexture n t)</c></td><td> set the multitexture t on the current state </td></tr>
 <tr><td><c>(time)</c></td><td> returns time in seconds since fluxus startup </td></tr>
 <tr><td><c>(translate v)</c></td><td> translate the current state </td></tr>
 <tr><td><c>(turtle-build)</c></td><td> tells the turtle to build the primitive </td></tr>

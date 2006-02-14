@@ -134,23 +134,13 @@ SCM FluxusBinding::build_cylinder(SCM s_hsegments, SCM s_rsegments)
     return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(CylPrim));
 }
 
-SCM FluxusBinding::build_line(SCM start, SCM swidth, SCM end, SCM ewidth)
+SCM FluxusBinding::build_line(SCM s_numpoints)
 {
-	SCM_ASSERT(SCM_VECTORP(start), start, SCM_ARG1, "build_line");
-	SCM_ASSERT(SCM_VECTOR_LENGTH(start)==3, start, SCM_ARG1, "build_line");
-	SCM_ASSERT(SCM_NUMBERP(swidth), swidth, SCM_ARG2, "build_line");
-	SCM_ASSERT(SCM_VECTORP(end), end, SCM_ARG3, "build_line");
-	SCM_ASSERT(SCM_VECTOR_LENGTH(end)==3, end, SCM_ARG3, "build_line");
-	SCM_ASSERT(SCM_NUMBERP(ewidth), ewidth, SCM_ARG4, "build_line");
-	float s[3],e[3];
-	gh_scm2floats(start,s);
-	gh_scm2floats(end,e);
+	SCM_ASSERT(SCM_NUMBERP(s_numpoints), s_numpoints, SCM_ARG1, "build-line");
 	
-	LinePrimitive *LinePrim = new LinePrimitive;
-	LinePrim->SetStart(dVertex(dVector(s[0],s[1],s[2]),dVector(0,1,0)),gh_scm2double(swidth));
-	LinePrim->SetEnd(dVertex(dVector(e[0],e[1],e[2]),dVector(0,1,0)),gh_scm2double(ewidth));
-	
-	return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(LinePrim));
+	LinePrimitive *Prim = new LinePrimitive();
+	Prim->Resize((int)gh_scm2double(s_numpoints));
+    return gh_double2scm(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_text(SCM s_text)
@@ -379,7 +369,7 @@ SCM FluxusBinding::ungrab()
 
 SCM FluxusBinding::apply(SCM s_id)
 {
-	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "apply");
+	SCM_ASSERT(SCM_NUMBERP(s_id), s_id, SCM_ARG1, "apply-transform");
 	Fluxus->GetRenderer()->GetPrimitive((int)gh_scm2double(s_id))->ApplyTransform();
 	return SCM_UNSPECIFIED;
 }
@@ -1276,13 +1266,16 @@ SCM FluxusBinding::turtle_reset()
 	return SCM_UNSPECIFIED;	
 }
 
-SCM FluxusBinding::start_framedump(SCM s_name)
+SCM FluxusBinding::start_framedump(SCM s_name, SCM s_type)
 {
-	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "start_framedump");	
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "start-framedump");	
+	SCM_ASSERT(SCM_STRINGP(s_type), s_type, SCM_ARG2, "start-framedump");	
     size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
-	Fluxus->StartDumpFrames(name);
+	char *type=gh_scm2newstr(s_type,&size);
+	Fluxus->StartDumpFrames(name,type);
 	free(name);
+	free(type);
     return SCM_UNSPECIFIED;
 }
 
@@ -1445,7 +1438,7 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
 {
     SCM_ASSERT(SCM_STRINGP(s_t), s_t, SCM_ARG1, "pdata-set");
     SCM_ASSERT(SCM_NUMBERP(s_i), s_i, SCM_ARG2, "pdata-set");
-	SCM_ASSERT(SCM_VECTORP(s_v), s_v, SCM_ARG3, "pdata-set");	
+	//SCM_ASSERT(SCM_VECTORP(s_v), s_v, SCM_ARG3, "pdata-set");	
 	//SCM_ASSERT(SCM_VECTOR_LENGTH(s_v)==3, s_v, SCM_ARG3, "pdata-set");
 	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
@@ -1461,7 +1454,11 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
 		{
 			if (index<size)
 			{
-				if (type=='v')	
+				if (type=='f')	
+				{
+					Grabbed->SetData<float>(name,index,gh_scm2double(s_v));
+				}
+				else if (type=='v')	
 				{
 					dVector v;
 					gh_scm2floats(s_v,v.arr());
@@ -2075,7 +2072,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_0("build-plane",     build_plane);
     gh_new_procedure0_2("build-seg-plane",     build_plane);
     gh_new_procedure0_2("build-cylinder", build_cylinder);
-	gh_new_procedure4_0("build-line",   build_line);
+	gh_new_procedure0_1("build-line",   build_line);
 	gh_new_procedure0_1("build-text",   build_text);
 	gh_new_procedure0_1("build-nurbs",  build_nurbs);
 	gh_new_procedure0_2("build-nurbs-sphere", build_nurbs_sphere);
@@ -2096,7 +2093,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("grab",         grab);
     gh_new_procedure0_0("ungrab",          ungrab);
     gh_new_procedure0_0("print-scene-graph",print_scene_graph);
-	gh_new_procedure0_1("apply",        apply);
+	gh_new_procedure0_1("apply-transform",        apply);
 	gh_new_procedure0_0("identity",        flux_identity);
 	gh_new_procedure0_1("concat",          concat);
     gh_new_procedure0_1("translate",    translate);
@@ -2157,9 +2154,9 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("light-position",  light_position);
 	
 	// interpreter + misc
-	gh_new_procedure0_1("load", load);
+	gh_new_procedure0_1("edit", load);
 	gh_new_procedure0_1("save-name", save_name);
-	gh_new_procedure0_1("source", source);
+	//gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key-pressed", key_pressed);
 	gh_new_procedure0_0("mouse-over", mouse_over);
 	gh_new_procedure0_1("mouse-button", mouse_button);
@@ -2168,7 +2165,7 @@ void FluxusBinding::RegisterProcs()
     gh_new_procedure0_1("every-frame", engine_callback);
     gh_new_procedure0_0("flxrnd", srandom);
 	gh_new_procedure0_1("desiredfps", desiredfps);
-	gh_new_procedure0_1("start-framedump", start_framedump);
+	gh_new_procedure0_2("start-framedump", start_framedump);
 	gh_new_procedure0_0("end-framedump", end_framedump);
 	gh_new_procedure0_1("load-code", load_recorded_code);
 	gh_new_procedure0_1("save-code", save_recorded_code);

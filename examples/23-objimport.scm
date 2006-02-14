@@ -1,5 +1,5 @@
 (clear)
-(source "../scm/objimport.scm")
+(load "../scm/objimport.scm")
 
 (define dirlight1 (vtransform (vector 0 1 0) (mrotate (vector 45 45 0))))
 (texture (load-texture "textures/gradient.png"))

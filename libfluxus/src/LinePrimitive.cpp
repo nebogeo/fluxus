@@ -21,76 +21,116 @@
 using namespace fluxus;
 
 LinePrimitive::LinePrimitive() 
-{
+{	
+	AddData("p",new TypedPData<dVector>);
+	AddData("w",new TypedPData<float>);
+	PDataDirty();
 }
 
 LinePrimitive::~LinePrimitive()
 {
 }
 
+void LinePrimitive::PDataDirty()
+{
+	// reset pointers
+	m_VertData=GetDataVec<dVector>("p");
+	m_WidthData=GetDataVec<float>("w");
+}
+
 void LinePrimitive::Render()
 {
+	if (m_VertData->size()<2) return;
+	
 	dMatrix ModelView;
 	glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
 
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	
-	dVector CameraDir(0,0,1);
-	CameraDir=ModelView.inverse().transform_no_trans(CameraDir);
-	CameraDir.normalise();
-	
-	dVector line=m_End.point-m_Start.point;
-	dVector up=line.cross(CameraDir);
-	up.normalise();
-	
-	dVector topnorm=up;
-	dVector botnorm=-up;
-	
-	glBegin(GL_TRIANGLE_STRIP);
-	glNormal3fv(CameraDir.arr());
-	glTexCoord2f(0,0);
-	glNormal3fv(botnorm.arr());
-	glVertex3fv((m_Start.point-(up*m_StartWidth)).arr());
-	glTexCoord2f(0,1);
-	glNormal3fv(topnorm.arr());
-	glVertex3fv((m_Start.point+(up*m_StartWidth)).arr());
-	glTexCoord2f(1,0);
-	glNormal3fv(botnorm.arr());
-	glVertex3fv((m_End.point-(up*m_EndWidth)).arr());
-	glTexCoord2f(1,1);
-	glNormal3fv(topnorm.arr());
-	glVertex3fv((m_End.point+(up*m_EndWidth)).arr());
-	glEnd();
+	if (m_State.Hints & HINT_SOLID)
+	{
+		dVector CameraDir(0,0,1);
+		CameraDir=ModelView.inverse().transform_no_trans(CameraDir);
+		CameraDir.normalise();
 
+		glBegin(GL_TRIANGLE_STRIP);
+
+		for (unsigned int n=0; n<m_VertData->size()-1; n++)
+		{
+			float txstart = n/(float)m_VertData->size();
+			float txend = (n+1)/(float)m_VertData->size();
+		
+			dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
+			dVector up=line.cross(CameraDir);
+			up.normalise();
+
+			dVector topnorm=up;
+			dVector botnorm=-up;
+
+			glTexCoord2f(txstart,0);
+			glNormal3fv(botnorm.arr());
+			glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
+			glTexCoord2f(txstart,1);
+			glNormal3fv(topnorm.arr());
+			glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
+			glTexCoord2f(txend,0);
+			glNormal3fv(botnorm.arr());
+			glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
+			glTexCoord2f(txend,1);
+			glNormal3fv(topnorm.arr());
+			glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
+		}
+		glEnd();
+
+	}
+	
+	if (m_State.Hints & HINT_WIRE)
+	{
+		glBegin(GL_LINE_STRIP);
+		for (unsigned int n=0; n<m_VertData->size()-1; n++)
+		{
+			float txstart = n/(float)m_VertData->size();
+			float txend = (n+1)/(float)m_VertData->size();
+			glTexCoord2f(txstart,0);
+			glVertex3fv((*m_VertData)[n].arr());
+			glTexCoord2f(txend,0);
+			glVertex3fv((*m_VertData)[n+1].arr());
+		}
+		glEnd();
+	}
+	
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
-}
-
-void LinePrimitive::Finalise()
-{
 }
 
 dBoundingBox LinePrimitive::GetBoundingBox()
 {
 	dBoundingBox box;
-	box.expand(m_Start.point);
-	box.expand(m_End.point);
+	for (unsigned int n=0; n<m_VertData->size()-1; n++)
+	{
+		box.expand((*m_VertData)[n]);
+	}
 	return box;
 }
 
 void LinePrimitive::ApplyTransform(bool ScaleRotOnly)
 {
-	m_Start=GetState()->Transform.transform(m_Start);
-	m_End=GetState()->Transform.transform(m_End);
+	if (!ScaleRotOnly)
+	{
+		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		{
+			*i=GetState()->Transform.transform(*i);
+		}
+	}
+	else
+	{
+		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		{
+			*i=GetState()->Transform.transform_no_trans(*i);
+		}
+	}
+	
+	GetState()->Transform.init();
 }
 
-void LinePrimitive::SetStart(const dVertex &Vert, float width)
-{
-	m_Start=Vert;
-	m_StartWidth=width;
-}
-
-void LinePrimitive::SetEnd(const dVertex &Vert, float width)
-{
-	m_End=Vert;
-	m_EndWidth=width;
-}

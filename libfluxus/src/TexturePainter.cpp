@@ -43,7 +43,7 @@ void TexturePainter::Initialise()
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
+		
     	glMatrixMode(GL_TEXTURE);
     	glLoadIdentity();
 	}
@@ -158,6 +158,8 @@ bool TexturePainter::SetCurrent(int *ids)
 		}
 	}
 	
+	glActiveTexture(GL_TEXTURE0);
+	
 	return ret;
 }
 
@@ -168,6 +170,7 @@ void TexturePainter::DisableAll()
 		glActiveTexture(GL_TEXTURE0+c);
 		glDisable(GL_TEXTURE_2D);
 	}
+	glClientActiveTexture(GL_TEXTURE0);
 }
 
 

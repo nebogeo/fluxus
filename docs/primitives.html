@@ -39,13 +39,6 @@ a capped cylinder, texture map wrapped around
 
 <img src="images/cylinder.png">
 
-<c>(build-line vstart swidth vend ewidth)</c>
-builds a single line from start to end in world space, with start and end 
-widths. the geometry is constantly camera facing and is texture mapped so the 
-texture is stretched along each line segment. if used in lit mode, the normals 
-are faked to approximate a circular cross section.
-
-<img src="images/line.png">
 
 <c>(build-text text)</c>
 builds a sequence of planes, texture mapped so that a font texture can be used 
@@ -77,6 +70,9 @@ builds a tessalated nurbs plane, texture mapped in uv direction
 <img src="images/nurbs-plane.png">
 a nurbs patch plane, again with a control vertex tweaked
 		
+The following primtives are different in that they require pdata modification
+to do anything useful. (see <a href="deforming.html">deforming</a> for more info)
+		
 <c>(build-particles num)</c>
 builds a particles primitive containing num points, all initially set to the 
 origin. you use the pdata functions to edit the postions, colours and sizes. 
@@ -92,6 +88,16 @@ happy textured sprites
 <img src="images/particles.png">
 point particles
 
+<c>(build-line numpoints)</c>
+builds a line consisting of numpoint points. the geometry is constantly camera 
+facing and is texture mapped so the texture is stretched along the line from start
+to finish. you use the pdata functions to edit the postions and widths of the lines. 
+if used lit, the normals are faked to approximate a circular cross section. 
+additionally, if solid rendering is cleared with (hint-none) and (hint-wire) is 
+activated, a faster constant width line will be drawn - width specified by the 
+(line-width) command
+
+<img src="images/line.png">
 <c>(build-polygons size type)</c>
 builds a raw polygon primitive with size vertices (everything set to zero). 
 type is a number that refers to the way the vertices are interpreted to build
