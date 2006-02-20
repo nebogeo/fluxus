@@ -21,7 +21,7 @@
 FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
 TurtleBuilder   FluxusBinding::turtle;
-string          FluxusBinding::CallbackString;
+SCM		FluxusBinding::FrameHook=NULL;
 PolyPrimitive*  FluxusBinding::StaticCube=NULL;
 PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
@@ -348,7 +348,11 @@ SCM FluxusBinding::clear()
 {
 	Fluxus->GetRenderer()->Clear();
 	Fluxus->GetPhysics()->Clear();
-	CallbackString="";
+	if (FrameHook)
+		scm_reset_hook_x(FrameHook);
+	else {
+		fprintf(stderr, "FrameHook == NULL during (clear)!\n");
+	}
 	return SCM_UNSPECIFIED;
 }
 
@@ -1066,14 +1070,9 @@ SCM FluxusBinding::multitexture(SCM s_t, SCM s_id)
     return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::engine_callback(SCM s_func)
+SCM FluxusBinding::frame_hook()
 {
-	SCM_ASSERT(SCM_STRINGP(s_func), s_func, SCM_ARG1, "engine_callback");
-	size_t size=0;
-	char *temp=gh_scm2newstr(s_func,&size);
-	CallbackString=temp;
-	free(temp);
-    return SCM_UNSPECIFIED;
+	return FrameHook;
 }
 
 SCM FluxusBinding::frustum(SCM s_u, SCM s_d, SCM s_l, SCM s_r)
@@ -2162,7 +2161,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("mouse-button", mouse_button);
     gh_new_procedure0_0("time", time);
     gh_new_procedure0_0("delta", delta);
-    gh_new_procedure0_1("every-frame", engine_callback);
+    gh_new_procedure0_0("frame-hook", frame_hook);
     gh_new_procedure0_0("flxrnd", srandom);
 	gh_new_procedure0_1("desiredfps", desiredfps);
 	gh_new_procedure0_2("start-framedump", start_framedump);

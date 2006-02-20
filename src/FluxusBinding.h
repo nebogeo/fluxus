@@ -19,7 +19,7 @@ public:
 	static FluxusMain *Fluxus;
 	static AudioCollector *Audio;
 	static TurtleBuilder turtle;
-	static string CallbackString;
+	static SCM FrameHook;
 	static int GrabbedID;
 
 	static PolyPrimitive* StaticCube;
@@ -129,7 +129,7 @@ public:
 	static SCM force_load_texture(SCM s_name);
 	static SCM texture(SCM s_id);
 	static SCM multitexture(SCM s_t, SCM s_id);
-	static SCM engine_callback(SCM s_func);
+	static SCM frame_hook();
 	static SCM ortho();
 	static SCM persp();
 	static SCM frustum(SCM s_u, SCM s_d, SCM s_l, SCM s_r);

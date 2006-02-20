@@ -171,12 +171,19 @@ void IdleCallback()
 	glutPostRedisplay();
 }
 
+
+SCM EngineCallbackThunk(void * dummy)
+{
+	scm_run_hook(binding->FrameHook,  SCM_EOL);
+	return SCM_UNDEFINED;
+}
+
 void EngineCallback()
 {
-    if (binding->CallbackString!="")
-    {
-        gh_eval_str_with_catch(binding->CallbackString.c_str(), (scm_t_catch_handler)ErrorHandler);
-    }
+	if (binding->FrameHook)
+		scm_internal_catch(SCM_BOOL_T, 
+				   EngineCallbackThunk, (void*)NULL,
+				   ErrorHandler, (void*)"fluxus");		
 }
 
 char *Script;
@@ -186,6 +193,8 @@ void inner_main(int argc, char **argv)
 	binding->RegisterProcs();
     string fragment;
 
+    binding->FrameHook=scm_make_hook(SCM_MAKINUM(0));
+    scm_gc_protect_object(binding->FrameHook);
     binding->Fluxus->GetRenderer()->SetEngineCallback(EngineCallback);
 
 	string Init = string(getenv("HOME"))+"/"+INIT_FILE;
