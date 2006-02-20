@@ -36,6 +36,7 @@ Source = Split("libfluxus/src/PData.cpp \
 				src/JackClient.cpp \
 				src/TurtleBuilder.cpp \
 				src/GLEditor.cpp \
+				src/Repl.cpp \
 				src/Utils.cpp \
 				src/OSCServer.cpp \
 				src/Recorder.cpp \
