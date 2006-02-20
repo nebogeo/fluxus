@@ -108,6 +108,23 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	}
 }
 
+// this function is used in arcball implementation
+static void onUnitSphere(const float mx, const float my,
+			 float& x, float& y, float& z)
+{
+	x = mx;		// should divide radius
+	y = my;
+	float mag = x*x + y*y;
+	if (mag > 1.0f) {
+		float scale = 1.0f / ((float) sqrt(mag));
+		x *= scale;
+		y *= scale;
+		z = 0;
+	} else {
+		z = (float) sqrt(1 - mag);
+	}
+}
+
 void FluxusMain::HandleImpl(unsigned char key, int button, int special, int state, int x, int y, int mod) 
 {
 	//cerr<<"key:"<<key<<" button:"<<button<<" special:"<<special<<" state:"<<state<<" x:"<<x<<" y:"<<y<<endl;
@@ -144,6 +161,12 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 				m_LastButton=button;
 				m_LastMouseX=x;
 				m_LastMouseY=y;
+				// arcball
+				m_RotStart = m_RotNow * m_RotStart;
+				m_RotNow = dQuat(); // identity
+				// unlike m_LastMouseX/Y the following aren't updated during drag
+				m_MouseClickX = (((float)x / (((float)m_Width  - 1.0) / 2.0)) - 1.0);
+				m_MouseClickY = -(((float)y / (((float)m_Height  - 1.0) / 2.0)) - 1.0);
 			}
 			else
 			{
@@ -151,8 +174,20 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 				{
 					case 0:
 					{
-						m_RotY+=(x-m_LastMouseX)/4.0f;
-						m_RotX+=-(y-m_LastMouseY)/4.0f;
+						/* arcball rotation */
+						float dx,dy,dz;
+						float mx,my,mz;
+						onUnitSphere(m_MouseClickX, m_MouseClickY, dx, dy, dz);
+						onUnitSphere((((float)x / (((float)m_Width  - 1.0) / 2.0)) - 1.0), 
+							     -(((float)y / (((float)m_Height  - 1.0) / 2.0)) - 1.0), 
+							     mx, my, mz);
+						
+						m_RotNow.x = dy*mz - dz*my;
+						m_RotNow.y = dz*mx - dx*mz;
+						m_RotNow.z = dx*my - dy*mx;
+						m_RotNow.w = dx*mx + dy*my + dz*mz;
+						
+						m_RotNow.renorm();
 					}
 					break;
 					case 1:
@@ -210,9 +245,8 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 		
 	m_Renderer.GetCamera()->init();
 	m_Renderer.GetCamera()->translate(m_PosX,m_PosY,m_DisY);
+	(*m_Renderer.GetCamera()) *= (m_RotNow * m_RotStart).conjugate().toMatrix();
 	m_Renderer.SetOrthoZoom(m_DisY);
-	m_Renderer.GetCamera()->roty(-m_RotY);
-	m_Renderer.GetCamera()->rotx(-m_RotX);
 }
 
 bool FluxusMain::KeyPressed(char b)
