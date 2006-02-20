@@ -22,6 +22,7 @@
 #include "OSCServer.h"
 #include "Recorder.h"
 #include "AudioCollector.h"
+#include "Repl.h"
 
 using namespace fluxus;
 
@@ -37,7 +38,10 @@ class FluxusMain
 {
 public:
 	FluxusMain(int x, int y);
-	virtual ~FluxusMain() {}
+	virtual ~FluxusMain() {
+		for(int i=0; i<10; i++)
+			delete m_Editor[i];
+	}
 	
 	void Handle(unsigned char key, int button, int special, int state, int x, int y, int mod);
 	void Render();
@@ -80,6 +84,8 @@ public:
     void SaveRecordedCode(const string &Filename) { m_Recorder.Save(Filename); }
 
 	void SetAudio(AudioCollector *s) { m_Audio=s; }
+	
+	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
 
 protected:
 	Renderer m_Renderer;
@@ -93,7 +99,7 @@ private:
 	enum CameraMode{SCENE,EDITOR};
 	CameraMode m_CameraMode;
 	
-	GLEditor m_Editor[NUM_EDITORS];
+	GLEditor * m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
 	string m_SaveName[NUM_EDITORS];
 

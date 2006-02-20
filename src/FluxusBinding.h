@@ -207,5 +207,7 @@ public:
 	static SCM searchpaths(SCM s_list);
 	static SCM full_path(SCM s_filename);
 
+	static SCM repl_princ(SCM c);
+	static SCM repl_print(SCM s);
 };
 #endif

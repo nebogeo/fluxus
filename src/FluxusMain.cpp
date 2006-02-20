@@ -21,6 +21,7 @@
 #include <GLUT/glut.h>
 #endif
 #include "Utils.h"
+#include "repl.h"
 
 using namespace fluxus;
 
@@ -51,6 +52,10 @@ m_OSCServer(NULL),
 m_OSCClient(NULL)
 {
 	m_Renderer.SetDesiredFPS(100000);
+	for(int i=0; i<9; i++) {
+		m_Editor[i] = new GLEditor();
+	}
+	m_Editor[9] = new Repl();
 }
 
 void FluxusMain::ResetCamera()
@@ -134,19 +139,19 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 		if (special==GLUT_KEY_F1) m_CameraMode=SCENE;
 		else if (special==GLUT_KEY_F2) m_CameraMode=EDITOR;
 		else if (special==GLUT_KEY_F3) ResetCamera();
-		else if (special==GLUT_KEY_F4) m_Editor[m_CurrentEditor].Reset();
+		else if (special==GLUT_KEY_F4) m_Editor[m_CurrentEditor]->Reset();
 		else if (special==GLUT_KEY_F9) 
 		{
-			m_Editor[m_CurrentEditor].m_TextColourRed=rand()%1000/1000.0f;
-			m_Editor[m_CurrentEditor].m_TextColourBlue=rand()%1000/1000.0f;
-			m_Editor[m_CurrentEditor].m_TextColourGreen=rand()%1000/1000.0f;
+			m_Editor[m_CurrentEditor]->m_TextColourRed=rand()%1000/1000.0f;
+			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
+			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
 		}	
-		else if (special==GLUT_KEY_F10) m_Editor[m_CurrentEditor].m_TextWidth--;
-		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor].m_TextWidth++;
-		else if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor].GetText();
+		else if (special==GLUT_KEY_F10) m_Editor[m_CurrentEditor]->m_TextWidth--;
+		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor]->m_TextWidth++;
+		else if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor]->GetText();
 	
 		// the editor only takes keyboard events
-		if (!m_HideScript) m_Editor[m_CurrentEditor].Handle(button,key,special,state,x,y,mod);
+		if (!m_HideScript) m_Editor[m_CurrentEditor]->Handle(button,key,special,state,x,y,mod);
 	}
 	else
 	{
@@ -221,19 +226,19 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 				{
 					case 0:
 					{
-						m_Editor[m_CurrentEditor].m_RotY+=(x-m_LastMouseX)/4.0f;
-						m_Editor[m_CurrentEditor].m_RotX+=-(y-m_LastMouseY)/4.0f;
+						m_Editor[m_CurrentEditor]->m_RotY+=(x-m_LastMouseX)/4.0f;
+						m_Editor[m_CurrentEditor]->m_RotX+=-(y-m_LastMouseY)/4.0f;
 					}
 					break;
 					case 1:
 					{
-						m_Editor[m_CurrentEditor].m_PosX+=(x-m_LastMouseX);
-						m_Editor[m_CurrentEditor].m_PosY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor]->m_PosX+=(x-m_LastMouseX);
+						m_Editor[m_CurrentEditor]->m_PosY+=-(y-m_LastMouseY);
 					}
 					break;
 					case 2:
 					{
-						m_Editor[m_CurrentEditor].m_DisY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor]->m_DisY+=-(y-m_LastMouseY);
 					}
 					break;
 				}
@@ -271,7 +276,7 @@ void FluxusMain::Reshape(int width, int height)
 {
 	for(int n=0; n<NUM_EDITORS; n++)
 	{
-		m_Editor[n].Reshape(width,height);
+		m_Editor[n]->Reshape(width,height);
 	}
 	
 	m_Renderer.SetResolution(width,height);
@@ -285,7 +290,7 @@ void FluxusMain::Render()
 	m_Physics.Tick();
 	m_Renderer.Render();
  	if (m_ShowLocators) m_Physics.Render();
-	if (!m_HideScript) m_Editor[m_CurrentEditor].Render();
+	if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 	
 	if (m_Frame!=-1)
 	{
@@ -345,7 +350,7 @@ void FluxusMain::LoadScript(const string &Filename)
 				return;
 			}			
 			buffer[size]='\0';
-			m_Editor[m_CurrentEditor].SetText(buffer);	
+			m_Editor[m_CurrentEditor]->SetText(buffer);	
 		}
 		else
 		{
@@ -382,7 +387,7 @@ void FluxusMain::SaveScript()
 	FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
 	if (file)
 	{	
-		fwrite(m_Editor[m_CurrentEditor].GetText().c_str(),1,m_Editor[m_CurrentEditor].GetAllText().size(),file);	
+		fwrite(m_Editor[m_CurrentEditor]->GetText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
 		fclose(file);
 	}
 	

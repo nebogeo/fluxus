@@ -14,7 +14,24 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef _GL_EDITOR_H_
+#define _GL_EDITOR_H_
+
 #include <string>
+
+#ifndef __APPLE__
+#define GLEDITOR_DELETE 127
+#define GLEDITOR_BACKSPACE 8
+#else
+#define GLEDITOR_DELETE 8
+#define GLEDITOR_BACKSPACE 127
+#endif
+
+#define GLEDITOR_TAB 9
+#define GLEDITOR_RETURN 13
+#define GLEDITOR_CUT 24 
+#define GLEDITOR_COPY 3 
+#define GLEDITOR_PASTE 22 
 
 using namespace std;
 
@@ -22,10 +39,10 @@ class GLEditor
 {
 public:
 	GLEditor();
-	~GLEditor();
+	virtual ~GLEditor();
 	
 	void Render();
-	void Handle(int button, int key, int special, int state, int x, int y, int mod);
+	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	void Reshape(unsigned int w,unsigned int h);
 
 	string GetText();
@@ -40,9 +57,10 @@ public:
 	float m_TextColourGreen;
 	float m_TextColourBlue;
 	
-private:
+protected:
 
 	void DrawCharBlock();
+	void DrawCursor();
 	void ProcessTabs();
 	int OffsetToCurrentLineStart();
 	int NextLineLength(int pos);
@@ -63,7 +81,8 @@ private:
 	bool m_ShiftState;
 	bool m_CtrlState;
 	float m_CursorWidth;
-	int m_ParenthesesHighlight;
+	float m_CharWidth;
+	int m_ParenthesesHighlight[2];
 	string m_OpenChars;
 	string m_CloseChars;
 	unsigned int m_VisibleLines;
@@ -73,3 +92,5 @@ private:
 	int m_Width;
 	int m_Height;
 };
+
+#endif

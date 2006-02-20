@@ -188,9 +188,22 @@ void EngineCallback()
 
 char *Script;
 
+
+
+static void setup_repl_port() {
+	SCM v = scm_c_make_vector(5, SCM_BOOL_F);
+	scm_vector_set_x(v,SCM_MAKINUM(0),scm_eval_0str("repl-princ"));
+	scm_vector_set_x(v,SCM_MAKINUM(1),scm_eval_0str("repl-print"));
+	SCM p = scm_make_soft_port(v, scm_makfrom0str("w"));
+	scm_set_current_output_port(p);
+	scm_set_current_error_port(p);
+}
+
 void inner_main(int argc, char **argv)
 {
 	binding->RegisterProcs();
+	setup_repl_port();
+	
     string fragment;
 
     binding->FrameHook=scm_make_hook(SCM_MAKINUM(0));

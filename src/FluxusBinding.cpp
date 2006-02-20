@@ -15,8 +15,10 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <fstream>
+#include <libguile.h>
 #include "FluxusBinding.h"
 #include "SearchPaths.h"
+#include "Repl.h"
 
 FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
@@ -54,6 +56,7 @@ FluxusBinding::FluxusBinding(int w, int h)
     MakeCylinder(StaticCylinder,1,1,5,10);
 	
 	Fluxus = new FluxusMain(w,h);
+
 }
 
 FluxusBinding::~FluxusBinding()
@@ -2062,6 +2065,21 @@ SCM FluxusBinding::full_path(SCM s_filename)
 	return gh_str2scm(fullpath.c_str(),fullpath.length());
 }
 
+SCM FluxusBinding::repl_princ(SCM c)
+{
+	Fluxus->GetRepl()->Print(c);
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::repl_print(SCM s)
+{
+	// FIXME this is wrong
+	if (!SCM_STRINGP(s)) 
+		return repl_princ(s);
+	Fluxus->GetRepl()->Print(string(SCM_STRING_CHARS(s)));
+	return SCM_UNSPECIFIED;
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	// primitives
@@ -2255,4 +2273,7 @@ void FluxusBinding::RegisterProcs()
 
 	gh_new_procedure0_1("searchpaths", searchpaths);
 	gh_new_procedure0_1("full-path", full_path);
+	
+	gh_new_procedure1_0("repl-princ", repl_princ);
+	gh_new_procedure1_0("repl-print", repl_print);
 }

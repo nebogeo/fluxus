@@ -23,20 +23,6 @@
 #include "GLEditor.h"
 #include "TexturePainter.h"
 
-#ifndef __APPLE__
-#define GLEDITOR_DELETE 127
-#define GLEDITOR_BACKSPACE 8
-#else
-#define GLEDITOR_DELETE 8
-#define GLEDITOR_BACKSPACE 127
-#endif
-
-#define GLEDITOR_TAB 9
-#define GLEDITOR_RETURN 13
-#define GLEDITOR_CUT 24 
-#define GLEDITOR_COPY 3 
-#define GLEDITOR_PASTE 22 
-
 using namespace fluxus;
 
 // static so we share between workspaces
@@ -65,7 +51,9 @@ m_TopTextPosition(0),
 m_BottomTextPosition(0)
 { 
 	// mono font - yay!
-	m_CursorWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
+	m_CharWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
+	m_CursorWidth=m_CharWidth/3.0f;
+	
 }
 
 GLEditor::~GLEditor() 
@@ -97,10 +85,21 @@ string GLEditor::GetText()
 void GLEditor::DrawCharBlock()
 {		
 	glBegin(GL_QUADS);
-	glVertex3f(m_CursorWidth,-30,0);				
-	glVertex3f(m_CursorWidth,130,0);
+	glVertex3f(m_CharWidth,-30,0);				
+	glVertex3f(m_CharWidth,130,0);
 	glVertex3f(0,130,0);
 	glVertex3f(0,-30,0);
+	glEnd();
+}
+
+void GLEditor::DrawCursor()
+{
+	float half = m_CursorWidth/2.0f;
+	glBegin(GL_QUADS);
+	glVertex2f(half,-30);				
+	glVertex2f(half,130);
+	glVertex2f(-half,130);
+	glVertex2f(-half,-30);
 	glEnd();
 }
 
@@ -133,7 +132,8 @@ void GLEditor::Render()
 	
 	glPushMatrix();
 	
-	m_ParenthesesHighlight=-1;
+	m_ParenthesesHighlight[0]=-1;
+	m_ParenthesesHighlight[1]=-1;
 	
 	int type=0;
 	for (string::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
@@ -142,11 +142,14 @@ void GLEditor::Render()
 		type++;
 	}
 		
-	type=0;	
-	for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
-	{
-		if (m_Text[m_Position]==*i) ParseCloseParentheses(m_Position,type);
-		type++;
+	if (m_Position > 0) {
+		type=0;	
+		for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
+		{
+			if (m_Text[m_Position-1]==*i) 
+				ParseCloseParentheses(m_Position-1,type);
+			type++;
+		}
 	}
 	
 	float ypos=0;
@@ -175,13 +178,14 @@ void GLEditor::Render()
 		
 		if (m_Position==n) // draw cursor
 		{ 
-			drawncursor=true;
-			glColor4f(1,0,0,0.5);
-			DrawCharBlock();
+			glColor4f(0.5,1,0.8,0.5);
+			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
+			drawncursor=true;
 		}
 		
-		if (m_ParenthesesHighlight==(int)n) // draw parentheses highlight
+		if (m_ParenthesesHighlight[0]==(int)n ||
+		    m_ParenthesesHighlight[1]==(int)n) // draw parentheses highlight
 		{ 
 			glColor4f(1,0,0,0.5);
 			DrawCharBlock();
@@ -217,8 +221,8 @@ void GLEditor::Render()
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
 	{
-		glColor4f(1,0,0,0.5);
-		DrawCharBlock();
+		glColor4f(0.5,1,0.8,0.5);
+		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
 	
@@ -268,7 +272,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 			break;
 			case GLUT_KEY_UP: 
 			{
-				if ((int)m_Position>LineLength(0)) // if we're not on the first line
+				if ((int)LineStart(m_Position) > 0) // if we're not on the first line
 				{
 					unsigned int previouslinelength=PreviousLineLength(m_Position);
 					if (previouslinelength<m_DesiredXPos) m_Position=LineStart(m_Position)-1; // end of previous
@@ -280,7 +284,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 			break;
 			case GLUT_KEY_DOWN: 
 			{
-				if (m_Position+LineLength(m_Position)<m_Text.size()) // if we're not on the last line
+				if ((int)LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
 				{
 					unsigned int nextlinelength=NextLineLength(m_Position);
 					if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
@@ -473,7 +477,7 @@ unsigned int GLEditor::LineEnd(int pos)
 void GLEditor::ParseOpenParentheses(int pos, int type)
 {
 	// looking for a close, so search forward
-	int stack=0;
+	int stack=0, start_pos = pos;
 	pos++;
 	while(stack!=-1 && pos<(int)m_Text.size())
 	{
@@ -483,16 +487,17 @@ void GLEditor::ParseOpenParentheses(int pos, int type)
 	}
 	if (stack==-1)
 	{
-		m_ParenthesesHighlight=pos-1;
+		m_ParenthesesHighlight[0]=start_pos;
+		m_ParenthesesHighlight[1]=pos-1;
 	}
 }
 
 void GLEditor::ParseCloseParentheses(int pos, int type)
 {
 	// looking for a open, so search backward
-	int stack=0;
+	int stack=0, start_pos = pos;
 	pos--;
-	while(stack!=-1 && pos>0)
+	while(stack!=-1 && pos>=0)
 	{
 		if (m_Text[pos]==m_CloseChars[type]) stack++;
 		if (m_Text[pos]==m_OpenChars[type]) stack--;
@@ -500,6 +505,7 @@ void GLEditor::ParseCloseParentheses(int pos, int type)
 	}
 	if (stack==-1)
 	{
-		m_ParenthesesHighlight=pos+1;
+		m_ParenthesesHighlight[0]=pos+1;
+		m_ParenthesesHighlight[1]=start_pos;
 	}	
 }
