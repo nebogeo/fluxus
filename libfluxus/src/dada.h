@@ -206,6 +206,66 @@ private:
 	bool m_Empty;
 };
 
+class dQuat
+{
+public:
+	dQuat():x(0),y(0),z(0),w(1){}
+	dQuat(float x, float y, float z, float w):x(x),y(y),z(z),w(w){}
+	dQuat(const dQuat& q):x(q.x),y(q.y),z(q.z),w(q.w){}
+	
+	// conversions
+	dMatrix toMatrix() const
+	{
+		float Nq = x*x + y*y + z*z + w*w;
+		float s = (Nq > 0.f) ? (2.0f / Nq) : 0.f;
+		float xs = x*s, ys = y*s, zs = z*s;
+		float wx = w*xs, wy = w*ys, wz = w*zs;
+		float xx = x*xs, xy = x*ys, xz = x*zs;
+		float yy = y*ys, yz = y*zs, zz = z*zs;
+		return dMatrix(1.0f - (yy + zz),
+			       xy + wz,
+			       xz - wy,
+			       0,
+			       xy - wz,          
+			       1.0f - (xx + zz),
+			       yz + wx,
+			       0,
+			       xz + wy,          
+			       yz - wx,          
+			       1.0f - (xx + yy),
+			       0, 0, 0, 0, 1.0f);
+			       
+	}
+	
+	// operations
+	dQuat conjugate() const
+	{
+		return dQuat(-x,-y,-z,w);
+	}
+	// make multiply look like multiply
+	dQuat operator* (const dQuat&qR) const
+	{
+		dQuat qq;
+		qq.w = w*qR.w - x*qR.x - y*qR.y - z*qR.z;
+		qq.x = w*qR.x + x*qR.w + y*qR.z - z*qR.y;
+		qq.y = w*qR.y + y*qR.w + z*qR.x - x*qR.z;
+		qq.z = w*qR.z + z*qR.w + x*qR.y - y*qR.x;
+		return (qq);
+	}
+	
+	void renorm() 
+	{
+		float Nq = 1.f / (float) (x*x + y*y + z*z + w*w);
+		x *= Nq;
+		y *= Nq;
+		z *= Nq;
+		w *= Nq;
+	}
+	
+	// the data
+	float x,y,z,w;
+};
+
 ////
 
 
