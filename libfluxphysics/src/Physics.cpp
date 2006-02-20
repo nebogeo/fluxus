@@ -93,7 +93,6 @@ void Physics::DrawLocator(dVector3 pos)
 
 void Physics::DrawAxis(dVector3 pos, dVector3 dir)
 {
-	float scale=1;
 	glBegin(GL_LINES);			
 	glVertex3f(pos[0],pos[1],pos[2]);
 	glVertex3f(pos[0]+dir[0],pos[1]+dir[1],pos[2]+dir[2]);
