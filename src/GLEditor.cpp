@@ -284,7 +284,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 			break;
 			case GLUT_KEY_DOWN: 
 			{
-				if ((int)LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
+				if (LineEnd(m_Position) < m_Text.size()) // if we're not on the last line
 				{
 					unsigned int nextlinelength=NextLineLength(m_Position);
 					if (nextlinelength<m_DesiredXPos) m_Position=LineEnd(LineEnd(m_Position)+1); // end of next
