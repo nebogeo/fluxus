@@ -17,8 +17,8 @@
 #ifndef _FLUXUS_REPL_H_
 #define _FLUXUS_REPL_H_
 
-#include <GLEditor.h>
 #include <libguile/tags.h>
+#include "GLEditor.h"
 
 class Repl : public GLEditor
 {
