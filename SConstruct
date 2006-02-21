@@ -1,7 +1,5 @@
 #                                                              -*- python -*-
 
-from osxbundle import *
-
 Target       = "fluxus"
 Install   	 = "/usr/local/bin"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
@@ -48,6 +46,7 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 Libs = Split("jack sndfile guile fftw3 ode png tiff z m X11 pthread lo jpeg")
 
 if env['PLATFORM'] == 'darwin':
+	from osxbundle import *
 	TOOL_BUNDLE(env)
 	Frameworks = Split("GLUT OpenGL")
 	env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths, FRAMEWORKS=Frameworks)
@@ -96,6 +95,8 @@ if not GetOption('clean'):
 	env = conf.Finish()	
 
 
-env.MakeBundle("Fluxus.app", "fluxus", "key", "fluxus-Info.plist", typecode='APPL', icon_file='macos/fluxus.icns')
+if env['PLATFORM'] == 'darwin':
+	env.MakeBundle("Fluxus.app", "fluxus", "key", "fluxus-Info.plist", typecode='APPL', icon_file='macos/fluxus.icns')
+
 env.Install(Install, Target)
 env.Alias('install', Install)

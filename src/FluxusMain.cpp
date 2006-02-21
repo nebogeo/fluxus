@@ -21,7 +21,7 @@
 #include <GLUT/glut.h>
 #endif
 #include "Utils.h"
-#include "repl.h"
+#include "Repl.h"
 
 using namespace fluxus;
 
