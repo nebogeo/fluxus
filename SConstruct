@@ -1,49 +1,59 @@
+#                                                              -*- python -*-
+
+from osxbundle import *
+
 Target       = "fluxus"
 Install   	 = "/usr/local/bin"
 LibPaths     = Split("/usr/local/lib /usr/X11R6/lib")
 IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
-	  
-Libs = Split("jack sndfile guile fftw3 ode png glut tiff GL GLU z m X11 pthread lo jpeg")
 
 #Libs = Split("jack sndfile guile fftw3 ode png glut tiff GL GLU z m Xi Xmu Xext Xt SM ICE X11 pthread lo jpeg")
 
 Source = Split("libfluxus/src/PData.cpp \
-				libfluxus/src/PDataOperator.cpp \
-				libfluxus/src/PDataContainer.cpp \
-				libfluxus/src/PDataArithmetic.cpp \
-				libfluxus/src/GraphicsUtils.cpp \
-				libfluxus/src/Lifeforms.cpp \
-				libfluxus/src/PNGLoader.cpp \
-				libfluxus/src/PolyPrimitive.cpp \
-				libfluxus/src/TextPrimitive.cpp \
-				libfluxus/src/CompiledPrimitive.cpp \
-				libfluxus/src/LinePrimitive.cpp \
-				libfluxus/src/ParticlePrimitive.cpp \
-				libfluxus/src/NURBSPrimitive.cpp \
-				libfluxus/src/Primitive.cpp \
-				libfluxus/src/Light.cpp \
-				libfluxus/src/Renderer.cpp \
-				libfluxus/src/SceneGraph.cpp \
-				libfluxus/src/State.cpp \
-				libfluxus/src/TexturePainter.cpp \
-				libfluxus/src/Tree.cpp \
-				libfluxus/src/dada.cpp \
-				libfluxus/src/SearchPaths.cpp \
-				libfluxphysics/src/Physics.cpp \
-				src/AudioCollector.cpp \
-				src/FluxusMain.cpp \
-				src/FluxusBinding.cpp \
-				src/JackClient.cpp \
-				src/TurtleBuilder.cpp \
-				src/GLEditor.cpp \
-				src/Repl.cpp \
-				src/Utils.cpp \
-				src/OSCServer.cpp \
-				src/Recorder.cpp \
-				src/main.cpp")					
+                libfluxus/src/PDataOperator.cpp \
+		libfluxus/src/PDataContainer.cpp \
+		libfluxus/src/PDataArithmetic.cpp \
+		libfluxus/src/GraphicsUtils.cpp \
+		libfluxus/src/Lifeforms.cpp \
+		libfluxus/src/PNGLoader.cpp \
+		libfluxus/src/PolyPrimitive.cpp \
+		libfluxus/src/TextPrimitive.cpp \
+		libfluxus/src/CompiledPrimitive.cpp \
+		libfluxus/src/LinePrimitive.cpp \
+		libfluxus/src/ParticlePrimitive.cpp \
+		libfluxus/src/NURBSPrimitive.cpp \
+		libfluxus/src/Primitive.cpp \
+		libfluxus/src/Light.cpp \
+		libfluxus/src/Renderer.cpp \
+		libfluxus/src/SceneGraph.cpp \
+		libfluxus/src/State.cpp \
+		libfluxus/src/TexturePainter.cpp \
+		libfluxus/src/Tree.cpp \
+		libfluxus/src/dada.cpp \
+		libfluxus/src/SearchPaths.cpp \
+		libfluxphysics/src/Physics.cpp \
+		src/AudioCollector.cpp \
+		src/FluxusMain.cpp \
+		src/FluxusBinding.cpp \
+		src/JackClient.cpp \
+		src/TurtleBuilder.cpp \
+		src/GLEditor.cpp \
+		src/Repl.cpp \
+		src/Utils.cpp \
+		src/OSCServer.cpp \
+		src/Recorder.cpp \
+		src/main.cpp")					
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC')
-env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
+Libs = Split("jack sndfile guile fftw3 ode png tiff z m X11 pthread lo jpeg")
+
+if env['PLATFORM'] == 'darwin':
+	TOOL_BUNDLE(env)
+	Frameworks = Split("GLUT OpenGL")
+	env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths, FRAMEWORKS=Frameworks)
+else:
+	Libs.extend(Split("glut GL GLU"))
+	env.Program(source = Source, target = Target, LIBS=Libs, LIBPATH=LibPaths, CPPPATH=IncludePaths)
 
 if not GetOption('clean'):
 	print '--------------------------------------------------------'		
@@ -86,5 +96,6 @@ if not GetOption('clean'):
 	env = conf.Finish()	
 
 
+env.MakeBundle("Fluxus.app", "fluxus", "key", "fluxus-Info.plist", typecode='APPL', icon_file='macos/fluxus.icns')
 env.Install(Install, Target)
 env.Alias('install', Install)
