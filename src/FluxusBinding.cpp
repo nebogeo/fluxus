@@ -1134,14 +1134,24 @@ SCM FluxusBinding::print_scene_graph()
 	return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::load(SCM s_name)
+SCM FluxusBinding::edit(SCM s_name)
 {
-	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "load");	
-    size_t size=0;
+	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "edit");
+        /*
+        size_t size=0;
 	char *name=gh_scm2newstr(s_name,&size);
 	Fluxus->LoadScript(name);
 	free(name);
-    return SCM_UNSPECIFIED;
+        return SCM_UNSPECIFIED;
+        */
+        s_name = scm_sys_search_load_path(s_name);
+        if (SCM_STRINGP(s_name)) {
+                Fluxus->LoadScript(SCM_STRING_CHARS(s_name));
+        } else {
+                /* FIXME bitch */
+        }
+        
+        return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::save_name(SCM s_name)
@@ -2171,7 +2181,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("light-position",  light_position);
 	
 	// interpreter + misc
-	gh_new_procedure0_1("edit", load);
+	gh_new_procedure0_1("edit", edit);
 	gh_new_procedure0_1("save-name", save_name);
 	//gh_new_procedure0_1("source", source);
 	gh_new_procedure0_1("key-pressed", key_pressed);

@@ -138,7 +138,7 @@ public:
 	static SCM delta();
 	static SCM reset_camera();
 	static SCM print_scene_graph();
-	static SCM load(SCM s_name);
+	static SCM edit(SCM s_name);
 	static SCM save_name(SCM s_name);
 	static SCM source(SCM s_name);
 	static SCM fluxface(SCM s_name, SCM x, SCM y);
