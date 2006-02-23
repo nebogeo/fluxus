@@ -32,12 +32,12 @@ EventRecorder::~EventRecorder()
 {
 }
 
-bool EventRecorder::Get(vector<Event> &events)
+bool EventRecorder::Get(vector<RecorderMessage*> &events)
 {
 	bool found=false;
-	for (vector<Event>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
 	{
-		if (i->Time>m_LastTimeSeconds && i->Time<=m_TimeSeconds)
+		if ((*i)->Time>m_LastTimeSeconds && (*i)->Time<=m_TimeSeconds)
 		{
 			events.push_back(*i);
 			found=true;
@@ -46,14 +46,18 @@ bool EventRecorder::Get(vector<Event> &events)
 	return found;
 }
 
-void EventRecorder::Record(Event &event)
+void EventRecorder::Record(RecorderMessage *event)
 {
-	event.Time=m_TimeSeconds;
+	event->Time=m_TimeSeconds;
 	m_EventVec.push_back(event);
 }
 
 void EventRecorder::Reset()
 {
+	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+	{
+		delete *i;
+	}
 	m_EventVec.clear();
 }
 
@@ -84,11 +88,12 @@ void EventRecorder::IncClock(double delta)
 void EventRecorder::Save(const string &filename)
 {
 	ofstream os(filename.c_str());
-	
+	int version = 1;
+	os<<version<<endl;
 	os<<m_EventVec.size()<<endl;
-	for (vector<Event>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
 	{
-		os<<i->Time<<" "<<(int)i->Key<<" "<<i->Button<<" "<<i->Special<<" "<<i->State<<" "<<i->X<<" "<<i->Y<<" "<<i->Mod<<endl;
+		os<<(*i)->Name<<" "<<(*i)->Time<<" "<<(*i)->Data<<endl;
 	}
 	
 	os.close();		
@@ -96,8 +101,10 @@ void EventRecorder::Save(const string &filename)
 
 void EventRecorder::Load(const string &filename)
 {
+	Reset();
 	ifstream is(filename.c_str());
-	
+	int version;
+	is>>version;
 	unsigned int size;
 	is>>size;
 	unsigned int count=0;
@@ -105,17 +112,10 @@ void EventRecorder::Load(const string &filename)
 	
 	while(count<size)
 	{
-		Event event;
-		is>>event.Time;
-		is>>temp;
-		event.Key=(char)temp;
-		is>>event.Button;
-		is>>event.Special;
-		is>>event.State;
-		is>>event.X;
-		is>>event.Y;
-		is>>event.Mod;
-			
+		RecorderMessage *event = new RecorderMessage;
+		is>>event->Name;
+		is>>event->Time;
+		is>>event->Data;
 		m_EventVec.push_back(event);
 		count++;
 	}

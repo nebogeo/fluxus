@@ -14,38 +14,26 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef FLUXUS_RECORDER
+#define FLUXUS_RECORDER
+
 #include <sys/time.h>
 #include <vector>
+#include "OSCCore.h"
 
 using namespace std;
 
 namespace fluxus
 {
 
-class Event
+class RecorderMessage
 {
 public:
-	Event(unsigned char key, int button, int special, int state, int x, int y, int mod) :
-	Time(0),
-	Key(key),
-	Button(button),
-	Special(special),
-	State(state),
-	X(x),
-	Y(y),
-	Mod(mod)
-	{}
+	RecorderMessage() : Time(0){}
 	
-	Event() {}
-	
+	string Name;
 	double Time;
-	unsigned char Key; 
-	int Button;
-	int Special;
-	int State;
-	int X;
-	int Y;
-	int Mod;
+	OSCMsgData Data;
 };
 
 class EventRecorder
@@ -59,8 +47,8 @@ public:
 	void SetMode(Mode mode) { m_Mode=mode; }
 	Mode GetMode() { return m_Mode; }
 	
-	bool Get(vector<Event> &events);
-	void Record(Event &event);
+	bool Get(vector<RecorderMessage*> &events);
+	void Record(RecorderMessage *event);
 
 	void Reset();
 	void ResetClock();
@@ -77,7 +65,10 @@ private:
 	double m_LastTimeSeconds;
 	double m_TimeSeconds;
 	
-	vector<Event> m_EventVec;
+	vector<RecorderMessage*> m_EventVec;
 };
 
 }
+
+#endif
+

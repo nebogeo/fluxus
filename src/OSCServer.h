@@ -1,4 +1,5 @@
-// Copyright (C) 2004 David Griffiths <dave@pawfal.org>
+
+// Copyright (C) 2006 David Griffiths <dave@pawfal.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +15,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef FLUXUS_OSC_SERVER
+#define FLUXUS_OSC_SERVER
+
 #include <string>
 #include <lo/lo.h>
 #include <set>
@@ -21,42 +25,13 @@
 #include <list>
 #include <vector>
 #include <pthread.h>
+#include "OSCCore.h"
+#include "Recorder.h"
 
 using namespace std;
 
-class OSCData
+namespace fluxus
 {
-	public:
-	virtual ~OSCData() {}
-	virtual char Type() { return '0'; }
-};
-
-class OSCInt : public OSCData
-{
-	public:
-	OSCInt(int s) { Value=s; }
-	virtual ~OSCInt() {}
-	virtual char Type() { return 'i'; }
-	int Value;
-};
-
-class OSCFloat : public OSCData
-{
-	public:
-	OSCFloat(float s) { Value=s; }
-	virtual ~OSCFloat() {}
-	virtual char Type() { return 'f'; }
-	float Value;
-};
-
-class OSCString : public OSCData
-{
-	public:
-	OSCString(const string &s) { Value=s; }
-	virtual ~OSCString() {}
-	virtual char Type() { return 's'; }
-	string Value;
-};
 
 class Client
 {
@@ -81,26 +56,28 @@ public:
 	bool SetMsg(const string &name);
 	bool GetArgs(vector<OSCData*> &args);
 	string GetLastMsg() { return m_LastMsg; }
-
+	
+	static void SetRecorder(EventRecorder *s) { m_Recorder = s; }
+	
+	// call once per frame
+	void PollRecorder();
+	
 private:
 
 	static int DefaultHandler(const char *path, const char *types, lo_arg **argv, int argc, void *data, void *user_data);
 	static void ErrorHandler(int num, const char *m, const char *path);	
 	
-	class MsgData
-	{
-	public:
-		MsgData(vector<OSCData*> a) : m_Data(a) {}
-		~MsgData();
-		vector<OSCData*> m_Data;
-	};
-	
-	static map<string,list<MsgData*> > m_Map;
+	static map<string,list<OSCMsgData*> > m_Map;
 	static string m_LastMsg;
 	
 	lo_server_thread m_Server;
 	static bool m_Exit;
 	static pthread_mutex_t* m_Mutex;
 	string m_CurrentOSCMsg;
-	list<MsgData*>::iterator m_CurrentOSCData;
+	list<OSCMsgData*>::iterator m_CurrentOSCData;
+	static EventRecorder *m_Recorder;
 };
+
+}
+
+#endif

@@ -736,3 +736,53 @@ bool dBoundingBox::inside(dVector p) const
 			p.y>min.y && p.y<max.y &&
 			p.z>min.z && p.z<max.z);
 }
+	
+// conversions
+dMatrix dQuat::toMatrix() const
+{
+	float Nq = x*x + y*y + z*z + w*w;
+	float s = (Nq > 0.f) ? (2.0f / Nq) : 0.f;
+	float xs = x*s, ys = y*s, zs = z*s;
+	float wx = w*xs, wy = w*ys, wz = w*zs;
+	float xx = x*xs, xy = x*ys, xz = x*zs;
+	float yy = y*ys, yz = y*zs, zz = z*zs;
+	return dMatrix(1.0f - (yy + zz),
+			   xy + wz,
+			   xz - wy,
+			   0,
+			   xy - wz,          
+			   1.0f - (xx + zz),
+			   yz + wx,
+			   0,
+			   xz + wy,          
+			   yz - wx,          
+			   1.0f - (xx + yy),
+			   0, 0, 0, 0, 1.0f);
+
+}
+
+// operations
+dQuat dQuat::conjugate() const
+{
+	return dQuat(-x,-y,-z,w);
+}
+
+// make multiply look like multiply
+dQuat dQuat::operator* (const dQuat&qR) const
+{
+	dQuat qq;
+	qq.w = w*qR.w - x*qR.x - y*qR.y - z*qR.z;
+	qq.x = w*qR.x + x*qR.w + y*qR.z - z*qR.y;
+	qq.y = w*qR.y + y*qR.w + z*qR.x - x*qR.z;
+	qq.z = w*qR.z + z*qR.w + x*qR.y - y*qR.x;
+	return (qq);
+}
+
+void dQuat::renorm() 
+{
+	float Nq = 1.f / (float) (x*x + y*y + z*z + w*w);
+	x *= Nq;
+	y *= Nq;
+	z *= Nq;
+	w *= Nq;
+}

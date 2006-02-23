@@ -1,4 +1,4 @@
-// Copyright (C) 2004 David Griffiths <dave@pawfal.org>
+// Copyright (C) 2006 David Griffiths <dave@pawfal.org>
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,7 +20,9 @@
 #include <iostream>
 
 #include "OSCServer.h"
+
 using namespace std;
+using namespace fluxus;
 
 void Client::SetDestination(const string &Port) 
 { 
@@ -53,13 +55,13 @@ static const unsigned int MAX_MSGS_STORED=2048;
 static const unsigned int DATA_PER_MESSAGE=256;
 
 bool Server::m_Exit=false;
-map<string,list<Server::MsgData*> > Server::m_Map;
+map<string,list<OSCMsgData*> > Server::m_Map;
 pthread_mutex_t* Server::m_Mutex;
 string Server::m_LastMsg="no message yet...";
+EventRecorder *Server::m_Recorder=NULL;
 
 Server::Server(const string &Port)
 {
-	cerr<<"osc port ["<<Port<<"]"<<endl;
     m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
     lo_server_thread_add_method(m_Server, NULL, NULL, DefaultHandler, NULL);
 	m_Mutex = new pthread_mutex_t;
@@ -73,7 +75,6 @@ Server::~Server()
 
 void Server::Run()
 {
-	cerr<<"Starting osc server"<<endl;
 	lo_server_thread_start(m_Server);
 }
 
@@ -125,10 +126,40 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 	}
 	
 	pthread_mutex_lock(m_Mutex);
-	if (m_Map[path].size()<DATA_PER_MESSAGE) m_Map[path].push_back(new MsgData(argsdata));
+	if (m_Map[path].size()<DATA_PER_MESSAGE) 
+	{	
+		m_Map[path].push_back(new OSCMsgData(argsdata));	
+	}
+	if (m_Recorder && m_Recorder->GetMode()==EventRecorder::RECORD)
+	{
+		cerr<<"saving an osc message"<<endl;
+		RecorderMessage *event = new RecorderMessage;
+		event->Name=path;
+		event->Data.Copy(argsdata);
+		m_Recorder->Record(event);
+	}
 	pthread_mutex_unlock(m_Mutex);
 		
     return 1;
+}
+
+void Server::PollRecorder()
+{
+	if (m_Recorder && m_Recorder->GetMode()==EventRecorder::PLAYBACK)
+	{
+		vector<RecorderMessage*> events;
+		m_Recorder->Get(events);
+		for (vector<RecorderMessage*>::iterator i=events.begin(); i!=events.end(); i++)
+		{
+			//cerr<<"polled an osc message from recorder"<<endl;
+			if (m_Map[(*i)->Name].size()<DATA_PER_MESSAGE) 
+			{
+				OSCMsgData *msg = new OSCMsgData;
+				msg->Copy((*i)->Data.m_Data);
+				m_Map[(*i)->Name].push_back(msg);
+			}
+		}
+	}
 }
 
 bool Server::GetArgs(vector<OSCData*> &args) 
@@ -144,7 +175,7 @@ bool Server::GetArgs(vector<OSCData*> &args)
 }
 
 bool Server::SetMsg(const string &name) 
-{
+{	
 	if (m_CurrentOSCMsg!="")
 	{
 		// get rid of the old data
@@ -153,7 +184,7 @@ bool Server::SetMsg(const string &name)
 	}
 	
 	m_CurrentOSCMsg="";
-	map<string,list<MsgData*> >::iterator i=m_Map.find(name);
+	map<string,list<OSCMsgData*> >::iterator i=m_Map.find(name);
 	if (i!=m_Map.end() && !i->second.empty())
 	{
 		m_CurrentOSCMsg=name;
@@ -163,10 +194,3 @@ bool Server::SetMsg(const string &name)
 	return false;
 }
 
-Server::MsgData::~MsgData() 
-{
-	for (vector<OSCData*>::iterator arg=m_Data.begin(); arg!=m_Data.end(); arg++)
-	{
-		delete *arg;
-	}
-}

@@ -240,7 +240,7 @@ void Renderer::BeginScene(bool PickMode)
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
-    	DrawText(s);
+    	if (!PickMode) DrawText(s);
     	PopState();
 	}
 	

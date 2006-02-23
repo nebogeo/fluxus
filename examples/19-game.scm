@@ -99,10 +99,10 @@
 (define (build-terrain n)
     (push)
         (colour (vector (flxrnd) (flxrnd) (flxrnd)))
-        (translate (vector (rand-range -150 150) 0 (rand-range -150 150)))
-        (scale (vector (rand-range 1 50) (rand-range 0 10) (rand-range 1 50)))
+        (translate (vector (rand-range -50 50) 0 (rand-range -50 50)))
+        (scale (vector (rand-range 1 10) (rand-range 0 2) (rand-range 1 10)))
         (rotate (vector (rand-range -15 15) (rand-range -15 15) (rand-range -15 15)))
-        (passive-box (build-cube))
+        (active-box (build-cube))
     (pop)
     (if (zero? n)
         1
@@ -115,7 +115,7 @@
 (texture (load-texture "textures/track.png"))
 (hint-unlit)
 (translate (vector 0 -0.5 0))
-(scale (vector 300 1 300))
+(scale (vector 100 1 100))
 (build-cube)
 (pop)
 (ground-plane (vector 0 1 0) 0.5)
@@ -123,7 +123,16 @@
 
 (lock-camera car-body)
 
-(build-terrain 100)
+(push)
+(colour (vector 0.2 0.2 0.2))
+(translate (vector 5 0 -15))
+(scale (vector 10 1 10))
+(rotate (vector 25 0 0))
+(let ((ramp (build-cube)))
+(passive-box ramp))
+(pop)
+
+(build-terrain 50)
 ;(blur 0.2)
 
 (define (run-loop)

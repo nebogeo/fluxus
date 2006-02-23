@@ -42,6 +42,8 @@ m_RotY(0),
 m_PosX(0),
 m_PosY(0),
 m_DisY(-10),
+m_MouseClickX(0),
+m_MouseClickY(0),
 m_ShowLocators(false),
 m_Frame(-1),
 m_Width(x),
@@ -52,7 +54,10 @@ m_OSCServer(NULL),
 m_OSCClient(NULL)
 {
 	m_Renderer.SetDesiredFPS(100000);
-	for(int i=0; i<9; i++) {
+	Server::SetRecorder(&m_Recorder);
+
+	for(int i=0; i<9; i++) 
+	{
 		m_Editor[i] = new GLEditor();
 	}
 	m_Editor[9] = new Repl();
@@ -68,11 +73,20 @@ void FluxusMain::TickRecorder()
 { 
 	if (m_Recorder.GetMode()==EventRecorder::PLAYBACK)
 	{
-		vector<Event> events;
+		vector<RecorderMessage*> events;
 		m_Recorder.Get(events);
-		for (vector<Event>::iterator i=events.begin(); i!=events.end(); i++)
+		for (vector<RecorderMessage*>::iterator i=events.begin(); i!=events.end(); i++)
 		{
-			HandleImpl(i->Key, i->Button, i->Special, i->State, i->X, i->Y, i->Mod);
+			if ((*i)->Name=="fluxus_keyboardinput")
+			{
+				HandleImpl(static_cast<OSCInt*>((*i)->Data.m_Data[0])->Value, 
+						   static_cast<OSCInt*>((*i)->Data.m_Data[1])->Value, 
+						   static_cast<OSCInt*>((*i)->Data.m_Data[2])->Value,
+						   static_cast<OSCInt*>((*i)->Data.m_Data[3])->Value, 
+						   static_cast<OSCInt*>((*i)->Data.m_Data[4])->Value, 
+						   static_cast<OSCInt*>((*i)->Data.m_Data[5])->Value, 
+						   static_cast<OSCInt*>((*i)->Data.m_Data[6])->Value);
+			}
 		}
 	}
 	
@@ -105,7 +119,18 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		if (m_Recorder.GetMode()==EventRecorder::RECORD)
 		{
-			Event event(key, button, special, state, x, y, mod);
+			RecorderMessage *event = new RecorderMessage();
+			event->Name="fluxus_keyboardinput";
+			
+			// we make a fake osc message to record
+			event->Data.m_Data.push_back(new OSCInt(key));
+			event->Data.m_Data.push_back(new OSCInt(button));
+			event->Data.m_Data.push_back(new OSCInt(special));
+			event->Data.m_Data.push_back(new OSCInt(state));
+			event->Data.m_Data.push_back(new OSCInt(x));
+			event->Data.m_Data.push_back(new OSCInt(y));
+			event->Data.m_Data.push_back(new OSCInt(mod));
+
 			m_Recorder.Record(event);
 		}
 		
@@ -124,8 +149,8 @@ static void onUnitSphere(const float mx, const float my,
 		float scale = 1.0f / ((float) sqrt(mag));
 		x *= scale;
 		y *= scale;
-		z = 0;
-	} else {
+	z = 0;
+		} else {
 		z = (float) sqrt(1 - mag);
 	}
 }
@@ -289,6 +314,7 @@ void FluxusMain::Render()
 {		
 	m_Physics.Tick();
 	m_Renderer.Render();
+	if (m_OSCServer) m_OSCServer->PollRecorder();
  	if (m_ShowLocators) m_Physics.Render();
 	if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 	

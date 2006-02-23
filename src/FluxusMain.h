@@ -108,12 +108,12 @@ private:
 	int m_LastMouseY;
 	int m_LastButton;
 	int m_CurButton;
-	float m_RotX,m_RotY,m_PosX,m_PosY,m_DisY;
-	
+	float m_RotX,m_RotY,m_PosX,m_PosY,m_DisY;	
+
 	// arcball
 	float m_MouseClickX, m_MouseClickY;
 	dQuat m_RotStart, m_RotNow;
-	
+		
 	bool m_ShowLocators;
 	dVector m_Pos;
 	dVector m_Dir;

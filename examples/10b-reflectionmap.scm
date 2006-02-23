@@ -27,7 +27,7 @@
 (pop)
 
 (colour (vector 0.5 0.5 1))
-(define ob (build-nurbs-sphere 15 15))
+(define ob (build-nurbs-sphere 20 20))
 (grab ob)
 ; more reference geometry for the deformation
 (pdata-copy "p" "pref")
