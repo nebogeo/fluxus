@@ -86,6 +86,7 @@ public:
 	void SetAudio(AudioCollector *s) { m_Audio=s; }
 	
 	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
+        void SwitchToRepl() { m_CurrentEditor = 9; }
 
 protected:
 	Renderer m_Renderer;

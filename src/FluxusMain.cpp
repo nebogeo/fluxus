@@ -173,7 +173,7 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 		}	
 		else if (special==GLUT_KEY_F10) m_Editor[m_CurrentEditor]->m_TextWidth--;
 		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor]->m_TextWidth++;
-		else if (special==GLUT_KEY_F5) m_Script=m_Editor[m_CurrentEditor]->GetText();
+		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) m_Script=m_Editor[m_CurrentEditor]->GetText();
 	
 		// the editor only takes keyboard events
 		if (!m_HideScript) m_Editor[m_CurrentEditor]->Handle(button,key,special,state,x,y,mod);

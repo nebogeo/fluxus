@@ -14,7 +14,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <iostream>
 #include <guile/gh.h>
+#include <GLUT/glut.h>
 #include "Repl.h"
 
 string Repl::m_Banner = string("Welcome to fluxus\n");
@@ -22,16 +24,34 @@ string Repl::m_Prompt = string("fluxus> ");
 
 SCM ErrorHandler (void *handler_data, SCM tag, SCM args);
 
-Repl::Repl()
+Repl::Repl() : m_InsertPos(0), m_History(), m_HistoryNavStarted(false)
 {
-	Print(m_Banner + m_Prompt);
+	Print(m_Banner);
+        PrintPrompt();
 }
 
-// FIXME: automatically restore partial command line
+// FIXME: wrap long lines
 void Repl::Print(string what)
 {
-	m_Text += what;
-	m_Position = m_PromptPos = m_Text.length();
+        unsigned int l = what.length();
+
+        m_Text.insert(m_InsertPos, what);
+        
+        m_Position += l;
+        m_PromptPos += l;
+        m_InsertPos += l;
+}
+
+void Repl::PrintPrompt()
+{
+        unsigned int where = m_Text.length();
+        m_InsertPos = m_Text.length();
+        if (m_Text[m_InsertPos-1]!='\n') {
+                m_Text += '\n';
+                m_InsertPos++;
+        }
+        m_Text += m_Prompt;
+        m_Position = m_PromptPos = m_Text.length();
 }
 
 void Repl::Print(SCM obj)
@@ -44,12 +64,38 @@ void Repl::Handle(int button, int key, int special, int state,
 		  int x, int y, int mod)
 {
 	if (key!=0) {
-		if (m_Position < m_PromptPos ||
-		    (m_Position == m_PromptPos && key == GLEDITOR_BACKSPACE))
-			return; // read only area
-		
+                if ((m_Position <= m_PromptPos && key == GLEDITOR_BACKSPACE) ||
+                    (m_Position < m_PromptPos && key == GLEDITOR_DELETE) ||
+                    ((m_Position < m_PromptPos ||
+                      m_HighlightStart < m_PromptPos ||
+                      m_HighlightEnd < m_PromptPos)
+                     && key == GLEDITOR_CUT))
+                        return;
+
+                if (m_Position < m_PromptPos && key != GLEDITOR_COPY) 
+                        m_Position = m_Text.length();
 	}
 	
+        if (special != 0) {
+                if (m_Position >= m_PromptPos) {
+                        switch(special)
+                        {
+                        case GLUT_KEY_UP:
+                                HistoryPrev();
+                                return;
+                        case GLUT_KEY_DOWN:
+                                HistoryNext();
+                                return;
+                        case GLUT_KEY_END:
+                                m_Position = m_Text.length();
+                                return;
+                        case GLUT_KEY_HOME:
+                                m_Position = m_PromptPos;
+                                return;
+                        }
+                }
+        }
+        
 	GLEditor::Handle(button, key, special, state, 
 			 x, y, mod);
 	
@@ -57,13 +103,45 @@ void Repl::Handle(int button, int key, int special, int state,
 	if (key == GLEDITOR_RETURN) TryEval();
 }
 
+void Repl::HistoryPrev()
+{
+        if (!m_HistoryNavStarted) {
+                m_HistoryIter = m_History.end();
+                m_HistoryNavStarted = true;
+        }
+        
+        if (m_HistoryIter == m_History.end())
+                m_HistoryPresent = m_Text.substr(m_PromptPos);
+
+        if (m_HistoryIter == m_History.begin())
+                return;
+        
+        m_HistoryIter--;
+        HistoryShow(*m_HistoryIter);
+}
+
+void Repl::HistoryNext()
+{
+        if (!m_HistoryNavStarted || (m_HistoryIter == m_History.end()))
+                return;
+
+        m_HistoryIter++;
+        HistoryShow((m_HistoryIter == m_History.end()) ?
+                     m_HistoryPresent : *m_HistoryIter);
+}
+
+void Repl::HistoryShow(string what)
+{
+        m_Text.resize(m_PromptPos,0);
+        m_Text += what;
+        m_Position = m_Text.length();
+}
+
 // FIXME: skip parens in strings and comments
 bool Balanced(string s)
 {
 	int balance = 0;
-	for (string::iterator i = s.begin();
-	     i != s.end();
-	     i++) {
+	for (string::iterator i = s.begin(); i != s.end(); i++) {
 		switch(*i) {
 			case '(':
 				balance++;
@@ -79,25 +157,41 @@ bool Balanced(string s)
 	return balance==0;
 }
 
-// FIXME don't bother evaluating empty strings (which ARE balanced)
-bool Repl::TryEval()
+inline bool Empty(string s) {
+        const string ws=" \t\n\r";
+	for (string::iterator i = s.begin(); i != s.end(); i++) {
+                if (ws.find(*i) == string::npos) {
+                        return false;
+                }
+        }
+        return true;
+}
+
+void Repl::TryEval()
 {
 	string defun = m_Text.substr(m_PromptPos);
 	
-	if (!Balanced(defun)) return false;
+	if (!Balanced(defun) || (m_Text.substr(m_Position).find(')')!=string::npos)) return;
+
+        if (!Empty(defun)) {
+                m_InsertPos = m_Text.length();
+                SCM res0 = scm_internal_catch(SCM_BOOL_T,
+                                              (scm_t_catch_body)scm_c_eval_string,
+                                              (void*)(defun.c_str()),
+                                              ErrorHandler,
+                                              (void*)"fluxus");
+
+                defun.resize(defun.length()-1,0); // strip \n
+                m_History.push_back(defun);
+                m_HistoryNavStarted = false;
+        
+                if (res0 != SCM_UNDEFINED && res0 != SCM_UNSPECIFIED) {
+                        Print(res0);
+                        Print("\n");
+                }
+        }
+	PrintPrompt();
 	
-	SCM res0 = scm_internal_catch(SCM_BOOL_T,
-				      (scm_t_catch_body)scm_c_eval_string,
-				      (void*)(defun.c_str()),
-				      ErrorHandler,
-				      (void*)"fluxus");
-	
-	if (res0 != SCM_UNDEFINED && res0 != SCM_UNSPECIFIED) {	
-		Print(res0);
-		Print("\n");
-	}
-	Print(m_Prompt);
-	
-	return true;
+	return;
 }
 

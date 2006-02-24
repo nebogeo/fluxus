@@ -18,6 +18,7 @@
 #define _FLUXUS_REPL_H_
 
 #include <libguile/tags.h>
+#include <deque>
 #include "GLEditor.h"
 
 class Repl : public GLEditor
@@ -36,8 +37,22 @@ protected:
 	static string m_Banner;
 	
 	unsigned int m_PromptPos;
+        unsigned int m_InsertPos;
 
-	bool TryEval();
+	void TryEval();
+        void PrintPrompt();
+        void HistoryPrev();
+        void HistoryNext();
+        void HistoryShow(string what);
+        
+        // line history
+        // temporary (?) solution, it would have been nicer to implement
+        // the i/o port correctly and use readline module
+        deque<string> m_History;
+        deque<string>::iterator m_HistoryIter;
+        // time to lear c++, artm :-/
+        bool m_HistoryNavStarted;
+        string m_HistoryPresent;
 };
 
 #endif
