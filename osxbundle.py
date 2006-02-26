@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 """Provides tools for building Mac application bundles."""
+# Based on code by Gary Oberbrunner and Mitch Chapman
 
 from os.path import *
 import re
@@ -186,3 +187,17 @@ def osx_copy( dest, source, env ):
     from macostools import copy
     copy( source, dest )
     shutil.copymode(source, dest)
+
+def BuildDmg(target, source, env):
+    tmp_dmg = 'tmp-' + str(target[0])
+    os.system('hdiutil create -size 32m -fs HFS+ -volname "Fluxus" ' + tmp_dmg)
+    outs = os.popen('hdiutil attach ' + tmp_dmg, 'r')
+    disk = outs.readline().split()[0]
+    for src in source:
+	# FIXME
+	os.system('cp -r ' + str(src) + ' /Volumes/Fluxus')
+    os.system('hdiutil detach ' + disk)
+    os.system('hdiutil convert -format UDZO -o ' + str(target[0]) + ' ' + tmp_dmg)
+    os.remove(tmp_dmg)
+    return None
+
