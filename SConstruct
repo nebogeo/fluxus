@@ -117,7 +117,7 @@ if env['PLATFORM'] == 'darwin':
 					"fluxus-Info.plist",
 					typecode='APPL',
 					icon_file='macos/fluxus.icns'))
-	env.Command(Dir("Fluxus.app/Contents/Resources/guile_scripts"), [], 'cp -r /usr/local/share/guile/1.6')
+	env.Command(Dir("Fluxus.app/Contents/Resources/guile_scripts"), [], 'cp -r /usr/local/share/guile/1.6 Fluxus.app/Contents/Resources/guile_scripts')
 	env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
 	DmgFiles = [File("COPYING"), Dir("Fluxus.app"), Dir("docs"), Dir("examples"), Dir("scm")]
 	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
