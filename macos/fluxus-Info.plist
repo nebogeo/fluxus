@@ -5,16 +5,20 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>fluxus</string>
+	<string>%BUNDLE_EXECUTABLE%</string>
+	<key>CFBundleIconFile</key>
+	<string>%ICONFILE%</string>
 	<key>CFBundleIdentifier</key>
 	<string>org.pawfal.fluxus</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Fluxus</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>FLUX</string>
 	<key>CFBundleVersion</key>
-	<string>0.8</string>
+	<string>%SHORTVERSION%</string>
 </dict>
 </plist>

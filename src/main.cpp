@@ -205,6 +205,13 @@ void inner_main(int argc, char **argv)
 {
 	binding->RegisterProcs();
 	setup_repl_port();
+
+#ifdef FLUXUS_SCHEME_DIR
+        scm_c_eval_srting("(set! %load-path (append %load-path (list \""
+                          FLUXUS_SCHEME_DIR
+                          "\")))");
+#endif
+        scm_primitive_load_path(scm_makfrom0str("fluxus/init.scm"));
 	
     string fragment;
 
@@ -230,13 +237,16 @@ void inner_main(int argc, char **argv)
 int main(int argc, char *argv[])
 {
 #ifdef __APPLE__
-        // for mac osx - get cwd and add guile_scripts to the GUILE_LOAD_PATH env var.
+        // make shure guile can boot on darwin
         std::string argv0(argv[0]);
-        unsigned int lastpos = argv0.rfind('/', argv0.length());
+        unsigned int lastpos = argv0.rfind('/');
+        lastpos = argv0.rfind('/', lastpos-1); // skip "MacOS"
         if ( lastpos!=std::string::npos )
         {
-                std::string guile_load_path = argv0.substr(0,lastpos)+std::string("/guile_scripts");
-                putenv( const_cast<char*>((std::string("GUILE_LOAD_PATH=")+guile_load_path).c_str() ) );
+                std::string guile_load_path = argv0.substr(0,lastpos) +
+                        std::string("/Resources/guile_scripts");
+                putenv( const_cast<char*>((std::string("GUILE_LOAD_PATH=") +
+                                           guile_load_path).c_str() ) );
         }
 #endif
 

@@ -3,7 +3,17 @@
 import os, os.path
 
 Target       = "fluxus"
-Install      = "/usr/local/bin"
+
+Prefix = "/usr/local"
+Install      = Prefix + "/bin"
+DataPrefix   = Prefix + "/share/fluxus"
+SchemePrefix = DataPrefix + "/scm"
+
+GuileVersionMajMin = "1.6"
+GuilePrefix        = "/usr/local"
+GuileDataPrefix    = GuilePrefix + "/share/guile"
+GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
+
 LibPaths     = ["/usr/local/lib"]
 # First member of each list is a library, second - a header or headers list
 # to be passed to the CheckLibWithHeader(...) at configure time.
@@ -60,28 +70,13 @@ FluxusVersion = "HEAD"
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
 		  LIBPATH = LibPaths,
-		  CPPPATH = IncludePaths)
-
-def BuildDmg(target, source, env):
-	tmp_dmg = 'tmp-' + str(target[0])
-	os.system('hdiutil create -size 32m -fs HFS+ -volname "Fluxus" ' + tmp_dmg)
-	outs = os.popen('hdiutil attach ' + tmp_dmg, 'r')
-	disk = outs.readline().split()[0]
-	for src in source:
-		# FIXME
-		os.system('cp -r ' + str(src) + ' /Volumes/Fluxus')
-	os.system('hdiutil detach ' + disk)
-	os.system('hdiutil convert -format UDZO -o ' + str(target[0]) + ' ' + tmp_dmg)
-	os.remove(tmp_dmg)
-	return None
+		  CPPPATH = IncludePaths,
+		  VERSION_NUM = FluxusVersion)
 
 Default(env.Program(source = Source, target = Target))
 
 if env['PLATFORM'] == 'darwin':
-	from osxbundle import *
-	TOOL_BUNDLE(env)
-	# env.Replace(LINKCOM = "./libtool --mode=link g++ $LINKFLAGS $_LIBDIRFLAGS $_LIBFLAGS $_FRAMEWORKS -o $TARGET $SOURCES")
-	env.Replace(LINK = "./libtool --mode=link g++")
+	env.Replace(LINK = "macos/libtool --mode=link g++")
 	env.Prepend(LINKFLAGS = ["-static"])
 else:
 	LibList += [["X11", "X11/Xlib.h"],
@@ -109,19 +104,30 @@ if not GetOption('clean'):
 
 # packaging / installing
 if env['PLATFORM'] == 'darwin':
+	from macos.osxbundle import *
+	TOOL_BUNDLE(env)
 	# We add frameworks after configuration bit so that testing is faster.
 	env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio"))
 	env.Alias("app", env.MakeBundle("Fluxus.app",
 					"fluxus",
 					"key",
-					"fluxus-Info.plist",
+					"macos/fluxus-Info.plist",
 					typecode='APPL',
 					icon_file='macos/fluxus.icns'))
-	env.Command(Dir("Fluxus.app/Contents/Resources/guile_scripts"), [], 'cp -r /usr/local/share/guile/1.6 Fluxus.app/Contents/Resources/guile_scripts')
+	SchemePrefix = "Fluxus.app/Contents/Resources/guile_scripts"
+	for where, dirs, files in os.walk(GuileSchemePrefix):
+		dest = os.path.join(SchemePrefix, where[len(GuileSchemePrefix)+1:])
+		for f in files:
+			env.Install(dest, os.path.join(where,f))
+	
 	env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
 	DmgFiles = [File("COPYING"), Dir("Fluxus.app"), Dir("docs"), Dir("examples"), Dir("scm")]
 	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
 				       DmgFiles))
 else:
+	env.Replace(CPPDEFINES = [("FLUXUS_SCHEME_DIR", SchemePrefix)])
 	env.Install(Install, Target)
-	env.Alias('install', Install)
+	env.Alias('install', Prefix)
+
+env.Install(SchemePrefix + "/fluxus","#/scm/init.scm")
+env.Install(SchemePrefix + "/fluxus","#/scm/macros.scm")
