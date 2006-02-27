@@ -69,7 +69,7 @@ SCM ErrorHandler (void *handler_data, SCM tag, SCM args)
 		scm_putc ('\n', p);
 	}
 
-        binding->Fluxus->SwitchToRepl();
+        // binding->Fluxus->SwitchToRepl();
 
 	return SCM_UNDEFINED;
 }
