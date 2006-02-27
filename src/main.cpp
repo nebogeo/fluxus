@@ -237,7 +237,7 @@ void inner_main(int argc, char **argv)
 int main(int argc, char *argv[])
 {
 #ifdef __APPLE__
-        // make shure guile can boot on darwin
+        // make sure guile can boot on darwin
         std::string argv0(argv[0]);
         unsigned int lastpos = argv0.rfind('/');
         lastpos = argv0.rfind('/', lastpos-1); // skip "MacOS"
