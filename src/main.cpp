@@ -208,7 +208,7 @@ void inner_main(int argc, char **argv)
 
 #ifdef FLUXUS_SCHEME_DIR
         scm_c_eval_srting("(set! %load-path (append %load-path (list \""
-                          FLUXUS_SCHEME_DIR
+                          #FLUXUS_SCHEME_DIR
                           "\")))");
 #endif
         scm_primitive_load_path(scm_makfrom0str("fluxus/init.scm"));
