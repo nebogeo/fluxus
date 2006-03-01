@@ -14,7 +14,8 @@ the buttons to get different movement controls.
 
 To animate this cube, it will have to be called a little differently:
 
-<c>(start-audio "" 256 44100) 
+<c>(start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate
+                                                          ; need to match jack's
 
 (define (render)
     (colour (vector (gh 1) (gh 2) (gh 3)))

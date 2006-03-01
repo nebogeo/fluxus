@@ -6,13 +6,13 @@ Target       = "fluxus"
 
 Prefix = "/usr/local"
 Install      = Prefix + "/bin"
-DataPrefix   = Prefix + "/share/fluxus"
-SchemePrefix = DataPrefix + "/scm"
 
 GuileVersionMajMin = "1.6"
 GuilePrefix        = "/usr/local"
 GuileDataPrefix    = GuilePrefix + "/share/guile"
 GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
+
+SchemePrefix = GuileSchemePrefix + "/site/fluxus"
 
 LibPaths     = ["/usr/local/lib"]
 # First member of each list is a library, second - a header or headers list
@@ -125,7 +125,6 @@ if env['PLATFORM'] == 'darwin':
 	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
 				       DmgFiles))
 else:
-	env.Replace(CPPDEFINES = [("FLUXUS_SCHEME_DIR", SchemePrefix)])
 	env.Install(Install, Target)
 	env.Alias('install', Prefix)
 

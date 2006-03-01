@@ -27,10 +27,11 @@ the quality of the sound. It's the same as you see on a graphic equaliser - in
 fact, one of the example scripts (bars.scm) acts as a graphic equaliser 
 display, and should be used to test the audio is working.
 
-<c>(start-audio device buffersize samplerate)</c>
+<c>(start-audio jack-port-name buffersize samplerate)</c>
 starts up the audio with the specified settings, you'll need to call this 
 first, or put it into .fluxus.scm in your home directory to call it 
-automatically at startup.
+automatically at startup. make the jack port name an empty string and it
+won't try to connect to anything for you
 
 <c>(gain value)</c>
 sets the gain level for the fft sound, it's 1 by default.

@@ -246,7 +246,8 @@ int main(int argc, char *argv[])
                 std::string guile_load_path = argv0.substr(0,lastpos) +
                         std::string("/Resources/guile_scripts");
                 putenv( const_cast<char*>((std::string("GUILE_LOAD_PATH=") +
-                                           guile_load_path).c_str() ) );
+                                           guile_load_path + ":" +
+                                           guile_load_path + "/site").c_str() ) );
         }
 #endif
 
@@ -268,7 +269,7 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	
-    gh_enter(argc, argv, inner_main);
+        gh_enter(argc, argv, inner_main);
     
 	return 0;
 }

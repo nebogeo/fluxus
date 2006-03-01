@@ -2,6 +2,15 @@
 ; not much explanation here, but the majority of the code is involved
 ; with connecting the various bits of the car together
 
+; keys are:
+; "q" accelerate
+; "a" decelerate
+; "o" turn left
+; "p" turn right
+; " " break
+;
+; you have to hide the code (ctrl h) and restart the script to play
+
 (clear)
 (colour (vector 1 1 1))
 (collisions 1)

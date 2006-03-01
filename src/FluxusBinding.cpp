@@ -1137,13 +1137,6 @@ SCM FluxusBinding::print_scene_graph()
 SCM FluxusBinding::edit(SCM s_name)
 {
 	SCM_ASSERT(SCM_STRINGP(s_name), s_name, SCM_ARG1, "edit");
-        /*
-        size_t size=0;
-	char *name=gh_scm2newstr(s_name,&size);
-	Fluxus->LoadScript(name);
-	free(name);
-        return SCM_UNSPECIFIED;
-        */
         s_name = scm_sys_search_load_path(s_name);
         if (SCM_STRINGP(s_name)) {
                 Fluxus->LoadScript(SCM_STRING_CHARS(s_name));
