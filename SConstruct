@@ -116,7 +116,7 @@ if env['PLATFORM'] == 'darwin':
 					icon_file='macos/fluxus.icns'))
 	SchemePrefix = "Fluxus.app/Contents/Resources/guile_scripts"
 	for where, dirs, files in os.walk(GuileSchemePrefix):
-		dest = os.path.join(SchemePrefix, where[len(GuileSchemePrefix)+1:])
+		dest = os.path.join(SchemePrefix, "/site/fluxus", where[len(GuileSchemePrefix)+1:])
 		for f in files:
 			env.Install(dest, os.path.join(where,f))
 	
@@ -128,5 +128,5 @@ else:
 	env.Install(Install, Target)
 	env.Alias('install', Prefix)
 
-env.Install(SchemePrefix + "/fluxus","#/scm/init.scm")
-env.Install(SchemePrefix + "/fluxus","#/scm/macros.scm")
+env.Install(SchemePrefix,"#/scm/init.scm")
+env.Install(SchemePrefix,"#/scm/macros.scm")
