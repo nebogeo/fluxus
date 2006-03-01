@@ -1,0 +1,9 @@
+*.pyc
+fluxus
+config.log
+PLAN
+Fluxus.app
+.sconsign.dblite
+.sconf_temp
+.libs
+.DS_Store
