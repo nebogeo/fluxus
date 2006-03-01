@@ -16,7 +16,11 @@
 
 #include <iostream>
 #include <guile/gh.h>
+#ifndef __APPLE__
+#include <GL/glut.h>
+#else
 #include <GLUT/glut.h>
+#endif
 #include "Repl.h"
 
 string Repl::m_Banner = string("Welcome to fluxus\n");
