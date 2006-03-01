@@ -206,11 +206,7 @@ void inner_main(int argc, char **argv)
 	binding->RegisterProcs();
 	setup_repl_port();
 
-#ifdef FLUXUS_SCHEME_DIR
-        scm_c_eval_string("(set! %load-path (append %load-path (list \""
-                          #FLUXUS_SCHEME_DIR
-                          "\")))");
-#endif
+        // FIXME handle errors well
         scm_primitive_load_path(scm_makfrom0str("fluxus/init.scm"));
 	
     string fragment;
