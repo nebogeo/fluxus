@@ -207,7 +207,7 @@ void inner_main(int argc, char **argv)
 	setup_repl_port();
 
 #ifdef FLUXUS_SCHEME_DIR
-        scm_c_eval_srting("(set! %load-path (append %load-path (list \""
+        scm_c_eval_string("(set! %load-path (append %load-path (list \""
                           #FLUXUS_SCHEME_DIR
                           "\")))");
 #endif

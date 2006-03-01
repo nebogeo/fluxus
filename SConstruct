@@ -114,9 +114,10 @@ if env['PLATFORM'] == 'darwin':
 					"macos/fluxus-Info.plist",
 					typecode='APPL',
 					icon_file='macos/fluxus.icns'))
-	SchemePrefix = "Fluxus.app/Contents/Resources/guile_scripts"
+	GuileScripts = "Fluxus.app/Contents/Resources/guile_scripts"
+	SchemePrefix = GuileScripts + "/site/fluxus"
 	for where, dirs, files in os.walk(GuileSchemePrefix):
-		dest = os.path.join(SchemePrefix, "/site/fluxus", where[len(GuileSchemePrefix)+1:])
+		dest = os.path.join(GuileScripts, where[len(GuileSchemePrefix)+1:])
 		for f in files:
 			env.Install(dest, os.path.join(where,f))
 	
