@@ -209,6 +209,8 @@ void inner_main(int argc, char **argv)
         SCM initFname = scm_sys_search_load_path(scm_makfrom0str("fluxus/init.scm"));
         if (SCM_STRINGP(initFname))
                 scm_primitive_load(initFname);
+        else 
+                cerr << "Couldn't find fluxus/init.scm script" << endl;
 	setup_repl_port();
 
 	
