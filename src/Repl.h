@@ -44,13 +44,11 @@ protected:
         void HistoryPrev();
         void HistoryNext();
         void HistoryShow(string what);
+        void EnsureCursorVisible();
         
         // line history
-        // temporary (?) solution, it would have been nicer to implement
-        // the i/o port correctly and use readline module
         deque<string> m_History;
         deque<string>::iterator m_HistoryIter;
-        // time to lear c++, artm :-/
         bool m_HistoryNavStarted;
         string m_HistoryPresent;
 };

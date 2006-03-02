@@ -45,6 +45,8 @@ void Repl::Print(string what)
         m_PromptPos += l;
         m_InsertPos += l;
 
+        EnsureCursorVisible();
+
         cout << what;
 }
 
@@ -177,7 +179,8 @@ void Repl::TryEval()
 {
 	string defun = m_Text.substr(m_PromptPos);
 	
-	if (!Balanced(defun) || (m_Text.substr(m_Position).find(')')!=string::npos)) return;
+	if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
+                return;
 
         if (!Empty(defun)) {
                 m_InsertPos = m_Text.length();
@@ -201,3 +204,15 @@ void Repl::TryEval()
 	return;
 }
 
+void Repl::EnsureCursorVisible()
+{
+        unsigned int i;
+        unsigned int curVisLine = 0;
+        // use m_VisibleLines, m_TopTextPosition;
+        for (i = m_Position; i>m_TopTextPosition; i--) 
+                if (m_Text[i] == '\n') 
+                        curVisLine++;
+        while (curVisLine >= m_VisibleLines)
+                if (m_Text[m_TopTextPosition++] == '\n')
+                        curVisLine--;
+}
