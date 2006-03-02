@@ -204,10 +204,11 @@ static void setup_repl_port() {
 void inner_main(int argc, char **argv)
 {
 	binding->RegisterProcs();
-	setup_repl_port();
 
         // FIXME handle errors well
         scm_primitive_load_path(scm_makfrom0str("fluxus/init.scm"));
+	setup_repl_port();
+
 	
     string fragment;
 

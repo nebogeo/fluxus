@@ -44,6 +44,8 @@ void Repl::Print(string what)
         m_Position += l;
         m_PromptPos += l;
         m_InsertPos += l;
+
+        cout << what;
 }
 
 void Repl::PrintPrompt()
