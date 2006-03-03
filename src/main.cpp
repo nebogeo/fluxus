@@ -246,9 +246,20 @@ int main(int argc, char *argv[])
         {
                 std::string guile_load_path = argv0.substr(0,lastpos) +
                         std::string("/Resources/guile_scripts");
+                if (guile_load_path[0] != '/') {
+                        // it isn't clever to have relative search paths
+                        char * cwd = getwd(NULL);
+                        if (cwd) {
+                                guile_load_path = string(cwd) + '/' + guile_load_path;
+                                free(cwd);
+                        }
+                }
+                guile_load_path = guile_load_path + ":" +
+                        guile_load_path + "/site";
                 putenv( const_cast<char*>((std::string("GUILE_LOAD_PATH=") +
-                                           guile_load_path + ":" +
-                                           guile_load_path + "/site").c_str() ) );
+                                           guile_load_path).c_str() ) );
+                cout << "Set GUILE_LOAD_PATH to " << guile_load_path << endl;
+
         }
 #endif
 

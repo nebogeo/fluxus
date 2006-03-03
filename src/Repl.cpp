@@ -104,11 +104,11 @@ void Repl::Handle(int button, int key, int special, int state,
                 }
         }
         
-	GLEditor::Handle(button, key, special, state, 
-			 x, y, mod);
-	
-	// react on return AFTER new line is output
-	if (key == GLEDITOR_RETURN) TryEval();
+	if (key == GLEDITOR_RETURN && !TryEval())
+                return;
+
+        GLEditor::Handle(button, key, special, state, 
+                         x, y, mod);
 }
 
 void Repl::HistoryPrev()
@@ -175,22 +175,24 @@ inline bool Empty(string s) {
         return true;
 }
 
-void Repl::TryEval()
+bool Repl::TryEval()
 {
 	string defun = m_Text.substr(m_PromptPos);
 	
 	if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
-                return;
+                return true;
 
         if (!Empty(defun)) {
                 m_InsertPos = m_Text.length();
+                Print("\n");
                 SCM res0 = scm_internal_catch(SCM_BOOL_T,
                                               (scm_t_catch_body)scm_c_eval_string,
                                               (void*)(defun.c_str()),
                                               ErrorHandler,
                                               (void*)"fluxus");
 
-                defun.resize(defun.length()-1,0); // strip \n
+                if (defun[defun.length()-1] == '\n')
+                        defun.resize(defun.length()-1,0); 
                 m_History.push_back(defun);
                 m_HistoryNavStarted = false;
         
@@ -201,7 +203,7 @@ void Repl::TryEval()
         }
 	PrintPrompt();
 	
-	return;
+	return false;
 }
 
 void Repl::EnsureCursorVisible()

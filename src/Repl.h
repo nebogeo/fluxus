@@ -39,7 +39,7 @@ protected:
 	unsigned int m_PromptPos;
         unsigned int m_InsertPos;
 
-	void TryEval();
+	bool TryEval();
         void PrintPrompt();
         void HistoryPrev();
         void HistoryNext();
