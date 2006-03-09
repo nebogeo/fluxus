@@ -147,10 +147,9 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 
-void PolyPrimitive::RecalculateNormals()
+void PolyPrimitive::RecalculateNormals(bool smooth)
 {
 	// todo - need different aproaches for TRISTRIP,QUADS,TRILIST,TRIFAN
-	// to smooth, or not?
 	
 	int stride=0;
 	if (m_Type==QUADS) stride=4;
@@ -174,50 +173,52 @@ void PolyPrimitive::RecalculateNormals()
 			}
 		}
 		
-		
-		// smooth the normals
-		if (m_ConnectedVerts.empty())
+		if (smooth)
 		{
-			// v innefficient, but lets cache it
-			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
-			for (unsigned int i=0; i<m_VertData->size(); i++)
+			// smooth the normals
+			if (m_ConnectedVerts.empty())
 			{
-				vector<int> connected;
-				dVector n = (*m_NormData)[i];
-				connected.push_back(i);
-				float count=1;
-				for (unsigned int b=0; b<m_VertData->size(); b++)
+				// v innefficient, but lets cache it
+				TypedPData<dVector> *newnorms = new TypedPData<dVector>;
+				for (unsigned int i=0; i<m_VertData->size(); i++)
 				{
-					// find all close verts
-					if (i!=b && (*m_VertData)[i].dist((*m_VertData)[b])<0.001)
+					vector<int> connected;
+					dVector n = (*m_NormData)[i];
+					connected.push_back(i);
+					float count=1;
+					for (unsigned int b=0; b<m_VertData->size(); b++)
 					{
-						n+=(*m_NormData)[b];
-						count+=1;
-						connected.push_back(b);
+						// find all close verts
+						if (i!=b && (*m_VertData)[i].dist((*m_VertData)[b])<0.001)
+						{
+							n+=(*m_NormData)[b];
+							count+=1;
+							connected.push_back(b);
+						}
 					}
+					m_ConnectedVerts.push_back(connected);
+					newnorms->m_Data.push_back((n/count).normalise());
 				}
-				m_ConnectedVerts.push_back(connected);
-				newnorms->m_Data.push_back(n/count);
+
+				SetDataRaw("n", newnorms);
 			}
-			
-			SetDataRaw("n", newnorms);
-		}
-		else // use the cache
-		{
-			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
-			for (unsigned int i=0; i<m_VertData->size(); i++)
+			else // use the cache
 			{
-				float count=0;
-				dVector n;
-				for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
-						b!=m_ConnectedVerts[i].end(); b++)
+				TypedPData<dVector> *newnorms = new TypedPData<dVector>;
+				for (unsigned int i=0; i<m_VertData->size(); i++)
 				{
-					n+=(*m_NormData)[*b];
-					count+=1;
+					float count=0;
+					dVector n;
+					for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
+							b!=m_ConnectedVerts[i].end(); b++)
+					{
+						n+=(*m_NormData)[*b];
+						count+=1;
+					}
+					newnorms->m_Data.push_back((n/count).normalise());
 				}
-				newnorms->m_Data.push_back(n/count);
+				SetDataRaw("n", newnorms);
 			}
-			SetDataRaw("n", newnorms);
 		}
 	}
 }

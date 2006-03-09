@@ -173,7 +173,7 @@ public:
 	static SCM pdata_add(SCM s_name, SCM s_type);
 	static SCM pdata_copy(SCM s_s, SCM s_d);
 	static SCM finalise();
-	static SCM recalc_normals();
+	static SCM recalc_normals(SCM s_b);
 	static SCM pdata_op(SCM s_op, SCM s_pd, SCM s_oper);
 		
 	static SCM vmul(SCM s_a, SCM s_b);

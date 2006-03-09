@@ -30,7 +30,7 @@ public:
 	virtual  ~NURBSPrimitive();
 	
 	virtual void Render();
-	virtual void RecalculateNormals();
+	virtual void RecalculateNormals(bool smooth);
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "NURBSPrimitive"; }

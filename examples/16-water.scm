@@ -49,7 +49,7 @@
     (grab s)
     (calc (pdata-size)) 
     (pdata-op "+" "p" "vel")
-    (recalc-normals)
+    (recalc-normals 1)
     (ungrab))
 
 (push)

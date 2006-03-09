@@ -2,8 +2,8 @@
 """Provides tools for building Mac application bundles."""
 # Based on code by Gary Oberbrunner and Mitch Chapman
 
-import os
 from os.path import *
+import os
 import re
 import shutil
 

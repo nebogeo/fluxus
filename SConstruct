@@ -33,7 +33,7 @@ LibList      = [["m", "math.h"],
 
 IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 Source = Split("libfluxus/src/PData.cpp \
-        	libfluxus/src/PDataOperator.cpp \
+        libfluxus/src/PDataOperator.cpp \
 		libfluxus/src/PDataContainer.cpp \
 		libfluxus/src/PDataArithmetic.cpp \
 		libfluxus/src/GraphicsUtils.cpp \
@@ -84,13 +84,12 @@ else:
            	    ["GL", "GL/gl.h"],
 		    ["GLU", "GL/glu.h"]]
 	env.Append(LIBPATH = ["/usr/X11R6/lib"])
-
+	
 if not GetOption('clean'):
 	print '--------------------------------------------------------'		
 	print 'Fluxus: Configuring Build Environment'
 	print '--------------------------------------------------------'		
 	conf = Configure( env )	
-
 	# all libraries are required, but they can be checked for independently (hence autoadd=0),
 	# which allows us to speed up the tests ...
 	for (lib,headers) in LibList:

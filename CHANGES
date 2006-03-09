@@ -2,15 +2,36 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.9
 
+* (recalc-normals smooth) now takes an optional smooth flag
 * osc fix
 * blur works for coloured backgrounds
 * (searchpath '("path/to/textures" "path/to/scripts" "path/to/scripts2" "path/to/etc"))
-...
+* ctrl-x with no selection no longer eats random bits of your script!
+* characters not supported by the editor are now represented by yellow blocks, rather than
+troublesome invisible entities
+* decent camera rotation control with left mouse
+* delete/backspace switched for the mac build
+* (osc-msg) now stores all messages in a fifo
+* (wire-colour colour)
 * hide mouse on ctrl m
+* locators for all the joints on (show-axis 1)
+* (build-fixedjoint obj)
+* rotations work with the physics system properly now
+* (turtle-push) (turtle-pop) turtle state stack
+* (hint-vertcols)
+* (get-transform) when not used between a (grab) and (ungrab) this returns the 
+current transform from the stack
 * save with text highlighted now safe (saves all rather than selection)
 * (full-path) searches the searchpaths and returns a fullpath, or the filename 
 if not found
 * (hint-box) renders object bounding box
+* (clip front back) sets the clipping plane positions, defaults to 1 10000
+* (frustum top bottom left right) sets screen area, defaults to -0.75 0.75 -1 1
+* (hint-multitex) turns on multitexturing
+* (multitexture n texture) loads a texture into multitexture slot n.
+* orthographic fixes - mouse zoom works, editor projection fixed
+
+
 
 0.8
 

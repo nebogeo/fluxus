@@ -66,7 +66,7 @@
 ; tweak a vertex to prove it's curvy
 (grab ob)
 (pdata-set "p" 95 (vector -1 1 1)))
-(recalc-normals)
+(recalc-normals 1)
 (ungrab)
 (pop)
 
@@ -83,7 +83,7 @@
 ; tweak a vertex to prove it's curvy
 (grab ob)
 (pdata-set "p" 45 (vector 0.4 1 0.4)))
-(recalc-normals)
+(recalc-normals 1)
 (ungrab)
 (pop)
 

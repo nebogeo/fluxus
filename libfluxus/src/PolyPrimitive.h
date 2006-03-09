@@ -34,7 +34,7 @@ public:
 	virtual void AddVertex(const dVertex &Vert);	
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
-	virtual void RecalculateNormals();
+	virtual void RecalculateNormals(bool smooth);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
 	

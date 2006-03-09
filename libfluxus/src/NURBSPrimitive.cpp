@@ -135,7 +135,7 @@ void NURBSPrimitive::Render()
 
 }
 
-void NURBSPrimitive::RecalculateNormals()
+void NURBSPrimitive::RecalculateNormals(bool smooth)
 {
 	for (int n=0; n<(int)m_NVec->size(); n++)
 	{

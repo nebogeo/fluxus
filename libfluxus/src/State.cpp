@@ -91,7 +91,7 @@ void State::SetBlendMode(string s, string d)
 	else if (d=="one-minus-src-alpha") DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
 	else if (d=="dst-alpha") DestinationBlend=GL_DST_ALPHA;
 	else if (d=="one-minus-dst-alpha") DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
-	else cerr<<"source blend mode not recognised"<<endl;
+	else cerr<<"dest blend mode not recognised"<<endl;
 }
 
 

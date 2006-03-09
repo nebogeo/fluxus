@@ -43,7 +43,7 @@
 (define (render)
     (grab ob)
     (deform (pdata-size))
-    (recalc-normals)
+    (recalc-normals 1)
     (toon (pdata-size)
         ; transforming a vector gets that vector "into" the space of the transform, so 0,0,0 in camera
         ; space is the camera position...

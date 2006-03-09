@@ -36,7 +36,7 @@ public:
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
     virtual string GetTypeName()    { return "Primitive"; }
 		
-	virtual void RecalculateNormals() {}
+	virtual void RecalculateNormals(bool smooth) {}
 	
 	void RenderBoundingBox();
 	

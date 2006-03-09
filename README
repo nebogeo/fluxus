@@ -1,4 +1,4 @@
-Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
+Fluxus : (C) 2006 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 act of a flowing; a continuous moving on or passing by, as of a flowing stream; a continuous 
 succession of changes
@@ -8,11 +8,3 @@ released under the GPL licence (see COPYING)
 
 see INSTALL for information on building
 
-contents
-
-doc/index.html : documentation on the application and scripting language
-examples/      : a loose collection of example scripts, tests and live scripts I've used
-scm/           : a set of util scheme code for various tasks (not much here yet)
-textures/      : some textures used in the examples
-
-www.pawfal.org/dave

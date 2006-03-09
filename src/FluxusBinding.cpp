@@ -553,7 +553,7 @@ SCM FluxusBinding::blend_mode(SCM s_s, SCM s_d)
 	
 	size_t size=0;
 	char *s=gh_scm2newstr(s_s,&size);	
-	char *d=gh_scm2newstr(s_s,&size);	
+	char *d=gh_scm2newstr(s_d,&size);	
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
     if (Grabbed) Grabbed->GetState()->SetBlendMode(s,d);
     else Fluxus->GetRenderer()->GetState()->SetBlendMode(s,d);
@@ -1392,11 +1392,15 @@ SCM FluxusBinding::osc_send(SCM s_msg, SCM s_types, SCM s_arglist)
 		else
 		{
 			cerr<<"osc-send has found an argument type it can't send, numbers and strings only"<<endl;
+			free(msg);
+			free(types);
+    		return SCM_UNSPECIFIED;
 		}
 	}
 
 	Fluxus->SendOSC(msg,oscargs);
 	free(msg);
+	free(types);
     return SCM_UNSPECIFIED;
 }
 
@@ -1705,10 +1709,11 @@ SCM FluxusBinding::finalise()
 	return SCM_UNSPECIFIED;
 }
 
-SCM FluxusBinding::recalc_normals()
+SCM FluxusBinding::recalc_normals(SCM s_b)
 {
+    SCM_ASSERT(SCM_NUMBERP(s_b), s_b, SCM_ARG1, "recalc-normals");
 	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
-	if (Grabbed) Grabbed->RecalculateNormals();
+	if (Grabbed) Grabbed->RecalculateNormals(gh_scm2double(s_b));
 	return SCM_UNSPECIFIED;
 }
 
@@ -2248,7 +2253,7 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_2("pdata-copy", pdata_copy);
 	gh_new_procedure3_0("pdata-op", pdata_op);	
 	gh_new_procedure0_0("finalise", finalise);
-	gh_new_procedure0_0("recalc-normals", recalc_normals);
+	gh_new_procedure0_1("recalc-normals", recalc_normals);
 	
 	// maths
 	gh_new_procedure0_2("vmul", vmul);

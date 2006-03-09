@@ -12,10 +12,9 @@ liblo      http://plugin.org.uk/liblo/
 
 and if that's not enough, you'll also need scons (http://www.scons.org/) to build fluxus
 
-to build, type:
+to build and install, type:
 
-scons
-scons install (as root)
+sudo scons install
 
 
 

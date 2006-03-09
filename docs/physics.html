@@ -1,6 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html><head><title>Fluxus manual v0.8</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
-<hdr><a href="index.html">Fluxus manual</a> v0.8 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+<html><head><title>Fluxus manual v0.9</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.9 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
 
 <h1>13.0  Physics</h1>
 
@@ -39,8 +39,9 @@ section 7.3.7 of the ODE docs for an explanation of these parameters
 
 enable the object to be acted upon by the physics system, using a box, sphere or
 cylinder as the bounding volume. as an active object, it will be transformed by
-ode.
-
+ode. note: rotations only work correctly if you specify your transforms
+scale first, then rotate (translate doesn't matter) basically, ode can't
+deal with shearing transforms. 
 
 <c>(passive-box object)</c>
 <c>(passive-sphere object)</c>
@@ -48,8 +49,9 @@ ode.
 
 enable the object to be acted upon by the physics system, using a box, sphere or
 cylinder as the bounding volume. as a passive object, active objects will
-collide with it, but it will not be transformed.
-
+collide with it, but it will not be transformed. note: rotations only work correctly 
+if you specify your transforms scale first, then rotate (translate doesn't matter) 
+basically, ode can't deal with shearing transforms. 
 
 <c>(set-mass object mass)</c>
 

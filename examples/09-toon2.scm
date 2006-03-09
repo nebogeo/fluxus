@@ -43,7 +43,7 @@
     (grab s)
     (pdata-copy "pref" "p") ; reset the points back
     (deform (pdata-size))
-    (recalc-normals)
+    (recalc-normals 1)
     (toon-light (pdata-size))
     (ungrab))
 
