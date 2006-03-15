@@ -178,7 +178,7 @@ void GLEditor::Render()
 		
 		if (m_Position==n) // draw cursor
 		{ 
-			glColor4f(0.5,1,0.8,0.5);
+			glColor4f(1,1,0,0.5);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
@@ -221,7 +221,7 @@ void GLEditor::Render()
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
 	{
-		glColor4f(0.5,1,0.8,0.5);
+		glColor4f(1,1,0,0.5);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}

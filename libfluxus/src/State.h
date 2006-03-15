@@ -44,7 +44,13 @@ namespace fluxus
 #define HINT_VERTCOLS 0x0080
 #define HINT_MULTITEX 0x0100
 
+#define ENABLE_MULTITEXTURE
+
+#ifdef ENABLE_MULTITEXTURE
 #define MAX_TEXTURES  8
+#else
+#define MAX_TEXTURES  1
+#endif
 
 class State
 {

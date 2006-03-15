@@ -420,6 +420,13 @@ int Renderer::Select(int x, int y, int size)
 	return ID;
 }
 
+dMatrix Renderer::GetProjection()
+{
+	dMatrix Projection;
+	glGetFloatv(GL_PROJECTION_MATRIX,Projection.arr());
+	return Projection;
+}
+
 void Renderer::LockCamera(int Prim)
 {
      Primitive *p = GetPrimitive(Prim);

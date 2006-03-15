@@ -93,7 +93,9 @@ public:
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; InitFeedback(); }
+	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
 	dMatrix *GetCamera()                     { return &m_Camera; }
+	dMatrix GetProjection();
 	void LockCamera(int Prim);
 	void UnlockCamera()						 { m_LockedCamera=false; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
@@ -121,7 +123,6 @@ public:
 	
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
-
 	
 	struct LibraryEntry
 	{	

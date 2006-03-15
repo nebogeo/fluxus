@@ -1009,7 +1009,8 @@ SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
 {
 	SCM_ASSERT(SCM_STRINGP(s_dev), s_dev, SCM_ARG1, "start-audio");
 	SCM_ASSERT(SCM_NUMBERP(s_bs), s_bs, SCM_ARG2, "start-audio");
-	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG3, "start-audio");
+ 	SCM_ASSERT(SCM_NUMBERP(s_sr), s_sr, SCM_ARG3, "start-audio");
+	
 	if (Audio==NULL)
 	{
 		char *name=0;
@@ -1748,6 +1749,31 @@ SCM FluxusBinding::get_camera_transform()
 	return gh_floats2scm(Fluxus->GetRenderer()->GetCamera()->inverse().arr(),16);
 }
 
+SCM FluxusBinding::get_projection_transform()
+{
+	return gh_floats2scm(Fluxus->GetRenderer()->GetProjection().arr(),16);
+}
+
+SCM FluxusBinding::get_screen_size()
+{
+	float res[2];
+	int x=0,y=0;
+	Fluxus->GetRenderer()->GetResolution(x,y);
+	res[0]=x; res[1]=y;
+	return gh_floats2scm(res,2);
+}
+
+SCM FluxusBinding::set_screen_size(SCM s_size)
+{
+	SCM_ASSERT(SCM_VECTORP(s_size), s_size, SCM_ARG1, "set-screen-size");	
+	SCM_ASSERT(SCM_VECTOR_LENGTH(s_size)==2, s_size, SCM_ARG3, "set-screen-size");
+	float v[2];
+	gh_scm2floats(s_size,v);
+	// hmmm, seems a bit wrong, but hey...
+	glutReshapeWindow((int)v[0],(int)v[1]);
+	return SCM_UNSPECIFIED;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 
 SCM FluxusBinding::vmul(SCM s_a, SCM s_b)
@@ -2111,6 +2137,9 @@ void FluxusBinding::RegisterProcs()
 	gh_new_procedure0_1("destroy",      destroy);
 	gh_new_procedure0_0("get-transform", get_transform);
 	gh_new_procedure0_0("get-camera-transform", get_camera_transform);
+	gh_new_procedure0_0("get-projection-transform", get_projection_transform);
+	gh_new_procedure0_0("get-screen-size", get_screen_size);
+	gh_new_procedure0_1("set-screen-size", set_screen_size);
 
 	// renderstate operations
 	gh_new_procedure0_0("push",            push);

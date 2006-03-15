@@ -60,6 +60,9 @@ public:
 	static SCM lock_camera(SCM s_ob);
 	static SCM get_transform();
 	static SCM get_camera_transform();
+	static SCM get_projection_transform();
+	static SCM get_screen_size();
+	static SCM set_screen_size(SCM s_size);
 	static SCM destroy(SCM s_name);
 	static SCM clear();
 	static SCM grab(SCM s_id);

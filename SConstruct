@@ -80,7 +80,9 @@ if env['PLATFORM'] == 'darwin':
 	env.Prepend(LINKFLAGS = ["-static"])
 else:
 	LibList += [["X11", "X11/Xlib.h"],
-                    ["glut", "GL/glut.h"],
+				# for X11
+				#["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
+                ["glut", "GL/glut.h"],
            	    ["GL", "GL/gl.h"],
 		    ["GLU", "GL/glu.h"]]
 	env.Append(LIBPATH = ["/usr/X11R6/lib"])

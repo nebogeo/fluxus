@@ -35,8 +35,10 @@ void TexturePainter::Initialise()
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
+		#ifdef ENABLE_MULTITEXTURE
 		glActiveTexture(GL_TEXTURE0+c);
 		glClientActiveTexture(GL_TEXTURE0+c);
+		#endif
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -47,7 +49,9 @@ void TexturePainter::Initialise()
     	glMatrixMode(GL_TEXTURE);
     	glLoadIdentity();
 	}
+	#ifdef ENABLE_MULTITEXTURE
 	glClientActiveTexture(GL_TEXTURE0);
+	#endif
 }
 
 int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
@@ -141,7 +145,9 @@ bool TexturePainter::SetCurrent(int *ids)
 	
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
+		#ifdef ENABLE_MULTITEXTURE
 		glActiveTexture(GL_TEXTURE0+c);
+		#endif
 		
 		map<unsigned int,TextureDesc*>::iterator i=m_TextureMap.find(ids[c]);
 		if (i!=m_TextureMap.end())
@@ -158,19 +164,25 @@ bool TexturePainter::SetCurrent(int *ids)
 		}
 	}
 	
+	#ifdef ENABLE_MULTITEXTURE
 	glActiveTexture(GL_TEXTURE0);
+	#endif
 	
 	return ret;
 }
 
 void TexturePainter::DisableAll()
 {
+	#ifdef ENABLE_MULTITEXTURE
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
 		glActiveTexture(GL_TEXTURE0+c);
 		glDisable(GL_TEXTURE_2D);
 	}
 	glClientActiveTexture(GL_TEXTURE0);
+	#else
+	glDisable(GL_TEXTURE_2D);
+	#endif
 }
 
 

@@ -110,12 +110,15 @@ void PolyPrimitive::Render()
 			TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
 			if (tex!=NULL)
 			{	
+				#ifdef ENABLE_MULTITEXTURE
 				glClientActiveTexture(GL_TEXTURE0+n);
+				#endif
 				glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
 			}
 		}
-		
+		#ifdef ENABLE_MULTITEXTURE
 		glClientActiveTexture(GL_TEXTURE0);
+		#endif
 	}
 	
 	if (m_State.Hints & HINT_VERTCOLS)
