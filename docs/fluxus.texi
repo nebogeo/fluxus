@@ -1,0 +1,1470 @@
+\input texinfo @c -*-texinfo-*- 
+
+@comment  makeinfo --css-include=fluxusdoc.css --html fluxus.texi
+
+@setfilename fluxus.info
+@settitle  Fluxus manual v0.9
+@afourpaper 
+
+@copying 
+@copyright{} 2005 Dave Griffiths : dave at pawfal dot org : @url{http://www.pawfal.org}
+@end copying
+
+@node Top
+@top Overview
+
+@image{images/splash}
+
+@menu
+* Introduction:: Introduction
+* Quickstart::  Quickstart
+* User Manual:: User Manual
+* Statemachine:: The Fluxus State Machine
+* Global Options:: Global options
+* Primitives:: Primitives 
+* Lights:: Lights 
+* Appearance:: The appearance of primitives 
+* Maths:: Maths calls
+* Deforming:: Deforming primitives 
+* User Input:: User input
+* Animation:: Animation sources
+* Physics:: Physics System
+* Turtle Builder:: Turtle builder 
+* Examples:: Examples 
+* Function Overview::Overview of Functions 
+* Index:: Index[es]
+@end menu
+@insertcopying 
+
+@node Introduction
+@chapter Introduction
+
+Fluxus allows you to write Scheme scripts that create graphics live,
+interpreting audio and OSC input as a source of animation data. Fluxus
+also uses a fully featured physics library, which means you can script
+physical properties into objects and simulate them in realtime. Released
+for Linux under the GPL licence.
+
+The built in scheme code editor runs on top of the renderer, which means
+you can edit the scripts while they are running. This allows Fluxus to
+be used for livecoding performances, or simply as a fast feedback way of
+experimenting or learning about graphics and animation.
+
+Fluxus lends itself to procedural modelling and animation. There is an
+experimental procedural modelling tool, and full support for texturing
+and material properties.
+
+@insertcopying 
+
+@node Quickstart
+@chapter Quickstart
+
+For a quick introduction to fluxus, try entering the following command
+once you have started fluxus and see the red cursor in the top left of
+the screen.
+
+@code{(build-cube)}
+
+Now press f5 - the script will be executed, and a white cube should appear in 
+the centre of the screen. Use the mouse and to move around the cube, pressing 
+the buttons to get different movement controls.
+
+To animate this cube, it will have to be called a little differently:
+
+@code{
+  (start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate need to match jack's
+
+  (define (render)
+    (colour (vector (gh 1) (gh 2) (gh 3)))
+    (draw-cube))
+
+  (every-frame "(render)")}
+
+Briefly, the @code{(every-frame)} function takes a fragment of script
+which is called once per frame by fluxus's internal engine. In this case
+it calls a function that sets the current colour using harmonics from
+the incoming sound with the @code{(gh)} - get harmonic - function; and
+draws a cube. Note that this time we use @code{(draw-cube)} not
+@code{(build-cube)}. The difference will be explained below.
+
+If everything goes as planned, and the audio is connected with some
+input - the cube will flash in a colourful manner along with the sound.
+
+@insertcopying 
+
+@node User Manual
+@chapter  User Manual
+
+Fluxus consists of one window containing a script editor rendered on top
+of the scene display render. The idea is that you only need the one
+window to build scripts, or play live. f5 is the key that runs the
+script when you are ready.  Selecting some text (using shift) and
+pressing f5 will execute the selected text only. This is handy for
+reevaluating functions without running the whole script each time.
+
+@section Camera control
+
+The camera is controlled by moving the mouse and pressing mouse buttons.
+
+@itemize @bullet
+@item Left mouse button: Rotate
+@item Middle mouse button: Move
+@item Right mouse button: Zoom
+@end itemize
+
+@section Workspaces
+
+The script editor allows you to edit 10 scripts simultaneously by using
+workspaces. To switch workspaces, use ctrl+number key. Only one can be
+run at once though, hitting f5 will execute the currently active
+workspace script.  Scripts in different workspaces can be saved to
+different files, by using the @code{(save-name)} call in the different
+workspaces (see below).
+
+@section Keyboard commands
+
+@itemize @bullet
+@item ctrl-f : Fullscreen mode.
+@item ctrl-w : Windowed mode.
+@item ctrl-h : Hide/show the editor.
+@item ctrl-s : Save current script.
+@item ctrl-0 to 9 : Switch to selected workspace
+@item F1 : Mouse moves the scene camera.
+@item F2 : Mouse moves the editor camera.
+@item F3 : Resets the scene camera.
+@item F4 : Resets the editor camera.
+@item F5 : Execute the selected text, or all if none is selected.
+@item F9 : Randomise the text colour
+@item F10 : Make text thinner
+@item F11 : Make text thicker
+@end itemize
+
+@section Loading/Saving scripts
+
+Scripts can be loaded by typing:
+
+@code{(edit "examples/bars.scm")}
+
+and hitting F5. The script you just typed will be replaced by the loaded
+script.  Scripts are saved by hitting ctrl-s - the filename is either
+set to the last loaded script, or overwritten by:
+
+@code{(save-name "newsavename.scm")}
+
+@insertcopying 
+
+@node Statemachine
+@chapter  The Fluxus State Machine
+
+The state machine is the key to understanding how fluxus works, all it
+really means is that you can call functions which change the current
+context which has an effect on subsequent functions. This is a very
+efficient way of describing things, and is built on top of the OpenGl
+api, which works in a similar way.  For example, in a function called
+every frame:
+
+@code{(colour (vector 1 0 0))
+(draw-cube)
+(colour (vector 0 1 0))
+(draw-cube)}
+
+will draw a red cube, then a green cube (in this case, you can think of
+the @code{(colour)} call as changing a pen colour before drawing
+something).  States can also be stacked, for example:
+
+@code{(colour (vector 1 0 0))
+(push)
+	(colour (vector 0 1 0))
+	(draw-cube)
+(pop)
+(draw-cube)}
+
+will draw a green, then a red cube. the @code{(push)} command stores the
+current state, and adds a copy to the top of the stack. @code{(pop)}
+retrieves the previous state and deletes the current one (so changes to
+the state between the push and the pop are lost)
+
+@section The Scenegraph 
+
+Both examples so far have used what is known as immediate mode, you have
+one state stack, the top of which is the current context, and everything
+is drawn once per frame. fluxus contains a structure known as a
+scenegraph for storing objects and their render states.
+
+Time for another example:
+
+@code{(colour (vector 1 0 0))
+(build-cube)
+(colour (vector 0 1 0))
+(build-cube)}
+
+The only difference between this and the first example is the use of 
+(build-cube) instead of (draw-cube). the build functions create a primitive 
+object, copy the current renderstate and add the information into the 
+scenegraph in a container called a scenenode.
+
+The (build-*) functions return object ID's (just numbers really) which enable 
+you to do things to the scene node after it's been created. you can now specify 
+objects like this:
+
+@code{(define myob (build-cube))}
+
+The cube will now be persistant in the scene until destroyed with
+
+@code{(destroy myob)}
+
+If you want to modify a objects renderstate after it's been loaded into
+the scenegraph, you can use the grab function to temporarially set the
+current context to that of the object. use ungrab to turn fluxus back
+into normal state stack mode. this allows you to animate objects stored
+in the scenegraph, for instance:
+
+@code{(colour (vector 1 1 1))
+(define obj1 (build-cube))
+(push)
+    (translate (vector 2 0 0))
+    (define obj2 (build-cube))
+(pop)}
+
+--->8---
+
+; in a function called per frame
+
+@code{(grab obj1)
+(rotate (vector 0 1 0))
+(ungrab)
+
+(grab obj2)
+(rotate (vector 0 0 1))
+(ungrab)}
+
+Do not call push or pop while an object is grabbed, it will have no
+effect - fluxus will print out a warning in this case.
+
+The scenegraph also enables you to parent objects to one another, using
+the renderstate's parent setting. this is only effective before an
+object is loaded into the scenegraph, setting it afterwards via a
+grabbed state will be ignored:
+
+@code{(colour (vector 1 1 1))
+(define a (build-cube))
+
+(push)
+    (parent a)
+    (translate (vector 0 2 0))
+    (define b (build-cube))
+(pop)
+
+(push)
+    (parent b)
+    (translate (vector 0 2 0))
+    (define c (build-cube))
+(pop)}
+
+creates three cubes, all attached to each other in a chain. transforms
+for object a will be passed down to b and c, transforms on b will effect
+c blah.
+
+destroying a object in such a hierachy will in turn destroy all child
+objects parented to it.
+
+@code{(apply-transform obj)}
+
+applies the tranformation stored in the object's scene graph node
+directly to the vertices of the geometry, and sets the transform to
+identity. this means that you can change the origin of the object, and
+therefore the parent pivot position.
+
+@code{(hide 0|1)}
+switch visibility of the current grabbed primitive
+
+@insertcopying 
+
+@node Global Options
+@chapter  Global options
+
+@section 5.0  Global Options
+
+These commands affect the global state, and can be called at any time.
+
+@code{(clear)}
+clears the scene graph of all objects and empties the state stack.
+
+@code{(ortho)} or @code{(persp)}
+sets the projection type to either othographic or perspective projection.
+
+@code{(frustum top bottom left right)}
+sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 
+0.75 -1 1
+
+@code{(clip front back)}
+sets the clipping plane positions, defaults to 1 10000
+
+@code{(reset-camera)}
+resets the camera matrix in case you get lost.
+
+@code{(lock-camera object)}
+locks the camera to the object.
+
+@code{(clear-colour colvec)}
+set the background clear colour.
+
+@code{(clear-frame 0|1)}
+enables/disables clearing.
+
+@code{(blur amount)}
+turns hackish motion blur on, just renders a transparent poly over the frame 
+rather than clearing. the transparency is set by amount, setting amount to 0 
+turns this feature off. 
+
+@code{(show-axis bool)}
+turns the origin axis display on or off.
+
+@code{(backfacecull 0|1)}
+enables/disables backface culling.
+
+@code{(desiredfps fps)}
+sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. 
+this value doesn't seem to be entirely correct, but it does the job.
+
+@code{(start-framedump filename type) }
+@code{(end-framedump)}
+starts and stops writing tiff frame images to disk. will be quite slow - and 
+unsuitable for realtime use - see @code{(process)} type can be one of "tif" or
+"jpg".
+
+@code{(fog colour density start end)}
+sets the global fogging parameters.
+
+@code{(feedback 0|1)}
+turns on a background plane which is textured with the previous frame, for those wacky 70's video 
+effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and 
+buggy and prone to crashing!
+
+@code{(feedback-transform matrix)}
+sets a transform for the feedback plane
+
+@code{(searchpaths l)}
+sets the directories in which fluxus will search for files (textures and scripts) to the given 
+list of paths, in order
+
+@code{(fullpath filename)}
+returns the full path to the file, using the searchpaths
+
+
+@insertcopying 
+
+@node Primitives
+@chapter  Primitives 
+
+Primitives are objects that you can render. There isn't really much else in a 
+fluxus scene, except lights, a camera and lots of primitives.
+
+@section Retained Mode
+    
+The normal way to create a primitive is to call it's build function and then 
+use it's returned ID (either directly, or by grabbing) to modify it later. 
+
+@code{(define myobj (build-cube))
+(grab myobj)
+(colour (vector 1 0 0))
+(ungrab) ; always remember to ungrab...	}
+
+Here are all the primitives:
+
+@code{(build-cube)}
+a simple cube, texture mapped placement per face
+
+@image{images/cube}
+
+@code{(build-sphere hsegments rsegments)}
+a sphere with the resolution specified in verts, texture mapped in normal 
+"world map" style
+
+@image{images/sphere}
+
+@code{(build-plane xsegments ysegments)}
+a tesselated poly plane, texture mapped from 0->1 in both dimensions
+
+@image{images/plane}
+
+@code{(build-cylinder hsegments rsegments)}
+a capped cylinder, texture map wrapped around
+
+@image{images/cylinder}
+
+@code{(build-text text)}
+builds a sequence of planes, texture mapped so that a font texture can be used 
+to display text. might also be useful for more abstract things. the texture 
+map should be drawn as follows:
+
+(ascii 32 onwards)
+  ! " # $ % & ' ( ) * + ' - . / 
+0 1 2 3 4 5 6 7 8 9 : ; < = > ?
+@ A B C D E F G H I J K L M N O
+P Q R S T U V W X Y Z [ \ ] ^ _
+` a b c d e f g h i j k l m n o
+p q r s t u v w x y z @{ | @} ~
+
+the font assumed to be non proportional - there is an example font shipped with 
+fluxus
+
+@image{images/text}
+ok, so this isn't a very good font texture :)
+
+@code{(build-nurbs-sphere hsegments rsegments)}
+builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly
+sphere
+@image{images/nurbs-sphere}
+a nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
+
+@code{(build-nurbs-plane usegments vsegments)}
+builds a tesselated nurbs plane, texture mapped in uv direction
+@image{images/nurbs-plane}
+a nurbs patch plane, again with a control vertex tweaked
+		
+@section Primitive Data [aka. pdata]
+
+Each primitive is made up of arrays of data that describe it's shape and surface 
+properties. The data is always stored per-vertex, and is created when you call 
+the build function. You do not have to know anything about this data to use 
+primitives, but it means you can modify or deform them in a more detailed way than
+using functions we've already looked at, and some primitives are only useful if
+pdata is used to control them.
+
+So, for example @code{(build-sphere)} creates a polygonal object with a spherical 
+distribution of vertex point data, surface normals at every vertex and texture 
+coordinates, so you can wrap a texture around the primitive. This data 
+(primitive data, or pdata for short) can be read and written to by your 
+scripts, using the following commands (which operate on the currently grabbed 
+object):
+
+@code{(pdata-set name vertnumber vector)}
+sets the data on the currently (grab)ed object to the input vector
+
+@code{(pdata-get name vertnumber)}
+returns the vector from the pdata on the currently (grab)ed object
+
+@code{(pdata-size)}
+returns the size of the pdata on the currently (grab)ed object (the number of 
+verts)
+
+The name describes the data we want to access, for instance "p" contains 
+the vertex positions:
+
+so, some examples to make sense of this:
+
+@code{(pdata-set "p" 0 (vector 0 0 0))}
+
+sets the first point in the primitive to the origin (not all that useful)
+
+@code{(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))}
+
+The same, but sets it to the original position + 1 in the x
+offsetting the position is more useful as it constitutes a deformation of the 
+original point.
+
+(see <a href="deforming.html">deforming</a> for more info on deformations)
+
+The pdata availible depends on the type of the primitive.
+
+Polygonal based primitives (Cube, Sphere, Cylinder, Plane, Text)
+
+Positions:      "p" vector
+Normals:        "n" vector
+Texture coords: "t" vector
+Vertex colours: "c" colour
+
+NURBS based primitives (NURBSSphere, NURBSPlane)
+
+Positions:      "p" vector
+Normals:        "n" vector
+Texture coords: "t" vector
+
+@section Geometry requiring pdata access
+
+The following primtives are different to the previous types in that they require 
+pdata modification to do anything useful. 
+		
+@code{(build-particles num)}
+builds a particles primitive containing num points, all initially set to the 
+origin. you use the pdata functions to edit the postions, colours and sizes. 
+particles come in two flavors, camera facing sprites, which are the default, can 
+be textured and individually scaled; and points (when @code{(hint-points)} is set),
+which cannot be textured but are much faster to render, as they are hardware 
+supported gl points. by default these point particles are square, turn on 
+@code{(hint-anti-alias)} to make them circular.
+
+@image{images/sprites}
+happy textured sprites
+
+@image{images/particles}
+point particles
+
+<b>Particle primitive pdata</b>
+
+Positions:      "p" vector
+Colours:        "c" colour
+Sizes:          "s" vector
+
+@code{(build-line numpoints)}
+builds a line consisting of numpoint points. the geometry is constantly camera 
+facing and is texture mapped so the texture is stretched along the line from start
+to finish. you use the pdata functions to edit the postions and widths of the lines. 
+if used lit, the normals are faked to approximate a circular cross section. 
+additionally, if solid rendering is cleared with (hint-none) and (hint-wire) is 
+activated, a faster constant width line will be drawn - width specified by the 
+(line-width) command
+
+@image{images/line}
+
+<b>Line primitive pdata</b>
+
+Positions:      "p" vector
+Width:          "w" float 
+
+@code{(build-polygons size type)}
+builds a raw polygon primitive with size vertices (everything set to zero). 
+type is a number that refers to the way the vertices are interpreted to build
+polygons, and can be one of the following:
+
+0=TRISTRIP
+1=QUADS
+2=TRILIST
+3=TRIFAN
+4=POLYGON
+
+@section Topology and pdata
+
+The order and meaning of the vertex pdata depends on the exact primitive, and in 
+the case of polygonal objects, the topology of the polygons.
+
+So a polygon primitive built from triangle lists will have the following ordering
+of it's pdata:
+
+(This is a really bad way of describing something which is easier done with a 
+picture, see your OpenGL manual, or search the net for "OpenGL Primitives" :)
+
+pdata index 0 : face 0 vert 0
+pdata index 1 : face 0 vert 1
+pdata index 2 : face 0 vert 2
+pdata index 3 : face 1 vert 0
+pdata index 4 : face 1 vert 1
+pdata index 5 : face 1 vert 2
+
+Quad lists:
+
+pdata index 0 : face 0 vert 0
+pdata index 1 : face 0 vert 1
+pdata index 2 : face 0 vert 2
+pdata index 3 : face 0 vert 3
+pdata index 4 : face 1 vert 0
+pdata index 5 : face 1 vert 1
+
+Triangle strip:
+
+pdata index 0 : face 0 vert 0 
+pdata index 1 : face 0 vert 1 & face 1 vert 0 
+pdata index 2 : face 0 vert 2 & face 1 vert 1 & face 2 vert 0
+pdata index 3 : face 1 vert 2 & face 2 vert 1 & face 3 vert 0 
+pdata index 4 : face 2 vert 2 & face 3 vert 1 & face 4 vert 0
+pdata index 5 : face 3 vert 2 & face 4 vert 1 & face 5 vert 0     
+
+Triangle fan:
+
+pdata index 0 : vert 0 for all faces
+pdata index 1 : face 0 vert 1 
+pdata index 2 : face 0 vert 2 & face 1 vert 1
+pdata index 3 : face 1 vert 2 & face 2 vert 1
+pdata index 4 : face 2 vert 2 & face 3 vert 1
+pdata index 5 : face 3 vert 2 & face 4 vert 1
+
+Polygon (the easy one):
+
+pdata index 0 : vert 0
+pdata index 1 : vert 1
+pdata index 2 : vert 2
+pdata index 3 : vert 3
+pdata index 4 : vert 4
+pdata index 5 : vert 5
+
+This lookup is the same for all the pdata on a particular primitive - vert positions, 
+normals, colours and texture coordinates.
+
+Although this implicit topology means the primitive is optimised to be very quick to 
+render, it costs some memory as points are duplicated. This is a standard tradeoff,
+the most optimal poly topology are triangle strips, as the duplication gets less, 
+depending on how long your strips get.
+
+The topologies for the various polygon primitives are as follows:
+
+cube: quad list
+plane: quad list
+text: quad list
+sphere: triangle list
+cylinder: triangle list
+
+<b>Nurbs topology</b>
+
+Nurbs pdata are much simpler to deal with, as the topology is just a patch grid for 
+both spheres and subdivided planes. 
+
+@section Instancing
+
+Sometimes retained mode primitives can be unwieldy to deal with. For instance, 
+if you are rendering thousands of identical objects, or doing things with 
+recursive graphics, where you are calling the same primitive in lots of 
+different states - keeping track of all the IDs would be annoying to say the 
+least.
+
+This is where instancing is helpful, all you call is:
+
+@code{(draw-instance myobj)}
+
+and it will redraw any given object in the current state (immediate mode).
+An example:
+
+@code{(define myobj (build-nurbs-sphere 8 10)) ; make a sphere
+
+(define (render-spheres n)
+	(push)
+	(translate (vector n 0 0)) ; move in x
+	(draw-instance myobj)       ; stamp down a copy
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies}
+
+@section Built In Immediate Mode Primitives
+
+To make life even easier than having to instance primitives, there are some 
+built in primitives that can be rendered at any time, without being built:
+
+@code{(draw-cube)
+(draw-sphere)
+(draw-plane)
+(draw-cylinder)}
+
+so the it makes the code above simpler:
+
+@code{(define (render-spheres n)
+	(push)
+    (translate (vector n 0 0)) ; move in x
+	(draw-sphere)              ; render a new sphere
+	(pop)
+	(if (< n 0)
+		0
+		(render-spheres (- n 1)))) ; recurse!
+
+(every-frame "(render-spheres 10)") ; draw 10 copies}
+
+These built in primitives are very restricted in that you can't edit them 
+or change their resolution settings etc, but they are handy to use for quick 
+scripts with simple shapes.
+
+@insertcopying 
+
+@node Lights
+@chapter  Lights 
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html><head><title>Fluxus manual v0.9</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
+<hdr><a href="index.html">Fluxus manual</a> v0.9 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
+
+@section 7.0 Lights</h1>
+Lights are needed to, err, light the scene. If there are none built, the 
+default light is a white one attached to the camera.
+
+@image{images/lights}
+an example of crazy lighting
+
+@code{(make-light 0/1)}
+makes a new light. if the argument is true, then it's locked to the camera (in 
+camera space) else it's in world space. returns the light id
+
+@code{(clear-lights)}
+destroys all lights
+
+@code{(light-ambient id colvec)
+(light-diffuse id colvec)
+(light-specular id colvec)
+(light-position id vec)}
+sets the parameters for the light
+
+
+@insertcopying 
+
+@node Appearance
+@chapter  The appearance of primitives 
+
+Now that we have primitives and lights for shading them, it's time to
+introduce the ways that you can modify the appearence of your
+primitives.
+
+@section Surface parameters
+
+These surface parameters can be treated exactly like the rest of the state 
+items - transforms, (colour) etc. They can either be set using the state stack 
+when building primitives, or set later using (grab)
+
+@image{images/materials}
+some spheres with random materials over a textured plane
+
+@code{(opacity n)}
+set the opacity value on the current state 
+
+@code{(wire-colour n)}
+set the wireframe colour on the current state 
+
+@code{(specular v) }                       
+set the specular colour on the current state 
+
+@code{(ambient v)}                         
+set the ambient colour on the current state
+
+@code{(emissive v)}                        
+set the emissive colour on the current state
+
+@code{(shinyness n)}                       
+set the shinyness on the current state
+
+@code{(texture n)}                         
+set the texture on the current state, using a texture ID
+
+Textures are loaded using (load-texture filename), they are cached so they 
+won't load more than once, so you can easily just call:
+
+@code{(texture (load-texture "path/to/mytexture.png"))}
+
+Textures have to be png format, and support alpha transparency.
+
+@code{(multitexture n t)}  (only on poly prims at the moment)                       
+set the texture on the current state, using a texture ID n to multitexture t. 
+multitexturing allows you to apply different textures and coordinates to the 
+same object at once. t is a number from 0 to 7. texture 0 is the default one
+(which uses the pdata "t" for it's texture coords) multitexture n looks for 
+pdata "tn" - ie multitexture 1 looks for "t1". you need to add these 
+yourself using (pdata-add) or (pdata-copy). see <a href="deforming.html">deforming</a> for
+more info.
+
+@code{(line-width n)}
+
+alters the line width in pixels
+
+@code{(point-width n)}
+
+alters the point width in pixels
+
+@code{(blend-mode src dest)}
+
+sets the blend mode for the primitive's alpha blending function, src and dest 
+are strings of the following type:
+
+zero
+one
+dst-color  
+one-minus-dst-color
+src-alpha		   
+one-minus-src-alpha
+dst-alpha
+one-minus-dst-alpha
+src-alpha-saturate (src only)
+
+@section Render hints
+
+There are other miscellaneous options that can change the way a primitive is 
+rendered. These options are called hints, as for some primitives they may not 
+apply, or may do different things. They are mainly useful for debugging, or 
+special cases - sometimes just for some fun.
+
+@image{images/hints}
+a poly sphere with normals, wireframe and solid hints, and line width set to
+4 pixels
+
+@code{(hint-none)}                         
+clear the current render hints
+
+@code{(hint-solid)}
+render solid - defaults to on
+
+@code{(hint-wire)}
+render wireframe representation
+
+@code{(hint-normal)}
+render normals, very handy
+
+@code{(hint-points)}
+render vertex or cv points
+
+@code{(hint-anti-alias)}
+render antialiased mode
+
+@code{(hint-unlit)}
+disable lighting
+
+@code{(hint-box)}
+renders the object's bounding box
+
+@code{(hint-vertcols)}
+uses vertex colours for the object, switches off colour materials from (colour) 
+command
+
+@code{(hint-multitex)}
+turns on multitexturing - only works on poly primitives at the moment
+
+
+
+@insertcopying 
+
+@node Maths
+@chapter  Maths calls
+
+For some operations, basic 3D types such as vectors (scheme vectors of
+size 3) and matrices (scheme vectors of size 16) will have to be
+processed and calculations operated on them. There is a basic maths
+library built into fluxus to do this for you.
+
+@code{(vadd v v)
+(vsub v v)
+(vmul v number)
+(vdiv v number)}
+simple operations on vectors
+
+@code{(vtransform v m)}
+transform the vector by the matrix m
+
+@code{(vtransform-rot v m)}
+transform the vector by the matrix m, ignoring the translation part (useful for 
+normals)
+
+@code{(vnormalise v)}
+return a normalised version of vector v
+
+@code{(vdot v v)}
+returns the dot product from the two vectors
+
+@code{(vmag v)}
+returns the magnitude of the vector 
+
+@code{(vdist v v)}
+returns the distance between the two vectors - treated as points
+
+@code{(vcross v v)}
+returns the cross product vector of the two input vectors
+
+@code{(madd m m)
+(msub m m)
+(mmul m m)
+(mdiv m m)}
+simple operations on matrices
+
+@code{(mident)}
+returns the identity matrix
+
+@code{(mtranslate v)}
+returns a translation matrix 
+
+@code{(mrotate v)}
+returns a rotation matrix 
+
+@code{(mscale v)}
+returns a scale matrix 
+
+@code{(mtranspose m)}
+returns a transposed version of the input matrix (columns = rows)
+
+@code{(minverse m)}
+returns the inverted version of the input matrix, if it can't be inverted it 
+will return the identity matrix (I think)
+
+@code{(maim v v)}
+returns a matrix aimed down the first vector, using the second vector as the 
+up vector. may be buggy.
+
+the following functions return the transform matrices for primitives and the 
+camera. these are really useful for a number of tasks, eg to get the position
+of a transformed object, use something like:
+@code{(grab myobject)
+(define position (vtransform (vector 0 0 0) (get-transform)))
+(ungrab)}
+
+@code{(get-transform)}
+gets the transform matrix of the grabbed primitive, or the top of the transform 
+stack if no object is grabbed
+
+@code{(get-camera-transform)}
+gets the current camera transform matrix 
+
+
+
+
+@insertcopying 
+
+@node Deforming
+@chapter  Deforming primitives 
+
+Deformation in this chapter signifies various operations. It can involve
+changing the shape of a primitive in a way not possible via a transform
+(ie bending, warping etc) or modifying texture coordinates or colours to
+achieve a per-vertex effect. (Deformation in this way is also the only
+way to get particle primitives to do anything interesting).
+
+Deforming is all about pdata, so, to deform an entire object, you do
+something like the following:
+
+@code{(hint-unlit)
+(hint-wire)
+(line-width 4)
+(define myobj (build-sphere 10 10))
+
+(define (deform n)
+    (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
+        (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
+    (if (< n 0)
+        0
+        (deform (- n 1))))
+    
+(grab myobj)
+(deform (pdata-size)) ; for every point
+(ungrab)}
+
+@image{images/deform}
+a sphere with randomly jittered vertices
+
+when deforming geometry, moving the positions of the vertices is not usually enough, 
+the normals will need to be updated for the lighting to work correctly. 
+
+@code{(recalc-normals smooth)}
+will regenerate the normals for polygon and nurbs primitives based on the vertex 
+positions. not particually fast (it is better to deform the normals in your 
+script if you can) and only works on poly primitives of type QUADS and TRILIST.
+if smooth is 1, the face normals are averaged with the coincident face normals to
+give a smooth appearance
+
+when working on polygon primitives it will cache certain results, so it will be
+a lot slower on the first calculation than subsequent calls on the same 
+primitive.
+
+@section User PData
+
+As well as the standard information that exists in primitives, fluxus also allows 
+you to add your own per vertex data to the primitive. User pdata can be written 
+or read in the same way as the built in pdata types.
+
+@code{(pdata-add name type)}
+where name is a string with the name you wish to call it, and type is a one 
+character string consisting of:
+
+f : float data
+v : vector data 
+c : colour data
+m : matrix data
+
+@code{(pdata-copy source destination)}
+this will copy a array of pdata, or overwrite an existing one with if it already 
+exists.
+
+So, adding your own storage for data on primitives means you can use it as a fast
+way of reading and writing data, even if the data doesn't directly affect the 
+primitive.
+
+@code{(define particle-count 1000)
+
+(define (init n)                                       ; setup our pdata arrays
+    (pdata-set "vel" n (vmul (vsub (vector (flxrnd) (flxrnd) (flxrnd)) 
+        (vector 0.5 0.5 0.5)) 0.1))                    ; randomise the velocity
+    (pdata-set "c" n (vector (flxrnd) (flxrnd) 1))     ; randomise the colour
+    (if (< n 0)
+        0
+        (init (- n 1))))
+
+(define (update n)
+    (pdata-set "vel" n (vadd (pdata-get "vel" n) (vector 0 -0.001 0))) ; add some gravity
+    (pdata-set "p" n (vadd (pdata-get "p" n) (pdata-get "vel" n)))     ; add velocity to the position
+    (if (< n 0)
+        0
+        (update (- n 1))))
+
+(define (render)
+    (grab ob)
+    (update (pdata-size))                              ; update the particles
+    (ungrab))
+
+; setup the scene
+(clear)
+(show-fps 1)
+(point-width 4)
+(hint-anti-alias)
+
+; build our particle primitive
+(define ob (build-particles particle-count))
+
+(grab ob)
+(pdata-add "vel" "v") ; add the velocity user pdata of type vector
+(init (pdata-size))   ; initialise the pdata arrays
+(ungrab)
+(blur 0.1)
+
+(every-frame "(render)")}
+
+@image{images/explosion}
+a particle explosion. finally - particles are useful for something
+
+@section PData Operations
+
+Pdata Operations are a optimisation which takes advantage of the nature of 
+these storage arrays to allow you to process them with a single call to the 
+scheme interpreter. This makes deforming primitive much faster as looping in 
+the scheme interpreter is slow, and it also simplifies your scheme code.
+
+@code{(pdata-op operation pdata operand)}
+where operation is a string identifier for the intended operation (listed below)
+and pdata is the name of the target pdata to operate on, and operand is either
+a single data (a scheme number or vector (length 3,4 or 16)) or a name of another 
+pdata array.
+
+If the @code{(update)} and @code{(render)} functions in the script above are 
+changed to the following:
+
+@code{(define (update)
+	(pdata-op "+" "vel" (vector 0 -0.002 0)) ; add this vector to all the velocities
+    (pdata-op "+" "p" "vel")) ; add all the velocities to all the positions
+
+(define (render)
+    (grab ob)
+    (update)
+    (ungrab))}
+	
+On my machine, this script runs over 6 times faster than the first version. 
+
+@code{(pdata-op)} can also return information to your script from certain 
+functions called on entire pdata arrays. 
+
+Pdata operations
+
+"+"       : addition
+"*"       : multiplication
+"sin"     : writes the sine of one float pdata array into another
+"cos"     : writes the cosine of one float pdata array into another
+"closest" : treats the vector pdata as positions, and if given a single vector, 
+            returns the closest position to it - or if given a float, uses it as a 
+			index into the pdata array, and returns the nearest position.
+
+For most pdata operations, the vast majority of the combinations of input types 
+(scheme number, the vectors or pdata types) will not be supported, you will 
+receive a rather criptic runtime warning message if this is the case.
+		
+@section 10.3 Using PData to build your own primitives
+
+The function (build_polygons) allows you to build empty primitives which you 
+can use to either build more types of procedural shapes than fluxus supports 
+natively, or for loading model data from disk. Once these primitives have been 
+constructed they can be treated in exactly the same way as any other primitive,
+ie pdata can be added or modified, and you can use (recalc-normals) etc.
+
+
+@insertcopying 
+
+@node User Input
+@chapter  User input
+
+Fluxus can also be used to build interactive applications, and allows
+user input to be read by scripts.
+
+@code{(key-pressed t)}                 
+returns true if the key has been pressed this frame
+
+@code{(mouse-button b)}                    
+returns true if the corresponding mouse button has been pressed this frame.
+
+@code{(mouse-over)}
+returns the id of the object the mouse is currently over
+
+@code{(selectable 0|1)}
+sets whether the current grabbed primitive is selectable by mouse over
+
+
+@insertcopying 
+
+@node Animation
+@chapter  Animation sources
+
+Animation sources are taps into the outside world. 
+
+@section Time
+
+The simplest source of information to use for animation is @code{(time)}, which 
+returns the time in seconds since fluxus was started. This is good to use for 
+animation, as it means your scripts will be frame rate independant - in other 
+words the animation will look the same regardless of the machine it's running 
+on, or the resolution etc.
+
+Another time related call is @code{(delta)} which returns the change in time since 
+the last frame. Technically, all your incremental animation data, regardless 
+of source, should be scaled by this factor, to maintain frame rate 
+independance.
+
+@section Audio
+
+Part of fluxus is responsible for capturing the incoming sound, and processing 
+it into harmonic data, using fft (Fast Fourier Transform). The harmonics are 
+bands of frequency which the sound is split into, giving some indication of 
+the quality of the sound. It's the same as you see on a graphic equaliser - in 
+fact, one of the example scripts (bars.scm) acts as a graphic equaliser 
+display, and should be used to test the audio is working.
+
+@code{(start-audio jack-port-name buffersize samplerate)}
+starts up the audio with the specified settings, you'll need to call this 
+first, or put it into .fluxus.scm in your home directory to call it 
+automatically at startup. make the jack port name an empty string and it
+won't try to connect to anything for you
+
+@code{(gain value)}
+sets the gain level for the fft sound, it's 1 by default.
+	
+@code{(gh band)
+(get-harmonic band)}
+returns the contribution of the harmonic specified. the harmonic band value 
+wraps, so you can use without worrying about out of range errors.
+
+@code{(process wavfilename)}
+this command temporarally disables the realtime reading of the input audio 
+stream and reads a wav file instead. for use with the framedump to process 
+audio offline to make music videos.
+
+@code{(smoothing-bias b)}
+a kind of weighted average for the harmonic bands which smooth them out over 
+time. this setting was hardcoded before (to 1.5) but the best setting really 
+depends on the quality of the music, and the buffer sizes, and ranges from 
+0 -> 2. it's obvious if you give it a try with the bars.scm script
+
+@section OSC 
+
+OSC stands for Open Sound Control, and is a widely used protocol for passing 
+data between multimedia applications. Fluxus can send or receive messages.
+
+@code{(osc-source port)}
+starts up the osc server, listening to the given port
+
+@code{(osc-msg name)}
+returns true if the message has been received since last frame, and sets the 
+current source to this message if it has been received. 
+
+calling it repeatedly returns every message recieved in the last frame. you need to 
+call it in a loop until it returns false, and all messages have been read - or your 
+script will lag behind the data source.
+
+@code{(osc index)}
+returns either a number or string value from the current osc message source - 
+ie, a message "/myvalue 0.4 hello" is sent to fluxus:
+
+@code{(osc-msg "/myvalue")
+(osc 0)}
+
+will evaluate to 0.4. 
+
+@code{(osc 1) }
+
+will then evaluate to "hello". 
+
+if a message has never been sent, the value defaults to zero, or a empty string.
+
+@code{(osc-peek)}
+this handy function returns the name, and format string and number/string 
+arguments of the last sent message as a string. you can then write something 
+like:
+
+@code{(display (osc-peek)) (newline)}
+
+and fluxus will dump a list of all the messages being recieved to the 
+commandline, use this to figure out what messages to use, and the types you 
+can use on the message.
+
+An example of using osc to communicate between pd and fluxus:
+
+ -- osc.scm
+
+@code{(define (test)
+    (push)
+	(osc-msg "/zzz")
+    (translate (vector 1 0 (osc 0)))
+    (draw-cube)
+    (pop))
+
+(osc-source "6543")
+(every-frame "(test)")}
+
+--- EOF
+
+--- zzz.pd
+@code{#N canvas 618 417 286 266 10;
+#X obj 58 161 sendOSC;
+#X msg 73 135 connect localhost 6543;
+#X msg 58 82 send /zzz \$1;
+#X floatatom 58 29 5 0 0 0 - - -;
+#X obj 58 54 / 100;
+#X obj 73 110 loadbang;
+#X connect 1 0 0 0;
+#X connect 2 0 0 0;
+#X connect 3 0 4 0;
+#X connect 4 0 2 0;
+#X connect 5 0 1 0;}
+
+OSC messages can also be sent with fluxus.
+
+@code{(osc-destination port)}
+starts up the osc client, which will send messages to the given port. 
+NOTE: due to the current implementation of the osc library fluxus uses, there 
+will be a crash if the port is not fully specified, use strings like 
+"osc.udp://localhost:4444" and it all seems to work fine
+
+@code{(osc-send name argslist)}
+sends a message with the argument list as the osc data. only supports numbers 
+(which are converted to floats) and strings as data, ie:
+
+@code{(osc-send "/hello" "fis" '(1 2 "three"))}
+
+will send the message out to the current osc destination, the type string 
+allows fluxus to convert the numbers correctly using "f" for float, or "i" for
+int.
+
+
+@insertcopying 
+
+@node Physics
+@chapter  Physics System
+
+The physics system used in fluxus is based on the ode library, which
+allows you to add physical properties to objects and set them in
+motion. Since ODE is designed for rigid-body simulations, structures are
+described in terms of objects, joints and forces.
+
+A much more comprehensive explanation of these concepts can be found in
+the ODE documentation, which you have probably downloaded if you have
+compiled fluxus, or can be found at <a
+href="http://ode.org/ode-docs.html">http://ode.org/ode-docs.html</a>
+
+To help with debugging joints, try using (show-axis 1), which will
+render locators showing you positions and axes of joints that have
+positional information.
+
+@code{(collisions 0|1)}
+
+enables or disables collision detection. this is the cause of great slowness 
+when doing physical particle systems, and also the cause of instability in the 
+low level physics library. defaults to off.
+
+@code{(gravity gravvec)}
+
+sets the strength and direction of gravity.
+
+
+@code{(surface-params slip1 slip2 softerp softcfm)}
+
+sets some global surface attributes that affect friction and bouncyness. see
+section 7.3.7 of the ODE docs for an explanation of these parameters 
+
+
+@code{(active-box object)}
+@code{(active-sphere object)}
+@code{(active-cylinder object)} 
+
+enable the object to be acted upon by the physics system, using a box, sphere or
+cylinder as the bounding volume. as an active object, it will be transformed by
+ode. note: rotations only work correctly if you specify your transforms
+scale first, then rotate (translate doesn't matter) basically, ode can't
+deal with shearing transforms. 
+
+@code{(passive-box object)}
+@code{(passive-sphere object)}
+@code{(passive-cylinder object)}
+
+enable the object to be acted upon by the physics system, using a box, sphere or
+cylinder as the bounding volume. as a passive object, active objects will
+collide with it, but it will not be transformed. note: rotations only work correctly 
+if you specify your transforms scale first, then rotate (translate doesn't matter) 
+basically, ode can't deal with shearing transforms. 
+
+@code{(set-mass object mass)}
+
+sets the mass of an active object
+
+
+@code{(ground-plane planevec planeoffset)}
+
+create an infinite passive plane for use as the 'ground'
+
+@code{(build-fixedjoint object)}
+@code{(build-hingejoint object1 object2 anchorvec hingevec)}
+@code{(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)}
+@code{(build-sliderjoint object1 object2 hingevec)}
+@code{(build-balljoint object1 object2 anchorvec)}
+@code{(build-amotorjoint axisvec)}
+
+These functions will create joints to connect two objects (see the ode docs for
+a detailed description of the differences between the joint types). ode
+considers joints to be a constraint that is enforced between two objects. when
+creating a joint, it is important to have the two primitives being joined in the
+desired positions before creating the joint. joints can be created, modified and
+indexed in a similar way to other primitives. The fixed joint attaches a object to
+the static environment.
+
+
+@code{(joint-param joint param value)}
+
+sets the joint parameter for a joint where @code{param} is one of the following:
+"HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM",
+"SuspensionERP", "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE
+docs for an explanation of each of these parameters, and which joint
+types they apply to.
+
+
+@code{(joint-angle joint velocity angle)}
+
+set the angle of the joint, with a given velocity (?)
+
+@code{(kick object kickvec)}
+
+applies translation force @code{kickvec} to the object
+
+
+@code{(twist object twistvec)}
+
+applies rotational force @code{twistvec} to the object
+
+	
+@code{(set-max-physical num)}
+
+sets the maximum number of objects the physics system can deal with. when the 
+max level has been reached the oldest objects are destroyed.
+
+
+@code{(has-collided id)}                      
+
+returns true if the grabbed object collided in the last frame
+
+</body>
+</html>
+
+
+@insertcopying 
+
+@node Turtle Builder
+@chapter  Turtle builder 
+
+The turtle polybuilder is an experimental way of building polygonal
+objects using a logo style turtle in 3D space. as you drive the turtle
+around you can place vertices and build shapes procedurally.
+
+@code{(turtle-prim type)}
+starts a new primitive of the type specified:
+0: triangle strip
+1: quad list
+2: triangle list
+3: triangle fan
+4: general polygon
+
+@code{(turtle-move distance)}
+moves the turtle forward in it's current orientation
+
+@code{(turtle-turn anglevec)}
+rotates the turtle's orientation with the supplied euler angles
+
+@code{(turtle-vert)}
+creates a new vertex in the current position
+
+@code{(turtle-build)}
+builds the object with the vertex list defined and gives it to the renderer
+
+@code{(turtle-reset)}
+resets the current postion and rotation of the turtle
+
+@code{(turtle-push)} @code{(turtle-pop)}
+the turtle build has it's own transform stack
+
+time for some examples:
+
+this script simply builds a single polygon circle, by playing the age old turtle
+trick of looping a function that moves a bit, turns a bit...
+
+@code{(define (build n)
+    (turtle-reset)
+    (turtle-prim 4)
+    (build-loop n n)
+    (turtle-build))
+
+(define (build-loop n t)
+    (turtle-turn (vector 0 (/ 360 t) 0))
+    (turtle-move 1)
+    (turtle-vert)
+    (if (< n 1)
+        0
+        (build-loop (- n 1) t)))
+
+    
+(backfacecull 0)    
+(clear)
+(hint-unlit)
+(hint-wire)
+(line-width 4)}
+
+@image{images/turtle}
+a circle
+
+for a more complex example, just modfiy the @code{(build-loop)} function as so:
+
+@code{(define (build-loop n t)
+    (turtle-turn (vector 0 (/ 360 t) 0))
+    (turtle-move 1)
+    (turtle-vert)
+    (if (< n 1)
+        0
+        (begin
+            (build-loop (- n 1) t)          ; add another call to the recursion
+            (turtle-turn (vector 0 0 45))   ; twist a bit
+            (build-loop (- n 1) t))))}
+			
+@image{images/turtlecomplex}
+a circle of circles
+
+
+@insertcopying 
+
+@node Examples
+@chapter Examples 
+
+The examples show you a quick roundup of features and are probably more
+useful than the documentation for getting an idea of what you can get
+working with fluxus. They range from simple test scripts to a little
+game, and should be commented to some extent for you to get an idea of
+whats going on.
+
+A note on relative paths, many of the scripts load textures, and use
+paths relative to the examples directory, so launch fluxus from there
+for best results.
+
+@insertcopying 
+
+@node Function Overview
+@chapter Overview of Functions 
+
+@printindex fn
+
+@insertcopying 
+
+@node Index 
+@unnumbered Index 
+@chapter Index
+
+@printindex cp 
+@shortcontents 
+@contents 
+
+@insertcopying 
+
+@bye 
+
+
+
