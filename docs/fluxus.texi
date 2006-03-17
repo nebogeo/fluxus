@@ -501,7 +501,7 @@ happy textured sprites
 @image{images/particles}
 point particles
 
-<b>Particle primitive pdata</b>
+@section Particle primitive pdata
 
 Positions:      "p" vector
 Colours:        "c" colour
@@ -518,7 +518,7 @@ activated, a faster constant width line will be drawn - width specified by the
 
 @image{images/line}
 
-<b>Line primitive pdata</b>
+@section Line primitive pdata
 
 Positions:      "p" vector
 Width:          "w" float 
@@ -604,7 +604,7 @@ text: quad list
 sphere: triangle list
 cylinder: triangle list
 
-<b>Nurbs topology</b>
+@section Nurbs topology
 
 Nurbs pdata are much simpler to deal with, as the topology is just a patch grid for 
 both spheres and subdivided planes. 
@@ -669,12 +669,7 @@ scripts with simple shapes.
 @node Lights
 @chapter  Lights 
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html><head><title>Fluxus manual v0.9</title><link rel="stylesheet" href="fluxusdoc.css"></head><body>
-<hdr><a href="index.html">Fluxus manual</a> v0.9 : (C) 2005 Dave Griffiths : dave at pawfal dot org : <a href="http://www.pawfal.org">www.pawfal.org</a></hdr>
-
-@section 7.0 Lights</h1>
-Lights are needed to, err, light the scene. If there are none built, the 
+Lights are needed to, err, light the scene. If there are none built, the
 default light is a white one attached to the camera.
 
 @image{images/lights}
@@ -740,7 +735,8 @@ won't load more than once, so you can easily just call:
 
 Textures have to be png format, and support alpha transparency.
 
-@code{(multitexture n t)}  (only on poly prims at the moment)                       
+@code{(multitexture n t)}  (only on poly prims at the moment)        
+               
 set the texture on the current state, using a texture ID n to multitexture t. 
 multitexturing allows you to apply different textures and coordinates to the 
 same object at once. t is a number from 0 to 7. texture 0 is the default one
@@ -1344,10 +1340,6 @@ max level has been reached the oldest objects are destroyed.
 @code{(has-collided id)}                      
 
 returns true if the grabbed object collided in the last frame
-
-</body>
-</html>
-
 
 @insertcopying 
 
