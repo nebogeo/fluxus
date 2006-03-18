@@ -283,8 +283,6 @@ switch visibility of the current grabbed primitive
 @node Global Options
 @chapter  Global options
 
-@section 5.0  Global Options
-
 These commands affect the global state, and can be called at any time.
 
 @code{(clear)}
@@ -294,8 +292,8 @@ clears the scene graph of all objects and empties the state stack.
 sets the projection type to either othographic or perspective projection.
 
 @code{(frustum top bottom left right)}
-sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 
-0.75 -1 1
+sets screen area, with this you can set the aspect ratio for the
+render. defaults to -0.75 0.75 -1 1
 
 @code{(clip front back)}
 sets the clipping plane positions, defaults to 1 10000
@@ -313,9 +311,9 @@ set the background clear colour.
 enables/disables clearing.
 
 @code{(blur amount)}
-turns hackish motion blur on, just renders a transparent poly over the frame 
-rather than clearing. the transparency is set by amount, setting amount to 0 
-turns this feature off. 
+turns hackish motion blur on, just renders a transparent poly over the
+frame rather than clearing. the transparency is set by amount, setting
+amount to 0 turns this feature off.
 
 @code{(show-axis bool)}
 turns the origin axis display on or off.
@@ -327,7 +325,7 @@ enables/disables backface culling.
 sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. 
 this value doesn't seem to be entirely correct, but it does the job.
 
-@code{(start-framedump filename type) }
+@code{(start-framedump filename type)}
 @code{(end-framedump)}
 starts and stops writing tiff frame images to disk. will be quite slow - and 
 unsuitable for realtime use - see @code{(process)} type can be one of "tif" or
@@ -350,7 +348,6 @@ list of paths, in order
 
 @code{(fullpath filename)}
 returns the full path to the file, using the searchpaths
-
 
 @insertcopying 
 
@@ -464,7 +461,7 @@ The same, but sets it to the original position + 1 in the x
 offsetting the position is more useful as it constitutes a deformation of the 
 original point.
 
-(see <a href="deforming.html">deforming</a> for more info on deformations)
+(see @xref{Deforming}, for more info on deformations)
 
 The pdata availible depends on the type of the primitive.
 
@@ -737,13 +734,13 @@ Textures have to be png format, and support alpha transparency.
 
 @code{(multitexture n t)}  (only on poly prims at the moment)        
                
-set the texture on the current state, using a texture ID n to multitexture t. 
-multitexturing allows you to apply different textures and coordinates to the 
-same object at once. t is a number from 0 to 7. texture 0 is the default one
-(which uses the pdata "t" for it's texture coords) multitexture n looks for 
-pdata "tn" - ie multitexture 1 looks for "t1". you need to add these 
-yourself using (pdata-add) or (pdata-copy). see <a href="deforming.html">deforming</a> for
-more info.
+set the texture on the current state, using a texture ID n to
+multitexture t.  multitexturing allows you to apply different textures
+and coordinates to the same object at once. t is a number from 0 to
+7. texture 0 is the default one (which uses the pdata "t" for it's
+texture coords) multitexture n looks for pdata "tn" - ie multitexture 1
+looks for "t1". you need to add these yourself using (pdata-add) or
+(pdata-copy). see @xref{Deforming}, for more info.
 
 @code{(line-width n)}
 
@@ -1052,7 +1049,7 @@ For most pdata operations, the vast majority of the combinations of input types
 (scheme number, the vectors or pdata types) will not be supported, you will 
 receive a rather criptic runtime warning message if this is the case.
 		
-@section 10.3 Using PData to build your own primitives
+@section Using PData to build your own primitives
 
 The function (build_polygons) allows you to build empty primitives which you 
 can use to either build more types of procedural shapes than fluxus supports 
@@ -1064,7 +1061,7 @@ ie pdata can be added or modified, and you can use (recalc-normals) etc.
 @insertcopying 
 
 @node User Input
-@chapter  User input
+@chapter User input
 
 Fluxus can also be used to build interactive applications, and allows
 user input to be read by scripts.
@@ -1085,7 +1082,7 @@ sets whether the current grabbed primitive is selectable by mouse over
 @insertcopying 
 
 @node Animation
-@chapter  Animation sources
+@chapter Animation sources
 
 Animation sources are taps into the outside world. 
 
@@ -1230,7 +1227,7 @@ int.
 @insertcopying 
 
 @node Physics
-@chapter  Physics System
+@chapter Physics System
 
 The physics system used in fluxus is based on the ode library, which
 allows you to add physical properties to objects and set them in
@@ -1239,8 +1236,7 @@ described in terms of objects, joints and forces.
 
 A much more comprehensive explanation of these concepts can be found in
 the ODE documentation, which you have probably downloaded if you have
-compiled fluxus, or can be found at <a
-href="http://ode.org/ode-docs.html">http://ode.org/ode-docs.html</a>
+compiled fluxus, or can be found at @url{http://ode.org/ode-docs.html}
 
 To help with debugging joints, try using (show-axis 1), which will
 render locators showing you positions and axes of joints that have
@@ -1344,7 +1340,7 @@ returns true if the grabbed object collided in the last frame
 @insertcopying 
 
 @node Turtle Builder
-@chapter  Turtle builder 
+@chapter Turtle builder 
 
 The turtle polybuilder is an experimental way of building polygonal
 objects using a logo style turtle in 3D space. as you drive the turtle
@@ -1421,8 +1417,8 @@ for a more complex example, just modfiy the @code{(build-loop)} function as so:
 @image{images/turtlecomplex}
 a circle of circles
 
-
 @insertcopying 
+
 
 @node Examples
 @chapter Examples 
@@ -1438,6 +1434,7 @@ paths relative to the examples directory, so launch fluxus from there
 for best results.
 
 @insertcopying 
+
 
 @node Function Overview
 @chapter Overview of Functions 
