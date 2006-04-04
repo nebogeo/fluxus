@@ -23,7 +23,7 @@
 #include <cstdlib>
 #include <unistd.h>
 #include <cstdio>
-#include <guile/gh.h>
+#include <libguile.h>
 #include "FluxusBinding.h"
 
 using namespace fluxus;
@@ -74,6 +74,12 @@ SCM ErrorHandler (void *handler_data, SCM tag, SCM args)
 	return SCM_UNDEFINED;
 }
 
+SCM run_scm(void *data)
+{
+	scm_c_eval_string((char *)data);
+	return SCM_UNDEFINED;
+}
+
 void DisplayCallback()
 {
 	binding->Fluxus->TickRecorder();
@@ -81,7 +87,7 @@ void DisplayCallback()
 	string fragment = binding->Fluxus->GetScriptFragment();
     if (fragment!="")
     {
-    	gh_eval_str_with_catch(fragment.c_str(), ErrorHandler);
+		scm_internal_catch(SCM_BOOL_T,run_scm,(void*)fragment.c_str(),ErrorHandler,NULL);
     }
 	
 	if (binding->Audio!=NULL) binding->Audio->GetFFT();
@@ -194,20 +200,26 @@ char *Script;
 
 static void setup_repl_port() {
 	SCM v = scm_c_make_vector(5, SCM_BOOL_F);
-	scm_vector_set_x(v,SCM_MAKINUM(0),scm_c_eval_string("repl-princ"));
-	scm_vector_set_x(v,SCM_MAKINUM(1),scm_c_eval_string("repl-print"));
+	scm_vector_set_x(v,scm_from_int(0),scm_c_eval_string("repl-princ"));
+	scm_vector_set_x(v,scm_from_int(1),scm_c_eval_string("repl-print"));
 	SCM p = scm_make_soft_port(v, scm_makfrom0str("w"));
 	scm_set_current_output_port(p);
 	scm_set_current_error_port(p);
 }
 
-void inner_main(int argc, char **argv)
+SCM load_scm(void *data)
+{
+	scm_c_primitive_load((char *)data);
+	return SCM_UNDEFINED;
+}
+
+void inner_main(void *context, int argc, char **argv)
 {
 	binding->RegisterProcs();
 
         // FIXME handle errors well
         SCM initFname = scm_sys_search_load_path(scm_makfrom0str("fluxus/init.scm"));
-        if (SCM_STRINGP(initFname))
+        if (scm_is_string(initFname))
                 scm_primitive_load(initFname);
         else 
                 cerr << "Couldn't find fluxus/init.scm script" << endl;
@@ -216,12 +228,12 @@ void inner_main(int argc, char **argv)
 	
     string fragment;
 
-    binding->FrameHook=scm_make_hook(SCM_MAKINUM(0));
+    binding->FrameHook=scm_make_hook(scm_from_int(0));
     scm_gc_protect_object(binding->FrameHook);
     binding->Fluxus->GetRenderer()->SetEngineCallback(EngineCallback);
 
 	string Init = string(getenv("HOME"))+"/"+INIT_FILE;
-    gh_eval_file_with_catch(Init.c_str(),(scm_t_catch_handler)ErrorHandler);
+	scm_internal_catch(SCM_BOOL_T,load_scm,(void*)Init.c_str(),ErrorHandler,NULL);
 	
 	if (argc>1)
 	{
@@ -281,7 +293,7 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	
-        gh_enter(argc, argv, inner_main);
+	scm_boot_guile(argc, argv, inner_main, 0);
     
 	return 0;
 }

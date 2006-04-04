@@ -1,4 +1,4 @@
-#include <guile/gh.h>
+#include <libguile.h>
 #include <GraphicsUtils.h>
 #include <LinePrimitive.h>
 #include <ParticlePrimitive.h>
@@ -30,7 +30,7 @@ public:
 	static set<int> m_KeySet;
 	
 	void RegisterProcs();
-
+		
 	static SCM build_polygons(SCM s_size, SCM s_type);
 	static SCM build_cube();
 	static SCM build_sphere(SCM s_hsegments, SCM s_rsegments);

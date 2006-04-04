@@ -395,12 +395,12 @@ void FluxusMain::LoadScript(const string &Filename)
 }
 
 // bad - need to move the interpreter around
-#include <guile/gh.h>
+#include <libguile.h>
 
 void FluxusMain::SourceScript(const string &Filename) 
 { 
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
-	gh_eval_file(Fullpath.c_str());
+	scm_primitive_load(scm_from_locale_string(Fullpath.c_str()));
 }
 
 void FluxusMain::SaveScript() 

@@ -32,5 +32,5 @@
 
 (define (loop) (tree 9))
 
-(every-frame "(loop)")
+(every-frame (loop))
 

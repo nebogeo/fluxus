@@ -17,6 +17,7 @@
 #ifndef _FLUXUS_REPL_H_
 #define _FLUXUS_REPL_H_
 
+#include <libguile.h>
 #include <libguile/tags.h>
 #include <deque>
 #include "GLEditor.h"

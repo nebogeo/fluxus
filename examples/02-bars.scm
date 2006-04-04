@@ -19,5 +19,5 @@
 (define (render)
     (bars 0))
 
-(every-frame "(render)")
+(every-frame (render))
 

@@ -7,7 +7,7 @@ Target       = "fluxus"
 Prefix = "/usr/local"
 Install      = Prefix + "/bin"
 
-GuileVersionMajMin = "1.6"
+GuileVersionMajMin = "1.8"
 GuilePrefix        = "/usr/local"
 GuileDataPrefix    = GuilePrefix + "/share/guile"
 GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
@@ -97,7 +97,7 @@ if not GetOption('clean'):
 	for (lib,headers) in LibList:
 		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
 			print "ERROR: '%s' must be installed!" % (lib)
-			Exit(1)
+			#Exit(1)
 		
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
