@@ -70,6 +70,4 @@
 (blur 0)
 (gain 10)
 
-;(start-framedump "frames/part")
-(every-frame "(render)")
-;(process "five-whole.wav")            
+(every-frame (render))

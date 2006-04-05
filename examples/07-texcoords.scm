@@ -28,5 +28,5 @@
     (ungrab))
 
 (blur 0)
-(every-frame "(render)")
+(every-frame (render))
 

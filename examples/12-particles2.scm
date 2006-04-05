@@ -29,4 +29,4 @@
 (ungrab)
 (show-axis 1)
 
-(every-frame "(move)")
+(every-frame (move))

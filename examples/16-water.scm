@@ -26,16 +26,16 @@
             (set! result (vector 0 -0.001 0)) ; we are above "sea level" head down
             (set! result (vector 0 0.001 0))) ; we are below "sea level" head up
 
-		; mix in the surrounding verts to transmit energy around
+        ; mix in the surrounding verts to transmit energy around
         (set! result (vadd result (vmul (pdata-get "vel" (- n w)) trans))) 
         (set! result (vadd result (vmul (pdata-get "vel" (+ n w)) trans))) 
         (set! result (vadd result (vmul (pdata-get "vel" (- n 1)) trans))) 
         (set! result (vadd result (vmul (pdata-get "vel" (+ n 1)) trans)))
         
-		; add the result to the existing velocity
+        ; add the result to the existing velocity
         (pdata-set "vel" n (vadd (pdata-get "vel" n) result)))
 
-		; clamp the velocity - this stops the simulation going too fast and blowing up
+        ; clamp the velocity - this stops the simulation going too fast and blowing up
         (if (< (vector-ref (pdata-get "vel" n) 1) (- clamp))
             (pdata-set "vel" n (vector 0 (- clamp) 0))) 
         (if (> (vector-ref (pdata-get "vel" n) 1) clamp)
@@ -62,4 +62,4 @@
 (init (pdata-size))
 (ungrab)
 
-(every-frame "(render)")
+(every-frame (render))

@@ -35,5 +35,5 @@
 (define (run-loop)    
      (spawn))
 
-(every-frame "(run-loop)")
+(every-frame (run-loop))
 

@@ -43,4 +43,4 @@
 (ungrab)
 (blur 0.1)
 
-(every-frame "(render)")
+(every-frame (render))

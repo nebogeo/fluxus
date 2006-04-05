@@ -81,7 +81,7 @@
 (add-cube)
 (add-cube)
 
-(every-frame "(render)")
+(every-frame (render))
 
 
 

@@ -12,7 +12,7 @@ GuilePrefix        = "/usr/local"
 GuileDataPrefix    = GuilePrefix + "/share/guile"
 GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
 
-SchemePrefix = GuileSchemePrefix + "/site/fluxus"
+SchemePrefix = GuileSchemePrefix + "/fluxus"
 
 LibPaths     = ["/usr/local/lib"]
 # First member of each list is a library, second - a header or headers list
@@ -81,7 +81,7 @@ if env['PLATFORM'] == 'darwin':
 else:
 	LibList += [["X11", "X11/Xlib.h"],
 				# for X11
-				#["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
+				["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
                 ["glut", "GL/glut.h"],
            	    ["GL", "GL/gl.h"],
 		    ["GLU", "GL/glu.h"]]
@@ -97,7 +97,7 @@ if not GetOption('clean'):
 	for (lib,headers) in LibList:
 		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
 			print "ERROR: '%s' must be installed!" % (lib)
-			#Exit(1)
+			Exit(1)
 		
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually

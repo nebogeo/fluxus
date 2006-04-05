@@ -13,15 +13,15 @@
 ; this is a useful function, as new textures added to the texture location will
 ; be automatically picked up by the script without any modifications
 (define get-textures
-	(lambda (d l)
-		(let ((ret (readdir d)))
-			(cond ((not (string? ret))
-				(closedir d)
-				l)
-				((if (and (> (string-length ret) 4)
-						(string=? (substring ret (- (string-length ret) 4)) ".png"))
-					(set! l (append l (list ret))))
-				(get-textures d l))))))
+    (lambda (d l)
+        (let ((ret (readdir d)))
+            (cond ((not (string? ret))
+                (closedir d)
+                l)
+                ((if (and (> (string-length ret) 4)
+                        (string=? (substring ret (- (string-length ret) 4)) ".png"))
+                    (set! l (append l (list ret))))
+                (get-textures d l))))))
 
 ; a list of all the textures
 (define texnames (get-textures (opendir texture-location) '()))
@@ -70,4 +70,4 @@
 
 (clear)
 (build  20)
-(every-frame "(render)")
+(every-frame (render))

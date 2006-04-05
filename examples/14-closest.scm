@@ -6,18 +6,18 @@
 
 ; build the main sphere
 (push)
-	(scale (vector 2 2 2))
-	(hint-none)
-	(hint-wire)
-	(define s (build-sphere 50 50))
-	(apply-transform s)
+    (scale (vector 2 2 2))
+    (hint-none)
+    (hint-wire)
+    (define s (build-sphere 50 50))
+    (apply-transform s)
 (pop)
 
 ; build the orbiting object
 (push)
-	(translate (vector 2 0 0))
-	(scale (vector 0.1 0.1 0.1))
-	(define o (build-cube))
+    (translate (vector 2 0 0))
+    (scale (vector 0.1 0.1 0.1))
+    (define o (build-cube))
 (pop)
 
 ; place a cube on the closest vert
@@ -33,17 +33,17 @@
 
 ; every frame
 (define (update)
-	; move the orbiting object
+    ; move the orbiting object
     (grab o)
     (identity)
     (translate (vmul (vector (sin (time)) (sin (* (time) 0.4)) (cos (time))) 2))
     (scale (vector 0.1 0.1 0.1))
     (let ((pos (vtransform (vector 0 0 0) (get-transform))))
     (ungrab)
-	
+    
     (stick pos)))
 
-(every-frame "(update)")
+(every-frame (update))
 
 
 

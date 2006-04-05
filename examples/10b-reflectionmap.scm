@@ -77,4 +77,4 @@
         (vtransform (vector 0 0 0) (get-transform))) ; gets the object position
     (ungrab))
 
-(every-frame "(render)")
+(every-frame (render))

@@ -43,4 +43,4 @@
 (clear)
 (line 10)
 (blur 0.1)
-(every-frame "(update objs 1 1)")
+(every-frame (update objs 1 1))
