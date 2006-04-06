@@ -237,14 +237,19 @@ void inner_main(void *context, int argc, char **argv)
 	
 	if (argc>1)
 	{
-	    binding->Fluxus->LoadScript(argv[1]);
-		//gh_eval_file_with_catch(argv[1],(scm_t_catch_handler)ErrorHandler);
+		if (!strcmp(argv[1],"-x"))
+		{
+			binding->Fluxus->SourceScript(argv[2]); // just load and execute the script
+			binding->Fluxus->Handle(0, 0, 0, 0, 0, 0, 0); // kick the camera into existance
+			binding->Fluxus->HideScript(); // hide the cursor
+		}
+		else
+		{
+	    	binding->Fluxus->LoadScript(argv[1]);
+		}
 	}
 	
 	glutMainLoop();
-
-    //Fluxus->GetFFTWindow()->SetData(Audio->GetFFT(),Audio->GetAudioBuffer());
-    //Fluxus->GetFFTWindow()->redraw();
 }
 
 int main(int argc, char *argv[])
@@ -292,7 +297,7 @@ int main(int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
-	
+		
 	scm_boot_guile(argc, argv, inner_main, 0);
     
 	return 0;
