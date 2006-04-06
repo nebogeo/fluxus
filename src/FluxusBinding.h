@@ -21,6 +21,7 @@ public:
 	static TurtleBuilder turtle;
 	static SCM FrameHook;
 	static int GrabbedID;
+	static deque<int> GrabbedIDStack;
 
 	static PolyPrimitive* StaticCube;
 	static PolyPrimitive* StaticPlane;

@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <fstream>
+#include <deque>
 #include <libguile.h>
 #include "FluxusBinding.h"
 #include "SearchPaths.h"
@@ -29,6 +30,7 @@ PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
 PolyPrimitive*  FluxusBinding::StaticCylinder=NULL;
 set<int>        FluxusBinding::m_KeySet;
+deque<int>		FluxusBinding::GrabbedIDStack;
 int				FluxusBinding::GrabbedID=-1;
 
 // little helper function for making vectors
@@ -379,7 +381,8 @@ SCM FluxusBinding::clear()
 
 SCM FluxusBinding::grab(SCM s_id)
 {
-	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "id");
+	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "id");		
+	GrabbedIDStack.push_front((int)scm_to_double(s_id));
 	GrabbedID=(int)scm_to_double(s_id);
 	Fluxus->GetRenderer()->Grab(GrabbedID);
 	return SCM_UNSPECIFIED;
@@ -388,7 +391,18 @@ SCM FluxusBinding::grab(SCM s_id)
 SCM FluxusBinding::ungrab()
 {
 	Fluxus->GetRenderer()->UnGrab();
-	GrabbedID=-1;
+	
+	if (!GrabbedIDStack.empty())
+	{
+		GrabbedIDStack.pop_front();
+		GrabbedID=*GrabbedIDStack.begin();
+		Fluxus->GetRenderer()->Grab(GrabbedID);
+	}
+	else
+	{
+		GrabbedID=-1;
+	}
+		
 	return SCM_UNSPECIFIED;
 }
 
