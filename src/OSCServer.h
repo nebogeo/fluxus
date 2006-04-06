@@ -52,6 +52,7 @@ public:
 	Server(const string &Port);
 	~Server();
 	
+	void SetPort(const string &Port);
 	void Run();
 	bool SetMsg(const string &name);
 	bool GetArgs(vector<OSCData*> &args);
@@ -69,6 +70,8 @@ private:
 	
 	static map<string,list<OSCMsgData*> > m_Map;
 	static string m_LastMsg;
+	static bool m_Error;
+	bool m_ServerStarted;
 	
 	lo_server_thread m_Server;
 	static bool m_Exit;

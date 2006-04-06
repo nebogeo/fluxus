@@ -59,28 +59,48 @@ map<string,list<OSCMsgData*> > Server::m_Map;
 pthread_mutex_t* Server::m_Mutex;
 string Server::m_LastMsg="no message yet...";
 EventRecorder *Server::m_Recorder=NULL;
+bool Server::m_Error=false;
 
-Server::Server(const string &Port)
+Server::Server(const string &Port) :
+m_ServerStarted(false)
 {
-    m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
-    lo_server_thread_add_method(m_Server, NULL, NULL, DefaultHandler, NULL);
+	SetPort(Port);
 	m_Mutex = new pthread_mutex_t;
 	pthread_mutex_init(m_Mutex,NULL);
 }
+
 
 Server::~Server()
 {
 	m_Exit=true;
 }
 
+void Server::SetPort(const string &Port)
+{
+	if (m_ServerStarted) 
+	{
+		lo_server_thread_stop(m_Server);
+		lo_server_thread_free(m_Server);
+		m_ServerStarted=false;
+	}
+	
+	m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
+    if (!m_Error) 
+	{
+		lo_server_thread_add_method(m_Server, NULL, NULL, DefaultHandler, NULL);
+		m_ServerStarted=true;
+	}
+}
+
 void Server::Run()
 {
-	lo_server_thread_start(m_Server);
+	if (!m_Error) lo_server_thread_start(m_Server);
 }
 
 void Server::ErrorHandler(int num, const char *msg, const char *path)
 {
-    cerr<<"liblo server error "<<num<<" in path "<<path<<": "<<msg<<endl;
+    cerr<<"liblo server error "<<num<<endl;//" in path "<<path<<": "<<msg<<endl;
+	m_Error=true;
 }
 
 int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,

@@ -430,7 +430,7 @@ void FluxusMain::StartOSC(const string &port)
 	}
 	else
 	{
-		cerr<<"osc server already running..."<<endl;
+		m_OSCServer->SetPort(port);
 	}
 }
 
