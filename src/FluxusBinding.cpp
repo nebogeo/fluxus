@@ -391,16 +391,16 @@ SCM FluxusBinding::grab(SCM s_id)
 SCM FluxusBinding::ungrab()
 {
 	Fluxus->GetRenderer()->UnGrab();
+	GrabbedID=-1;
 	
 	if (!GrabbedIDStack.empty())
 	{
 		GrabbedIDStack.pop_front();
-		GrabbedID=*GrabbedIDStack.begin();
-		Fluxus->GetRenderer()->Grab(GrabbedID);
-	}
-	else
-	{
-		GrabbedID=-1;
+		if (!GrabbedIDStack.empty())
+		{
+			GrabbedID=*GrabbedIDStack.begin();
+			Fluxus->GetRenderer()->Grab(GrabbedID);
+		}
 	}
 		
 	return SCM_UNSPECIFIED;
