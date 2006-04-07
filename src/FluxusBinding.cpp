@@ -1160,14 +1160,17 @@ SCM FluxusBinding::print_scene_graph()
 SCM FluxusBinding::edit(SCM s_name)
 {
 	SCM_ASSERT(scm_is_string(s_name), s_name, SCM_ARG1, "edit");
-        s_name = scm_sys_search_load_path(s_name);
-        if (scm_is_string(s_name)) {
-                Fluxus->LoadScript(scm_to_locale_string(s_name));
-        } else {
-                /* FIXME bitch */
-        }
+    SCM path = scm_sys_search_load_path(s_name);
+    if (scm_is_string(path)) 
+	{
+        Fluxus->LoadScript(scm_to_locale_string(path));
+    } 
+	else 
+	{
+        Fluxus->LoadScript(scm_to_locale_string(s_name));
+    }
         
-        return SCM_UNSPECIFIED;
+    return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::save_name(SCM s_name)
@@ -1390,7 +1393,7 @@ SCM FluxusBinding::osc_send(SCM s_msg, SCM s_types, SCM s_arglist)
 	{
 		SCM arg=scm_vector_ref(argvec, scm_from_int(n));
 
-		if (scm_is_number(arg) ||  scm_is_true(scm_exact_p(arg)) || scm_is_true(scm_inexact_p(arg)))
+		if (scm_is_number(arg))// ||  scm_is_true(scm_exact_p(arg)) || scm_is_true(scm_inexact_p(arg)))
 		{
 			if (n<strlen(types))
 			{

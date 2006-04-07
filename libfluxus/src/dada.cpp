@@ -411,7 +411,7 @@ dVector dMatrix::gettranslate()
     return dVector(m[3][0],m[3][1],m[3][2]);
 }
 
-#define USE_FAST_SINCOS
+//#define USE_FAST_SINCOS
 
 dMatrix &dMatrix::rotxyz(float x,float y,float z)
 {
@@ -667,6 +667,8 @@ void dMatrix::aim(dVector v, dVector up)
 	v.normalise();
 	dVector l=v.cross(up);
 	dVector u=v.cross(l);
+	l.normalise();
+	u.normalise();
 	
 	m[0][0]=v.x; m[0][1]=v.y; m[0][2]=v.z;
 	m[1][0]=l.x; m[1][1]=l.y; m[1][2]=l.z;
