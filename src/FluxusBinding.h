@@ -202,6 +202,10 @@ public:
 	static SCM mtranspose(SCM s_a);
 	static SCM minverse(SCM s_a);
 	static SCM maim(SCM s_a, SCM s_b);
+	static SCM qaxisangle(SCM s_axis, SCM s_angle);
+	static SCM qmul(SCM s_q, SCM s_q);
+	static SCM qnormalise(SCM s_q);
+	static SCM qtomatrix(SCM s_q);
 	
 	static SCM mouse_over();
 	static SCM mouse_button(SCM s_b);

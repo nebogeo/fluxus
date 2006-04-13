@@ -788,3 +788,16 @@ void dQuat::renorm()
 	z *= Nq;
 	w *= Nq;
 }
+
+void dQuat::setaxisangle(dVector axis, float angle)
+{ 
+	angle*=0.017453292;
+	w = cos(angle/2);
+	axis.normalise();
+    axis *= sin(angle/2);
+	x=axis.x;
+	y=axis.y;
+	z=axis.z;
+}
+
+

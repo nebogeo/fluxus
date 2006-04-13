@@ -218,11 +218,13 @@ public:
 	
 	// operations
 	dQuat conjugate() const;
+	void setaxisangle(dVector axis, float angle);
 	
 	// make multiply look like multiply
 	dQuat operator* (const dQuat&qR) const;
 	
 	void renorm();
+	float *arr() {return &x;}
 	
 	// the data
 	float x,y,z,w;

@@ -2045,6 +2045,56 @@ SCM FluxusBinding::maim(SCM s_a, SCM s_b)
 	m.aim(a,b);
 	return flx_floats_to_scm(m.arr(),16);
 }
+	
+SCM FluxusBinding::qaxisangle(SCM s_axis, SCM s_angle)
+{
+	SCM_ASSERT(scm_is_generalized_vector(s_axis), s_axis, SCM_ARG1, "qaxisangle");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_axis)==3, s_axis, SCM_ARG1, "qaxisangle");
+	SCM_ASSERT(scm_is_number(s_angle),  s_angle,  SCM_ARG1, "qaxisangle");
+	
+	dVector ax;
+	flx_floats_from_scm(s_axis,ax.arr());
+	dQuat q;
+	q.setaxisangle(ax,scm_to_double(s_angle));
+	return flx_floats_to_scm(q.arr(),4);
+}
+
+SCM FluxusBinding::qmul(SCM s_a, SCM s_b)
+{
+	SCM_ASSERT(scm_is_generalized_vector(s_a), s_a, SCM_ARG1, "qmul");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_a)==4, s_a, SCM_ARG1, "qmul");
+	SCM_ASSERT(scm_is_generalized_vector(s_b), s_b, SCM_ARG2, "qmul");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_b)==4, s_b, SCM_ARG2, "qmul");
+	
+	dQuat a;
+	flx_floats_from_scm(s_a,a.arr());
+	dQuat b;
+	flx_floats_from_scm(s_b,b.arr());
+	dQuat c=a*b;
+	return flx_floats_to_scm(c.arr(),4);
+}
+
+SCM FluxusBinding::qnormalise(SCM s_a)
+{
+	SCM_ASSERT(scm_is_generalized_vector(s_a), s_a, SCM_ARG1, "qnormalise");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_a)==4, s_a, SCM_ARG1, "qnormalise");
+	
+	dQuat a;
+	flx_floats_from_scm(s_a,a.arr());
+	a.renorm();
+	return flx_floats_to_scm(a.arr(),4);
+}
+
+SCM FluxusBinding::qtomatrix(SCM s_a)
+{
+	SCM_ASSERT(scm_is_generalized_vector(s_a), s_a, SCM_ARG1, "qnormalise");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_a)==4, s_a, SCM_ARG1, "qnormalise");
+	
+	dQuat a;
+	flx_floats_from_scm(s_a,a.arr());
+	dMatrix m=a.toMatrix();
+	return flx_floats_to_scm(m.arr(),16);
+}
 
 SCM FluxusBinding::mouse_over()
 {
@@ -2321,6 +2371,10 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("mtranspose",1,0,0,(SCM (*)()) mtranspose);
 	scm_c_define_gsubr("minverse",1,0,0,(SCM (*)()) minverse);
 	scm_c_define_gsubr("maim",2,0,0,(SCM (*)()) maim);
+	scm_c_define_gsubr("qaxisangle",2,0,0,(SCM (*)())qaxisangle);
+	scm_c_define_gsubr("qmul",2,0,0,(SCM (*)()) qmul);
+	scm_c_define_gsubr("qnormalise",1,0,0,(SCM (*)())qnormalise);
+	scm_c_define_gsubr("qtomatrix",1,0,0,(SCM (*)())qtomatrix);
 
 	scm_c_define_gsubr("searchpaths",1,0,0,(SCM (*)()) searchpaths);
 	scm_c_define_gsubr("full-path",1,0,0,(SCM (*)()) full_path);
