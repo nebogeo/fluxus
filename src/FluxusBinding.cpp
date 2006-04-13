@@ -526,18 +526,42 @@ SCM FluxusBinding::concat(SCM s_m)
 SCM FluxusBinding::rotate(SCM s_vec)
 {
     SCM_ASSERT(scm_is_generalized_vector(s_vec), s_vec, SCM_ARG1, "rotate");
-	SCM_ASSERT(scm_c_generalized_vector_length(s_vec)==3, s_vec, SCM_ARG1, "rotate");
-	float rot[0];
-	flx_floats_from_scm(s_vec,rot);
-    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
-    if (Grabbed)
-    {
-    	Grabbed->GetState()->Transform.rotxyz(rot[0],rot[1],rot[2]);
-    }
-    else
-    {
-    	Fluxus->GetRenderer()->GetState()->Transform.rotxyz(rot[0],rot[1],rot[2]);
-    }
+	
+	if (scm_c_generalized_vector_length(s_vec)==3)
+	{
+		// euler angles
+		float rot[3];
+		flx_floats_from_scm(s_vec,rot);
+	    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+	    if (Grabbed)
+	    {
+	    	Grabbed->GetState()->Transform.rotxyz(rot[0],rot[1],rot[2]);
+	    }
+	    else
+	    {
+	    	Fluxus->GetRenderer()->GetState()->Transform.rotxyz(rot[0],rot[1],rot[2]);
+	    }
+	}
+	else if (scm_c_generalized_vector_length(s_vec)==4)
+	{
+		// quaternion
+		dQuat a;
+		flx_floats_from_scm(s_vec,a.arr());
+		dMatrix m=a.toMatrix();
+	 	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+	    if (Grabbed)
+	    {
+	    	Grabbed->GetState()->Transform*=m;
+	    }
+	    else
+	    {
+	    	Fluxus->GetRenderer()->GetState()->Transform*=m;
+	    }
+	}
+	else
+	{
+		cerr<<"rotate - wrong number of elements in vector"<<endl;
+	}
     return SCM_UNSPECIFIED;
 }
 
@@ -1991,13 +2015,28 @@ SCM FluxusBinding::mtranslate(SCM s_v)
 
 SCM FluxusBinding::mrotate(SCM s_v)
 {
-	SCM_ASSERT(scm_is_generalized_vector(s_v),  s_v,  SCM_ARG1, "mrotate");
-	SCM_ASSERT(scm_c_generalized_vector_length(s_v)==3,  s_v,  SCM_ARG1, "mrotate");
-	dVector a;
-	flx_floats_from_scm(s_v,a.arr());
-	dMatrix m;
-	m.rotxyz(a.x,a.y,a.z);
-	return flx_floats_to_scm(m.arr(),16);	
+	SCM_ASSERT(scm_is_generalized_vector(s_v),  s_v,  SCM_ARG1, "mrotate");	
+	
+	if (scm_c_generalized_vector_length(s_v)==3)
+	{
+		// euler angles
+		dVector a;
+		flx_floats_from_scm(s_v,a.arr());
+		dMatrix m;
+		m.rotxyz(a.x,a.y,a.z);
+		return flx_floats_to_scm(m.arr(),16);	
+	}
+	else if (scm_c_generalized_vector_length(s_v)==4)
+	{
+		// quaternion
+		dQuat a;
+		flx_floats_from_scm(s_v,a.arr());
+		dMatrix m=a.toMatrix();
+		return flx_floats_to_scm(m.arr(),16);	
+	}
+	
+	cerr<<"mrotate - wrong number of elements in vector"<<endl;
+	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::mscale(SCM s_v)
