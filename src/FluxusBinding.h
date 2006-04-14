@@ -1,7 +1,5 @@
 #include <libguile.h>
 #include <GraphicsUtils.h>
-#include <LinePrimitive.h>
-#include <ParticlePrimitive.h>
 #include <set>
 #include "AudioCollector.h"
 #include "TurtleBuilder.h"
@@ -44,6 +42,9 @@ public:
 	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_nurbs_plane(SCM s_usegments, SCM s_vsegments);
 	static SCM build_particles(SCM s_count);
+	static SCM build_pixels(SCM s_w, SCM s_h);
+	static SCM upload_pixels();
+	static SCM pixels2texture(SCM s_ob);
 	static SCM draw_instance(SCM s_ob);
 	static SCM draw_cube();
 	static SCM draw_plane();

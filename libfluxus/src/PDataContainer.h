@@ -54,6 +54,7 @@ public:
 	template <class S, class T> PData *FindOperate(const string &name, TypedPData<S> *a, T b);
 	// erases all current data
 	void Resize(unsigned int size);
+	unsigned int Size();
 
 protected:
 

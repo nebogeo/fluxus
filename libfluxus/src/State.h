@@ -66,7 +66,7 @@ public:
 	dColour Ambient;
 	float Shinyness;
 	float Opacity;
-	int Textures[MAX_TEXTURES];
+	unsigned int Textures[MAX_TEXTURES];
 	
 	int Parent;
 	int Hints;

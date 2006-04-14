@@ -33,7 +33,7 @@ DestinationBlend(GL_ONE_MINUS_SRC_ALPHA)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
-		Textures[c]=-1;
+		Textures[c]=0;
 	}
 }
 

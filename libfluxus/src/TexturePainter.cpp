@@ -54,7 +54,7 @@ void TexturePainter::Initialise()
 	#endif
 }
 
-int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
+unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
 	
@@ -74,7 +74,6 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 		}
 	}
 	
-	
 	GLuint ID=0;
 	
 	char *ImageData;
@@ -89,44 +88,10 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 		if (desc->Format==RGB)
     	{
 			gluBuild2DMipmaps(GL_TEXTURE_2D,3,desc->Width, desc->Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
-       		
-			// test texture upload
-			/*glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGB, desc->Width, desc->Height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-			
-			int width = 0;
-			int height = 0;
-     		glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-     		glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
-			
-			if (width!=desc->Width || height!=desc->Height) 
-	  		{
-				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Fullpath<<"]"<<endl;
-			}
-			else
-			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, desc->Width, desc->Height, 0, GL_RGB, GL_UNSIGNED_BYTE, ImageData);
-			}*/
     	}
     	else
     	{
     		gluBuild2DMipmaps(GL_TEXTURE_2D,4,desc->Width, desc->Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
-			
-			// test texture upload
-			/*glTexImage2D(GL_PROXY_TEXTURE_2D, 0, GL_RGBA, desc->Width, desc->Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			
-			int width = 0;
-			int height = 0;
-     		glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_WIDTH, &width);
-     		glGetTexLevelParameteriv (GL_PROXY_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height);
-			
-			if (width!=desc->Width || height!=desc->Height) 
-	  		{
-				cerr<<"TexturePainter::LoadTexture: not enough gfx memory to load texture ["<<Fullpath<<"]"<<endl;
-			}
-			else
-			{
-       			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, desc->Width, desc->Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, ImageData);
-			}*/
     	}
 		delete[] ImageData;
 		
@@ -135,11 +100,31 @@ int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
 		return ID;
 	}
 	
-	m_LoadedMap[Fullpath]=-1;
-    return -1;
+	m_LoadedMap[Fullpath]=0;
+    return 0;
 }
 
-bool TexturePainter::SetCurrent(int *ids)
+unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *data)
+{
+	GLuint ID=0;
+	TypedPData<dColour> *pixels = dynamic_cast<TypedPData<dColour>*>(data);
+	if (pixels)
+	{
+		// upload to card...
+		glGenTextures(1,&ID);
+    	glBindTexture(GL_TEXTURE_2D,ID);
+    	gluBuild2DMipmaps(GL_TEXTURE_2D,4,w,h,GL_RGBA,GL_FLOAT,&pixels->m_Data[0]);
+		return ID;
+	}
+    return 0;
+}
+
+void TexturePainter::Delete(unsigned int id)
+{
+	glDeleteTextures(1,(GLuint*)&id);
+}	
+
+bool TexturePainter::SetCurrent(unsigned int *ids)
 {
 	bool ret=false;
 	
@@ -148,9 +133,8 @@ bool TexturePainter::SetCurrent(int *ids)
 		#ifdef ENABLE_MULTITEXTURE
 		glActiveTexture(GL_TEXTURE0+c);
 		#endif
-		
-		map<unsigned int,TextureDesc*>::iterator i=m_TextureMap.find(ids[c]);
-		if (i!=m_TextureMap.end())
+				
+		if (ids[c]!=0)
 		{
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,ids[c]);

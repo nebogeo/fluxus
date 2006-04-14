@@ -43,6 +43,7 @@ Source = Split("libfluxus/src/PData.cpp \
 		libfluxus/src/CompiledPrimitive.cpp \
 		libfluxus/src/LinePrimitive.cpp \
 		libfluxus/src/ParticlePrimitive.cpp \
+		libfluxus/src/PixelPrimitive.cpp \
 		libfluxus/src/NURBSPrimitive.cpp \
 		libfluxus/src/Primitive.cpp \
 		libfluxus/src/Light.cpp \

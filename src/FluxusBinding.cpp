@@ -20,6 +20,9 @@
 #include "FluxusBinding.h"
 #include "SearchPaths.h"
 #include "Repl.h"
+#include <LinePrimitive.h>
+#include <ParticlePrimitive.h>
+#include <PixelPrimitive.h>
 
 FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
@@ -220,6 +223,52 @@ SCM FluxusBinding::build_particles(SCM s_count)
 	}
 	
     return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
+SCM FluxusBinding::build_pixels(SCM s_w, SCM s_h)
+{
+	SCM_ASSERT(scm_is_number(s_w), s_w, SCM_ARG1, "build-pixels");
+	SCM_ASSERT(scm_is_number(s_h), s_h, SCM_ARG1, "build-pixels");
+	
+	PixelPrimitive *Prim = new PixelPrimitive((int)scm_to_double(s_w), (int)scm_to_double(s_h));
+    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
+SCM FluxusBinding::upload_pixels()
+{	
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->Upload();
+		    return SCM_UNSPECIFIED;
+		}
+	}
+	
+	cerr<<"upload-pixels can only be called while a pixelprimitive is grabbed"<<endl;
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::pixels2texture(SCM s_ob)
+{	
+	SCM_ASSERT(scm_is_number(s_ob), s_ob, SCM_ARG1, "pixels->texture");
+	
+	Primitive *Prim=Fluxus->GetRenderer()->GetPrimitive((int)scm_to_double(s_ob));
+	if (Prim) 
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
+		if (pp)
+		{
+		    return scm_from_double(pp->GetTexture());
+		}
+	}
+	
+	cerr<<"pixels->texture can only be called on a pixelprimitive"<<endl;
+    return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::draw_instance(SCM s_ob)
@@ -1108,7 +1157,9 @@ SCM FluxusBinding::force_load_texture(SCM s_name)
 SCM FluxusBinding::texture(SCM s_id)
 {
 	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "texture");	
-    Fluxus->GetRenderer()->GetState()->Textures[0]=(int)scm_to_double(s_id);
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+	if (Grabbed) Grabbed->GetState()->Textures[0]=(int)scm_to_double(s_id);
+    else Fluxus->GetRenderer()->GetState()->Textures[0]=(int)scm_to_double(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1116,7 +1167,9 @@ SCM FluxusBinding::multitexture(SCM s_t, SCM s_id)
 {
 	SCM_ASSERT(scm_is_number(s_t), s_t, SCM_ARG1, "multitexture");	
 	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG2, "multitexture");	
-    Fluxus->GetRenderer()->GetState()->Textures[(int)scm_to_double(s_t)]=(int)scm_to_double(s_id);
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+	if (Grabbed) Grabbed->GetState()->Textures[(int)scm_to_double(s_t)]=(int)scm_to_double(s_id);
+    else Fluxus->GetRenderer()->GetState()->Textures[(int)scm_to_double(s_t)]=(int)scm_to_double(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1470,7 +1523,7 @@ SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
 				}
 				else if (type=='c')	
 				{
-					ret=flx_floats_to_scm(Grabbed->GetData<dColour>(name,index).arr(),3); 
+					ret=flx_floats_to_scm(Grabbed->GetData<dColour>(name,index).arr(),4); 
 				}
 				else if (type=='m')	
 				{
@@ -1706,37 +1759,13 @@ SCM FluxusBinding::pdata_copy(SCM s_s, SCM s_d)
 	
 	return SCM_UNSPECIFIED;
 }
-/*
-SCM FluxusBinding::pdata_op(SCM s_op, SCM s_pd, SCM s_other)
-{
-    SCM_ASSERT(scm_is_string(s_op), s_op, SCM_ARG1, "pdata-op");
-    SCM_ASSERT(scm_is_string(s_pd), s_pd, SCM_ARG2, "pdata-op");
-	
-	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
-	if (Grabbed) 
-	{
-		char *op=scm_to_locale_string(s_op);
-		string opstr(op);
-		
-		
-		free(op);
-	}
-	
-	return SCM_UNSPECIFIED;
-}*/
 
 SCM FluxusBinding::pdata_size()
 {
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		char type;
-		unsigned int size;
-		// all prims have a p - this might have to be changed if we 
-		// ever support data of size other than vertex - but it will 
-		// only have to be changed here...
-		Grabbed->GetDataInfo("p", type, size);
-		return scm_from_double(size);
+		return scm_from_double(Grabbed->Size());
 	}
     return SCM_UNSPECIFIED;
 }
@@ -2230,10 +2259,13 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("build-nurbs",1,0,0,  (SCM (*)())build_nurbs);
 	scm_c_define_gsubr("build-nurbs-sphere",2,0,0, (SCM (*)())build_nurbs_sphere);
 	scm_c_define_gsubr("build-nurbs-plane",2,0,0, (SCM (*)())build_nurbs_plane);
+	scm_c_define_gsubr("build-particles",1,0,0,(SCM (*)()) build_particles);
+	scm_c_define_gsubr("build-pixels",2,0,0,(SCM (*)()) build_pixels);
+	scm_c_define_gsubr("upload-pixels",0,0,0,(SCM (*)())upload_pixels);
+	scm_c_define_gsubr("pixels->texture",1,0,0,(SCM (*)())pixels2texture);
 	
     scm_c_define_gsubr("rotate", 1,0,0, (SCM (*)())rotate);
 	
-	scm_c_define_gsubr("build-particles",1,0,0,(SCM (*)()) build_particles);
 	scm_c_define_gsubr("draw-instance", 1,0,0,(SCM (*)())draw_instance);
     scm_c_define_gsubr("draw-cube", 0,0,0,(SCM (*)())	   draw_cube);
     scm_c_define_gsubr("draw-plane", 0,0,0,(SCM (*)())     draw_plane);

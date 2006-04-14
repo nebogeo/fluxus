@@ -21,6 +21,7 @@
 #include <string>
 #include <map>
 #include "PNGLoader.h"
+#include "PData.h"
 
 using namespace std;
 
@@ -51,8 +52,10 @@ public:
 	}
 	
 	void Initialise();
-	int LoadTexture(const string &Filename, bool ignorecache=false);
-	bool SetCurrent(int *ids);
+	unsigned int LoadTexture(const string &Filename, bool ignorecache=false);
+	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
+	void Delete(unsigned int id);	
+	bool SetCurrent(unsigned int *ids);
 	void DisableAll();
 	
 private:

@@ -38,6 +38,17 @@ void PDataContainer::Resize(unsigned int size)
 	}
 }
 
+	
+unsigned int PDataContainer::Size()
+{
+	if (!m_PData.empty())
+	{
+		return m_PData.begin()->second->Size();
+	}
+	
+	return 0;
+}
+
 bool PDataContainer::GetDataInfo(const string &name, char &type, unsigned int &size)
 {
 	map<string,PData*>::iterator i=m_PData.find(name);
