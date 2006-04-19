@@ -176,6 +176,7 @@ public:
 	void    remove_scale();
 	void    extract_euler(float &x, float &y, float &z);
 	void    aim(dVector v, dVector up=dVector(0,0,1));
+	void    blend(dMatrix other, float amount);
 	
 	void load_glmatrix(float glm[16]);
 	void load_dMatrix(float glm[16]);

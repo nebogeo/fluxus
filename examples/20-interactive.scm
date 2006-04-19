@@ -5,6 +5,8 @@
 
 (clear)
 
+(define box 0) 
+
 (define (build-world size)
     (ground-plane (vector 0  1 0) (- size))
     (ground-plane (vector 0 -1 0) (- size))
@@ -17,7 +19,8 @@
     (hint-none)
     (hint-wire)
     (scale (vmul (vector size size size) 2))
-    (grab (build-cube))
+    (set! box (build-cube))
+    (grab box)
     (selectable 0)
     (ungrab)
     (pop))
@@ -50,7 +53,7 @@
     (update obs)
     (if (or (mouse-button 1) (mouse-button 3))
         (let ((selected (mouse-over)))
-            (if (> selected 0)
+            (if (not (number? selected))
                 (begin
                     (cond 
                         ((mouse-button 1)
@@ -80,6 +83,7 @@
 (add-cube)
 (add-cube)
 (add-cube)
+
 
 (every-frame (render))
 

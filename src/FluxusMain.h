@@ -75,6 +75,7 @@ public:
 	void SendOSC(const string &msg, const vector<OSCData*> &args);
 	void ShowLocators(bool s) { m_ShowLocators=s; }
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
+	void SetInteractiveCamera(bool s) { m_InteractiveCamera=s; }
 	
 	float GetMouseX() { return m_LastMouseX; }
 	float GetMouseY() { return m_LastMouseY; }
@@ -126,7 +127,8 @@ private:
 	string m_Script;
 	bool m_HideScript;
 	bool m_ShowCursor;
-
+	bool m_InteractiveCamera;
+	
 	Server *m_OSCServer;
 	Client *m_OSCClient;
 };

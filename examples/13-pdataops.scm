@@ -7,7 +7,7 @@
     (pdata-set "c" n (vector (flxrnd) (flxrnd) 1)))
 
 (define (initsome n)
-    (init (* particle-count (flxrnd)))
+    (init (round (inexact->exact (* particle-count (flxrnd)))))
     (if (< n 0)
         0
         (initsome (- n 1))))

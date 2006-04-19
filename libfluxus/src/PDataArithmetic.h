@@ -73,6 +73,8 @@ PData *MultOperator::Operate(TypedPData<float> *a, float b);
 template<>
 PData *MultOperator::Operate(TypedPData<dVector> *a, float b);
 template<>
+PData *MultOperator::Operate(TypedPData<dColour> *a, float b);
+template<>
 PData *MultOperator::Operate(TypedPData<dVector> *a, dVector b);
 template<>
 PData *MultOperator::Operate(TypedPData<float> *a, TypedPData<float> *b);

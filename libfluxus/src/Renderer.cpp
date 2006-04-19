@@ -42,6 +42,7 @@ m_Fade(0.02f),
 m_InScene(false),
 m_Ortho(false),
 m_LockedCamera(false),
+m_CameraLag(0),
 m_ShowAxis(false),
 m_Grabbed(NULL),
 m_ClearFrame(true),
@@ -256,8 +257,16 @@ void Renderer::BeginScene(bool PickMode)
 		Primitive *p = GetPrimitive(m_CameraAttached);
 		if (p)
 		{
-			dMatrix t =  p->GetState()->Transform.inverse();
-			glMultMatrixf(t.arr());		
+			if (m_CameraLag!=0)
+			{
+				m_LockedMatrix.blend(p->GetState()->Transform.inverse(),m_CameraLag);
+			}
+			else
+			{
+				m_LockedMatrix=p->GetState()->Transform.inverse();
+			}
+			
+			glMultMatrixf(m_LockedMatrix.arr());		
 		}
 		else m_LockedCamera=false;
 	}

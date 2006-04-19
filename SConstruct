@@ -58,6 +58,7 @@ Source = Split("libfluxus/src/PData.cpp \
 		src/AudioCollector.cpp \
 		src/FluxusMain.cpp \
 		src/FluxusBinding.cpp \
+		src/SchemePrim.cpp \
 		src/JackClient.cpp \
 		src/TurtleBuilder.cpp \
 		src/GLEditor.cpp \
@@ -82,7 +83,7 @@ if env['PLATFORM'] == 'darwin':
 else:
 	LibList += [["X11", "X11/Xlib.h"],
 				# for X11
-				["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
+				#["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
                 ["glut", "GL/glut.h"],
            	    ["GL", "GL/gl.h"],
 		    ["GLU", "GL/glu.h"]]

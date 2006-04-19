@@ -24,7 +24,8 @@ void Light::Render(int index)
 	glLightfv(GL_LIGHT0+index, GL_AMBIENT,  m_Ambient.arr());
  	glLightfv(GL_LIGHT0+index, GL_DIFFUSE,  m_Diffuse.arr());
   	glLightfv(GL_LIGHT0+index, GL_SPECULAR, m_Specular.arr());
-	glLightfv(GL_LIGHT0+index, GL_POSITION, dVector(0,0,0).arr());
+	float pos[4] = { 0,0,0,1 };
+	glLightfv(GL_LIGHT0+index, GL_POSITION, pos);
   	glEnable(GL_LIGHT0+index);
 	glPopMatrix();	
 }

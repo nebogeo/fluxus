@@ -675,6 +675,17 @@ void dMatrix::aim(dVector v, dVector up)
 	m[2][0]=u.x; m[2][1]=u.y; m[2][2]=u.z;	
 }
 
+void dMatrix::blend(dMatrix other, float amount)
+{
+	for (int j=0; j<4; j++)
+	{
+        for (int i=0; i<4; i++)
+		{
+            m[i][j]=(1-amount)*m[i][j]+amount*other.m[i][j];
+		}
+	}
+}
+
 ostream &operator<<(ostream &os, dMatrix const &om)
 {
     for (int j=0; j<4; j++)

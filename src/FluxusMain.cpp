@@ -49,7 +49,8 @@ m_Frame(-1),
 m_Width(x),
 m_Height(y),
 m_HideScript(false),
-m_ShowCursor(true),
+m_ShowCursor(true),	
+m_InteractiveCamera(true),
 m_OSCServer(NULL),
 m_OSCClient(NULL)
 {
@@ -66,7 +67,11 @@ m_OSCClient(NULL)
 void FluxusMain::ResetCamera()
 {
 	m_RotX=m_RotY=m_PosX=m_PosY=0;
-	m_DisY=-10;
+	m_DisY=-10;	
+	m_MouseClickX=m_MouseClickY=0;
+	m_RotStart=dQuat();
+	m_RotNow=dQuat();
+	m_InteractiveCamera=true;
 }
 
 void FluxusMain::TickRecorder()
@@ -272,11 +277,14 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 			}		
 		}
 	}
-		
-	m_Renderer.GetCamera()->init();
-	m_Renderer.GetCamera()->translate(m_PosX,m_PosY,m_DisY);
-	(*m_Renderer.GetCamera()) *= (m_RotNow * m_RotStart).conjugate().toMatrix();
-	m_Renderer.SetOrthoZoom(m_DisY);
+	
+	if (m_InteractiveCamera)
+	{
+		m_Renderer.GetCamera()->init();
+		m_Renderer.GetCamera()->translate(m_PosX,m_PosY,m_DisY);
+		(*m_Renderer.GetCamera()) *= (m_RotNow * m_RotStart).conjugate().toMatrix();
+		m_Renderer.SetOrthoZoom(m_DisY);
+	}
 }
 
 bool FluxusMain::KeyPressed(char b)

@@ -35,6 +35,7 @@ namespace fluxus
 class State;
 class Primitive;
 
+// todo - this has become a "god object", move some stuff out...
 class Renderer
 {
 public:
@@ -94,14 +95,18 @@ public:
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; InitFeedback(); }
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
+	
+	// todo - move camera stuff out of here...
 	dMatrix *GetCamera()                     { return &m_Camera; }
 	dMatrix GetProjection();
 	void LockCamera(int Prim);
 	void UnlockCamera()						 { m_LockedCamera=false; }
+	void SetCameraLag(float s)               { m_CameraLag=s; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
+	
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void ShowCursor(bool s);
@@ -150,6 +155,8 @@ private:
 	bool  m_Ortho;
 	int   m_CameraAttached;
 	bool  m_LockedCamera;
+	float m_CameraLag;
+	dMatrix  m_LockedMatrix;
 	bool  m_ShowAxis;
 	Primitive *m_Grabbed;
 	dColour m_BGColour;

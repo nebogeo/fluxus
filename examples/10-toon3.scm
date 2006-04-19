@@ -21,7 +21,7 @@
 
 ; some sinewave deformation with time
 (define (deform n)
-    (let ((v (vector (* 2 (sin (+ (time) (* (vector-ref (pdata-get "pref" n) 1) 10.4)))) 0 0)))
+    (let ((v (vector (* 2 (sin (+ (time) (* (f32vector-ref (pdata-get "pref" n) 1) 10.4)))) 0 0)))
         (set! v (vmul v (* (sin (time)) 0.5)))
         (pdata-set "p" n (vadd v (pdata-get "pref" n))))
     (if (< n 0)

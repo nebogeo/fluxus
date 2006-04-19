@@ -59,13 +59,13 @@
 (line-width 8)
 (clear-colour (vector 1 1 1))
 
-(desiredfps 25)
+(desiredfps 250000)
 
 (gravity (vector 0 0 0))
 
 (define (render)
     (if (> (gh 1) 0.1)
-        (flowers 1)))
+        (flowers 0)))
 
 (blur 0)
 (gain 10)

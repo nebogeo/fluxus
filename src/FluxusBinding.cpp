@@ -41,18 +41,18 @@ int				FluxusBinding::GrabbedID=-1;
 SCM flx_floats_to_scm(float *d, unsigned int len)
 {
 
-//	float *t=(float*)malloc(sizeof(float)*len);
-//	for (unsigned int i=0; i<len; i++) t[i]=d[i];
-//	SCM ret=scm_take_f32vector(t,len);
+	float *t=(float*)malloc(sizeof(float)*len);
+	memcpy(t,d,len*sizeof(float));
+	SCM ret=scm_take_f32vector(t,len);
 	
 	// this is probably much slower but means we can use these vectors 
 	// normally without having to use functions like (f32vector-set)	
 	// I'm sure there is a better way
-	SCM ret=scm_make_vector(scm_from_int(len),scm_from_double(0));	
-	for (unsigned int n=0; n<len; n++) 
-	{
-		scm_vector_set_x(ret,scm_from_int(n),scm_from_double(d[n]));
-	}
+//	SCM ret=scm_make_vector(scm_from_int(len),scm_from_double(0));	
+//	for (unsigned int n=0; n<len; n++) 
+//	{
+//		scm_vector_set_x(ret,scm_from_int(n),scm_from_double(d[n]));
+//	}
 	return ret;
 }
 
@@ -66,6 +66,9 @@ void flx_floats_from_scm(SCM v, float *ptr)
 	// todo, get rid of this copy
 	memcpy(ptr,sp,lenp*sizeof(float));
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 FluxusBinding::FluxusBinding(int w, int h) 
 {
@@ -91,14 +94,29 @@ FluxusBinding::~FluxusBinding()
 	delete Fluxus;
 }
 
+SCM FluxusBinding::Prim2Smob(int id)
+{
+	SCM smob;
+	SchemePrim *pb = new SchemePrim(id, Fluxus->GetRenderer());
+	SCM_NEWSMOB (smob, SchemePrim::Tag, pb);
+	return smob;
+}
+
+int FluxusBinding::Smob2Prim(SCM smob)
+{
+	SchemePrim::Assert(smob);
+	SchemePrim *pb = (SchemePrim *)SCM_SMOB_DATA(smob);
+	return pb->GetID();
+}
+
 SCM FluxusBinding::build_polygons(SCM s_size, SCM s_type)
 {
 	SCM_ASSERT(scm_is_number(s_size), s_size, SCM_ARG1, "build-polygons");
 	SCM_ASSERT(scm_is_number(s_type), s_type, SCM_ARG2, "build-polygons");
 	
-	PolyPrimitive *Prim = new PolyPrimitive((PolyPrimitive::Type)(int)scm_to_double(s_type));
-	Prim->Resize((int)scm_to_double(s_size));
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+	PolyPrimitive *Prim = new PolyPrimitive((PolyPrimitive::Type)scm_to_int(s_type));
+	Prim->Resize(scm_to_int(s_size));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_nurbs(SCM s_size)
@@ -106,36 +124,34 @@ SCM FluxusBinding::build_nurbs(SCM s_size)
 	SCM_ASSERT(scm_is_number(s_size), s_size, SCM_ARG1, "build-nurbs");
 	
 	NURBSPrimitive *Prim = new NURBSPrimitive();
-	Prim->Resize((int)scm_to_double(s_size));
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+	Prim->Resize(scm_to_int(s_size));
+	return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_cube()
 {
 	PolyPrimitive *BoxPrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(BoxPrim);
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(BoxPrim));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(BoxPrim));    
 }
 
 SCM FluxusBinding::build_sphere(SCM s_hsegments, SCM s_rsegments)
 {
 	SCM_ASSERT(scm_is_number(s_hsegments), s_hsegments, SCM_ARG1, "build_sphere");
 	SCM_ASSERT(scm_is_number(s_rsegments), s_rsegments, SCM_ARG2, "build_sphere");
-	double hsegments;
-	hsegments=scm_to_double(s_hsegments);
-    double rsegments;
-	rsegments=scm_to_double(s_rsegments);	
+	int hsegments=scm_to_int(s_hsegments);
+    int rsegments=scm_to_int(s_rsegments);	
 	
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeSphere(SphPrim, 1, (int)hsegments, (int)rsegments);
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
+    MakeSphere(SphPrim, 1, hsegments, rsegments);
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
 }
 
 SCM FluxusBinding::build_plane()
 {
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(PlanePrim);
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
 }
 
 SCM FluxusBinding::build_plane(SCM s_xsegments, SCM s_ysegments)
@@ -144,23 +160,19 @@ SCM FluxusBinding::build_plane(SCM s_xsegments, SCM s_ysegments)
 	SCM_ASSERT(scm_is_number(s_ysegments), s_ysegments, SCM_ARG2, "build-plane");
 
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakePlane(PlanePrim,(int)scm_to_double(s_xsegments),(int)scm_to_double(s_ysegments));
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
+    MakePlane(PlanePrim,scm_to_int(s_xsegments),scm_to_int(s_ysegments));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(PlanePrim));
 }
 
 SCM FluxusBinding::build_cylinder(SCM s_hsegments, SCM s_rsegments)
 {
 	SCM_ASSERT(scm_is_number(s_hsegments), s_hsegments, SCM_ARG1, "build_cylinder");
 	SCM_ASSERT(scm_is_number(s_rsegments), s_rsegments, SCM_ARG2, "build_cylinder");
-	double hsegments;
-	hsegments=scm_to_double(s_hsegments);
-    double rsegments;
-	rsegments=scm_to_double(s_rsegments);	
-
+	
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeCylinder(CylPrim, 1, 1, (int)hsegments, (int)rsegments);
+    MakeCylinder(CylPrim, 1, 1, scm_to_int(s_hsegments), scm_to_int(s_rsegments));
 
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(CylPrim));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(CylPrim));
 }
 
 SCM FluxusBinding::build_line(SCM s_numpoints)
@@ -168,8 +180,8 @@ SCM FluxusBinding::build_line(SCM s_numpoints)
 	SCM_ASSERT(scm_is_number(s_numpoints), s_numpoints, SCM_ARG1, "build-line");
 	
 	LinePrimitive *Prim = new LinePrimitive();
-	Prim->Resize((int)scm_to_double(s_numpoints));
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+	Prim->Resize(scm_to_int(s_numpoints));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_text(SCM s_text)
@@ -181,48 +193,40 @@ SCM FluxusBinding::build_text(SCM s_text)
 	TextPrimitive *TextPrim = new TextPrimitive(15/256.0f,25/256.0f,17,40);
 	TextPrim->SetText(text,20,-20);
 	
-	return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(TextPrim));
+	return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(TextPrim));
 }
 	
 SCM FluxusBinding::build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments)
 {
 	SCM_ASSERT(scm_is_number(s_hsegments), s_hsegments, SCM_ARG1, "build_nurbs_sphere");
 	SCM_ASSERT(scm_is_number(s_rsegments), s_rsegments, SCM_ARG2, "build_nurbs_sphere");
-	double hsegments;
-	hsegments=scm_to_double(s_hsegments);
-    double rsegments;
-	rsegments=scm_to_double(s_rsegments);	
 	
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
-    MakeNURBSSphere(SphPrim, 1, (int)hsegments, (int)rsegments);
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
+    MakeNURBSSphere(SphPrim, 1, scm_to_int(s_hsegments), scm_to_int(s_rsegments));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(SphPrim));
 }
 
 SCM FluxusBinding::build_nurbs_plane(SCM s_usegments, SCM s_vsegments)
 {
 	SCM_ASSERT(scm_is_number(s_usegments), s_usegments, SCM_ARG1, "build_nurbs_sphere");
 	SCM_ASSERT(scm_is_number(s_vsegments), s_vsegments, SCM_ARG2, "build_nurbs_sphere");
-	double usegments;
-	usegments=scm_to_double(s_usegments);
-    double vsegments;
-	vsegments=scm_to_double(s_vsegments);	
-	
+		
 	NURBSPrimitive *Prim = new NURBSPrimitive;
-    MakeNURBSPlane(Prim, (int)usegments, (int)vsegments);
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+    MakeNURBSPlane(Prim, scm_to_int(s_usegments), scm_to_int(s_vsegments));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_particles(SCM s_count)
 {
 	SCM_ASSERT(scm_is_number(s_count), s_count, SCM_ARG1, "build_particles");
 	ParticlePrimitive *Prim = new ParticlePrimitive;
-	int count=(int)scm_to_double(s_count);
+	int count=scm_to_int(s_count);
 	for (int i=0; i<count; i++)
 	{
 		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
 	
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::build_pixels(SCM s_w, SCM s_h)
@@ -231,7 +235,7 @@ SCM FluxusBinding::build_pixels(SCM s_w, SCM s_h)
 	SCM_ASSERT(scm_is_number(s_h), s_h, SCM_ARG1, "build-pixels");
 	
 	PixelPrimitive *Prim = new PixelPrimitive((int)scm_to_double(s_w), (int)scm_to_double(s_h));
-    return scm_from_double(Fluxus->GetRenderer()->AddPrimitive(Prim));
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusBinding::upload_pixels()
@@ -253,17 +257,15 @@ SCM FluxusBinding::upload_pixels()
 }
 
 SCM FluxusBinding::pixels2texture(SCM s_ob)
-{	
-	SCM_ASSERT(scm_is_number(s_ob), s_ob, SCM_ARG1, "pixels->texture");
-	
-	Primitive *Prim=Fluxus->GetRenderer()->GetPrimitive((int)scm_to_double(s_ob));
+{		
+	Primitive *Prim=Fluxus->GetRenderer()->GetPrimitive(Smob2Prim(s_ob));
 	if (Prim) 
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
 		if (pp)
 		{
-		    return scm_from_double(pp->GetTexture());
+		    return scm_from_int(pp->GetTexture());
 		}
 	}
 	
@@ -273,10 +275,7 @@ SCM FluxusBinding::pixels2texture(SCM s_ob)
 
 SCM FluxusBinding::draw_instance(SCM s_ob)
 {    	
-	SCM_ASSERT(scm_is_number(s_ob), s_ob, SCM_ARG1, "draw_instance");
-	int ob=0;
-	ob=(int)scm_to_double(s_ob);	
-    Fluxus->GetRenderer()->RenderPrimitive(Fluxus->GetRenderer()->GetPrimitive(ob));
+    Fluxus->GetRenderer()->RenderPrimitive(Fluxus->GetRenderer()->GetPrimitive(Smob2Prim(s_ob)));
     return SCM_UNSPECIFIED;
 }
 
@@ -309,11 +308,11 @@ SCM FluxusBinding::key_pressed(SCM s_key)
 {
 	SCM_ASSERT(scm_is_string(s_key), s_key, SCM_ARG1, "key_pressed");
 	char *key=scm_to_locale_string(s_key);
-	double pressed;
-	if (m_KeySet.find(key[0])!=m_KeySet.end()) pressed=1;
-	else pressed=0;
+	bool pressed;
+	if (m_KeySet.find(key[0])!=m_KeySet.end()) pressed=true;
+	else pressed=false;
     free(key);
-    return scm_from_bool((int)pressed);
+    return scm_from_bool(pressed);
 }
 
 SCM FluxusBinding::show_axis(SCM s_id)
@@ -335,7 +334,7 @@ SCM FluxusBinding::make_light(SCM cam)
 	SCM_ASSERT(scm_is_number(cam), cam, SCM_ARG1, "make_light");
 	Light *l=new Light;
 	l->SetCameraLock((bool)scm_to_double(cam));
-	return scm_from_double(Fluxus->GetRenderer()->AddLight(l));
+	return scm_from_int(Fluxus->GetRenderer()->AddLight(l));
 }
 
 SCM FluxusBinding::clear_lights()
@@ -351,7 +350,7 @@ SCM FluxusBinding::light_ambient(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_ambient");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight((int)scm_to_double(id))->SetAmbient(dColour(vec[0],vec[1],vec[2]));
+	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetAmbient(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -362,7 +361,7 @@ SCM FluxusBinding::light_diffuse(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_diffuse");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight((int)scm_to_double(id))->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
+	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -373,7 +372,7 @@ SCM FluxusBinding::light_specular(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_specular");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight((int)scm_to_double(id))->SetSpecular(dColour(vec[0],vec[1],vec[2]));
+	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetSpecular(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -384,24 +383,29 @@ SCM FluxusBinding::light_position(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_position");	
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight((int)scm_to_double(id))->SetPosition(dVector(vec[0],vec[1],vec[2]));
+	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetPosition(dVector(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::lock_camera(SCM s_ob)
 {
-	SCM_ASSERT(scm_is_number(s_ob), s_ob, SCM_ARG1, "lock_camera");
-	int ob=0;
-	ob=(int)scm_to_double(s_ob);	
+	int ob=Smob2Prim(s_ob);	
     Fluxus->GetRenderer()->LockCamera(ob);
+	scm_remember_upto_here_1(s_ob);
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::camera_lag(SCM s_amount)
+{
+	SCM_ASSERT(scm_is_number(s_amount), s_amount, SCM_ARG1, "camera-lag");	
+    Fluxus->GetRenderer()->SetCameraLag(scm_to_double(s_amount));
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::destroy(SCM s_name)
 {
-	SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "destroy");
 	int name=0;
-	name=(int)scm_to_double(s_name);	
+	name=Smob2Prim(s_name);	
 	
 	Primitive *p=Fluxus->GetRenderer()->GetPrimitive(name);
 	if (p)
@@ -413,6 +417,7 @@ SCM FluxusBinding::destroy(SCM s_name)
     	Fluxus->GetRenderer()->RemovePrimitive(name);
     }
 
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
@@ -425,15 +430,21 @@ SCM FluxusBinding::clear()
 	else {
 		fprintf(stderr, "FrameHook == NULL during (clear)!\n");
 	}
+	
+	GrabbedIDStack.clear();
+	GrabbedID=-1;
+	Fluxus->GetRenderer()->UnGrab();
+	
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::grab(SCM s_id)
 {
-	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "id");		
-	GrabbedIDStack.push_front((int)scm_to_double(s_id));
-	GrabbedID=(int)scm_to_double(s_id);
+	int id = Smob2Prim(s_id);
+	GrabbedIDStack.push_front(id);
+	GrabbedID=id;
 	Fluxus->GetRenderer()->Grab(GrabbedID);
+	scm_remember_upto_here_1(s_id);
 	return SCM_UNSPECIFIED;
 }
 
@@ -457,8 +468,8 @@ SCM FluxusBinding::ungrab()
 
 SCM FluxusBinding::apply(SCM s_id)
 {
-	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "apply-transform");
-	Fluxus->GetRenderer()->GetPrimitive((int)scm_to_double(s_id))->ApplyTransform();
+	Fluxus->GetRenderer()->GetPrimitive(Smob2Prim(s_id))->ApplyTransform();
+	scm_remember_upto_here_1(s_id);
 	return SCM_UNSPECIFIED;
 }
 
@@ -628,8 +639,8 @@ SCM FluxusBinding::scale(SCM s_vec)
 
 SCM FluxusBinding::parent(SCM s_p)
 {
-    SCM_ASSERT(scm_is_number(s_p), s_p, SCM_ARG1, "parent");
-    Fluxus->GetRenderer()->GetState()->Parent=(int)scm_to_double(s_p);
+    Fluxus->GetRenderer()->GetState()->Parent=Smob2Prim(s_p);
+	scm_remember_upto_here_1(s_p);
     return SCM_UNSPECIFIED;
 }
 
@@ -834,55 +845,49 @@ SCM FluxusBinding::ground_plane(SCM s_ori, SCM s_off)
 
 SCM FluxusBinding::active_box(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "active_box");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakeActive(name,1.0f,Physics::BOX);
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::active_cylinder(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "active_cylinder");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakeActive(name,1.0f,Physics::CYLINDER);
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::active_sphere(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "active_sphere");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakeActive(name,1.0f,Physics::SPHERE);
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::passive_box(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "passive_box");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::BOX);
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::passive_cylinder(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "passive_cylinder");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::CYLINDER);
+	scm_remember_upto_here_1(s_name);
     return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::passive_sphere(SCM s_name)
 {
-    SCM_ASSERT(scm_is_number(s_name), s_name, SCM_ARG1, "passive_sphere");
-	int name=0;
-	name=(int)scm_to_double(s_name);	
+	int name=Smob2Prim(s_name);	
 	Fluxus->GetPhysics()->MakePassive(name,1.0f,Physics::SPHERE);
+	scm_remember_upto_here_1(s_name);
 	return SCM_UNSPECIFIED;
 }
 
@@ -899,40 +904,32 @@ SCM FluxusBinding::surface_params(SCM s_slip1, SCM s_slip2, SCM s_softerp, SCM s
 
 SCM FluxusBinding::build_balljoint(SCM s_ob1, SCM s_ob2, SCM s_anchor)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_balljoint");
-    SCM_ASSERT(scm_is_number(s_ob2),    s_ob2,    SCM_ARG2, "build_balljoint");
     SCM_ASSERT(scm_is_generalized_vector(s_anchor), s_anchor, SCM_ARG3, "build_balljoint");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_anchor)==3, s_anchor, SCM_ARG3, "build_balljoint");
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	int name2=0;
-	name2=(int)scm_to_double(s_ob2);	
+    int name1=Smob2Prim(s_ob1);
+	int name2=Smob2Prim(s_ob2);	
 	float anchor[3];
 	flx_floats_from_scm(s_anchor,anchor);
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
+	scm_remember_upto_here_1(s_ob1);
+	scm_remember_upto_here_1(s_ob2);
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
 }
 
 SCM FluxusBinding::build_fixedjoint(SCM s_ob1)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_fixedjoint");
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointFixed(name1));
+    int name1=Smob2Prim(s_ob1);
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointFixed(name1));
 }
 
 SCM FluxusBinding::build_hingejoint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_hingejoint");
-    SCM_ASSERT(scm_is_number(s_ob2),    s_ob2,    SCM_ARG2, "build_hingejoint");
     SCM_ASSERT(scm_is_generalized_vector(s_anchor), s_anchor, SCM_ARG3, "build_hingejoint");
  	SCM_ASSERT(scm_c_generalized_vector_length(s_anchor)==3, s_anchor, SCM_ARG3, "build_hingejoint");
     SCM_ASSERT(scm_is_generalized_vector(s_hinge),  s_hinge,  SCM_ARG4, "build_hingejoint");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_hinge)==3, s_hinge, SCM_ARG4, "build_hingejoint");
 
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	int name2=0;
-	name2=(int)scm_to_double(s_ob2);
+    int name1=Smob2Prim(s_ob1);
+	int name2=Smob2Prim(s_ob2);
 	
 	float anchor[3];
 	flx_floats_from_scm(s_anchor,anchor);
@@ -943,21 +940,20 @@ SCM FluxusBinding::build_hingejoint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hi
 	Hinge.x=temp[0];
 	Hinge.y=temp[1];
 	Hinge.z=temp[2];
-	
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointHinge(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
+
+	scm_remember_upto_here_1(s_ob1);
+	scm_remember_upto_here_1(s_ob2);
+
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointHinge(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
 SCM FluxusBinding::build_sliderjoint(SCM s_ob1, SCM s_ob2, SCM s_hinge)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_sliderjoint");
-    SCM_ASSERT(scm_is_number(s_ob2),    s_ob2,    SCM_ARG2, "build_sliderjoint");
     SCM_ASSERT(scm_is_generalized_vector(s_hinge),  s_hinge,  SCM_ARG3, "build_sliderjoint");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_hinge)==3, s_hinge, SCM_ARG3, "build_sliderjoint");
 
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	int name2=0;
-	name2=(int)scm_to_double(s_ob2);
+    int name1=Smob2Prim(s_ob1);
+	int name2=Smob2Prim(s_ob2);
 		
 	dVector Hinge;
 	float temp[3];
@@ -965,14 +961,15 @@ SCM FluxusBinding::build_sliderjoint(SCM s_ob1, SCM s_ob2, SCM s_hinge)
 	Hinge.x=temp[0];
 	Hinge.y=temp[1];
 	Hinge.z=temp[2];
-	
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointSlider(name1, name2, Hinge));
+
+	scm_remember_upto_here_1(s_ob1);
+	scm_remember_upto_here_1(s_ob2);
+
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointSlider(name1, name2, Hinge));
 }
 
 SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_hinge1, SCM s_hinge2)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_hinge2joint");
-    SCM_ASSERT(scm_is_number(s_ob2),    s_ob2,    SCM_ARG2, "build_hinge2joint");
     SCM_ASSERT(scm_is_generalized_vector(s_anchor), s_anchor, SCM_ARG3, "build_hinge2joint");
     SCM_ASSERT(scm_c_generalized_vector_length(s_anchor)==3, s_anchor, SCM_ARG3, "build_hinge2joint");
 	SCM_ASSERT(scm_is_generalized_vector(s_hinge1), s_hinge1, SCM_ARG4, "build_hinge2joint");
@@ -980,10 +977,8 @@ SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_h
 	SCM_ASSERT(scm_is_generalized_vector(s_hinge2), s_hinge2, SCM_ARG5, "build_hinge2joint");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_hinge2)==3, s_hinge2, SCM_ARG5, "build_hinge2joint");
 
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	int name2=0;
-	name2=(int)scm_to_double(s_ob2);
+    int name1=Smob2Prim(s_ob1);
+	int name2=Smob2Prim(s_ob2);
 	
 	float anchor[3];
 	flx_floats_from_scm(s_anchor,anchor);
@@ -1000,22 +995,23 @@ SCM FluxusBinding::build_hinge2joint(SCM s_ob1, SCM s_ob2, SCM s_anchor, SCM s_h
 	Hinge[1].y=temp[1];
 	Hinge[1].z=temp[2];
 	
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointHinge2(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
+	scm_remember_upto_here_1(s_ob1);
+	scm_remember_upto_here_1(s_ob2);
+
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointHinge2(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
 SCM FluxusBinding::build_amotorjoint(SCM s_ob1, SCM s_ob2, SCM s_axis)
 {
-    SCM_ASSERT(scm_is_number(s_ob1),    s_ob1,    SCM_ARG1, "build_amotorjoint");
-    SCM_ASSERT(scm_is_number(s_ob2),    s_ob2,    SCM_ARG2, "build_amotorjoint");
     SCM_ASSERT(scm_is_generalized_vector(s_axis),   s_axis,   SCM_ARG3, "build_amotorjoint");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_axis)==3, s_axis, SCM_ARG3, "build_amotorjoint");
-    int name1=0;
-	name1=(int)scm_to_double(s_ob1);
-	int name2=0;
-	name2=(int)scm_to_double(s_ob2);	
+    int name1=Smob2Prim(s_ob1);
+	int name2=Smob2Prim(s_ob2);	
 	float axis[3];
 	flx_floats_from_scm(s_axis,axis);
-	return scm_from_double(Fluxus->GetPhysics()->CreateJointAMotor(name1, name2, dVector(axis[0],axis[1],axis[2])));
+	scm_remember_upto_here_1(s_ob1);
+	scm_remember_upto_here_1(s_ob2);
+	return scm_from_int(Fluxus->GetPhysics()->CreateJointAMotor(name1, name2, dVector(axis[0],axis[1],axis[2])));
 }
 
 SCM FluxusBinding::joint_param(SCM s_joint, SCM s_param, SCM s_value)
@@ -1024,7 +1020,7 @@ SCM FluxusBinding::joint_param(SCM s_joint, SCM s_param, SCM s_value)
     SCM_ASSERT(scm_is_string(s_param), s_param, SCM_ARG1, "joint_param");
     SCM_ASSERT(scm_is_number(s_value), s_value, SCM_ARG2, "joint_param");
     int joint=0;
-	joint=(int)scm_to_double(s_joint);
+	joint=scm_to_int(s_joint);
 	char *param=0;
 	param=scm_to_locale_string(s_param);	
     double v = scm_to_double(s_value);
@@ -1038,26 +1034,24 @@ SCM FluxusBinding::joint_angle(SCM s_joint, SCM s_vel, SCM s_angle)
     SCM_ASSERT(scm_is_number(s_joint), s_joint, SCM_ARG1, "joint_angle");
     SCM_ASSERT(scm_is_number(s_vel),   s_vel,   SCM_ARG1, "joint_angle");
     SCM_ASSERT(scm_is_number(s_angle), s_angle, SCM_ARG2, "joint_angle");
-	Fluxus->GetPhysics()->SetJointAngle((int)scm_to_double(s_joint),scm_to_double(s_vel),scm_to_double(s_angle));
+	Fluxus->GetPhysics()->SetJointAngle(scm_to_int(s_joint),scm_to_double(s_vel),scm_to_double(s_angle));
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::set_max_physical(SCM s_value)
 {
     SCM_ASSERT(scm_is_number(s_value), s_value, SCM_ARG2, "set_max_physical");
-    double v = scm_to_double(s_value);
-    Fluxus->GetPhysics()->SetMaxObjectCount((int)v);
+    Fluxus->GetPhysics()->SetMaxObjectCount(scm_to_int(s_value));
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::set_mass(SCM s_obj, SCM s_mass)
 {
-    SCM_ASSERT(scm_is_number(s_obj), s_obj, SCM_ARG1, "set_mass");
     SCM_ASSERT(scm_is_number(s_mass), s_mass, SCM_ARG2, "set_mass");
-    int obj=0;
-	obj=(int)scm_to_double(s_obj);
+    int obj=Smob2Prim(s_obj);
     float mass=scm_to_double(s_mass);
 	Fluxus->GetPhysics()->SetMass(obj,mass);
+	scm_remember_upto_here_1(s_obj);
 	return SCM_UNSPECIFIED;
 }
 
@@ -1073,27 +1067,25 @@ SCM FluxusBinding::gravity(SCM s_vec)
 
 SCM FluxusBinding::kick(SCM s_obj, SCM s_vec)
 {
-    SCM_ASSERT(scm_is_number(s_obj), s_obj, SCM_ARG1, "kick");
     SCM_ASSERT(scm_is_generalized_vector(s_vec), s_vec, SCM_ARG2, "kick");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_vec)==3, s_vec, SCM_ARG2, "kick");
-    int obj=0;
-	obj=(int)scm_to_double(s_obj);
+    int obj=Smob2Prim(s_obj);
     float vec[3];
     flx_floats_from_scm(s_vec,vec);
 	Fluxus->GetPhysics()->Kick(obj,dVector(vec[0],vec[1],vec[2]));
+	scm_remember_upto_here_1(s_obj);
 	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::twist(SCM s_obj, SCM s_vec)
 {
-    SCM_ASSERT(scm_is_number(s_obj), s_obj, SCM_ARG1, "twist");
     SCM_ASSERT(scm_is_generalized_vector(s_vec), s_vec, SCM_ARG2, "twist");
 	SCM_ASSERT(scm_c_generalized_vector_length(s_vec)==3, s_vec, SCM_ARG2, "twist");
-    int obj=0;
-	obj=(int)scm_to_double(s_obj);
+    int obj=Smob2Prim(s_obj);
     float vec[3];
     flx_floats_from_scm(s_vec,vec);
 	Fluxus->GetPhysics()->Twist(obj,dVector(vec[0],vec[1],vec[2]));
+	scm_remember_upto_here_1(s_obj);
 	return SCM_UNSPECIFIED;
 }
 
@@ -1104,8 +1096,7 @@ SCM FluxusBinding::srandom()
 
 SCM FluxusBinding::has_collided(SCM s_id)
 {
-	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "has-collided");
-	return scm_from_bool(Fluxus->GetPhysics()->HasCollided((int)scm_to_double(s_id)));
+	return scm_from_bool(Fluxus->GetPhysics()->HasCollided(Smob2Prim(s_id)));
 }
 
 SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
@@ -1117,7 +1108,7 @@ SCM FluxusBinding::start_audio(SCM s_dev, SCM s_bs, SCM s_sr)
 	if (Audio==NULL)
 	{
 		char *name=scm_to_locale_string(s_dev);		
-		Audio = new AudioCollector(name,(unsigned int)scm_to_double(s_bs),(int)scm_to_double(s_sr));
+		Audio = new AudioCollector(name,(unsigned int)scm_to_int(s_bs),scm_to_int(s_sr));
 		Fluxus->SetAudio(Audio);
 		free(name);
 	}
@@ -1129,7 +1120,7 @@ SCM FluxusBinding::get_harmonic(SCM s_harm)
 	SCM_ASSERT(scm_is_number(s_harm), s_harm, SCM_ARG1, "get_harmonic");	
 	if (Audio!=NULL)
 	{	
-    	return scm_from_double(Audio->GetHarmonic((int)scm_to_double(s_harm)));
+    	return scm_from_double(Audio->GetHarmonic(scm_to_int(s_harm)));
 	}
 	return scm_from_double(0);
 }
@@ -1158,8 +1149,8 @@ SCM FluxusBinding::texture(SCM s_id)
 {
 	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG1, "texture");	
 	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
-	if (Grabbed) Grabbed->GetState()->Textures[0]=(int)scm_to_double(s_id);
-    else Fluxus->GetRenderer()->GetState()->Textures[0]=(int)scm_to_double(s_id);
+	if (Grabbed) Grabbed->GetState()->Textures[0]=(int)scm_to_int(s_id);
+    else Fluxus->GetRenderer()->GetState()->Textures[0]=(int)scm_to_int(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1168,8 +1159,8 @@ SCM FluxusBinding::multitexture(SCM s_t, SCM s_id)
 	SCM_ASSERT(scm_is_number(s_t), s_t, SCM_ARG1, "multitexture");	
 	SCM_ASSERT(scm_is_number(s_id), s_id, SCM_ARG2, "multitexture");	
 	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
-	if (Grabbed) Grabbed->GetState()->Textures[(int)scm_to_double(s_t)]=(int)scm_to_double(s_id);
-    else Fluxus->GetRenderer()->GetState()->Textures[(int)scm_to_double(s_t)]=(int)scm_to_double(s_id);
+	if (Grabbed) Grabbed->GetState()->Textures[scm_to_int(s_t)]=scm_to_int(s_id);
+    else Fluxus->GetRenderer()->GetState()->Textures[scm_to_int(s_t)]=scm_to_int(s_id);
     return SCM_UNSPECIFIED;
 }
 
@@ -1322,7 +1313,7 @@ SCM FluxusBinding::clear_frame(SCM s_gain)
 SCM FluxusBinding::turtle_prim(SCM type)
 {
 	SCM_ASSERT(scm_is_number(type), type, SCM_ARG1, "turtle_prim");
-	turtle.Prim((int)scm_to_double(type));
+	turtle.Prim(scm_to_int(type));
 	return SCM_UNSPECIFIED;
 }
 
@@ -1334,7 +1325,7 @@ SCM FluxusBinding::turtle_vert()
 
 SCM FluxusBinding::turtle_build()
 {
-	return scm_from_double(turtle.Build(Fluxus->GetRenderer()));
+	return Prim2Smob(turtle.Build(Fluxus->GetRenderer()));
 }
 
 SCM FluxusBinding::turtle_move(SCM dist)
@@ -1427,7 +1418,8 @@ SCM FluxusBinding::osc(SCM s_index)
 	unsigned int index=(unsigned int)scm_to_double(s_index);
 	char type = Fluxus->TypeFromOSC(index);
 	SCM ret;
-	if (type=='f' || type=='i') ret=scm_from_double(Fluxus->NumberFromOSC(index));
+	if (type=='f') ret=scm_from_double(Fluxus->NumberFromOSC(index));
+	else if (type=='i') ret=scm_from_int((int)Fluxus->NumberFromOSC(index));
 	else if (type=='s') 
 	{
 		string value=Fluxus->StringFromOSC(index);
@@ -1475,7 +1467,7 @@ SCM FluxusBinding::osc_send(SCM s_msg, SCM s_types, SCM s_arglist)
 			if (n<strlen(types))
 			{
 				if (types[n]=='f') oscargs.push_back(new OSCFloat(scm_to_double(arg)));
-				else if (types[n]=='i') oscargs.push_back(new OSCInt((int)scm_to_double(arg)));
+				else if (types[n]=='i') oscargs.push_back(new OSCInt(scm_to_int(arg)));
 			}
 		}
 		else if (scm_is_string(arg))
@@ -1508,7 +1500,7 @@ SCM FluxusBinding::pdata_get(SCM s_t, SCM s_i)
 	if (Grabbed) 
 	{
 		char *name=scm_to_locale_string(s_t);
-		unsigned int index=(int)scm_to_double(s_i);
+		unsigned int index=scm_to_int(s_i);
 		unsigned int size;
 		char type;
 		SCM ret=flx_floats_to_scm(dVector().arr(),3);
@@ -1549,7 +1541,7 @@ SCM FluxusBinding::pdata_set(SCM s_t, SCM s_i, SCM s_v)
 	{
 		size_t ssize=0;
 		char *name=scm_to_locale_string(s_t);
-		unsigned int index=(int)scm_to_double(s_i);
+		unsigned int index=scm_to_int(s_i);
 		unsigned int size;
 		char type;
 		
@@ -1765,7 +1757,7 @@ SCM FluxusBinding::pdata_size()
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		return scm_from_double(Grabbed->Size());
+		return scm_from_int(Grabbed->Size());
 	}
     return SCM_UNSPECIFIED;
 }
@@ -1812,6 +1804,17 @@ SCM FluxusBinding::get_transform()
 SCM FluxusBinding::get_camera_transform()
 {
 	return flx_floats_to_scm(Fluxus->GetRenderer()->GetCamera()->inverse().arr(),16);
+}
+
+SCM FluxusBinding::set_camera_transform(SCM s_m)
+{
+	SCM_ASSERT(scm_is_generalized_vector(s_m),  s_m,  SCM_ARG1, "set-camera-transform");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_m)==16,  s_m,  SCM_ARG1, "set-camera-transform");
+	dMatrix m;
+	flx_floats_from_scm(s_m,m.arr());
+	(*Fluxus->GetRenderer()->GetCamera())=m.inverse();
+	Fluxus->SetInteractiveCamera(false);
+	return SCM_UNSPECIFIED;
 }
 
 SCM FluxusBinding::get_projection_transform()
@@ -2166,13 +2169,21 @@ SCM FluxusBinding::qtomatrix(SCM s_a)
 
 SCM FluxusBinding::mouse_over()
 {
-	return scm_from_double(Fluxus->GetRenderer()->Select((int)Fluxus->GetMouseX(),(int)Fluxus->GetMouseY(),5));
+	int id=Fluxus->GetRenderer()->Select((int)Fluxus->GetMouseX(),(int)Fluxus->GetMouseY(),5);
+	if (id > 0)
+	{
+		return Prim2Smob(id);
+	}
+	else
+	{
+		return scm_from_bool(false);
+	}
 }
 
 SCM FluxusBinding::mouse_button(SCM s_b)
 {
 	SCM_ASSERT(scm_is_number(s_b),  s_b,  SCM_ARG1, "mouse-button");
-	int but=(int)scm_to_double(s_b);		
+	int but=scm_to_int(s_b);		
 	return scm_from_bool(Fluxus->GetMouseButton()==but);
 }
 
@@ -2244,6 +2255,8 @@ SCM FluxusBinding::repl_print(SCM s)
 
 void FluxusBinding::RegisterProcs()
 {
+	SchemePrim::Init();
+
 	scm_c_define_gsubr("repl-princ", 1,0,0,(SCM (*)())repl_princ);
 	scm_c_define_gsubr("repl-print", 1,0,0,(SCM (*)())repl_print);
 	
@@ -2273,7 +2286,8 @@ void FluxusBinding::RegisterProcs()
     scm_c_define_gsubr("draw-cylinder",0,0,0,(SCM (*)())   draw_cylinder);
 	scm_c_define_gsubr("destroy",1,0,0,(SCM (*)())  	destroy);
 	scm_c_define_gsubr("get-transform",0,0,0,(SCM (*)()) get_transform);
-	scm_c_define_gsubr("get-camera-transform",0 ,0,0,(SCM (*)())get_camera_transform);
+	scm_c_define_gsubr("get-camera-transform",0,0,0,(SCM (*)())get_camera_transform);
+	scm_c_define_gsubr("set-camera-transform",1,0,0,(SCM (*)())set_camera_transform);
 	scm_c_define_gsubr("get-projection-transform",0,0,0,(SCM (*)()) get_projection_transform);
 	scm_c_define_gsubr("get-screen-size",0,0,0,(SCM (*)()) get_screen_size);
 	scm_c_define_gsubr("set-screen-size",1,0,0,(SCM (*)()) set_screen_size);
@@ -2323,6 +2337,7 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("clip",2,0,0,(SCM (*)()) 		clip);
     scm_c_define_gsubr("reset-camera",0,0,0,(SCM (*)())    reset_camera);
 	scm_c_define_gsubr("lock-camera",1,0,0,(SCM (*)())  lock_camera);
+	scm_c_define_gsubr("camera-lag",1,0,0,(SCM (*)())  camera_lag);
 	scm_c_define_gsubr("clear-colour",1,0,0,(SCM (*)())    clear_colour);	 
 	scm_c_define_gsubr("clear-frame",1,0,0,(SCM (*)())     clear_frame);
 	scm_c_define_gsubr("blur",1 ,0,0,(SCM (*)())		blur);

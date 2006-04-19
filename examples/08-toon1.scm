@@ -28,7 +28,7 @@
 (define (deform n a s)
     (pdata-set "p" n (vadd (pdata-get "p" n) 
         (vmul (pdata-get "n" n)
-            (* (sin (* (vector-ref (pdata-get "p" n) 1) s)) a))))
+            (* (sin (* (f32vector-ref (pdata-get "p" n) 1) s)) a))))
     (if (< n 1)
         0
         (deform (- n 1) a s)))

@@ -24,7 +24,7 @@
 (define (deform n)
     (pdata-set "p" n (vadd (pdata-get "pref" n) ; add deformation with the original geometry
         (vmul (pdata-get "nref" n)              ; push and pull along the original normal
-            (* (sin (* (+ (vector-ref (pdata-get "p" n) 1) (* (time) 0.3)) 9)) 0.2))))
+            (* (sin (* (+ (f32vector-ref (pdata-get "p" n) 1) (* (time) 0.3)) 9)) 0.2))))
     (if (< n 1)
         0
         (deform (- n 1))))

@@ -102,6 +102,16 @@ PData *MultOperator::Operate(TypedPData<dVector> *a, float b)
 }
 
 template <>
+PData *MultOperator::Operate(TypedPData<dColour> *a, float b)
+{
+	for (vector<dColour>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	{
+		(*i)*=b;
+	}
+	return NULL;
+}
+
+template <>
 PData *MultOperator::Operate(TypedPData<dVector> *a, dVector b)
 {
 	for (vector<dVector>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
