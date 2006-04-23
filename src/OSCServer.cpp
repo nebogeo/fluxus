@@ -77,18 +77,22 @@ Server::~Server()
 
 void Server::SetPort(const string &Port)
 {
-	if (m_ServerStarted) 
+	if (m_Port!=Port)
 	{
-		lo_server_thread_stop(m_Server);
-		lo_server_thread_free(m_Server);
-		m_ServerStarted=false;
-	}
-	
-	m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
-    if (!m_Error) 
-	{
-		lo_server_thread_add_method(m_Server, NULL, NULL, DefaultHandler, NULL);
-		m_ServerStarted=true;
+		if (m_ServerStarted) 
+		{
+			lo_server_thread_stop(m_Server);
+			lo_server_thread_free(m_Server);
+			m_ServerStarted=false;
+		}
+
+		m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
+    	if (!m_Error) 
+		{
+			m_Port=Port;
+			lo_server_thread_add_method(m_Server, NULL, NULL, DefaultHandler, NULL);
+			m_ServerStarted=true;
+		}
 	}
 }
 

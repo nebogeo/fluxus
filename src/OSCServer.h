@@ -73,6 +73,7 @@ private:
 	static bool m_Error;
 	bool m_ServerStarted;
 	
+	string m_Port;
 	lo_server_thread m_Server;
 	static bool m_Exit;
 	static pthread_mutex_t* m_Mutex;
