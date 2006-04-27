@@ -3,11 +3,11 @@
 @comment  makeinfo --css-include=fluxusdoc.css --html fluxus.texi
 
 @setfilename fluxus.info
-@settitle  Fluxus manual v0.9
+@settitle  Fluxus manual v0.10
 @afourpaper 
 
 @copying 
-@copyright{} 2005 Dave Griffiths : dave at pawfal dot org : @url{http://www.pawfal.org}
+@c @copyright{} 2005 Dave Griffiths : dave at pawfal dot org :  @url{http://www.pawfal.org}
 @end copying
 
 @node Top
@@ -39,68 +39,47 @@
 @node Introduction
 @chapter Introduction
 
-Fluxus allows you to write Scheme scripts that create graphics live,
-interpreting audio and OSC input as a source of animation data. Fluxus
-also uses a fully featured physics library, which means you can script
-physical properties into objects and simulate them in realtime. Released
-for Linux under the GPL licence.
+Fluxus allows you to write Scheme scripts that create graphics live, interpreting audio and OSC input as a source of animation data. Fluxus also uses a fully featured physics library, which means you can script physical properties into objects and simulate them in realtime. Released for Linux under the GPL licence.
 
-The built in scheme code editor runs on top of the renderer, which means
-you can edit the scripts while they are running. This allows Fluxus to
-be used for livecoding performances, or simply as a fast feedback way of
-experimenting or learning about graphics and animation.
+The built in scheme code editor runs on top of the renderer, which means you can edit the scripts while they are running. This allows Fluxus to be used for livecoding performances, or simply as a fast feedback way of experimenting or learning about graphics and animation.
 
-Fluxus lends itself to procedural modelling and animation. There is an
-experimental procedural modelling tool, and full support for texturing
-and material properties.
+Fluxus lends itself to procedural modelling and animation. There is an experimental procedural modelling tool, and full support for texturing and material properties.
 
 @insertcopying 
 
 @node Quickstart
 @chapter Quickstart
 
-For a quick introduction to fluxus, try entering the following command
-once you have started fluxus and see the red cursor in the top left of
-the screen.
+For a quick introduction to fluxus, try entering the following command once you have started fluxus and see the red cursor in the top left of the screen.
 
-@code{(build-cube)}
+@lisp
+(build-cube)
+@end lisp
 
-Now press f5 - the script will be executed, and a white cube should appear in 
-the centre of the screen. Use the mouse and to move around the cube, pressing 
-the buttons to get different movement controls.
+Now press f5 - the script will be executed, and a white cube should appear in the centre of the screen. Use the mouse and to move around the cube, pressing the buttons to get different movement controls.
 
 To animate this cube, it will have to be called a little differently:
 
-@code{
-  (start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate need to match jack's
+@lisp
+(start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate need to match jack's
 
-  (define (render)
+(define (render)
     (colour (vector (gh 1) (gh 2) (gh 3)))
     (draw-cube))
 
-  (every-frame "(render)")}
+(every-frame "(render)")
+@end lisp
 
-Briefly, the @code{(every-frame)} function takes a fragment of script
-which is called once per frame by fluxus's internal engine. In this case
-it calls a function that sets the current colour using harmonics from
-the incoming sound with the @code{(gh)} - get harmonic - function; and
-draws a cube. Note that this time we use @code{(draw-cube)} not
-@code{(build-cube)}. The difference will be explained below.
+Briefly, the @code{(every-frame)} function takes a fragment of script which is called once per frame by fluxus's internal engine. In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function; and draws a cube. Note that this time we use @code{(draw-cube)} not @code{(build-cube)}. The difference will be explained below.
 
-If everything goes as planned, and the audio is connected with some
-input - the cube will flash in a colourful manner along with the sound.
+If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound.
 
 @insertcopying 
 
 @node User Manual
 @chapter  User Manual
 
-Fluxus consists of one window containing a script editor rendered on top
-of the scene display render. The idea is that you only need the one
-window to build scripts, or play live. f5 is the key that runs the
-script when you are ready.  Selecting some text (using shift) and
-pressing f5 will execute the selected text only. This is handy for
-reevaluating functions without running the whole script each time.
+Fluxus consists of one window containing a script editor rendered on top of the scene display render. The idea is that you only need the one window to build scripts, or play live. f5 is the key that runs the script when you are ready.  Selecting some text (using shift) and pressing f5 will execute the selected text only. This is handy for reevaluating functions without running the whole script each time.
 
 @section Camera control
 
@@ -114,12 +93,7 @@ The camera is controlled by moving the mouse and pressing mouse buttons.
 
 @section Workspaces
 
-The script editor allows you to edit 10 scripts simultaneously by using
-workspaces. To switch workspaces, use ctrl+number key. Only one can be
-run at once though, hitting f5 will execute the currently active
-workspace script.  Scripts in different workspaces can be saved to
-different files, by using the @code{(save-name)} call in the different
-workspaces (see below).
+The script editor allows you to edit 10 scripts simultaneously by using workspaces. To switch workspaces, use ctrl+number key. Only one can be run at once though, hitting f5 will execute the currently active workspace script.  Scripts in different workspaces can be saved to different files, by using the @code{(save-name)} call in the different workspaces (see below).
 
 @section Keyboard commands
 
@@ -143,110 +117,101 @@ workspaces (see below).
 
 Scripts can be loaded by typing:
 
-@code{(edit "examples/bars.scm")}
+@lisp
+(edit "examples/bars.scm")
+@end lisp
 
-and hitting F5. The script you just typed will be replaced by the loaded
-script.  Scripts are saved by hitting ctrl-s - the filename is either
-set to the last loaded script, or overwritten by:
+and hitting F5. The script you just typed will be replaced by the loaded script. Scripts are saved by hitting ctrl-s - the filename is either set to the last loaded script, or overwritten by:
 
-@code{(save-name "newsavename.scm")}
+@lisp
+(save-name "newsavename.scm")
+@end lisp
 
 @insertcopying 
 
 @node Statemachine
 @chapter  The Fluxus State Machine
 
-The state machine is the key to understanding how fluxus works, all it
-really means is that you can call functions which change the current
-context which has an effect on subsequent functions. This is a very
-efficient way of describing things, and is built on top of the OpenGl
-api, which works in a similar way.  For example, in a function called
-every frame:
+The state machine is the key to understanding how fluxus works, all it really means is that you can call functions which change the current context which has an effect on subsequent functions. This is a very efficient way of describing things, and is built on top of the OpenGl api, which works in a similar way.  For example, in a function called every frame:
 
-@code{(colour (vector 1 0 0))
+@lisp
+(colour (vector 1 0 0))
 (draw-cube)
 (colour (vector 0 1 0))
-(draw-cube)}
+(draw-cube)
+@end lisp
 
-will draw a red cube, then a green cube (in this case, you can think of
-the @code{(colour)} call as changing a pen colour before drawing
-something).  States can also be stacked, for example:
+will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something).  States can also be stacked, for example:
 
-@code{(colour (vector 1 0 0))
+@lisp
+(colour (vector 1 0 0))
 (push)
 	(colour (vector 0 1 0))
 	(draw-cube)
 (pop)
-(draw-cube)}
+(draw-cube)
+@end lisp
 
-will draw a green, then a red cube. the @code{(push)} command stores the
-current state, and adds a copy to the top of the stack. @code{(pop)}
-retrieves the previous state and deletes the current one (so changes to
-the state between the push and the pop are lost)
+will draw a green, then a red cube. the @code{(push)} command stores the current state, and adds a copy to the top of the stack. @code{(pop)} retrieves the previous state and deletes the current one (so changes to the state between the push and the pop are lost)
 
 @section The Scenegraph 
 
-Both examples so far have used what is known as immediate mode, you have
-one state stack, the top of which is the current context, and everything
-is drawn once per frame. fluxus contains a structure known as a
-scenegraph for storing objects and their render states.
+Both examples so far have used what is known as immediate mode, you have one state stack, the top of which is the current context, and everything is drawn once per frame. fluxus contains a structure known as a scenegraph for storing objects and their render states.
 
 Time for another example:
 
-@code{(colour (vector 1 0 0))
+@lisp
+(colour (vector 1 0 0))
 (build-cube)
 (colour (vector 0 1 0))
-(build-cube)}
+(build-cube)
+@end lisp
 
-The only difference between this and the first example is the use of 
-(build-cube) instead of (draw-cube). the build functions create a primitive 
-object, copy the current renderstate and add the information into the 
-scenegraph in a container called a scenenode.
+The only difference between this and the first example is the use of (build-cube) instead of (draw-cube). the build functions create a primitive object, copy the current renderstate and add the information into the scenegraph in a container called a scenenode.
 
-The (build-*) functions return object ID's (just numbers really) which enable 
-you to do things to the scene node after it's been created. you can now specify 
-objects like this:
+The (build-*) functions return object ID's (just numbers really) which enable you to do things to the scene node after it's been created. you can now specify  objects like this:
 
-@code{(define myob (build-cube))}
+@lisp
+(define myob (build-cube))
+@end lisp
 
 The cube will now be persistant in the scene until destroyed with
 
-@code{(destroy myob)}
+@lisp
+(destroy myob)
+@end lisp
 
-If you want to modify a objects renderstate after it's been loaded into
-the scenegraph, you can use the grab function to temporarially set the
-current context to that of the object. use ungrab to turn fluxus back
-into normal state stack mode. this allows you to animate objects stored
-in the scenegraph, for instance:
+If you want to modify a objects renderstate after it's been loaded into the scenegraph, you can use the grab function to temporarially set the current context to that of the object. use ungrab to turn fluxus back into normal state stack mode. this allows you to animate objects stored in the scenegraph, for instance:
 
-@code{(colour (vector 1 1 1))
+@lisp
+(colour (vector 1 1 1))
 (define obj1 (build-cube))
 (push)
     (translate (vector 2 0 0))
     (define obj2 (build-cube))
-(pop)}
+(pop)
+@end lisp
 
 --->8---
 
 ; in a function called per frame
 
-@code{(grab obj1)
+@lisp
+(grab obj1)
 (rotate (vector 0 1 0))
 (ungrab)
 
 (grab obj2)
 (rotate (vector 0 0 1))
-(ungrab)}
+(ungrab)
+@end lisp
 
-Do not call push or pop while an object is grabbed, it will have no
-effect - fluxus will print out a warning in this case.
+Do not call push or pop while an object is grabbed, it will have no effect - fluxus will print out a warning in this case.
 
-The scenegraph also enables you to parent objects to one another, using
-the renderstate's parent setting. this is only effective before an
-object is loaded into the scenegraph, setting it afterwards via a
-grabbed state will be ignored:
+The scenegraph also enables you to parent objects to one another, using the renderstate's parent setting. this is only effective before an object is loaded into the scenegraph, setting it afterwards via a grabbed state will be ignored:
 
-@code{(colour (vector 1 1 1))
+@lisp
+(colour (vector 1 1 1))
 (define a (build-cube))
 
 (push)
@@ -259,23 +224,22 @@ grabbed state will be ignored:
     (parent b)
     (translate (vector 0 2 0))
     (define c (build-cube))
-(pop)}
+(pop)
+@end lisp
 
-creates three cubes, all attached to each other in a chain. transforms
-for object a will be passed down to b and c, transforms on b will effect
-c blah.
+creates three cubes, all attached to each other in a chain. transforms for object a will be passed down to b and c, transforms on b will effect c blah.
 
-destroying a object in such a hierachy will in turn destroy all child
-objects parented to it.
+destroying a object in such a hierachy will in turn destroy all child objects parented to it.
 
-@code{(apply-transform obj)}
+@lisp
+(apply-transform obj)
+@end lisp
 
-applies the tranformation stored in the object's scene graph node
-directly to the vertices of the geometry, and sets the transform to
-identity. this means that you can change the origin of the object, and
-therefore the parent pivot position.
+applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
 
-@code{(hide 0|1)}
+@lisp
+(hide 0|1)
+@end lisp
 switch visibility of the current grabbed primitive
 
 @insertcopying 
@@ -285,68 +249,97 @@ switch visibility of the current grabbed primitive
 
 These commands affect the global state, and can be called at any time.
 
-@code{(clear)}
+@lisp
+(clear)
+@end lisp
 clears the scene graph of all objects and empties the state stack.
 
-@code{(ortho)} or @code{(persp)}
+@lisp
+(ortho)
+(persp)
+@end lisp
 sets the projection type to either othographic or perspective projection.
 
-@code{(frustum top bottom left right)}
-sets screen area, with this you can set the aspect ratio for the
-render. defaults to -0.75 0.75 -1 1
+@lisp
+(frustum top bottom left right)
+@end lisp
+sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1
 
-@code{(clip front back)}
+@lisp
+(clip front back)
+@end lisp
 sets the clipping plane positions, defaults to 1 10000
 
-@code{(reset-camera)}
+@lisp
+(reset-camera)
+@end lisp
 resets the camera matrix in case you get lost.
 
-@code{(lock-camera object)}
+@lisp
+(lock-camera object)
+@end lisp
 locks the camera to the object.
 
-@code{(clear-colour colvec)}
+@lisp
+(clear-colour colvec)
+@end lisp
 set the background clear colour.
 
-@code{(clear-frame 0|1)}
+@lisp
+(clear-frame 0|1)
+@end lisp
 enables/disables clearing.
 
-@code{(blur amount)}
-turns hackish motion blur on, just renders a transparent poly over the
-frame rather than clearing. the transparency is set by amount, setting
-amount to 0 turns this feature off.
+@lisp
+(blur amount)
+@end lisp
+turns hackish motion blur on, just renders a transparent poly over the frame rather than clearing. the transparency is set by amount, setting amount to 0 turns this feature off.
 
-@code{(show-axis bool)}
+@lisp
+(show-axis bool)
+@end lisp
 turns the origin axis display on or off.
 
-@code{(backfacecull 0|1)}
+@lisp
+(backfacecull 0|1)
+@end lisp
 enables/disables backface culling.
 
-@code{(desiredfps fps)}
-sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. 
-this value doesn't seem to be entirely correct, but it does the job.
+@lisp
+(desiredfps fps)
+@end lisp
+sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't seem to be entirely correct, but it does the job.
 
-@code{(start-framedump filename type)}
-@code{(end-framedump)}
-starts and stops writing tiff frame images to disk. will be quite slow - and 
-unsuitable for realtime use - see @code{(process)} type can be one of "tif" or
-"jpg".
+@lisp
+(start-framedump filename type)
+(end-framedump)
+@end lisp
+starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif" or "jpg".
 
-@code{(fog colour density start end)}
+@lisp
+(fog colour density start end)
+@end lisp
 sets the global fogging parameters.
 
-@code{(feedback 0|1)}
-turns on a background plane which is textured with the previous frame, for those wacky 70's video 
-effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and 
-buggy and prone to crashing!
+@lisp
+(feedback 0|1)
+@end lisp
+turns on a background plane which is textured with the previous frame, for those wacky 70's video effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and buggy and prone to crashing!
 
-@code{(feedback-transform matrix)}
+@lisp
+(feedback-transform matrix)
+@end lisp
 sets a transform for the feedback plane
 
-@code{(searchpaths l)}
+@lisp
+(searchpaths l)
+@end lisp
 sets the directories in which fluxus will search for files (textures and scripts) to the given 
 list of paths, in order
 
-@code{(fullpath filename)}
+@lisp
+(fullpath filename)
+@end lisp
 returns the full path to the file, using the searchpaths
 
 @insertcopying 
@@ -362,38 +355,47 @@ fluxus scene, except lights, a camera and lots of primitives.
 The normal way to create a primitive is to call it's build function and then 
 use it's returned ID (either directly, or by grabbing) to modify it later. 
 
-@code{(define myobj (build-cube))
+@lisp
+(define myobj (build-cube))
 (grab myobj)
 (colour (vector 1 0 0))
-(ungrab) ; always remember to ungrab...	}
+(ungrab) ; always remember to ungrab...	
+@end lisp
 
 Here are all the primitives:
 
-@code{(build-cube)}
+@lisp
+(build-cube)
+@end lisp
 a simple cube, texture mapped placement per face
 
 @image{images/cube}
 
-@code{(build-sphere hsegments rsegments)}
-a sphere with the resolution specified in verts, texture mapped in normal 
-"world map" style
+@lisp
+(build-sphere hsegments rsegments)
+@end lisp
+a sphere with the resolution specified in verts, texture mapped in normal "world map" style
 
 @image{images/sphere}
 
-@code{(build-plane xsegments ysegments)}
+@lisp
+(build-plane xsegments ysegments)
+@end lisp
 a tesselated poly plane, texture mapped from 0->1 in both dimensions
 
 @image{images/plane}
 
-@code{(build-cylinder hsegments rsegments)}
+@lisp
+(build-cylinder hsegments rsegments)
+@end lisp
 a capped cylinder, texture map wrapped around
 
 @image{images/cylinder}
 
-@code{(build-text text)}
-builds a sequence of planes, texture mapped so that a font texture can be used 
-to display text. might also be useful for more abstract things. the texture 
-map should be drawn as follows:
+@lisp
+(build-text text)
+@end lisp
+builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
 
 (ascii 32 onwards)
   ! " # $ % & ' ( ) * + ' - . / 
@@ -409,25 +411,23 @@ fluxus
 @image{images/text}
 ok, so this isn't a very good font texture :)
 
-@code{(build-nurbs-sphere hsegments rsegments)}
-builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly
-sphere
+@lisp
+(build-nurbs-sphere hsegments rsegments)
+@end lisp
+builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere
 @image{images/nurbs-sphere}
 a nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
 
-@code{(build-nurbs-plane usegments vsegments)}
+@lisp
+(build-nurbs-plane usegments vsegments)
+@end lisp
 builds a tesselated nurbs plane, texture mapped in uv direction
 @image{images/nurbs-plane}
 a nurbs patch plane, again with a control vertex tweaked
 		
 @section Primitive Data [aka. pdata]
 
-Each primitive is made up of arrays of data that describe it's shape and surface 
-properties. The data is always stored per-vertex, and is created when you call 
-the build function. You do not have to know anything about this data to use 
-primitives, but it means you can modify or deform them in a more detailed way than
-using functions we've already looked at, and some primitives are only useful if
-pdata is used to control them.
+Each primitive is made up of arrays of data that describe it's shape and surface properties. The data is always stored per-vertex, and is created when you call the build function. You do not have to know anything about this data to use primitives, but it means you can modify or deform them in a more detailed way than using functions we've already looked at, and some primitives are only useful if pdata is used to control them.
 
 So, for example @code{(build-sphere)} creates a polygonal object with a spherical 
 distribution of vertex point data, surface normals at every vertex and texture 
@@ -436,30 +436,36 @@ coordinates, so you can wrap a texture around the primitive. This data
 scripts, using the following commands (which operate on the currently grabbed 
 object):
 
-@code{(pdata-set name vertnumber vector)}
+@lisp
+(pdata-set name vertnumber vector)
+@end lisp
 sets the data on the currently (grab)ed object to the input vector
 
-@code{(pdata-get name vertnumber)}
+@lisp
+(pdata-get name vertnumber)
+@end lisp
 returns the vector from the pdata on the currently (grab)ed object
 
-@code{(pdata-size)}
-returns the size of the pdata on the currently (grab)ed object (the number of 
-verts)
+@lisp
+(pdata-size)
+@end lisp
+returns the size of the pdata on the currently (grab)ed object (the number of verts)
 
-The name describes the data we want to access, for instance "p" contains 
-the vertex positions:
+The name describes the data we want to access, for instance "p" contains the vertex positions:
 
 so, some examples to make sense of this:
 
-@code{(pdata-set "p" 0 (vector 0 0 0))}
+@lisp
+(pdata-set "p" 0 (vector 0 0 0))
+@end lisp
 
 sets the first point in the primitive to the origin (not all that useful)
 
-@code{(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))}
+@lisp
+(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
+@end lisp
 
-The same, but sets it to the original position + 1 in the x
-offsetting the position is more useful as it constitutes a deformation of the 
-original point.
+The same, but sets it to the original position + 1 in the x offsetting the position is more useful as it constitutes a deformation of the original point.
 
 (see @xref{Deforming}, for more info on deformations)
 
@@ -483,7 +489,9 @@ Texture coords: "t" vector
 The following primtives are different to the previous types in that they require 
 pdata modification to do anything useful. 
 		
-@code{(build-particles num)}
+@lisp
+(build-particles num)
+@end lisp
 builds a particles primitive containing num points, all initially set to the 
 origin. you use the pdata functions to edit the postions, colours and sizes. 
 particles come in two flavors, camera facing sprites, which are the default, can 
@@ -504,7 +512,9 @@ Positions:      "p" vector
 Colours:        "c" colour
 Sizes:          "s" vector
 
-@code{(build-line numpoints)}
+@lisp
+(build-line numpoints)
+@end lisp
 builds a line consisting of numpoint points. the geometry is constantly camera 
 facing and is texture mapped so the texture is stretched along the line from start
 to finish. you use the pdata functions to edit the postions and widths of the lines. 
@@ -520,10 +530,12 @@ activated, a faster constant width line will be drawn - width specified by the
 Positions:      "p" vector
 Width:          "w" float 
 
-@code{(build-polygons size type)}
+@lisp
+(build-polygons size type)
 builds a raw polygon primitive with size vertices (everything set to zero). 
 type is a number that refers to the way the vertices are interpreted to build
 polygons, and can be one of the following:
+@end lisp
 
 0=TRISTRIP
 1=QUADS
