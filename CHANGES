@@ -1,5 +1,44 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.10
+
+* scheme repl (read evaluate print loop) interpreter on ctrl 0
+* new cursor
+* major overhaul for guile 1.8
+* (every frame) now takes a function directly rather than a string
+* livecode + osc input recorder for recording and rerendering performances
+* (get-projection-transform) gets the projection matrix
+* (get-screen-size) returns the resolution as a two value vector
+* (set-screen-size (vector x y)) sets the res, and updates the window to match
+* support for executable scripts with #!/usr/local/bin/fluxus -x
+* grab stack implemented
+* (maim) fixed
+* (edit) works from the local path again, but searches the searchpaths
+first. all script loading uses guile's %load-path, while textures use the
+fluxus searchpath, needs unifying maybe and documenting.
+* (osc-source) can change port. seems to fail if you set it back to one
+used previously, not sure why this is, looking into it. should also be
+more stable than before.
+* sincos lookup table disabled - was causing "jitteryness" due to lack of
+precision in some cases (and it wasn't really helping out speed wise)
+* (qaxisangle) : builds a quat with a rotation axis and angle in degrees
+* (qmul) : returns two quats multiplied
+* (qnormalise) : returns the normalised quat
+* (qtomatrix) : returns the rotation matrix for the quaternion
+* (build-pixels width height) makes a new pixel primitive
+* (upload-pixels) uploads texture data, you need to call this when you've 
+finished writing to the pixelprim, and while it's grabbed
+* (pixels->texture pixelprim) returns a texture you can use exactly like a 
+normal loaded one 
+* (camera-lag amount) when locked to a primitive, lags the camera - does
+a linear interpolation on the matrix, so you can get some wacky stuff
+happening with rotations/scales. smaller numbers are more laggy
+* (set-camera-transform) overrides and turns off the mouse camera control - use 
+(reset-camera) to switch mouse control back on
+* a multiply pdata-op for colour pdata and single float values
+* stricter typing - primitive type/exact used where required
+* infinite asteroids example
+
 0.9
 
 * (recalc-normals smooth) now takes an optional smooth flag
