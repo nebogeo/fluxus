@@ -141,7 +141,7 @@ The state machine is the key to understanding how fluxus works, all it really me
 (draw-cube)
 @end lisp
 
-will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something).  States can also be stacked, for example:
+Will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something).  States can also be stacked, for example:
 
 @lisp
 (colour (vector 1 0 0))
@@ -227,20 +227,20 @@ The scenegraph also enables you to parent objects to one another, using the rend
 (pop)
 @end lisp
 
-creates three cubes, all attached to each other in a chain. transforms for object a will be passed down to b and c, transforms on b will effect c blah.
+Creates three cubes, all attached to each other in a chain. transforms for object a will be passed down to b and c, transforms on b will effect c blah.
 
-destroying a object in such a hierachy will in turn destroy all child objects parented to it.
+Destroying a object in such a hierachy will in turn destroy all child objects parented to it.
 
 @lisp
 (apply-transform obj)
 @end lisp
 
-applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
+Applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
 
 @lisp
 (hide 0|1)
 @end lisp
-switch visibility of the current grabbed primitive
+Switch visibility of the current grabbed primitive
 
 @insertcopying 
 
@@ -252,94 +252,94 @@ These commands affect the global state, and can be called at any time.
 @lisp
 (clear)
 @end lisp
-clears the scene graph of all objects and empties the state stack.
+Clears the scene graph of all objects and empties the state stack.
 
 @lisp
 (ortho)
 (persp)
 @end lisp
-sets the projection type to either othographic or perspective projection.
+Sets the projection type to either othographic or perspective projection.
 
 @lisp
 (frustum top bottom left right)
 @end lisp
-sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1
+Sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1
 
 @lisp
 (clip front back)
 @end lisp
-sets the clipping plane positions, defaults to 1 10000
+Sets the clipping plane positions, defaults to 1 10000
 
 @lisp
 (reset-camera)
 @end lisp
-resets the camera matrix in case you get lost.
+Resets the camera matrix in case you get lost.
 
 @lisp
 (lock-camera object)
 @end lisp
-locks the camera to the object.
+Locks the camera to the object.
 
 @lisp
 (clear-colour colvec)
 @end lisp
-set the background clear colour.
+Set the background clear colour.
 
 @lisp
 (clear-frame 0|1)
 @end lisp
-enables/disables clearing.
+Enables/disables clearing.
 
 @lisp
 (blur amount)
 @end lisp
-turns hackish motion blur on, just renders a transparent poly over the frame rather than clearing. the transparency is set by amount, setting amount to 0 turns this feature off.
+Turns hackish motion blur on, just renders a transparent poly over the frame rather than clearing. the transparency is set by amount, setting amount to 0 turns this feature off.
 
 @lisp
 (show-axis bool)
 @end lisp
-turns the origin axis display on or off.
+Turns the origin axis display on or off.
 
 @lisp
 (backfacecull 0|1)
 @end lisp
-enables/disables backface culling.
+Enables/disables backface culling.
 
 @lisp
 (desiredfps fps)
 @end lisp
-sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't seem to be entirely correct, but it does the job.
+Sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't seem to be entirely correct, but it does the job.
 
 @lisp
 (start-framedump filename type)
 (end-framedump)
 @end lisp
-starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif" or "jpg".
+Starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif" or "jpg".
 
 @lisp
 (fog colour density start end)
 @end lisp
-sets the global fogging parameters.
+Sets the global fogging parameters.
 
 @lisp
 (feedback 0|1)
 @end lisp
-turns on a background plane which is textured with the previous frame, for those wacky 70's video effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and buggy and prone to crashing!
+Turns on a background plane which is textured with the previous frame, for those wacky 70's video effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and buggy and prone to crashing!
 
 @lisp
 (feedback-transform matrix)
 @end lisp
-sets a transform for the feedback plane
+Sets a transform for the feedback plane
 
 @lisp
 (searchpaths l)
 @end lisp
-sets the directories in which fluxus will search for files (textures and scripts) to the given list of paths, in order
+Sets the directories in which fluxus will search for textures to the given list of paths, in order
 
 @lisp
 (fullpath filename)
 @end lisp
-returns the full path to the file, using the searchpaths
+Returns the full path to the file, using the searchpaths
 
 @insertcopying 
 
@@ -378,21 +378,21 @@ a sphere with the resolution specified in verts, texture mapped in normal "world
 @lisp
 (build-plane xsegments ysegments)
 @end lisp
-a tesselated poly plane, texture mapped from 0->1 in both dimensions
+A tesselated poly plane, texture mapped from 0->1 in both dimensions
 
 @image{images/plane}
 
 @lisp
 (build-cylinder hsegments rsegments)
 @end lisp
-a capped cylinder, texture map wrapped around
+A capped cylinder, texture map wrapped around
 
 @image{images/cylinder}
 
 @lisp
 (build-text text)
 @end lisp
-builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
+Builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
 
 @lisp
 (ascii 32 onwards)
@@ -404,29 +404,29 @@ P Q R S T U V W X Y Z [ \ ] ^ _
 p q r s t u v w x y z @{ | @} ~
 @end lisp
 
-the font assumed to be non proportional - there is an example font shipped with 
+The font assumed to be non proportional - there is an example font shipped with 
 fluxus
 
 @image{images/text}
-ok, so this isn't a very good font texture :)
+Ok, so this isn't a very good font texture :)
 
 @lisp
 (build-nurbs-sphere hsegments rsegments)
 @end lisp
-builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere
+Builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere
 
 @image{images/nurbs-sphere}
 
-a nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
+A nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
 
 @lisp
 (build-nurbs-plane usegments vsegments)
 @end lisp
-builds a tesselated nurbs plane, texture mapped in uv direction
+Builds a tesselated nurbs plane, texture mapped in uv direction
 
 @image{images/nurbs-plane}
 
-a nurbs patch plane, again with a control vertex tweaked
+A nurbs patch plane, again with a control vertex tweaked
 		
 @section Primitive Data [aka. pdata]
 
@@ -437,27 +437,27 @@ So, for example @code{(build-sphere)} creates a polygonal object with a spherica
 @lisp
 (pdata-set name vertnumber vector)
 @end lisp
-sets the data on the currently (grab)ed object to the input vector
+Sets the data on the currently (grab)ed object to the input vector
 
 @lisp
 (pdata-get name vertnumber)
 @end lisp
-returns the vector from the pdata on the currently (grab)ed object
+Returns the vector from the pdata on the currently (grab)ed object
 
 @lisp
 (pdata-size)
 @end lisp
-returns the size of the pdata on the currently (grab)ed object (the number of verts)
+Returns the size of the pdata on the currently (grab)ed object (the number of verts)
 
 The name describes the data we want to access, for instance "p" contains the vertex positions:
 
-so, some examples to make sense of this:
+So, some examples to make sense of this:
 
 @lisp
 (pdata-set "p" 0 (vector 0 0 0))
 @end lisp
 
-sets the first point in the primitive to the origin (not all that useful)
+Sets the first point in the primitive to the origin (not all that useful)
 
 @lisp
 (pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
@@ -493,13 +493,13 @@ The following primtives are different to the previous types in that they require
 @lisp
 (build-particles num)
 @end lisp
-builds a particles primitive containing num points, all initially set to the  origin. you use the pdata functions to edit the postions, colours and sizes.  particles come in two flavors, camera facing sprites, which are the default, can  be textured and individually scaled; and points (when @code{(hint-points)} is set), which cannot be textured but are much faster to render, as they are hardware  supported gl points. by default these point particles are square, turn on @code{(hint-anti-alias)} to make them circular.
+Builds a particles primitive containing num points, all initially set to the  origin. you use the pdata functions to edit the postions, colours and sizes.  particles come in two flavors, camera facing sprites, which are the default, can  be textured and individually scaled; and points (when @code{(hint-points)} is set), which cannot be textured but are much faster to render, as they are hardware  supported gl points. by default these point particles are square, turn on @code{(hint-anti-alias)} to make them circular.
 
 @image{images/sprites}
-happy textured sprites
+Happy textured sprites
 
 @image{images/particles}
-point particles
+Boint particles
 
 @section Particle primitive pdata
 
@@ -512,7 +512,7 @@ Sizes:          "s" vector
 @lisp
 (build-line numpoints)
 @end lisp
-builds a line consisting of numpoint points. the geometry is constantly camera  facing and is texture mapped so the texture is stretched along the line from start to finish. you use the pdata functions to edit the postions and widths of the lines. if used lit, the normals are faked to approximate a circular cross section. additionally, if solid rendering is cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be drawn - width specified by the (line-width) command
+Builds a line consisting of numpoint points. the geometry is constantly camera  facing and is texture mapped so the texture is stretched along the line from start to finish. you use the pdata functions to edit the postions and widths of the lines. if used lit, the normals are faked to approximate a circular cross section. additionally, if solid rendering is cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be drawn - width specified by the (line-width) command
 
 @image{images/line}
 
@@ -525,7 +525,7 @@ Width:          "w" float
 
 @lisp
 (build-polygons size type)
-builds a raw polygon primitive with size vertices (everything set to zero). type is a number that refers to the way the vertices are interpreted to build polygons, and can be one of the following:
+Builds a raw polygon primitive with size vertices (everything set to zero). type is a number that refers to the way the vertices are interpreted to build polygons, and can be one of the following:
 @end lisp
 
 @lisp
@@ -617,7 +617,7 @@ This is where instancing is helpful, all you call is:
 (draw-instance myobj)
 @end lisp
 
-and it will redraw any given object in the current state (immediate mode).
+Will redraw any given object in the current state (immediate mode).
 An example:
 
 @lisp
@@ -646,7 +646,7 @@ To make life even easier than having to instance primitives, there are some buil
 (draw-cylinder)
 @end lisp
 
-so the it makes the code above simpler:
+So the it makes the code above simpler:
 
 @lisp
 (define (render-spheres n)
@@ -670,18 +670,16 @@ scripts with simple shapes.
 @node Lights
 @chapter  Lights 
 
-Lights are needed to, err, light the scene. If there are none built, the
-default light is a white one attached to the camera.
+Lights are needed to, err, light the scene. If there are none built, the default light is a white one attached to the camera.
 
 @image{images/lights}
-an example of crazy lighting
+An example of crazy lighting
 
 @code{(make-light 0/1)}
-makes a new light. if the argument is true, then it's locked to the camera (in 
-camera space) else it's in world space. returns the light id
+Makes a new light. if the argument is true, then it's locked to the camera (in camera space) else it's in world space. returns the light id
 
 @code{(clear-lights)}
-destroys all lights
+Destroys all lights
 
 @lisp
 (light-ambient id colvec)
@@ -689,8 +687,7 @@ destroys all lights
 (light-specular id colvec)
 (light-position id vec)
 @end lisp
-sets the parameters for the light
-
+Sets the parameters for the light
 
 @insertcopying 
 
@@ -708,42 +705,42 @@ items - transforms, (colour) etc. They can either be set using the state stack
 when building primitives, or set later using (grab)
 
 @image{images/materials}
-some spheres with random materials over a textured plane
+Some spheres with random materials over a textured plane
 
 @lisp
 (opacity n)
 @end lisp
-set the opacity value on the current state 
+Set the opacity value on the current state 
 
 @lisp
 (wire-colour n)
 @end lisp
-set the wireframe colour on the current state 
+Set the wireframe colour on the current state 
 
 @lisp
 (specular v)                       
 @end lisp
-set the specular colour on the current state 
+Set the specular colour on the current state 
 
 @lisp
 (ambient v)                     
 @end lisp
-set the ambient colour on the current state
+Set the ambient colour on the current state
 
 @lisp
 (emissive v)                      
 @end lisp
-set the emissive colour on the current state
+Set the emissive colour on the current state
 
 @lisp
 (shinyness n)                      
 @end lisp
-set the shinyness on the current state
+Set the shinyness on the current state
 
 @lisp
 (texture n)                  
 @end lisp
-set the texture on the current state, using a texture ID
+Set the texture on the current state, using a texture ID
 
 Textures are loaded using (load-texture filename), they are cached so they 
 won't load more than once, so you can easily just call:
@@ -758,22 +755,22 @@ Textures have to be png format, and support alpha transparency.
 (multitexture n t)  (only on poly prims at the moment)        
 @end lisp
               
-set the texture on the current state, using a texture ID n to multitexture t.  multitexturing allows you to apply different textures and coordinates to the same object at once. t is a number from 0 to 7. texture 0 is the default one (which uses the pdata "t" for it's texture coords) multitexture n looks for pdata "tn" - ie multitexture 1 looks for "t1". you need to add these yourself using (pdata-add) or (pdata-copy). see @xref{Deforming}, for more info.
+Set the texture on the current state, using a texture ID n to multitexture t.  multitexturing allows you to apply different textures and coordinates to the same object at once. t is a number from 0 to 7. texture 0 is the default one (which uses the pdata "t" for it's texture coords) multitexture n looks for pdata "tn" - ie multitexture 1 looks for "t1". you need to add these yourself using (pdata-add) or (pdata-copy). see @xref{Deforming}, for more info.
 
 @lisp
 (line-width n)
 @end lisp
-alters the line width in pixels
+Alters the line width in pixels
 
 @lisp
 (point-width n)
 @end lisp
-alters the point width in pixels
+Alters the point width in pixels
 
 @lisp
 (blend-mode src dest)
 @end lisp
-sets the blend mode for the primitive's alpha blending function, src and dest are strings of the following type:
+Sets the blend mode for the primitive's alpha blending function, src and dest are strings of the following type:
 
 @lisp
 zero
@@ -792,58 +789,58 @@ src-alpha-saturate (src only)
 There are other miscellaneous options that can change the way a primitive is rendered. These options are called hints, as for some primitives they may not apply, or may do different things. They are mainly useful for debugging, or special cases - sometimes just for some fun.
 
 @image{images/hints}
-a poly sphere with normals, wireframe and solid hints, and line width set to
+A poly sphere with normals, wireframe and solid hints, and line width set to
 4 pixels
 
 @lisp
 (hint-none)
 @end lisp                     
-clear the current render hints
+Clear the current render hints
 
 @lisp
 (hint-solid)
 @end lisp                     
-render solid - defaults to on
+Render solid - defaults to on
 
 @lisp
 (hint-wire)
 @end lisp                     
-render wireframe representation
+Render wireframe representation
 
 @lisp
 (hint-normal)
 @end lisp                     
-render normals, very handy
+Render normals, very handy
 
 @lisp
 (hint-points)
 @end lisp                     
-render vertex or cv points
+Render vertex or cv points
 
 @lisp
 (hint-anti-alias)
 @end lisp                     
-render antialiased mode
+Render antialiased mode
 
 @lisp
 (hint-unlit)
 @end lisp                     
-disable lighting
+Disable lighting
 
 @lisp
 (hint-box)
 @end lisp                     
-renders the object's bounding box
+Renders the object's bounding box
 
 @lisp
 (hint-vertcols)
 @end lisp                     
-uses vertex colours for the object, switches off colour materials from (colour) command
+Uses vertex colours for the object, switches off colour materials from (colour) command
 
 @lisp
 (hint-multitex)
 @end lisp                     
-turns on multitexturing - only works on poly primitives at the moment
+Turns on multitexturing - only works on poly primitives at the moment
 
 @insertcopying 
 
@@ -858,42 +855,42 @@ For some operations, basic 3D types such as vectors (scheme vectors ofsize 3) an
 (vmul v number)
 (vdiv v number)
 @end lisp                     
-simple operations on vectors
+Simple operations on vectors
 
 @lisp
 (vtransform v m)
 @end lisp                     
-transform the vector by the matrix m
+Transform the vector by the matrix m
 
 @lisp
 (vtransform-rot v m)
 @end lisp                     
-transform the vector by the matrix m, ignoring the translation part (useful for normals)
+Transform the vector by the matrix m, ignoring the translation part (useful for normals)
 
 @lisp
 (vnormalise v)
 @end lisp                     
-return a normalised version of vector v
+Return a normalised version of vector v
 
 @lisp
 (vdot v v)
 @end lisp                     
-returns the dot product from the two vectors
+Returns the dot product from the two vectors
 
 @lisp
 (vmag v)
 @end lisp                     
-returns the magnitude of the vector 
+Returns the magnitude of the vector 
 
 @lisp
 (vdist v v)
 @end lisp                     
-returns the distance between the two vectors - treated as points
+Returns the distance between the two vectors - treated as points
 
 @lisp
 (vcross v v)
 @end lisp                     
-returns the cross product vector of the two input vectors
+Returns the cross product vector of the two input vectors
 
 @lisp
 (madd m m)
@@ -901,44 +898,44 @@ returns the cross product vector of the two input vectors
 (mmul m m)
 (mdiv m m)
 @end lisp                     
-simple operations on matrices
+Simple operations on matrices
 
 @lisp
 (mident)
 @end lisp                     
-returns the identity matrix
+Returns the identity matrix
 
 @lisp
 (mtranslate v)
 @end lisp                     
-returns a translation matrix 
+Returns a translation matrix 
 
 @lisp
 (mrotate v)
 @end lisp                     
-returns a rotation matrix 
+Returns a rotation matrix 
 
 @lisp
 (mscale v)
 @end lisp                     
-returns a scale matrix 
+Returns a scale matrix 
 
 @lisp
 (mtranspose m)
 @end lisp                     
-returns a transposed version of the input matrix (columns = rows)
+Returns a transposed version of the input matrix (columns = rows)
 
 @lisp
 (minverse m)
 @end lisp                     
-returns the inverted version of the input matrix, if it can't be inverted it will return the identity matrix (I think)
+Returns the inverted version of the input matrix, if it can't be inverted it will return the identity matrix (I think)
 
 @lisp
 (maim v v)
 @end lisp                     
-returns a matrix aimed down the first vector, using the second vector as the up vector. may be buggy.
+Returns a matrix aimed down the first vector, using the second vector as the up vector. may be buggy.
 
-the following functions return the transform matrices for primitives and the camera. these are really useful for a number of tasks, eg to get the position of a transformed object, use something like:
+The following functions return the transform matrices for primitives and the camera. these are really useful for a number of tasks, eg to get the position of a transformed object, use something like:
 
 @lisp
 (grab myobject)
@@ -949,13 +946,13 @@ the following functions return the transform matrices for primitives and the cam
 @lisp
 (get-transform)
 @end lisp                     
-gets the transform matrix of the grabbed primitive, or the top of the transform 
+Gets the transform matrix of the grabbed primitive, or the top of the transform 
 stack if no object is grabbed
 
 @lisp
 (get-camera-transform)
 @end lisp                     
-gets the current camera transform matrix 
+Gets the current camera transform matrix 
 
 @insertcopying 
 
@@ -985,16 +982,16 @@ Deforming is all about pdata, so, to deform an entire object, you do something l
 @end lisp                     
 
 @image{images/deform}
-a sphere with randomly jittered vertices
+A sphere with randomly jittered vertices
 
-when deforming geometry, moving the positions of the vertices is not usually enough, the normals will need to be updated for the lighting to work correctly. 
+When deforming geometry, moving the positions of the vertices is not usually enough, the normals will need to be updated for the lighting to work correctly. 
 
 @lisp                     
 (recalc-normals smooth)
 @end lisp                     
-will regenerate the normals for polygon and nurbs primitives based on the vertex positions. not particually fast (it is better to deform the normals in your script if you can) and only works on poly primitives of type QUADS and TRILIST. if smooth is 1, the face normals are averaged with the coincident face normals to give a smooth appearance
+Will regenerate the normals for polygon and nurbs primitives based on the vertex positions. not particually fast (it is better to deform the normals in your script if you can) and only works on poly primitives of type QUADS and TRILIST. if smooth is 1, the face normals are averaged with the coincident face normals to give a smooth appearance
 
-when working on polygon primitives it will cache certain results, so it will be a lot slower on the first calculation than subsequent calls on the same primitive.
+When working on polygon primitives it will cache certain results, so it will be a lot slower on the first calculation than subsequent calls on the same primitive.
 
 @section User PData
 
@@ -1003,7 +1000,7 @@ As well as the standard information that exists in primitives, fluxus also allow
 @lisp                     
 (pdata-add name type)
 @end lisp                     
-where name is a string with the name you wish to call it, and type is a one character string consisting of:
+Where name is a string with the name you wish to call it, and type is a one character string consisting of:
 
 @lisp                     
 f : float data
@@ -1015,7 +1012,7 @@ m : matrix data
 @lisp                     
 (pdata-copy source destination)
 @end lisp                     
-this will copy a array of pdata, or overwrite an existing one with if it already exists.
+This will copy a array of pdata, or overwrite an existing one with if it already exists.
 
 So, adding your own storage for data on primitives means you can use it as a fast way of reading and writing data, even if the data doesn't directly affect the primitive.
 
@@ -1071,7 +1068,7 @@ the scheme interpreter is slow, and it also simplifies your scheme code.
 @lisp                     
 (pdata-op operation pdata operand)
 @end lisp                     
-where operation is a string identifier for the intended operation (listed below) and pdata is the name of the target pdata to operate on, and operand is either a single data (a scheme number or vector (length 3,4 or 16)) or a name of another 
+Where operation is a string identifier for the intended operation (listed below) and pdata is the name of the target pdata to operate on, and operand is either a single data (a scheme number or vector (length 3,4 or 16)) or a name of another 
 pdata array.
 
 If the @code{(update)} and @code{(render)} functions in the script above are 
@@ -1090,8 +1087,7 @@ changed to the following:
 	
 On my machine, this script runs over 6 times faster than the first version. 
 
-@code{(pdata-op)} can also return information to your script from certain 
-functions called on entire pdata arrays. 
+@code{(pdata-op)} can also return information to your script from certain functions called on entire pdata arrays. 
 
 Pdata operations
 
@@ -1122,22 +1118,22 @@ Fluxus can also be used to build interactive applications, and allows user input
 @lisp                     
 (key-pressed t)                
 @end lisp                     
-returns true if the key has been pressed this frame
+Returns true if the key has been pressed this frame
 
 @lisp                     
 (mouse-button b)                    
 @end lisp                     
-returns true if the corresponding mouse button has been pressed this frame.
+Returns true if the corresponding mouse button has been pressed this frame.
 
 @lisp                     
 (mouse-over)
 @end lisp                     
-returns the id of the object the mouse is currently over
+Returns the id of the object the mouse is currently over
 
 @lisp                     
 (selectable 0|1)
 @end lisp                     
-sets whether the current grabbed primitive is selectable by mouse over
+Sets whether the current grabbed primitive is selectable by mouse over
 
 @insertcopying 
 
@@ -1158,29 +1154,31 @@ independance.
 Part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of 
 the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
 
-@code{(start-audio jack-port-name buffersize samplerate)}
-starts up the audio with the specified settings, you'll need to call this first, or put it into .fluxus.scm in your home directory to call it automatically at startup. make the jack port name an empty string and it won't try to connect to anything for you
+@lisp                     
+(start-audio jack-port-name buffersize samplerate)
+@end lisp                     
+Starts up the audio with the specified settings, you'll need to call this first, or put it into .fluxus.scm in your home directory to call it automatically at startup. make the jack port name an empty string and it won't try to connect to anything for you
 
 @lisp                     
 (gain value)
 @end lisp                     
-sets the gain level for the fft sound, it's 1 by default.
+Sets the gain level for the fft sound, it's 1 by default.
 	
 @lisp                     
 (gh band)
 (get-harmonic band)
 @end lisp                     
-returns the contribution of the harmonic specified. the harmonic band value wraps, so you can use without worrying about out of range errors.
+Returns the contribution of the harmonic specified. the harmonic band value wraps, so you can use without worrying about out of range errors.
 
 @lisp                     
 (process wavfilename)
 @end lisp                     
-this command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. for use with the framedump to process audio offline to make music videos.
+This command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. for use with the framedump to process audio offline to make music videos.
 
 @lisp                     
 (smoothing-bias b)
 @end lisp                     
-a kind of weighted average for the harmonic bands which smooth them out over time. this setting was hardcoded before (to 1.5) but the best setting really depends on the quality of the music, and the buffer sizes, and ranges from 0 -> 2. it's obvious if you give it a try with the bars.scm script
+A kind of weighted average for the harmonic bands which smooth them out over time. this setting was hardcoded before (to 1.5) but the best setting really depends on the quality of the music, and the buffer sizes, and ranges from 0 -> 2. it's obvious if you give it a try with the bars.scm script
 
 @section OSC 
 
@@ -1189,45 +1187,45 @@ OSC stands for Open Sound Control, and is a widely used protocol for passing dat
 @lisp 
 (osc-source port)
 @end lisp                     
-starts up the osc server, listening to the given port
+Starts up the osc server, listening to the given port
 
 @lisp 
 (osc-msg name)
 @end lisp                     
-returns true if the message has been received since last frame, and sets the current source to this message if it has been received. 
+Returns true if the message has been received since last frame, and sets the current source to this message if it has been received. 
 
-calling it repeatedly returns every message recieved in the last frame. you need to call it in a loop until it returns false, and all messages have been read - or your script will lag behind the data source.
+Calling it repeatedly returns every message recieved in the last frame. you need to call it in a loop until it returns false, and all messages have been read - or your script will lag behind the data source.
 
 @lisp 
 (osc index)
 @end lisp                     
-returns either a number or string value from the current osc message source - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
+Returns either a number or string value from the current osc message source - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
 
 @lisp 
 (osc-msg "/myvalue")
 (osc 0)
 @end lisp                     
 
-will evaluate to 0.4. 
+Will evaluate to 0.4. 
 
 @lisp 
 (osc 1) 
 @end lisp                     
 
-will then evaluate to "hello". 
+Will then evaluate to "hello". 
 
-if a message has never been sent, the value defaults to zero, or a empty string.
+If a message has never been sent, the value defaults to zero, or a empty string.
 
 @lisp 
 (osc-peek)
 @end lisp                     
-this handy function returns the name, and format string and number/string arguments of the last sent message as a string. you can then write something like:
+This handy function returns the name, and format string and number/string arguments of the last sent message as a string. you can then write something like:
 
 @lisp 
 (display (osc-peek)) (newline)
 @end lisp                     
 
-and fluxus will dump a list of all the messages being recieved to the commandline, use this to figure out what messages to use, and the types you can use on the message.
+Fluxus will dump a list of all the messages being recieved to the commandline, use this to figure out what messages to use, and the types you can use on the message.
 
 An example of using osc to communicate between pd and fluxus:
 
@@ -1266,18 +1264,18 @@ OSC messages can also be sent with fluxus.
 @lisp 
 (osc-destination port)
 @end lisp 
-starts up the osc client, which will send messages to the given port. Ports look somthing like this "osc.udp://localhost:4444"
+Starts up the osc client, which will send messages to the given port. Ports look somthing like this "osc.udp://localhost:4444"
 
 @lisp 
 (osc-send name argslist)
 @end lisp 
-sends a message with the argument list as the osc data. only supports numbers (which are converted to floats) and strings as data, ie:
+Sends a message with the argument list as the osc data. only supports numbers (which are converted to floats) and strings as data, ie:
 
 @lisp 
 (osc-send "/hello" "fis" '(1 2 "three"))
 @end lisp 
 
-will send the message out to the current osc destination, the type string allows fluxus to convert the numbers correctly using "f" for float, or "i" for int.
+Will send the message out to the current osc destination, the type string allows fluxus to convert the numbers correctly using "f" for float, or "i" for int.
 
 @insertcopying 
 
@@ -1294,19 +1292,19 @@ To help with debugging joints, try using (show-axis 1), which will render locato
 (collisions 0|1)
 @end lisp 
 
-enables or disables collision detection. this is the cause of great slowness when doing physical particle systems, and also the cause of instability in the low level physics library. defaults to off.
+Enables or disables collision detection. this is the cause of great slowness when doing physical particle systems, and also the cause of instability in the low level physics library. defaults to off.
 
 @lisp 
 (gravity gravvec)
 @end lisp 
 
-sets the strength and direction of gravity.
+Sets the strength and direction of gravity.
 
 @lisp 
 (surface-params slip1 slip2 softerp softcfm)
 @end lisp 
 
-sets some global surface attributes that affect friction and bouncyness. see section 7.3.7 of the ODE docs for an explanation of these parameters 
+Sets some global surface attributes that affect friction and bouncyness. see section 7.3.7 of the ODE docs for an explanation of these parameters 
 
 @lisp 
 (active-box object)
@@ -1314,7 +1312,7 @@ sets some global surface attributes that affect friction and bouncyness. see sec
 (active-cylinder object)
 @end lisp 
 
-enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as an active object, it will be transformed by ode. note: rotations only work correctly if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+Enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as an active object, it will be transformed by ode. note: rotations only work correctly if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
 
 @lisp 
 (passive-box object)
@@ -1322,19 +1320,19 @@ enable the object to be acted upon by the physics system, using a box, sphere or
 (passive-cylinder object)
 @end lisp 
 
-enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as a passive object, active objects will collide with it, but it will not be transformed. note: rotations only work correctly  if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+Enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as a passive object, active objects will collide with it, but it will not be transformed. note: rotations only work correctly  if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
 
 @lisp 
 (set-mass object mass)
 @end lisp 
 
-sets the mass of an active object
+Sets the mass of an active object
 
 @lisp 
 (ground-plane planevec planeoffset)
 @end lisp 
 
-create an infinite passive plane for use as the 'ground'
+Create an infinite passive plane for use as the 'ground'
 
 @lisp 
 (build-fixedjoint object)
@@ -1347,43 +1345,42 @@ create an infinite passive plane for use as the 'ground'
 
 These functions will create joints to connect two objects (see the ode docs for a detailed description of the differences between the joint types). ode considers joints to be a constraint that is enforced between two objects. when creating a joint, it is important to have the two primitives being joined in the desired positions before creating the joint. joints can be created, modified and indexed in a similar way to other primitives. The fixed joint attaches a object to the static environment.
 
-
 @lisp 
 (joint-param joint param value)
 @end lisp 
 
-sets the joint parameter for a joint where @code{param} is one of the following: "HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM","SuspensionERP", "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE
+Sets the joint parameter for a joint where @code{param} is one of the following: "HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM","SuspensionERP", "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE
 docs for an explanation of each of these parameters, and which joint types they apply to.
 
 @lisp 
 (joint-angle joint velocity angle)
 @end lisp 
 
-set the angle of the joint, with a given velocity (?)
+Set the angle of the joint, with a given velocity (?)
 
 @lisp 
 (kick object kickvec)
 @end lisp 
 
-applies translation force @code{kickvec} to the object
+Applies translation force @code{kickvec} to the object
 
 @lisp 
 (twist object twistvec)
 @end lisp 
 
-applies rotational force @code{twistvec} to the object
+Applies rotational force @code{twistvec} to the object
 
 @lisp 
 (set-max-physical num)
 @end lisp 
 
-sets the maximum number of objects the physics system can deal with. when the max level has been reached the oldest objects are destroyed.
+Sets the maximum number of objects the physics system can deal with. when the max level has been reached the oldest objects are destroyed.
 
 @lisp 
 (has-collided id)                     
 @end lisp 
 
-returns true if the grabbed object collided in the last frame
+Returns true if the grabbed object collided in the last frame
 
 @insertcopying 
 
@@ -1395,7 +1392,7 @@ The turtle polybuilder is an experimental way of building polygonal objects usin
 @lisp 
 (turtle-prim type)
 @end lisp 
-starts a new primitive of the type specified:
+Starts a new primitive of the type specified:
 
 @lisp 
 0: triangle strip
@@ -1408,37 +1405,37 @@ starts a new primitive of the type specified:
 @lisp 
 (turtle-move distance)
 @end lisp 
-moves the turtle forward in it's current orientation
+Moves the turtle forward in it's current orientation
 
 @lisp 
 (turtle-turn anglevec)
 @end lisp 
-rotates the turtle's orientation with the supplied euler angles
+Rotates the turtle's orientation with the supplied euler angles
 
 @lisp 
 (turtle-vert)
 @end lisp 
-creates a new vertex in the current position
+Creates a new vertex in the current position
 
 @lisp 
 (turtle-build)
 @end lisp 
-builds the object with the vertex list defined and gives it to the renderer
+Builds the object with the vertex list defined and gives it to the renderer
 
 @lisp 
 (turtle-reset)
 @end lisp 
-resets the current postion and rotation of the turtle
+Resets the current postion and rotation of the turtle
 
 @lisp 
 (turtle-push)
 (turtle-pop)
 @end lisp 
-the turtle build has it's own transform stack
+The turtle build has it's own transform stack
 
-time for some examples:
+Time for some examples:
 
-this script simply builds a single polygon circle, by playing the age old turtle trick of looping a function that moves a bit, turns a bit...
+This script simply builds a single polygon circle, by playing the age old turtle trick of looping a function that moves a bit, turns a bit...
 
 @lisp 
 (define (build n)
@@ -1464,9 +1461,9 @@ this script simply builds a single polygon circle, by playing the age old turtle
 @end lisp 
 
 @image{images/turtle}
-a circle
+A circle
 
-for a more complex example, just modfiy the @code{(build-loop)} function as so:
+For a more complex example, just modfiy the @code{(build-loop)} function as so:
 
 @lisp 
 (define (build-loop n t)
@@ -1485,7 +1482,6 @@ for a more complex example, just modfiy the @code{(build-loop)} function as so:
 a circle of circles
 
 @insertcopying 
-
 
 @node Examples
 @chapter Examples 
