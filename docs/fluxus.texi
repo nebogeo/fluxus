@@ -30,6 +30,7 @@
 * Animation:: Animation sources
 * Physics:: Physics System
 * Turtle Builder:: Turtle builder 
+* Making Movies:: Making Movies
 * Examples:: Examples 
 * Function Overview::Overview of Functions 
 * Index:: Index[es]
@@ -39,18 +40,20 @@
 @node Introduction
 @chapter Introduction
 
-Fluxus allows you to write Scheme scripts that create graphics live, interpreting audio and OSC input as a source of animation data. Fluxus also uses a fully featured physics library, which means you can script physical properties into objects and simulate them in realtime. Released for Linux under the GPL licence.
+A graphical livecoding environment for Scheme. Builds for Linux or OSX, and released under the GPL licence.
 
-The built in scheme code editor runs on top of the renderer, which means you can edit the scripts while they are running. This allows Fluxus to be used for livecoding performances, or simply as a fast feedback way of experimenting or learning about graphics and animation.
+Fluxus reads live audio or OSC network messages which can be used as a source of animation data for realtime performances or installations. Keyboard or mouse input can also be read for simple games development, and a physics engine is included for realtime simulations of rigid body dynamics.
 
-Fluxus lends itself to procedural modelling and animation. There is an experimental procedural modelling tool, and full support for texturing and material properties.
+The built in scheme code editor runs on top of the renderer, which means you can edit the scripts while they are running. As well as making livecoding possible, it's also gives you a very fast feedback way of experimenting or learning about graphics and animation.
+
+Fluxus lends itself to procedural modelling and animation. There is an expermental procedural modelling tool, and full support for texturing and basic material properties. 
 
 @insertcopying 
 
 @node Quickstart
 @chapter Quickstart
 
-For a quick introduction to fluxus, try entering the following command once you have started fluxus and see the red cursor in the top left of the screen.
+For a quick introduction to fluxus, try entering the following command once you have started fluxus and see the yellow cursor in the top left of the screen.
 
 @lisp
 (build-cube)
@@ -93,7 +96,11 @@ The camera is controlled by moving the mouse and pressing mouse buttons.
 
 @section Workspaces
 
-The script editor allows you to edit 10 scripts simultaneously by using workspaces. To switch workspaces, use ctrl+number key. Only one can be run at once though, hitting f5 will execute the currently active workspace script.  Scripts in different workspaces can be saved to different files, by using the @code{(save-name)} call in the different workspaces (see below).
+The script editor allows you to edit 9 scripts simultaneously by using workspaces. To switch workspaces, use ctrl+number key. Only one can be run at once though, hitting f5 will execute the currently active workspace script.  Scripts in different workspaces can be saved to different files, by using the @code{(save-name)} call in the different workspaces (see below).
+
+@section The REPL
+
+If you press ctrl and 0, instead of getting another script workspace, you will be presented with a Read Evaluate Print Loop interpreter, or repl for short. This is really just an interactive interpreter similar to the commandline, where you can enter scheme code for immediate evaluation. This code is evaluated in the same interpreter as the other scripts, so you can use the repl to debug or inspect global variables and functions they define. This window is also where error reporting is printed, along with the terminal window you started fluxus from.
 
 @section Keyboard commands
 
@@ -102,14 +109,18 @@ The script editor allows you to edit 10 scripts simultaneously by using workspac
 @item ctrl-w : Windowed mode.
 @item ctrl-h : Hide/show the editor.
 @item ctrl-s : Save current script.
-@item ctrl-0 to 9 : Switch to selected workspace
+@item ctrl-1 to 9 : Switch to selected workspace.
+@item ctrl-0 : Switch to the REPL.
 @item F1 : Mouse moves the scene camera.
 @item F2 : Mouse moves the editor camera.
 @item F3 : Resets the scene camera.
 @item F4 : Resets the editor camera.
 @item F5 : Execute the selected text, or all if none is selected.
-@item F9 : Randomise the text colour
-@item F10 : Make text thinner
+@item F6 : Livecode/OSC recorder mode, see below
+@item F7 : Livecode/OSC recorder off, see below
+@item F8 : Livecode/OSC recorder reset, see below
+@item F9 : Randomise the text colour (aka the panic button)
+@item F10 : Make text thinner (these two are for use with projectors to make the text easier to read)
 @item F11 : Make text thicker
 @end itemize
 
@@ -1481,7 +1492,70 @@ For a more complex example, just modfiy the @code{(build-loop)} function as so:
 @image{images/turtlecomplex}
 a circle of circles
 
-@insertcopying 
+@insertcopying
+ 
+@node Making Movies
+@chapter Making Movies
+
+Fluxus is designed for realtime use, this means interactive performance or games mainly, but you can also use the frame dump commands to save out frames which can be converted to movies. This process can be fairly complex, involving syncing to audio, osc or keyboard input.
+
+Used alone, frame dumping will simply save out frames as fast as your machine can render and save them to disk. This is useful in some cases, but not if we want to create a movie at a fixed framerate, but with the same timing as they are generated at - ie synced with an audio track at 25fps. 
+
+@section Syncing to audio
+
+The (process) command does several things, it switches the audio from the jack input source to a file, but it also makes sure that every buffer of audio is used to produce exactly one frame. Usually in realtime operation, audio buffers will be skipped or duplicated, depending on the variable framerate and fixed audio rate. 
+
+So, what this actually means is that if we want to produce video at 25fps, with audio at 44100 samplerate, 44100/25 = 1764 audio samples per frame. Set your jack and (start-audio) buffer settings to this. Then all you need to do is make sure the calls to (process) and (start-framedump) happen on the same frame, so that the first frame is at the start of the audio. As this process is not realtime, you can set your resolution as large as you want, or make the framerate as slow as you like.
+
+@section Syncing keyboard or OSC input
+
+If you also want to use this technique for re-rendering animations which involve keyboard presses or OSC input, things are a little more involved. Fluxus contains a recorder for these inputs, which is not exactly easy to use, (ok, I'll admit it was a crazy hack :)) but I've used it quite a lot and it seems to work fine.
+
+What it actually does is record the time of every keypress or OSC message, so it can replay them at different framerates correctly. 
+
+It also works with the process command in the same way as the audio does (you always need an audio track, even if it's silence). So the recorder will advance the number of seconds per frame as it renders, rather than using the realtime clock - so again, you can make the rendering as slow as you like, it will appear correct when you view the movie.
+
+@subsection Operating the livecode/OSC recorder
+
+@itemize @bullet
+@item F6 starts, and selects between recording or playing back recordings
+@item F7 stops recording/playing back
+@item F8 resets the position in time
+@end itemize
+
+So to give it a try, press F6 until "recording" is printed in the terminal window, type some keys, hit F7 to stop, delete the text, and press F6 again to select "playing". Hit F8 to reset the timer, which will then magically recreate the text you just entered.
+
+As I said, it's not exactly obvious, but I ran out of F keys to use... I will change it at some point to be a little more friendly, ie change the colour of the cursor to indicate the mode.
+
+You can save this recording out to a file, with (save-code "filename") and reload it with (load-code "filename"). The files are ascii format, and contain the timestamps and the information to recreate the key presses. They are not scheme files.
+
+If you are using fluxus to recieve osc information, the details of the messages will also be stored in this file for later use. When playing back a recording, the osc interface treats the recorded messages the same as normal ones, so your script doesn't need to be modified to pick them up.
+
+@subsection An example
+
+It's easier to set up if you start your script from an empty workspace - ie start the recording with the (edit "myscript.scm") or write a script from scratch. Play with fluxus as you normally would, move the camera around, change bits of the script, etc. Then, after saving out the code, you can then use a little startup script which does the following:
+
+@lisp
+(start-audio "" 1764 44100)
+(load-code "codefile")
+(process "audiofile")
+(start-framedump "outputframes" "jpg")
+@end lisp
+
+Then select all the code, hit F5 to run it, delete to remove it, F6 to start the playback and F8 to reset the recorder time. Then, if everything has worked out the recorder will type out (edit "myscript.scm") and run it, saving frames out at a fixed framerate.
+
+@section Syncing Problems
+
+Getting the syncing right when combining audio/keyboard and OSC input can be a bit tricky. Some common problems I've seen with the resulting movies fall into two categories.
+
+@subsection Syncing lags, and gets worse with time
+
+The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
+
+@subsection Syncing is offset in a constant manner
+
+This happens when the start of the audio does not quite match the first frame. You can try adding or removing some silence at the beginning of the audio track to sort this out. I often just encode the first couple of seconds until I get it right.
+
 
 @node Examples
 @chapter Examples 
