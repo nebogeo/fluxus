@@ -388,6 +388,8 @@ The normal way to create a primitive is to call it's build function and then use
 
 Here are all the primitives:
 
+@subsection Poly primitives
+
 @lisp
 (build-cube)
 @end lisp
@@ -437,6 +439,8 @@ fluxus
 @image{images/text}
 Ok, so this isn't a very good font texture :)
 
+@subsection NURBS primitives
+
 @lisp
 (build-nurbs-sphere hsegments rsegments)
 @end lisp
@@ -454,6 +458,8 @@ Builds a tesselated nurbs plane, texture mapped in uv direction
 @image{images/nurbs-plane}
 
 A nurbs patch plane, again with a control vertex tweaked
+
+@subsection Locator primitive
 
 @lisp
 (build-locator)
@@ -521,7 +527,9 @@ Texture coords: "t" vector
 @section Geometry requiring pdata access
 
 The following primtives are different to the previous types in that they require pdata modification to do anything useful. 
-		
+
+@subsection Particle primitive
+
 @lisp
 (build-particles num)
 @end lisp
@@ -533,13 +541,15 @@ Happy textured sprites
 @image{images/particles}
 Boint particles
 
-@section Particle primitive pdata
+@subsection Particle primitive pdata
 
 @lisp
 Positions:      "p" vector
 Colours:        "c" colour
 Sizes:          "s" vector
 @end lisp
+
+@subsection Line primitive
 
 @lisp
 (build-line numpoints)
@@ -548,7 +558,7 @@ Builds a line consisting of numpoint points. the geometry is constantly camera  
 
 @image{images/line}
 
-@section Line primitive pdata
+@subsection Line primitive pdata
 
 @lisp
 Positions:      "p" vector
@@ -568,6 +578,8 @@ Builds a raw polygon primitive with size vertices (everything set to zero). type
 4=POLYGON
 @end lisp
 
+@subsection Pixel primitive
+
 @lisp
 (build-pixels width height) 
 @end lisp
@@ -584,6 +596,13 @@ Uploads the texture data, you need to call this when you've finished writing to 
 (pixels->texture pixelprim) 
 @end lisp
 Returns a texture you can use exactly like a normal loaded one.
+
+@subsection Pixel primitive pdata
+
+@lisp
+Colour:      "c" vector
+Alpha:       "a" float 
+@end lisp
 
 @section Topology and pdata
 
