@@ -55,6 +55,7 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	glPushMatrix();		
 	node->Prim->ApplyState();
 	glPushName(node->ID);
+	node->Prim->Prerender();
 	node->Prim->Render();
 	glPopName();
     

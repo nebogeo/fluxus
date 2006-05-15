@@ -314,7 +314,9 @@ void Renderer::EndScene()
 	// clear the texture, if the last primitive assigned one...
 	glDisable(GL_TEXTURE_2D);
 
-	if (m_ShowAxis) DrawAxes();
+	glDisable(GL_DEPTH_TEST);
+	if (m_ShowAxis) Primitive::RenderAxes();
+	glEnable(GL_DEPTH_TEST);
 	
 	PopState();
 	
@@ -587,38 +589,6 @@ void Renderer::PopState()
 	}
 }
 
-void Renderer::DrawAxes()
-{
-	glLineWidth(1);
-    glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);
-		glColor3f(1,0,0);
-		glVertex3f(0,0,0);
-		glVertex3f(1,0,0);
-	
-		glColor3f(0,1,0);
-		glVertex3f(0,0,0);
-		glVertex3f(0,1,0);
-		
-		glColor3f(0,0,1);
-		glVertex3f(0,0,0);
-		glVertex3f(0,0,1);
-	glEnd();
-
-    glColor3f(1, 0, 0);
-    glRasterPos3f(1.1, 0.0, 0.0);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'x');
-    glColor3f(0, 1, 0);
-    glRasterPos3f(0.0, 1.1, 0.0);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'y');
-    glColor3f(0, 0, 1);
-    glRasterPos3f(0.0, 0.0, 1.1);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');
-    glEnable(GL_LIGHTING);
-	glEnable(GL_DEPTH_TEST);
-}
-	
 void Renderer::Grab(int ID)
 {
 	SceneNode *n=(SceneNode *)m_World.FindNode(ID);

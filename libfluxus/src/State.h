@@ -43,6 +43,7 @@ namespace fluxus
 #define HINT_UNLIT    0x0040
 #define HINT_VERTCOLS 0x0080
 #define HINT_MULTITEX 0x0100
+#define HINT_ORIGIN   0x0200
 
 #define ENABLE_MULTITEXTURE
 

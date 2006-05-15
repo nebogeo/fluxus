@@ -62,6 +62,7 @@ public:
 	static SCM build_nurbs_sphere(SCM s_hsegments, SCM s_rsegments);
 	static SCM build_nurbs_plane(SCM s_usegments, SCM s_vsegments);
 	static SCM build_particles(SCM s_count);
+	static SCM build_locator();
 	static SCM build_pixels(SCM s_w, SCM s_h);
 	static SCM upload_pixels();
 	static SCM pixels2texture(SCM s_ob);
@@ -120,6 +121,7 @@ public:
 	static SCM hint_box();
 	static SCM hint_none();
 	static SCM hint_multitex();
+	static SCM hint_origin();
 	static SCM blur(SCM s_blur);
 	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
 	static SCM feedback(SCM s_fb);

@@ -23,6 +23,7 @@
 #include <LinePrimitive.h>
 #include <ParticlePrimitive.h>
 #include <PixelPrimitive.h>
+#include <LocatorPrimitive.h>
 
 FluxusMain     *FluxusBinding::Fluxus=NULL;
 AudioCollector *FluxusBinding::Audio=NULL;
@@ -226,6 +227,12 @@ SCM FluxusBinding::build_particles(SCM s_count)
 		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
 	
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
+}
+
+SCM FluxusBinding::build_locator()
+{
+	LocatorPrimitive *Prim = new LocatorPrimitive();
     return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
@@ -755,6 +762,14 @@ SCM FluxusBinding::hint_none()
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
     if (Grabbed) Grabbed->GetState()->Hints=0;
     else Fluxus->GetRenderer()->GetState()->Hints=0;
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::hint_origin()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_ORIGIN;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_ORIGIN;
     return SCM_UNSPECIFIED;
 }
 
@@ -2273,6 +2288,7 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("build-nurbs-sphere",2,0,0, (SCM (*)())build_nurbs_sphere);
 	scm_c_define_gsubr("build-nurbs-plane",2,0,0, (SCM (*)())build_nurbs_plane);
 	scm_c_define_gsubr("build-particles",1,0,0,(SCM (*)()) build_particles);
+	scm_c_define_gsubr("build-locator",0,0,0,(SCM (*)()) build_locator);
 	scm_c_define_gsubr("build-pixels",2,0,0,(SCM (*)()) build_pixels);
 	scm_c_define_gsubr("upload-pixels",0,0,0,(SCM (*)())upload_pixels);
 	scm_c_define_gsubr("pixels->texture",1,0,0,(SCM (*)())pixels2texture);
@@ -2322,6 +2338,7 @@ void FluxusBinding::RegisterProcs()
     scm_c_define_gsubr("hint-vertcols",0,0,0,(SCM (*)())   hint_vertcols);
     scm_c_define_gsubr("hint-box",0,0,0,(SCM (*)()) 		hint_box);
     scm_c_define_gsubr("hint-multitex",0,0,0,(SCM (*)())   hint_multitex);
+    scm_c_define_gsubr("hint-origin",0,0,0,(SCM (*)())    hint_origin);
 	scm_c_define_gsubr("line-width",1,0,0,(SCM (*)())	line_width);
 	scm_c_define_gsubr("point-width",1,0,0,(SCM (*)())  point_width);
 	scm_c_define_gsubr("blend-mode",2,0,0,(SCM (*)())	blend_mode);

@@ -44,7 +44,6 @@ void ParticlePrimitive::PDataDirty()
 void ParticlePrimitive::Render()
 {
 	glDisable(GL_LIGHTING);
-	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
 	
 	if (m_State.Hints & HINT_POINTS)
 	{

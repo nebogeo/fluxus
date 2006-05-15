@@ -81,7 +81,6 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_POINTS) glPolygonMode(GL_FRONT,GL_POINTS);
-	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
 	
 	if (m_State.Hints & HINT_NORMAL)
 	{

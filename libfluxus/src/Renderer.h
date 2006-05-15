@@ -89,7 +89,6 @@ public:
 		
 	////////////////////////////////////////////////////////////////////////
 	// Global state control
-	void DrawAxes();
 	void DrawText(const string &Text);
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }

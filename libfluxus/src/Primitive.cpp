@@ -21,6 +21,44 @@ using namespace fluxus;
 Primitive::~Primitive()
 {
 }		   
+			
+void Primitive::Prerender()
+{
+	// todo: put other common state things here...
+	// (not all, as they are often primitive dependant)
+	if (m_State.Hints & HINT_ORIGIN) RenderAxes();	
+	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
+}
+	
+void Primitive::RenderAxes()
+{
+	glLineWidth(1);
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+		glColor3f(1,0,0);
+		glVertex3f(0,0,0);
+		glVertex3f(1,0,0);
+	
+		glColor3f(0,1,0);
+		glVertex3f(0,0,0);
+		glVertex3f(0,1,0);
+		
+		glColor3f(0,0,1);
+		glVertex3f(0,0,0);
+		glVertex3f(0,0,1);
+	glEnd();
+
+    glColor3f(1, 0, 0);
+    glRasterPos3f(1.1, 0.0, 0.0);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'x');
+    glColor3f(0, 1, 0);
+    glRasterPos3f(0.0, 1.1, 0.0);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'y');
+    glColor3f(0, 0, 1);
+    glRasterPos3f(0.0, 0.0, 1.1);
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');
+    glEnable(GL_LIGHTING);
+}
 			   	
 void Primitive::RenderBoundingBox()
 {

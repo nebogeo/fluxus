@@ -39,6 +39,9 @@ public:
 	virtual void RecalculateNormals(bool smooth) {}
 	
 	void RenderBoundingBox();
+	static void RenderAxes();
+
+	void Prerender();
 	
 	void ApplyState()               { m_State.Apply(); }
 	void SetState(State *s)         { assert(s); m_State=*s; }
