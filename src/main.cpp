@@ -87,7 +87,8 @@ void DisplayCallback()
 	string fragment = binding->Fluxus->GetScriptFragment();
     if (fragment!="")
     {
-		scm_internal_catch(SCM_BOOL_T,run_scm,(void*)fragment.c_str(),ErrorHandler,NULL);
+		scm_c_catch(SCM_BOOL_T,run_scm,(void*)fragment.c_str(),ErrorHandler, 
+			(void*)"fluxus",ErrorHandler, (void*)"fluxus");
     }
 	
 	if (binding->Audio!=NULL) binding->Audio->GetFFT();
@@ -189,9 +190,9 @@ SCM EngineCallbackThunk(void * dummy)
 void EngineCallback()
 {
 	if (binding->FrameHook)
-		scm_internal_catch(SCM_BOOL_T, 
+		scm_c_catch(SCM_BOOL_T, 
 				   EngineCallbackThunk, (void*)NULL,
-				   ErrorHandler, (void*)"fluxus");		
+				   ErrorHandler, (void*)"fluxus",ErrorHandler, (void*)"fluxus");		
 }
 
 char *Script;
@@ -233,8 +234,8 @@ void inner_main(void *context, int argc, char **argv)
     binding->Fluxus->GetRenderer()->SetEngineCallback(EngineCallback);
 
 	string Init = string(getenv("HOME"))+"/"+INIT_FILE;
-	scm_internal_catch(SCM_BOOL_T,load_scm,(void*)Init.c_str(),ErrorHandler,NULL);
-	
+	scm_c_catch(SCM_BOOL_T,load_scm,(void*)Init.c_str(),ErrorHandler,(void*)"fluxus",ErrorHandler,(void*)"fluxus");
+
 	if (argc>1)
 	{
 		if (!strcmp(argv[1],"-x"))
