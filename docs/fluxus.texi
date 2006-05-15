@@ -31,6 +31,7 @@
 * Physics:: Physics System
 * Turtle Builder:: Turtle builder 
 * Making Movies:: Making Movies
+* Debugging Scheme:: Debugging Scheme
 * Examples:: Examples 
 * Function Overview::Overview of Functions 
 * Index:: Index[es]
@@ -292,6 +293,21 @@ Resets the camera matrix in case you get lost.
 Locks the camera to the object.
 
 @lisp
+(camera-lag amount) 
+@end lisp
+When locked to a primitive, lags the camera - does a linear interpolation on the matrix, so you can get some wacky stuff happening.
+
+@lisp
+(get-screen-size)
+@end lisp                     
+Returns the resolution as a two value vector
+
+@lisp
+(set-screen-size (vector x y)) 
+@end lisp                     
+Sets the resolution, and updates the window to match
+
+@lisp
 (clear-colour colvec)
 @end lisp
 Set the background clear colour.
@@ -375,7 +391,7 @@ Here are all the primitives:
 @lisp
 (build-cube)
 @end lisp
-a simple cube, texture mapped placement per face
+A simple cube, texture mapped placement per face
 
 @image{images/cube}
 
@@ -438,6 +454,11 @@ Builds a tesselated nurbs plane, texture mapped in uv direction
 @image{images/nurbs-plane}
 
 A nurbs patch plane, again with a control vertex tweaked
+
+@lisp
+(build-locator)
+@end lisp
+A locator is an empty primitive, useful for parenting to (when you don't want to have the parent object visible). This primitive can only be visualised with (hint-origin) to display it's local transform origin.
 		
 @section Primitive Data [aka. pdata]
 
@@ -546,6 +567,23 @@ Builds a raw polygon primitive with size vertices (everything set to zero). type
 3=TRIFAN
 4=POLYGON
 @end lisp
+
+@lisp
+(build-pixels width height) 
+@end lisp
+Makes a new pixel primitive. A pixel primitive is used for making procedural textures, which can then be applied to other primitives. For this reason, pixel primitives probably wont be rendered much, but you can render them to preview the texture on a flat plane.
+
+Pixel primitives also come with the following commands:
+
+@lisp
+(upload-pixels) 
+@end lisp
+Uploads the texture data, you need to call this when you've finished writing to the pixelprim, and while it's grabbed.
+
+@lisp
+(pixels->texture pixelprim) 
+@end lisp
+Returns a texture you can use exactly like a normal loaded one.
 
 @section Topology and pdata
 
@@ -853,6 +891,11 @@ Uses vertex colours for the object, switches off colour materials from (colour) 
 @end lisp                     
 Turns on multitexturing - only works on poly primitives at the moment
 
+@lisp
+(hint-origin)
+@end lisp                     
+Displays the origin of the local transform for this object.
+
 @insertcopying 
 
 @node Maths
@@ -944,7 +987,7 @@ Returns the inverted version of the input matrix, if it can't be inverted it wil
 @lisp
 (maim v v)
 @end lisp                     
-Returns a matrix aimed down the first vector, using the second vector as the up vector. may be buggy.
+Returns a matrix aimed down the first vector, using the second vector as the up vector.
 
 The following functions return the transform matrices for primitives and the camera. these are really useful for a number of tasks, eg to get the position of a transformed object, use something like:
 
@@ -964,6 +1007,37 @@ stack if no object is grabbed
 (get-camera-transform)
 @end lisp                     
 Gets the current camera transform matrix 
+
+@lisp
+(set-camera-transform m)
+@end lisp                     
+Sets the camera transform matrix - this overrides and turns off the mouse controlled camera.
+Use (reset-camera) to turn mouse control back on.
+
+@lisp
+(get-projection-transform)
+@end lisp                     
+Gets the current projection transform matrix 
+
+@lisp
+(qaxisangle axisvec angle)
+@end lisp                     
+Builds a quaternion with a rotation axis and angle in degrees. Quaternions are a useful way of describing rotations, which doesn't suffer from some problems faced by matrix rotations - ie gimbal lock. A quat is just a 4 element vector.
+
+@lisp
+(qmul quata quatb)
+@end lisp                     
+Returns two quats multiplied
+
+@lisp
+(qnormalise quat)
+@end lisp                     
+Returns the normalised quat
+
+@lisp
+(qtomatrix quat)
+@end lisp                     
+Returns the rotation matrix for the quaternion
 
 @insertcopying 
 
@@ -1198,7 +1272,7 @@ OSC stands for Open Sound Control, and is a widely used protocol for passing dat
 @lisp 
 (osc-source port)
 @end lisp                     
-Starts up the osc server, listening to the given port
+Starts up the osc server, or changes port. Known bug: seems to fail if you set it back to a port used previously.
 
 @lisp 
 (osc-msg name)
@@ -1556,6 +1630,18 @@ The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus
 
 This happens when the start of the audio does not quite match the first frame. You can try adding or removing some silence at the beginning of the audio track to sort this out. I often just encode the first couple of seconds until I get it right.
 
+@node Debugging Scheme
+@chapter Debugging Scheme
+
+It can be hard to track down errors in scheme scripts, especially in deeply nested functional calls. Luckily the scheme interpreter fluxus uses has some built in debugging utilities you can use.
+
+@lisp
+(debug-enable 'stacktrace)
+@end lisp
+
+@lisp
+(read-enable 'positions)
+@end lisp
 
 @node Examples
 @chapter Examples 

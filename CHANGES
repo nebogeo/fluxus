@@ -38,6 +38,9 @@ happening with rotations/scales. smaller numbers are more laggy
 * a multiply pdata-op for colour pdata and single float values
 * stricter typing - primitive type/exact used where required
 * infinite asteroids example
+* locator primitive
+* (hint-origin) renders the local origin for a primitive
+* guile debugging and stack trace supported
 
 0.9
 
