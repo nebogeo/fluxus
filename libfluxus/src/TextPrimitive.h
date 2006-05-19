@@ -32,7 +32,7 @@ public:
 	virtual void Render();
 	virtual string GetTypeName() { return "TextPrimitive"; }
 	
-	void SetText(const string &s, float Width=10, float Height=10);
+	void SetText(const string &s, float Width=10, float Height=10, float Zoom=0);
 	float GetTextWidth() { return m_TextWidth; }
 	float GetTextHeight() { return m_TextHeight; }
 	

@@ -28,21 +28,35 @@ class Light
 {
 public:
 	Light();
-	virtual ~Light() {}
-	void Render(int index=0);
+	virtual ~Light();
+	void Render();
+	
+	enum Type {POINT,DIRECTIONAL,SPOT};
 
-	void SetAmbient(dColour s)  { m_Ambient=s; }
-	void SetDiffuse(dColour s)  { m_Diffuse=s; }
-	void SetSpecular(dColour s) { m_Specular=s; }
-	void SetPosition(dVector s) { m_Position=s; }
+	void SetType(Type s) { m_Type=s; }
+	void SetIndex(int s);
+	void SetAmbient(dColour s);
+	void SetDiffuse(dColour s);
+	void SetSpecular(dColour s);
+	void SetSpotAngle(float s);
+	void SetSpotExponent(float s);
+	void SetPosition(dVector s);
+	void SetAttenuation(int type, float s);
+	void SetDirection(dVector s);
+	
 	void SetCameraLock(bool s)  { m_CameraLock=s; }
 	bool GetCameraLock()   { return m_CameraLock; }
 	
 protected:
+
+	int m_Index;
 	dColour m_Ambient;
 	dColour m_Diffuse;
 	dColour m_Specular;
 	dVector m_Position;
+	dVector m_Direction;
+	
+	Type m_Type;
 	bool m_CameraLock;
 	
 private:

@@ -743,19 +743,34 @@ Lights are needed to, err, light the scene. If there are none built, the default
 @image{images/lights}
 An example of crazy lighting
 
-@code{(make-light 0/1)}
-Makes a new light. if the argument is true, then it's locked to the camera (in camera space) else it's in world space. returns the light id
-
-@code{(clear-lights)}
-Destroys all lights
+@lisp
+(make-light type cameralocked)
+@end lisp
+Makes a new light. Type can be one of "point", "spot" or "directional". cameralocked can be "cameralocked" or "free". If a light is camera locked, then it's attached to the camera otherwise it's static in world space. Returns the light id. (clear) removes all lights.
 
 @lisp
 (light-ambient id colvec)
 (light-diffuse id colvec)
 (light-specular id colvec)
-(light-position id vec)
 @end lisp
-Sets the parameters for the light
+Sets the colour parameters for the light
+
+@lisp
+(light-position id vec)
+(light-direction id vec)
+@end lisp
+Sets the transforms for the light, either relative to camera or world space.
+
+@lisp
+(light-spot-angle id angle)
+(light-spot-exponent id exponent)
+@end lisp
+Sets the angle or exponent (blurryness) of the spotlight beam.
+
+@lisp
+(light-attenuation id type setting)
+@end lisp
+Sets the attenuation setting for the light, how it fades over time. Type can be one of "constant", "linear" or "quadratic". The setting is the mix level for the chosen function.
 
 @insertcopying 
 

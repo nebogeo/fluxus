@@ -19,14 +19,6 @@
 #include "State.h"
 
 using namespace fluxus;
-
-// assumes font has chars from ascii 32 onwards:
-//   ! " # $ % & ' ( ) * + ' - . / 
-// 0 1 2 3 4 5 6 7 8 9 : ; < = > ?
-// @ A B C D E F G H I J K L M N O
-// P Q R S T U V W X Y Z [ \ ] ^ _
-// ` a b c d e f g h i j k l m n o
-// p q r s t u v w x y z { | } ~
 	
 TextPrimitive::TextPrimitive(float charw, float charh, int charstride, int wrapchars) :
 PolyPrimitive(PolyPrimitive::QUADS),
@@ -37,7 +29,7 @@ m_WrapChars(wrapchars)
 {
 }
 
-void TextPrimitive::SetText(const string &s, float Width, float Height)
+void TextPrimitive::SetText(const string &s, float Width, float Height, float Zoom)
 {
 	float x=0,y=0;
 	dVector Normal(0,0,1);
@@ -48,24 +40,30 @@ void TextPrimitive::SetText(const string &s, float Width, float Height)
 	m_TextWidth=w*s.size();
 	m_TextHeight=h;
 	int wrapcount=0;
-	
+		
+	w-=Zoom*50; //??? some constant scaling to covert from texture 
+                // coordinates to world space
+		
 	for (unsigned int n=0; n<s.size(); n++)
 	{
-		if (s[n]>=32 && s[n]<127)
-		{
-			int pos=(int)s[n]-32;
-		
-			float s=(pos%m_CharStride)*m_CharWidth;
-			float t=(pos/m_CharStride)*m_CharHeight;
+		int pos=(int)s[n];
 
-			AddVertex(dVertex(dVector(x,y,0),Normal,s,t));
-			AddVertex(dVertex(dVector(x+w,y,0),Normal,s+m_CharWidth,t));
-			AddVertex(dVertex(dVector(x+w,y+h,0),Normal,s+m_CharWidth,t+m_CharHeight));
-			AddVertex(dVertex(dVector(x,y+h,0),Normal,s,t+m_CharHeight));
-			if (m_WrapChars) wrapcount++;
-		}
+		float S=(pos%m_CharStride)*m_CharWidth;
+		float T=(pos/m_CharStride)*m_CharHeight;
 		
-		if (s[n]=='\n' || wrapcount>m_WrapChars)
+		dVector min(S,T,0);
+		dVector max(S+m_CharWidth,T+m_CharHeight,0);
+		
+		min.x+=Zoom;
+		max.x-=Zoom;
+		
+		AddVertex(dVertex(dVector(x,y,0),Normal,min.x,min.y));
+		AddVertex(dVertex(dVector(x+w,y,0),Normal,max.x,min.y));
+		AddVertex(dVertex(dVector(x+w,y+h,0),Normal,max.x,max.y));
+		AddVertex(dVertex(dVector(x,y+h,0),Normal,min.x,max.y));
+		if (m_WrapChars) wrapcount++;
+		
+		if (s[n]=='\n' || (m_WrapChars && wrapcount>m_WrapChars))
 		{
 			y+=h;
 			m_TextHeight+=h;

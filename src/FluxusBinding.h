@@ -74,12 +74,15 @@ public:
 	static SCM key_pressed(SCM s_key);
 	static SCM show_axis(SCM s_id);
 	static SCM show_fps(SCM s_id);
-	static SCM make_light(SCM cam);
-	static SCM clear_lights();
+	static SCM make_light(SCM type, SCM cam);
 	static SCM light_ambient(SCM id, SCM v);
 	static SCM light_diffuse(SCM id, SCM v);
 	static SCM light_specular(SCM id, SCM v);
 	static SCM light_position(SCM id, SCM v);
+	static SCM light_spot_angle(SCM id, SCM s);
+	static SCM light_spot_exponent(SCM id, SCM s);
+	static SCM light_attenuation(SCM id, SCM t, SCM s);
+	static SCM light_direction(SCM id, SCM v);
 	static SCM lock_camera(SCM s_ob);
 	static SCM camera_lag(SCM s_amount);
 	static SCM get_transform();

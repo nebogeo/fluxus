@@ -73,11 +73,8 @@ EngineCallback(NULL)
 	State InitialState;
 	m_StateStack.push_back(InitialState);
 	
-	// add a default light
-	Light *light=new Light;
-	light->SetPosition(dVector(0,0,0));
-	light->SetCameraLock(true);
-	AddLight(light);
+	// builds the default camera light
+	ClearLights();
 
 	InitFeedback();
 }
@@ -359,7 +356,7 @@ void Renderer::RenderLights(bool camera)
 	{
 		if (n<MAXLIGHTS && (*i)->GetCameraLock()==camera) 
 		{
-			(*i)->Render(n);
+			(*i)->Render();
 		}
 		n++;
 	}
@@ -367,6 +364,7 @@ void Renderer::RenderLights(bool camera)
 
 int Renderer::AddLight(Light *l)
 {
+	l->SetIndex(m_LightVec.size());
 	m_LightVec.push_back(l);
 	return m_LightVec.size()-1;
 }
@@ -379,7 +377,18 @@ Light *Renderer::GetLight(int id)
 
 void Renderer::ClearLights()
 {
+	for (unsigned int n=0; n<m_LightVec.size(); n++)
+	{
+		glDisable(GL_LIGHT0+n);
+	}
+	
 	m_LightVec.clear();
+	
+	// add a default light
+	Light *light=new Light;
+	light->SetPosition(dVector(0,0,0));
+	light->SetCameraLock(true);
+	AddLight(light);
 }
 
 int Renderer::Select(int x, int y, int size)
