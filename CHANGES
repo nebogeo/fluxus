@@ -41,6 +41,7 @@ happening with rotations/scales. smaller numbers are more laggy
 * locator primitive
 * (hint-origin) renders the local origin for a primitive
 * guile debugging and stack trace supported
+* lighting fixes and directional/spotlight support
 
 0.9
 
