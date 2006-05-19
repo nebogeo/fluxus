@@ -72,6 +72,23 @@ Source = Split("libfluxus/src/PData.cpp \
 		src/main.cpp")
 FluxusVersion = "HEAD"
 
+param_cast_test_src = """
+#include <libguile.h>
+
+SCM test () { return NULL; }
+
+int main(int argc, char ** argv) {
+	scm_c_define_gsubr("test", 0,0,0,(SCM (*)())test);
+	return 0;
+}
+"""
+
+def CheckParamCast(context):
+	context.Message('Checking if callbacks should be cast to (SCM (*)())...')
+	result = context.TryCompile(param_cast_test_src, ".cpp")
+	context.Result(result)
+	return result
+
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
 		  LIBPATH = LibPaths,
 		  CPPPATH = IncludePaths,
@@ -95,17 +112,20 @@ if not GetOption('clean'):
 	print '--------------------------------------------------------'		
 	print 'Fluxus: Configuring Build Environment'
 	print '--------------------------------------------------------'		
-	conf = Configure( env )	
-	# all libraries are required, but they can be checked for independently (hence autoadd=0),
-	# which allows us to speed up the tests ...
+	conf = Configure( env, custom_tests = {'CheckParamCast' : CheckParamCast} )	
+	# all libraries are required, but they can be checked for independently
+	# (hence autoadd=0), which allows us to speed up the tests ...
 	for (lib,headers) in LibList:
 		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
-		
+	# check if ellipsis is needed in casts
+	if not conf.CheckParamCast():
+		env.Append(CCFLAGS=' -DNEED_ELLIPSIS_IN_CASTS')
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
 	env.Replace(LIBS = [rec[0] for rec in LibList])
+	
 
 # packaging / installing
 if env['PLATFORM'] == 'darwin':
@@ -136,3 +156,4 @@ else:
 
 env.Install(SchemePrefix,"#/scm/init.scm")
 env.Install(SchemePrefix,"#/scm/macros.scm")
+
