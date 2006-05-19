@@ -46,14 +46,14 @@ m_Height(h)
 	m_Points.push_back(dVector(1,1,0));
 	m_Points.push_back(dVector(0,1,0));
 	
-	glGenTextures(1,&m_Texture);
+	glGenTextures(1,(GLuint*)&m_Texture);
 }
 
 PixelPrimitive::~PixelPrimitive()
 {
 	if (m_Texture!=0)
 	{
-		glDeleteTextures(1,&m_Texture);
+		glDeleteTextures(1,(GLuint*)&m_Texture);
 	}
 }
 
@@ -67,7 +67,7 @@ void PixelPrimitive::Upload()
 {
 	if (m_Texture!=0)
 	{
-		glDeleteTextures(1,&m_Texture);
+		glDeleteTextures(1,(GLuint*)&m_Texture);
 	}
 	
 	glBindTexture(GL_TEXTURE_2D,m_Texture);

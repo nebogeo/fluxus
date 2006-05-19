@@ -15,6 +15,8 @@ GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
 SchemePrefix = GuileSchemePrefix + "/fluxus"
 
 LibPaths     = ["/usr/local/lib"]
+IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
+
 # First member of each list is a library, second - a header or headers list
 # to be passed to the CheckLibWithHeader(...) at configure time.
 # We may add extra libraries later on per platform basis
@@ -31,7 +33,6 @@ LibList      = [["m", "math.h"],
 		["z", "zlib.h"],
 		["png", "libpng/png.h"]]
 
-IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 Source = Split("libfluxus/src/PData.cpp \
         libfluxus/src/PDataOperator.cpp \
 		libfluxus/src/PDataContainer.cpp \
