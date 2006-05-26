@@ -16,5 +16,12 @@ to build and install, type:
 
 sudo scons install
 
+Build options:
 
+X11=1          : Build with the X11 libraries - rather than Xorg which is 
+                 default.
+
+MULTITEXTURE=0 : Multitexturing is checked at configure time, but it can cause
+                 crashes on some drivers - set this to disable the 
+				 multitexturing code manually.
 

@@ -53,7 +53,7 @@ void TextPrimitive::SetText(const string &s, float Width, float Height, float Zo
 		
 		dVector min(S,T,0);
 		dVector max(S+m_CharWidth,T+m_CharHeight,0);
-		
+				
 		min.x+=Zoom;
 		max.x-=Zoom;
 		

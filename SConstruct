@@ -23,11 +23,11 @@ IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
 LibList      = [["m", "math.h"],
 		["jack", "jack/jack.h"],
 		["sndfile", "sndfile.h"],
+		["pthread", "pthread.h"],
 		["guile", "guile/gh.h"],
 		["fftw3", "fftw3.h"],
 		["ode", "ode/ode.h"],
 		["lo", "lo/lo.h"],
-		["pthread", "pthread.h"],
 		["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
 		["tiff", "tiff.h"],
 		["z", "zlib.h"],
@@ -89,6 +89,22 @@ def CheckParamCast(context):
 	context.Result(result)
 	return result
 
+multitexture_test_src = """
+#include <GL/gl.h>
+
+int main(int argc, char ** argv) {
+	glClientActiveTexture(GL_TEXTURE1);
+	return 0;
+}
+"""
+
+def CheckMultitexture(context):
+	context.Message('Checking for multitexturing support...')
+	result = context.TryCompile(multitexture_test_src, ".cpp")
+	context.Result(result)
+	return result
+
+
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
 		  LIBPATH = LibPaths,
 		  CPPPATH = IncludePaths,
@@ -101,27 +117,49 @@ if env['PLATFORM'] == 'darwin':
 	env.Prepend(LINKFLAGS = ["-static"])
 else:
 	LibList += [["X11", "X11/Xlib.h"],
-				# for X11
-				#["Xi", None],["Xmu", None], ["Xext", None], ["Xt", None], ["SM", None], ["ICE", None],
-                ["glut", "GL/glut.h"],
            	    ["GL", "GL/gl.h"],
-		    ["GLU", "GL/glu.h"]]
+           	    ["GLU", "GL/glu.h"],
+                ["glut", "GL/glut.h"]]
 	env.Append(LIBPATH = ["/usr/X11R6/lib"])
+	
+	# add the X11 libs on - needed if we are not building on xorg
+	if ARGUMENTS.get("X11",0):
+		LibList=[["Xi", "X11/Xlib.h"],
+				 ["Xmu", "X11/Xlib.h"], 
+				 ["Xext", "X11/Xlib.h"], 
+				 ["Xt", "X11/Xlib.h"], 
+				 ["SM", "X11/Xlib.h"], 
+				 ["ICE", "X11/Xlib.h"]] + LibList;
 	
 if not GetOption('clean'):
 	print '--------------------------------------------------------'		
 	print 'Fluxus: Configuring Build Environment'
 	print '--------------------------------------------------------'		
-	conf = Configure( env, custom_tests = {'CheckParamCast' : CheckParamCast} )	
+	conf = Configure( env, custom_tests = 
+	{'CheckParamCast' : CheckParamCast, 
+	 'CheckMultitexture' : CheckMultitexture })
+	
 	# all libraries are required, but they can be checked for independently
 	# (hence autoadd=0), which allows us to speed up the tests ...
 	for (lib,headers) in LibList:
-		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
+		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 1):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
+			
 	# check if ellipsis is needed in casts
 	if not conf.CheckParamCast():
 		env.Append(CCFLAGS=' -DNEED_ELLIPSIS_IN_CASTS')
+		
+		
+	if env['PLATFORM'] != 'darwin':
+		# check if multitexturing is supported (todo: use glew for this sort of thing)
+		if not conf.CheckMultitexture():
+			env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
+	
+	# enable users to disable multitexturing manually
+	if ARGUMENTS.get("MULTITEXTURE",1)=="0":
+		env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
+		
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
 	env.Replace(LIBS = [rec[0] for rec in LibList])
