@@ -192,7 +192,7 @@ SCM FluxusBinding::build_text(SCM s_text)
 	char *text=scm_to_locale_string(s_text);
 	
 	// 16*16 grid of letters
-	TextPrimitive *TextPrim = new TextPrimitive(16/1.0f,16/1.0f,16,0);
+	TextPrimitive *TextPrim = new TextPrimitive(16/256.0f,16/256.0f,16,0);
 	TextPrim->SetText(text,20,-20,0.018);
 	
 	return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(TextPrim));
@@ -382,7 +382,8 @@ SCM FluxusBinding::light_ambient(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_ambient");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetAmbient(dColour(vec[0],vec[1],vec[2]));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetAmbient(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -393,7 +394,8 @@ SCM FluxusBinding::light_diffuse(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_diffuse");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -404,7 +406,8 @@ SCM FluxusBinding::light_specular(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_specular");
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetSpecular(dColour(vec[0],vec[1],vec[2]));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetSpecular(dColour(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
@@ -415,7 +418,8 @@ SCM FluxusBinding::light_position(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light_position");	
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetPosition(dVector(vec[0],vec[1],vec[2]));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetPosition(dVector(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 	
@@ -423,7 +427,8 @@ SCM FluxusBinding::light_spot_angle(SCM id, SCM s)
 {
 	SCM_ASSERT(scm_is_number(id), id, SCM_ARG1, "light-spot-angle");	
 	SCM_ASSERT(scm_is_number(s), s, SCM_ARG2, "light-spot-angle");
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetSpotAngle(scm_to_double(s));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetSpotAngle(scm_to_double(s));
 	return SCM_UNSPECIFIED;
 }	
 
@@ -431,7 +436,8 @@ SCM FluxusBinding::light_spot_exponent(SCM id, SCM s)
 {
 	SCM_ASSERT(scm_is_number(id), id, SCM_ARG1, "light-spot-exponent");	
 	SCM_ASSERT(scm_is_number(s), s, SCM_ARG2, "light-spot-exponent");
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetSpotExponent(scm_to_double(s));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetSpotExponent(scm_to_double(s));
 	return SCM_UNSPECIFIED;
 }
 
@@ -441,21 +447,25 @@ SCM FluxusBinding::light_attenuation(SCM id, SCM t, SCM s)
 	SCM_ASSERT(scm_is_string(t), t, SCM_ARG2, "make_light");
 	SCM_ASSERT(scm_is_number(s), s, SCM_ARG3, "light-attenuation");
 				
-	char *type=scm_to_locale_string(t);	
-	if (!strcmp(type,"constant"))
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) 
 	{
-		Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetAttenuation(0,scm_to_double(s));
-	}
-	else if (!strcmp(type,"linear"))
-	{
-		Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetAttenuation(1,scm_to_double(s));
-	}
-	else if (!strcmp(type,"quadratic"))
-	{
-		Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetAttenuation(2,scm_to_double(s));
-	}
+		char *type=scm_to_locale_string(t);	
+		if (!strcmp(type,"constant"))
+		{
+			light->SetAttenuation(0,scm_to_double(s));
+		}
+		else if (!strcmp(type,"linear"))
+		{
+			light->SetAttenuation(1,scm_to_double(s));
+		}
+		else if (!strcmp(type,"quadratic"))
+		{
+			light->SetAttenuation(2,scm_to_double(s));
+		}
 
-	free(type);
+		free(type);
+	}
 	
 	return SCM_UNSPECIFIED;
 }
@@ -467,7 +477,8 @@ SCM FluxusBinding::light_direction(SCM id, SCM v)
 	SCM_ASSERT(scm_c_generalized_vector_length(v)==3, v, SCM_ARG2, "light-direction");	
 	float vec[3];
 	flx_floats_from_scm(v,vec);
-	Fluxus->GetRenderer()->GetLight(scm_to_int(id))->SetDirection(dVector(vec[0],vec[1],vec[2]));
+	Light *light = Fluxus->GetRenderer()->GetLight(scm_to_int(id));
+	if (light) light->SetDirection(dVector(vec[0],vec[1],vec[2]));
 	return SCM_UNSPECIFIED;
 }
 
