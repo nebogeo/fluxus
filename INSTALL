@@ -25,3 +25,10 @@ MULTITEXTURE=0 : Multitexturing is checked at configure time, but it can cause
                  crashes on some drivers - set this to disable the 
 				 multitexturing code manually.
 
+building the documentation:
+
+cd docs/
+./builddocs.sh
+
+this will make a fluxus directory containing the html docs
+

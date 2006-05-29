@@ -15,7 +15,7 @@
 ; ctrl-h to hide the code!
 
 (clear)
-(blur 0.2)
+(blur 0)
 (define current-bullet 0)
 (hint-none)
 (hint-wire)
