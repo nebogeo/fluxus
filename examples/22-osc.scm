@@ -1,6 +1,6 @@
-(define out 0)
+(define out (build-cube))
 (hint-unlit)
-(texture (load-texture "textures/scribblefont.png"))
+(texture (load-texture "textures/.png"))
 
 (define (osctest)
     (destroy out)
@@ -8,4 +8,4 @@
 
 (osc-source "4444")
 
-(every-frame "(osctest)")
+(every-frame (osctest))

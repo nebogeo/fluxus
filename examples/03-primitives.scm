@@ -45,18 +45,8 @@
 (ungrab))
 (pop)
 
-; poly text
-(translate (vector 2 0 0))
-(push)
-(colour (vector 0 0 0))
-(hint-unlit)
-(scale (vector 0.2 0.2 0.2))
-(texture (load-texture "textures/scribblefont.png"))
-(build-text "hello")
-(pop)
-
 ; nurbs sphere
-(translate (vector -8 2 0))
+(translate (vector -6 2 0))
 (texture tex)
 (push)
 (hint-points)
