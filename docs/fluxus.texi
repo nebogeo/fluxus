@@ -424,7 +424,9 @@ A capped cylinder, texture map wrapped around
 Builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
 
 @lisp
-(ascii 32 onwards)
+(ascii order 16 * 16 grid)
+
+
   ! " # $ % & ' ( ) * + ' - . / 
 0 1 2 3 4 5 6 7 8 9 : ; < = > ?
 @ A B C D E F G H I J K L M N O
@@ -438,6 +440,8 @@ fluxus
 
 @image{images/text}
 Ok, so this isn't a very good font texture :)
+
+Note: the font primitive is due to change to a more flexible form soon.
 
 @subsection NURBS primitives
 
