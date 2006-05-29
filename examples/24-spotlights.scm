@@ -13,7 +13,7 @@
 (light-diffuse key (vector 1 0.95 0.8))
 (light-specular key (vector 0.6 0.3 0.1))
 (light-spot-angle key 22)
-(light-spot-exponent key 500)
+(light-spot-exponent key 100)
 (light-direction key (vector -1 -1 0))
 
 ; make a fill light
@@ -22,7 +22,7 @@
 (light-diffuse fill (vector 0.5 0.3 0.1))
 (light-specular fill (vector 0.5 0.3 0.05))
 (light-spot-angle fill 12)
-(light-spot-exponent fill 400)
+(light-spot-exponent fill 100)
 (light-direction fill (vector 0.6 -0.6 -1))
 
 ; make a rim light
@@ -31,7 +31,7 @@
 (light-diffuse rim (vector 0 0.3 0.5))
 (light-specular rim (vector 0.4 0.6 1))
 (light-spot-angle rim 12)
-(light-spot-exponent rim 400)
+(light-spot-exponent rim 100)
 (light-direction rim (vector 0 -0.6 1))
 
 
