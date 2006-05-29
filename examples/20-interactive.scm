@@ -53,7 +53,7 @@
     (update obs)
     (if (or (mouse-button 1) (mouse-button 3))
         (let ((selected (mouse-over)))
-            (if (not (number? selected))
+            (if selected
                 (begin
                     (cond 
                         ((mouse-button 1)

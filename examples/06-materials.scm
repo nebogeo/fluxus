@@ -33,9 +33,8 @@
         (grid (- m 1) n)))
 
 (clear)
-(clear-lights)
 ; make a fixed light
-(define l1 (make-light 0))
+(define l1 (make-light "point" "free"))
 (light-position l1 (vector 0 10 10))
 
 ; put a plane in to show the transparency better
