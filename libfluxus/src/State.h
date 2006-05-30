@@ -16,12 +16,15 @@
 
 #include "dada.h"
 #include "iostream"  
-                 	
+#include "GLSLShader.h" 
+          	
 #ifndef __APPLE__
+#include "GL/glew.h"
 #include "GL/gl.h"
 #include "GL/glu.h"
 #include "GL/glut.h"
 #else
+#include "OpenGL/glew.h" /// ???
 #include "OpenGL/gl.h"
 #include "OpenGL/glu.h"
 #include "GLUT/glut.h"
@@ -85,6 +88,8 @@ public:
 	void SetBlendMode(string s, string d);
 	
 	dMatrix Transform;
+	
+	GLSLShader *Shader;
 };
 
 };

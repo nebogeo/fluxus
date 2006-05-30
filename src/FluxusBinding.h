@@ -83,6 +83,8 @@ public:
 	static SCM light_spot_exponent(SCM id, SCM s);
 	static SCM light_attenuation(SCM id, SCM t, SCM s);
 	static SCM light_direction(SCM id, SCM v);
+	static SCM shader(SCM s_vert, SCM s_frag);
+	static SCM shader_set(SCM s_params);
 	static SCM lock_camera(SCM s_ob);
 	static SCM camera_lag(SCM s_amount);
 	static SCM get_transform();

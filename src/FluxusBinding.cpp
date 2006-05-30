@@ -482,6 +482,112 @@ SCM FluxusBinding::light_direction(SCM id, SCM v)
 	return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::shader(SCM s_vert, SCM s_frag)
+{
+	SCM_ASSERT(scm_is_string(s_vert), s_vert, SCM_ARG1, "shader");
+	SCM_ASSERT(scm_is_string(s_frag), s_frag, SCM_ARG2, "shader");
+	
+	char *vert=scm_to_locale_string(s_vert);
+	char *frag=scm_to_locale_string(s_frag);
+	
+ 	GLSLShader *shader = new GLSLShader(vert,frag);
+	
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) 
+	{
+		// remove the old one
+		if (Grabbed->GetState()->Shader)
+		{
+			delete Grabbed->GetState()->Shader;
+		}
+		
+		Grabbed->GetState()->Shader=shader;
+	}
+    else 
+	{
+		// remove the old one
+		if (Fluxus->GetRenderer()->GetState()->Shader)
+		{
+			delete Fluxus->GetRenderer()->GetState()->Shader;
+		}
+
+		Fluxus->GetRenderer()->GetState()->Shader=shader;
+	}
+	
+	free(vert);
+	free(frag);
+
+	return SCM_UNSPECIFIED;
+}
+
+SCM FluxusBinding::shader_set(SCM s_params)
+{	
+ 	GLSLShader *shader;
+	
+	Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) shader=Grabbed->GetState()->Shader;
+    else shader=Fluxus->GetRenderer()->GetState()->Shader;
+
+	if (shader)
+	{
+		// vectors seem easier to handle than lists with this api
+		SCM paramvec = scm_vector(s_params);
+
+		// apply to set parameters
+		shader->Apply();
+
+		for (unsigned int n=0; n<scm_c_generalized_vector_length(paramvec); n+=2)
+		{
+			SCM arg=scm_vector_ref(paramvec, scm_from_int(n));
+
+			if (scm_is_string(arg))
+			{
+				// get the parameter name
+				char *param = scm_to_locale_string(arg);
+
+				// get the value
+				SCM arg=scm_vector_ref(paramvec, scm_from_int(n+1));
+
+				if (scm_is_number(arg))
+				{
+					shader->SetFloat(param,(float)scm_to_double(arg));
+				}
+				else if (scm_is_vector(arg))
+				{
+					if (scm_c_generalized_vector_length(arg) == 3)
+					{
+						dVector vec;
+						flx_floats_from_scm(arg,vec.arr());
+						shader->SetVector(param,vec);
+					}
+					else if (scm_c_generalized_vector_length(arg) == 4)
+					{
+						dColour vec;
+						flx_floats_from_scm(arg,vec.arr());
+						shader->SetColour(param,vec);
+					}
+					else
+					{	
+						cerr<<"shader has found an argument vector of a strange size"<<endl;
+					}
+				}
+				else
+				{
+					cerr<<"shader has found an argument type it can't send, numbers and vectors only"<<endl;
+				}
+
+				free(param);
+			}
+			else
+			{
+				cerr<<"shader has found a mal-formed parameter list"<<endl;
+			}
+		}
+		GLSLShader::Unapply();
+	}   
+	return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::lock_camera(SCM s_ob)
 {
 	int ob=Smob2Prim(s_ob);	
@@ -2441,6 +2547,8 @@ void FluxusBinding::RegisterProcs()
     scm_c_define_gsubr("parent", 1 ,0,0,(CALLBACK_CAST) 	parent);
 	scm_c_define_gsubr("hide",1,0,0,(CALLBACK_CAST) 		hide);
 	scm_c_define_gsubr("selectable",1,0,0,(CALLBACK_CAST)	selectable);
+	scm_c_define_gsubr("shader",2,0,0,(CALLBACK_CAST)	shader);
+	scm_c_define_gsubr("shader-set!",1,0,0,(CALLBACK_CAST)	shader_set);
 	
 	// global state operations
 	scm_c_define_gsubr("clear",0,0,0,(CALLBACK_CAST)		   clear);

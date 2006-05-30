@@ -29,7 +29,8 @@ Hints(HINT_SOLID),
 LineWidth(1),
 PointWidth(1),
 SourceBlend(GL_SRC_ALPHA),
-DestinationBlend(GL_ONE_MINUS_SRC_ALPHA)
+DestinationBlend(GL_ONE_MINUS_SRC_ALPHA),
+Shader(NULL)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
@@ -52,6 +53,15 @@ void State::Apply()
 	glBlendFunc(SourceBlend,DestinationBlend);
 
 	TexturePainter::Get()->SetCurrent(Textures);
+	
+	if (Shader)
+	{
+		Shader->Apply();
+	}
+	else
+	{
+		GLSLShader::Unapply();
+	}
 }
 
 void State::Spew()

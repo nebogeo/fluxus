@@ -298,9 +298,23 @@ int main(int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
-		
+
+#ifdef ENABLE_GLSL		
+    if(glewInit() != GLEW_OK)
+	{
+		cerr << "ERROR Unable to check OpenGL extensions" << endl;
+		return false;
+	}
+	
+	if(!glewIsSupported("GL_VERSION_2_0"))
+	{
+		cerr << "ERROR OpenGL 2.0 required" << endl;
+		return false;
+	}
+#endif
+
 	scm_boot_guile(argc, argv, inner_main, 0);
-    
+	
 	return 0;
 }
 

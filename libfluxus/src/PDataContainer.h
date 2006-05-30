@@ -61,7 +61,6 @@ protected:
 	// called when a named pdata mapping changes 
 	virtual void PDataDirty() = 0;
 	
-private:
 	// todo: replace with a hashmap
 	map<string,PData*> m_PData;
 

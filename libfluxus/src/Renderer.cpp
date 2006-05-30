@@ -311,6 +311,8 @@ void Renderer::EndScene()
 	// clear the texture, if the last primitive assigned one...
 	glDisable(GL_TEXTURE_2D);
 
+	GLSLShader::Unapply();
+
 	glDisable(GL_DEPTH_TEST);
 	if (m_ShowAxis) Primitive::RenderAxes();
 	glEnable(GL_DEPTH_TEST);
