@@ -151,9 +151,10 @@ void PolyPrimitive::Render()
 
 void PolyPrimitive::RecalculateNormals(bool smooth)
 {
-	// todo - need different aproaches for TRISTRIP,QUADS,TRILIST,TRIFAN
+	// todo - need different approach for TRIFAN
 	
 	int stride=0;
+	if (m_Type==TRISTRIP) stride=2;
 	if (m_Type==QUADS) stride=4;
 	if (m_Type==TRILIST) stride=3;
 	if (stride>0)
