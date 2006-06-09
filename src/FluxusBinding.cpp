@@ -550,7 +550,8 @@ SCM FluxusBinding::shader_set(SCM s_params)
 
 				if (scm_is_number(arg))
 				{
-					shader->SetFloat(param,(float)scm_to_double(arg));
+					if (scm_is_integer(arg)) shader->SetInt(param,scm_to_int(arg));
+					else shader->SetFloat(param,(float)scm_to_double(arg));
 				}
 				else if (scm_is_vector(arg))
 				{

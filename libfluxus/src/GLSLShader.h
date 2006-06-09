@@ -46,6 +46,7 @@ public:
 	void Apply();
 	static void Unapply();
 	
+	void SetInt(const string &name, int s);
 	void SetFloat(const string &name, float s);
 	void SetVector(const string &name, dVector s);
 	void SetColour(const string &name, dColour s);

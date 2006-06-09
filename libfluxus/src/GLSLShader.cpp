@@ -44,6 +44,14 @@ void GLSLShader::Unapply()
 #endif	
 }
 
+void GLSLShader::SetInt(const string &name, int s)
+{
+#ifdef ENABLE_GLSL
+	GLuint param = glGetUniformLocation(m_Program, name.c_str());
+	glUniform1i(param,s);
+#endif	
+}
+
 void GLSLShader::SetFloat(const string &name, float s)
 {
 #ifdef ENABLE_GLSL
