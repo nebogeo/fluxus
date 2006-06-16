@@ -970,6 +970,14 @@ SCM FluxusBinding::hint_origin()
     return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::hint_cast_shadow()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_CAST_SHADOW;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_CAST_SHADOW;
+    return SCM_UNSPECIFIED;
+}
+
 SCM FluxusBinding::blur(SCM s_blur)
 {
     SCM_ASSERT(scm_is_number(s_blur), s_blur, SCM_ARG1, "blur");
@@ -1631,7 +1639,7 @@ SCM FluxusBinding::osc(SCM s_index)
 	char type = Fluxus->TypeFromOSC(index);
 	SCM ret;
 	if (type=='f') ret=scm_from_double(Fluxus->NumberFromOSC(index));
-	else if (type=='i') ret=scm_from_int((int)Fluxus->NumberFromOSC(index));
+	else if (type=='i') ret=scm_from_uint((int)Fluxus->NumberFromOSC(index));
 	else if (type=='s') 
 	{
 		string value=Fluxus->StringFromOSC(index);
@@ -1679,7 +1687,7 @@ SCM FluxusBinding::osc_send(SCM s_msg, SCM s_types, SCM s_arglist)
 			if (n<strlen(types))
 			{
 				if (types[n]=='f') oscargs.push_back(new OSCFloat(scm_to_double(arg)));
-				else if (types[n]=='i') oscargs.push_back(new OSCInt(scm_to_int(arg)));
+				else if (types[n]=='i') oscargs.push_back(new OSCInt(scm_to_uint(arg)));
 			}
 		}
 		else if (scm_is_string(arg))
@@ -2542,6 +2550,7 @@ void FluxusBinding::RegisterProcs()
     scm_c_define_gsubr("hint-box",0,0,0,(CALLBACK_CAST) 		hint_box);
     scm_c_define_gsubr("hint-multitex",0,0,0,(CALLBACK_CAST)   hint_multitex);
     scm_c_define_gsubr("hint-origin",0,0,0,(CALLBACK_CAST)    hint_origin);
+    scm_c_define_gsubr("hint-cast-shadow",0,0,0,(CALLBACK_CAST) hint_cast_shadow);
 	scm_c_define_gsubr("line-width",1,0,0,(CALLBACK_CAST)	line_width);
 	scm_c_define_gsubr("point-width",1,0,0,(CALLBACK_CAST)  point_width);
 	scm_c_define_gsubr("blend-mode",2,0,0,(CALLBACK_CAST)	blend_mode);
@@ -2689,6 +2698,5 @@ void FluxusBinding::RegisterProcs()
 
 	scm_c_define_gsubr("searchpaths",1,0,0,(CALLBACK_CAST) searchpaths);
 	scm_c_define_gsubr("full-path",1,0,0,(CALLBACK_CAST) full_path);
-	
 	
 }

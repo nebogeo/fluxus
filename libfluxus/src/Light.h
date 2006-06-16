@@ -47,6 +47,8 @@ public:
 	void SetCameraLock(bool s)  { m_CameraLock=s; }
 	bool GetCameraLock()   { return m_CameraLock; }
 	
+	dVector GetPosition() { return m_Position; }
+	
 protected:
 
 	int m_Index;

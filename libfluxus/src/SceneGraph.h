@@ -18,6 +18,7 @@
 #include "Tree.h"
 #include "Primitive.h"
 #include "State.h"
+#include "ShadowVolumeGen.h"
 
 using namespace std;
 
@@ -52,9 +53,13 @@ public:
 	dMatrix GetGlobalTransform(SceneNode *node);
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
 
+	ShadowVolumeGen *GetShadowVolumeGen() { return &m_ShadowVolumeGen; }
+
 private:
 	void RenderWalk(SceneNode *node, int depth, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
+	
+	ShadowVolumeGen m_ShadowVolumeGen;
 };
 
 }

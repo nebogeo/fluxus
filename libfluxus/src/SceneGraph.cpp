@@ -59,6 +59,11 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	node->Prim->Render();
 	glPopName();
     
+	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
+	{
+		m_ShadowVolumeGen.Generate(node->Prim);
+	}
+	
 	depth++;
 
 	for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)

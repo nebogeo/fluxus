@@ -14,6 +14,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  
+#ifndef N_RENDERER
+#define N_RENDERER
+
 #include <sys/time.h>
 #include "dada.h"
 #include "deque"
@@ -23,9 +26,6 @@
 #include "SceneGraph.h"
 #include "Light.h"
 #include "TexturePainter.h"
-
-#ifndef N_RENDERER
-#define N_RENDERER
 
 using namespace std;
 
@@ -81,7 +81,7 @@ public:
 	int AddLight(Light *l);
 	Light *GetLight(int id);
 	void ClearLights();
-	
+
 	////////////////////////////////////////////////////////////////////////
 	// Scenegraph access
 	const SceneGraph &GetSceneGraph()        { return m_World; }
@@ -180,7 +180,7 @@ private:
     deque<State> m_StateStack;
     SceneGraph m_World;
 	vector<Light*> m_LightVec;
-	
+		
     /////////////////////////////////////////////////////
     // Immediate-ish mode
     // we need to keep a record of immediate mode requests to

@@ -286,7 +286,7 @@ int main(int argc, char *argv[])
 	
 	glutInitWindowSize(768,576) ;
   	glutInit(&argc,argv);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH);
+	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
   	glutCreateWindow("fluxus");
 	binding = new FluxusBinding(768,576);
 	glutDisplayFunc(DisplayCallback);

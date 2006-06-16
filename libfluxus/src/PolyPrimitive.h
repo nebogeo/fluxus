@@ -14,6 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <set>
+
 #include "Renderer.h"
 #include "Primitive.h"
 
@@ -38,12 +40,30 @@ public:
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
 	
+	Type GetType() { return m_Type; }
+
+	const vector<vector<int> > &GetConnectedVerts() { GenerateTopology(); return m_ConnectedVerts; }
+	const vector<dVector> &GetGeometricNormals() { GenerateTopology(); return m_GeometricNormals; }
+	const vector<vector<pair<int,int> > > &GetUniqueEdges() { GenerateTopology(); return m_UniqueEdges; }
+	
 protected:
 
+	void GenerateTopology();
+	
+	void CalculateConnected();
+	void CalculateGeometricNormals();
+	void CalculateUniqueEdges();
+	
+	void UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> > firstpass, set<pair<int,int> > &stored);
+	
 	virtual void PDataDirty();
 	
-	Type m_Type;
 	vector<vector<int> > m_ConnectedVerts;
+	vector<dVector> m_GeometricNormals;
+	vector<vector<int> > m_Faces;
+	vector<vector<pair<int,int> > >  m_UniqueEdges;
+	
+	Type m_Type;
 	vector<dVector> *m_VertData;
 	vector<dVector> *m_NormData;
 	vector<dColour> *m_ColData;

@@ -57,6 +57,7 @@ Source = Split("libfluxus/src/PData.cpp \
 		libfluxus/src/dada.cpp \
 		libfluxus/src/SearchPaths.cpp \
 		libfluxus/src/GLSLShader.cpp \
+		libfluxus/src/ShadowVolumeGen.cpp \
 		libfluxphysics/src/Physics.cpp \
 		src/AudioCollector.cpp \
 		src/FluxusMain.cpp \

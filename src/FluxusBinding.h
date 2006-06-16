@@ -127,6 +127,7 @@ public:
 	static SCM hint_none();
 	static SCM hint_multitex();
 	static SCM hint_origin();
+	static SCM hint_cast_shadow();
 	static SCM blur(SCM s_blur);
 	static SCM fog(SCM s_col, SCM s_d, SCM s_s, SCM s_e);
 	static SCM feedback(SCM s_fb);
@@ -247,5 +248,6 @@ public:
 
 	static SCM repl_princ(SCM c);
 	static SCM repl_print(SCM s);
+	
 };
 #endif

@@ -268,20 +268,82 @@ void Renderer::BeginScene(bool PickMode)
 		else m_LockedCamera=false;
 	}
 
+	//m_World.GetShadowVolumeGen()->SetLightPosition(m_Camera.inverse().transform((*m_LightVec.begin())->GetPosition()));
+
 }
 
 void Renderer::Render()
 {
 	if (!m_LoadedFromFlx) ClearIMPrimitives();
 	
-	BeginScene();
-	glPushMatrix();
-	if (EngineCallback) EngineCallback();
-	glPopMatrix();
-	m_World.Render();
-	RenderIMPrimitives();	
-	EndScene();
-	
+	if (!m_World.GetShadowVolumeGen()->IsActive())
+	{	
+		BeginScene();
+		glPushMatrix();
+		if (EngineCallback) EngineCallback();
+		glPopMatrix();
+		m_World.Render();
+		RenderIMPrimitives();
+		EndScene();
+	}
+	else
+	{		
+		// do the multipass for shadow rendering
+		// i'd really like to expose this to fluxus more generally
+		// for custom multipass rendering, but can't think of a nice
+		// way to do this yet
+		BeginScene();
+		//glDisable(GL_LIGHT0); 
+		glPushMatrix();
+		if (EngineCallback) EngineCallback();
+		glPopMatrix();
+		m_World.Render();
+		RenderIMPrimitives();
+		
+		/*
+		glClear(GL_STENCIL_BUFFER_BIT);
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc(GL_ALWAYS, 0, ~0);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LESS);
+		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+		glDepthMask(GL_FALSE);
+		glEnable(GL_CULL_FACE);
+		
+		glCullFace(GL_BACK);
+    	glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+		m_World.GetShadowVolumeGen()->GetVolume()->Render();
+
+    	glCullFace(GL_FRONT);
+    	glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+		m_World.GetShadowVolumeGen()->GetVolume()->Render();
+ 
+	 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glDepthFunc(GL_EQUAL);
+		glStencilFunc(GL_EQUAL, 0, ~0);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ONE, GL_ONE);
+		glCullFace(GL_BACK);
+
+		glEnable(GL_LIGHT0);
+		 
+		m_World.Render();
+		RenderIMPrimitives();
+		
+		glDepthMask(GL_TRUE);
+		glDepthFunc(GL_LEQUAL);
+		glStencilFunc(GL_ALWAYS, 0, ~0);
+		*/
+		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
+		m_World.GetShadowVolumeGen()->GetVolume()->Render();
+		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
+
+		
+		EndScene();
+	}
+		
 	if (m_LoadedFromFlx) ClearIMPrimitives();
 	
 	timeval ThisTime;
@@ -467,7 +529,6 @@ void Renderer::Clear()
 	m_World.Clear();
 	m_StateStack.clear();
 	UnGrab();
-	
 	State InitialState;
 	m_StateStack.push_back(InitialState);
 }	
