@@ -42,31 +42,32 @@ void  dSinCos(float a, float &s, float &c);
 class dVector
 {
 public:
-       float x,y,z,w;
-       dVector() {x=y=z=0; w=1;}
-       dVector(float X, float Y, float Z, float W=1) {x=X; y=Y; z=Z; w=W;}
-       dVector(dVector const &c) {*this=c;}
+		float x,y,z,w;
+		dVector() {x=y=z=0; w=1;}
+		dVector(float X, float Y, float Z, float W=1) {x=X; y=Y; z=Z; w=W;}
+		dVector(dVector const &c) {*this=c;}
 		
-	float *arr() {return &x;}
-	int operator==(dVector const &rhs) {return (x==rhs.x&&y==rhs.y&&z==rhs.z);}
-       dVector &operator=(dVector const &rhs);
-       dVector operator+(dVector const &rhs) const;
-       dVector operator-(dVector const &rhs) const;
-       dVector operator*(float rhs) const;
-       dVector operator/(float rhs) const;
-       dVector &operator+=(dVector const &rhs);
-       dVector &operator-=(dVector const &rhs);
-       dVector &operator*=(float rhs);
-       dVector &operator/=(float rhs);
-       dVector cross(dVector const &rhs) const;
-       float dot(dVector const &rhs) const;
-       float dist(dVector const &rhs) const;
-       float mag();
-       void get_euler(float &rx, float &ry, float &rz) const;
-       void homog() {if (w && w!=1.0) {x/=w; y/=w; z/=w; w=1;}}
-       dVector &normalise() {*this/=mag(); return *this;}
-		 
-		 void get_rot(float m[16],dVector up); // legacy func 
+		float *arr() {return &x;}
+		int operator==(dVector const &rhs) {return (x==rhs.x&&y==rhs.y&&z==rhs.z);}
+		dVector &operator=(dVector const &rhs);
+		dVector operator+(dVector const &rhs) const;
+		dVector operator-(dVector const &rhs) const;
+		dVector operator*(float rhs) const;
+		dVector operator/(float rhs) const;
+		dVector &operator+=(dVector const &rhs);
+		dVector &operator-=(dVector const &rhs);
+		dVector &operator*=(float rhs);
+		dVector &operator/=(float rhs);
+		dVector cross(dVector const &rhs) const;
+		float dot(dVector const &rhs) const;
+		float dist(dVector const &rhs) const;
+		float mag();
+		void get_euler(float &rx, float &ry, float &rz) const;
+		void homog() {if (w && w!=1.0) {x/=w; y/=w; z/=w; w=1;}}
+		dVector &normalise() {*this/=mag(); return *this;}
+		bool feq(const dVector &other, float epsilon=0.001);
+
+		void get_rot(float m[16],dVector up); // legacy func 
 private:
 };
 

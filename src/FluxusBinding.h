@@ -44,6 +44,7 @@ public:
 	static PolyPrimitive* StaticCylinder;
 	
 	static set<int> m_KeySet;
+	static set<int> m_SpecialKeySet;
 	
 	void RegisterProcs();
 	
@@ -72,6 +73,9 @@ public:
 	static SCM draw_sphere();
 	static SCM draw_cylinder();
 	static SCM key_pressed(SCM s_key);
+	static SCM keys_down();
+	static SCM key_special_pressed(SCM s_key);
+	static SCM keys_special_down();
 	static SCM show_axis(SCM s_id);
 	static SCM show_fps(SCM s_id);
 	static SCM make_light(SCM type, SCM cam);

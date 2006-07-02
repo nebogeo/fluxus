@@ -34,6 +34,7 @@ PolyPrimitive*  FluxusBinding::StaticPlane=NULL;
 PolyPrimitive*  FluxusBinding::StaticSphere=NULL;
 PolyPrimitive*  FluxusBinding::StaticCylinder=NULL;
 set<int>        FluxusBinding::m_KeySet;
+set<int>        FluxusBinding::m_SpecialKeySet;
 deque<int>		FluxusBinding::GrabbedIDStack;
 int				FluxusBinding::GrabbedID=-1;
 
@@ -313,14 +314,44 @@ SCM FluxusBinding::draw_cylinder()
 
 
 SCM FluxusBinding::key_pressed(SCM s_key)
-{
+{	
 	SCM_ASSERT(scm_is_string(s_key), s_key, SCM_ARG1, "key_pressed");
-	char *key=scm_to_locale_string(s_key);
+	char *key=0;
+	key=scm_to_locale_string(s_key);
 	bool pressed;
 	if (m_KeySet.find(key[0])!=m_KeySet.end()) pressed=true;
 	else pressed=false;
     free(key);
     return scm_from_bool(pressed);
+}
+
+SCM FluxusBinding::keys_down()
+{
+	vector<float> keys;
+	for (set<int>::iterator i=m_KeySet.begin(); i!=m_KeySet.end(); i++)
+	{
+		keys.push_back(*i);
+	}
+	return flx_floats_to_scm(&(*keys.begin()), keys.size());	
+}
+
+SCM FluxusBinding::key_special_pressed(SCM s_key)
+{	
+	SCM_ASSERT(scm_is_number(s_key), s_key, SCM_ARG1, "key-special-pressed");	
+	bool pressed;
+	if (m_SpecialKeySet.find(scm_to_int(s_key))!=m_SpecialKeySet.end()) pressed=true;
+	else pressed=false;
+    return scm_from_bool(pressed);
+}
+
+SCM FluxusBinding::keys_special_down()
+{
+	vector<float> keys;
+	for (set<int>::iterator i=m_SpecialKeySet.begin(); i!=m_SpecialKeySet.end(); i++)
+	{
+		keys.push_back(*i);
+	}
+	return flx_floats_to_scm(&(*keys.begin()), keys.size());	
 }
 
 SCM FluxusBinding::show_axis(SCM s_id)
@@ -2596,6 +2627,9 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("edit",1,0,0,(CALLBACK_CAST) edit);
 	scm_c_define_gsubr("save-name",1,0,0,(CALLBACK_CAST) save_name);
 	scm_c_define_gsubr("key-pressed",1,0,0,(CALLBACK_CAST) key_pressed);
+	scm_c_define_gsubr("keys-down",0,0,0,(CALLBACK_CAST) keys_down);
+	scm_c_define_gsubr("key-special-pressed",1,0,0,(CALLBACK_CAST) key_special_pressed);
+	scm_c_define_gsubr("keys-special-down",0,0,0,(CALLBACK_CAST) keys_special_down);
 	scm_c_define_gsubr("mouse-over",0,0,0,(CALLBACK_CAST) mouse_over);
 	scm_c_define_gsubr("mouse-button",1,0,0,(CALLBACK_CAST) mouse_button);
     scm_c_define_gsubr("time",0,0,0,(CALLBACK_CAST) time);

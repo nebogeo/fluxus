@@ -9,7 +9,7 @@
 (clear)
 (clear-colour (vector 0 0 0))
 
-(let ((l (make-light 0)))
+(let ((l (make-light "point" "free")))
     (light-position l (vector 10 50 10)))
 
 ;(hint-unlit)

@@ -1,5 +1,11 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+* big (recalc-normals) speedup
+* normals recalculated for primitives of type POLYGON
+* (keys-down) returns vector of the ascii values of all keys pressed
+* (key-special-pressed id) for cursor keys etc
+* (keys-special-down) returns vector of all special keys pressed
+
 0.10
 
 * scheme repl (read evaluate print loop) interpreter on ctrl 0

@@ -178,7 +178,12 @@ void dVector::get_rot(float m[16],dVector up)
 	m[4]=b.x; m[5]=b.y;	m[6]=b.z;	
 	m[8]=c.x; m[9]=c.y;	m[10]=c.z;
 	}
-	
+
+bool dVector::feq(const dVector &other, float epsilon)
+{
+	return (fabs(x-other.x)<epsilon && fabs(y-other.y)<epsilon && fabs(z-other.z)<epsilon);
+}
+
 ////
 
 dColour &dColour::operator=(dColour const &rhs)

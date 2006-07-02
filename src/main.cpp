@@ -158,11 +158,13 @@ void KeyboardUpCallback(unsigned char key,int x, int y)
 void SpecialKeyboardCallback(int key,int x, int y)
 {
 	binding->Fluxus->Handle(0, -1, key, -1, x, y, glutGetModifiers());
+	binding->m_SpecialKeySet.insert(key);
 }
 
 void SpecialKeyboardUpCallback(int key,int x, int y)
 {
 	//binding->Fluxus->Handle( 0, 0, key, 1, x, y);
+	binding->m_SpecialKeySet.erase(key);
 }
 
 void MouseCallback(int button, int state, int x, int y)
@@ -284,7 +286,7 @@ int main(int argc, char *argv[])
         InitDada();
 	srand(time(NULL));
 	
-	glutInitWindowSize(768,576) ;
+	glutInitWindowSize(720,576) ;
   	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
   	glutCreateWindow("fluxus");
@@ -299,13 +301,13 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 
-#ifdef ENABLE_GLSL		
     if(glewInit() != GLEW_OK)
 	{
 		cerr << "ERROR Unable to check OpenGL extensions" << endl;
 		return false;
 	}
 	
+#ifdef ENABLE_GLSL		
 	if(!glewIsSupported("GL_VERSION_2_0"))
 	{
 		cerr << "ERROR OpenGL 2.0 required" << endl;

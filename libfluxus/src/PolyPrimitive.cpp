@@ -191,10 +191,10 @@ void PolyPrimitive::GenerateTopology()
 		CalculateGeometricNormals();
 	}
 	
-	if (m_UniqueEdges.empty())
-	{
-		CalculateUniqueEdges();
-	}
+	//if (m_UniqueEdges.empty())
+	//{
+	//	CalculateUniqueEdges();
+	//}
 }
 
 void PolyPrimitive::CalculateConnected()
@@ -206,7 +206,7 @@ void PolyPrimitive::CalculateConnected()
 		for (unsigned int b=0; b<m_VertData->size(); b++)
 		{
 			// find all close verts
-			if (i!=b && (*m_VertData)[i].dist((*m_VertData)[b])<0.001)
+			if (i!=b && (*m_VertData)[i].feq((*m_VertData)[b]))
 			{
 				connected.push_back(b);
 			}
@@ -219,6 +219,23 @@ void PolyPrimitive::CalculateConnected()
 void PolyPrimitive::CalculateGeometricNormals()
 {
 	// todo - need different approach for TRIFAN
+	// one face 
+	if (m_Type==POLYGON && m_VertData->size()>2) 
+	{
+		m_GeometricNormals.clear();
+		dVector a((*m_VertData)[0]-(*m_VertData)[1]);
+		dVector b((*m_VertData)[1]-(*m_VertData)[2]);
+		dVector normal(a.cross(b));
+		normal.normalise();
+		
+		for (unsigned int i=0; i<m_VertData->size(); i++)
+		{
+			m_GeometricNormals.push_back(normal);
+		}
+		
+		return;
+	}
+	
 	int stride=0;
 	if (m_Type==TRISTRIP) stride=2;
 	if (m_Type==QUADS) stride=4;

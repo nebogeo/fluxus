@@ -13,11 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-
-#include "dada.h"
-#include "iostream"  
-#include "GLSLShader.h" 
-          	
+         	
 #ifndef __APPLE__
 #include "GL/glew.h"
 #include "GL/gl.h"
@@ -30,6 +26,10 @@
 #include "GLUT/glut.h"
 #endif
 
+#include "dada.h"
+#include "iostream"  
+#include "GLSLShader.h" 
+ 
 #ifndef N_STATE
 #define N_STATE
 

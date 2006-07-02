@@ -1239,9 +1239,24 @@ constructed they can be treated in exactly the same way as any other primitive, 
 Fluxus can also be used to build interactive applications, and allows user input to be read by scripts.
 
 @lisp                     
-(key-pressed t)                
+(key-pressed "a")                
 @end lisp                     
-Returns true if the key has been pressed this frame
+Returns true if the "a" key has been pressed this frame
+
+@lisp                     
+(key-special-pressed 100)                
+@end lisp                     
+Returns true if the special key has been pressed this frame (in this case left cursor key)
+
+@lisp                     
+(keys-down)                
+@end lisp                     
+Returns a vector containing the ascii codes of the currently pressed keys. Mainly of use for debugging.
+
+@lisp                     
+(keys-special-down)                
+@end lisp                     
+Returns a vector containing the codes of the currently pressed keys special keys. Mainly of use for debugging.
 
 @lisp                     
 (mouse-button b)                    
