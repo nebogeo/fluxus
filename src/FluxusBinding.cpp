@@ -2459,6 +2459,16 @@ SCM FluxusBinding::mouse_button(SCM s_b)
 	return scm_from_bool(Fluxus->GetMouseButton()==but);
 }
 
+SCM FluxusBinding::mouse_x()
+{
+	return scm_from_int(Fluxus->GetMouseX());
+}
+
+SCM FluxusBinding::mouse_y()
+{
+	return scm_from_int(Fluxus->GetMouseY());
+}
+
 SCM FluxusBinding::load_recorded_code(SCM s_name)
 {
 	SCM_ASSERT(scm_is_string(s_name), s_name, SCM_ARG1, "load-recorded-code");	
@@ -2653,7 +2663,9 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("keys-special-down",0,0,0,(CALLBACK_CAST) keys_special_down);
 	scm_c_define_gsubr("mouse-over",0,0,0,(CALLBACK_CAST) mouse_over);
 	scm_c_define_gsubr("mouse-button",1,0,0,(CALLBACK_CAST) mouse_button);
-    scm_c_define_gsubr("time",0,0,0,(CALLBACK_CAST) time);
+	scm_c_define_gsubr("mouse-x",0,0,0,(CALLBACK_CAST) mouse_x);
+ 	scm_c_define_gsubr("mouse-y",0,0,0,(CALLBACK_CAST) mouse_y);
+   scm_c_define_gsubr("time",0,0,0,(CALLBACK_CAST) time);
     scm_c_define_gsubr("delta",0,0,0,(CALLBACK_CAST) delta);
     scm_c_define_gsubr("frame-hook",0,0,0,(CALLBACK_CAST) frame_hook);
     scm_c_define_gsubr("flxrnd",0,0,0,(CALLBACK_CAST) srandom);

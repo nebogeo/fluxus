@@ -163,6 +163,8 @@ static void onUnitSphere(const float mx, const float my,
 void FluxusMain::HandleImpl(unsigned char key, int button, int special, int state, int x, int y, int mod) 
 {
 	//cerr<<"key:"<<key<<" button:"<<button<<" special:"<<special<<" state:"<<state<<" x:"<<x<<" y:"<<y<<endl;
+	m_CurMouseX=x;
+	m_CurMouseY=y;
 	
 	if (key!=0 || special!=-1) 
 	{

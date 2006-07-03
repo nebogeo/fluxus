@@ -77,8 +77,8 @@ public:
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
 	void SetInteractiveCamera(bool s) { m_InteractiveCamera=s; }
 	
-	float GetMouseX() { return m_LastMouseX; }
-	float GetMouseY() { return m_LastMouseY; }
+	int GetMouseX() { return m_CurMouseX; }
+	int GetMouseY() { return m_CurMouseY; }
 	int GetMouseButton() { return m_CurButton; }
  
     void LoadRecordedCode(const string &Filename) { m_Recorder.Load(Filename); }
@@ -106,6 +106,8 @@ private:
 	string m_SaveName[NUM_EDITORS];
 
 	bool m_Init;
+	int m_CurMouseX;
+	int m_CurMouseY;
 	int m_LastMouseX;
 	int m_LastMouseY;
 	int m_LastButton;

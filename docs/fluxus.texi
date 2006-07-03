@@ -1264,6 +1264,12 @@ Returns a vector containing the codes of the currently pressed keys special keys
 Returns true if the corresponding mouse button has been pressed this frame.
 
 @lisp                     
+(mouse-x)                    
+(mouse-y)                    
+@end lisp                     
+Returns the current screen pixel coordinates of the mouse.
+
+@lisp                     
 (mouse-over)
 @end lisp                     
 Returns the id of the object the mouse is currently over
@@ -1525,7 +1531,7 @@ Returns true if the grabbed object collided in the last frame
 @node Turtle Builder
 @chapter Turtle builder 
 
-The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 3D space. as you drive the turtle around you can place vertices and build shapes procedurally.
+The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 3D space. As you drive the turtle around you can place vertices and build shapes procedurally. The turtle can also be used to deform existing polygonal primitives, by attaching it to objects you have already created. 
 
 @lisp 
 (turtle-prim type)
@@ -1541,6 +1547,11 @@ Starts a new primitive of the type specified:
 @end lisp 
 
 @lisp 
+(turtle-attach polyprimitive)
+@end lisp 
+Attaches the turtle to an existing poly primitive. This means you are able to deform an existing objects points using the turtle builder.
+
+@lisp 
 (turtle-move distance)
 @end lisp 
 Moves the turtle forward in it's current orientation
@@ -1548,17 +1559,17 @@ Moves the turtle forward in it's current orientation
 @lisp 
 (turtle-turn anglevec)
 @end lisp 
-Rotates the turtle's orientation with the supplied euler angles
+Rotates the turtle's orientation with the supplied euler angles (rotations in x, y and z)
 
 @lisp 
 (turtle-vert)
 @end lisp 
-Creates a new vertex in the current position
+Creates a new vertex in the current position, or sets the current vertex if the turtle builder is attached. 
 
 @lisp 
 (turtle-build)
 @end lisp 
-Builds the object with the vertex list defined and gives it to the renderer
+Builds the object with the vertex list defined and gives it to the renderer. Has no effect if the turtle builder is attached to a primitive.
 
 @lisp 
 (turtle-reset)
@@ -1570,6 +1581,11 @@ Resets the current postion and rotation of the turtle
 (turtle-pop)
 @end lisp 
 The turtle build has it's own transform stack
+
+@lisp 
+(turtle-skip count)
+@end lisp 
+When attached, causes the turtle to skip vertices. This value may be negative, which will set the turtle to write to previous vertices.
 
 Time for some examples:
 
