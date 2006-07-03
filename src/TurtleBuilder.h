@@ -31,7 +31,6 @@ public:
 	
 	// for attached mode only
 	void Skip(int n);
-	void Shift(int n);
 	
 	
 private:

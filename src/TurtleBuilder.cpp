@@ -60,11 +60,6 @@ void TurtleBuilder::Skip(int n)
 	m_Position+=n;
 }
 
-void TurtleBuilder::Shift(int n)
-{
-	// todo
-}
-
 int TurtleBuilder::Build(Renderer *renderer)
 {
 	if (m_BuildingPrim) 

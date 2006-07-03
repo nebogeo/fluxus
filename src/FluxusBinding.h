@@ -198,7 +198,6 @@ public:
 	static SCM turtle_pop();
 	static SCM turtle_attach(SCM s_obj);
 	static SCM turtle_skip(SCM s_count);
-	static SCM turtle_shift(SCM s_count);
 	static SCM start_framedump(SCM s_name, SCM s_type);
 	static SCM end_framedump();
 	static SCM process(SCM s_wavname);

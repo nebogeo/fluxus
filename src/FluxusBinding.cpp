@@ -1635,12 +1635,6 @@ SCM FluxusBinding::turtle_skip(SCM s_count)
 	return SCM_UNSPECIFIED;	
 }
 
-SCM FluxusBinding::turtle_shift(SCM s_count)
-{
-	turtle.Shift(scm_to_int(s_count));
-	return SCM_UNSPECIFIED;	
-}
-
 SCM FluxusBinding::start_framedump(SCM s_name, SCM s_type)
 {
 	SCM_ASSERT(scm_is_string(s_name), s_name, SCM_ARG1, "start-framedump");	
@@ -2688,7 +2682,6 @@ void FluxusBinding::RegisterProcs()
 	scm_c_define_gsubr("turtle-prim",1,0,0,(CALLBACK_CAST)  	   turtle_prim);
 	scm_c_define_gsubr("turtle-attach",1,0,0,(CALLBACK_CAST)  	   turtle_attach);
 	scm_c_define_gsubr("turtle-skip",1,0,0,(CALLBACK_CAST)  	   turtle_skip);
-	scm_c_define_gsubr("turtle-shift",1,0,0,(CALLBACK_CAST)  	   turtle_shift);
 	
 	// physics
 	scm_c_define_gsubr("collisions",1,0,0,(CALLBACK_CAST) collisions);
