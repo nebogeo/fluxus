@@ -3,8 +3,9 @@
 using namespace fluxus;
 
 TurtleBuilder::TurtleBuilder() : 
-m_Built(false),
-m_CurrentPrim(NULL) 
+m_BuildingPrim(NULL),
+m_AttachedPoints(NULL),
+m_Position(0)
 {
 	Reset();
 }
@@ -17,28 +18,60 @@ void TurtleBuilder::Reset()
 	m_State.begin()->m_Rot=dVector(0,0,0); 
 	m_State.begin()->m_Colour=dColour(1,1,1); 
 }
-	
+
+void TurtleBuilder::Initialise()
+{
+	if(m_BuildingPrim) delete m_BuildingPrim;
+	m_AttachedPoints=NULL;
+	m_BuildingPrim=NULL;
+	m_Position=0;
+}
+
 void TurtleBuilder::Prim(int Type)
 {
-	if(m_CurrentPrim && !m_Built) delete m_CurrentPrim;
-	m_CurrentPrim=new PolyPrimitive((PolyPrimitive::Type)Type);
-	m_Built=false;
+	Initialise();
+	m_BuildingPrim=new PolyPrimitive((PolyPrimitive::Type)Type);
 }
+
+void TurtleBuilder::Attach(PolyPrimitive *p)
+{
+	Initialise();
+	TypedPData<dVector> *points = dynamic_cast<TypedPData<dVector>* >(p->GetDataRaw("p"));
+	m_AttachedPoints = &points->m_Data;
+}
+
 
 void TurtleBuilder::Vert()
 {
-	if (m_CurrentPrim && !m_Built) 
+	if (m_BuildingPrim) 
 	{
-		m_CurrentPrim->AddVertex(dVertex(m_State.begin()->m_Pos,dVector(0,1,0)));
+		m_BuildingPrim->AddVertex(dVertex(m_State.begin()->m_Pos,dVector(0,1,0)));
 	}
+	else if (m_AttachedPoints)
+	{
+		(*m_AttachedPoints)[m_Position%m_AttachedPoints->size()]=m_State.begin()->m_Pos;
+	}
+	
+	m_Position++;
+}
+
+void TurtleBuilder::Skip(int n)
+{
+	m_Position+=n;
+}
+
+void TurtleBuilder::Shift(int n)
+{
+	// todo
 }
 
 int TurtleBuilder::Build(Renderer *renderer)
 {
-	if (m_CurrentPrim && !m_Built) 
+	if (m_BuildingPrim) 
 	{
-		m_Built=true;
-		return renderer->AddPrimitive(m_CurrentPrim);
+		int id = renderer->AddPrimitive(m_BuildingPrim);
+		m_BuildingPrim=NULL;
+		return id;
 	}
 	return -1;
 }
@@ -55,11 +88,6 @@ void TurtleBuilder::Move(float d)
 void TurtleBuilder::Turn(dVector a)
 {
 	m_State.begin()->m_Rot+=a;
-}
-
-void TurtleBuilder::Colour(dColour c)
-{
-	m_State.begin()->m_Colour=c;
 }
 
 void TurtleBuilder::Push()

@@ -73,21 +73,22 @@ void ShadowVolumeGen::PolyGen(PolyPrimitive *src)
 	if (src->GetType()==PolyPrimitive::TRILIST) stride=3;
 	if (stride>0)
 	{
-		vector<vector<pair<int,int> > >  edges = src->GetUniqueEdges();
-	
+		SharedEdgeContainer edges = src->GetUniqueEdges();
+		vector<pair<dVector,dVector> > silhouette;
+			
 		// loop over all the edges
-		for (vector<vector<pair<int,int> > >::iterator i=edges.begin(); i!=edges.end(); ++i)
+		for (SharedEdgeContainer::iterator i=edges.begin(); i!=edges.end(); ++i)
 		{
-			vector<pair<int, int> > sharededges = *i;
+			EdgeContainer sharededges = *i;
 
 			dVector lightdir = transform.transform(points->m_Data[sharededges.begin()->first])-m_LightPosition;
 			lightdir.normalise();
-
+				
 			bool backface=false;
 			bool frontface=false;
 
 			// loop over the edges shared by this one
-			for (vector<pair<int, int> >::iterator edge=sharededges.begin(); edge!=sharededges.end(); ++edge)
+			for (EdgeContainer::iterator edge=sharededges.begin(); edge!=sharededges.end(); ++edge)
 			{			
 				// only check the first vert, as they should have 
 				// the same geometric normal if the poly is planar..
@@ -97,34 +98,90 @@ void ShadowVolumeGen::PolyGen(PolyPrimitive *src)
 
 			// if we contain both front and back facing normals (from the light's pov) 
 			if (backface == frontface) 
-			{
-				// make the shadow volume from the first edge only, so we don't duplicate 
-				// edges and ruin the stencil buffer by overwriting it...
-				dVector worldpoint1 = transform.transform(points->m_Data[sharededges.begin()->first]);
-				dVector worldpoint2 = transform.transform(points->m_Data[sharededges.begin()->second]);
-
-				glPushMatrix();
-				glDisable(GL_LIGHTING);
-				glBegin(GL_LINES);					
-					glColor3f(1,0,0);
-					glVertex3fv(worldpoint1.arr());
-					glColor3f(0,0,1);
-					glVertex3fv(worldpoint2.arr());
-				glEnd();
-				glEnable(GL_LIGHTING);
-				glPopMatrix();
-
-				m_ShadowVolume.AddVertex(dVertex(worldpoint2,dVector(0,0,0),0,0));
-				m_ShadowVolume.AddVertex(dVertex(worldpoint1,dVector(0,0,0),0,0));
-
-				dVector proj = worldpoint1-m_LightPosition;
-				m_ShadowVolume.AddVertex(dVertex(worldpoint2+proj*10,dVector(0,0,0),0,0));
-				
-				proj = worldpoint2-m_LightPosition;
-				m_ShadowVolume.AddVertex(dVertex(worldpoint1+proj*10,dVector(0,0,0),0,0));
-			}
+			{			
+				silhouette.push_back(pair<dVector,dVector>(transform.transform(points->m_Data[sharededges.begin()->first]),
+					                                       transform.transform(points->m_Data[sharededges.begin()->second])));
+			}						
+		}
+		
+		AddEdge(silhouette[0].first,silhouette[0].second);
+		bool flip=false;
+		int edge=FindNextEdge(0, silhouette, flip);
+		
+		// loop round the silhouette building the shadow volume
+		while(edge>0)
+		{
+			if (flip) AddEdge(silhouette[edge].second,silhouette[edge].first);
+			else AddEdge(silhouette[edge].first,silhouette[edge].second);
+			
+			edge=FindNextEdge(edge, silhouette, flip);
 		}
 	}
+}
+
+int ShadowVolumeGen::FindNextEdge(unsigned int index, vector<pair<dVector,dVector> > &silhouette, bool &flip)
+{
+	// find a point connecting to the one specified
+	for (unsigned int i=0; i<silhouette.size()-1; i++)
+	{
+		if (i!=index)
+		{
+			if (flip)
+			{
+				if (silhouette[i].first.feq(silhouette[index].first))
+				{
+					flip=false;
+					return i;
+				}
+
+				if (silhouette[i].second.feq(silhouette[index].first))
+				{
+					flip=true;
+					return i;
+				}
+			}
+			else
+			{
+				if (silhouette[i].first.feq(silhouette[index].second))
+				{
+					flip=false;
+					return i;
+				}
+
+				if (silhouette[i].second.feq(silhouette[index].second))
+				{
+					flip=true;
+					return i;
+				}
+			}			
+		}
+	}
+	cerr<<"not found"<<endl;
+	// shouldn't happen
+	return -1;
+}
+
+void ShadowVolumeGen::AddEdge(dVector start, dVector end)
+{
+	glPushMatrix();
+	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);					
+		glColor3f(1,0,0);
+		glVertex3fv(start.arr());
+		glColor3f(0,0,1);
+		glVertex3fv(end.arr());
+	glEnd();
+	glEnable(GL_LIGHTING);
+	glPopMatrix();
+
+	m_ShadowVolume.AddVertex(dVertex(start,dVector(0,0,0),0,0));
+	m_ShadowVolume.AddVertex(dVertex(end,dVector(0,0,0),0,0));
+
+	dVector proj = start-m_LightPosition;
+	m_ShadowVolume.AddVertex(dVertex(end+proj*10,dVector(0,0,0),0,0));
+
+	proj = end-m_LightPosition;
+	m_ShadowVolume.AddVertex(dVertex(start+proj*10,dVector(0,0,0),0,0));
 }
 
 void ShadowVolumeGen::NURBSGen(NURBSPrimitive *src)

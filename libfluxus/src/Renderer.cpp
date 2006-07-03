@@ -337,7 +337,7 @@ void Renderer::Render()
 		glStencilFunc(GL_ALWAYS, 0, ~0);
 		*/
 		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
-		m_World.GetShadowVolumeGen()->GetVolume()->Render();
+		//m_World.GetShadowVolumeGen()->GetVolume()->Render();
 		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
 
 		

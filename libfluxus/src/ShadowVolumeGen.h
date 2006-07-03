@@ -45,8 +45,15 @@ public:
 	
 private:
 
+	typedef pair<int,int> EdgeType;
+	typedef vector<EdgeType> EdgeContainer;
+	typedef vector<EdgeContainer> SharedEdgeContainer;
+
 	void PolyGen(PolyPrimitive *src);
 	void NURBSGen(NURBSPrimitive *src);
+	
+	void AddEdge(dVector start, dVector end);
+	int FindNextEdge(unsigned int index, vector<pair<dVector,dVector> > &silhouette, bool &flip);
 
 	PolyPrimitive m_ShadowVolume;
 	dVector m_LightPosition;

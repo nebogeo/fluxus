@@ -190,11 +190,6 @@ void PolyPrimitive::GenerateTopology()
 	{
 		CalculateGeometricNormals();
 	}
-	
-	//if (m_UniqueEdges.empty())
-	//{
-	//	CalculateUniqueEdges();
-	//}
 }
 
 void PolyPrimitive::CalculateConnected()
@@ -262,36 +257,39 @@ void PolyPrimitive::CalculateGeometricNormals()
 
 void PolyPrimitive::CalculateUniqueEdges()
 {
-	// todo - need different approach for TRIFAN
-	int stride=0;
-	if (m_Type==TRISTRIP) stride=2;
-	if (m_Type==QUADS) stride=4;
-	if (m_Type==TRILIST) stride=3;
-	if (stride>0)
-	{		
-		set<pair<int,int> > firstpass;
-		
-		for (unsigned int i=0; i<m_VertData->size(); i+=stride)
-		{
-			for (int n=0; n<stride-1; n++)
-			{
-				firstpass.insert(pair<int,int>(n+i,n+i+1));
-				firstpass.insert(pair<int,int>(n+i+1,n+i));
-			}
-			firstpass.insert(pair<int,int>(i,i+stride-1));
-			firstpass.insert(pair<int,int>(i+stride-1,i));
-		}
+	if (m_UniqueEdges.empty())
+	{
+		// todo - need different approach for TRIFAN
+		int stride=0;
+		if (m_Type==TRISTRIP) stride=2;
+		if (m_Type==QUADS) stride=4;
+		if (m_Type==TRILIST) stride=3;
+		if (stride>0)
+		{		
+			set<pair<int,int> > firstpass;
 
-		set<pair<int,int> > stored;
-		pair<int,int> key;
-		
-		for (unsigned int i=0; i<m_VertData->size(); i+=stride)
-		{
-			for (int n=0; n<stride-1; n++)
-			{	
-				UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
-			}	
-			UniqueEdgesFindShared(pair<int,int>(i,i+stride-1), firstpass, stored);	
+			for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+			{
+				for (int n=0; n<stride-1; n++)
+				{
+					firstpass.insert(pair<int,int>(n+i,n+i+1));
+					firstpass.insert(pair<int,int>(n+i+1,n+i));
+				}
+				firstpass.insert(pair<int,int>(i,i+stride-1));
+				firstpass.insert(pair<int,int>(i+stride-1,i));
+			}
+
+			set<pair<int,int> > stored;
+			pair<int,int> key;
+
+			for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+			{
+				for (int n=0; n<stride-1; n++)
+				{	
+					UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
+				}	
+				UniqueEdgesFindShared(pair<int,int>(i,i+stride-1), firstpass, stored);	
+			}
 		}
 	}
 }

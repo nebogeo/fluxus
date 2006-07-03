@@ -44,7 +44,7 @@ public:
 
 	const vector<vector<int> > &GetConnectedVerts() { GenerateTopology(); return m_ConnectedVerts; }
 	const vector<dVector> &GetGeometricNormals() { GenerateTopology(); return m_GeometricNormals; }
-	const vector<vector<pair<int,int> > > &GetUniqueEdges() { GenerateTopology(); return m_UniqueEdges; }
+	const vector<vector<pair<int,int> > > &GetUniqueEdges() { CalculateUniqueEdges(); return m_UniqueEdges; }
 	
 protected:
 

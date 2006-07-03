@@ -65,7 +65,7 @@ public:
 		void get_euler(float &rx, float &ry, float &rz) const;
 		void homog() {if (w && w!=1.0) {x/=w; y/=w; z/=w; w=1;}}
 		dVector &normalise() {*this/=mag(); return *this;}
-		bool feq(const dVector &other, float epsilon=0.001);
+		bool feq(const dVector &other, float epsilon=0.00001);
 
 		void get_rot(float m[16],dVector up); // legacy func 
 private:
