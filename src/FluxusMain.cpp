@@ -429,7 +429,7 @@ void FluxusMain::SaveScript()
 	FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
 	if (file)
 	{	
-		fwrite(m_Editor[m_CurrentEditor]->GetText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
+		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
 		fclose(file);
 	}
 	
