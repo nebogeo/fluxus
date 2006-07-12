@@ -21,6 +21,7 @@ extern "C"
 }
 #include "Utils.h"
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -153,6 +154,28 @@ int WriteJPG(char *filename, char *description, int x, int y, int width, int hei
  	fclose(outfile);
 
 	jpeg_destroy_compress(&cinfo);
+	free(image);
+	
+	return 0;
+}	
+
+int WritePPM(char *filename, char *description, int x, int y, int width, int height, int compression, int super)
+{
+	FILE* file = fopen(filename,"w");
+	if (file == NULL) 
+	{
+		return 1;
+	}
+	
+	GLubyte *image = GetScreenBuffer(x, y, width, height, super);
+	char buf[256];
+	sprintf(buf,"P6\n%d\n%d\n255\n",width,height);
+	fwrite(buf,strlen(buf)*sizeof(char),1,file);
+	for (int y=height-1; y>-1; y--)
+	{
+		fwrite(image+y*width*3,width*3,1,file);
+	}
+	fclose(file);
 	free(image);
 	
 	return 0;

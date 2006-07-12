@@ -345,6 +345,12 @@ void FluxusMain::Render()
 			WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
 			cerr<<Filename<<endl;
 		}
+		else if (m_FrameType=="ppm")
+		{
+			string Filename=m_FrameName+"-"+string(Fnum)+".ppm";
+			WritePPM((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
+			cerr<<Filename<<endl;
+		}
 		
 		m_Frame++;
 	}
