@@ -25,7 +25,17 @@
 #include <cstdio>
 #include <libguile.h>
 #include "FluxusBinding.h"
-
+#include "FluxusPrimitiveBinding.h"
+#include "FluxusRenderstateBinding.h"
+#include "FluxusGlobalstateBinding.h"
+#include "FluxusMathsBinding.h"
+#include "FluxusOSCBinding.h"
+#include "FluxusPDataBinding.h"
+#include "FluxusPhysicsBinding.h"
+#include "FluxusTurtleBinding.h"
+#include "FluxusAudioBinding.h"
+#include "FluxusIOBinding.h"
+#include "FluxusLightsBinding.h"
 using namespace fluxus;
 
 static const string INIT_FILE=".fluxus.scm";
@@ -199,8 +209,6 @@ void EngineCallback()
 
 char *Script;
 
-
-
 static void setup_repl_port() {
 	SCM v = scm_c_make_vector(5, SCM_BOOL_F);
 	scm_vector_set_x(v,scm_from_int(0),scm_c_eval_string("repl-princ"));
@@ -219,6 +227,29 @@ SCM load_scm(void *data)
 void inner_main(void *context, int argc, char **argv)
 {
 	binding->RegisterProcs();
+	
+	FluxusPrimitiveBinding primbinding;
+	primbinding.RegisterProcs();	
+	FluxusRenderstateBinding statebinding;
+	statebinding.RegisterProcs();
+	FluxusGlobalstateBinding globalbinding;
+	globalbinding.RegisterProcs();
+	FluxusMathsBinding mathsbinding;
+	mathsbinding.RegisterProcs();
+	FluxusOSCBinding oscbinding;
+	oscbinding.RegisterProcs();
+	FluxusPDataBinding pdatabinding;
+	pdatabinding.RegisterProcs();
+	FluxusPhysicsBinding physicsbinding;
+	physicsbinding.RegisterProcs();
+	FluxusTurtleBinding turtlebinding;
+	turtlebinding.RegisterProcs();
+	FluxusAudioBinding audiobinding;
+	audiobinding.RegisterProcs();
+	FluxusIOBinding iobinding;
+	iobinding.RegisterProcs();
+	FluxusLightsBinding lightsbinding;
+	lightsbinding.RegisterProcs();
 
         // FIXME handle errors well
         SCM initFname = scm_sys_search_load_path(scm_makfrom0str("fluxus/init.scm"));
@@ -283,9 +314,8 @@ int main(int argc, char *argv[])
         }
 #endif
 
-        InitDada();
+    InitDada();
 	srand(time(NULL));
-		
 		
 	glutInitWindowSize(720,576) ;
   	glutInit(&argc,argv);

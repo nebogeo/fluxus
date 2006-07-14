@@ -18,6 +18,9 @@
 #include <Renderer.h>
 #include <set>
 
+#ifndef FLUXUS_PHYSICS
+#define FLUXUS_PHYSICS
+
 namespace fluxus
 {
 
@@ -117,3 +120,5 @@ private:
 };
 
 };
+
+#endif

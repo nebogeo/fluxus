@@ -62,6 +62,17 @@ Source = Split("libfluxus/src/PData.cpp \
 		src/AudioCollector.cpp \
 		src/FluxusMain.cpp \
 		src/FluxusBinding.cpp \
+		src/FluxusPrimitiveBinding.cpp \
+		src/FluxusRenderstateBinding.cpp \
+		src/FluxusGlobalstateBinding.cpp \
+		src/FluxusMathsBinding.cpp \
+		src/FluxusOSCBinding.cpp \
+		src/FluxusPDataBinding.cpp \
+		src/FluxusPhysicsBinding.cpp \
+		src/FluxusTurtleBinding.cpp \
+		src/FluxusAudioBinding.cpp \
+		src/FluxusIOBinding.cpp \
+		src/FluxusLightsBinding.cpp \
 		src/SchemePrim.cpp \
 		src/JackClient.cpp \
 		src/TurtleBuilder.cpp \

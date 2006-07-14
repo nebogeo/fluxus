@@ -1,12 +1,14 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+* glsl support with (shader) and (shader-set!)
 * big (recalc-normals) speedup
 * normals recalculated for primitives of type POLYGON
 * (keys-down) returns vector of the ascii values of all keys pressed
 * (key-special-pressed id) for cursor keys etc
 * (keys-special-down) returns vector of all special keys pressed
 * kick/twist static object crash fix
-* editor fix
+* save with text highlighted now actually really safe (saves all rather than 
+  selection + random characters)
 * immediate mode state fix
 * fixed (hint-points) for polygons
 * fixed (draw-plane) and (draw-cube) no longer has a plane inside it :)
