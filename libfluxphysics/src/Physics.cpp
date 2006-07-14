@@ -469,8 +469,12 @@ void Physics::Kick(int ID, dVector v)
 		cerr<<"Physics::Kick : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	const dReal *cv = dBodyGetLinearVel(i->second->Body);
-	dBodySetLinearVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
+	
+	if (i->second->Type==ACTIVE)
+	{
+		const dReal *cv = dBodyGetLinearVel(i->second->Body);
+		dBodySetLinearVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
+	}
 }
 
 void Physics::Twist(int ID, dVector v)
@@ -481,8 +485,12 @@ void Physics::Twist(int ID, dVector v)
 		cerr<<"Physics::Twist : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	const dReal *cv = dBodyGetAngularVel(i->second->Body);
-	dBodySetAngularVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
+	
+	if (i->second->Type==ACTIVE)
+	{
+		const dReal *cv = dBodyGetAngularVel(i->second->Body);
+		dBodySetAngularVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
+	}
 }
 
 void Physics::NearCallback(void *data, dGeomID o1, dGeomID o2)

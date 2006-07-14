@@ -285,7 +285,8 @@ int main(int argc, char *argv[])
 
         InitDada();
 	srand(time(NULL));
-	
+		
+		
 	glutInitWindowSize(720,576) ;
   	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
