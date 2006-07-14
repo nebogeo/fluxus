@@ -78,7 +78,7 @@ FluxusBinding::FluxusBinding(int w, int h)
     MakeCube(StaticCube);
 
 	StaticPlane = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakePlane(StaticCube);
+    MakePlane(StaticPlane);
 
 	StaticSphere = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(StaticSphere,1,5,10);

@@ -589,10 +589,6 @@ void Renderer::RenderPrimitive(Primitive *Prim)
 	newitem->m_State = *GetState();
 	newitem->m_Primitive = Prim;
 	m_IMRecord.push_back(newitem);
-	
-	// render hints need to be in the primitives state to be picked up
-	// annoying... make sure this doesn't happed too much
-	Prim->GetState()->Hints=newitem->m_State.Hints;
 }
 
 void Renderer::RenderIMPrimitives()
@@ -601,6 +597,9 @@ void Renderer::RenderIMPrimitives()
 	{
 		glPushMatrix();
 		(*i)->m_State.Apply();
+		// need to set the state to the primitive to update the parts of the state the 
+		// render call acts on. need to look at this.
+	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
 		(*i)->m_Primitive->Render();
 		glPopMatrix();
 	}

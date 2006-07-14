@@ -53,7 +53,7 @@ void PolyPrimitive::AddVertex(const dVertex &Vert)
 	m_VertData->push_back(Vert.point); 
 	m_NormData->push_back(Vert.normal); 
 	m_ColData->push_back(Vert.col); 	
-	m_TexData->push_back(dVector(Vert.s, Vert.t, 0)); 
+	m_TexData->push_back(dVector(Vert.s, Vert.t, 0));
 }	
 
 void PolyPrimitive::Render()
@@ -80,7 +80,6 @@ void PolyPrimitive::Render()
 
 	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	if (m_State.Hints & HINT_POINTS) glPolygonMode(GL_FRONT,GL_POINTS);
 	
 	if (m_State.Hints & HINT_NORMAL)
 	{
@@ -95,7 +94,7 @@ void PolyPrimitive::Render()
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
-	
+		
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
@@ -144,7 +143,17 @@ void PolyPrimitive::Render()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 	}
-		
+	
+	if (m_State.Hints & HINT_POINTS)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
+		glColor3fv(m_State.WireColour.arr());
+		glDisable(GL_LIGHTING);	
+		glDrawArrays(type,0,m_VertData->size());	
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glEnable(GL_LIGHTING);
+	}
+	
 	if (m_State.Hints & HINT_VERTCOLS) glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
