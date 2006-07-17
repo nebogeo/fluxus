@@ -12,6 +12,8 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * immediate mode state fix
 * fixed (hint-points) for polygons
 * fixed (draw-plane) and (draw-cube) no longer has a plane inside it :)
+* equal? implemented for primitive types
+* fixed picking when show-fps is turned on
 
 0.10
 

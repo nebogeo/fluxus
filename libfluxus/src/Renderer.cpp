@@ -231,14 +231,14 @@ void Renderer::BeginScene(bool PickMode)
 	
 
 	
-	if (m_FPSDisplay)
+	if (m_FPSDisplay && !PickMode)
 	{
 		PushState();
 		GetState()->Transform.translate(m_Up,m_Left,0);
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
-    	if (!PickMode) DrawText(s);
+    	DrawText(s);
     	PopState();
 	}
 	
@@ -476,11 +476,6 @@ int Renderer::Select(int x, int y, int size)
 	// render the scene for picking
 	m_World.Render(SceneGraph::SELECT);
 	
-	// ... and reset the scene back here so we can carry on afterwards as if nothing
-	// has happened...
-	m_Initialised=false;
-	BeginScene();
-	
 	int hits=glRenderMode(GL_RENDER);
 	unsigned int *ptr=IDs, numnames;
 	float minz,maxz,closest=1000000;
@@ -501,6 +496,12 @@ int Renderer::Select(int x, int y, int size)
 		}
 		for (unsigned int i=0; i<numnames; i++) *ptr++;
 	}
+	
+	// ... and reset the scene back here so we can carry on afterwards as if nothing
+	// has happened...
+	m_Initialised=false;
+	BeginScene();
+	
 	return ID;
 }
 
