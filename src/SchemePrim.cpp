@@ -35,13 +35,13 @@ SchemePrim::~SchemePrim()
 void SchemePrim::Init() 
 {  
 	Tag = scm_make_smob_type ("primitive", sizeof(SchemePrim));
-	scm_set_smob_mark (Tag, Mark);
-	scm_set_smob_print (Tag, Print);
-	scm_set_smob_free (Tag, Free);
+	scm_set_smob_mark(Tag,Mark);
+	scm_set_smob_print(Tag,Print);
+	scm_set_smob_free(Tag,Free);
+	scm_set_smob_equalp(Tag,Equal);
 
 	//scm_c_define_gsubr ("clear-image", 1, 0, 0, clear_image);
 	//scm_c_define_gsubr ("make-image", 3, 0, 0, make_image);
-
 }
 
 size_t SchemePrim::Free(SCM smob) 
@@ -74,3 +74,15 @@ void SchemePrim::Assert(SCM smob)
 {
 	scm_assert_smob_type(Tag,smob);  
 }
+
+SCM SchemePrim::Equal(SCM a, SCM b)
+{
+	SchemePrim *aa = (SchemePrim *)SCM_SMOB_DATA(a);
+	SchemePrim *bb = (SchemePrim *)SCM_SMOB_DATA(b);
+	if (aa->m_ID==bb->m_ID)
+	{
+		return SCM_BOOL_T;
+	}
+	return SCM_BOOL_F;
+}
+

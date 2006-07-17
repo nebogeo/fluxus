@@ -33,7 +33,7 @@ public:
 	static SCM Mark(SCM smob);
 	static int Print(SCM smob, SCM port, scm_print_state *pstate);
 	static void Assert(SCM smob);
-
+	static SCM Equal(SCM a, SCM b);
 	static scm_t_bits Tag;
 
 private:
