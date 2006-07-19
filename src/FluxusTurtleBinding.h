@@ -34,6 +34,7 @@ public:
 	static SCM turtle_pop();
 	static SCM turtle_attach(SCM s_obj);
 	static SCM turtle_skip(SCM s_count);
+	static SCM turtle_position();
 
 };
 #endif

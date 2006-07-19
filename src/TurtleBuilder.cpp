@@ -51,7 +51,7 @@ void TurtleBuilder::Vert()
 	{
 		(*m_AttachedPoints)[m_Position%m_AttachedPoints->size()]=m_State.begin()->m_Pos;
 	}
-	
+
 	m_Position++;
 }
 

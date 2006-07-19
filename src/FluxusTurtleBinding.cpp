@@ -40,13 +40,14 @@ void FluxusTurtleBinding::RegisterProcs()
 	scm_c_define_gsubr("turtle-prim",1,0,0,(CALLBACK_CAST)  	   turtle_prim);
 	scm_c_define_gsubr("turtle-attach",1,0,0,(CALLBACK_CAST)  	   turtle_attach);
 	scm_c_define_gsubr("turtle-skip",1,0,0,(CALLBACK_CAST)  	   turtle_skip);
+	scm_c_define_gsubr("turtle-position",0,0,0,(CALLBACK_CAST)  	   turtle_position);
 }
 
 
 
 SCM FluxusTurtleBinding::turtle_prim(SCM type)
 {
-	SCM_ASSERT(scm_is_number(type), type, SCM_ARG1, "turtle_prim");
+	SCM_ASSERT(scm_is_number(type), type, SCM_ARG1, "turtle-prim");
 	turtle.Prim(scm_to_int(type));
 	return SCM_UNSPECIFIED;
 }
@@ -64,7 +65,7 @@ SCM FluxusTurtleBinding::turtle_build()
 
 SCM FluxusTurtleBinding::turtle_move(SCM dist)
 {
-	SCM_ASSERT(scm_is_number(dist), dist, SCM_ARG1, "turtle_move");
+	SCM_ASSERT(scm_is_number(dist), dist, SCM_ARG1, "turtle-move");
 	turtle.Move(scm_to_double(dist));
 	return SCM_UNSPECIFIED;
 }
@@ -83,8 +84,8 @@ SCM FluxusTurtleBinding::turtle_pop()
 
 SCM FluxusTurtleBinding::turtle_turn(SCM s_vec)
 {
-    SCM_ASSERT(scm_is_generalized_vector(s_vec), s_vec, SCM_ARG1, "turtle_turn");
-	SCM_ASSERT(scm_c_generalized_vector_length(s_vec)==3, s_vec, SCM_ARG1, "turtle_turn");
+    SCM_ASSERT(scm_is_generalized_vector(s_vec), s_vec, SCM_ARG1, "turtle-turn");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_vec)==3, s_vec, SCM_ARG1, "turtle-turn");
 	float rot[3];
 	flx_floats_from_scm(s_vec,rot);
 	turtle.Turn(dVector(rot[0],rot[1],rot[2]));
@@ -118,3 +119,7 @@ SCM FluxusTurtleBinding::turtle_skip(SCM s_count)
 	return SCM_UNSPECIFIED;	
 }
 
+SCM FluxusTurtleBinding::turtle_position()
+{
+	return scm_from_int(turtle.Position());
+}

@@ -111,7 +111,9 @@ SCM FluxusIOBinding::keys_special_down()
 
 SCM FluxusIOBinding::time()
 {
-	return scm_from_double(Fluxus->GetRenderer()->GetTime());
+	timeval time;
+	gettimeofday(&time,NULL);
+	return scm_from_double(time.tv_sec+time.tv_usec*0.000001f);
 }
 
 SCM FluxusIOBinding::delta()
