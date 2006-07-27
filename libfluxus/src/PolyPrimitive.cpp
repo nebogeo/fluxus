@@ -136,6 +136,7 @@ void PolyPrimitive::Render()
 	
 	if (m_State.Hints & HINT_WIRE)
 	{
+		glPolygonOffset(1,1);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glColor3fv(m_State.WireColour.arr());
 		glDisable(GL_LIGHTING);	

@@ -45,7 +45,7 @@ void Repl::Print(string what)
         m_PromptPos += l;
         m_InsertPos += l;
 
-        EnsureCursorVisible();
+		EnsureCursorVisible();
 
         cout << what;
 }
@@ -103,12 +103,13 @@ void Repl::Handle(int button, int key, int special, int state,
                         }
                 }
         }
-        
+		
+	EnsureCursorVisible();
+
 	if (key == GLEDITOR_RETURN && !TryEval())
                 return;
 
-        GLEditor::Handle(button, key, special, state, 
-                         x, y, mod);
+    GLEditor::Handle(button, key, special, state, x, y, mod);
 }
 
 void Repl::HistoryPrev()
@@ -216,5 +217,5 @@ void Repl::EnsureCursorVisible()
                         curVisLine++;
         while (curVisLine >= m_VisibleLines)
                 if (m_Text[m_TopTextPosition++] == '\n')
-                        curVisLine--;
+                        curVisLine--;				
 }

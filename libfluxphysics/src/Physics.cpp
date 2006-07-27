@@ -807,7 +807,8 @@ bool Physics::HasCollided(int Ob)
 		return false;
 	}
 	
-	if (m_CollisionRecord.find(i->second->Body)!=m_CollisionRecord.end())
+	// only active objects have bodies to get
+	if (i->second->Type==ACTIVE && m_CollisionRecord.find(i->second->Body)!=m_CollisionRecord.end())
 	{
 		return true;
 	}

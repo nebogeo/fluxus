@@ -88,6 +88,7 @@ protected:
 	unsigned int m_VisibleLines;
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;
+	unsigned int m_LineCount;
 	
 	int m_Width;
 	int m_Height;

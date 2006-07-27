@@ -26,6 +26,11 @@ using namespace fluxus;
 
 //#define DEBUG_TRACE
 
+// should use glew for this?
+#ifndef GL_POLYGON_OFFSET
+#define GL_POLYGON_OFFSET GL_POLYGON_OFFSET_EXT
+#endif
+
 static const int FRAMES_PER_TIME = 10;
 static int TimeCounter = 0;
 static timeval StartTime;
@@ -141,7 +146,8 @@ void Renderer::BeginScene(bool PickMode)
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
-
+		glEnable(GL_POLYGON_OFFSET);
+		
 		if (m_FogDensity>0)
 		{
 			glEnable(GL_FOG);
@@ -276,7 +282,7 @@ void Renderer::Render()
 {
 	if (!m_LoadedFromFlx) ClearIMPrimitives();
 	
-	if (!m_World.GetShadowVolumeGen()->IsActive())
+	//if (!m_World.GetShadowVolumeGen()->IsActive())
 	{	
 		BeginScene();
 		glPushMatrix();
@@ -286,7 +292,9 @@ void Renderer::Render()
 		RenderIMPrimitives();
 		EndScene();
 	}
-	else
+	
+	// shadow volumes not ready yet...
+	/*else
 	{		
 		// do the multipass for shadow rendering
 		// i'd really like to expose this to fluxus more generally
@@ -300,7 +308,6 @@ void Renderer::Render()
 		m_World.Render();
 		RenderIMPrimitives();
 		
-		/*
 		glClear(GL_STENCIL_BUFFER_BIT);
 		glEnable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 0, ~0);
@@ -335,14 +342,14 @@ void Renderer::Render()
 		glDepthMask(GL_TRUE);
 		glDepthFunc(GL_LEQUAL);
 		glStencilFunc(GL_ALWAYS, 0, ~0);
-		*/
+		
 		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
 		//m_World.GetShadowVolumeGen()->GetVolume()->Render();
 		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
 
 		
 		EndScene();
-	}
+	}*/
 		
 	if (m_LoadedFromFlx) ClearIMPrimitives();
 	

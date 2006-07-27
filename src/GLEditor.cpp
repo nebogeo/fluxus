@@ -48,7 +48,8 @@ m_OpenChars("([<{"),
 m_CloseChars(")]>}"),
 m_VisibleLines(40),
 m_TopTextPosition(0),
-m_BottomTextPosition(0)
+m_BottomTextPosition(0),
+m_LineCount(0)
 { 
 	// mono font - yay!
 	m_CharWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
@@ -157,15 +158,15 @@ void GLEditor::Render()
 	bool drawncursor=false;
 	
 	unsigned int n=m_TopTextPosition;
-	unsigned int linecount=0;
-	while (n<m_Text.size() && linecount<m_VisibleLines)
+	m_LineCount=0;
+	while (n<m_Text.size() && m_LineCount<m_VisibleLines)
 	{
 		width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
 		
 		if (m_Text[n]=='\n') 
 		{
 			width=m_CursorWidth;
-			linecount++;
+			m_LineCount++;
 		}
 		else if (width==0) // bad character
 		{
@@ -215,7 +216,7 @@ void GLEditor::Render()
 		n++;
 	}
 	
-	if (linecount>=m_VisibleLines-1) m_BottomTextPosition=n;
+	if (m_LineCount>=m_VisibleLines-1) m_BottomTextPosition=n;
 	else m_BottomTextPosition=m_Text.size()+1;
 	
 	// draw cursor if we have no text, or if we're at the end of the buffer
@@ -370,7 +371,10 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					temp[1]='\0';
 					m_Text.insert(m_Position,string(temp));
 					m_Position++;
-					if (key=='\n' && m_Position>m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+					if (key=='\n' && m_Position>=m_BottomTextPosition && m_LineCount+1>=m_VisibleLines) 
+					{
+						m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+					}
 				break;
 			}
 		}

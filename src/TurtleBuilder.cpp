@@ -17,6 +17,7 @@ void TurtleBuilder::Reset()
 	m_State.begin()->m_Pos=dVector(0,0,0); 
 	m_State.begin()->m_Rot=dVector(0,0,0); 
 	m_State.begin()->m_Colour=dColour(1,1,1); 
+	m_Position=0;
 }
 
 void TurtleBuilder::Initialise()
