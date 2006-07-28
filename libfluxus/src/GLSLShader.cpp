@@ -19,6 +19,8 @@
 
 using namespace std;
 
+bool GLSLShader::m_Enabled(glewIsSupported("GL_VERSION_2_0"));
+
 GLSLShader::GLSLShader(const string &vertexfilename, const string &fragmentfilename) :
 m_Program(0)
 {
@@ -27,85 +29,77 @@ m_Program(0)
 
 GLSLShader::~GLSLShader()
 {
+	if (!m_Enabled) return;
 	glDeleteProgram(m_Program);
 }
 
 void GLSLShader::Apply() 
 { 
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	glUseProgram(m_Program); 
-#endif	
 }
 
 void GLSLShader::Unapply() 
 { 
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	glUseProgram(0); 
-#endif	
 }
 
 void GLSLShader::SetInt(const string &name, int s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
 	glUniform1i(param,s);
-#endif	
 }
 
 void GLSLShader::SetFloat(const string &name, float s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
 	glUniform1f(param,s);
-#endif	
 }
 
 void GLSLShader::SetVector(const string &name, dVector s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
 	glUniform3f(param,s.x,s.y,s.z);
-#endif	
 }
 
 void GLSLShader::SetColour(const string &name, dColour s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
 	glUniform4f(param,s.r,s.g,s.b,s.a);
-#endif	
 }
 
 void GLSLShader::SetFloatArray(const string &name, const vector<float> &s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint attrib = glGetAttribLocation(m_Program, name.c_str());
 	glEnableVertexAttribArray(attrib);
 	glVertexAttribPointer(attrib,1,GL_FLOAT,false,0,&(*s.begin()));
-#endif	
 }
 
 void GLSLShader::SetVectorArray(const string &name, const vector<dVector> &s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint attrib = glGetAttribLocation(m_Program, name.c_str());
 	glEnableVertexAttribArray(attrib);
 	glVertexAttribPointer(attrib,4,GL_FLOAT,false,0,&(*s.begin()));
-#endif	
 }
 
 void GLSLShader::SetColourArray(const string &name, const vector<dColour> &s)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return;
 	GLuint attrib = glGetAttribLocation(m_Program, name.c_str());
 	glEnableVertexAttribArray(attrib);
 	glVertexAttribPointer(attrib,4,GL_FLOAT,false,0,&(*s.begin()));
-#endif	
 }
 
 bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilename)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return true;
 	if (m_Program!=0) glDeleteProgram(m_Program);
 
 	m_Program = glCreateProgram();
@@ -141,7 +135,6 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 		glGetProgramInfoLog(m_Program, 1024, &size, log);
 		cout<<log<<endl;
 	}
-#endif	
 
 	return true;
 }
@@ -149,7 +142,7 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 	
 unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 {
-#ifdef ENABLE_GLSL
+	if (!m_Enabled) return 0;
 	FILE* file = fopen(filename.c_str(), "r");
 	if (!file) return 0;
 
@@ -191,7 +184,6 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 		delete[] code;
 		return shader;
 	}
-#endif	
 	
 	return 0;
 }

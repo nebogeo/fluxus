@@ -26,8 +26,6 @@
 #include "GLUT/glut.h"
 #endif
 
-//#define ENABLE_GLSL
-
 #include <string>
 #include <vector>
 #include "dada.h"
@@ -61,7 +59,7 @@ private:
 
 	unsigned int LoadShader(string filename, unsigned int type);
 	unsigned int m_Program;
-
+	static bool m_Enabled;
 };
 
 #endif

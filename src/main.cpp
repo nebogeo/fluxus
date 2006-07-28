@@ -337,14 +337,6 @@ int main(int argc, char *argv[])
 		cerr << "ERROR Unable to check OpenGL extensions" << endl;
 		return false;
 	}
-	
-#ifdef ENABLE_GLSL		
-	if(!glewIsSupported("GL_VERSION_2_0"))
-	{
-		cerr << "ERROR OpenGL 2.0 required" << endl;
-		return false;
-	}
-#endif
 
 	scm_boot_guile(argc, argv, inner_main, 0);
 	

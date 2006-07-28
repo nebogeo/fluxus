@@ -173,10 +173,7 @@ if not GetOption('clean'):
 	# enable users to disable multitexturing manually
 	if ARGUMENTS.get("MULTITEXTURE",1)=="0":
 		env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
-	
-	if ARGUMENTS.get("GLSL",1)=="1":
-		env.Append(CCFLAGS=' -DENABLE_GLSL')
-	
+		
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
 	env.Replace(LIBS = [rec[0] for rec in LibList])

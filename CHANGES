@@ -1,5 +1,7 @@
 Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.11
+
 * glsl support with (shader) and (shader-set!)
 * big (recalc-normals) speedup
 * normals recalculated for primitives of type POLYGON
@@ -14,6 +16,10 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * fixed (draw-plane) and (draw-cube) no longer has a plane inside it :)
 * equal? implemented for primitive types
 * fixed picking when show-fps is turned on
+* editor/repl bug fixes
+* wireframe/solid z fighting fix
+* (time) returns posix time now (don't ask)
+* (turtle-position) returns current vertex when attached to a primitive
 
 0.10
 
