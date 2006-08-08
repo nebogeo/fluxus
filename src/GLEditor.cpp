@@ -294,12 +294,22 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				}
 			}
 			break;
-			case GLUT_KEY_PAGE_UP: 
+		  case GLUT_KEY_PAGE_UP: 
+		  {
+			  m_Position=0;
+			  m_TopTextPosition=0;
+		  }
+  		  break;
+/*			case GLUT_KEY_PAGE_UP: 
 			{
-				m_Position=0;
-				m_TopTextPosition=0;
+				m_Position-=100;
 			}
 			break;
+			case GLUT_KEY_PAGE_DOWN: 
+			{
+				m_Position+=100;
+			}
+			break; */
 		}
 	}	
 		
@@ -363,6 +373,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				break;
 				//case 172: break; // ignore ¬
 				//case 163: break; // ignore £
+				case 27: break; // ignore esc - no GLUT_KEY_ESCAPE?
 				case GLEDITOR_RETURN: 
 					key='\n'; // fallthrough (replacement of newline)
 				default:

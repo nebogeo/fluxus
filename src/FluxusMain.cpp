@@ -322,6 +322,7 @@ void FluxusMain::Reshape(int width, int height)
 
 void FluxusMain::Render()
 {		
+	gettimeofday(&m_Time,NULL);
 	m_Physics.Tick();
 	m_Renderer.Render();
 	if (m_OSCServer) m_OSCServer->PollRecorder();

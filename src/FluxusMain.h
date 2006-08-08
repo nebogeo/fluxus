@@ -85,6 +85,8 @@ public:
     void SaveRecordedCode(const string &Filename) { m_Recorder.Save(Filename); }
 
 	void SetAudio(AudioCollector *s) { m_Audio=s; }
+
+	timeval GetTime() { return m_Time; }
 	
 	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
         void SwitchToRepl() { m_CurrentEditor = 9; }
@@ -130,6 +132,7 @@ private:
 	bool m_HideScript;
 	bool m_ShowCursor;
 	bool m_InteractiveCamera;
+	timeval m_Time;
 	
 	Server *m_OSCServer;
 	Client *m_OSCClient;
