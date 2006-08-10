@@ -505,9 +505,7 @@ Sets the first point in the primitive to the origin (not all that useful)
 (pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
 @end lisp
 
-The same, but sets it to the original position + 1 in the x offsetting the position is more useful as it constitutes a deformation of the original point.
-
-(see @xref{Deforming}, for more info on deformations)
+The same, but sets it to the original position + 1 in the x offsetting the position is more useful as it constitutes a deformation of the original point. (@xref{Deforming}, for more info on deformations)
 
 The pdata availible depends on the type of the primitive.
 
@@ -842,7 +840,7 @@ Textures have to be png format, and support alpha transparency.
 (multitexture n t)  (only on poly prims at the moment)        
 @end lisp
               
-Set the texture on the current state, using a texture ID n to multitexture t.  multitexturing allows you to apply different textures and coordinates to the same object at once. t is a number from 0 to 7. texture 0 is the default one (which uses the pdata "t" for it's texture coords) multitexture n looks for pdata "tn" - ie multitexture 1 looks for "t1". you need to add these yourself using (pdata-add) or (pdata-copy). see @xref{Deforming}, for more info.
+Set the texture on the current state, using a texture ID n to multitexture t.  multitexturing allows you to apply different textures and coordinates to the same object at once. t is a number from 0 to 7. texture 0 is the default one (which uses the pdata "t" for it's texture coords) multitexture n looks for pdata "tn" - ie multitexture 1 looks for "t1". you need to add these yourself using (pdata-add) or (pdata-copy). @xref{Deforming}, for more info.
 
 @lisp
 (line-width n)
