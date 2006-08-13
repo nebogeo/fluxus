@@ -126,6 +126,13 @@ float dVector::dist(dVector const &rhs) const
                 (rhs.z-z)*(rhs.z-z));
 }
 
+float dVector::distsq(dVector const &rhs) const
+{
+    return (rhs.x-x)*(rhs.x-x)+
+           (rhs.y-y)*(rhs.y-y)+
+           (rhs.z-z)*(rhs.z-z);
+}
+
 void dVector::get_euler(float &rx, float &ry, float &rz) const
 {
 	if (z==0) rx=0;

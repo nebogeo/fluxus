@@ -106,8 +106,11 @@ void Repl::Handle(int button, int key, int special, int state,
 		
 	EnsureCursorVisible();
 
-	if (key == GLEDITOR_RETURN && !TryEval())
-                return;
+	if (key == GLEDITOR_RETURN)
+	{
+		m_Position = m_Text.length();
+        if (!TryEval()) return;
+    }
 
     GLEditor::Handle(button, key, special, state, x, y, mod);
 }

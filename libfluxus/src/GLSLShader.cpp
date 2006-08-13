@@ -19,7 +19,7 @@
 
 using namespace std;
 
-bool GLSLShader::m_Enabled(glewIsSupported("GL_VERSION_2_0"));
+bool GLSLShader::m_Enabled(false);
 
 GLSLShader::GLSLShader(const string &vertexfilename, const string &fragmentfilename) :
 m_Program(0)
@@ -31,6 +31,11 @@ GLSLShader::~GLSLShader()
 {
 	if (!m_Enabled) return;
 	glDeleteProgram(m_Program);
+}
+
+void GLSLShader::Init()
+{
+	m_Enabled = glewIsSupported("GL_VERSION_2_0");
 }
 
 void GLSLShader::Apply() 

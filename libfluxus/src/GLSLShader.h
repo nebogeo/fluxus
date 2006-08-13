@@ -41,6 +41,8 @@ public:
 	GLSLShader(const string &vertexfilename, const string &fragmentfilename);
 	~GLSLShader();
 
+	static void Init();
+
 	void Apply();
 	static void Unapply();
 	

@@ -40,6 +40,7 @@ public:
 	static SCM build_pixels(SCM s_w, SCM s_h);
 	static SCM upload_pixels();
 	static SCM pixels2texture(SCM s_ob);
+	static SCM build_blobby(SCM s_count, SCM s_dim, SCM s_size);
 	static SCM draw_instance(SCM s_ob);
 	static SCM draw_cube();
 	static SCM draw_plane();

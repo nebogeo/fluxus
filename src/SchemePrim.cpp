@@ -52,7 +52,6 @@ size_t SchemePrim::Free(SCM smob)
 
 SCM SchemePrim::Mark(SCM smob)
 {
-	SchemePrim *pb = (SchemePrim *)SCM_SMOB_DATA(smob);
 	return SCM_UNDEFINED;
 }
 

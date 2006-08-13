@@ -103,7 +103,6 @@ SCM FluxusRenderstateBinding::grab(SCM s_id)
 	GrabbedIDStack.push_front(id);
 	GrabbedID=id;
 	Fluxus->GetRenderer()->Grab(GrabbedID);
-	scm_remember_upto_here_1(s_id);
 	return SCM_UNSPECIFIED;
 }
 
@@ -128,7 +127,6 @@ SCM FluxusRenderstateBinding::ungrab()
 SCM FluxusRenderstateBinding::apply(SCM s_id)
 {
 	Fluxus->GetRenderer()->GetPrimitive(Smob2Prim(s_id))->ApplyTransform();
-	scm_remember_upto_here_1(s_id);
 	return SCM_UNSPECIFIED;
 }
 

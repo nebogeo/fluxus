@@ -28,6 +28,8 @@ void Primitive::Prerender()
 	// (not all, as they are often primitive dependant)
 	if (m_State.Hints & HINT_ORIGIN) RenderAxes();	
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
+	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
+	else glDisable(GL_COLOR_MATERIAL);
 	
 	if (m_State.Shader)
 	{

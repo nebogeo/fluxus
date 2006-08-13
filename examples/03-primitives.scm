@@ -115,3 +115,21 @@
 (grab particles)
 (particle-init (pdata-size))
 (ungrab)
+
+; blobby
+(translate (vector 1.5 0 0))
+(push)
+(point-width 10)
+; a function to init the particle points and colours
+(define (blobby-init n)
+    (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd)))
+    (pdata-set "s" n 0.05)
+    (if (< n 1)
+        0
+        (blobby-init (- n 1))))
+
+(define blobbys (build-blobby 3 (vector 20 20 20) (vector 1 1 1)))
+(pop)
+(grab blobbys)
+(blobby-init (pdata-size))
+(ungrab)

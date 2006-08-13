@@ -25,6 +25,7 @@
 #include <ParticlePrimitive.h>
 #include <PixelPrimitive.h>
 #include <LocatorPrimitive.h>
+#include <BlobbyPrimitive.h>
 
 void FluxusPrimitiveBinding::RegisterProcs()
 {
@@ -46,7 +47,8 @@ void FluxusPrimitiveBinding::RegisterProcs()
 	scm_c_define_gsubr("build-pixels",2,0,0,(CALLBACK_CAST) build_pixels);
 	scm_c_define_gsubr("upload-pixels",0,0,0,(CALLBACK_CAST)upload_pixels);
 	scm_c_define_gsubr("pixels->texture",1,0,0,(CALLBACK_CAST)pixels2texture);
-	
+	scm_c_define_gsubr("build-blobby",3,0,0,(CALLBACK_CAST) build_blobby);
+
 	scm_c_define_gsubr("draw-instance", 1,0,0,(CALLBACK_CAST)draw_instance);
     scm_c_define_gsubr("draw-cube", 0,0,0,(CALLBACK_CAST)	   draw_cube);
     scm_c_define_gsubr("draw-plane", 0,0,0,(CALLBACK_CAST)     draw_plane);
@@ -224,6 +226,28 @@ SCM FluxusPrimitiveBinding::pixels2texture(SCM s_ob)
 	
 	cerr<<"pixels->texture can only be called on a pixelprimitive"<<endl;
     return SCM_UNSPECIFIED;
+}
+
+SCM FluxusPrimitiveBinding::build_blobby(SCM s_count, SCM s_dim, SCM s_size)
+{
+	SCM_ASSERT(scm_is_number(s_count), s_count, SCM_ARG1, "build-blobby");
+	SCM_ASSERT(scm_is_generalized_vector(s_dim),  s_dim,  SCM_ARG2, "build-blobby");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_dim)==3,  s_dim,  SCM_ARG2, "build-blobby");
+	SCM_ASSERT(scm_is_generalized_vector(s_size),  s_size,  SCM_ARG3, "build-blobby");
+	SCM_ASSERT(scm_c_generalized_vector_length(s_size)==3,  s_size,  SCM_ARG3, "build-blobby");
+
+	dVector dim;
+	flx_floats_from_scm(s_dim,dim.arr());
+	dVector size;
+	flx_floats_from_scm(s_size,size.arr());
+	BlobbyPrimitive *Prim = new BlobbyPrimitive((int)dim.x,(int)dim.y,(int)dim.z,size);
+	int count=scm_to_int(s_count);
+	for (int i=0; i<count; i++)
+	{
+		Prim->AddInfluence(dVector(0,0,0),0);
+	}
+	
+    return Prim2Smob(Fluxus->GetRenderer()->AddPrimitive(Prim));
 }
 
 SCM FluxusPrimitiveBinding::draw_instance(SCM s_ob)

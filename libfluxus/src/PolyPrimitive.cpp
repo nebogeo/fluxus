@@ -78,7 +78,6 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	else glDisable(GL_LINE_SMOOTH);		
 
-	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	
 	if (m_State.Hints & HINT_NORMAL)
@@ -155,7 +154,6 @@ void PolyPrimitive::Render()
 		glEnable(GL_LIGHTING);
 	}
 	
-	if (m_State.Hints & HINT_VERTCOLS) glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 

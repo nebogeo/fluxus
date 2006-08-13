@@ -61,6 +61,7 @@ public:
 		dVector cross(dVector const &rhs) const;
 		float dot(dVector const &rhs) const;
 		float dist(dVector const &rhs) const;
+		float distsq(dVector const &rhs) const;
 		float mag();
 		void get_euler(float &rx, float &ry, float &rz) const;
 		void homog() {if (w && w!=1.0) {x/=w; y/=w; z/=w; w=1;}}
