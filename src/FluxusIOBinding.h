@@ -37,7 +37,8 @@ public:
 	static SCM mouse_button(SCM s_b);
 	static SCM mouse_x();
 	static SCM mouse_y();
-	static SCM srandom();
+	static SCM flxrnd();
+	static SCM flxseed(SCM s_seed);
 	static SCM time();
 	static SCM delta();
 	static SCM key_pressed(SCM s_key);

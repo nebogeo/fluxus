@@ -52,7 +52,6 @@ m_ShowAxis(false),
 m_Grabbed(NULL),
 m_ClearFrame(true),
 m_ClearZBuffer(false),
-m_DepthTest(true),
 m_Up(-1),
 m_Down(1),
 m_Left(-0.75),
@@ -135,10 +134,7 @@ void Renderer::BeginScene(bool PickMode)
 		
 		if (m_FaceOrderClockwise) glFrontFace(GL_CW);
 		else glFrontFace(GL_CCW);
-		
-		if (m_DepthTest) glEnable(GL_DEPTH_TEST);
-		else glDisable(GL_DEPTH_TEST);
-		 
+				 
     	glEnable(GL_RESCALE_NORMAL);
 		glDisable(GL_COLOR_MATERIAL);
 
@@ -608,6 +604,7 @@ void Renderer::RenderIMPrimitives()
 		// need to set the state to the primitive to update the parts of the state the 
 		// render call acts on. need to look at this.
 	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
+		(*i)->m_Primitive->Prerender();
 		(*i)->m_Primitive->Render();
 		glPopMatrix();
 	}

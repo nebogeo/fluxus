@@ -135,6 +135,7 @@ void PolyPrimitive::Render()
 	
 	if (m_State.Hints & HINT_WIRE)
 	{
+		glDisable(GL_TEXTURE_2D);
 		glPolygonOffset(1,1);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glColor3fv(m_State.WireColour.arr());
@@ -142,16 +143,19 @@ void PolyPrimitive::Render()
 		glDrawArrays(type,0,m_VertData->size());	
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
 	}
 	
 	if (m_State.Hints & HINT_POINTS)
 	{
+		glDisable(GL_TEXTURE_2D);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
 		glColor3fv(m_State.WireColour.arr());
 		glDisable(GL_LIGHTING);	
 		glDrawArrays(type,0,m_VertData->size());	
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
 	}
 	
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);

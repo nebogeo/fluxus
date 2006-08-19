@@ -113,7 +113,6 @@ public:
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
 	void SetClearZBuffer(bool s)             { m_ClearZBuffer=s; }
 	void SetBackFaceCull(bool s)             { m_BackFaceCull=s; m_Initialised=false; }
-	void SetDepthTest(bool s)                { m_DepthTest=s; m_Initialised=false; }
 	// default to ccw
 	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
@@ -161,7 +160,6 @@ private:
 	dColour m_BGColour;
 	bool m_ClearFrame;
 	bool m_ClearZBuffer;
-	bool m_DepthTest;
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
 	float m_OrthZoom;
 	bool m_BackFaceCull;

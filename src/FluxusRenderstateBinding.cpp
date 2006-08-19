@@ -63,6 +63,7 @@ void FluxusRenderstateBinding::RegisterProcs()
     scm_c_define_gsubr("hint-multitex",0,0,0,(CALLBACK_CAST)   hint_multitex);
     scm_c_define_gsubr("hint-origin",0,0,0,(CALLBACK_CAST)    hint_origin);
     scm_c_define_gsubr("hint-cast-shadow",0,0,0,(CALLBACK_CAST) hint_cast_shadow);
+    scm_c_define_gsubr("hint-ignore-depth",0,0,0,(CALLBACK_CAST) hint_ignore_depth);
 	scm_c_define_gsubr("line-width",1,0,0,(CALLBACK_CAST)	line_width);
 	scm_c_define_gsubr("point-width",1,0,0,(CALLBACK_CAST)  point_width);
 	scm_c_define_gsubr("blend-mode",2,0,0,(CALLBACK_CAST)	blend_mode);
@@ -428,6 +429,14 @@ SCM FluxusRenderstateBinding::hint_cast_shadow()
     Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
     if (Grabbed) Grabbed->GetState()->Hints|=HINT_CAST_SHADOW;
     else Fluxus->GetRenderer()->GetState()->Hints|=HINT_CAST_SHADOW;
+    return SCM_UNSPECIFIED;
+}
+
+SCM FluxusRenderstateBinding::hint_ignore_depth()
+{
+    Primitive *Grabbed=Fluxus->GetRenderer()->Grabbed();
+    if (Grabbed) Grabbed->GetState()->Hints|=HINT_IGNORE_DEPTH;
+    else Fluxus->GetRenderer()->GetState()->Hints|=HINT_IGNORE_DEPTH;	
     return SCM_UNSPECIFIED;
 }
 

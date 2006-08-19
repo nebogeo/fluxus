@@ -30,6 +30,8 @@ void Primitive::Prerender()
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
 	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	else glDisable(GL_COLOR_MATERIAL);
+	if (m_State.Hints & HINT_IGNORE_DEPTH) glDisable(GL_DEPTH_TEST);
+	else glEnable(GL_DEPTH_TEST);
 	
 	if (m_State.Shader)
 	{

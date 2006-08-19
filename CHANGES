@@ -20,6 +20,7 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * wireframe/solid z fighting fix
 * (time) returns posix time now (don't ask)
 * (turtle-position) returns current vertex when attached to a primitive
+* (hint-ignore-depth) as a cheap fix for transparency
 
 0.10
 

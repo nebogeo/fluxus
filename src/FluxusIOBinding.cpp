@@ -41,7 +41,8 @@ void FluxusIOBinding::RegisterProcs()
  	scm_c_define_gsubr("mouse-y",0,0,0,(CALLBACK_CAST) mouse_y);
     scm_c_define_gsubr("time",0,0,0,(CALLBACK_CAST) time);
     scm_c_define_gsubr("delta",0,0,0,(CALLBACK_CAST) delta);
-    scm_c_define_gsubr("flxrnd",0,0,0,(CALLBACK_CAST) srandom);
+    scm_c_define_gsubr("flxrnd",0,0,0,(CALLBACK_CAST) flxrnd);
+    scm_c_define_gsubr("flxseed",1,0,0,(CALLBACK_CAST) flxseed);
 	scm_c_define_gsubr("desiredfps",1,0,0,(CALLBACK_CAST) desiredfps);
 	scm_c_define_gsubr("start-framedump",2,0,0,(CALLBACK_CAST) start_framedump);
 	scm_c_define_gsubr("end-framedump",0,0,0,(CALLBACK_CAST) end_framedump);
@@ -244,7 +245,14 @@ SCM FluxusIOBinding::full_path(SCM s_filename)
 	return scm_from_locale_stringn(fullpath.c_str(),fullpath.length());
 }
 
-SCM FluxusIOBinding::srandom()
+SCM FluxusIOBinding::flxrnd()
 {
 	return scm_from_double(RandFloat());
+}
+
+SCM FluxusIOBinding::flxseed(SCM s_seed)
+{
+	SCM_ASSERT(scm_is_number(s_seed), s_seed, SCM_ARG1, "flxseed");	
+	srand(scm_to_int(s_seed));
+	return SCM_UNSPECIFIED;
 }

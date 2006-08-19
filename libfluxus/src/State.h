@@ -36,18 +36,19 @@
 namespace fluxus
 {
 
-#define HINT_NONE        0x0000
-#define HINT_SOLID       0x0001
-#define HINT_WIRE        0x0002
-#define HINT_NORMAL      0x0004
-#define HINT_POINTS      0x0008
-#define HINT_AALIAS      0x0010
-#define HINT_BOUND       0x0020
-#define HINT_UNLIT       0x0040
-#define HINT_VERTCOLS    0x0080
-#define HINT_MULTITEX    0x0100
-#define HINT_ORIGIN      0x0200
-#define HINT_CAST_SHADOW 0x0400
+#define HINT_NONE         0x0000
+#define HINT_SOLID        0x0001
+#define HINT_WIRE         0x0002
+#define HINT_NORMAL       0x0004
+#define HINT_POINTS       0x0008
+#define HINT_AALIAS       0x0010
+#define HINT_BOUND        0x0020
+#define HINT_UNLIT        0x0040
+#define HINT_VERTCOLS     0x0080
+#define HINT_MULTITEX     0x0100
+#define HINT_ORIGIN       0x0200
+#define HINT_CAST_SHADOW  0x0400
+#define HINT_IGNORE_DEPTH 0x0800
 
 // todo: use glew for this
 #ifndef DISABLE_MULTITEXTURING

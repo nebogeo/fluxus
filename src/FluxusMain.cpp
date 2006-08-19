@@ -258,19 +258,19 @@ void FluxusMain::HandleImpl(unsigned char key, int button, int special, int stat
 				{
 					case 0:
 					{
-						m_Editor[m_CurrentEditor]->m_RotY+=(x-m_LastMouseX)/4.0f;
-						m_Editor[m_CurrentEditor]->m_RotX+=-(y-m_LastMouseY)/4.0f;
+						m_Editor[m_CurrentEditor]->m_RotY+=(x-m_LastMouseX)/2.0f;
+						m_Editor[m_CurrentEditor]->m_RotX+=-(y-m_LastMouseY)/2.0f;
 					}
 					break;
 					case 1:
 					{
-						m_Editor[m_CurrentEditor]->m_PosX+=(x-m_LastMouseX);
-						m_Editor[m_CurrentEditor]->m_PosY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor]->m_PosX+=(x-m_LastMouseX)*2;
+						m_Editor[m_CurrentEditor]->m_PosY+=-(y-m_LastMouseY)*2;
 					}
 					break;
 					case 2:
 					{
-						m_Editor[m_CurrentEditor]->m_DisY+=-(y-m_LastMouseY);
+						m_Editor[m_CurrentEditor]->m_DisY+=-(y-m_LastMouseY)*4;
 					}
 					break;
 				}

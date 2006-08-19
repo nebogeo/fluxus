@@ -56,6 +56,7 @@ public:
 	static SCM hint_multitex();
 	static SCM hint_origin();
 	static SCM hint_cast_shadow();	
+	static SCM hint_ignore_depth();	
 	static SCM line_width(SCM s_p);
 	static SCM point_width(SCM s_p);
 	static SCM blend_mode(SCM s_s, SCM s_d);
