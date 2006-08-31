@@ -3,7 +3,7 @@
 @comment  makeinfo --css-include=fluxusdoc.css --html fluxus.texi
 
 @setfilename fluxus.info
-@settitle  Fluxus manual v0.10
+@settitle  Fluxus manual v0.11
 @afourpaper 
 
 @copying 
@@ -26,6 +26,7 @@
 * Appearance:: The appearance of primitives 
 * Maths:: Maths calls
 * Deforming:: Deforming primitives 
+* Shaders:: Hardware shading support 
 * User Input:: User input
 * Animation:: Animation sources
 * Physics:: Physics System
@@ -123,6 +124,7 @@ If you press ctrl and 0, instead of getting another script workspace, you will b
 @item F9 : Randomise the text colour (aka the panic button)
 @item F10 : Make text thinner (these two are for use with projectors to make the text easier to read)
 @item F11 : Make text thicker
+@item Escape : Editor panic button, resets the cursor if it gets stuck (let me know if you need to use this)
 @end itemize
 
 @section Loading/Saving scripts
@@ -243,10 +245,38 @@ Creates three cubes, all attached to each other in a chain. transforms for objec
 
 Destroying a object in such a hierachy will in turn destroy all child objects parented to it.
 
+@section Transforms
+
+Here are a list of the transforms in full:
+
+@lisp
+(concat matrix)
+@end lisp
+Applies the specified transformation matrix (a 16 element vector) to the current transform.
+
+@lisp
+(translate vec)
+@end lisp
+Applies the specified translation on to the current transform.
+
+@lisp
+(rotate vec)
+@end lisp
+Applies the specified rotation on to the current transform.
+
+@lisp
+(scale vec)
+@end lisp
+Applies the specified scale on to the current transform. Scaling to 0 in any dimension will collapse the object irreversably.
+
+@lisp
+(identity)
+@end lisp
+Sets the current transform to the identity matrix, which clears all transforms.
+
 @lisp
 (apply-transform obj)
 @end lisp
-
 Applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
 
 @lisp
@@ -341,7 +371,7 @@ Sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. thi
 (start-framedump filename type)
 (end-framedump)
 @end lisp
-Starts and stops writing tiff frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif" or "jpg".
+Starts and stops writing frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif", "jpg" or "ppm".
 
 @lisp
 (fog colour density start end)
@@ -567,6 +597,8 @@ Positions:      "p" vector
 Width:          "w" float 
 @end lisp
 
+@subsection Raw polygons primitive
+
 @lisp
 (build-polygons size type)
 Builds a raw polygon primitive with size vertices (everything set to zero). type is a number that refers to the way the vertices are interpreted to build polygons, and can be one of the following:
@@ -578,6 +610,27 @@ Builds a raw polygon primitive with size vertices (everything set to zero). type
 2=TRILIST
 3=TRIFAN
 4=POLYGON
+@end lisp
+
+@subsection Blobby primitive
+
+Blobby primitives are a higher level implicit surface representation in fluxus which is defined using influences in 3 dimesional space. These infuences are then summed together, and a particular value is "meshed" (using the marching cubes algorithm) to form a smooth surface. The influences can be animated, and the smooth surface moves and deforms to adapt, giving the primitive it's blobby name.
+
+@lisp
+(build-blobby numinfluences subdivisionsvec boundingvec)
+@end lisp
+Builds a new blobby primitive. Numinfluences is the number of "blobs". Subdivisions allows you to control the resolution of the surface in each dimension, while boundingvec sets the bounding area of the primitive in local object space. The mesh will not be calculated outside of this area.
+
+@image{images/blobby}
+
+@subsection Blobby primitive pdata
+
+Each element of pdata corresponds to an influence.
+
+@lisp
+Positions:      "p" vector
+Strength:       "s" float 
+Colour:         "c" vector 
 @end lisp
 
 @subsection Pixel primitive
@@ -675,7 +728,20 @@ cylinder: triangle list
 
 @section Nurbs topology
 
-Nurbs pdata are much simpler to deal with, as the topology is just a patch grid for both spheres and subdivided planes. 
+Nurbs pdata are much simpler to deal with, as the topology is just a patch grid for both spheres and subdivided planes. For example:
+
+@lisp
+(build-nurbs-plane 5 5)
+@end lisp
+Would give you a topology like this:
+
+@lisp
+0   1   2   3   4 
+5   6   7   8   9  
+10  11  12  13  14
+15  16  17  18  19 
+20  21  22  23  24 
+@end lisp
 
 @section Instancing
 
@@ -932,7 +998,13 @@ Turns on multitexturing - only works on poly primitives at the moment
 @end lisp                     
 Displays the origin of the local transform for this object.
 
+@lisp
+(hint-ignore-depth)
+@end lisp                     
+When rendering this primitive, ignores the zbuffer depth test - use this to fix transparency problems. This will cause the primitive to render in front of things it should be behind, but is useful in some cases.
+
 @insertcopying 
+
 
 @node Maths
 @chapter  Maths calls
@@ -1228,6 +1300,81 @@ For most pdata operations, the vast majority of the combinations of input types 
 
 The function (build_polygons) allows you to build empty primitives which you can use to either build more types of procedural shapes than fluxus supports natively, or for loading model data from disk. Once these primitives have been 
 constructed they can be treated in exactly the same way as any other primitive, ie pdata can be added or modified, and you can use (recalc-normals) etc.
+
+@insertcopying 
+
+@node Shaders
+@chapter  Hardware shading support
+
+Hardware shaders allow you to have much finer control over the graphics pipeline used to display your objects. Fluxus has commands to set and control GLSL shaders from your scheme scripts, and even edit your shaders in the fluxus editor. GLSL is the OpenGL standard for shaders across various graphics card types, if your card and driver support OpenGL2, this should work for you.
+
+@lisp
+(shader vertshader fragshader)
+@end lisp
+Loads, compiles and binds the vertex and fragment shaders on to current state or grabbed primitive.
+
+@lisp
+(shader-set! paramlist)
+@end lisp
+Sets uniform parameters for the shader in a token, value list, eg:
+@lisp
+(list "specular" 0.5 "mycolour" (vector 1 0 0))
+@end lisp
+
+This is very simple to set up - in your GLSL shader you just need to declare a uniform value eg:
+
+@lisp
+uniform float deformamount;
+@end lisp
+This is then set by calling from scheme:
+@lisp
+(shader-set! (list "deformamount" 1.4))
+@end lisp
+The deformamount is set once per object/shader - hence it's a uniform value across the whole object.
+
+Shaders also get given all pdata as attribute (per vertex) parameters, so you can share all this information between shaders and scripts in a similar way:
+
+In GLSL:
+@lisp
+attribute vec3 testcol;
+@end lisp
+
+To pass this from scheme, first create some new pdata with a matching name:
+@lisp
+(pdata-add "testcol" "v")
+@end lisp
+Then you can set it in the same way as any other pdata, controlling shader parameters on a per-vertex basis.
+
+@section Samplers
+
+Samplers are the hardware shading word for textures, the word sampler is used to be a little more general in that they are used as a way of passing lots of information (which may not be visual in nature) around between shaders. Passing textures into GLSL shaders from fluxus is again fairly simple:
+
+In your GLSL shader:
+@lisp
+uniform sampler2D mytexture;
+@end lisp
+
+In scheme:
+@lisp
+(texture (load-texture "mytexturefile.png"))
+(shader-set! (list "mytexture" 0))
+@end lisp
+This just tells GLSL to use the first texture unit (0) as the sampler for mytexture. This is the texture unit that the standard (texture) command loads textures to.
+
+To pass more than one texture, you need multitexturing turned on:
+
+In GLSL:
+@lisp
+uniform sampler2D mytexture;
+uniform sampler2D mysecondtexture;
+@end lisp
+
+In scheme:
+@lisp
+(multitexture 0 (load-texture "mytexturefile.png"))  ; load to texture unit 0
+(multitexture 1 (load-texture "mytexturefile2.png")) ; load to texture unit 1
+(shader-set! (list "mytexture" 0 "mysecondtexture" 1))
+@end lisp
 
 @insertcopying 
 
@@ -1585,6 +1732,11 @@ The turtle build has it's own transform stack
 @end lisp 
 When attached, causes the turtle to skip vertices. This value may be negative, which will set the turtle to write to previous vertices.
 
+@lisp 
+(turtle-position)
+@end lisp 
+When attached, returns the current pdata index the turtle is writing to.
+
 Time for some examples:
 
 This script simply builds a single polygon circle, by playing the age old turtle trick of looping a function that moves a bit, turns a bit...
@@ -1700,15 +1852,22 @@ This happens when the start of the audio does not quite match the first frame. Y
 @node Debugging Scheme
 @chapter Debugging Scheme
 
-It can be hard to track down errors in scheme scripts, especially in deeply nested functional calls. Luckily the scheme interpreter fluxus uses has some built in debugging utilities you can use.
+It can be hard to track down errors in scheme scripts, especially in deeply nested functional calls. Luckily the scheme interpreter fluxus uses has some built in debugging utilities you can use. It's generally a good idea to turn these on when writing scripts, but turn them off for performance use, as they do slow things down a little.
 
 @lisp
-(debug-enable 'stacktrace)
+(debug-enable 'debug)
 @end lisp
+Turns on the debugger (this causes the interpreter to run slower)
+
+@lisp
+(debug-enable 'backtrace)
+@end lisp
+Prints out full stack trace apon error - this is very useful for complex programs.
 
 @lisp
 (read-enable 'positions)
 @end lisp
+Tells you line numbers of errors which occur. Not very useful in the fluxus editor (yet).
 
 @node Examples
 @chapter Examples 

@@ -64,6 +64,8 @@ public:
 	static SCM frame_hook();
 	static SCM repl_princ(SCM c);
 	static SCM repl_print(SCM s);
-	
+	static SCM flx_major_version();
+	static SCM flx_minor_version();
+
 };
 #endif

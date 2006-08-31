@@ -112,10 +112,12 @@ float BlobbyPrimitive::SampleCol(const dVector &pos, dColour &col)
 		{
 			float mul=1/distance;
 			val+=(*m_StrengthData)[n]*mul;
+			
+			//col+=(*m_ColData)[n]*mul;
 
 			col.r+=(*m_ColData)[n].r*mul;
 			col.g+=(*m_ColData)[n].g*mul;
-			col.b+=(*m_ColData)[n].b*mul;		
+			col.b+=(*m_ColData)[n].b*mul;
 		}
 	}		
 	return val;	

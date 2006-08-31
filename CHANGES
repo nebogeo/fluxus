@@ -19,8 +19,19 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * editor/repl bug fixes
 * wireframe/solid z fighting fix
 * (time) returns posix time now (don't ask)
+* (turtle-attach object) : attaches the turtle to an existing primitive for
+  recalculating it's points (turtle-vert) writes into the vertex position
+  for the current index
+* (turtle-skip count) : when attached to a primitive, this tells the turtle
+  to skip points - can be negative to go backwards. the indexing wraps
 * (turtle-position) returns current vertex when attached to a primitive
 * (hint-ignore-depth) as a cheap fix for transparency
+* pgup/pgdown work 
+* escape - editor panic button
+* ppm frame dump format support
+* blobby implicit surface objects
+* more examples
+* (flx-major-version) and (flx-minor-version)
 
 0.10
 

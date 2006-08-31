@@ -3,6 +3,8 @@
 import os, os.path
 
 Target       = "fluxus"
+MajorVersion = "0"
+MinorVersion = "11"
 
 Prefix = "/usr/local"
 Install      = Prefix + "/bin"
@@ -125,6 +127,8 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 		  VERSION_NUM = FluxusVersion)
 
 Default(env.Program(source = Source, target = Target))
+env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
+env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 
 if env['PLATFORM'] == 'darwin':
 	env.Replace(LINK = "macos/libtool --mode=link g++")

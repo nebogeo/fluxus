@@ -134,9 +134,21 @@ SCM FluxusBinding::repl_print(SCM s)
 	return SCM_UNSPECIFIED;
 }
 
+SCM FluxusBinding::flx_major_version()
+{
+	return scm_from_int(FLUXUS_MAJOR_VERSION);
+}
+
+SCM FluxusBinding::flx_minor_version()
+{
+	return scm_from_int(FLUXUS_MINOR_VERSION);
+}
+
 void FluxusBinding::RegisterProcs()
 {
 	scm_c_define_gsubr("repl-princ", 1,0,0,(CALLBACK_CAST)repl_princ);
 	scm_c_define_gsubr("repl-print", 1,0,0,(CALLBACK_CAST)repl_print);
     scm_c_define_gsubr("frame-hook",0,0,0,(CALLBACK_CAST) frame_hook);
+    scm_c_define_gsubr("flx-major-version",0,0,0,(CALLBACK_CAST) flx_major_version);
+    scm_c_define_gsubr("flx-minor-version",0,0,0,(CALLBACK_CAST) flx_minor_version);
 }
