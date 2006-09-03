@@ -16,8 +16,8 @@ GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
 
 SchemePrefix = GuileSchemePrefix + "/fluxus"
 
-LibPaths     = ["/usr/local/lib"]
-IncludePaths = Split("/usr/local/include libfluxus/src libfluxphysics/src")
+LibPaths     = Split("/usr/local/lib /usr/lib")
+IncludePaths = Split("/usr/local/include /usr/include libfluxus/src libfluxphysics/src")
 
 # First member of each list is a library, second - a header or headers list
 # to be passed to the CheckLibWithHeader(...) at configure time.

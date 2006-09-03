@@ -88,17 +88,17 @@ void ParticlePrimitive::Render()
 		glBegin(GL_QUADS);
 		for (unsigned int n=0; n<m_VertData->size(); n++)
 		{
-			dVector scaledacross(across*(*m_SizeData)[n].x);
-			dVector scaledown(down*(*m_SizeData)[n].y);
+			dVector scaledacross(across*(*m_SizeData)[n].x*0.5);
+			dVector scaledown(down*(*m_SizeData)[n].y*0.5);
 			glColor3fv((*m_ColData)[n].arr());
 			glTexCoord2f(0,0);
-			glVertex3fv((*m_VertData)[n].arr());
+			glVertex3fv(((*m_VertData)[n]-scaledacross-scaledown).arr());
 			glTexCoord2f(0,1);
-			glVertex3fv(((*m_VertData)[n]+scaledown).arr());
+			glVertex3fv(((*m_VertData)[n]-scaledacross+scaledown).arr());
 			glTexCoord2f(1,1);
 			glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
 			glTexCoord2f(1,0);
-			glVertex3fv(((*m_VertData)[n]+scaledacross).arr());
+			glVertex3fv(((*m_VertData)[n]+scaledacross-scaledown).arr());
 		}
 		glEnd();
 	}
