@@ -131,11 +131,11 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 
 	glLinkProgram(m_Program);
 
-	int status = GL_FALSE;
+	GLint status = GL_FALSE;
 	glGetProgramiv(m_Program, GL_LINK_STATUS, &status);
 	if(status != GL_TRUE)
 	{
-		int size = 0;
+		GLsizei size = 0;
 		char log[1024];
 		glGetProgramInfoLog(m_Program, 1024, &size, log);
 		cout<<log<<endl;
@@ -170,11 +170,11 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 		glShaderSource(shader, 1, (const char**)&code, NULL);
 		glCompileShader(shader);
 
-		int status = GL_FALSE;
+		GLint status = GL_FALSE;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 		if(status != GL_TRUE)
 		{	
-			int size = 0;
+			GLsizei size = 0;
 			char log[1024];
 
 			glGetShaderInfoLog(shader, 1024, &size, log);

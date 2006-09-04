@@ -1,7 +1,14 @@
 #                                                              -*- python -*-
+import os, os.path, sys
+from stat import *
 
-import os, os.path
+# deal with options
+opts = Options(['options.cache'], ARGUMENTS)
+opts.AddOptions(
+	('DEPS_PREFIX_PATH','a colon separated list of non-standard locations where dependencies are installed',None),
+    )
 
+# globals
 Target       = "fluxus"
 MajorVersion = "0"
 MinorVersion = "11"
@@ -10,11 +17,7 @@ Prefix = "/usr/local"
 Install      = Prefix + "/bin"
 
 GuileVersionMajMin = "1.8"
-GuilePrefix        = "/usr/local"
-GuileDataPrefix    = GuilePrefix + "/share/guile"
-GuileSchemePrefix  = GuileDataPrefix + "/" + GuileVersionMajMin
 
-SchemePrefix = GuileSchemePrefix + "/fluxus"
 
 LibPaths     = Split("/usr/local/lib /usr/lib")
 IncludePaths = Split("/usr/local/include /usr/include libfluxus/src libfluxphysics/src")
@@ -33,7 +36,8 @@ LibList      = [["m", "math.h"],
 		["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
 		["tiff", "tiff.h"],
 		["z", "zlib.h"],
-		["png", "libpng/png.h"]]
+		["png", "png.h"],
+                ["GLEW", "GL/glew.h"]]
 
 Source = Split("libfluxus/src/PData.cpp \
         libfluxus/src/PDataOperator.cpp \
@@ -121,10 +125,38 @@ def CheckMultitexture(context):
 	return result
 
 
+def SearchForGuile(prefix_list):
+	global GuileSchemePrefix
+	for prefix in prefix_list:
+		candidate = os.path.join(prefix,"share","guile",GuileVersionMajMin)
+		try:
+			s = os.stat(candidate)
+			if S_ISDIR(s.st_mode):
+				# found!
+				print "Found guile in", prefix
+				GuileSchemePrefix = candidate
+				return True
+		except OSError:
+			continue
+	return False
+
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
 		  LIBPATH = LibPaths,
 		  CPPPATH = IncludePaths,
-		  VERSION_NUM = FluxusVersion)
+		  VERSION_NUM = FluxusVersion,
+		  options = opts)
+Help(opts.GenerateHelpText(env))
+opts.Save('options.cache', env)
+
+# handle DEPS_PREFIX_PATH
+DEPS_PREFIX_PATH = []
+if env.has_key('DEPS_PREFIX_PATH'):
+	DEPS_PREFIX_PATH = env['DEPS_PREFIX_PATH'].split(':')
+	env.Append(
+		CPPPATH = map(lambda prefix: os.path.join(prefix, 'include'), 
+			DEPS_PREFIX_PATH),
+		LIBPATH =  map(lambda prefix: os.path.join(prefix, 'lib'), 
+			DEPS_PREFIX_PATH))
 
 Default(env.Program(source = Source, target = Target))
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
@@ -137,31 +169,28 @@ else:
 	LibList += [["X11", "X11/Xlib.h"],
            	    ["GL", "GL/gl.h"],
            	    ["GLU", "GL/glu.h"],
-                ["glut", "GL/glut.h"],
-                ["GLEW", "GL/glew.h"]]
+                ["glut", "GL/glut.h"], ]
 	env.Append(LIBPATH = ["/usr/X11R6/lib"])
 	
 	# add the X11 libs on - needed if we are not building on xorg
 	if ARGUMENTS.get("X11",0):
 		LibList=[["Xi", "X11/Xlib.h"],
-				 ["Xmu", "X11/Xlib.h"], 
-				 ["Xext", "X11/Xlib.h"], 
-				 ["Xt", "X11/Xlib.h"], 
-				 ["SM", "X11/Xlib.h"], 
-				 ["ICE", "X11/Xlib.h"]] + LibList;
+			["Xmu", "X11/Xlib.h"], 
+			["Xext", "X11/Xlib.h"], 
+			["Xt", "X11/Xlib.h"], 
+			["SM", "X11/Xlib.h"], 
+			["ICE", "X11/Xlib.h"]] + LibList;
 	
 if not GetOption('clean'):
-	print '--------------------------------------------------------'		
+	print '--------------------------------------------------------'
 	print 'Fluxus: Configuring Build Environment'
 	print '--------------------------------------------------------'		
 	conf = Configure( env, custom_tests = 
 	{'CheckParamCast' : CheckParamCast, 
 	 'CheckMultitexture' : CheckMultitexture })
 	
-	# all libraries are required, but they can be checked for independently
-	# (hence autoadd=0), which allows us to speed up the tests ...
 	for (lib,headers) in LibList:
-		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 1):
+		if not conf.CheckLibWithHeader(lib, headers, 'C'):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
 			
@@ -180,16 +209,14 @@ if not GetOption('clean'):
 		env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 		
 	env = conf.Finish()
-	# ... but we shouldn't forget to add them to LIBS manually
-	env.Replace(LIBS = [rec[0] for rec in LibList])
-	
 
+SearchForGuile(['/usr','/usr/local'] + DEPS_PREFIX_PATH)
 # packaging / installing
 if env['PLATFORM'] == 'darwin':
 	from macos.osxbundle import *
 	TOOL_BUNDLE(env)
 	# We add frameworks after configuration bit so that testing is faster.
-	env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio"))
+	env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation"))
 	env.Alias("app", env.MakeBundle("Fluxus.app",
 					"fluxus",
 					"key",
@@ -197,6 +224,7 @@ if env['PLATFORM'] == 'darwin':
 					typecode='APPL',
 					icon_file='macos/fluxus.icns'))
 	GuileScripts = "Fluxus.app/Contents/Resources/guile_scripts"
+	# on osx we install scripts inside the app bundle
 	SchemePrefix = GuileScripts + "/site/fluxus"
 	for where, dirs, files in os.walk(GuileSchemePrefix):
 		dest = os.path.join(GuileScripts, where[len(GuileSchemePrefix)+1:])
@@ -208,6 +236,8 @@ if env['PLATFORM'] == 'darwin':
 	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
 				       DmgFiles))
 else:
+	# on linux we install scripts along side the guile scripts
+	SchemePrefix = GuileSchemePrefix + "/fluxus"
 	env.Install(Install, Target)
 	env.Alias('install', Prefix)
 
