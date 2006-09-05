@@ -6,8 +6,8 @@ from stat import *
 opts = Options(['options.cache'], ARGUMENTS)
 opts.AddOptions(
 	('DEPS_PREFIX_PATH','a colon separated list of non-standard locations where dependencies are installed',None),
-#	BoolOption('X11', 'link against X11 as opposed to xorg', 0),
-#	BoolOption('MULTITEXTURE', 'set to 0 to force disabling of multitexture support', 1),
+	BoolOption('X11', 'link against X11 as opposed to xorg', 0),
+	BoolOption('MULTITEXTURE', 'set to 0 to force disabling of multitexture support', 1),
     )
 
 # globals
@@ -178,7 +178,7 @@ else:
 	env.Append(LIBPATH = ["/usr/X11R6/lib"])
 	
 	# add the X11 libs on - needed if we are not building on xorg
-	if ARGUMENTS.get("X11",0):
+	if env["X11"]:
 		LibList=[["Xi", "X11/Xlib.h"],
 			["Xmu", "X11/Xlib.h"], 
 			["Xext", "X11/Xlib.h"], 
@@ -210,7 +210,7 @@ if not (GetOption('clean') or scons_options.help_msg):
 			env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 	
 	# enable users to disable multitexturing manually
-	if ARGUMENTS.get("MULTITEXTURE",1)=="0":
+	if not env["MULTITEXTURE"]:
 		env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 		
 	env = conf.Finish()
