@@ -1,11 +1,13 @@
 #                                                              -*- python -*-
-import os, os.path, sys
+import os, os.path, SCons
 from stat import *
 
 # deal with options
 opts = Options(['options.cache'], ARGUMENTS)
 opts.AddOptions(
 	('DEPS_PREFIX_PATH','a colon separated list of non-standard locations where dependencies are installed',None),
+#	BoolOption('X11', 'link against X11 as opposed to xorg', 0),
+#	BoolOption('MULTITEXTURE', 'set to 0 to force disabling of multitexture support', 1),
     )
 
 # globals
@@ -15,12 +17,15 @@ MinorVersion = "11"
 
 Prefix = "/usr/local"
 Install      = Prefix + "/bin"
-
 GuileVersionMajMin = "1.8"
-
+GuileSchemePrefix = None
 
 LibPaths     = Split("/usr/local/lib /usr/lib")
 IncludePaths = Split("/usr/local/include /usr/include libfluxus/src libfluxphysics/src")
+
+parser = SCons.Script.OptParser()
+scons_options, scons_targets = parser.parse_args()
+
 
 # First member of each list is a library, second - a header or headers list
 # to be passed to the CheckLibWithHeader(...) at configure time.
@@ -181,7 +186,7 @@ else:
 			["SM", "X11/Xlib.h"], 
 			["ICE", "X11/Xlib.h"]] + LibList;
 	
-if not GetOption('clean'):
+if not (GetOption('clean') or scons_options.help_msg):
 	print '--------------------------------------------------------'
 	print 'Fluxus: Configuring Build Environment'
 	print '--------------------------------------------------------'		
@@ -211,6 +216,7 @@ if not GetOption('clean'):
 	env = conf.Finish()
 
 SearchForGuile(['/usr','/usr/local'] + DEPS_PREFIX_PATH)
+
 # packaging / installing
 if env['PLATFORM'] == 'darwin':
 	from macos.osxbundle import *
