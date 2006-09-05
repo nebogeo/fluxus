@@ -168,7 +168,7 @@ env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 
 if env['PLATFORM'] == 'darwin':
-	env.Replace(LINK = "macos/libtool --mode=link g++")
+	env.Replace(LINK = "glibtool --mode=link g++")
 	env.Prepend(LINKFLAGS = ["-static"])
 else:
 	LibList += [["X11", "X11/Xlib.h"],
