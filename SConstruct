@@ -238,8 +238,12 @@ if env['PLATFORM'] == 'darwin':
 			env.Install(dest, os.path.join(where,f))
 	
 	env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
-	DmgFiles = [File("COPYING"), Dir("Fluxus.app"), Dir("docs"), Dir("examples"), Dir("scm")]
-	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
+	DmgFiles = [File("COPYING"), 
+		Dir("Fluxus.app"), 
+		Dir("docs"), 
+		Dir("examples")]
+	env.Alias("dmg", 
+		env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
 				       DmgFiles))
 else:
 	# on linux we install scripts along side the guile scripts
