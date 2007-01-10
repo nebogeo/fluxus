@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
-#include <guile/gh.h>
 #ifndef __APPLE__
 #include <GL/glut.h>
 #else
@@ -23,86 +22,91 @@
 #endif
 #include "Repl.h"
 
+using namespace fluxus;
+
 string Repl::m_Banner = string("Welcome to fluxus\n");
 string Repl::m_Prompt = string("fluxus> ");
 
-SCM ErrorHandler (void *handler_data, SCM tag, SCM args);
-
-Repl::Repl() : m_InsertPos(0), m_History(), m_HistoryNavStarted(false)
+Repl::Repl(Interpreter *i) : 
+m_InsertPos(0), 
+m_History(), 
+m_HistoryNavStarted(false),
+m_Interpreter(i)
 {
 	Print(m_Banner);
-        PrintPrompt();
+	PrintPrompt();
 }
 
 // FIXME: wrap long lines
 void Repl::Print(string what)
 {
-        unsigned int l = what.length();
+	unsigned int l = what.length();
 
-        m_Text.insert(m_InsertPos, what);
-        
-        m_Position += l;
-        m_PromptPos += l;
-        m_InsertPos += l;
+	m_Text.insert(m_InsertPos, what);
 
-		EnsureCursorVisible();
+	m_Position += l;
+	m_PromptPos += l;
+	m_InsertPos += l;
 
-        cout << what;
+	EnsureCursorVisible();
+
+	cout << what;
 }
 
 void Repl::PrintPrompt()
 {
-        unsigned int where = m_Text.length();
-        m_InsertPos = m_Text.length();
-        if (m_Text[m_InsertPos-1]!='\n') {
-                m_Text += '\n';
-                m_InsertPos++;
-        }
-        m_Text += m_Prompt;
-        m_Position = m_PromptPos = m_Text.length();
+	unsigned int where = m_Text.length();
+	m_InsertPos = m_Text.length();
+	if (m_Text[m_InsertPos-1]!='\n') {
+		m_Text += '\n';
+		m_InsertPos++;
+	}
+	m_Text += m_Prompt;
+	m_Position = m_PromptPos = m_Text.length();
 }
 
-void Repl::Print(SCM obj)
+void Repl::Print(Scheme_Object *obj)
 {
-	SCM str_obj = scm_object_to_string(obj, SCM_UNDEFINED);
-	Print(string(SCM_STRING_CHARS(str_obj)));
+	long length=0;
+	char *str = scheme_display_to_string(obj, &length);
+	Print(str);
 }
 
 void Repl::Handle(int button, int key, int special, int state, 
 		  int x, int y, int mod)
 {
 	if (key!=0) {
-                if ((m_Position <= m_PromptPos && key == GLEDITOR_BACKSPACE) ||
-                    (m_Position < m_PromptPos && key == GLEDITOR_DELETE) ||
-                    ((m_Position < m_PromptPos ||
-                      m_HighlightStart < m_PromptPos ||
-                      m_HighlightEnd < m_PromptPos)
-                     && key == GLEDITOR_CUT))
-                        return;
+		if ((m_Position <= m_PromptPos && key == GLEDITOR_BACKSPACE) ||
+			(m_Position < m_PromptPos && key == GLEDITOR_DELETE) ||
+			((m_Position < m_PromptPos ||
+			m_HighlightStart < m_PromptPos ||
+			m_HighlightEnd < m_PromptPos)
+			&& key == GLEDITOR_CUT))
+			return;
 
-                if (m_Position < m_PromptPos && key != GLEDITOR_COPY) 
-                        m_Position = m_Text.length();
+		if (m_Position < m_PromptPos && key != GLEDITOR_COPY) 
+			m_Position = m_Text.length();
 	}
-	
-        if (special != 0) {
-                if (m_Position >= m_PromptPos) {
-                        switch(special)
-                        {
-                        case GLUT_KEY_UP:
-                                HistoryPrev();
-                                return;
-                        case GLUT_KEY_DOWN:
-                                HistoryNext();
-                                return;
-                        case GLUT_KEY_END:
-                                m_Position = m_Text.length();
-                                return;
-                        case GLUT_KEY_HOME:
-                                m_Position = m_PromptPos;
-                                return;
-                        }
-                }
-        }
+
+	if (special != 0) {
+		if (m_Position >= m_PromptPos) {
+			switch(special)
+			{
+			case GLUT_KEY_UP:
+    			HistoryPrev();
+    			return;
+			case GLUT_KEY_DOWN:
+    			HistoryNext();
+    			return;
+			case GLUT_KEY_END:
+    			m_Position = m_Text.length();
+    			return;
+			case GLUT_KEY_HOME:
+    			m_Position = m_PromptPos;
+    			return;
+			}
+		}
+	}
 		
 	EnsureCursorVisible();
 
@@ -117,36 +121,36 @@ void Repl::Handle(int button, int key, int special, int state,
 
 void Repl::HistoryPrev()
 {
-        if (!m_HistoryNavStarted) {
-                m_HistoryIter = m_History.end();
-                m_HistoryNavStarted = true;
-        }
-        
-        if (m_HistoryIter == m_History.end())
-                m_HistoryPresent = m_Text.substr(m_PromptPos);
+	if (!m_HistoryNavStarted) {
+		m_HistoryIter = m_History.end();
+		m_HistoryNavStarted = true;
+	}
 
-        if (m_HistoryIter == m_History.begin())
-                return;
-        
-        m_HistoryIter--;
-        HistoryShow(*m_HistoryIter);
+	if (m_HistoryIter == m_History.end())
+		m_HistoryPresent = m_Text.substr(m_PromptPos);
+
+	if (m_HistoryIter == m_History.begin())
+		return;
+
+	m_HistoryIter--;
+	HistoryShow(*m_HistoryIter);
 }
 
 void Repl::HistoryNext()
 {
-        if (!m_HistoryNavStarted || (m_HistoryIter == m_History.end()))
-                return;
+	if (!m_HistoryNavStarted || (m_HistoryIter == m_History.end()))
+		return;
 
-        m_HistoryIter++;
-        HistoryShow((m_HistoryIter == m_History.end()) ?
-                     m_HistoryPresent : *m_HistoryIter);
+	m_HistoryIter++;
+	HistoryShow((m_HistoryIter == m_History.end()) ?
+		m_HistoryPresent : *m_HistoryIter);
 }
 
 void Repl::HistoryShow(string what)
 {
-        m_Text.resize(m_PromptPos,0);
-        m_Text += what;
-        m_Position = m_Text.length();
+	m_Text.resize(m_PromptPos,0);
+	m_Text += what;
+	m_Position = m_Text.length();
 }
 
 // FIXME: skip parens in strings and comments
@@ -184,27 +188,25 @@ bool Repl::TryEval()
 	string defun = m_Text.substr(m_PromptPos);
 	
 	if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
-                return true;
+		return true;
 
-        if (!Empty(defun)) {
-                m_InsertPos = m_Text.length();
-                Print("\n");
-                SCM res0 = scm_internal_catch(SCM_BOOL_T,
-                                              (scm_t_catch_body)scm_c_eval_string,
-                                              (void*)(defun.c_str()),
-                                              ErrorHandler,
-                                              (void*)"fluxus");
+	if (!Empty(defun)) {
+		m_InsertPos = m_Text.length();
+		Print("\n");
+	
+		Scheme_Object *out = m_Interpreter->Interpret(defun);
 
-                if (defun[defun.length()-1] == '\n')
-                        defun.resize(defun.length()-1,0); 
-                m_History.push_back(defun);
-                m_HistoryNavStarted = false;
-        
-                if (res0 != SCM_UNDEFINED && res0 != SCM_UNSPECIFIED) {
-                        Print(res0);
-                        Print("\n");
-                }
-        }
+		if (defun[defun.length()-1] == '\n')
+        		defun.resize(defun.length()-1,0); 
+		m_History.push_back(defun);
+		m_HistoryNavStarted = false;
+
+		if (out != NULL && out != scheme_void) {
+        	Print(out);
+        	Print("\n");
+		}
+		
+	}
 	PrintPrompt();
 	
 	return false;

@@ -1,0 +1,16 @@
+###############################################################
+# Top level SConscript for the fluxus PLT modules
+#
+# Sets up common stuff, and calls each module SConscript 
+
+Import("env", "CollectsLocation", "MZDYN")
+
+# Don't know what the name for this for osx is - probably doesn't matter, but 
+# we should use the convention PLT uses (I guess it's used for a networked 
+# multi architecture install)
+Arch = "/i386-linux"
+BinaryModulesLocation = CollectsLocation + "/compiled/native" + Arch
+
+SConscript(dirs = ["fluxus-engine", "fluxus-audio", "fluxus-osc", "scheme"], 
+           exports = ["env", "CollectsLocation", "BinaryModulesLocation", "MZDYN"])
+

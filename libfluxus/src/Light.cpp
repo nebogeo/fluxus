@@ -9,6 +9,8 @@ m_Ambient(0.2,0.2,0.2),
 m_Diffuse(1,1,1),
 m_Specular(1,1,1),
 m_Position(0,0,0),
+m_Direction(0,0,0),
+m_Type(POINT),
 m_CameraLock(false)
 {
 }

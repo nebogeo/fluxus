@@ -1,0 +1,23 @@
+###############################################################
+# SConscript for fluxus-audio
+#
+# This is the main PLT module for the fluxus audio functions
+
+Import("env", "BinaryModulesLocation", "MZDYN")
+
+Target       = "fluxus-audio.so"
+
+Install      = BinaryModulesLocation
+Libs =  Split("jack fftw3 sndfile")
+
+Source = Split("src/FluxusAudio.cpp \
+		src/AudioCollector.cpp \
+		src/JackClient.cpp "+ 
+		MZDYN)
+		
+env.SharedLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs,
+				  SHLIBPREFIX = "")
+						  
+env.Install(Install, Target)

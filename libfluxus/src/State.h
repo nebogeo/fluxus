@@ -50,10 +50,6 @@ namespace fluxus
 #define HINT_IGNORE_DEPTH 0x0800
 
 // todo: use glew for this
-#ifndef DISABLE_MULTITEXTURING
-#define ENABLE_MULTITEXTURE
-#endif
-
 #ifdef ENABLE_MULTITEXTURE
 #define MAX_TEXTURES  8
 #else

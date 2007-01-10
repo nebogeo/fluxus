@@ -1,0 +1,33 @@
+###############################################################
+# SConscript for fluxus-engine
+#
+# This is the main PLT module for fluxus, containing all core
+# graphics functions
+
+Import("env", "BinaryModulesLocation", "MZDYN")
+
+Target = "fluxus-engine.so"
+Install = BinaryModulesLocation
+Libs = Split("GL GLU glut GLEW fluxus png ode")
+
+Source = Split("src/Engine.cpp \
+		src/FluxusEngine.cpp \
+		src/SchemeHelper.cpp \
+        src/GlobalStateFunctions.cpp \
+		src/LocalStateFunctions.cpp \
+		src/MathsFunctions.cpp \
+		src/PrimitiveFunctions.cpp \
+		src/PDataFunctions.cpp \
+		src/UtilFunctions.cpp \
+		src/TurtleFunctions.cpp \
+		src/LightFunctions.cpp \
+		src/PhysicsFunctions.cpp \
+		src/TurtleBuilder.cpp " + 
+		MZDYN)
+		
+env.SharedLibrary(source = Source, 
+				  target = Target, 
+		  		  LIBS = Libs,
+		  		  SHLIBPREFIX = "")
+						  
+env.Install(Install, Target)

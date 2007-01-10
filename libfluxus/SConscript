@@ -1,0 +1,40 @@
+###############################################################
+# SConscript for libfluxus
+#
+# Builds a static library of the core rendering code, no need
+# to install, as this is linked to fluxus-engine statically
+
+Import("env")
+
+Target = "libfluxus.a"
+
+Source = Split("src/PData.cpp \
+        src/PDataOperator.cpp \
+		src/PDataContainer.cpp \
+		src/PDataArithmetic.cpp \
+		src/GraphicsUtils.cpp \
+		src/PNGLoader.cpp \
+		src/PolyPrimitive.cpp \
+		src/TextPrimitive.cpp \
+		src/CompiledPrimitive.cpp \
+		src/LinePrimitive.cpp \
+		src/ParticlePrimitive.cpp \
+		src/PixelPrimitive.cpp \
+		src/BlobbyPrimitive.cpp \
+		src/NURBSPrimitive.cpp \
+		src/LocatorPrimitive.cpp \
+		src/Primitive.cpp \
+		src/Light.cpp \
+		src/Renderer.cpp \
+		src/SceneGraph.cpp \
+		src/State.cpp \
+		src/TexturePainter.cpp \
+		src/Tree.cpp \
+		src/dada.cpp \
+		src/SearchPaths.cpp \
+		src/GLSLShader.cpp \
+		src/ShadowVolumeGen.cpp \
+		src/Physics.cpp")
+		
+env.StaticLibrary(source = Source, target = Target)
+

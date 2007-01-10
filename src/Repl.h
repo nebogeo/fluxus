@@ -17,41 +17,49 @@
 #ifndef _FLUXUS_REPL_H_
 #define _FLUXUS_REPL_H_
 
-#include <libguile.h>
-#include <libguile/tags.h>
 #include <deque>
+#include <plt/scheme.h>
 #include "GLEditor.h"
+#include "Interpreter.h"
+
+namespace fluxus 
+{
 
 class Repl : public GLEditor
 {
 public:
-	Repl();
+	Repl(Interpreter *i);
 	virtual ~Repl() {}
 	
 	virtual void Handle(int button, int key, int special, int state, 
 			    int x, int y, int mod);
 	
 	void Print(string what);
-	void Print(SCM obj);
+	void Print(Scheme_Object *obj);
+
 protected:
 	static string m_Prompt;
 	static string m_Banner;
 	
 	unsigned int m_PromptPos;
-        unsigned int m_InsertPos;
+	unsigned int m_InsertPos;
 
 	bool TryEval();
-        void PrintPrompt();
-        void HistoryPrev();
-        void HistoryNext();
-        void HistoryShow(string what);
-        void EnsureCursorVisible();
-        
-        // line history
-        deque<string> m_History;
-        deque<string>::iterator m_HistoryIter;
-        bool m_HistoryNavStarted;
-        string m_HistoryPresent;
+	void PrintPrompt();
+	void HistoryPrev();
+	void HistoryNext();
+	void HistoryShow(string what);
+	void EnsureCursorVisible();
+
+	// line history
+	deque<string> 			m_History;
+	deque<string>::iterator m_HistoryIter;
+	bool 					m_HistoryNavStarted;
+	string 					m_HistoryPresent;
+	
+	Interpreter*			m_Interpreter;
 };
+
+}
 
 #endif

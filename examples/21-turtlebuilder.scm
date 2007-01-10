@@ -1,4 +1,4 @@
-
+(start-audio "alsa_pcm:capture_1" 1024 44100)
 
 (define pi 3.141593)
 (define glob-list '())

@@ -49,13 +49,13 @@
 (define (deform x y n)
     (let ((p (pdata-get "p" n)))
     (pdata-set "p" n (vadd p (vmul (pdata-get "n" n) 
-        (* 0.1 (sin (* (f32vector-ref p 1) x)))))))
+        (* 0.1 (sin (* (vector-ref p 1) x)))))))
 
     (let ((p (pdata-get "p" n)))
     (pdata-set "p" n (vadd p (vmul (pdata-get "n" n) 
         (* 0.1 (sin (* y 
-            (+ (sin (f32vector-ref p 0)) 
-               (cos (f32vector-ref p 2))))))))))
+            (+ (sin (vector-ref p 0)) 
+               (cos (vector-ref p 2))))))))))
 
     (if (zero? n)
         0

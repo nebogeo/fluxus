@@ -21,7 +21,6 @@
 #endif
 #include <iostream>
 #include "GLEditor.h"
-#include "TexturePainter.h"
 
 using namespace fluxus;
 
@@ -113,7 +112,7 @@ void GLEditor::Render()
 	glFrustum(-1,1,-0.75,0.75,1,10);
 	glMatrixMode(GL_MODELVIEW);
 
-	TexturePainter::Get()->DisableAll();
+	glDisable(GL_TEXTURE_2D);
 
 	glPushMatrix();
 	glDisable(GL_LIGHTING);

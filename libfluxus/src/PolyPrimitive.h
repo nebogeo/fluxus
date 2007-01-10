@@ -62,7 +62,7 @@ protected:
 	vector<dVector> m_GeometricNormals;
 	vector<vector<int> > m_Faces;
 	vector<vector<pair<int,int> > >  m_UniqueEdges;
-	
+		
 	Type m_Type;
 	vector<dVector> *m_VertData;
 	vector<dVector> *m_NormData;

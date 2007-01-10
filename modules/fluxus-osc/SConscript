@@ -1,0 +1,22 @@
+###############################################################
+# SConscript for fluxus-osc
+#
+# This is the main PLT module for the fluxus osc functions
+
+Import("env", "BinaryModulesLocation", "MZDYN")
+
+Target = "fluxus-osc.so"
+Install = BinaryModulesLocation
+Libs = Split("lo")
+
+Source = Split("src/FluxusOSC.cpp \
+		src/OSCServer.cpp \
+		src/OSCCore.cpp "+ 
+		MZDYN)
+
+env.SharedLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs,
+				  SHLIBPREFIX = "")
+						 
+env.Install(Install, Target)

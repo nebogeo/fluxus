@@ -1,5 +1,6 @@
 ; a simple use of physics without collisions
 ; you need audio to see this work, it's a favorite of mine :)
+(start-audio "alsa_pcm:capture_1" 1024 44100)
 
 ; global control constants
 (define speed 10)

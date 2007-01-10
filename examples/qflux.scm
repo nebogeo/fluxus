@@ -35,7 +35,7 @@
     (let ((obj (block-get-obj block)))
     (let ((newsquare (not (equal? (list-ref block 2) col))))
     (list-set! block 2 col)
-    (cond ((not (number? obj)) ; check we've built the object
+    (cond ((not (zero? obj)) ; check we've built the object
         (grab obj)
         (colour col)
         (ungrab)))
@@ -197,7 +197,7 @@
     (let ((obj (entity-get-obj entity)))
     (let ((pos (entity-get-pos entity)))
     (let ((height (block-get-height (world-get-block world pos))))
-    (cond ((not (number? obj)) ; check we've built the object
+    (cond ((not (zero? obj)) ; check we've built the object
         (grab obj)
         (identity)
         (translate (vector (vector-ref pos 0) (+ height 1) (vector-ref pos 1)))
@@ -403,7 +403,7 @@
           (entity-get-pos (level-get-player level)))
                (vector 0 1 0))
      ;(lock-camera (entity-get-obj (level-get-player level)))
-     (set-camera-transform (level-get-camera level))
+     (set-camera-transform (minverse (level-get-camera level)))
      
     (if (not (eq? '() (level-get-enemies level)))
           (update-enemies (level-get-enemies level)))))
@@ -610,5 +610,3 @@
     (game-update game))
 
 (every-frame (render))
-
-    

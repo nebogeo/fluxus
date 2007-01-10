@@ -166,28 +166,31 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 	GenerateTopology();
 	CalculateGeometricNormals();
 
-	for (unsigned int i=0; i<m_VertData->size(); i++)
+	if (!m_GeometricNormals.empty()) 
 	{
-		(*m_NormData)[i]=m_GeometricNormals[i];
-	}
-
-	if (smooth)
-	{
-		// smooth the normals
-		TypedPData<dVector> *newnorms = new TypedPData<dVector>;
 		for (unsigned int i=0; i<m_VertData->size(); i++)
 		{
-			float count=1;
-			dVector n = (*m_NormData)[i];
-			for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
-					b!=m_ConnectedVerts[i].end(); b++)
-			{
-				n+=(*m_NormData)[*b];
-				count+=1;
-			}
-			newnorms->m_Data.push_back((n/count).normalise());
+			(*m_NormData)[i]=m_GeometricNormals[i];
 		}
-		SetDataRaw("n", newnorms);
+	
+		if (smooth)
+		{
+			// smooth the normals
+			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
+			for (unsigned int i=0; i<m_VertData->size(); i++)
+			{
+				float count=1;
+				dVector n = (*m_NormData)[i];
+				for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
+						b!=m_ConnectedVerts[i].end(); b++)
+				{
+					n+=(*m_NormData)[*b];
+					count+=1;
+				}
+				newnorms->m_Data.push_back((n/count).normalise());
+			}
+			SetDataRaw("n", newnorms);
+		}
 	}
 }
 

@@ -66,7 +66,7 @@
     (vector (* n 30 (sin (* 0.1 (time)))) 0 0))
 
 (define (render)
-    (if (not (number? obj)) (destroy obj))
+    (destroy obj)
     (turtle-reset)
     (turtle-prim 0)
     (stack 12 0.4 0.8 50 wfn tfn)    

@@ -53,7 +53,7 @@
     (update obs)
     (if (or (mouse-button 1) (mouse-button 3))
         (let ((selected (mouse-over)))
-            (if selected
+            (if (not (zero? selected))
                 (begin
                     (cond 
                         ((mouse-button 1)
@@ -84,7 +84,7 @@
 (add-cube)
 (add-cube)
 
-
+(desiredfps 1000)
 (every-frame (render))
 
 

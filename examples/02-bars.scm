@@ -1,4 +1,3 @@
-
 ; draw a bar, using c as the harmonic to look up
 (define (bar c)
     (push)
@@ -19,5 +18,6 @@
 (define (render)
     (bars 0))
 
+(start-audio "alsa_pcm:capture_1" 1024 44100)
 (every-frame (render))
 

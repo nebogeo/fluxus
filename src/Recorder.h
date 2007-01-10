@@ -19,7 +19,6 @@
 
 #include <sys/time.h>
 #include <vector>
-#include "OSCCore.h"
 
 using namespace std;
 
@@ -33,7 +32,7 @@ public:
 	
 	string Name;
 	double Time;
-	OSCMsgData Data;
+	int Data;
 };
 
 class EventRecorder

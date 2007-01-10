@@ -44,8 +44,7 @@ public:
 	
 	//////////////////////////////////////////////////////////////////////
 	// Rendering control (retained mode)
-	void BeginScene(bool PickMode=false);
-	void Render();
+	void BeginScene();
 	void EndScene();	
 	void Clear();
 	
@@ -142,14 +141,16 @@ public:
 
 
 private:
+	void PreRender(bool PickMode=false);
+	void PostRender();
 	void RenderLights(bool camera);
 	void InitFeedback();
 	
 	bool  m_Initialised;
+	bool  m_InitLights;
 	int   m_Width,m_Height;
 	bool  m_MotionBlur;
 	float m_Fade;
-	bool  m_InScene;
 	bool  m_Ortho;
 	int   m_CameraAttached;
 	bool  m_LockedCamera;
@@ -196,9 +197,6 @@ private:
     // loaded from an flx file
     void RenderIMPrimitives();
     void ClearIMPrimitives();
-
-    // need to know, so we can delete the IM primitives newed by the loader.
-    bool m_LoadedFromFlx;
 
 	// info for picking mode
 	struct SelectInfo

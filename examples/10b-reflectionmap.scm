@@ -35,7 +35,7 @@
 
 ; some sinewave deformation with time
 (define (deform n)
-    (let ((v (vector (* 1 (sin (+ (time) (* (f32vector-ref (pdata-get "pref" n) 1) 5.4)))) 0 0)))
+    (let ((v (vector (* 1 (sin (+ (time) (* (vector-ref (pdata-get "pref" n) 1) 5.4)))) 0 0)))
         (set! v (vmul v (* (sin (time)) 0.5)))
         (pdata-set "p" n (vadd v (pdata-get "pref" n))))
     (if (< n 0)
@@ -49,8 +49,8 @@
 (define reflect
     (lambda (eye normal)
         (let ((refl (vmul (vsub eye normal) (vdot eye normal)))) ; reflection vec
-            (vector (+ (/ (f32vector-ref refl 0) 2) 0.5) ; s coord
-                (+ (/ (f32vector-ref refl 1) 2) 0.5) 0)))) ; t coord
+            (vector (+ (/ (vector-ref refl 0) 2) 0.5) ; s coord
+                (+ (/ (vector-ref refl 1) 2) 0.5) 0)))) ; t coord
 
 ; this is the interesting part, the facing ratio is the dot product of the direction we are looking 
 ; at the vertex from, and the normal of the vertex - where all vectors are normalised. the complex bit

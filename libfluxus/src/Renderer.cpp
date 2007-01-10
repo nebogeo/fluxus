@@ -40,11 +40,11 @@ static const int MAXLIGHTS = 8;
 
 Renderer::Renderer() :
 m_Initialised(false),
+m_InitLights(false),
 m_Width(640),
 m_Height(480),
 m_MotionBlur(false),
 m_Fade(0.02f),
-m_InScene(false),
 m_Ortho(false),
 m_LockedCamera(false),
 m_CameraLag(0),
@@ -67,7 +67,6 @@ m_FogEnd(100),
 m_FeedBack(false),
 m_FeedBackData(NULL),
 m_FeedBackID(0),
-m_LoadedFromFlx(false),
 m_Deadline(1/25.0f),
 m_FPSDisplay(false),
 m_Time(0),
@@ -77,10 +76,14 @@ EngineCallback(NULL)
 	State InitialState;
 	m_StateStack.push_back(InitialState);
 	
-	// builds the default camera light
-	ClearLights();
 
 	InitFeedback();
+	
+	m_Camera.translate(0,0,-10);
+
+	// stop valgrind complaining
+	m_LastTime.tv_sec=0;
+	m_LastTime.tv_usec=0;
 }
 
 Renderer::~Renderer()
@@ -90,17 +93,8 @@ Renderer::~Renderer()
 
 /////////////////////////////////////	
 // retained mode
-void Renderer::BeginScene(bool PickMode)
+void Renderer::PreRender(bool PickMode)
 {
-	if (m_InScene)
-	{
-		cerr<<"Renderer::BeginScene : already in scene, aborting"<<endl;
-		return;
-	}
-	
-	#ifdef DEBUG_TRACE
-    cerr<<"Renderer::BeginScene"<<endl;
-    #endif
     if (!m_Initialised || PickMode)
     {
     	glViewport(0,0,m_Width,m_Height);
@@ -166,17 +160,13 @@ void Renderer::BeginScene(bool PickMode)
     	m_Initialised=true;
 	}
 	
-	if (m_ClearFrame)
+	if (!m_InitLights)
 	{
-		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
-		if (m_MotionBlur || m_FeedBack) glClear(GL_DEPTH_BUFFER_BIT);
-		else glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
+		// builds the default camera light
+		ClearLights();
+		m_InitLights=true;
 	}
 	
-	if (m_ClearZBuffer)
-	{
-		glClear(GL_DEPTH_BUFFER_BIT);
-	}
 	
 	glMatrixMode (GL_MODELVIEW);
   	glLoadIdentity();
@@ -204,7 +194,6 @@ void Renderer::BeginScene(bool PickMode)
 	
 	if (m_FeedBack)
 	{       	
-		
 		glEnable(GL_TEXTURE_2D);
 		glDisable(GL_DEPTH_TEST);
 		glDisable(GL_LIGHTING);
@@ -230,8 +219,6 @@ void Renderer::BeginScene(bool PickMode)
 		glEnable(GL_LIGHTING);
 		glDisable(GL_TEXTURE_2D);
 	}
-	
-
 	
 	if (m_FPSDisplay && !PickMode)
 	{
@@ -274,82 +261,34 @@ void Renderer::BeginScene(bool PickMode)
 
 }
 
-void Renderer::Render()
+void Renderer::BeginScene()
 {
-	if (!m_LoadedFromFlx) ClearIMPrimitives();
-	
-	//if (!m_World.GetShadowVolumeGen()->IsActive())
-	{	
-		BeginScene();
-		glPushMatrix();
-		if (EngineCallback) EngineCallback();
-		glPopMatrix();
-		m_World.Render();
-		RenderIMPrimitives();
-		EndScene();
+	if (m_ClearFrame)
+	{
+		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
+		if (m_MotionBlur || m_FeedBack) glClear(GL_DEPTH_BUFFER_BIT);
+		else glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
 	}
 	
-	// shadow volumes not ready yet...
-	/*else
-	{		
-		// do the multipass for shadow rendering
-		// i'd really like to expose this to fluxus more generally
-		// for custom multipass rendering, but can't think of a nice
-		// way to do this yet
-		BeginScene();
-		//glDisable(GL_LIGHT0); 
-		glPushMatrix();
-		if (EngineCallback) EngineCallback();
-		glPopMatrix();
-		m_World.Render();
-		RenderIMPrimitives();
-		
-		glClear(GL_STENCIL_BUFFER_BIT);
-		glEnable(GL_STENCIL_TEST);
-		glStencilFunc(GL_ALWAYS, 0, ~0);
-		glEnable(GL_DEPTH_TEST);
-		glDepthFunc(GL_LESS);
-		glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-		glDepthMask(GL_FALSE);
-		glEnable(GL_CULL_FACE);
-		
-		glCullFace(GL_BACK);
-    	glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-		m_World.GetShadowVolumeGen()->GetVolume()->Render();
-
-    	glCullFace(GL_FRONT);
-    	glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-		m_World.GetShadowVolumeGen()->GetVolume()->Render();
- 
-	 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-		glDepthFunc(GL_EQUAL);
-		glStencilFunc(GL_EQUAL, 0, ~0);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-		
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_ONE, GL_ONE);
-		glCullFace(GL_BACK);
-
-		glEnable(GL_LIGHT0);
-		 
-		m_World.Render();
-		RenderIMPrimitives();
-		
-		glDepthMask(GL_TRUE);
-		glDepthFunc(GL_LEQUAL);
-		glStencilFunc(GL_ALWAYS, 0, ~0);
-		
-		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
-		//m_World.GetShadowVolumeGen()->GetVolume()->Render();
-		//m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
-
-		
-		EndScene();
-	}*/
-		
-	if (m_LoadedFromFlx) ClearIMPrimitives();
+	if (m_ClearZBuffer)
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+}
 	
+void Renderer::EndScene()
+{
+	PreRender();
+	m_World.Render();
+	RenderIMPrimitives();
+	ClearIMPrimitives();		
+	PostRender();
+			
 	timeval ThisTime;
+	// stop valgrind complaining
+	ThisTime.tv_sec=0;
+	ThisTime.tv_usec=0;
+	
 	gettimeofday(&ThisTime,NULL);
 	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
 			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
@@ -364,15 +303,11 @@ void Renderer::Render()
 	}
 	
 	m_LastTime=ThisTime;
-	if (m_Delta>0) m_Time+=m_Delta;
+	if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
 }
 
-void Renderer::EndScene()
+void Renderer::PostRender()
 {
-	#ifdef DEBUG_TRACE
-	cerr<<"Renderer::EndScene"<<endl;
-	#endif
-	
 	// clear the texture, if the last primitive assigned one...
 	glDisable(GL_TEXTURE_2D);
 
@@ -474,7 +409,7 @@ int Renderer::Select(int x, int y, int size)
 	
 	// the problem here is that select is called mid-scene, so we have to set up for 
 	// picking mode here...
-	BeginScene(true);
+	PreRender(true);
 	
 	// render the scene for picking
 	m_World.Render(SceneGraph::SELECT);
@@ -503,7 +438,7 @@ int Renderer::Select(int x, int y, int size)
 	// ... and reset the scene back here so we can carry on afterwards as if nothing
 	// has happened...
 	m_Initialised=false;
-	BeginScene();
+	PreRender();
 	
 	return ID;
 }
@@ -614,8 +549,6 @@ void Renderer::ClearIMPrimitives()
 {
 	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
 	{
-		// only delete the primitive pointer if we've created it...
-		if (m_LoadedFromFlx) delete (*i)->m_Primitive;
 		delete *i;
 	}
 	

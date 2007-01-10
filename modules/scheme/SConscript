@@ -1,0 +1,20 @@
+###############################################################
+# SConscript for the Scheme PLT modules
+#
+# Should be ok for cross platform
+
+import os	 
+Import("env", "CollectsLocation")
+
+Scripts    = ["fluxus-boot.scm", 
+			  "fluxus-canvas.ss", 
+			  "fluxus-input.ss",
+			  "fluxus-camera.ss",
+			  "fluxus-obj-import.ss" ]
+
+Install        = CollectsLocation
+InstallStartup = os.environ["HOME"]+"/.fluxus/"
+
+env.Install(Install, Scripts)
+env.Install(InstallStartup, ["startup.scm"])
+env.Alias('install', InstallStartup)
