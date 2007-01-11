@@ -19,7 +19,7 @@
 
 #include <deque>
 #include <string>
-#include <plt/scheme.h>
+#include <scheme.h>
 
 namespace fluxus 
 {

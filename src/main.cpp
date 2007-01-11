@@ -32,11 +32,6 @@ static const string ENGINE_CALLBACK="(fluxus-frame-callback)";
 static const string RESHAPE_CALLBACK="fluxus-reshape-callback";
 static const string INPUT_CALLBACK="fluxus-input-callback";
 static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
-
-// I want to pass this in from the SConstruct, but no amount of fiddling
-// with #'es will work with -D to get a string constant as far as I can see
-static const string COLLECTS_LOCATION="/usr/local/lib/plt/collects";
-
 static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d.%d\") \
 									(load (string-append (path->string (find-system-path 'home-dir)) \".fluxus/startup.scm\"))";
@@ -129,7 +124,7 @@ int main(int argc, char *argv[])
 	char startup[1024];
 	// insert the version number
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		COLLECTS_LOCATION.c_str(),FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
+		COLLECTS_LOCATION,FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
 	interpreter->Interpret(startup,true);
 	
 	srand(time(NULL));

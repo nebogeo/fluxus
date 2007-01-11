@@ -12,9 +12,22 @@ MinorVersion = "12"
 FluxusVersion = MajorVersion+"."+MinorVersion
 Target = "fluxus-"+FluxusVersion
 Prefix = "/usr/local"
-CollectsLocation = Prefix + "/lib/plt/collects/fluxus-"+FluxusVersion
-LibPaths     = ["/usr/local/lib", "/usr/lib", "../../libfluxus"]
-IncludePaths = ["/usr/local/include", "/usr/include", "/usr/local/lib/plt", "../../libfluxus/src"]
+PLTPrefix = "/usr/local"
+PLTInclude = PLTPrefix+"/include/plt"
+PLTLib = PLTPrefix+"/lib"
+
+CollectsLocation = PLTPrefix + "/lib/plt/collects/"
+CollectsInstall = CollectsLocation + "fluxus-"+FluxusVersion
+
+LibPaths     = ["/usr/local/lib", 
+				"/usr/lib", 
+				PLTLib,
+				"../../libfluxus"]
+				
+IncludePaths = ["/usr/local/include", 
+				"/usr/include", 
+				PLTInclude, 
+				"../../libfluxus/src"]
 
 ################################################################################
 # Make the "one" environment for building and installing
@@ -26,10 +39,11 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 		  
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
+env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = "/usr/local/lib/plt/mzdyn.o"
+MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -40,12 +54,12 @@ MZDYN = "/usr/local/lib/plt/mzdyn.o"
 LibList = [["m", "math.h"],
 		["pthread", "pthread.h"],
 		["dl", "stdio.h"],
-		["mzgc", "plt/scheme.h"],
-		["mzscheme", "plt/scheme.h"],
+		["mzgc", "scheme.h"],
+		["mzscheme", "scheme.h"],
 		["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
 		["tiff", "tiff.h"],
 		["z", "zlib.h"],
-		["png", "libpng/png.h"],
+		["png", "png.h"],
 		["ode", "ode/ode.h"],
 		["jack", "jack/jack.h"],
 		["sndfile", "sndfile.h"],
@@ -56,6 +70,7 @@ if env['PLATFORM'] == 'darwin':
 	env.Replace(LINK = "macos/libtool --mode=link g++")
 	env.Prepend(LINKFLAGS = ["-static"])
 else:
+	env.Prepend(LINKFLAGS = ["-rdynamic"])  
 	LibList += [["X11", "X11/Xlib.h"],
            	    ["GL", "GL/gl.h"],
            	    ["GLU", "GL/glu.h"],
@@ -115,7 +130,7 @@ env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-SConscript(dirs = Split("libfluxus modules"), exports = ["env", "CollectsLocation", "MZDYN"])
+SConscript(dirs = Split("libfluxus modules"), exports = ["env", "CollectsInstall", "MZDYN"])
 
 ################################################################################
 # packaging / installing

@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <assert.h>
-#include <plt/escheme.h>
 #include "SchemeHelper.h"
 #include "Engine.h"
 #include "PDataFunctions.h"
@@ -63,7 +62,7 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 {
-	ArgCheck("pdata-get", "si?", argc, argv);		
+	ArgCheck("pdata-set", "si?", argc, argv);		
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
@@ -90,7 +89,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 				else if (type=='c')	
 				{
 					dColour c;
-					FloatsFromScheme(argv[2],c.arr(),3);
+					FloatsFromScheme(argv[2],c.arr(),4);
 					Grabbed->SetData<dColour>(name,index,c);
 				}
 				else if (type=='m')	

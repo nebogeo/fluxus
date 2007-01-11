@@ -18,7 +18,7 @@
 #define _FLUXUS_REPL_H_
 
 #include <deque>
-#include <plt/scheme.h>
+#include <scheme.h>
 #include "GLEditor.h"
 #include "Interpreter.h"
 

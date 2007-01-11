@@ -88,10 +88,10 @@ public:
 	float *arr() {return &r;}
 
        dColour &operator=(dColour const &rhs);
-       dColour operator+(dColour const &rhs);
-       dColour operator-(dColour const &rhs);
-       dColour operator*(float rhs);
-       dColour operator/(float rhs);
+       dColour operator+(dColour const &rhs) const;
+       dColour operator-(dColour const &rhs) const;
+       dColour operator*(float rhs) const;
+       dColour operator/(float rhs) const;
        dColour &operator+=(dColour const &rhs);
        dColour &operator-=(dColour const &rhs);
        dColour &operator*=(float rhs);
@@ -146,10 +146,10 @@ public:
     void init();
     float *arr() {return &m[0][0];}
     const dMatrix &operator=(dMatrix const &rhs);
-    dMatrix operator+(dMatrix const &rhs);
-    dMatrix operator-(dMatrix const &rhs);
-    dMatrix operator*(dMatrix const &rhs);
-    dMatrix operator/(dMatrix const &rhs);
+    dMatrix operator+(dMatrix const &rhs) const;
+    dMatrix operator-(dMatrix const &rhs) const;
+    dMatrix operator*(dMatrix const &rhs) const;
+    dMatrix operator/(dMatrix const &rhs) const;
     dMatrix &operator+=(dMatrix const &rhs);
     dMatrix &operator-=(dMatrix const &rhs);
     dMatrix &operator*=(dMatrix const &rhs);
@@ -157,7 +157,7 @@ public:
 	dMatrix &translate(dVector &tr);
     dMatrix &translate(float x, float y, float z);
     void    settranslate(dVector &tr);
-    dVector gettranslate();
+    dVector gettranslate() const;
     dMatrix &rotx(float a);
     dMatrix &roty(float a);
     dMatrix &rotz(float a);
@@ -167,8 +167,8 @@ public:
     dVector transform(dVector const &p) const;
     dVertex transform(dVertex const &p) const;
 	void    transpose();
-	dMatrix inverse();
-	float   determinant();
+	dMatrix inverse() const;
+	float   determinant() const;
 	dVector get_hori_i() {return dVector(m[0][0],m[1][0],m[2][0]);}
 	dVector get_hori_j() {return dVector(m[0][1],m[1][1],m[2][1]);}
 	dVector get_hori_k() {return dVector(m[0][2],m[1][2],m[2][2]);}
@@ -176,7 +176,7 @@ public:
 	dVector get_vert_j() {return dVector(m[1][0],m[1][1],m[1][2]);}
 	dVector get_vert_k() {return dVector(m[2][0],m[2][1],m[2][2]);}
 	void    remove_scale();
-	void    extract_euler(float &x, float &y, float &z);
+	void    extract_euler(float &x, float &y, float &z) const;
 	void    aim(dVector v, dVector up=dVector(0,0,1));
 	void    blend(dMatrix other, float amount);
 	

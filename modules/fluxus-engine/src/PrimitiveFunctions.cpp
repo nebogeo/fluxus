@@ -15,12 +15,11 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <assert.h>
-#include <plt/escheme.h>
 #include "Engine.h"
+#include "SchemeHelper.h"
 #include "PrimitiveFunctions.h"
 #include "dada.h"
 #include "GraphicsUtils.h"
-#include "SchemeHelper.h"
 #include "LinePrimitive.h"
 #include "TextPrimitive.h"
 #include "ParticlePrimitive.h"

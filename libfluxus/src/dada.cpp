@@ -199,28 +199,28 @@ dColour &dColour::operator=(dColour const &rhs)
     return *this;
 }
 
-dColour dColour::operator+(dColour const &rhs)
+dColour dColour::operator+(dColour const &rhs) const
 {
     dColour t;
     t.r=r+rhs.r; t.g=g+rhs.g; t.b=b+rhs.b; t.a=a+rhs.a;
     return t;
 }
 
-dColour dColour::operator-(dColour const &rhs)
+dColour dColour::operator-(dColour const &rhs) const
 {
     dColour t;
     t.r=r-rhs.r; t.g=g-rhs.g; t.b=b-rhs.b; t.a=a-rhs.a;
     return t;
 }
 
-dColour dColour::operator*(float rhs)
+dColour dColour::operator*(float rhs) const
 {
     dColour t;
     t.r=r*rhs; t.g=g*rhs; t.b=b*rhs; t.a=a*rhs;
     return t;
 }
 
-dColour dColour::operator/(float rhs)
+dColour dColour::operator/(float rhs) const
 {
     dColour t;
     t.r=r/rhs; t.g=g/rhs; t.b=b/rhs; t.a=a/rhs;
@@ -292,7 +292,7 @@ m[3][0]=rhs.m[3][0]; m[3][1]=rhs.m[3][1]; m[3][2]=rhs.m[3][2]; m[3][3]=rhs.m[3][
 return rhs;
 }
 
-dMatrix dMatrix::operator+(dMatrix const &rhs)
+dMatrix dMatrix::operator+(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
@@ -301,7 +301,7 @@ dMatrix dMatrix::operator+(dMatrix const &rhs)
     return t;
 }
 
-dMatrix dMatrix::operator-(dMatrix const &rhs)
+dMatrix dMatrix::operator-(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
@@ -310,7 +310,7 @@ dMatrix dMatrix::operator-(dMatrix const &rhs)
     return t;
 }
 
-dMatrix dMatrix::operator*(dMatrix const &rhs)
+dMatrix dMatrix::operator*(dMatrix const &rhs) const
 {
     //dMatrix t;
     //for (int i=0; i<4; i++)
@@ -349,7 +349,7 @@ dMatrix dMatrix::operator*(dMatrix const &rhs)
     return t;
 }
 
-dMatrix dMatrix::operator/(dMatrix const &rhs)
+dMatrix dMatrix::operator/(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
@@ -418,7 +418,7 @@ void dMatrix::settranslate(dVector &tr)
     m[3][2]=tr.z;
 }
 
-dVector dMatrix::gettranslate()
+dVector dMatrix::gettranslate() const
 {
     return dVector(m[3][0],m[3][1],m[3][2]);
 }
@@ -605,7 +605,7 @@ void dMatrix::transpose()
     *this=t;
 }
 
-dMatrix dMatrix::inverse()
+dMatrix dMatrix::inverse() const
 {
 	dMatrix temp;
 	temp.m[0][0] = m[1][2]*m[2][3]*m[3][1] - m[1][3]*m[2][2]*m[3][1] + m[1][3]*m[2][1]*m[3][2] - m[1][1]*m[2][3]*m[3][2] - m[1][2]*m[2][1]*m[3][3] + m[1][1]*m[2][2]*m[3][3];
@@ -629,7 +629,7 @@ dMatrix dMatrix::inverse()
    return temp;
 }
 
-float dMatrix::determinant() 
+float dMatrix::determinant()  const
 {
    return 
    m[0][3] * m[1][2] * m[2][1] * m[3][0]-m[0][2] * m[1][3] * m[2][1] * m[3][0]-m[0][3] * m[1][1] * m[2][2] * m[3][0]+m[0][1] * m[1][3] * m[2][2] * m[3][0]+
@@ -651,7 +651,7 @@ void dMatrix::remove_scale()
 	m[0][2]=zvec.x; m[1][2]=zvec.y; m[2][2]=zvec.z;
 }
 
-void dMatrix::extract_euler(float &x, float &y, float &z)
+void dMatrix::extract_euler(float &x, float &y, float &z) const
 {
 	dMatrix t=*this;
 	t.remove_scale();
