@@ -17,22 +17,24 @@
 */ 
 #include "dada.h"
 
+using namespace fluxus;
+
 static const int SINCOS_TABLESIZE = 2048;
 static float SinTab[SINCOS_TABLESIZE];
 static float CosTab[SINCOS_TABLESIZE];
 static const float SINCOS_LOOKUP=SINCOS_TABLESIZE/(float)TWO_PI;
 
-float RandFloat()
+float fluxus::RandFloat()
 {
 	return rand()%10000/10000.0f;
 }
 
-float RandRange(float L, float H)
+float fluxus::RandRange(float L, float H)
 {
 	return ((rand()%10000/10000.0f)*(H-L))+L;
 }
 
-void InitDada()
+void fluxus::InitDada()
 {
 	for (int n=0; n<SINCOS_TABLESIZE; n++)
 	{
@@ -42,7 +44,7 @@ void InitDada()
 	}
 }
 
-void dSinCos(float a, float &s, float &c)
+void fluxus::dSinCos(float a, float &s, float &c)
 {
 	int Index=(int)rint(a*SINCOS_LOOKUP)&SINCOS_TABLESIZE-1;
 	s=SinTab[Index];
@@ -148,18 +150,18 @@ float dVector::mag()
     return dist(dVector(0,0,0));
 }
 
-dVector operator-(dVector rhs)
+dVector fluxus::operator-(dVector rhs)
 {
     return dVector(-rhs.x,-rhs.y,-rhs.z);
 }
 
-ostream &operator<<(ostream &os, dVector const &om)
+ostream &fluxus::operator<<(ostream &os, dVector const &om)
 {
     os<<om.x<<" "<<om.y<<" "<<om.z<<" "<<om.w<<" ";
     return os;
 }
 
-istream &operator>>(istream &is, dVector &om)
+istream &fluxus::operator>>(istream &is, dVector &om)
 {
     is>>om.x>>om.y>>om.z>>om.w;
     return is;
@@ -251,7 +253,7 @@ dColour &dColour::operator/=(float rhs)
     return *this;
 }
 
-ostream &operator<<(ostream &os, dColour const &om)
+ostream &fluxus::operator<<(ostream &os, dColour const &om)
 {
     os<<"r="<<om.r<<" g="<<om.g<<" b="<<om.b<<" a="<<om.a<<" ";
     return os;
@@ -269,7 +271,7 @@ dVertex const &dVertex::operator=(dVertex const &rhs)
     return rhs;
 }
 
-ostream &operator<<(ostream &os, dVertex const &v)
+ostream &fluxus::operator<<(ostream &os, dVertex const &v)
 {
     os<<"Vertex : p="<<v.point<<" n="<<v.normal<<v.col<<" "<<v.s<<" "<<v.t<<endl;
     return os;
@@ -698,7 +700,7 @@ void dMatrix::blend(dMatrix other, float amount)
 	}
 }
 
-ostream &operator<<(ostream &os, dMatrix const &om)
+ostream &fluxus::operator<<(ostream &os, dMatrix const &om)
 {
     for (int j=0; j<4; j++)
         for (int i=0; i<4; i++)

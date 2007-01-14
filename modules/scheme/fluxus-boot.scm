@@ -20,8 +20,9 @@
 
 ; setup where to find the library module collections
 (current-library-collection-paths 
-	(path-list-string->path-list fluxus-collects-location 
-	(current-library-collection-paths)))
+	(path-list-string->path-list 
+		(or (getenv "PLTCOLLECTS") fluxus-collects-location)
+		(current-library-collection-paths)))
 
 ; the path to load extensions from
 (define fluxus-extension-path 

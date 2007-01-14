@@ -22,6 +22,7 @@
 
 using namespace UtilFunctions;
 using namespace SchemeHelper;
+using namespace fluxus;
 
 Scheme_Object *time(int argc, Scheme_Object **argv)
 {

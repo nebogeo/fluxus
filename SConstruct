@@ -5,8 +5,6 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules 
 
-import os, os.path, shutil
-
 MajorVersion = "0"
 MinorVersion = "12"
 FluxusVersion = MajorVersion+"."+MinorVersion
@@ -41,10 +39,15 @@ env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
 
+# multitexturing causes crashes on some cards, default it to off, and
+# enable users to enable manually while I figure out what it is...
+if ARGUMENTS.get("MULTITEXTURE","0")=="1":
+	env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
+	
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
-
+	
 ################################################################################
 # Figure out which libraries we are going to need
 
@@ -103,10 +106,6 @@ if not GetOption('clean'):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
 			
-	# enable users to enable multitexturing manually
-	if ARGUMENTS.get("MULTITEXTURE",1)=="1":
-		env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
-		
 	env = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
 	env.Replace(LIBS = [rec[0] for rec in LibList])

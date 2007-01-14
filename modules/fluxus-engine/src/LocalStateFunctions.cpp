@@ -22,6 +22,7 @@
 
 using namespace LocalStateFunctions;
 using namespace SchemeHelper;
+using namespace fluxus;
 
 // DocSection LocalState
 

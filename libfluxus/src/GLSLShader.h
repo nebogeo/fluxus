@@ -34,6 +34,9 @@
 
 using namespace std;
 
+namespace fluxus
+{
+
 class GLSLShader
 {
 public:
@@ -62,5 +65,7 @@ private:
 	unsigned int m_Program;
 	static bool m_Enabled;
 };
+
+}
 
 #endif

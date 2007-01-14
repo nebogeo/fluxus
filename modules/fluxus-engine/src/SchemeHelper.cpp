@@ -20,6 +20,7 @@
 
 using namespace std;
 using namespace SchemeHelper;
+using namespace fluxus;
 
 float SchemeHelper::FloatFromScheme(Scheme_Object *ob)
 {

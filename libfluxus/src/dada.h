@@ -28,6 +28,10 @@ using namespace std;
 
 #ifndef DADA
 #define DADA
+
+namespace fluxus
+{
+
 static const float TWO_PI=3.141592654*2.0f;
 static const float DEG_CONV = 0.017453292;
 static const float RAD_CONV = 1/0.017453292;
@@ -235,6 +239,6 @@ public:
 
 ////
 
-
+}
 
 #endif // DADA

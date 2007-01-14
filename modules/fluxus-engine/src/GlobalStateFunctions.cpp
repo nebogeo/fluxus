@@ -22,6 +22,7 @@
  
 using namespace GlobalStateFunctions;
 using namespace SchemeHelper;
+using namespace fluxus;
 
 Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 {

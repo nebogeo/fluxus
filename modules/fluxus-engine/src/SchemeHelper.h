@@ -30,9 +30,9 @@ namespace SchemeHelper
 	void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size);
 	char *StringFromScheme(Scheme_Object *ob);
 	Scheme_Object *FloatsToScheme(float *src, unsigned int size);
-	dVector VectorFromScheme(Scheme_Object *src);
-	dColour ColourFromScheme(Scheme_Object *src);
-	dQuat QuatFromScheme(Scheme_Object *src);
-	dMatrix MatrixFromScheme(Scheme_Object *src);
+	fluxus::dVector VectorFromScheme(Scheme_Object *src);
+	fluxus::dColour ColourFromScheme(Scheme_Object *src);
+	fluxus::dQuat QuatFromScheme(Scheme_Object *src);
+	fluxus::dMatrix MatrixFromScheme(Scheme_Object *src);
 	void ArgCheck(const std::string &funcname, const std::string &format, int argc, Scheme_Object **argv);
 }

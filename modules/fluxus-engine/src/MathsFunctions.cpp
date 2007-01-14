@@ -21,6 +21,7 @@
 
 using namespace MathsFunctions;
 using namespace SchemeHelper;
+using namespace fluxus;
 
 // description:
 // Multiplies a vector by a scalar value. 
