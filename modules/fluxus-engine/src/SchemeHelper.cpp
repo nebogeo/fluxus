@@ -69,7 +69,8 @@ dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 dColour SchemeHelper::ColourFromScheme(Scheme_Object *src)
 {
 	dColour ret;
-	FloatsFromScheme(src,ret.arr(),3);
+	if (SCHEME_VEC_SIZE(src)==3) FloatsFromScheme(src,ret.arr(),3);
+	else FloatsFromScheme(src,ret.arr(),4);
 	return ret;
 }
 

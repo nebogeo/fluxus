@@ -78,25 +78,39 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 			{
 				if (type=='f')	
 				{
-					Grabbed->SetData<float>(name,index,FloatFromScheme(argv[2]));
+					if (SCHEME_NUMBERP(argv[2])) Grabbed->SetData<float>(name,index,FloatFromScheme(argv[2]));
+					else cerr<<"expected number value in pdata-set"<<endl;
 				}
 				else if (type=='v')	
 				{
-					dVector v;
-					FloatsFromScheme(argv[2],v.arr(),3);
-					Grabbed->SetData<dVector>(name,index,v);
+					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==3) 
+					{
+						dVector v;
+						FloatsFromScheme(argv[2],v.arr(),3);
+						Grabbed->SetData<dVector>(name,index,v);
+					}
+					else cerr<<"expected vector (size 3) value in pdata-set"<<endl;
 				}
 				else if (type=='c')	
 				{
-					dColour c;
-					FloatsFromScheme(argv[2],c.arr(),4);
-					Grabbed->SetData<dColour>(name,index,c);
+					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])>=3 && SCHEME_VEC_SIZE(argv[2])<=4)
+					{
+						dColour c;
+						if (SCHEME_VEC_SIZE(argv[2])==3) FloatsFromScheme(argv[2],c.arr(),3);
+						else FloatsFromScheme(argv[2],c.arr(),4);
+						Grabbed->SetData<dColour>(name,index,c);
+					}
+					else cerr<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
 				}
 				else if (type=='m')	
 				{
-					dMatrix m;
-					FloatsFromScheme(argv[2],m.arr(),16);
-					Grabbed->SetData<dMatrix>(name,index,m);
+					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==16)
+					{
+						dMatrix m;
+						FloatsFromScheme(argv[2],m.arr(),16);
+						Grabbed->SetData<dMatrix>(name,index,m);
+					}
+					else cerr<<"expected matrix vector (size 16) value in pdata-set"<<endl;
 				}
 			}
 		}
