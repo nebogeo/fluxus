@@ -34,7 +34,8 @@ m_Frame(-1),
 m_Width(x),
 m_Height(y),
 m_HideScript(false),
-m_ShowCursor(true)
+m_ShowCursor(true),
+m_ShowFileDialog(false)
 {
 	for(int i=0; i<9; i++) 
 	{
@@ -73,6 +74,14 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			case 19: SaveScript(); break; // s			
 			case 8: HideScript(); break; // h
 			case 13: HideCursor(); break; // m
+			case 12: 
+				m_FileDialog.SetSaveAsMode(false);
+				m_ShowFileDialog=!m_ShowFileDialog; 
+			break; // l
+			case 4: // d
+				m_FileDialog.SetSaveAsMode(true);
+				m_ShowFileDialog=!m_ShowFileDialog; 
+			break; // l
 #ifndef __APPLE__
 			case 49: SetCurrentEditor(0); break; // 1
 			case 0: SetCurrentEditor(1); break; // 2
@@ -111,8 +120,29 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor]->m_TextWidth++;
 		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) m_Script=m_Editor[m_CurrentEditor]->GetText();
 	
-		// the editor only takes keyboard events
-		if (!m_HideScript) m_Editor[m_CurrentEditor]->Handle(button,key,special,state,x,y,mod);
+		// the editors only take keyboard events
+		if (m_ShowFileDialog) 
+		{
+			m_FileDialog.Handle(button,key,special,state,x,y,mod);
+			if (m_FileDialog.GetOutput()!="")
+			{
+				if (m_FileDialog.GetSaveAsMode()) 
+				{
+					m_SaveName[m_CurrentEditor]=m_FileDialog.GetOutput();
+					SaveScript();
+				}
+				else 
+				{
+					LoadScript(m_FileDialog.GetOutput());
+				}
+				m_FileDialog.Clear();
+				m_ShowFileDialog=false;
+			}
+		}
+		else if (!m_HideScript) 
+		{
+			m_Editor[m_CurrentEditor]->Handle(button,key,special,state,x,y,mod);
+		}
 	}
 }
 
@@ -142,7 +172,8 @@ void FluxusMain::Reshape(int width, int height)
 
 void FluxusMain::Render()
 {		
-	if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
+	if (m_ShowFileDialog) m_FileDialog.Render();
+	else if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 	
 	if (m_Frame!=-1)
 	{

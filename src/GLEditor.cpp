@@ -26,6 +26,11 @@ using namespace fluxus;
 
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
+float GLEditor::m_TextWidth(1);
+float GLEditor::m_TextColourRed(1);
+float GLEditor::m_TextColourGreen(1);
+float GLEditor::m_TextColourBlue(1);
+	
 
 GLEditor::GLEditor():
 m_PosX(0),
@@ -34,10 +39,6 @@ m_PosZ(0),
 m_RotX(0),
 m_RotY(0),
 m_DisY(-10),
-m_TextWidth(1),
-m_TextColourRed(1),
-m_TextColourGreen(1),
-m_TextColourBlue(1),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),

@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "GLEditor.h"
+#include "GLFileDialog.h"
 #include "Recorder.h"
 #include "Repl.h"
 #include "Interpreter.h"
@@ -64,7 +65,8 @@ private:
 	GLEditor * m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
 	string m_SaveName[NUM_EDITORS];
-		
+	GLFileDialog m_FileDialog;
+	
 	int m_Frame;
 	string m_FrameName;
 	string m_FrameType;
@@ -73,6 +75,7 @@ private:
 	string m_Script;
 	bool m_HideScript;
 	bool m_ShowCursor;
+	bool m_ShowFileDialog;
 };
 
 };

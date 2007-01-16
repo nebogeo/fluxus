@@ -116,6 +116,7 @@ if not GetOption('clean'):
 Install = Prefix + "/bin"
 
 Source = ["src/GLEditor.cpp", 
+		"src/GLFileDialog.cpp",
 		"src/Interpreter.cpp",
 		"src/Repl.cpp",
 		"src/Utils.cpp",

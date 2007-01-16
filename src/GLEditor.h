@@ -44,7 +44,7 @@ public:
 	GLEditor();
 	virtual ~GLEditor();
 	
-	void Render();
+	virtual void Render();
 	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	void Reshape(unsigned int w,unsigned int h);
 
@@ -55,10 +55,10 @@ public:
 	
 	float m_PosX,m_PosY,m_PosZ;
 	float m_RotX,m_RotY,m_DisY;
-	float m_TextWidth;
-	float m_TextColourRed;
-	float m_TextColourGreen;
-	float m_TextColourBlue;
+	static float m_TextWidth;
+	static float m_TextColourRed;
+	static float m_TextColourGreen;
+	static float m_TextColourBlue;
 	
 protected:
 
