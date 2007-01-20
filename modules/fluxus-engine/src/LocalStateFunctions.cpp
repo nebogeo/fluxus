@@ -24,10 +24,18 @@ using namespace LocalStateFunctions;
 using namespace SchemeHelper;
 using namespace fluxus;
 
-// DocSection LocalState
+// StartSectionDoc-en
+// LocalState
+// The local state functions control rendering either for the current state - or the state of 
+// the currently grabbed primitive. In fluxus state means the way that things are displayed, 
+// either turning on and off rendering features, changing the style of different features, or altering 
+// the current transform. 
+// Example:
+// EndSectionDoc 
 
-// StartFunctionDoc
-// push
+// StartFunctionDoc-en
+// push 
+// Returns: void
 // Description:
 // Pushes a copy of the current drawing state to the top of the stack. The drawing state 
 // contains information about things like the current colour, transformation and hints.
@@ -52,8 +60,9 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // pop
+// Returns: void
 // Description:
 // Destroys the current drawing state, and sets the current one to be the previously pushed 
 // one in the stack. The drawing state contains information about things like the current 
@@ -79,8 +88,9 @@ Scheme_Object *pop(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // grab object-id
+// Returns: void
 // Description:
 // Grabs the specified object. Once an object has grabbed it's state can be modified using
 // the same commands used to set the current drawing state. (ungrab) needs to be used to
@@ -101,8 +111,9 @@ Scheme_Object *grab(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // ungrab
+// Returns: void
 // Description:
 // Ungrabs the currently grabbed object, and either returns to the normal drawing state, 
 // or pops to the last grabbed primitive. 
@@ -120,8 +131,9 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // apply object-id
+// Returns: void
 // Description:
 // Applies the current object transform to the vertex positions of the supplied object and 
 // sets it's transform to identity.
@@ -138,8 +150,9 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // opacity value
+// Returns: void
 // Description:
 // Sets the opacity of the current drawing state, or the currently grabbed primitive.
 // Example:
@@ -154,8 +167,9 @@ Scheme_Object *opacity(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // shinyness value
+// Returns: void
 // Description:
 // Sets the shinyness of the current drawing state, or the currently grabbed primitive. 
 // This value sets the tightness of the specular highlight.
@@ -172,8 +186,9 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // colour colour-vector
+// Returns: void
 // Description:
 // Sets the colour of the current drawing state, or the currently grabbed primitive. 
 // Example:
@@ -188,8 +203,9 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // wire-colour colour-vector
+// Returns: void
 // Description:
 // Sets the wire frame colour of the current drawing state, or the currently grabbed 
 // primitive. Visible with (hint-wire) on most primitives.
@@ -206,8 +222,9 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // specular colour-vector
+// Returns: void
 // Description:
 // Sets the specular colour of the current drawing state, or the currently grabbed 
 // primitive. 
@@ -223,8 +240,9 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // ambient colour-vector
+// Returns: void
 // Description:
 // Sets the ambient colour of the current drawing state, or the currently grabbed 
 // primitive. 
@@ -240,8 +258,9 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // opacity value
+// Returns: void
 // Description:
 // Sets the emissive colour of the current drawing state, or the currently grabbed 
 // primitive. 
@@ -257,8 +276,9 @@ Scheme_Object *emissive(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // identity
+// Returns: void
 // Description:
 // Sets the drawing state transform to identity, on the state stack, or the currently 
 // grabbed primitive. 
@@ -278,8 +298,9 @@ Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // concat matrix
+// Returns: void
 // Description:
 // Concatenates (multiplies) a matrix on to the current drawing state or grabbed primitive. 
 // Example:
@@ -297,8 +318,9 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // translate vector
+// Returns: void
 // Description:
 // Applies a translation to the current drawing state transform or grabbed primitive.
 // Example:
@@ -315,8 +337,9 @@ Scheme_Object *translate(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // rotate vector-or-quaternion
+// Returns: void
 // Description:
 // Applies a rotation to the current drawing state transform or grabbed primitive.
 // Example:
@@ -350,8 +373,9 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // scale vector
+// Returns: void
 // Description:
 // Applies a scale to the current drawing state transform or grabbed primitive.
 // Example:
@@ -368,10 +392,11 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // get-transform
+// Returns: matrix-vector
 // Description:
-// Returns a matrix representing the current state transform or for the 
+// Returns: a matrix representing the current state transform or for the 
 // grabbed primitive.
 // Example:
 // (translate (vector 1 0 0))
@@ -388,8 +413,9 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 	return FloatsToScheme(Engine::Get()->State()->Transform.arr(),16);
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // parent primitive-id
+// Returns: void
 // Description:
 // Parents the currently grabbed primitive to the supplied parent primitive. The current
 // primitive will now be moved around with the parent by aquiring all the parent's
@@ -411,8 +437,9 @@ Scheme_Object *parent(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // line-width value
+// Returns: void
 // Description: 
 // Sets the line width (in screen space) of the current drawing state, or the currently 
 // grabbed primitive. Affects wireframe and things like that.
@@ -429,8 +456,9 @@ Scheme_Object *line_width(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // point-width value
+// Returns: void
 // Description: 
 // Sets the point width (in screen space) of the current drawing state, or the currently 
 // grabbed primitive. Affects point rendering and particles in hardware point mode.
@@ -447,8 +475,9 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // blend-mode src dst
+// Returns: void
 // Description: 
 // Sets the blend mode of the current drawing state, or the currently grabbed primitive. 
 // This is the way that alpha is composited to the rendering surface.
@@ -467,8 +496,9 @@ Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-solid
+// Returns: void
 // Description: 
 // Sets the render hints to solid of the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -484,8 +514,9 @@ Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-wire
+// Returns: void
 // Description: 
 // Sets the render hints to wireframe of the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -501,8 +532,9 @@ Scheme_Object *hint_wire(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-normal
+// Returns: void
 // Description: 
 // Sets the render hints to display normals in the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -518,8 +550,9 @@ Scheme_Object *hint_normal(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-points
+// Returns: void
 // Description: 
 // Sets the render hints to display points in the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -535,8 +568,9 @@ Scheme_Object *hint_points(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-anti-alias
+// Returns: void
 // Description: 
 // Sets the render hints to anti-alias in the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -552,8 +586,9 @@ Scheme_Object *hint_anti_alias(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-unlit
+// Returns: void
 // Description: 
 // Sets the render hints to unlit in the current drawing state, or the currently grabbed 
 // primitive. Render hints change the way that primitives are rendered, but may have 
@@ -569,8 +604,9 @@ Scheme_Object *hint_unlit(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-vertcols
+// Returns: void
 // Description: 
 // Sets the render hints to use vertex colours in the current drawing state, or the 
 // currently grabbed primitive. Render hints change the way that primitives are rendered, 
@@ -590,8 +626,9 @@ Scheme_Object *hint_vertcols(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
-// hint-boc
+// StartFunctionDoc-en
+// hint-box
+// Returns: void
 // Description: 
 // Sets the render hints to bounding box display in the current drawing state, or the 
 // currently grabbed primitive. Render hints change the way that primitives are rendered, 
@@ -608,8 +645,9 @@ Scheme_Object *hint_box(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-multitex
+// Returns: void
 // Description: 
 // Sets the render hints to use multitexturing in the current drawing state, or the 
 // currently grabbed primitive. Render hints change the way that primitives are rendered, 
@@ -628,8 +666,9 @@ Scheme_Object *hint_multitex(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc
+// StartFunctionDoc-en
 // hint-none
+// Returns: void
 // Description: 
 // Clears the render hints in the current drawing state, or the currently grabbed primitive.
 // This allows you mainly to get rid of the default solid style, but also means that you can
@@ -646,11 +685,38 @@ Scheme_Object *hint_none(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// hint-origin
+// Returns: void
+// Description: 
+// Sets the render hints to display the object space origin of the primitive the current drawing state, or the 
+// currently grabbed primitive. Render hints change the way that primitives are rendered, 
+// but may have different effects - or no effect on certain primitive types, hence the 
+// name hint. 
+// Example:
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
+
 Scheme_Object *hint_origin(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_ORIGIN;
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// hint-cast-shadow
+// Returns: void
+// Description: 
+// (note: Not yet implemented)
+// Sets the render hints to cast shadows for the current drawing state, or the 
+// currently grabbed primitive. Render hints change the way that primitives are rendered, 
+// but may have different effects - or no effect on certain primitive types, hence the 
+// name hint. 
+// Example:
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
 
 Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
 {
@@ -658,11 +724,36 @@ Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// hint-ignore-depth
+// Returns: void
+// Description: 
+// Sets the render hints to ignore depth tests for the current drawing state, or the 
+// currently grabbed primitive. Render hints change the way that primitives are rendered, 
+// but may have different effects - or no effect on certain primitive types, hence the 
+// name hint. This feature is useful for rendering transparent objects, as it means objects 
+// will be shown behind previously rendered ones.
+// Example:
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
+
 Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_IGNORE_DEPTH;	
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// texture textureid-number
+// Returns: void
+// Description: 
+// Sets the texture of the current drawing state, or the currently 
+// grabbed primitive. Texture ids can be generated by the load-texture function.
+// Example:
+// (texture (load-texture "mytexture.png"))
+// (build-sphere 10 10) ; make a sphere textured with mytexture.png
+// EndFunctionDoc
 
 Scheme_Object *texture(int argc, Scheme_Object **argv)
 {
@@ -671,6 +762,29 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// multitexture textureunit-number textureid-number
+// Returns: void
+// Description: 
+// Sets the texture of the current drawing state, or the currently 
+// grabbed primitive in the same way as the texture function, but allows you to specify
+// the texture unit (0-7) to apply the texture to. Multitexturing allows you to apply different 
+// textures and texture coordinates to the same object at once. Texture unit 0 is the default one 
+// (which uses the pdata "t" for it's texture coords) texture unit n looks for pdata "tn" - ie 
+// multitexture 1 looks for "t1". You need to add these yourself using (pdata-add) or (pdata-copy). 
+// Multitexturing is useful when the textures contain alpha, as they can be overlayed, i.e. decals
+// placed on background textures.
+// Note: fluxus needs to be built using scons MULTITEXTURE=1 to enable this feature.
+// Example:
+// (define obj (build-sphere 10 10)) ; make a sphere 
+// (grab obj)
+// (multitexture 0 (load-texture "mytextureA.png")) 
+// (multitexture 1 (load-texture "mytextureB.png"))
+// (pdata-add "t1" "v")   ; make some texture coords for texture B
+// (pdata-copy "t" "t1")  ; copy them from the default texture coords
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *multitexture(int argc, Scheme_Object **argv)
 {
   	ArgCheck("multitexture", "ii", argc, argv);
@@ -678,11 +792,33 @@ Scheme_Object *multitexture(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// print-scene-graph 
+// Returns: void
+// Description: 
+// Prints out the current scene graph, useful for debugging.
+// Example:
+// (print-scene-graph) ; exciting...
+// EndFunctionDoc
+
 Scheme_Object *print_scene_graph(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Renderer()->PrintSceneGraph();
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// hide hidden-number
+// Returns: void
+// Description: 
+// Sets the hidden state for the grabbed primitive (also affects all child primitives). Hidden primitives
+// can be treated as normal in every way - they just won't be rendered.
+// Example:
+// (define obj (build-cube))
+// (grab obj)
+// (hide 1) ; hide this cube
+// (ungrab)
+// EndFunctionDoc
 
 Scheme_Object *hide(int argc, Scheme_Object **argv)
 {
@@ -694,6 +830,18 @@ Scheme_Object *hide(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// selectable selectable-number
+// Returns: void
+// Description: 
+// Sets whether the grabbed primitive can be selected or not using the select command.
+// Example:
+// (define obj (build-cube))
+// (grab obj)
+// (selectable 0) ; now it won't be "seen" by calling select
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *selectable(int argc, Scheme_Object **argv)
 {
   	ArgCheck("selectable", "i", argc, argv);
@@ -703,6 +851,36 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 	}
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// shader vertexprogram-string fragmentprogram-string
+// Returns: void
+// Description: 
+// Loads, compiles and sets the GLSL harware shader pair for the current drawing state, or the 
+// currently grabbed primitive. Requires OpenGL 2 support.
+// The shader's uniform data can be controlled via shader-set! and all the pdata is sent through as 
+// per-vertex attribute data to the shader.
+// Example:
+// (push)
+// ; assign the shaders to the surface
+// (shader "simplevert.glsl" "simplefrag.glsl")
+// (define s (build-sphere 20 20))
+// (pop)
+// 
+// (grab s)
+// ; add and set the pdata - this is then picked up in the vertex shader 
+// ; as an input attribute called "testcol"
+// (pdata-add "testcol" "v")
+// (set-cols (pdata-size))
+// (ungrab)
+// 
+// (define (animate)
+//     (grab s)
+// 	; animate the deformamount uniform input parameter 
+//     (shader-set! (list "deformamount" (cos (time))))
+//     (ungrab))
+// 
+// (every-frame (animate))// EndFunctionDoc
 
 Scheme_Object *shader(int argc, Scheme_Object **argv)
 {
@@ -723,6 +901,35 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 	
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// shader-set! argument-list
+// Returns: void
+// Description: 
+// Sets the uniform shader parameters for the GLSL shader. The list consists of token-string value 
+// pairs, which relate to the corresponding shader parameters names and values. 
+// Example:
+// (push)
+// ; assign the shaders to the surface
+// (shader "simplevert.glsl" "simplefrag.glsl")
+// (define s (build-sphere 20 20))
+// (pop)
+// 
+// (grab s)
+// ; add and set the pdata - this is then picked up in the vertex shader 
+// ; as an input attribute called "testcol"
+// (pdata-add "testcol" "v")
+// (set-cols (pdata-size))
+// (ungrab)
+// 
+// (define (animate)
+//     (grab s)
+// 	; animate the deformamount uniform input parameter 
+//     (shader-set! (list "deformamount" (cos (time))))
+//     (ungrab))
+// 
+// (every-frame (animate))
+// EndFunctionDoc
 
 Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 {	

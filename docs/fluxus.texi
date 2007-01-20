@@ -1,1901 +1,1166 @@
 \input texinfo @c -*-texinfo-*- 
 
-@comment  makeinfo --css-include=fluxusdoc.css --html fluxus.texi
-
 @setfilename fluxus.info
-@settitle  Fluxus manual v0.11
+@settitle  Fluxus documentation v0.12
 @afourpaper 
 
-@copying 
-@c @copyright{} 2005 Dave Griffiths : dave at pawfal dot org :  @url{http://www.pawfal.org}
-@end copying
-
 @node Top
-@top Overview
-
-@image{images/splash}
-
+@top Fluxus
 @menu
-* Introduction:: Introduction
-* Quickstart::  Quickstart
-* User Manual:: User Manual
-* Statemachine:: The Fluxus State Machine
-* Global Options:: Global options
-* Primitives:: Primitives 
-* Lights:: Lights 
-* Appearance:: The appearance of primitives 
-* Maths:: Maths calls
-* Deforming:: Deforming primitives 
-* Shaders:: Hardware shading support 
-* User Input:: User input
-* Animation:: Animation sources
-* Physics:: Physics System
-* Turtle Builder:: Turtle builder 
-* Making Movies:: Making Movies
-* Debugging Scheme:: Debugging Scheme
-* Examples:: Examples 
-* Function Overview::Overview of Functions 
-* Index:: Index[es]
+* Audio:: Audio
+* GlobalState:: GlobalState
+* LocalState:: LocalState
+* OSC:: OSC
+* Camera:: Camera
 @end menu
-@insertcopying 
-
-@node Introduction
-@chapter Introduction
-
-A graphical livecoding environment for Scheme. Builds for Linux or OSX, and released under the GPL licence.
-
-Fluxus reads live audio or OSC network messages which can be used as a source of animation data for realtime performances or installations. Keyboard or mouse input can also be read for simple games development, and a physics engine is included for realtime simulations of rigid body dynamics.
-
-The built in scheme code editor runs on top of the renderer, which means you can edit the scripts while they are running. As well as making livecoding possible, it's also gives you a very fast feedback way of experimenting or learning about graphics and animation.
-
-Fluxus lends itself to procedural modelling and animation. There is an expermental procedural modelling tool, and full support for texturing and basic material properties. 
-
-@insertcopying 
-
-@node Quickstart
-@chapter Quickstart
-
-For a quick introduction to fluxus, try entering the following command once you have started fluxus and see the yellow cursor in the top left of the screen.
-
-@lisp
-(build-cube)
-@end lisp
-
-Now press f5 - the script will be executed, and a white cube should appear in the centre of the screen. Use the mouse and to move around the cube, pressing the buttons to get different movement controls.
-
-To animate this cube, it will have to be called a little differently:
-
-@lisp
-(start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate need to match jack's
-
-(define (render)
-    (colour (vector (gh 1) (gh 2) (gh 3)))
-    (draw-cube))
-
-(every-frame (render))
-@end lisp
-
-Briefly, the @code{(every-frame)} function takes a function which is called once per frame by fluxus's internal engine. In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function; and draws a cube. Note that this time we use @code{(draw-cube)} not @code{(build-cube)}. The difference will be explained below.
-
-If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound.
-
-@insertcopying 
-
-@node User Manual
-@chapter  User Manual
-
-Fluxus consists of one window containing a script editor rendered on top of the scene display render. The idea is that you only need the one window to build scripts, or play live. f5 is the key that runs the script when you are ready.  Selecting some text (using shift) and pressing f5 will execute the selected text only. This is handy for reevaluating functions without running the whole script each time.
-
-@section Camera control
-
-The camera is controlled by moving the mouse and pressing mouse buttons.
-
-@itemize @bullet
-@item Left mouse button: Rotate
-@item Middle mouse button: Move
-@item Right mouse button: Zoom
-@end itemize
-
-@section Workspaces
-
-The script editor allows you to edit 9 scripts simultaneously by using workspaces. To switch workspaces, use ctrl+number key. Only one can be run at once though, hitting f5 will execute the currently active workspace script.  Scripts in different workspaces can be saved to different files, by using the @code{(save-name)} call in the different workspaces (see below).
-
-@section The REPL
-
-If you press ctrl and 0, instead of getting another script workspace, you will be presented with a Read Evaluate Print Loop interpreter, or repl for short. This is really just an interactive interpreter similar to the commandline, where you can enter scheme code for immediate evaluation. This code is evaluated in the same interpreter as the other scripts, so you can use the repl to debug or inspect global variables and functions they define. This window is also where error reporting is printed, along with the terminal window you started fluxus from.
-
-@section Keyboard commands
-
-@itemize @bullet
-@item ctrl-f : Fullscreen mode.
-@item ctrl-w : Windowed mode.
-@item ctrl-h : Hide/show the editor.
-@item ctrl-s : Save current script.
-@item ctrl-1 to 9 : Switch to selected workspace.
-@item ctrl-0 : Switch to the REPL.
-@item F1 : Mouse moves the scene camera.
-@item F2 : Mouse moves the editor camera.
-@item F3 : Resets the scene camera.
-@item F4 : Resets the editor camera.
-@item F5 : Execute the selected text, or all if none is selected.
-@item F6 : Livecode/OSC recorder mode, see below
-@item F7 : Livecode/OSC recorder off, see below
-@item F8 : Livecode/OSC recorder reset, see below
-@item F9 : Randomise the text colour (aka the panic button)
-@item F10 : Make text thinner (these two are for use with projectors to make the text easier to read)
-@item F11 : Make text thicker
-@item Escape : Editor panic button, resets the cursor if it gets stuck (let me know if you need to use this)
-@end itemize
-
-@section Loading/Saving scripts
-
-Scripts can be loaded by typing:
-
-@lisp
-(edit "examples/bars.scm")
-@end lisp
-
-and hitting F5. The script you just typed will be replaced by the loaded script. Scripts are saved by hitting ctrl-s - the filename is either set to the last loaded script, or overwritten by:
-
-@lisp
-(save-name "newsavename.scm")
-@end lisp
-
-@insertcopying 
-
-@node Statemachine
-@chapter  The Fluxus State Machine
-
-The state machine is the key to understanding how fluxus works, all it really means is that you can call functions which change the current context which has an effect on subsequent functions. This is a very efficient way of describing things, and is built on top of the OpenGl api, which works in a similar way.  For example, in a function called every frame:
-
-@lisp
-(colour (vector 1 0 0))
-(draw-cube)
-(colour (vector 0 1 0))
-(draw-cube)
-@end lisp
-
-Will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something).  States can also be stacked, for example:
-
-@lisp
-(colour (vector 1 0 0))
-(push)
-	(colour (vector 0 1 0))
-	(draw-cube)
-(pop)
-(draw-cube)
-@end lisp
-
-will draw a green, then a red cube. the @code{(push)} command stores the current state, and adds a copy to the top of the stack. @code{(pop)} retrieves the previous state and deletes the current one (so changes to the state between the push and the pop are lost)
-
-@section The Scenegraph 
-
-Both examples so far have used what is known as immediate mode, you have one state stack, the top of which is the current context, and everything is drawn once per frame. fluxus contains a structure known as a scenegraph for storing objects and their render states.
-
-Time for another example:
-
-@lisp
-(colour (vector 1 0 0))
-(build-cube)
-(colour (vector 0 1 0))
-(build-cube)
-@end lisp
-
-The only difference between this and the first example is the use of (build-cube) instead of (draw-cube). the build functions create a primitive object, copy the current renderstate and add the information into the scenegraph in a container called a scenenode.
-
-The (build-*) functions return object ID's (just numbers really) which enable you to do things to the scene node after it's been created. you can now specify  objects like this:
-
-@lisp
-(define myob (build-cube))
-@end lisp
-
-The cube will now be persistant in the scene until destroyed with
-
-@lisp
-(destroy myob)
-@end lisp
-
-If you want to modify a objects renderstate after it's been loaded into the scenegraph, you can use the grab function to temporarially set the current context to that of the object. use ungrab to turn fluxus back into normal state stack mode. this allows you to animate objects stored in the scenegraph, for instance:
-
-@lisp
-(colour (vector 1 1 1))
-(define obj1 (build-cube))
-(push)
-    (translate (vector 2 0 0))
-    (define obj2 (build-cube))
-(pop)
-@end lisp
-
---->8---
-
-; in a function called per frame
-
-@lisp
-(grab obj1)
-(rotate (vector 0 1 0))
-(ungrab)
-
-(grab obj2)
-(rotate (vector 0 0 1))
-(ungrab)
-@end lisp
-
-Do not call push or pop while an object is grabbed, it will have no effect - fluxus will print out a warning in this case.
-
-The scenegraph also enables you to parent objects to one another, using the renderstate's parent setting. this is only effective before an object is loaded into the scenegraph, setting it afterwards via a grabbed state will be ignored:
-
-@lisp
-(colour (vector 1 1 1))
-(define a (build-cube))
-
-(push)
-    (parent a)
-    (translate (vector 0 2 0))
-    (define b (build-cube))
-(pop)
-
-(push)
-    (parent b)
-    (translate (vector 0 2 0))
-    (define c (build-cube))
-(pop)
-@end lisp
-
-Creates three cubes, all attached to each other in a chain. transforms for object a will be passed down to b and c, transforms on b will effect c blah.
-
-Destroying a object in such a hierachy will in turn destroy all child objects parented to it.
-
-@section Transforms
-
-Here are a list of the transforms in full:
-
-@lisp
-(concat matrix)
-@end lisp
-Applies the specified transformation matrix (a 16 element vector) to the current transform.
-
-@lisp
-(translate vec)
-@end lisp
-Applies the specified translation on to the current transform.
-
-@lisp
-(rotate vec)
-@end lisp
-Applies the specified rotation on to the current transform.
-
-@lisp
-(scale vec)
-@end lisp
-Applies the specified scale on to the current transform. Scaling to 0 in any dimension will collapse the object irreversably.
-
-@lisp
-(identity)
-@end lisp
-Sets the current transform to the identity matrix, which clears all transforms.
-
-@lisp
-(apply-transform obj)
-@end lisp
-Applies the tranformation stored in the object's scene graph node directly to the vertices of the geometry, and sets the transform to identity. this means that you can change the origin of the object, and therefore the parent pivot position.
-
-@lisp
-(hide 0|1)
-@end lisp
-Switch visibility of the current grabbed primitive
-
-@insertcopying 
-
-@node Global Options
-@chapter  Global options
-
-These commands affect the global state, and can be called at any time.
-
-@lisp
-(clear)
-@end lisp
-Clears the scene graph of all objects and empties the state stack.
-
-@lisp
-(ortho)
-(persp)
-@end lisp
-Sets the projection type to either othographic or perspective projection.
-
-@lisp
-(frustum top bottom left right)
-@end lisp
-Sets screen area, with this you can set the aspect ratio for the render. defaults to -0.75 0.75 -1 1
-
-@lisp
-(clip front back)
-@end lisp
-Sets the clipping plane positions, defaults to 1 10000
-
-@lisp
-(reset-camera)
-@end lisp
-Resets the camera matrix in case you get lost.
-
-@lisp
-(lock-camera object)
-@end lisp
-Locks the camera to the object.
-
-@lisp
-(camera-lag amount) 
-@end lisp
-When locked to a primitive, lags the camera - does a linear interpolation on the matrix, so you can get some wacky stuff happening.
-
-@lisp
-(get-screen-size)
-@end lisp                     
-Returns the resolution as a two value vector
-
-@lisp
-(set-screen-size (vector x y)) 
-@end lisp                     
-Sets the resolution, and updates the window to match
-
-@lisp
-(clear-colour colvec)
-@end lisp
-Set the background clear colour.
-
-@lisp
-(clear-frame 0|1)
-@end lisp
-Enables/disables clearing.
-
-@lisp
-(blur amount)
-@end lisp
-Turns hackish motion blur on, just renders a transparent poly over the frame rather than clearing. the transparency is set by amount, setting amount to 0 turns this feature off.
-
-@lisp
-(show-axis bool)
-@end lisp
-Turns the origin axis display on or off.
-
-@lisp
-(backfacecull 0|1)
-@end lisp
-Enables/disables backface culling.
-
-@lisp
-(desiredfps fps)
-@end lisp
-Sets a maximum fps setting so fluxus doesn't max out cpu usage all the time. this value doesn't seem to be entirely correct, but it does the job.
-
-@lisp
-(start-framedump filename type)
-(end-framedump)
-@end lisp
-Starts and stops writing frame images to disk. will be quite slow - and unsuitable for realtime use - see @code{(process)} type can be one of "tif", "jpg" or "ppm".
-
-@lisp
-(fog colour density start end)
-@end lisp
-Sets the global fogging parameters.
-
-@lisp
-(feedback 0|1)
-@end lisp
-Turns on a background plane which is textured with the previous frame, for those wacky 70's video effects. be warned - this is slow and probably won't work as advertised on large frame sizes, and buggy and prone to crashing!
-
-@lisp
-(feedback-transform matrix)
-@end lisp
-Sets a transform for the feedback plane
-
-@lisp
-(searchpaths l)
-@end lisp
-Sets the directories in which fluxus will search for textures to the given list of paths, in order
-
-@lisp
-(fullpath filename)
-@end lisp
-Returns the full path to the file, using the searchpaths
-
-@insertcopying 
-
-@node Primitives
-@chapter  Primitives 
-
-Primitives are objects that you can render. There isn't really much else in a fluxus scene, except lights, a camera and lots of primitives.
-
-@section Retained Mode
-    
-The normal way to create a primitive is to call it's build function and then use it's returned ID (either directly, or by grabbing) to modify it later. 
-
-@lisp
-(define myobj (build-cube))
-(grab myobj)
-(colour (vector 1 0 0))
-(ungrab) ; always remember to ungrab...	
-@end lisp
-
-Here are all the primitives:
-
-@subsection Poly primitives
-
-@lisp
-(build-cube)
-@end lisp
-A simple cube, texture mapped placement per face
-
-@image{images/cube}
-
-@lisp
-(build-sphere hsegments rsegments)
-@end lisp
-a sphere with the resolution specified in verts, texture mapped in normal "world map" style
-
-@image{images/sphere}
-
-@lisp
-(build-plane xsegments ysegments)
-@end lisp
-A tesselated poly plane, texture mapped from 0->1 in both dimensions
-
-@image{images/plane}
-
-@lisp
-(build-cylinder hsegments rsegments)
-@end lisp
-A capped cylinder, texture map wrapped around
-
-@image{images/cylinder}
-
-@lisp
-(build-text text)
-@end lisp
-Builds a sequence of planes, texture mapped so that a font texture can be used to display text. might also be useful for more abstract things. the texture map should be drawn as follows:
-
-@lisp
-(ascii order 16 * 16 grid)
-
-
-  ! " # $ % & ' ( ) * + ' - . / 
-0 1 2 3 4 5 6 7 8 9 : ; < = > ?
-@ A B C D E F G H I J K L M N O
-P Q R S T U V W X Y Z [ \ ] ^ _
-` a b c d e f g h i j k l m n o
-p q r s t u v w x y z @{ | @} ~
-@end lisp
-
-The font assumed to be non proportional - there is an example font shipped with 
-fluxus
-
-@image{images/text}
-Ok, so this isn't a very good font texture :)
-
-Note: the font primitive is due to change to a more flexible form soon.
-
-@subsection NURBS primitives
-
-@lisp
-(build-nurbs-sphere hsegments rsegments)
-@end lisp
-Builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere
-
-@image{images/nurbs-sphere}
-
-A nurbs patch sphere, with a control vertex tweaked to prove it's curvy nature
-
-@lisp
-(build-nurbs-plane usegments vsegments)
-@end lisp
-Builds a tesselated nurbs plane, texture mapped in uv direction
-
-@image{images/nurbs-plane}
-
-A nurbs patch plane, again with a control vertex tweaked
-
-@subsection Locator primitive
-
-@lisp
-(build-locator)
-@end lisp
-A locator is an empty primitive, useful for parenting to (when you don't want to have the parent object visible). This primitive can only be visualised with (hint-origin) to display it's local transform origin.
-		
-@section Primitive Data [aka. pdata]
-
-Each primitive is made up of arrays of data that describe it's shape and surface properties. The data is always stored per-vertex, and is created when you call the build function. You do not have to know anything about this data to use primitives, but it means you can modify or deform them in a more detailed way than using functions we've already looked at, and some primitives are only useful if pdata is used to control them.
-
-So, for example @code{(build-sphere)} creates a polygonal object with a spherical distribution of vertex point data, surface normals at every vertex and texture coordinates, so you can wrap a texture around the primitive. This data (primitive data, or pdata for short) can be read and written to by your scripts, using the following commands (which operate on the currently grabbed object):
-
-@lisp
-(pdata-set name vertnumber vector)
-@end lisp
-Sets the data on the currently (grab)ed object to the input vector
-
-@lisp
-(pdata-get name vertnumber)
-@end lisp
-Returns the vector from the pdata on the currently (grab)ed object
-
-@lisp
-(pdata-size)
-@end lisp
-Returns the size of the pdata on the currently (grab)ed object (the number of verts)
-
-The name describes the data we want to access, for instance "p" contains the vertex positions:
-
-So, some examples to make sense of this:
-
-@lisp
-(pdata-set "p" 0 (vector 0 0 0))
-@end lisp
-
-Sets the first point in the primitive to the origin (not all that useful)
-
-@lisp
-(pdata-set "p" 0 (vadd (pdata-get "p" 0) (vector 1 0 0)))
-@end lisp
-
-The same, but sets it to the original position + 1 in the x offsetting the position is more useful as it constitutes a deformation of the original point. (@xref{Deforming}, for more info on deformations)
-
-The pdata availible depends on the type of the primitive.
-
-Polygonal based primitives (Cube, Sphere, Cylinder, Plane, Text)
-
-@lisp
-Positions:      "p" vector
-Normals:        "n" vector
-Texture coords: "t" vector
-Vertex colours: "c" colour
-@end lisp
-
-NURBS based primitives (NURBSSphere, NURBSPlane)
-
-@lisp
-Positions:      "p" vector
-Normals:        "n" vector
-Texture coords: "t" vector
-@end lisp
-
-@section Geometry requiring pdata access
-
-The following primtives are different to the previous types in that they require pdata modification to do anything useful. 
-
-@subsection Particle primitive
-
-@lisp
-(build-particles num)
-@end lisp
-Builds a particles primitive containing num points, all initially set to the  origin. you use the pdata functions to edit the postions, colours and sizes.  particles come in two flavors, camera facing sprites, which are the default, can  be textured and individually scaled; and points (when @code{(hint-points)} is set), which cannot be textured but are much faster to render, as they are hardware  supported gl points. by default these point particles are square, turn on @code{(hint-anti-alias)} to make them circular.
-
-@image{images/sprites}
-Happy textured sprites
-
-@image{images/particles}
-Boint particles
-
-@subsection Particle primitive pdata
-
-@lisp
-Positions:      "p" vector
-Colours:        "c" colour
-Sizes:          "s" vector
-@end lisp
-
-@subsection Line primitive
-
-@lisp
-(build-line numpoints)
-@end lisp
-Builds a line consisting of numpoint points. the geometry is constantly camera  facing and is texture mapped so the texture is stretched along the line from start to finish. you use the pdata functions to edit the postions and widths of the lines. if used lit, the normals are faked to approximate a circular cross section. additionally, if solid rendering is cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be drawn - width specified by the (line-width) command
-
-@image{images/line}
-
-@subsection Line primitive pdata
-
-@lisp
-Positions:      "p" vector
-Width:          "w" float 
-@end lisp
-
-@subsection Raw polygons primitive
-
-@lisp
-(build-polygons size type)
-Builds a raw polygon primitive with size vertices (everything set to zero). type is a number that refers to the way the vertices are interpreted to build polygons, and can be one of the following:
-@end lisp
-
-@lisp
-0=TRISTRIP
-1=QUADS
-2=TRILIST
-3=TRIFAN
-4=POLYGON
-@end lisp
-
-@subsection Blobby primitive
-
-Blobby primitives are a higher level implicit surface representation in fluxus which is defined using influences in 3 dimesional space. These infuences are then summed together, and a particular value is "meshed" (using the marching cubes algorithm) to form a smooth surface. The influences can be animated, and the smooth surface moves and deforms to adapt, giving the primitive it's blobby name.
-
-@lisp
-(build-blobby numinfluences subdivisionsvec boundingvec)
-@end lisp
-Builds a new blobby primitive. Numinfluences is the number of "blobs". Subdivisions allows you to control the resolution of the surface in each dimension, while boundingvec sets the bounding area of the primitive in local object space. The mesh will not be calculated outside of this area.
-
-@image{images/blobby}
-
-@subsection Blobby primitive pdata
-
-Each element of pdata corresponds to an influence.
-
-@lisp
-Positions:      "p" vector
-Strength:       "s" float 
-Colour:         "c" vector 
-@end lisp
-
-@subsection Pixel primitive
-
-@lisp
-(build-pixels width height) 
-@end lisp
-Makes a new pixel primitive. A pixel primitive is used for making procedural textures, which can then be applied to other primitives. For this reason, pixel primitives probably wont be rendered much, but you can render them to preview the texture on a flat plane.
-
-Pixel primitives also come with the following commands:
-
-@lisp
-(upload-pixels) 
-@end lisp
-Uploads the texture data, you need to call this when you've finished writing to the pixelprim, and while it's grabbed.
-
-@lisp
-(pixels->texture pixelprim) 
-@end lisp
-Returns a texture you can use exactly like a normal loaded one.
-
-@subsection Pixel primitive pdata
-
-@lisp
-Colour:      "c" vector
-Alpha:       "a" float 
-@end lisp
-
-@section Topology and pdata
-
-The order and meaning of the vertex pdata depends on the exact primitive, and in the case of polygonal objects, the topology of the polygons.
-
-So a polygon primitive built from triangle lists will have the following ordering of it's pdata:
-
-(This is a really bad way of describing something which is easier done with a picture, see your OpenGL manual, or search the net for "OpenGL Primitives" :)
-
-@lisp
-pdata index 0 : face 0 vert 0
-pdata index 1 : face 0 vert 1
-pdata index 2 : face 0 vert 2
-pdata index 3 : face 1 vert 0
-pdata index 4 : face 1 vert 1
-pdata index 5 : face 1 vert 2
-
-Quad lists:
-
-pdata index 0 : face 0 vert 0
-pdata index 1 : face 0 vert 1
-pdata index 2 : face 0 vert 2
-pdata index 3 : face 0 vert 3
-pdata index 4 : face 1 vert 0
-pdata index 5 : face 1 vert 1
-
-Triangle strip:
-
-pdata index 0 : face 0 vert 0 
-pdata index 1 : face 0 vert 1 & face 1 vert 0 
-pdata index 2 : face 0 vert 2 & face 1 vert 1 & face 2 vert 0
-pdata index 3 : face 1 vert 2 & face 2 vert 1 & face 3 vert 0 
-pdata index 4 : face 2 vert 2 & face 3 vert 1 & face 4 vert 0
-pdata index 5 : face 3 vert 2 & face 4 vert 1 & face 5 vert 0     
-
-Triangle fan:
-
-pdata index 0 : vert 0 for all faces
-pdata index 1 : face 0 vert 1 
-pdata index 2 : face 0 vert 2 & face 1 vert 1
-pdata index 3 : face 1 vert 2 & face 2 vert 1
-pdata index 4 : face 2 vert 2 & face 3 vert 1
-pdata index 5 : face 3 vert 2 & face 4 vert 1
-
-Polygon (the easy one):
-
-pdata index 0 : vert 0
-pdata index 1 : vert 1
-pdata index 2 : vert 2
-pdata index 3 : vert 3
-pdata index 4 : vert 4
-pdata index 5 : vert 5
-@end lisp
-
-This lookup is the same for all the pdata on a particular primitive - vert positions, normals, colours and texture coordinates.
-
-Although this implicit topology means the primitive is optimised to be very quick to render, it costs some memory as points are duplicated. This is a standard tradeoff, the most optimal poly topology are triangle strips, as the duplication gets less, depending on how long your strips get.
-
-The topologies for the various polygon primitives are as follows:
-
-@lisp
-cube: quad list
-plane: quad list
-text: quad list
-sphere: triangle list
-cylinder: triangle list
-@end lisp
-
-@section Nurbs topology
-
-Nurbs pdata are much simpler to deal with, as the topology is just a patch grid for both spheres and subdivided planes. For example:
-
-@lisp
-(build-nurbs-plane 5 5)
-@end lisp
-Would give you a topology like this:
-
-@lisp
-0   1   2   3   4 
-5   6   7   8   9  
-10  11  12  13  14
-15  16  17  18  19 
-20  21  22  23  24 
-@end lisp
-
-@section Instancing
-
-Sometimes retained mode primitives can be unwieldy to deal with. For instance, if you are rendering thousands of identical objects, or doing things with recursive graphics, where you are calling the same primitive in lots of different states - keeping track of all the IDs would be annoying to say the least.
-
-This is where instancing is helpful, all you call is:
-
-@lisp
-(draw-instance myobj)
-@end lisp
-
-Will redraw any given object in the current state (immediate mode).
-An example:
-
-@lisp
-(define myobj (build-nurbs-sphere 8 10)) ; make a sphere
-
-(define (render-spheres n)
-	(push)
-	(translate (vector n 0 0)) ; move in x
-	(draw-instance myobj)       ; stamp down a copy
-	(pop)
-	(if (< n 0)
-		0
-		(render-spheres (- n 1)))) ; recurse!
-
-(every-frame (render-spheres 10)) ; draw 10 copies
-@end lisp
-
-@section Built In Immediate Mode Primitives
-
-To make life even easier than having to instance primitives, there are some built in primitives that can be rendered at any time, without being built:
-
-@lisp
-(draw-cube)
-(draw-sphere)
-(draw-plane)
-(draw-cylinder)
-@end lisp
-
-So the it makes the code above simpler:
-
-@lisp
-(define (render-spheres n)
-	(push)
-    (translate (vector n 0 0)) ; move in x
-	(draw-sphere)              ; render a new sphere
-	(pop)
-	(if (< n 0)
-		0
-		(render-spheres (- n 1)))) ; recurse!
-
-(every-frame (render-spheres 10)) ; draw 10 copies
-@end lisp
-
-These built in primitives are very restricted in that you can't edit them 
-or change their resolution settings etc, but they are handy to use for quick 
-scripts with simple shapes.
-
-@insertcopying 
-
-@node Lights
-@chapter  Lights 
-
-Lights are needed to, err, light the scene. If there are none built, the default light is a white one attached to the camera.
-
-@image{images/lights}
-An example of crazy lighting
-
-@lisp
-(make-light type cameralocked)
-@end lisp
-Makes a new light. Type can be one of "point", "spot" or "directional". cameralocked can be "cameralocked" or "free". If a light is camera locked, then it's attached to the camera otherwise it's static in world space. Returns the light id. (clear) removes all lights.
-
-@lisp
-(light-ambient id colvec)
-(light-diffuse id colvec)
-(light-specular id colvec)
-@end lisp
-Sets the colour parameters for the light
-
-@lisp
-(light-position id vec)
-(light-direction id vec)
-@end lisp
-Sets the transforms for the light, either relative to camera or world space.
-
-@lisp
-(light-spot-angle id angle)
-(light-spot-exponent id exponent)
-@end lisp
-Sets the angle or exponent (blurryness) of the spotlight beam.
-
-@lisp
-(light-attenuation id type setting)
-@end lisp
-Sets the attenuation setting for the light, how it fades over time. Type can be one of "constant", "linear" or "quadratic". The setting is the mix level for the chosen function.
-
-@insertcopying 
-
-@node Appearance
-@chapter  The appearance of primitives 
-
-Now that we have primitives and lights for shading them, it's time to
-introduce the ways that you can modify the appearence of your
-primitives.
-
-@section Surface parameters
-
-These surface parameters can be treated exactly like the rest of the state 
-items - transforms, (colour) etc. They can either be set using the state stack 
-when building primitives, or set later using (grab)
-
-@image{images/materials}
-Some spheres with random materials over a textured plane
-
-@lisp
-(opacity n)
-@end lisp
-Set the opacity value on the current state 
-
-@lisp
-(wire-colour n)
-@end lisp
-Set the wireframe colour on the current state 
-
-@lisp
-(specular v)                       
-@end lisp
-Set the specular colour on the current state 
-
-@lisp
-(ambient v)                     
-@end lisp
-Set the ambient colour on the current state
-
-@lisp
-(emissive v)                      
-@end lisp
-Set the emissive colour on the current state
-
-@lisp
-(shinyness n)                      
-@end lisp
-Set the shinyness on the current state
-
-@lisp
-(texture n)                  
-@end lisp
-Set the texture on the current state, using a texture ID
-
-Textures are loaded using (load-texture filename), they are cached so they 
-won't load more than once, so you can easily just call:
-
-@lisp
-(texture (load-texture "path/to/mytexture.png"))
-@end lisp
-
-Textures have to be png format, and support alpha transparency.
-
-@lisp
-(multitexture n t)  (only on poly prims at the moment)        
-@end lisp
-              
-Set the texture on the current state, using a texture ID n to multitexture t.  multitexturing allows you to apply different textures and coordinates to the same object at once. t is a number from 0 to 7. texture 0 is the default one (which uses the pdata "t" for it's texture coords) multitexture n looks for pdata "tn" - ie multitexture 1 looks for "t1". you need to add these yourself using (pdata-add) or (pdata-copy). @xref{Deforming}, for more info.
-
-@lisp
-(line-width n)
-@end lisp
-Alters the line width in pixels
-
-@lisp
-(point-width n)
-@end lisp
-Alters the point width in pixels
-
-@lisp
-(blend-mode src dest)
-@end lisp
-Sets the blend mode for the primitive's alpha blending function, src and dest are strings of the following type:
-
-@lisp
-zero
-one
-dst-color  
-one-minus-dst-color
-src-alpha		   
-one-minus-src-alpha
-dst-alpha
-one-minus-dst-alpha
-src-alpha-saturate (src only)
-@end lisp
-
-@section Render hints
-
-There are other miscellaneous options that can change the way a primitive is rendered. These options are called hints, as for some primitives they may not apply, or may do different things. They are mainly useful for debugging, or special cases - sometimes just for some fun.
-
-@image{images/hints}
-A poly sphere with normals, wireframe and solid hints, and line width set to
-4 pixels
-
-@lisp
-(hint-none)
-@end lisp                     
-Clear the current render hints
-
-@lisp
-(hint-solid)
-@end lisp                     
-Render solid - defaults to on
-
-@lisp
-(hint-wire)
-@end lisp                     
-Render wireframe representation
-
-@lisp
-(hint-normal)
-@end lisp                     
-Render normals, very handy
-
-@lisp
-(hint-points)
-@end lisp                     
-Render vertex or cv points
-
-@lisp
-(hint-anti-alias)
-@end lisp                     
-Render antialiased mode
-
-@lisp
-(hint-unlit)
-@end lisp                     
-Disable lighting
-
-@lisp
-(hint-box)
-@end lisp                     
-Renders the object's bounding box
-
-@lisp
-(hint-vertcols)
-@end lisp                     
-Uses vertex colours for the object, switches off colour materials from (colour) command
-
-@lisp
-(hint-multitex)
-@end lisp                     
-Turns on multitexturing - only works on poly primitives at the moment
-
-@lisp
-(hint-origin)
-@end lisp                     
-Displays the origin of the local transform for this object.
-
-@lisp
-(hint-ignore-depth)
-@end lisp                     
-When rendering this primitive, ignores the zbuffer depth test - use this to fix transparency problems. This will cause the primitive to render in front of things it should be behind, but is useful in some cases.
-
-@insertcopying 
-
-
-@node Maths
-@chapter  Maths calls
-
-For some operations, basic 3D types such as vectors (scheme vectors ofsize 3) and matrices (scheme vectors of size 16) will have to be processed and calculations operated on them. There is a basic maths library built into fluxus to do this for you.
-
-@lisp
-(vadd v v)
-(vsub v v)
-(vmul v number)
-(vdiv v number)
-@end lisp                     
-Simple operations on vectors
-
-@lisp
-(vtransform v m)
-@end lisp                     
-Transform the vector by the matrix m
-
-@lisp
-(vtransform-rot v m)
-@end lisp                     
-Transform the vector by the matrix m, ignoring the translation part (useful for normals)
-
+@node Audio
+@chapter Audio
+This part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
+@subsection Example
 @lisp
-(vnormalise v)
-@end lisp                     
-Return a normalised version of vector v
+ (start-audio "alsa_pcm:capture_1" 1024 44100)
+ (define (animate)
+		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
+		(draw-cube)) ; draw a cube with this colour
+ (every-frame (animate))
 
-@lisp
-(vdot v v)
-@end lisp                     
-Returns the dot product from the two vectors
-
-@lisp
-(vmag v)
-@end lisp                     
-Returns the magnitude of the vector 
-
-@lisp
-(vdist v v)
-@end lisp                     
-Returns the distance between the two vectors - treated as points
-
-@lisp
-(vcross v v)
-@end lisp                     
-Returns the cross product vector of the two input vectors
-
-@lisp
-(madd m m)
-(msub m m)
-(mmul m m)
-(mdiv m m)
-@end lisp                     
-Simple operations on matrices
-
-@lisp
-(mident)
-@end lisp                     
-Returns the identity matrix
-
-@lisp
-(mtranslate v)
-@end lisp                     
-Returns a translation matrix 
-
-@lisp
-(mrotate v)
-@end lisp                     
-Returns a rotation matrix 
-
-@lisp
-(mscale v)
-@end lisp                     
-Returns a scale matrix 
-
-@lisp
-(mtranspose m)
-@end lisp                     
-Returns a transposed version of the input matrix (columns = rows)
-
-@lisp
-(minverse m)
-@end lisp                     
-Returns the inverted version of the input matrix, if it can't be inverted it will return the identity matrix (I think)
-
-@lisp
-(maim v v)
-@end lisp                     
-Returns a matrix aimed down the first vector, using the second vector as the up vector.
-
-The following functions return the transform matrices for primitives and the camera. these are really useful for a number of tasks, eg to get the position of a transformed object, use something like:
-
-@lisp
-(grab myobject)
-(define position (vtransform (vector 0 0 0) (get-transform)))
-(ungrab)
-@end lisp                     
-
-@lisp
-(get-transform)
-@end lisp                     
-Gets the transform matrix of the grabbed primitive, or the top of the transform 
-stack if no object is grabbed
-
-@lisp
-(get-camera-transform)
-@end lisp                     
-Gets the current camera transform matrix 
-
-@lisp
-(set-camera-transform m)
-@end lisp                     
-Sets the camera transform matrix - this overrides and turns off the mouse controlled camera.
-Use (reset-camera) to turn mouse control back on.
-
-@lisp
-(get-projection-transform)
-@end lisp                     
-Gets the current projection transform matrix 
-
-@lisp
-(qaxisangle axisvec angle)
-@end lisp                     
-Builds a quaternion with a rotation axis and angle in degrees. Quaternions are a useful way of describing rotations, which doesn't suffer from some problems faced by matrix rotations - ie gimbal lock. A quat is just a 4 element vector.
-
-@lisp
-(qmul quata quatb)
-@end lisp                     
-Returns two quats multiplied
-
-@lisp
-(qnormalise quat)
-@end lisp                     
-Returns the normalised quat
-
-@lisp
-(qtomatrix quat)
-@end lisp                     
-Returns the rotation matrix for the quaternion
-
-@insertcopying 
-
-@node Deforming
-@chapter  Deforming primitives 
-
-Deformation in this chapter signifies various operations. It can involve changing the shape of a primitive in a way not possible via a transform (ie bending, warping etc) or modifying texture coordinates or colours to achieve a per-vertex effect. (Deformation in this way is also the only way to get particle primitives to do anything interesting).
-
-Deforming is all about pdata, so, to deform an entire object, you do something like the following:
-
-@lisp                     
-(hint-unlit)
-(hint-wire)
-(line-width 4)
-(define myobj (build-sphere 10 10))
-
-(define (deform n)
-    (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
-        (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
-    (if (< n 0)
-        0
-        (deform (- n 1))))
-    
-(grab myobj)
-(deform (pdata-size)) ; for every point
-(ungrab)
-@end lisp                     
-
-@image{images/deform}
-A sphere with randomly jittered vertices
-
-When deforming geometry, moving the positions of the vertices is not usually enough, the normals will need to be updated for the lighting to work correctly. 
-
-@lisp                     
-(recalc-normals smooth)
-@end lisp                     
-Will regenerate the normals for polygon and nurbs primitives based on the vertex positions. not particually fast (it is better to deform the normals in your script if you can) and only works on poly primitives of type QUADS and TRILIST. if smooth is 1, the face normals are averaged with the coincident face normals to give a smooth appearance
-
-When working on polygon primitives it will cache certain results, so it will be a lot slower on the first calculation than subsequent calls on the same primitive.
-
-@section User PData
-
-As well as the standard information that exists in primitives, fluxus also allows you to add your own per vertex data to the primitive. User pdata can be written or read in the same way as the built in pdata types.
-
-@lisp                     
-(pdata-add name type)
-@end lisp                     
-Where name is a string with the name you wish to call it, and type is a one character string consisting of:
-
-@lisp                     
-f : float data
-v : vector data 
-c : colour data
-m : matrix data
-@end lisp                     
-
-@lisp                     
-(pdata-copy source destination)
-@end lisp                     
-This will copy a array of pdata, or overwrite an existing one with if it already exists.
-
-So, adding your own storage for data on primitives means you can use it as a fast way of reading and writing data, even if the data doesn't directly affect the primitive.
-
-@lisp                     
-(define particle-count 1000)
-
-(define (init n)                                       ; setup our pdata arrays
-    (pdata-set "vel" n (vmul (vsub (vector (flxrnd) (flxrnd) (flxrnd)) 
-        (vector 0.5 0.5 0.5)) 0.1))                    ; randomise the velocity
-    (pdata-set "c" n (vector (flxrnd) (flxrnd) 1))     ; randomise the colour
-    (if (< n 0)
-        0
-        (init (- n 1))))
-
-(define (update n)
-    (pdata-set "vel" n (vadd (pdata-get "vel" n) (vector 0 -0.001 0))) ; add some gravity
-    (pdata-set "p" n (vadd (pdata-get "p" n) (pdata-get "vel" n)))     ; add velocity to the position
-    (if (< n 0)
-        0
-        (update (- n 1))))
-
-(define (render)
-    (grab ob)
-    (update (pdata-size))                              ; update the particles
-    (ungrab))
-
-; setup the scene
-(clear)
-(show-fps 1)
-(point-width 4)
-(hint-anti-alias)
-
-; build our particle primitive
-(define ob (build-particles particle-count))
-
-(grab ob)
-(pdata-add "vel" "v") ; add the velocity user pdata of type vector
-(init (pdata-size))   ; initialise the pdata arrays
-(ungrab)
-(blur 0.1)
-
-(every-frame (render))
-@end lisp                     
-
-@image{images/explosion}
-a particle explosion. finally - particles are useful for something
-
-@section PData Operations
-
-Pdata Operations are a optimisation which takes advantage of the nature of these storage arrays to allow you to process them with a single call to the scheme interpreter. This makes deforming primitive much faster as looping in 
-the scheme interpreter is slow, and it also simplifies your scheme code.
-
-@lisp                     
-(pdata-op operation pdata operand)
-@end lisp                     
-Where operation is a string identifier for the intended operation (listed below) and pdata is the name of the target pdata to operate on, and operand is either a single data (a scheme number or vector (length 3,4 or 16)) or a name of another 
-pdata array.
-
-If the @code{(update)} and @code{(render)} functions in the script above are 
-changed to the following:
-
-@lisp                     
-(define (update)
-	(pdata-op "+" "vel" (vector 0 -0.002 0)) ; add this vector to all the velocities
-    (pdata-op "+" "p" "vel")) ; add all the velocities to all the positions
-
-(define (render)
-    (grab ob)
-    (update)
-    (ungrab))
-@end lisp                     
-	
-On my machine, this script runs over 6 times faster than the first version. 
-
-@code{(pdata-op)} can also return information to your script from certain functions called on entire pdata arrays. 
-
-Pdata operations
-
-@lisp                     
-"+"       : addition
-"*"       : multiplication
-"sin"     : writes the sine of one float pdata array into another
-"cos"     : writes the cosine of one float pdata array into another
-"closest" : treats the vector pdata as positions, and if given a single vector, 
-            returns the closest position to it - or if given a float, uses it as a 
-			index into the pdata array, and returns the nearest position.
-@end lisp                     
-
-For most pdata operations, the vast majority of the combinations of input types (scheme number, the vectors or pdata types) will not be supported, you will receive a rather criptic runtime warning message if this is the case.
-		
-@section Using PData to build your own primitives
-
-The function (build_polygons) allows you to build empty primitives which you can use to either build more types of procedural shapes than fluxus supports natively, or for loading model data from disk. Once these primitives have been 
-constructed they can be treated in exactly the same way as any other primitive, ie pdata can be added or modified, and you can use (recalc-normals) etc.
-
-@insertcopying 
-
-@node Shaders
-@chapter  Hardware shading support
-
-Hardware shaders allow you to have much finer control over the graphics pipeline used to display your objects. Fluxus has commands to set and control GLSL shaders from your scheme scripts, and even edit your shaders in the fluxus editor. GLSL is the OpenGL standard for shaders across various graphics card types, if your card and driver support OpenGL2, this should work for you.
-
-@lisp
-(shader vertshader fragshader)
-@end lisp
-Loads, compiles and binds the vertex and fragment shaders on to current state or grabbed primitive.
-
-@lisp
-(shader-set! paramlist)
-@end lisp
-Sets uniform parameters for the shader in a token, value list, eg:
-@lisp
-(list "specular" 0.5 "mycolour" (vector 1 0 0))
-@end lisp
-
-This is very simple to set up - in your GLSL shader you just need to declare a uniform value eg:
-
-@lisp
-uniform float deformamount;
-@end lisp
-This is then set by calling from scheme:
-@lisp
-(shader-set! (list "deformamount" 1.4))
-@end lisp
-The deformamount is set once per object/shader - hence it's a uniform value across the whole object.
-
-Shaders also get given all pdata as attribute (per vertex) parameters, so you can share all this information between shaders and scripts in a similar way:
-
-In GLSL:
-@lisp
-attribute vec3 testcol;
-@end lisp
-
-To pass this from scheme, first create some new pdata with a matching name:
-@lisp
-(pdata-add "testcol" "v")
 @end lisp
-Then you can set it in the same way as any other pdata, controlling shader parameters on a per-vertex basis.
-
-@section Samplers
-
-Samplers are the hardware shading word for textures, the word sampler is used to be a little more general in that they are used as a way of passing lots of information (which may not be visual in nature) around between shaders. Passing textures into GLSL shaders from fluxus is again fairly simple:
-
-In your GLSL shader:
+@section (start-audio jackport-string buffersize-number samplerate-number)
+@subsection Returns
+void
+@subsection Description
+Starts up the audio with the specified settings, you'll need to call this first, or put it into $HOME/.fluxus/startup.scm to call it automatically at startup. Make the jack port name an empty string and it won't try to connect to anything for you. You can use qjackctrl or equivelent to do the connection manually. Fluxus reads a single mono source.
+@subsection Example
 @lisp
-uniform sampler2D mytexture;
-@end lisp
+ (start-audio "alsa_pcm:capture_1" 1024 44100)
 
-In scheme:
-@lisp
-(texture (load-texture "mytexturefile.png"))
-(shader-set! (list "mytexture" 0))
 @end lisp
-This just tells GLSL to use the first texture unit (0) as the sampler for mytexture. This is the texture unit that the standard (texture) command loads textures to.
 
-To pass more than one texture, you need multitexturing turned on:
-
-In GLSL:
+@section (gh harmonic-number)
+@subsection Returns
+harmonic-real
+@subsection Description
+Fluxus converts incoming audio into harmonic frequencies, which can then be plugged into your animations using this command. There are 16 harmonic bands availible, the harmonic-value argument will be wrapped around if greater or less than 16, so you can use this command without worrying about out of range errors.
+@subsection Example
 @lisp
-uniform sampler2D mytexture;
-uniform sampler2D mysecondtexture;
-@end lisp
+ (define (animate)
+		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
+		(draw-cube)) ; draw a cube with this colour
+ (every-frame (animate))
 
-In scheme:
-@lisp
-(multitexture 0 (load-texture "mytexturefile.png"))  ; load to texture unit 0
-(multitexture 1 (load-texture "mytexturefile2.png")) ; load to texture unit 1
-(shader-set! (list "mytexture" 0 "mysecondtexture" 1))
 @end lisp
-
-@insertcopying 
-
-@node User Input
-@chapter User input
-
-Fluxus can also be used to build interactive applications, and allows user input to be read by scripts.
-
-@lisp                     
-(key-pressed "a")                
-@end lisp                     
-Returns true if the "a" key has been pressed this frame
-
-@lisp                     
-(key-special-pressed 100)                
-@end lisp                     
-Returns true if the special key has been pressed this frame (in this case left cursor key)
-
-@lisp                     
-(keys-down)                
-@end lisp                     
-Returns a vector containing the ascii codes of the currently pressed keys. Mainly of use for debugging.
-
-@lisp                     
-(keys-special-down)                
-@end lisp                     
-Returns a vector containing the codes of the currently pressed keys special keys. Mainly of use for debugging.
-
-@lisp                     
-(mouse-button b)                    
-@end lisp                     
-Returns true if the corresponding mouse button has been pressed this frame.
-
-@lisp                     
-(mouse-x)                    
-(mouse-y)                    
-@end lisp                     
-Returns the current screen pixel coordinates of the mouse.
-
-@lisp                     
-(mouse-over)
-@end lisp                     
-Returns the id of the object the mouse is currently over
-
-@lisp                     
-(selectable 0|1)
-@end lisp                     
-Sets whether the current grabbed primitive is selectable by mouse over
-
-@insertcopying 
-
-@node Animation
-@chapter Animation sources
-
-Animation sources are taps into the outside world. 
-
-@section Time
-
-The simplest source of information to use for animation is @code{(time)}, which returns the time in seconds since fluxus was started. This is good to use for animation, as it means your scripts will be frame rate independant - in other words the animation will look the same regardless of the machine it's running on, or the resolution etc.
-
-Another time related call is @code{(delta)} which returns the change in time since the last frame. Technically, all your incremental animation data, regardless of source, should be scaled by this factor, to maintain frame rate 
-independance.
-
-@section Audio
-
-Part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of 
-the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
-
-@lisp                     
-(start-audio jack-port-name buffersize samplerate)
-@end lisp                     
-Starts up the audio with the specified settings, you'll need to call this first, or put it into .fluxus.scm in your home directory to call it automatically at startup. make the jack port name an empty string and it won't try to connect to anything for you
 
-@lisp                     
-(gain value)
-@end lisp                     
+@section (gain gain-number)
+@subsection Returns
+void
+@subsection Description
 Sets the gain level for the fft sound, it's 1 by default.
-	
-@lisp                     
-(gh band)
-(get-harmonic band)
-@end lisp                     
-Returns the contribution of the harmonic specified. the harmonic band value wraps, so you can use without worrying about out of range errors.
+@subsection Example
+@lisp
+ (gain 100) ; too quiet?!
 
-@lisp                     
-(process wavfilename)
-@end lisp                     
-This command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. for use with the framedump to process audio offline to make music videos.
+@end lisp
 
-@lisp                     
-(smoothing-bias b)
-@end lisp                     
-A kind of weighted average for the harmonic bands which smooth them out over time. this setting was hardcoded before (to 1.5) but the best setting really depends on the quality of the music, and the buffer sizes, and ranges from 0 -> 2. it's obvious if you give it a try with the bars.scm script
+@section (process wavfile-string)
+@subsection Returns
+void
+@subsection Description
+This command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. For use with the framedump command to process audio offline to make music videos. The advantage of this is that it locks the framerate so the right amount of audio gets read for each frame - making syncing of the frames and audio files possible.
+@subsection Example
+@lisp
+ (process "somemusic.wav") ; read a precorded audio file
 
-@section OSC 
+@end lisp
 
+@section (smoothing-bias value-number)
+@subsection Returns
+void
+@subsection Description
+A kind of weighted average for the harmonic bands which smooth them out over time. This setting defaults to 1.5. The best value really depends on the quality of the music, and the buffer sizes, and ranges from 0 -> 2. It's more obvious if you give it a try with the bars.scm script
+@subsection Example
+@lisp
+ (smoothing-bias 0) ; no smoothing
+
+@end lisp
+
+@section (update-audio)
+@subsection Returns
+void
+@subsection Description
+Updates the audio subsytem. This function is called for you (per frame) in fluxus-canvas.ss.
+@subsection Example
+@lisp
+ (smoothing-bias 0) ; no smoothing
+
+@end lisp
+
+@node GlobalState
+@chapter GlobalState
+Global state is really anything that controls the renderer globally, so it affects all primitives or controls the renderer directly - ie camera control or full screen effects like blurring.
+@subsection Example
+@lisp
+
+@end lisp
+@section (clear-engine)
+@subsection Returns
+void
+@subsection Description
+Clears the renderer, and physics system. This command should not be called directly, use clear instead, as this clears a few other things, and calls clear-engine itself.
+@subsection Example
+@lisp
+ (clear-engine) ; woo hoo!
+
+@end lisp
+
+@section (blur amount-number)
+@subsection Returns
+void
+@subsection Description
+Sets the full screen blur setting. Less is more, but if you set it too low it will make the on screen editing impossible to read, so save your script first :)
+@subsection Example
+@lisp
+ (blur 0.1) ; for nice trails
+
+@end lisp
+
+@section (fog fogcolour-vector amount-number begin-number end-number)
+@subsection Returns
+void
+@subsection Description
+Sets the fogging parameters to give a visual depth cue (aerial perspective in painter's jargon). This can obscure the on screen editing, so keep the amount small.
+@subsection Example
+@lisp
+ (clear-colour (vector 0 0 1))   ; looks nice if the background matches
+ (fog (vector 0 0 1) 0.01 1 100) ; blue fog
+
+@end lisp
+
+@section (feedback amount-number)
+@subsection Returns
+void
+@subsection Description
+Full screen feedback for Jeff Minter style crazyness (renders the last frame in the background, including the previous feedback background...). This allocates large amounts of texture space and seems to be unstable, so it's probably better not to use it. If you do, use with feedback-transform, but don't say I didn't warn you.
+@subsection Example
+@lisp
+ (feedback 0.1) ; set the feedback amount
+ (build-cube)
+ (define (animate)
+     (feedback-transform (mrotate (vector 1 1 (* 45 (sin (time))))))) ; change the transform
+ (every-frame (animate))
+
+@end lisp
+
+@section (feedback-transform matrix-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the transform for the feedback plane. See feedback for more details, probably shouldn't be used.
+@subsection Example
+@lisp
+ (feedback 0.1) ; set the feedback amount
+ (build-cube)
+ (define (animate)
+     (feedback-transform (mrotate (vector 1 1 (* 45 (sin (time))))))) ; change the transform
+ (every-frame (animate))
+
+@end lisp
+
+@section (show-axis show-number)
+@subsection Returns
+void
+@subsection Description
+Shows the worldspace origin axis. used.
+@subsection Example
+@lisp
+ (show-axis 1)
+
+@end lisp
+
+@section (show-fps show-number)
+@subsection Returns
+void
+@subsection Description
+Shows an fps count in the lower left of the screen. used.
+@subsection Example
+@lisp
+ (show-fps 1)
+
+@end lisp
+
+@section (lock-camera primitiveid-number)
+@subsection Returns
+void
+@subsection Description
+Locks the camera transform onto the specified primitive's transform. It's like parenting the camera to the object. This is the easiest way to procedurally drive the camera. Use an id number of 0 to unlock the camera.
+@subsection Example
+@lisp
+ (clear)
+ (define obj (build-cube)) ; make a cube for the camera to lock to
+ 
+ (push) ; make a background cube so we can tell what's happening
+ (hint-wire)  
+ (hint-unlit) 
+ (colour (vector 0 0.4 0))
+ (scale (vector -50 -50 -50))
+ (build-cube)
+ (pop)
+ 
+ (lock-camera obj) ; lock the camera to our first cube
+ 
+ (define (animate)
+     (grab obj)
+     (rotate (vector 1 0 0)) ; rotate the cube
+     (ungrab))
+ 
+ (every-frame (animate))
+
+@end lisp
+
+@section (camera-lag amount-number)
+@subsection Returns
+void
+@subsection Description
+The camera locking has an inbuilt lagging which means it will smoothly blend the movement relative to the primitive it's locked to.
+@subsection Example
+@lisp
+ (clear)
+ (define obj (build-cube)) ; make a cube for the camera to lock to
+ 
+ (push) ; make a background cube so we can tell what's happening
+ (hint-wire)
+ (hint-unlit)
+ (colour (vector 0 0.4 0))
+ (scale (vector -50 -50 -50))
+ (build-cube)
+ (pop)
+ 
+ (lock-camera obj) ; lock the camera to our first cube
+ (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
+ 
+ (define (animate)
+     (grab obj)
+     (identity)
+     (translate (vector (modulo (round (inexact->exact (time))) 6) 0 0)) ; make a jittery movement
+     (ungrab))
+ 
+ (every-frame (animate))
+
+@end lisp
+
+@section (load-texture pngfilename-string)
+@subsection Returns
+textureid-number
+@subsection Description
+Loads a texture from disk, converts it to a texture, and returns the id number. The texture loading is memory cached, so repeatedly calling this will not cause it to load again. Use force-load-texture if you are changing the texture while running the script. The png may be RGB or RGBA to use alpha transparency.
+@subsection Example
+@lisp
+ (texture (load-texture "mytexture.png"))
+ (build-cube) ; the cube will be texture mapped with the image
+
+@end lisp
+
+@section (load-texture pngfilename-string)
+@subsection Returns
+textureid-number
+@subsection Description
+Uncached loading of textures from disk, converts it to a texture, and returns the id number. Useful if you are changing the texture while running the script, otherwise use load-texture, which will be much faster. The png may be RGB or RGBA to use alpha transparency.
+@subsection Example
+@lisp
+ (texture (force-load-texture "mytexture.png"))
+ (build-cube) ; the cube will be texture mapped with the image
+
+@end lisp
+
+@section (frustum top-number bottom-number left-number right-number)
+@subsection Returns
+void
+@subsection Description
+Sets the camera frustum, and thus the aspect ratio of the frame.
+@subsection Example
+@lisp
+ (frustum -1 1 -0.75 0.75) ; default settings
+
+@end lisp
+
+@section (clip front-number back-number)
+@subsection Returns
+void
+@subsection Description
+Sets the front & back clipping planes for the camera frustum, and thus the viewing angle. Change the front clipping distance to alter the perspective from telephoto to fisheye.
+@subsection Example
+@lisp
+ (clip 1 10000) ; default settings
+
+@end lisp
+
+@section (ortho)
+@subsection Returns
+void
+@subsection Description
+Sets orthographic projection - i.e. no perspective.
+@subsection Example
+@lisp
+ (ortho) 
+
+@end lisp
+
+@section (persp)
+@subsection Returns
+void
+@subsection Description
+Sets perspective projection (the default) after ortho has been set.
+@subsection Example
+@lisp
+ (persp) 
+
+@end lisp
+
+@section (set-ortho-zoom amount-number)
+@subsection Returns
+void
+@subsection Description
+Sets the zoom level for the orthographic projection.
+@subsection Example
+@lisp
+ (set-ortho-zoom 2) 
+
+@end lisp
+
+@section (backfacecull setting-number)
+@subsection Returns
+void
+@subsection Description
+Turns backface culling on or off. Backface culling speeds up rendering by removing faces not orientated towards the camera. Defaults to on, but this is not always desired, eg for double sided polygons.
+@subsection Example
+@lisp
+ (backfacecull 0) 
+
+@end lisp
+
+@section (clear-colour colour-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the colour we clear the renderer with, this forms the background colour for the scene.
+@subsection Example
+@lisp
+ (clear-colour (vector 1 0 0)) ; RED!!!
+
+@end lisp
+
+@section (clear-frame setting-number)
+@subsection Returns
+void
+@subsection Description
+Sets the frame and zbuffer clearing on or off.
+@subsection Example
+@lisp
+ (clear-frame 0) 
+
+@end lisp
+
+@section (get-camera-transform)
+@subsection Returns
+matrix-vector
+@subsection Description
+Gets the current camera transform matrix.
+@subsection Example
+@lisp
+ (get-camera-transform) 
+
+@end lisp
+
+@section (set-camera)
+@subsection Returns
+void
+@subsection Description
+Sets the camera transform matrix. This is the low level interface used by set-camera-transform, which you should generally use instead.
+@subsection Example
+@lisp
+ (set-camera) 
+
+@end lisp
+
+@section (get-projection-transfrom)
+@subsection Returns
+projection-matrix
+@subsection Description
+Gets the current projection matrix.
+@subsection Example
+@lisp
+ (get-projection-transfrom) 
+
+@end lisp
+
+@section (get-screen-size)
+@subsection Returns
+size-vector
+@subsection Description
+Returns a vector containing the current width and height of the window.
+@subsection Example
+@lisp
+ (get-screen-size) 
+
+@end lisp
+
+@section (set-screen-size size-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the window width and height.
+@subsection Example
+@lisp
+ (set-screen-size (vector 10 10)) ; small window time :) 
+
+@end lisp
+
+@section (select screenxpos-number screenypos-number pixelssize-number)
+@subsection Returns
+primitiveid-number
+@subsection Description
+Looks in the region specified and returns the id of the closest primitive to the camera rendered there, or 0 if none exist.
+@subsection Example
+@lisp
+ (display (select 10 10 2))(newline)
+
+@end lisp
+
+@section (desiredfps fps-number)
+@subsection Returns
+void
+@subsection Description
+Throttles the renderer so as to not take 100% cpu. This gives an upper limit on the fps rate, which doesn't quite match the given number, but I'm working on it...
+@subsection Example
+@lisp
+ (desiredfps 100000) ; makes fluxus render as fast as it can, and take 100% cpu.
+
+@end lisp
+
+@node LocalState
+@chapter LocalState
+The local state functions control rendering either for the current state - or the state of the currently grabbed primitive. In fluxus state means the way that things are displayed, either turning on and off rendering features, changing the style of different features, or altering the current transform.
+@subsection Example
+@lisp
+
+@end lisp
+@section (push)
+@subsection Returns
+void
+@subsection Description
+Pushes a copy of the current drawing state to the top of the stack. The drawing state contains information about things like the current colour, transformation and hints.
+@subsection Example
+@lisp
+ (colour (vector 1 0 0)) ; set current colour to red
+ (push)                  ; copy and push drawing state
+ (colour (vector 0 1 0)) ; set current colour to green
+ (draw-cube)             ; draws a green cube
+ (pop)				   ; forget old drawing state
+ ; current colour is now red again
+
+@end lisp
+
+@section (pop)
+@subsection Returns
+void
+@subsection Description
+Destroys the current drawing state, and sets the current one to be the previously pushed one in the stack. The drawing state contains information about things like the current colour, transformation and hints.
+@subsection Example
+@lisp
+ (colour (vector 1 0 0)) ; set current colour to red
+ (push)                  ; copy and push drawing state
+ (colour (vector 0 1 0)) ; set current colour to green
+ (draw-cube)             ; draws a green cube
+ (pop)				   ; forget old drawing state
+ ; current colour is now red again
+
+@end lisp
+
+@section (grab object-id)
+@subsection Returns
+void
+@subsection Description
+Grabs the specified object. Once an object has grabbed it's state can be modified using the same commands used to set the current drawing state. (ungrab) needs to be used to return to the normal drawing state. Grabbing can also be stacked, in which case ungrab pops to the last grabbed primitive.
+@subsection Example
+@lisp
+ (colour (vector 1 0 0))      ; set the current colour to red
+ (define mycube (build-cube)) ; makes a red cube 
+ (grab mycube)  				       
+ (colour (vector 0 1 0)) ; sets the cubes colour to green 
+ (ungrab)				   ; return to normal state
+
+@end lisp
+
+@section (ungrab)
+@subsection Returns
+void
+@subsection Description
+Ungrabs the currently grabbed object, and either returns to the normal drawing state, or pops to the last grabbed primitive.
+@subsection Example
+@lisp
+ (colour (vector 1 0 0))      ; set the current colour to red
+ (define mycube (build-cube)) ; makes a red cube 
+ (grab mycube)  				       
+ (colour (vector 0 1 0)) ; sets the cubes colour to green 
+ (ungrab)				   ; return to normal state
+
+@end lisp
+
+@section (apply object-id)
+@subsection Returns
+void
+@subsection Description
+Applies the current object transform to the vertex positions of the supplied object and sets it's transform to identity.
+@subsection Example
+@lisp
+ (rotate (vector 45 0 0))     
+ (define mycube (build-cube)) ; makes a cube with a rotation 
+ (apply mycube)  				; applies the rotation to the points of the cube
+
+@end lisp
+
+@section (opacity value)
+@subsection Returns
+void
+@subsection Description
+Sets the opacity of the current drawing state, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (opacity 0.5)     
+ (define mycube (build-cube)) ; makes a half transparent cube 
+
+@end lisp
+
+@section (shinyness value)
+@subsection Returns
+void
+@subsection Description
+Sets the shinyness of the current drawing state, or the currently grabbed primitive. This value sets the tightness of the specular highlight.
+@subsection Example
+@lisp
+ (shinyness 100)     
+ (specular (vector 1 1 1)) ; sets the specular colour
+ (define mysphere (build-sphere 10 10)) ; makes a shiny cube 
+
+@end lisp
+
+@section (colour colour-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the colour of the current drawing state, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (colour (vector 1 0.5 0.1)) ; mmm orange...   
+ (define mycube (build-cube)) ; makes an orange cube 
+
+@end lisp
+
+@section (wire-colour colour-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the wire frame colour of the current drawing state, or the currently grabbed primitive. Visible with (hint-wire) on most primitives.
+@subsection Example
+@lisp
+ (wire-colour (vector 1 1 0)) ; set yellow as current wire colour
+ (hint-wire)   
+ (define mycube (build-cube)) ; makes a cube with yellow wireframe 
+
+@end lisp
+
+@section (specular colour-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the specular colour of the current drawing state, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (specular (vector 0 0 1)) ; set blue as specular colour
+ (define mysphere (build-sphere 10 10)) ; makes a shiny blue sphere
+
+@end lisp
+
+@section (ambient colour-vector)
+@subsection Returns
+void
+@subsection Description
+Sets the ambient colour of the current drawing state, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (ambient (vector 0 0 1)) ; set blue as ambient colour
+ (define mysphere (build-sphere 10 10)) ; makes a boringly blue sphere 
+
+@end lisp
+
+@section (opacity value)
+@subsection Returns
+void
+@subsection Description
+Sets the emissive colour of the current drawing state, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (emissive (vector 0 0 1)) ; set blue as emissive colour
+ (define mysphere (build-sphere 10 10)) ; makes an bright blue sphere 
+
+@end lisp
+
+@section (identity)
+@subsection Returns
+void
+@subsection Description
+Sets the drawing state transform to identity, on the state stack, or the currently grabbed primitive.
+@subsection Example
+@lisp
+ (push)
+ (scale (vector 2 2 2)) ; set the current scale to double in each dimension
+ (define mycube (build-cube)) ; make a scaled cube 
+ (pop)
+ (grab mycube)
+ (identity) ; erases the transform and puts the cube back to its original state
+ (ungrab)
+
+@end lisp
+
+@section (concat matrix)
+@subsection Returns
+void
+@subsection Description
+Concatenates (multiplies) a matrix on to the current drawing state or grabbed primitive.
+@subsection Example
+@lisp
+ (define mymatrix (mrotate (vector 0 45 0))) ; make a matrix
+ (concat mymatrix) ; concat it into the current state
+ (build-cube) ; make a cube with this rotation
+
+@end lisp
+
+@section (translate vector)
+@subsection Returns
+void
+@subsection Description
+Applies a translation to the current drawing state transform or grabbed primitive.
+@subsection Example
+@lisp
+ (transform (vector 0 1.4 0)) ; translates the current transform up a bit
+ (build-cube) ; build a cube with this transform
+
+@end lisp
+
+@section (rotate vector-or-quaternion)
+@subsection Returns
+void
+@subsection Description
+Applies a rotation to the current drawing state transform or grabbed primitive.
+@subsection Example
+@lisp
+ (rotate (vector 0 45 0)) ; turns 45 degrees in the Y axis
+ (build-cube) ; build a cube with this transform
+
+@end lisp
+
+@section (scale vector)
+@subsection Returns
+void
+@subsection Description
+Applies a scale to the current drawing state transform or grabbed primitive.
+@subsection Example
+@lisp
+ (scale (vector 0.5 0.5 0.5)) ; scales the current transform to half the size
+ (build-cube) ; build a cube with this transform
+
+@end lisp
+
+@section (get-transform)
+@subsection Returns
+matrix-vector
+@subsection Description
+Returns: a matrix representing the current state transform or for the grabbed primitive.
+@subsection Example
+@lisp
+ (translate (vector 1 0 0))
+ (display (get-transform))(newline) ; prints the current transform
+ (define shape (build-sphere 10 10))
+ (grab shape)
+ (translate (vector 0 1 0))
+ (display (get-transform))(newline) ; prints shape's transform
+ (ungrab)
+
+@end lisp
+
+@section (parent primitive-id)
+@subsection Returns
+void
+@subsection Description
+Parents the currently grabbed primitive to the supplied parent primitive. The current primitive will now be moved around with the parent by aquiring all the parent's transforms.
+@subsection Example
+@lisp
+ (define parent-prim (build-cube)) ; make a parent cube
+ (translate (vector 2 0 0)) ; move a bit in x
+ (parent parent-prim) ; set parent-prim as the current parent
+ (define child-prim (build-cube)) ; make a child cube
+ (grab parent-prim) 
+ (rotate (vector 0 45 0)) ; the child will now be moved by this transform in addition to its own
+ (ungrab)
+
+@end lisp
+
+@section (line-width value)
+@subsection Returns
+void
+@subsection Description
+Sets the line width (in screen space) of the current drawing state, or the currently grabbed primitive. Affects wireframe and things like that.
+@subsection Example
+@lisp
+ (line-width 5)
+ (hint-wire)
+ (build-sphere 10 10) ; make a sphere with thick wireframe
+
+@end lisp
+
+@section (point-width value)
+@subsection Returns
+void
+@subsection Description
+Sets the point width (in screen space) of the current drawing state, or the currently grabbed primitive. Affects point rendering and particles in hardware point mode.
+@subsection Example
+@lisp
+ (point-width 5)
+ (hint-points)
+ (build-sphere 10 10) ; make a sphere with thick points
+
+@end lisp
+
+@section (blend-mode src dst)
+@subsection Returns
+void
+@subsection Description
+Sets the blend mode of the current drawing state, or the currently grabbed primitive. This is the way that alpha is composited to the rendering surface.
+@subsection Example
+@lisp
+ (point-width 5)
+ (hint-points)
+ (build-sphere 10 10) ; make a sphere with thick points
+
+@end lisp
+
+@section (hint-solid)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to solid of the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-solid) ; this is the default render style so this isn't too exciting
+ (build-cube) ; make a solid rendered cube 
+
+@end lisp
+
+@section (hint-wire)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to wireframe of the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-wire)
+ (build-cube) ; make a wirefame rendered cube 
+
+@end lisp
+
+@section (hint-normal)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to display normals in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-normal)
+ (build-cube) ; display the normals on this cube 
+
+@end lisp
+
+@section (hint-points)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to display points in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-points)
+ (build-cube) ; display the vertex points on this cube 
+
+@end lisp
+
+@section (hint-anti-alias)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to anti-alias in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-anti-alias)
+ (build-cube) ; display a smoothed cube 
+
+@end lisp
+
+@section (hint-unlit)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to unlit in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-unlit)
+ (build-cube) ; display an unlit cube
+
+@end lisp
+
+@section (hint-vertcols)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to use vertex colours in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint. Vertex colours override the current (colour) state.
+@subsection Example
+@lisp
+ (hint-vertcols)
+ (define mycube (build-cube)) ; make a cube with vertcols enabled
+ (grab mycube)
+ (pdata-set "c" 0 (vector 0 1 0)) ; set the colour of the first vertex to green
+ (ungrab)
+
+@end lisp
+
+@section (hint-box)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to bounding box display in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-box)
+ (build-sphere 10 10) ; make a sphere with bounding box displayed
+
+@end lisp
+
+@section (hint-multitex)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to use multitexturing in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-multitexture)
+ (multitexture 0 (load-texture "tex1.png"))
+ (multitexture 1 (load-texture "tex2.png"))
+ (build-sphere 10 10) ; make a sphere with overlayed textures
+
+@end lisp
+
+@section (hint-none)
+@subsection Returns
+void
+@subsection Description
+Clears the render hints in the current drawing state, or the currently grabbed primitive. This allows you mainly to get rid of the default solid style, but also means that you can turn on and off hints without using push or pop.
+@subsection Example
+@lisp
+ (hint-none)
+ (hint-wire)
+ (build-cube) ; make a cube only visible with wireframe
+
+@end lisp
+
+@section (hint-origin)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to display the object space origin of the primitive the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-origin)
+ (build-sphere 10 10) ; make a sphere with the origin displayed
+
+@end lisp
+
+@section (hint-cast-shadow)
+@subsection Returns
+void
+@subsection Description
+(note: Not yet implemented) Sets the render hints to cast shadows for the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
+@subsection Example
+@lisp
+ (hint-origin)
+ (build-sphere 10 10) ; make a sphere with the origin displayed
+
+@end lisp
+
+@section (hint-ignore-depth)
+@subsection Returns
+void
+@subsection Description
+Sets the render hints to ignore depth tests for the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint. This feature is useful for rendering transparent objects, as it means objects will be shown behind previously rendered ones.
+@subsection Example
+@lisp
+ (hint-origin)
+ (build-sphere 10 10) ; make a sphere with the origin displayed
+
+@end lisp
+
+@section (texture textureid-number)
+@subsection Returns
+void
+@subsection Description
+Sets the texture of the current drawing state, or the currently grabbed primitive. Texture ids can be generated by the load-texture function.
+@subsection Example
+@lisp
+ (texture (load-texture "mytexture.png"))
+ (build-sphere 10 10) ; make a sphere textured with mytexture.png
+
+@end lisp
+
+@section (multitexture textureunit-number textureid-number)
+@subsection Returns
+void
+@subsection Description
+Sets the texture of the current drawing state, or the currently grabbed primitive in the same way as the texture function, but allows you to specify the texture unit (0-7) to apply the texture to. Multitexturing allows you to apply different textures and texture coordinates to the same object at once. Texture unit 0 is the default one (which uses the pdata "t" for it's texture coords) texture unit n looks for pdata "tn" - ie multitexture 1 looks for "t1". You need to add these yourself using (pdata-add) or (pdata-copy). Multitexturing is useful when the textures contain alpha, as they can be overlayed, i.e. decals placed on background textures. Note: fluxus needs to be built using scons MULTITEXTURE=1 to enable this feature.
+@subsection Example
+@lisp
+ (define obj (build-sphere 10 10)) ; make a sphere 
+ (grab obj)
+ (multitexture 0 (load-texture "mytextureA.png")) 
+ (multitexture 1 (load-texture "mytextureB.png"))
+ (pdata-add "t1" "v")   ; make some texture coords for texture B
+ (pdata-copy "t" "t1")  ; copy them from the default texture coords
+ (ungrab)
+
+@end lisp
+
+@section (print-scene-graph)
+@subsection Returns
+void
+@subsection Description
+Prints out the current scene graph, useful for debugging.
+@subsection Example
+@lisp
+ (print-scene-graph) ; exciting...
+
+@end lisp
+
+@section (hide hidden-number)
+@subsection Returns
+void
+@subsection Description
+Sets the hidden state for the grabbed primitive (also affects all child primitives). Hidden primitives can be treated as normal in every way - they just won't be rendered.
+@subsection Example
+@lisp
+ (define obj (build-cube))
+ (grab obj)
+ (hide 1) ; hide this cube
+ (ungrab)
+
+@end lisp
+
+@section (selectable selectable-number)
+@subsection Returns
+void
+@subsection Description
+Sets whether the grabbed primitive can be selected or not using the select command.
+@subsection Example
+@lisp
+ (define obj (build-cube))
+ (grab obj)
+ (selectable 0) ; now it won't be "seen" by calling select
+ (ungrab)
+
+@end lisp
+
+@section (shader vertexprogram-string fragmentprogram-string)
+@subsection Returns
+void
+@subsection Description
+Loads, compiles and sets the GLSL harware shader pair for the current drawing state, or the currently grabbed primitive. Requires OpenGL 2 support. The shader's uniform data can be controlled via shader-set! and all the pdata is sent through as per-vertex attribute data to the shader.
+@subsection Example
+@lisp
+ (push)
+ ; assign the shaders to the surface
+ (shader "simplevert.glsl" "simplefrag.glsl")
+ (define s (build-sphere 20 20))
+ (pop)
+ 
+ (grab s)
+ ; add and set the pdata - this is then picked up in the vertex shader 
+ ; as an input attribute called "testcol"
+ (pdata-add "testcol" "v")
+ (set-cols (pdata-size))
+ (ungrab)
+ 
+ (define (animate)
+     (grab s)
+ 	; animate the deformamount uniform input parameter 
+     (shader-set! (list "deformamount" (cos (time))))
+     (ungrab))
+ 
+ (every-frame (animate))
+@end lisp
+
+@section (shader-set! argument-list)
+@subsection Returns
+void
+@subsection Description
+Sets the uniform shader parameters for the GLSL shader. The list consists of token-string value pairs, which relate to the corresponding shader parameters names and values.
+@subsection Example
+@lisp
+ (push)
+ ; assign the shaders to the surface
+ (shader "simplevert.glsl" "simplefrag.glsl")
+ (define s (build-sphere 20 20))
+ (pop)
+ 
+ (grab s)
+ ; add and set the pdata - this is then picked up in the vertex shader 
+ ; as an input attribute called "testcol"
+ (pdata-add "testcol" "v")
+ (set-cols (pdata-size))
+ (ungrab)
+ 
+ (define (animate)
+     (grab s)
+ 	; animate the deformamount uniform input parameter 
+     (shader-set! (list "deformamount" (cos (time))))
+     (ungrab))
+ 
+ (every-frame (animate))
+
+@end lisp
+
+@node OSC
+@chapter OSC
 OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia applications. Fluxus can send or receive messages.
-
-@lisp 
-(osc-source port)
-@end lisp                     
-Starts up the osc server, or changes port. Known bug: seems to fail if you set it back to a port used previously.
-
-@lisp 
-(osc-msg name)
-@end lisp                     
-Returns true if the message has been received since last frame, and sets the current source to this message if it has been received. 
-
-Calling it repeatedly returns every message recieved in the last frame. you need to call it in a loop until it returns false, and all messages have been read - or your script will lag behind the data source.
-
-@lisp 
-(osc index)
-@end lisp                     
-Returns either a number or string value from the current osc message source - ie, a message "/myvalue 0.4 hello" is sent to fluxus:
-
-@lisp 
-(osc-msg "/myvalue")
-(osc 0)
-@end lisp                     
-
-Will evaluate to 0.4. 
-
-@lisp 
-(osc 1) 
-@end lisp                     
-
-Will then evaluate to "hello". 
-
-If a message has never been sent, the value defaults to zero, or a empty string.
-
-@lisp 
-(osc-peek)
-@end lisp                     
-This handy function returns the name, and format string and number/string arguments of the last sent message as a string. you can then write something like:
-
-@lisp 
-(display (osc-peek)) (newline)
-@end lisp                     
-
-Fluxus will dump a list of all the messages being recieved to the commandline, use this to figure out what messages to use, and the types you can use on the message.
-
-An example of using osc to communicate between pd and fluxus:
-
-@lisp 
+@subsection Example
+@lisp
+ An example of using osc to communicate between pd and fluxus.
+ A fluxus script to move a cube based on incoming osc messages.
  -- osc.scm
 
-(define (test)
-    (push)
-	(osc-msg "/zzz")
-    (translate (vector 1 0 (osc 0)))
-    (draw-cube)
-    (pop))
-
-(osc-source "6543")
-(every-frame (test))
-
---- EOF
-
---- zzz.pd
-#N canvas 618 417 286 266 10;
-#X obj 58 161 sendOSC;
-#X msg 73 135 connect localhost 6543;
-#X msg 58 82 send /zzz \$1;
-#X floatatom 58 29 5 0 0 0 - - -;
-#X obj 58 54 / 100;
-#X obj 73 110 loadbang;
-#X connect 1 0 0 0;
-#X connect 2 0 0 0;
-#X connect 3 0 4 0;
-#X connect 4 0 2 0;
-#X connect 5 0 1 0;
-@end lisp 
-
-OSC messages can also be sent with fluxus.
-
-@lisp 
-(osc-destination port)
-@end lisp 
-Starts up the osc client, which will send messages to the given port. Ports look somthing like this "osc.udp://localhost:4444"
-
-@lisp 
-(osc-send name argslist)
-@end lisp 
-Sends a message with the argument list as the osc data. only supports numbers (which are converted to floats) and strings as data, ie:
-
-@lisp 
-(osc-send "/hello" "fis" '(1 2 "three"))
-@end lisp 
-
-Will send the message out to the current osc destination, the type string allows fluxus to convert the numbers correctly using "f" for float, or "i" for int.
-
-@insertcopying 
-
-@node Physics
-@chapter Physics System
-
-The physics system used in fluxus is based on the ode library, which allows you to add physical properties to objects and set them in motion. Since ODE is designed for rigid-body simulations, structures are described in terms of objects, joints and forces.
-
-A much more comprehensive explanation of these concepts can be found in the ODE documentation, which you have probably downloaded if you have compiled fluxus, or can be found at @url{http://ode.org/ode-docs.html}
-
-To help with debugging joints, try using (show-axis 1), which will render locators showing you positions and axes of joints that have positional information.
-
-@lisp 
-(collisions 0|1)
-@end lisp 
-
-Enables or disables collision detection. this is the cause of great slowness when doing physical particle systems, and also the cause of instability in the low level physics library. defaults to off.
-
-@lisp 
-(gravity gravvec)
-@end lisp 
-
-Sets the strength and direction of gravity.
-
-@lisp 
-(surface-params slip1 slip2 softerp softcfm)
-@end lisp 
-
-Sets some global surface attributes that affect friction and bouncyness. see section 7.3.7 of the ODE docs for an explanation of these parameters 
-
-@lisp 
-(active-box object)
-(active-sphere object)
-(active-cylinder object)
-@end lisp 
-
-Enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as an active object, it will be transformed by ode. note: rotations only work correctly if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
-
-@lisp 
-(passive-box object)
-(passive-sphere object)
-(passive-cylinder object)
-@end lisp 
-
-Enable the object to be acted upon by the physics system, using a box, sphere or cylinder as the bounding volume. as a passive object, active objects will collide with it, but it will not be transformed. note: rotations only work correctly  if you specify your transforms scale first, then rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
-
-@lisp 
-(set-mass object mass)
-@end lisp 
-
-Sets the mass of an active object
-
-@lisp 
-(ground-plane planevec planeoffset)
-@end lisp 
-
-Create an infinite passive plane for use as the 'ground'
-
-@lisp 
-(build-fixedjoint object)
-(build-hingejoint object1 object2 anchorvec hingevec)
-(build-hinge2joint object1 object2 anchorvec hinge1vec hinge2vec)
-(build-sliderjoint object1 object2 hingevec)
-(build-balljoint object1 object2 anchorvec)
-(build-amotorjoint axisvec)
-@end lisp 
-
-These functions will create joints to connect two objects (see the ode docs for a detailed description of the differences between the joint types). ode considers joints to be a constraint that is enforced between two objects. when creating a joint, it is important to have the two primitives being joined in the desired positions before creating the joint. joints can be created, modified and indexed in a similar way to other primitives. The fixed joint attaches a object to the static environment.
-
-@lisp 
-(joint-param joint param value)
-@end lisp 
-
-Sets the joint parameter for a joint where @code{param} is one of the following: "HiStop", "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM","SuspensionERP", "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE
-docs for an explanation of each of these parameters, and which joint types they apply to.
-
-@lisp 
-(joint-angle joint velocity angle)
-@end lisp 
-
-Set the angle of the joint, with a given velocity (?)
-
-@lisp 
-(kick object kickvec)
-@end lisp 
-
-Applies translation force @code{kickvec} to the object
-
-@lisp 
-(twist object twistvec)
-@end lisp 
-
-Applies rotational force @code{twistvec} to the object
-
-@lisp 
-(set-max-physical num)
-@end lisp 
-
-Sets the maximum number of objects the physics system can deal with. when the max level has been reached the oldest objects are destroyed.
-
-@lisp 
-(has-collided id)                     
-@end lisp 
-
-Returns true if the grabbed object collided in the last frame
-
-@insertcopying 
-
-@node Turtle Builder
-@chapter Turtle builder 
-
-The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 3D space. As you drive the turtle around you can place vertices and build shapes procedurally. The turtle can also be used to deform existing polygonal primitives, by attaching it to objects you have already created. 
-
-@lisp 
-(turtle-prim type)
-@end lisp 
-Starts a new primitive of the type specified:
-
-@lisp 
-0: triangle strip
-1: quad list
-2: triangle list
-3: triangle fan
-4: general polygon
-@end lisp 
-
-@lisp 
-(turtle-attach polyprimitive)
-@end lisp 
-Attaches the turtle to an existing poly primitive. This means you are able to deform an existing objects points using the turtle builder.
-
-@lisp 
-(turtle-move distance)
-@end lisp 
-Moves the turtle forward in it's current orientation
-
-@lisp 
-(turtle-turn anglevec)
-@end lisp 
-Rotates the turtle's orientation with the supplied euler angles (rotations in x, y and z)
-
-@lisp 
-(turtle-vert)
-@end lisp 
-Creates a new vertex in the current position, or sets the current vertex if the turtle builder is attached. 
-
-@lisp 
-(turtle-build)
-@end lisp 
-Builds the object with the vertex list defined and gives it to the renderer. Has no effect if the turtle builder is attached to a primitive.
-
-@lisp 
-(turtle-reset)
-@end lisp 
-Resets the current postion and rotation of the turtle
-
-@lisp 
-(turtle-push)
-(turtle-pop)
-@end lisp 
-The turtle build has it's own transform stack
-
-@lisp 
-(turtle-skip count)
-@end lisp 
-When attached, causes the turtle to skip vertices. This value may be negative, which will set the turtle to write to previous vertices.
-
-@lisp 
-(turtle-position)
-@end lisp 
-When attached, returns the current pdata index the turtle is writing to.
-
-Time for some examples:
-
-This script simply builds a single polygon circle, by playing the age old turtle trick of looping a function that moves a bit, turns a bit...
-
-@lisp 
-(define (build n)
-    (turtle-reset)
-    (turtle-prim 4)
-    (build-loop n n)
-    (turtle-build))
-
-(define (build-loop n t)
-    (turtle-turn (vector 0 (/ 360 t) 0))
-    (turtle-move 1)
-    (turtle-vert)
-    (if (< n 1)
-        0
-        (build-loop (- n 1) t)))
-
-    
-(backfacecull 0)    
-(clear)
-(hint-unlit)
-(hint-wire)
-(line-width 4)
-@end lisp 
-
-@image{images/turtle}
-A circle
-
-For a more complex example, just modfiy the @code{(build-loop)} function as so:
-
-@lisp 
-(define (build-loop n t)
-    (turtle-turn (vector 0 (/ 360 t) 0))
-    (turtle-move 1)
-    (turtle-vert)
-    (if (< n 1)
-        0
-        (begin
-            (build-loop (- n 1) t)          ; add another call to the recursion
-            (turtle-turn (vector 0 0 45))   ; twist a bit
-            (build-loop (- n 1) t))))
-@end lisp 
-			
-@image{images/turtlecomplex}
-a circle of circles
-
-@insertcopying
+ (define value 0)
+
+ (define (test)
+     (push)
+     (if (osc-msg "/zzz")
+         (set! value (osc 0)))
+     (translate (vector 1 0 value))
+     (draw-cube)
+     (pop))
  
-@node Making Movies
-@chapter Making Movies
+ (osc-source "6543")
+ (every-frame (test))
+ 
+ --- EOF
+ A PD patch to send control messages to fluxus:
+ --- zzz.pd
+ #N canvas 618 417 286 266 10;
+ #X obj 58 161 sendOSC;
+ #X msg 73 135 connect localhost 6543;
+ #X msg 58 82 send /zzz \$1;
+ #X floatatom 58 29 5 0 0 0 - - -;
+ #X obj 58 54 / 100;
+ #X obj 73 110 loadbang;
+ #X connect 1 0 0 0;
+ #X connect 2 0 0 0;
+ #X connect 3 0 4 0;
+ #X connect 4 0 2 0;
+ #X connect 5 0 1 0;
 
-Fluxus is designed for realtime use, this means interactive performance or games mainly, but you can also use the frame dump commands to save out frames which can be converted to movies. This process can be fairly complex, involving syncing to audio, osc or keyboard input.
-
-Used alone, frame dumping will simply save out frames as fast as your machine can render and save them to disk. This is useful in some cases, but not if we want to create a movie at a fixed framerate, but with the same timing as they are generated at - ie synced with an audio track at 25fps. 
-
-@section Syncing to audio
-
-The (process) command does several things, it switches the audio from the jack input source to a file, but it also makes sure that every buffer of audio is used to produce exactly one frame. Usually in realtime operation, audio buffers will be skipped or duplicated, depending on the variable framerate and fixed audio rate. 
-
-So, what this actually means is that if we want to produce video at 25fps, with audio at 44100 samplerate, 44100/25 = 1764 audio samples per frame. Set your jack and (start-audio) buffer settings to this. Then all you need to do is make sure the calls to (process) and (start-framedump) happen on the same frame, so that the first frame is at the start of the audio. As this process is not realtime, you can set your resolution as large as you want, or make the framerate as slow as you like.
-
-@section Syncing keyboard or OSC input
-
-If you also want to use this technique for re-rendering animations which involve keyboard presses or OSC input, things are a little more involved. Fluxus contains a recorder for these inputs, which is not exactly easy to use, (ok, I'll admit it was a crazy hack :)) but I've used it quite a lot and it seems to work fine.
-
-What it actually does is record the time of every keypress or OSC message, so it can replay them at different framerates correctly. 
-
-It also works with the process command in the same way as the audio does (you always need an audio track, even if it's silence). So the recorder will advance the number of seconds per frame as it renders, rather than using the realtime clock - so again, you can make the rendering as slow as you like, it will appear correct when you view the movie.
-
-@subsection Operating the livecode/OSC recorder
-
-@itemize @bullet
-@item F6 starts, and selects between recording or playing back recordings
-@item F7 stops recording/playing back
-@item F8 resets the position in time
-@end itemize
-
-So to give it a try, press F6 until "recording" is printed in the terminal window, type some keys, hit F7 to stop, delete the text, and press F6 again to select "playing". Hit F8 to reset the timer, which will then magically recreate the text you just entered.
-
-As I said, it's not exactly obvious, but I ran out of F keys to use... I will change it at some point to be a little more friendly, ie change the colour of the cursor to indicate the mode.
-
-You can save this recording out to a file, with (save-code "filename") and reload it with (load-code "filename"). The files are ascii format, and contain the timestamps and the information to recreate the key presses. They are not scheme files.
-
-If you are using fluxus to recieve osc information, the details of the messages will also be stored in this file for later use. When playing back a recording, the osc interface treats the recorded messages the same as normal ones, so your script doesn't need to be modified to pick them up.
-
-@subsection An example
-
-It's easier to set up if you start your script from an empty workspace - ie start the recording with the (edit "myscript.scm") or write a script from scratch. Play with fluxus as you normally would, move the camera around, change bits of the script, etc. Then, after saving out the code, you can then use a little startup script which does the following:
-
+@end lisp
+@section (osc-source port-string)
+@subsection Returns
+void
+@subsection Description
+Starts up the osc server, or changes port. Known bug: seems to fail if you set it back to a port used previously.
+@subsection Example
 @lisp
-(start-audio "" 1764 44100)
-(load-code "codefile")
-(process "audiofile")
-(start-framedump "outputframes" "jpg")
+ (osc-source "4444")	 ; listen to port 4444 for osc messages
+
 @end lisp
 
-Then select all the code, hit F5 to run it, delete to remove it, F6 to start the playback and F8 to reset the recorder time. Then, if everything has worked out the recorder will type out (edit "myscript.scm") and run it, saving frames out at a fixed framerate.
-
-@section Syncing Problems
-
-Getting the syncing right when combining audio/keyboard and OSC input can be a bit tricky. Some common problems I've seen with the resulting movies fall into two categories.
-
-@subsection Syncing lags, and gets worse with time
-
-The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
-
-@subsection Syncing is offset in a constant manner
-
-This happens when the start of the audio does not quite match the first frame. You can try adding or removing some silence at the beginning of the audio track to sort this out. I often just encode the first couple of seconds until I get it right.
-
-@node Debugging Scheme
-@chapter Debugging Scheme
-
-It can be hard to track down errors in scheme scripts, especially in deeply nested functional calls. Luckily the scheme interpreter fluxus uses has some built in debugging utilities you can use. It's generally a good idea to turn these on when writing scripts, but turn them off for performance use, as they do slow things down a little.
-
+@section (osc-msg name-string)
+@subsection Returns
+msgreceived-boolean
+@subsection Description
+Returns true if the message has been received since the last frame, and sets it as the current message for subsequent calls to (osc) for reading the arguments.
+@subsection Example
 @lisp
-(debug-enable 'debug)
-@end lisp
-Turns on the debugger (this causes the interpreter to run slower)
+ (cond 
+     ((osc-msg "/hello")              ; if a the /hello message is recieved
+         (display (osc 1))(newline)))	; print out the first argument
 
+@end lisp
+
+@section (osc argument-number)
+@subsection Returns
+oscargument
+@subsection Description
+Returns the argument from the current osc message.
+@subsection Example
 @lisp
-(debug-enable 'backtrace)
-@end lisp
-Prints out full stack trace apon error - this is very useful for complex programs.
+ (cond 
+     ((osc-msg "/hello")              ; if a the /hello message is recieved
+         (display (osc 1))(newline)))	; print out the first argument
 
+@end lisp
+
+@section (osc-destination port-string)
+@subsection Returns
+void
+@subsection Description
+Specifies the destination for outgoing osc messages. The port name needs to specify the whole url and should look something like this "osc.udp://localhost:4444"
+@subsection Example
 @lisp
-(read-enable 'positions)
+ (osc-destination "osc.udp:localhost:4444")
+ (osc-send "/hello" "s" (list "boo!"))  ; send a message to this destination
+
 @end lisp
-Tells you line numbers of errors which occur. Not very useful in the fluxus editor (yet).
 
-@node Examples
-@chapter Examples 
+@section (osc-peek)
+@subsection Returns
+msg-string
+@subsection Description
+This util function returns the name, and format string and number/string arguments of the last sent message as a string - for debugging your osc network.
+@subsection Example
+@lisp
+ (display (osc-peek))(newline) 
 
-The examples show you a quick roundup of features and are probably more useful than the documentation for getting an idea of what you can get working with fluxus. They range from simple test scripts to a little game, and should be commented to some extent for you to get an idea of whats going on.
+@end lisp
 
-A note on relative paths, many of the scripts load textures, and use paths relative to the examples directory, so launch fluxus from there for best results.
+@section (osc-send name-string format-string argument-list)
+@subsection Returns
+void
+@subsection Description
+Sends an osc message with the argument list as the osc data. Only supports floats, ints and strings as data. The format-string should be composed of "i", "f" and "s", and must match the types given in the list. This could probably be removed by using the types directly, but doing it this way allows you to explicitly set the typing for the osc message.
+@subsection Example
+@lisp
+ (osc-destination "osc.udp:localhost:4444")
+ (osc-send "/hello" "sif" (list "boo!" 3 42.3))  ; send a message to this destination
 
-@insertcopying 
+@end lisp
 
-@node Function Overview
-@chapter Overview of Functions 
+@node Camera
+@chapter Camera
+Camera functions
+@subsection Example
+@lisp
 
-@printindex fn
+@end lisp
+@section (reset-camera)
+@subsection Returns
+void
+@subsection Description
+Resets the camera transform, useful if it becomes trashed, or you get lost somewhere in space. Also turns off camera locking to objects with (lock-camera)
+@subsection Example
+@lisp
+ ; ruin the camera transform
+ (set-camera-transform (vector 123 41832 28 0.2 128 0.001 123 41832 28 0.2 128 0.001 0.2 100 13 1931)) 
+ ; set it back to the starting position/orientation
+ (reset-camera) 
 
-@insertcopying 
-
-@node Index 
-@unnumbered Index 
-@chapter Index
-
-@printindex cp 
-@shortcontents 
-@contents 
-
-@insertcopying 
-
-@bye 
-
-
+@end lisp
 

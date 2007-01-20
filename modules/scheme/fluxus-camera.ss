@@ -14,6 +14,12 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+;; StartSectionDoc-en
+;; Camera
+;; Camera functions
+;; Example:
+;; EndSectionDoc	
+
 (module fluxus-camera mzscheme
 	(require fluxus-engine)
 	(provide 
@@ -31,8 +37,9 @@
 	(define last-mouse (vector 0 0))
 	(define last-button 0)
 	
-;; StartFunctionDoc
+;; StartFunctionDoc-en
 ;; reset-camera
+;; Returns: void 
 ;; Description:
 ;; Resets the camera transform, useful if it becomes trashed, or you get lost 
 ;; somewhere in space. Also turns off camera locking to objects with (lock-camera)
