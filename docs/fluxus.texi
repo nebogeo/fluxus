@@ -9,14 +9,18 @@
 @menu
 * Audio:: Audio
 * GlobalState:: GlobalState
+* Lights:: Lights
 * LocalState:: LocalState
+* Maths:: Maths
+* PrimitiveData:: PrimitiveData
+* Turtle:: Turtle
 * OSC:: OSC
 * Camera:: Camera
 @end menu
 @node Audio
 @chapter Audio
 This part of fluxus is responsible for capturing the incoming sound, and processing it into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of frequency which the sound is split into, giving some indication of the quality of the sound. It's the same as you see on a graphic equaliser - in fact, one of the example scripts (bars.scm) acts as a graphic equaliser display, and should be used to test the audio is working.
-@subsection Example
+@subsubheading Example
 @lisp
  (start-audio "alsa_pcm:capture_1" 1024 44100)
  (define (animate)
@@ -26,22 +30,22 @@ This part of fluxus is responsible for capturing the incoming sound, and process
 
 @end lisp
 @section (start-audio jackport-string buffersize-number samplerate-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Starts up the audio with the specified settings, you'll need to call this first, or put it into $HOME/.fluxus/startup.scm to call it automatically at startup. Make the jack port name an empty string and it won't try to connect to anything for you. You can use qjackctrl or equivelent to do the connection manually. Fluxus reads a single mono source.
-@subsection Example
+@subsubheading Example
 @lisp
  (start-audio "alsa_pcm:capture_1" 1024 44100)
 
 @end lisp
 
 @section (gh harmonic-number)
-@subsection Returns
+@subsubheading Returns
 harmonic-real
-@subsection Description
+@subsubheading Description
 Fluxus converts incoming audio into harmonic frequencies, which can then be plugged into your animations using this command. There are 16 harmonic bands availible, the harmonic-value argument will be wrapped around if greater or less than 16, so you can use this command without worrying about out of range errors.
-@subsection Example
+@subsubheading Example
 @lisp
  (define (animate)
 		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
@@ -51,44 +55,44 @@ Fluxus converts incoming audio into harmonic frequencies, which can then be plug
 @end lisp
 
 @section (gain gain-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the gain level for the fft sound, it's 1 by default.
-@subsection Example
+@subsubheading Example
 @lisp
  (gain 100) ; too quiet?!
 
 @end lisp
 
 @section (process wavfile-string)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 This command temporarally disables the realtime reading of the input audio stream and reads a wav file instead. For use with the framedump command to process audio offline to make music videos. The advantage of this is that it locks the framerate so the right amount of audio gets read for each frame - making syncing of the frames and audio files possible.
-@subsection Example
+@subsubheading Example
 @lisp
  (process "somemusic.wav") ; read a precorded audio file
 
 @end lisp
 
 @section (smoothing-bias value-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 A kind of weighted average for the harmonic bands which smooth them out over time. This setting defaults to 1.5. The best value really depends on the quality of the music, and the buffer sizes, and ranges from 0 -> 2. It's more obvious if you give it a try with the bars.scm script
-@subsection Example
+@subsubheading Example
 @lisp
  (smoothing-bias 0) ; no smoothing
 
 @end lisp
 
 @section (update-audio)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Updates the audio subsytem. This function is called for you (per frame) in fluxus-canvas.ss.
-@subsection Example
+@subsubheading Example
 @lisp
  (smoothing-bias 0) ; no smoothing
 
@@ -97,38 +101,38 @@ Updates the audio subsytem. This function is called for you (per frame) in fluxu
 @node GlobalState
 @chapter GlobalState
 Global state is really anything that controls the renderer globally, so it affects all primitives or controls the renderer directly - ie camera control or full screen effects like blurring.
-@subsection Example
+@subsubheading Example
 @lisp
 
 @end lisp
 @section (clear-engine)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Clears the renderer, and physics system. This command should not be called directly, use clear instead, as this clears a few other things, and calls clear-engine itself.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear-engine) ; woo hoo!
 
 @end lisp
 
 @section (blur amount-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the full screen blur setting. Less is more, but if you set it too low it will make the on screen editing impossible to read, so save your script first :)
-@subsection Example
+@subsubheading Example
 @lisp
  (blur 0.1) ; for nice trails
 
 @end lisp
 
 @section (fog fogcolour-vector amount-number begin-number end-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the fogging parameters to give a visual depth cue (aerial perspective in painter's jargon). This can obscure the on screen editing, so keep the amount small.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear-colour (vector 0 0 1))   ; looks nice if the background matches
  (fog (vector 0 0 1) 0.01 1 100) ; blue fog
@@ -136,11 +140,11 @@ Sets the fogging parameters to give a visual depth cue (aerial perspective in pa
 @end lisp
 
 @section (feedback amount-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Full screen feedback for Jeff Minter style crazyness (renders the last frame in the background, including the previous feedback background...). This allocates large amounts of texture space and seems to be unstable, so it's probably better not to use it. If you do, use with feedback-transform, but don't say I didn't warn you.
-@subsection Example
+@subsubheading Example
 @lisp
  (feedback 0.1) ; set the feedback amount
  (build-cube)
@@ -151,11 +155,11 @@ Full screen feedback for Jeff Minter style crazyness (renders the last frame in 
 @end lisp
 
 @section (feedback-transform matrix-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the transform for the feedback plane. See feedback for more details, probably shouldn't be used.
-@subsection Example
+@subsubheading Example
 @lisp
  (feedback 0.1) ; set the feedback amount
  (build-cube)
@@ -166,33 +170,33 @@ Sets the transform for the feedback plane. See feedback for more details, probab
 @end lisp
 
 @section (show-axis show-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Shows the worldspace origin axis. used.
-@subsection Example
+@subsubheading Example
 @lisp
  (show-axis 1)
 
 @end lisp
 
 @section (show-fps show-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Shows an fps count in the lower left of the screen. used.
-@subsection Example
+@subsubheading Example
 @lisp
  (show-fps 1)
 
 @end lisp
 
 @section (lock-camera primitiveid-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Locks the camera transform onto the specified primitive's transform. It's like parenting the camera to the object. This is the easiest way to procedurally drive the camera. Use an id number of 0 to unlock the camera.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear)
  (define obj (build-cube)) ; make a cube for the camera to lock to
@@ -217,11 +221,11 @@ Locks the camera transform onto the specified primitive's transform. It's like p
 @end lisp
 
 @section (camera-lag amount-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 The camera locking has an inbuilt lagging which means it will smoothly blend the movement relative to the primitive it's locked to.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear)
  (define obj (build-cube)) ; make a cube for the camera to lock to
@@ -248,11 +252,11 @@ The camera locking has an inbuilt lagging which means it will smoothly blend the
 @end lisp
 
 @section (load-texture pngfilename-string)
-@subsection Returns
+@subsubheading Returns
 textureid-number
-@subsection Description
+@subsubheading Description
 Loads a texture from disk, converts it to a texture, and returns the id number. The texture loading is memory cached, so repeatedly calling this will not cause it to load again. Use force-load-texture if you are changing the texture while running the script. The png may be RGB or RGBA to use alpha transparency.
-@subsection Example
+@subsubheading Example
 @lisp
  (texture (load-texture "mytexture.png"))
  (build-cube) ; the cube will be texture mapped with the image
@@ -260,11 +264,11 @@ Loads a texture from disk, converts it to a texture, and returns the id number. 
 @end lisp
 
 @section (load-texture pngfilename-string)
-@subsection Returns
+@subsubheading Returns
 textureid-number
-@subsection Description
+@subsubheading Description
 Uncached loading of textures from disk, converts it to a texture, and returns the id number. Useful if you are changing the texture while running the script, otherwise use load-texture, which will be much faster. The png may be RGB or RGBA to use alpha transparency.
-@subsection Example
+@subsubheading Example
 @lisp
  (texture (force-load-texture "mytexture.png"))
  (build-cube) ; the cube will be texture mapped with the image
@@ -272,183 +276,289 @@ Uncached loading of textures from disk, converts it to a texture, and returns th
 @end lisp
 
 @section (frustum top-number bottom-number left-number right-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the camera frustum, and thus the aspect ratio of the frame.
-@subsection Example
+@subsubheading Example
 @lisp
  (frustum -1 1 -0.75 0.75) ; default settings
 
 @end lisp
 
 @section (clip front-number back-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the front & back clipping planes for the camera frustum, and thus the viewing angle. Change the front clipping distance to alter the perspective from telephoto to fisheye.
-@subsection Example
+@subsubheading Example
 @lisp
  (clip 1 10000) ; default settings
 
 @end lisp
 
 @section (ortho)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets orthographic projection - i.e. no perspective.
-@subsection Example
+@subsubheading Example
 @lisp
  (ortho) 
 
 @end lisp
 
 @section (persp)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets perspective projection (the default) after ortho has been set.
-@subsection Example
+@subsubheading Example
 @lisp
  (persp) 
 
 @end lisp
 
 @section (set-ortho-zoom amount-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the zoom level for the orthographic projection.
-@subsection Example
+@subsubheading Example
 @lisp
  (set-ortho-zoom 2) 
 
 @end lisp
 
 @section (backfacecull setting-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Turns backface culling on or off. Backface culling speeds up rendering by removing faces not orientated towards the camera. Defaults to on, but this is not always desired, eg for double sided polygons.
-@subsection Example
+@subsubheading Example
 @lisp
  (backfacecull 0) 
 
 @end lisp
 
 @section (clear-colour colour-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the colour we clear the renderer with, this forms the background colour for the scene.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear-colour (vector 1 0 0)) ; RED!!!
 
 @end lisp
 
 @section (clear-frame setting-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the frame and zbuffer clearing on or off.
-@subsection Example
+@subsubheading Example
 @lisp
  (clear-frame 0) 
 
 @end lisp
 
 @section (get-camera-transform)
-@subsection Returns
+@subsubheading Returns
 matrix-vector
-@subsection Description
+@subsubheading Description
 Gets the current camera transform matrix.
-@subsection Example
+@subsubheading Example
 @lisp
  (get-camera-transform) 
 
 @end lisp
 
 @section (set-camera)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the camera transform matrix. This is the low level interface used by set-camera-transform, which you should generally use instead.
-@subsection Example
+@subsubheading Example
 @lisp
  (set-camera) 
 
 @end lisp
 
 @section (get-projection-transfrom)
-@subsection Returns
+@subsubheading Returns
 projection-matrix
-@subsection Description
+@subsubheading Description
 Gets the current projection matrix.
-@subsection Example
+@subsubheading Example
 @lisp
  (get-projection-transfrom) 
 
 @end lisp
 
 @section (get-screen-size)
-@subsection Returns
+@subsubheading Returns
 size-vector
-@subsection Description
+@subsubheading Description
 Returns a vector containing the current width and height of the window.
-@subsection Example
+@subsubheading Example
 @lisp
  (get-screen-size) 
 
 @end lisp
 
 @section (set-screen-size size-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the window width and height.
-@subsection Example
+@subsubheading Example
 @lisp
  (set-screen-size (vector 10 10)) ; small window time :) 
 
 @end lisp
 
 @section (select screenxpos-number screenypos-number pixelssize-number)
-@subsection Returns
+@subsubheading Returns
 primitiveid-number
-@subsection Description
+@subsubheading Description
 Looks in the region specified and returns the id of the closest primitive to the camera rendered there, or 0 if none exist.
-@subsection Example
+@subsubheading Example
 @lisp
  (display (select 10 10 2))(newline)
 
 @end lisp
 
 @section (desiredfps fps-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Throttles the renderer so as to not take 100% cpu. This gives an upper limit on the fps rate, which doesn't quite match the given number, but I'm working on it...
-@subsection Example
+@subsubheading Example
 @lisp
  (desiredfps 100000) ; makes fluxus render as fast as it can, and take 100% cpu.
+
+@end lisp
+
+@node Lights
+@chapter Lights
+Without lights you wouldn't be able to see anything. Luckily fluxus gives you one for free by default, a white diffuse point light attached to the camera. For more interesting lighting, you'll need these functions. Using the standard fixed function graphics pipeline, simplistically speaking, OpenGL multiplies these values with the surface material (set with local state commands like ambient and diffuse) and the texture colour value to give the final colour.
+@subsubheading Example
+@lisp
+
+@end lisp
+@section (make-light type-string cameralocked-string)
+@subsubheading Returns
+lightid-number
+@subsubheading Description
+Makes a new light. The type can be one of: "point", "directional" or "spot". If the cameralocked string is not "free" then it will be attached to the camera, and move around when you move the camera.
+@subsubheading Example
+@lisp
+ (make-light "spot" "locked")
+
+@end lisp
+
+@section (light-ambient lightid-number colour)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the ambient contribution for the specified light.
+@subsubheading Example
+@lisp
+ (light-ambient mylight (vector 1 1 1)) ; a boring light
+
+@end lisp
+
+@section (light-diffuse lightid-number colour)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the diffuse contribution for the specified light.
+@subsubheading Example
+@lisp
+ (light-diffuse mylight (vector 1 1 1)) 
+
+@end lisp
+
+@section (light-specular lightid-number colour)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the specular contribution for the specified light.
+@subsubheading Example
+@lisp
+ (light-specular mylight (vector 1 1 1)) 
+
+@end lisp
+
+@section (light-position lightid-number position-vector)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the position of the specified light. In worldspace if free, in camera space is attached.
+@subsubheading Example
+@lisp
+ (light-position mylight (vector 0 100 0)) 
+
+@end lisp
+
+@section (light-spot-angle lightid-number angle-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the spotlight cone angle of the specified light. If it's not a spot light, this command has no effect.
+@subsubheading Example
+@lisp
+ (light-position mylight (vector 0 100 0)) 
+
+@end lisp
+
+@section (light-spot-exponent lightid-number exponent-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the spotlight exponent (fuzzyness of the cone) of the specified light. If it's not a spot light, this command has no effect.
+@subsubheading Example
+@lisp
+ (light-spot-exponent mylight 0.1) 
+
+@end lisp
+
+@section (light-attenuation lightid-number type-string attenuation-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the light attenuation (fade off with distance) of the specified light. The type string can be one of: "constant", "linear" or "quadratic".
+@subsubheading Example
+@lisp
+ (light-spot-exponent mylight 0.1) 
+
+@end lisp
+
+@section (light-direction lightid-number direction-vector)
+@subsubheading Returns
+void
+@subsubheading Description
+Sets the direction of a directional light. If it's not a directional light, this command has no effect.
+@subsubheading Example
+@lisp
+ (light-spot-exponent mylight 0.1) 
 
 @end lisp
 
 @node LocalState
 @chapter LocalState
 The local state functions control rendering either for the current state - or the state of the currently grabbed primitive. In fluxus state means the way that things are displayed, either turning on and off rendering features, changing the style of different features, or altering the current transform.
-@subsection Example
+@subsubheading Example
 @lisp
 
 @end lisp
 @section (push)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Pushes a copy of the current drawing state to the top of the stack. The drawing state contains information about things like the current colour, transformation and hints.
-@subsection Example
+@subsubheading Example
 @lisp
  (colour (vector 1 0 0)) ; set current colour to red
  (push)                  ; copy and push drawing state
@@ -460,11 +570,11 @@ Pushes a copy of the current drawing state to the top of the stack. The drawing 
 @end lisp
 
 @section (pop)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Destroys the current drawing state, and sets the current one to be the previously pushed one in the stack. The drawing state contains information about things like the current colour, transformation and hints.
-@subsection Example
+@subsubheading Example
 @lisp
  (colour (vector 1 0 0)) ; set current colour to red
  (push)                  ; copy and push drawing state
@@ -476,11 +586,11 @@ Destroys the current drawing state, and sets the current one to be the previousl
 @end lisp
 
 @section (grab object-id)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Grabs the specified object. Once an object has grabbed it's state can be modified using the same commands used to set the current drawing state. (ungrab) needs to be used to return to the normal drawing state. Grabbing can also be stacked, in which case ungrab pops to the last grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (colour (vector 1 0 0))      ; set the current colour to red
  (define mycube (build-cube)) ; makes a red cube 
@@ -491,11 +601,11 @@ Grabs the specified object. Once an object has grabbed it's state can be modifie
 @end lisp
 
 @section (ungrab)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Ungrabs the currently grabbed object, and either returns to the normal drawing state, or pops to the last grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (colour (vector 1 0 0))      ; set the current colour to red
  (define mycube (build-cube)) ; makes a red cube 
@@ -506,11 +616,11 @@ Ungrabs the currently grabbed object, and either returns to the normal drawing s
 @end lisp
 
 @section (apply object-id)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Applies the current object transform to the vertex positions of the supplied object and sets it's transform to identity.
-@subsection Example
+@subsubheading Example
 @lisp
  (rotate (vector 45 0 0))     
  (define mycube (build-cube)) ; makes a cube with a rotation 
@@ -519,11 +629,11 @@ Applies the current object transform to the vertex positions of the supplied obj
 @end lisp
 
 @section (opacity value)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the opacity of the current drawing state, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (opacity 0.5)     
  (define mycube (build-cube)) ; makes a half transparent cube 
@@ -531,11 +641,11 @@ Sets the opacity of the current drawing state, or the currently grabbed primitiv
 @end lisp
 
 @section (shinyness value)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the shinyness of the current drawing state, or the currently grabbed primitive. This value sets the tightness of the specular highlight.
-@subsection Example
+@subsubheading Example
 @lisp
  (shinyness 100)     
  (specular (vector 1 1 1)) ; sets the specular colour
@@ -544,11 +654,11 @@ Sets the shinyness of the current drawing state, or the currently grabbed primit
 @end lisp
 
 @section (colour colour-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the colour of the current drawing state, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (colour (vector 1 0.5 0.1)) ; mmm orange...   
  (define mycube (build-cube)) ; makes an orange cube 
@@ -556,11 +666,11 @@ Sets the colour of the current drawing state, or the currently grabbed primitive
 @end lisp
 
 @section (wire-colour colour-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the wire frame colour of the current drawing state, or the currently grabbed primitive. Visible with (hint-wire) on most primitives.
-@subsection Example
+@subsubheading Example
 @lisp
  (wire-colour (vector 1 1 0)) ; set yellow as current wire colour
  (hint-wire)   
@@ -569,11 +679,11 @@ Sets the wire frame colour of the current drawing state, or the currently grabbe
 @end lisp
 
 @section (specular colour-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the specular colour of the current drawing state, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (specular (vector 0 0 1)) ; set blue as specular colour
  (define mysphere (build-sphere 10 10)) ; makes a shiny blue sphere
@@ -581,11 +691,11 @@ Sets the specular colour of the current drawing state, or the currently grabbed 
 @end lisp
 
 @section (ambient colour-vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the ambient colour of the current drawing state, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (ambient (vector 0 0 1)) ; set blue as ambient colour
  (define mysphere (build-sphere 10 10)) ; makes a boringly blue sphere 
@@ -593,11 +703,11 @@ Sets the ambient colour of the current drawing state, or the currently grabbed p
 @end lisp
 
 @section (opacity value)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the emissive colour of the current drawing state, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (emissive (vector 0 0 1)) ; set blue as emissive colour
  (define mysphere (build-sphere 10 10)) ; makes an bright blue sphere 
@@ -605,11 +715,11 @@ Sets the emissive colour of the current drawing state, or the currently grabbed 
 @end lisp
 
 @section (identity)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the drawing state transform to identity, on the state stack, or the currently grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (push)
  (scale (vector 2 2 2)) ; set the current scale to double in each dimension
@@ -622,11 +732,11 @@ Sets the drawing state transform to identity, on the state stack, or the current
 @end lisp
 
 @section (concat matrix)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Concatenates (multiplies) a matrix on to the current drawing state or grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (define mymatrix (mrotate (vector 0 45 0))) ; make a matrix
  (concat mymatrix) ; concat it into the current state
@@ -635,11 +745,11 @@ Concatenates (multiplies) a matrix on to the current drawing state or grabbed pr
 @end lisp
 
 @section (translate vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Applies a translation to the current drawing state transform or grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (transform (vector 0 1.4 0)) ; translates the current transform up a bit
  (build-cube) ; build a cube with this transform
@@ -647,11 +757,11 @@ Applies a translation to the current drawing state transform or grabbed primitiv
 @end lisp
 
 @section (rotate vector-or-quaternion)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Applies a rotation to the current drawing state transform or grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (rotate (vector 0 45 0)) ; turns 45 degrees in the Y axis
  (build-cube) ; build a cube with this transform
@@ -659,11 +769,11 @@ Applies a rotation to the current drawing state transform or grabbed primitive.
 @end lisp
 
 @section (scale vector)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Applies a scale to the current drawing state transform or grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (scale (vector 0.5 0.5 0.5)) ; scales the current transform to half the size
  (build-cube) ; build a cube with this transform
@@ -671,11 +781,11 @@ Applies a scale to the current drawing state transform or grabbed primitive.
 @end lisp
 
 @section (get-transform)
-@subsection Returns
+@subsubheading Returns
 matrix-vector
-@subsection Description
+@subsubheading Description
 Returns: a matrix representing the current state transform or for the grabbed primitive.
-@subsection Example
+@subsubheading Example
 @lisp
  (translate (vector 1 0 0))
  (display (get-transform))(newline) ; prints the current transform
@@ -688,11 +798,11 @@ Returns: a matrix representing the current state transform or for the grabbed pr
 @end lisp
 
 @section (parent primitive-id)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Parents the currently grabbed primitive to the supplied parent primitive. The current primitive will now be moved around with the parent by aquiring all the parent's transforms.
-@subsection Example
+@subsubheading Example
 @lisp
  (define parent-prim (build-cube)) ; make a parent cube
  (translate (vector 2 0 0)) ; move a bit in x
@@ -705,11 +815,11 @@ Parents the currently grabbed primitive to the supplied parent primitive. The cu
 @end lisp
 
 @section (line-width value)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the line width (in screen space) of the current drawing state, or the currently grabbed primitive. Affects wireframe and things like that.
-@subsection Example
+@subsubheading Example
 @lisp
  (line-width 5)
  (hint-wire)
@@ -718,11 +828,11 @@ Sets the line width (in screen space) of the current drawing state, or the curre
 @end lisp
 
 @section (point-width value)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the point width (in screen space) of the current drawing state, or the currently grabbed primitive. Affects point rendering and particles in hardware point mode.
-@subsection Example
+@subsubheading Example
 @lisp
  (point-width 5)
  (hint-points)
@@ -731,11 +841,11 @@ Sets the point width (in screen space) of the current drawing state, or the curr
 @end lisp
 
 @section (blend-mode src dst)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the blend mode of the current drawing state, or the currently grabbed primitive. This is the way that alpha is composited to the rendering surface.
-@subsection Example
+@subsubheading Example
 @lisp
  (point-width 5)
  (hint-points)
@@ -744,11 +854,11 @@ Sets the blend mode of the current drawing state, or the currently grabbed primi
 @end lisp
 
 @section (hint-solid)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to solid of the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-solid) ; this is the default render style so this isn't too exciting
  (build-cube) ; make a solid rendered cube 
@@ -756,11 +866,11 @@ Sets the render hints to solid of the current drawing state, or the currently gr
 @end lisp
 
 @section (hint-wire)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to wireframe of the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-wire)
  (build-cube) ; make a wirefame rendered cube 
@@ -768,11 +878,11 @@ Sets the render hints to wireframe of the current drawing state, or the currentl
 @end lisp
 
 @section (hint-normal)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to display normals in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-normal)
  (build-cube) ; display the normals on this cube 
@@ -780,11 +890,11 @@ Sets the render hints to display normals in the current drawing state, or the cu
 @end lisp
 
 @section (hint-points)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to display points in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-points)
  (build-cube) ; display the vertex points on this cube 
@@ -792,11 +902,11 @@ Sets the render hints to display points in the current drawing state, or the cur
 @end lisp
 
 @section (hint-anti-alias)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to anti-alias in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-anti-alias)
  (build-cube) ; display a smoothed cube 
@@ -804,11 +914,11 @@ Sets the render hints to anti-alias in the current drawing state, or the current
 @end lisp
 
 @section (hint-unlit)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to unlit in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-unlit)
  (build-cube) ; display an unlit cube
@@ -816,11 +926,11 @@ Sets the render hints to unlit in the current drawing state, or the currently gr
 @end lisp
 
 @section (hint-vertcols)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to use vertex colours in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint. Vertex colours override the current (colour) state.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-vertcols)
  (define mycube (build-cube)) ; make a cube with vertcols enabled
@@ -831,11 +941,11 @@ Sets the render hints to use vertex colours in the current drawing state, or the
 @end lisp
 
 @section (hint-box)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to bounding box display in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-box)
  (build-sphere 10 10) ; make a sphere with bounding box displayed
@@ -843,11 +953,11 @@ Sets the render hints to bounding box display in the current drawing state, or t
 @end lisp
 
 @section (hint-multitex)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to use multitexturing in the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-multitexture)
  (multitexture 0 (load-texture "tex1.png"))
@@ -857,11 +967,11 @@ Sets the render hints to use multitexturing in the current drawing state, or the
 @end lisp
 
 @section (hint-none)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Clears the render hints in the current drawing state, or the currently grabbed primitive. This allows you mainly to get rid of the default solid style, but also means that you can turn on and off hints without using push or pop.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-none)
  (hint-wire)
@@ -870,11 +980,11 @@ Clears the render hints in the current drawing state, or the currently grabbed p
 @end lisp
 
 @section (hint-origin)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to display the object space origin of the primitive the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-origin)
  (build-sphere 10 10) ; make a sphere with the origin displayed
@@ -882,11 +992,11 @@ Sets the render hints to display the object space origin of the primitive the cu
 @end lisp
 
 @section (hint-cast-shadow)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 (note: Not yet implemented) Sets the render hints to cast shadows for the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-origin)
  (build-sphere 10 10) ; make a sphere with the origin displayed
@@ -894,11 +1004,11 @@ void
 @end lisp
 
 @section (hint-ignore-depth)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the render hints to ignore depth tests for the current drawing state, or the currently grabbed primitive. Render hints change the way that primitives are rendered, but may have different effects - or no effect on certain primitive types, hence the name hint. This feature is useful for rendering transparent objects, as it means objects will be shown behind previously rendered ones.
-@subsection Example
+@subsubheading Example
 @lisp
  (hint-origin)
  (build-sphere 10 10) ; make a sphere with the origin displayed
@@ -906,11 +1016,11 @@ Sets the render hints to ignore depth tests for the current drawing state, or th
 @end lisp
 
 @section (texture textureid-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the texture of the current drawing state, or the currently grabbed primitive. Texture ids can be generated by the load-texture function.
-@subsection Example
+@subsubheading Example
 @lisp
  (texture (load-texture "mytexture.png"))
  (build-sphere 10 10) ; make a sphere textured with mytexture.png
@@ -918,11 +1028,11 @@ Sets the texture of the current drawing state, or the currently grabbed primitiv
 @end lisp
 
 @section (multitexture textureunit-number textureid-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the texture of the current drawing state, or the currently grabbed primitive in the same way as the texture function, but allows you to specify the texture unit (0-7) to apply the texture to. Multitexturing allows you to apply different textures and texture coordinates to the same object at once. Texture unit 0 is the default one (which uses the pdata "t" for it's texture coords) texture unit n looks for pdata "tn" - ie multitexture 1 looks for "t1". You need to add these yourself using (pdata-add) or (pdata-copy). Multitexturing is useful when the textures contain alpha, as they can be overlayed, i.e. decals placed on background textures. Note: fluxus needs to be built using scons MULTITEXTURE=1 to enable this feature.
-@subsection Example
+@subsubheading Example
 @lisp
  (define obj (build-sphere 10 10)) ; make a sphere 
  (grab obj)
@@ -935,22 +1045,22 @@ Sets the texture of the current drawing state, or the currently grabbed primitiv
 @end lisp
 
 @section (print-scene-graph)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Prints out the current scene graph, useful for debugging.
-@subsection Example
+@subsubheading Example
 @lisp
  (print-scene-graph) ; exciting...
 
 @end lisp
 
 @section (hide hidden-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the hidden state for the grabbed primitive (also affects all child primitives). Hidden primitives can be treated as normal in every way - they just won't be rendered.
-@subsection Example
+@subsubheading Example
 @lisp
  (define obj (build-cube))
  (grab obj)
@@ -960,11 +1070,11 @@ Sets the hidden state for the grabbed primitive (also affects all child primitiv
 @end lisp
 
 @section (selectable selectable-number)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets whether the grabbed primitive can be selected or not using the select command.
-@subsection Example
+@subsubheading Example
 @lisp
  (define obj (build-cube))
  (grab obj)
@@ -974,11 +1084,11 @@ Sets whether the grabbed primitive can be selected or not using the select comma
 @end lisp
 
 @section (shader vertexprogram-string fragmentprogram-string)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Loads, compiles and sets the GLSL harware shader pair for the current drawing state, or the currently grabbed primitive. Requires OpenGL 2 support. The shader's uniform data can be controlled via shader-set! and all the pdata is sent through as per-vertex attribute data to the shader.
-@subsection Example
+@subsubheading Example
 @lisp
  (push)
  ; assign the shaders to the surface
@@ -1003,11 +1113,11 @@ Loads, compiles and sets the GLSL harware shader pair for the current drawing st
 @end lisp
 
 @section (shader-set! argument-list)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sets the uniform shader parameters for the GLSL shader. The list consists of token-string value pairs, which relate to the corresponding shader parameters names and values.
-@subsection Example
+@subsubheading Example
 @lisp
  (push)
  ; assign the shaders to the surface
@@ -1032,10 +1142,511 @@ Sets the uniform shader parameters for the GLSL shader. The list consists of tok
 
 @end lisp
 
+@node Maths
+@chapter Maths
+These functions are optimised for 3D graphics, and the collision of computer science and maths is apparent here, so vectors representing "vectors" are in this context taken to be 3 elements long, quaternions are vectors of length 4, and matrices are vectors of 16 elements long.
+@subsubheading Example
+@lisp
+
+@end lisp
+@section (vmul vector number)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Multiplies a vector by a number
+@subsubheading Example
+@lisp
+ (vmul (vector 1 2 3) 2)
+
+@end lisp
+
+@section (vadd vector vector)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Adds two vectors together
+@subsubheading Example
+@lisp
+ (vadd (vector 1 2 3) (vector 1 2 3))
+
+@end lisp
+
+@section (vsub vector vector)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Subtracts a vector from another
+@subsubheading Example
+@lisp
+ (vsub (vector 1 2 3) (vector 1 2 3))
+
+@end lisp
+
+@section (vdiv vector number)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Divides a vector by a number
+@subsubheading Example
+@lisp
+ (vdiv (vector 1 2 3) 2)
+
+@end lisp
+
+@section (vtransform vector matrix)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Multiplies (transforms) a vector by a matrix
+@subsubheading Example
+@lisp
+ (vtransform (vector 0 1 0) (mrotate (vector 90 0 0)))
+
+@end lisp
+
+@section (vtransform-rot vector matrix)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Multiplies (transforms) a vector by a matrix, but leaves out the translation part. For operations involving normals.
+@subsubheading Example
+@lisp
+ (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
+
+@end lisp
+
+@section (vnormalise vector)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Returns the normalised form of the vector (length=1)
+@subsubheading Example
+@lisp
+ (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
+
+@end lisp
+
+@section (vdot vector vector)
+@subsubheading Returns
+result-number
+@subsubheading Description
+Returns the dot product of two vectors
+@subsubheading Example
+@lisp
+ (vdot (vector 0 1 0) (vector 1 0 0))
+
+@end lisp
+
+@section (vmag vector)
+@subsubheading Returns
+result-number
+@subsubheading Description
+Returns the magnitude, or length of the vector
+@subsubheading Example
+@lisp
+ (vmag (vector 0 1 1))
+
+@end lisp
+
+@section (vdist vector vector)
+@subsubheading Returns
+result-number
+@subsubheading Description
+Treating the vectors as points, returns the distance between them
+@subsubheading Example
+@lisp
+ (vdist (vector 100 100 0) (vector 0 0 100))
+
+@end lisp
+
+@section (vcross vector vector)
+@subsubheading Returns
+result-vector
+@subsubheading Description
+Returns the cross product of two vectors
+@subsubheading Example
+@lisp
+ (vcross (vector 100 100 0) (vector 0 0 100))
+
+@end lisp
+
+@section (mmul matrix-vector matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Multiplies two matrices together
+@subsubheading Example
+@lisp
+ (vmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+
+@end lisp
+
+@section (madd matrix-vector matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Adds two matrices together
+@subsubheading Example
+@lisp
+ (vadd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+
+@end lisp
+
+@section (msub matrix-vector matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Subtracts a matrix from another
+@subsubheading Example
+@lisp
+ (vsub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+
+@end lisp
+
+@section (mdiv matrix-vector matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Divides a matrix by another
+@subsubheading Example
+@lisp
+ (vdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+
+@end lisp
+
+@section (mident)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns the identity matrix
+@subsubheading Example
+@lisp
+ (mident)
+
+@end lisp
+
+@section (mtranslate vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns a matrix representing the specified transform
+@subsubheading Example
+@lisp
+ (mtransform (vector 100 0 0))
+
+@end lisp
+
+@section (mrotate vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns a matrix representing the specified rotation. Accepts a vector of euler angles, or a quaternion.
+@subsubheading Example
+@lisp
+ (mrotate (vector 0 45 0))
+
+@end lisp
+
+@section (mscale vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns a matrix representing the specified scaling.
+@subsubheading Example
+@lisp
+ (mscale (vector 0.5 2 0.5))
+
+@end lisp
+
+@section (mtranspose matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns the transpose of the input vector
+@subsubheading Example
+@lisp
+ (mtranspose (mident))
+
+@end lisp
+
+@section (minverse matrix-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns the inverse of the input vector
+@subsubheading Example
+@lisp
+ (minverse (mscale (vector 0.5 2 0.5)))
+
+@end lisp
+
+@section (maim aim-vector up-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Returns a matrix representing an aiming rotation so that the x axis points down the aim direction, and the y axis points up the up vector. Probably suffers from gimbal lock.
+@subsubheading Example
+@lisp
+ (maim (vector 0 0 1) (vector 0 1 0))
+
+@end lisp
+
+@section (qaxisangle axis-vector angle-number)
+@subsubheading Returns
+quaternion-vector
+@subsubheading Description
+Returns the quaternion representing rotation of angle degrees about the specified axis.
+@subsubheading Example
+@lisp
+ (qaxisangle (vector 0 1 0) 45)
+
+@end lisp
+
+@section (qmul quaternion-vector quaternion-vector)
+@subsubheading Returns
+quaternion-vector
+@subsubheading Description
+Multiplies two quaternions together.
+@subsubheading Example
+@lisp
+ (qmul (qaxisangle (vector 0 1 0) 45) (qaxisangle (vector 0 0 1) 180))
+
+@end lisp
+
+@section (qnormalise quaternion-vector)
+@subsubheading Returns
+quaternion-vector
+@subsubheading Description
+Normalises a quaternion.
+@subsubheading Example
+@lisp
+ (qnormalise (qaxisangle (vector 0 19 0) 45))
+
+@end lisp
+
+@section (qtomatrix quaternion-vector)
+@subsubheading Returns
+matrix-vector
+@subsubheading Description
+Converts a quaternion into a rotation matrix.
+@subsubheading Example
+@lisp
+ (qtomatrix (qaxisangle (vector 0 1 0) 45))
+
+@end lisp
+
+@section (qconjugate quaternion-vector)
+@subsubheading Returns
+quaternion-vector
+@subsubheading Description
+Conjugatea a quaternion.
+@subsubheading Example
+@lisp
+ (qconjugate (qaxisangle (vector 0 1 0) 45))
+
+@end lisp
+
+@node PrimitiveData
+@chapter PrimitiveData
+Primitive data (pdata for short) is fluxus' name for data which comprises primitives. In polygon primitives this means the vertex information, in particle primitives it corresponds to the particle information, in NURBS primitives it's the control vertices. Access to pdata gives you the ability to use primitives which are otherwise not very interesting, and deform and shape other primitives to give much more detailed models and animations. You can also add your own pdata, which is treated exactly like the built in types. Primitive data is named by type strings, the names of which depend on the sort of primitive.
+@subsubheading Example
+@lisp
+ ; a function to deform the points of an object
+ (define (deform n)
+     (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
+         (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
+     (if (zero? n)
+         0
+         (deform (- n 1))))
+     
+ (hint-unlit) ; set some render settings to
+ (hint-wire)  ; make things easier to see
+ (line-width 4)
+ (define myobj (build-sphere 10 10)) ; make a sphere
+ (grab myobj)
+ (deform (pdata-size)) ; deform it
+ (ungrab)
+
+@end lisp
+@section (pdata-get type-string index-number)
+@subsubheading Returns
+value-vector/colour/matrix/number
+@subsubheading Description
+Returns the corresponding pdata element.
+@subsubheading Example
+@lisp
+ (pdata-get "p" 1)
+
+@end lisp
+
+@section (pdata-set type-string index-number value-vector/colour/matrix/number)
+@subsubheading Returns
+void
+@subsubheading Description
+Writes to the corresponding pdata element.
+@subsubheading Example
+@lisp
+ (pdata-get "p" 1)
+
+@end lisp
+
+@node Turtle
+@chapter Turtle
+The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 3D space. As you drive the turtle around you can place vertices and build shapes procedurally. The turtle can also be used to deform existing polygonal primitives, by attaching it to objects you have already created.
+@subsubheading Example
+@lisp
+ (define (build n)
+     (turtle-reset)
+     (turtle-prim 4)
+     (build-loop n n)
+     (turtle-build))
+ 
+ (define (build-loop n t)
+     (turtle-turn (vector 0 (/ 360 t) 0))
+     (turtle-move 1)
+     (turtle-vert)
+     (if (< n 1)
+         0
+         (build-loop (- n 1) t)))
+
+@end lisp
+@section (turtle-prim type-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Starts building a new polygon primitive with the turtle. The type specifies the polygon face type and is one of the following: 0: triangle strip, 1: quad list, 2: triangle list, 3: triangle fan, 4: general polygon
+@subsubheading Example
+@lisp
+ (turtle-prim 0)
+
+@end lisp
+
+@section (turtle-vert)
+@subsubheading Returns
+void
+@subsubheading Description
+Creates a new vertex in the current position, or sets the current vertex if the turtle builder is attached.
+@subsubheading Example
+@lisp
+ (turtle-vert)
+
+@end lisp
+
+@section (turtle-build)
+@subsubheading Returns
+primitiveid-number
+@subsubheading Description
+Builds the object with the vertex list defined and gives it to the renderer. Has no effect if the turtle builder is attached to a primitive.
+@subsubheading Example
+@lisp
+ (define mynewshape (turtle-build))
+
+@end lisp
+
+@section (turtle-move distance-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Moves the turtle forward in it's current orientation.
+@subsubheading Example
+@lisp
+ (turtle-move 1)
+
+@end lisp
+
+@section (turtle-push)
+@subsubheading Returns
+void
+@subsubheading Description
+The turtle build has it's own transform stack. Push remembers the current position and orientation.
+@subsubheading Example
+@lisp
+ (turtle-push)
+
+@end lisp
+
+@section (turtle-pop)
+@subsubheading Returns
+void
+@subsubheading Description
+The turtle build has it's own transform stack. Pop forgets the current position and orientation, and goes back to the state at the last push.
+@subsubheading Example
+@lisp
+ (turtle-pop)
+
+@end lisp
+
+@section (turtle-turn rotation-vector)
+@subsubheading Returns
+void
+@subsubheading Description
+Rotates the turtle's orientation with the supplied euler angles (rotations in x, y and z).
+@subsubheading Example
+@lisp
+ (turtle-turn (vector 45 0 0))
+
+@end lisp
+
+@section (turtle-reset)
+@subsubheading Returns
+void
+@subsubheading Description
+Resets the current postion and rotation of the turtle to the origin.
+@subsubheading Example
+@lisp
+ (turtle-reset)
+
+@end lisp
+
+@section (turtle-attach primitiveid-number)
+@subsubheading Returns
+void
+@subsubheading Description
+Attaches the turtle to an existing poly primitive. This means you are able to deform an existing objects points using the turtle builder.
+@subsubheading Example
+@lisp
+ (define myshape (build-sphere 10 10))
+ (turtle-attach myshape)
+
+@end lisp
+
+@section (turtle-skip count-number)
+@subsubheading Returns
+void
+@subsubheading Description
+When attached, causes the turtle to skip vertices. This value may be negative, which will set the turtle to write to previous vertices.
+@subsubheading Example
+@lisp
+ (turtle-skip -1)
+
+@end lisp
+
+@section (turtle-position)
+@subsubheading Returns
+count-number
+@subsubheading Description
+When attached, returns the current pdata index the turtle is writing to.
+@subsubheading Example
+@lisp
+ (display (turtle-position))(newline)
+
+@end lisp
+
+@section (turtle-seek position-number)
+@subsubheading Returns
+void
+@subsubheading Description
+When attached, sets the absolute pdata index the turtle is writing to.
+@subsubheading Example
+@lisp
+ (turtle-seek 0)
+
+@end lisp
+
 @node OSC
 @chapter OSC
 OSC stands for Open Sound Control, and is a widely used protocol for passing data between multimedia applications. Fluxus can send or receive messages.
-@subsection Example
+@subsubheading Example
 @lisp
  An example of using osc to communicate between pd and fluxus.
  A fluxus script to move a cube based on incoming osc messages.
@@ -1072,22 +1683,22 @@ OSC stands for Open Sound Control, and is a widely used protocol for passing dat
 
 @end lisp
 @section (osc-source port-string)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Starts up the osc server, or changes port. Known bug: seems to fail if you set it back to a port used previously.
-@subsection Example
+@subsubheading Example
 @lisp
  (osc-source "4444")	 ; listen to port 4444 for osc messages
 
 @end lisp
 
 @section (osc-msg name-string)
-@subsection Returns
+@subsubheading Returns
 msgreceived-boolean
-@subsection Description
+@subsubheading Description
 Returns true if the message has been received since the last frame, and sets it as the current message for subsequent calls to (osc) for reading the arguments.
-@subsection Example
+@subsubheading Example
 @lisp
  (cond 
      ((osc-msg "/hello")              ; if a the /hello message is recieved
@@ -1096,11 +1707,11 @@ Returns true if the message has been received since the last frame, and sets it 
 @end lisp
 
 @section (osc argument-number)
-@subsection Returns
+@subsubheading Returns
 oscargument
-@subsection Description
+@subsubheading Description
 Returns the argument from the current osc message.
-@subsection Example
+@subsubheading Example
 @lisp
  (cond 
      ((osc-msg "/hello")              ; if a the /hello message is recieved
@@ -1109,11 +1720,11 @@ Returns the argument from the current osc message.
 @end lisp
 
 @section (osc-destination port-string)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Specifies the destination for outgoing osc messages. The port name needs to specify the whole url and should look something like this "osc.udp://localhost:4444"
-@subsection Example
+@subsubheading Example
 @lisp
  (osc-destination "osc.udp:localhost:4444")
  (osc-send "/hello" "s" (list "boo!"))  ; send a message to this destination
@@ -1121,22 +1732,22 @@ Specifies the destination for outgoing osc messages. The port name needs to spec
 @end lisp
 
 @section (osc-peek)
-@subsection Returns
+@subsubheading Returns
 msg-string
-@subsection Description
+@subsubheading Description
 This util function returns the name, and format string and number/string arguments of the last sent message as a string - for debugging your osc network.
-@subsection Example
+@subsubheading Example
 @lisp
  (display (osc-peek))(newline) 
 
 @end lisp
 
 @section (osc-send name-string format-string argument-list)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Sends an osc message with the argument list as the osc data. Only supports floats, ints and strings as data. The format-string should be composed of "i", "f" and "s", and must match the types given in the list. This could probably be removed by using the types directly, but doing it this way allows you to explicitly set the typing for the osc message.
-@subsection Example
+@subsubheading Example
 @lisp
  (osc-destination "osc.udp:localhost:4444")
  (osc-send "/hello" "sif" (list "boo!" 3 42.3))  ; send a message to this destination
@@ -1146,16 +1757,16 @@ Sends an osc message with the argument list as the osc data. Only supports float
 @node Camera
 @chapter Camera
 Camera functions
-@subsection Example
+@subsubheading Example
 @lisp
 
 @end lisp
 @section (reset-camera)
-@subsection Returns
+@subsubheading Returns
 void
-@subsection Description
+@subsubheading Description
 Resets the camera transform, useful if it becomes trashed, or you get lost somewhere in space. Also turns off camera locking to objects with (lock-camera)
-@subsection Example
+@subsubheading Example
 @lisp
  ; ruin the camera transform
  (set-camera-transform (vector 123 41832 28 0.2 128 0.001 123 41832 28 0.2 128 0.001 0.2 100 13 1931)) 

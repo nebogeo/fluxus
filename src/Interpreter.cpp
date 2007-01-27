@@ -31,12 +31,17 @@ Interpreter::~Interpreter()
 {
 }
 
-Scheme_Object *Interpreter::Interpret(const string &str, bool abort)
+void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 {	
-	Scheme_Object *ret=NULL;
 	Scheme_Object *outport=NULL;
 	Scheme_Object *errport=NULL;
+	
+	MZ_GC_DECL_REG(2);
 
+    MZ_GC_VAR_IN_REG(0, outport);
+    MZ_GC_VAR_IN_REG(1, errport);
+    MZ_GC_REG();
+	
 	if (m_Repl) 
 	{
 		outport = scheme_make_byte_string_output_port();
@@ -45,7 +50,6 @@ Scheme_Object *Interpreter::Interpret(const string &str, bool abort)
 		scheme_set_param(scheme_current_config(), MZCONFIG_ERROR_PORT, errport);
 	}
 	
-  	Scheme_Object *curout=NULL;
  	mz_jmp_buf * volatile save, fresh;
 	
 	save = scheme_current_thread->error_buf;
@@ -58,7 +62,14 @@ Scheme_Object *Interpreter::Interpret(const string &str, bool abort)
     } 
 	else 
 	{
-		ret = scheme_eval_string_all(str.c_str(), m_Scheme, 1);
+		if (ret==NULL)
+		{
+			scheme_eval_string_all(str.c_str(), m_Scheme, 1);
+		}
+		else
+		{
+			*ret = scheme_eval_string_all(str.c_str(), m_Scheme, 1);
+		}
 		scheme_current_thread->error_buf = save;
     }
 		
@@ -80,5 +91,5 @@ Scheme_Object *Interpreter::Interpret(const string &str, bool abort)
 		if (size>0) m_Repl->Print(string(msg));
 	}	
 	
-	return ret;
+	MZ_GC_UNREG();
 }

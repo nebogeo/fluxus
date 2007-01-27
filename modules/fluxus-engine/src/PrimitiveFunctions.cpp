@@ -31,6 +31,21 @@ using namespace PrimitiveFunctions;
 using namespace fluxus;
 using namespace SchemeHelper;
 
+// StartSectionDoc-en
+// Primitives
+// Primitive are cool... 
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// build-cube
+// Returns: primitiveid-number
+// Description:
+// Builds a new cube
+// Example:
+// (define mynewcube (build-cube))
+// EndFunctionDoc
+
 Scheme_Object *build_cube(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *BoxPrim = new PolyPrimitive(PolyPrimitive::QUADS);

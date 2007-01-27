@@ -23,6 +23,37 @@
 using namespace SchemeHelper;
 using namespace fluxus;
 
+// StartSectionDoc-en
+// Turtle
+// The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 
+// 3D space. As you drive the turtle around you can place vertices and build shapes procedurally. The turtle 
+// can also be used to deform existing polygonal primitives, by attaching it to objects you have already created. 
+// Example:
+// (define (build n)
+//     (turtle-reset)
+//     (turtle-prim 4)
+//     (build-loop n n)
+//     (turtle-build))
+// 
+// (define (build-loop n t)
+//     (turtle-turn (vector 0 (/ 360 t) 0))
+//     (turtle-move 1)
+//     (turtle-vert)
+//     (if (< n 1)
+//         0
+//         (build-loop (- n 1) t)))
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// turtle-prim type-number
+// Returns: void
+// Description:
+// Starts building a new polygon primitive with the turtle. The type specifies the polygon face type and is one 
+// of the following: 0: triangle strip, 1: quad list, 2: triangle list, 3: triangle fan, 4: general polygon
+// Example:
+// (turtle-prim 0)
+// EndFunctionDoc
+
 Scheme_Object *turtle_prim(int argc, Scheme_Object **argv)
 {
 	ArgCheck("turtle-prim", "i", argc, argv);		
@@ -30,16 +61,44 @@ Scheme_Object *turtle_prim(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// turtle-vert 
+// Returns: void
+// Description:
+// Creates a new vertex in the current position, or sets the current vertex if the turtle builder is attached.
+// Example:
+// (turtle-vert)
+// EndFunctionDoc
+
 Scheme_Object *turtle_vert(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Vert();
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// turtle-build 
+// Returns: primitiveid-number
+// Description:
+// Builds the object with the vertex list defined and gives it to the renderer. 
+// Has no effect if the turtle builder is attached to a primitive.
+// Example:
+// (define mynewshape (turtle-build))
+// EndFunctionDoc
+
 Scheme_Object *turtle_build(int argc, Scheme_Object **argv)
 {
 	return scheme_make_integer_value(Engine::Get()->GetTurtle()->Build(Engine::Get()->Renderer()));
 }
+
+// StartFunctionDoc-en
+// turtle-move distance-number
+// Returns: void
+// Description:
+// Moves the turtle forward in it's current orientation.
+// Example:
+// (turtle-move 1)
+// EndFunctionDoc
 
 Scheme_Object *turtle_move(int argc, Scheme_Object **argv)
 {
@@ -48,17 +107,45 @@ Scheme_Object *turtle_move(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// turtle-push
+// Returns: void
+// Description:
+// The turtle build has it's own transform stack. Push remembers the current position and orientation.
+// Example:
+// (turtle-push)
+// EndFunctionDoc
+
 Scheme_Object *turtle_push(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Push();
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// turtle-pop
+// Returns: void
+// Description:
+// The turtle build has it's own transform stack. Pop forgets the current position and orientation, and 
+// goes back to the state at the last push.
+// Example:
+// (turtle-pop)
+// EndFunctionDoc
+
 Scheme_Object *turtle_pop(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Pop();
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// turtle-turn rotation-vector
+// Returns: void
+// Description:
+// Rotates the turtle's orientation with the supplied euler angles (rotations in x, y and z).
+// Example:
+// (turtle-turn (vector 45 0 0))
+// EndFunctionDoc
 
 Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 {
@@ -69,11 +156,31 @@ Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 	return scheme_void;	
 }
 
+// StartFunctionDoc-en
+// turtle-reset 
+// Returns: void
+// Description:
+// Resets the current postion and rotation of the turtle to the origin.
+// Example:
+// (turtle-reset)
+// EndFunctionDoc
+
 Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Reset();
 	return scheme_void;	
 }
+
+// StartFunctionDoc-en
+// turtle-attach primitiveid-number
+// Returns: void
+// Description:
+// Attaches the turtle to an existing poly primitive. This means you are able to 
+// deform an existing objects points using the turtle builder.
+// Example:
+// (define myshape (build-sphere 10 10))
+// (turtle-attach myshape)
+// EndFunctionDoc
 
 Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 {
@@ -91,6 +198,16 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 	return scheme_void;	
 }
 
+// StartFunctionDoc-en
+// turtle-skip count-number
+// Returns: void
+// Description:
+// When attached, causes the turtle to skip vertices. This value may be negative, which will set 
+// the turtle to write to previous vertices.
+// Example:
+// (turtle-skip -1)
+// EndFunctionDoc
+
 Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 {
 	ArgCheck("turtle-skip", "i", argc, argv);		
@@ -98,10 +215,28 @@ Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 	return scheme_void;	
 }
 
+// StartFunctionDoc-en
+// turtle-position
+// Returns: count-number
+// Description:
+// When attached, returns the current pdata index the turtle is writing to.
+// Example:
+// (display (turtle-position))(newline)
+// EndFunctionDoc
+
 Scheme_Object *turtle_position(int argc, Scheme_Object **argv)
 {
 	return scheme_make_integer_value(Engine::Get()->GetTurtle()->Position());
 }
+
+// StartFunctionDoc-en
+// turtle-seek position-number
+// Returns: void
+// Description:
+// When attached, sets the absolute pdata index the turtle is writing to.
+// Example:
+// (turtle-seek 0)
+// EndFunctionDoc
 
 Scheme_Object *turtle_seek(int argc, Scheme_Object **argv)
 {

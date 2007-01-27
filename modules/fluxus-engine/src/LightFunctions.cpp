@@ -24,6 +24,26 @@ using namespace LightFunctions;
 using namespace fluxus;
 using namespace SchemeHelper;
 
+// StartSectionDoc-en
+// Lights
+// Without lights you wouldn't be able to see anything. Luckily fluxus gives you one for free by default, a white 
+// diffuse point light attached to the camera. For more interesting lighting, you'll need these functions. Using the 
+// standard fixed function graphics pipeline, simplistically speaking, OpenGL multiplies these values with the surface 
+// material (set with local state commands like ambient and diffuse) and the texture colour value to give the final 
+// colour.
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// make-light type-string cameralocked-string
+// Returns: lightid-number
+// Description:
+// Makes a new light. The type can be one of: "point", "directional" or "spot". If the cameralocked string is not
+// "free" then it will be attached to the camera, and move around when you move the camera.
+// Example:
+// (make-light "spot" "locked")
+// EndFunctionDoc
+
 Scheme_Object *make_light(int argc, Scheme_Object **argv)
 {
 	ArgCheck("make-light", "ss", argc, argv);
@@ -58,6 +78,15 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddLight(l));
 }
 
+// StartFunctionDoc-en
+// light-ambient lightid-number colour
+// Returns: void
+// Description:
+// Sets the ambient contribution for the specified light.
+// Example:
+// (light-ambient mylight (vector 1 1 1)) ; a boring light
+// EndFunctionDoc
+
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 {
 	ArgCheck("light-ambient", "iv", argc, argv);
@@ -67,6 +96,15 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 	if (light) light->SetAmbient(dColour(vec[0],vec[1],vec[2]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// light-diffuse lightid-number colour
+// Returns: void
+// Description:
+// Sets the diffuse contribution for the specified light.
+// Example:
+// (light-diffuse mylight (vector 1 1 1)) 
+// EndFunctionDoc
 
 Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 {
@@ -78,6 +116,15 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// light-specular lightid-number colour
+// Returns: void
+// Description:
+// Sets the specular contribution for the specified light.
+// Example:
+// (light-specular mylight (vector 1 1 1)) 
+// EndFunctionDoc
+
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 {
 	ArgCheck("light-specular", "iv", argc, argv);
@@ -88,6 +135,15 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// light-position lightid-number position-vector
+// Returns: void
+// Description:
+// Sets the position of the specified light. In worldspace if free, in camera space is attached.
+// Example:
+// (light-position mylight (vector 0 100 0)) 
+// EndFunctionDoc
+
 Scheme_Object *light_position(int argc, Scheme_Object **argv)
 {
 	ArgCheck("light-position", "iv", argc, argv);
@@ -97,6 +153,15 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 	if (light) light->SetPosition(dVector(vec[0],vec[1],vec[2]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// light-spot-angle lightid-number angle-number
+// Returns: void
+// Description:
+// Sets the spotlight cone angle of the specified light. If it's not a spot light, this command has no effect. 
+// Example:
+// (light-position mylight (vector 0 100 0)) 
+// EndFunctionDoc
 	
 Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 {
@@ -104,7 +169,16 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetSpotAngle(FloatFromScheme(argv[1]));
 	return scheme_void;
-}	
+}
+	
+// StartFunctionDoc-en
+// light-spot-exponent lightid-number exponent-number
+// Returns: void
+// Description:
+// Sets the spotlight exponent (fuzzyness of the cone) of the specified light. If it's not a spot light, this command has no effect. 
+// Example:
+// (light-spot-exponent mylight 0.1) 
+// EndFunctionDoc
 
 Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 {
@@ -113,6 +187,16 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 	if (light) light->SetSpotExponent(FloatFromScheme(argv[1]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// light-attenuation lightid-number type-string attenuation-number
+// Returns: void
+// Description:
+// Sets the light attenuation (fade off with distance) of the specified light. 
+// The type string can be one of: "constant", "linear" or "quadratic".
+// Example:
+// (light-spot-exponent mylight 0.1) 
+// EndFunctionDoc
 
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 {
@@ -137,6 +221,15 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 	
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// light-direction lightid-number direction-vector
+// Returns: void
+// Description:
+// Sets the direction of a directional light. If it's not a directional light, this command has no effect. 
+// Example:
+// (light-spot-exponent mylight 0.1) 
+// EndFunctionDoc
 
 Scheme_Object *light_direction(int argc, Scheme_Object **argv)
 {

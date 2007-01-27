@@ -24,6 +24,41 @@ using namespace PDataFunctions;
 using namespace SchemeHelper;
 using namespace fluxus;
 
+// StartSectionDoc-en
+// PrimitiveData
+// Primitive data (pdata for short) is fluxus' name for data which comprises primitives. In polygon primitives this means 
+// the vertex information, in particle primitives it corresponds to the particle information, in NURBS primitives it's 
+// the control vertices. Access to pdata gives you the ability to use primitives which are otherwise not very 
+// interesting, and deform and shape other primitives to give much more detailed models and animations. You can also add
+// your own pdata, which is treated exactly like the built in types. Primitive data is named by type strings, the names of
+// which depend on the sort of primitive. All pdata commands operate on the currently grabbed primitive.
+// Example:
+// ; a function to deform the points of an object
+// (define (deform n)
+//     (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
+//         (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
+//     (if (zero? n)
+//         0
+//         (deform (- n 1))))
+//     
+// (hint-unlit) ; set some render settings to
+// (hint-wire)  ; make things easier to see
+// (line-width 4)
+// (define myobj (build-sphere 10 10)) ; make a sphere
+// (grab myobj)
+// (deform (pdata-size)) ; deform it
+// (ungrab)
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// pdata-get type-string index-number
+// Returns: value-vector/colour/matrix/number
+// Description:
+// Returns the corresponding pdata element.
+// Example:
+// (pdata-get "p" 1)
+// EndFunctionDoc
+
 Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 {
 	ArgCheck("pdata-get", "si", argc, argv);		
@@ -35,30 +70,48 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 		unsigned int index=IntFromScheme(argv[1]);
 		unsigned int size;
 		char type;
-		Scheme_Object *ret=FloatsToScheme(dVector().arr(),3);
+		Scheme_Object *ret=NULL;
 		
 		if (Grabbed->GetDataInfo(name,type,size))
 		{
-			if (index<size)
+			if (type=='f')	
 			{
-				if (type=='v')	
-				{
-					ret=FloatsToScheme(Grabbed->GetData<dVector>(name,index).arr(),3); 
-				}
-				else if (type=='c')	
-				{
-					ret=FloatsToScheme(Grabbed->GetData<dColour>(name,index).arr(),4); 
-				}
-				else if (type=='m')	
-				{
-					ret=FloatsToScheme(Grabbed->GetData<dMatrix>(name,index).arr(),16); 
-				}
+				ret=scheme_make_double(Grabbed->GetData<float>(name,index%size)); 
 			}
+			else if (type=='v')	
+			{
+				ret=FloatsToScheme(Grabbed->GetData<dVector>(name,index%size).arr(),3); 
+			}
+			else if (type=='c')	
+			{
+				ret=FloatsToScheme(Grabbed->GetData<dColour>(name,index%size).arr(),4); 
+			}
+			else if (type=='m')	
+			{
+				ret=FloatsToScheme(Grabbed->GetData<dMatrix>(name,index%size).arr(),16); 
+			}
+		
 		}
+		
+		if (ret==NULL)
+		{
+			cerr<<"could not find pdata called ["<<name<<"]"<<endl;
+			return scheme_make_double(0);
+		}
+		
 		return ret;
 	}
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// pdata-set type-string index-number value-vector/colour/matrix/number
+// Returns: void
+// Description:
+// Writes to the corresponding pdata element.
+// Example:
+// (pdata-get "p" 1)
+// EndFunctionDoc
 
 Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 {
@@ -74,49 +127,56 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 		
 		if (Grabbed->GetDataInfo(name,type,size))
 		{
-			if (index<size)
+			if (type=='f')	
 			{
-				if (type=='f')	
+				if (SCHEME_NUMBERP(argv[2])) Grabbed->SetData<float>(name,index%size,FloatFromScheme(argv[2]));
+				else cerr<<"expected number value in pdata-set"<<endl;
+			}
+			else if (type=='v')	
+			{
+				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==3) 
 				{
-					if (SCHEME_NUMBERP(argv[2])) Grabbed->SetData<float>(name,index,FloatFromScheme(argv[2]));
-					else cerr<<"expected number value in pdata-set"<<endl;
+					dVector v;
+					FloatsFromScheme(argv[2],v.arr(),3);
+					Grabbed->SetData<dVector>(name,index%size,v);
 				}
-				else if (type=='v')	
+				else cerr<<"expected vector (size 3) value in pdata-set"<<endl;
+			}
+			else if (type=='c')	
+			{
+				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])>=3 && SCHEME_VEC_SIZE(argv[2])<=4)
 				{
-					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==3) 
-					{
-						dVector v;
-						FloatsFromScheme(argv[2],v.arr(),3);
-						Grabbed->SetData<dVector>(name,index,v);
-					}
-					else cerr<<"expected vector (size 3) value in pdata-set"<<endl;
+					dColour c;
+					if (SCHEME_VEC_SIZE(argv[2])==3) FloatsFromScheme(argv[2],c.arr(),3);
+					else FloatsFromScheme(argv[2],c.arr(),4);
+					Grabbed->SetData<dColour>(name,index%size,c);
 				}
-				else if (type=='c')	
+				else cerr<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
+			}
+			else if (type=='m')	
+			{
+				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==16)
 				{
-					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])>=3 && SCHEME_VEC_SIZE(argv[2])<=4)
-					{
-						dColour c;
-						if (SCHEME_VEC_SIZE(argv[2])==3) FloatsFromScheme(argv[2],c.arr(),3);
-						else FloatsFromScheme(argv[2],c.arr(),4);
-						Grabbed->SetData<dColour>(name,index,c);
-					}
-					else cerr<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
+					dMatrix m;
+					FloatsFromScheme(argv[2],m.arr(),16);
+					Grabbed->SetData<dMatrix>(name,index%size,m);
 				}
-				else if (type=='m')	
-				{
-					if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==16)
-					{
-						dMatrix m;
-						FloatsFromScheme(argv[2],m.arr(),16);
-						Grabbed->SetData<dMatrix>(name,index,m);
-					}
-					else cerr<<"expected matrix vector (size 16) value in pdata-set"<<endl;
-				}
+				else cerr<<"expected matrix vector (size 16) value in pdata-set"<<endl;
 			}
 		}
 	}
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// pdata-add type-string name-string
+// Returns: void
+// Description:
+// Adds a new user pdata array. Type is one of "v":vector, "c":colour, "f":float or "m":matrix.
+// Example:
+// (pdata-add "v" "mydata")
+// (pdata-set "mydata" 0 (vector 1 2 3))
+// EndFunctionDoc
 
 Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 {
@@ -149,6 +209,25 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 	
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// pdata-op funcname-string pdataname-string operator
+// Returns: void
+// Description:
+// This is an experimental feature allowing you to do operations on pdata very quickly,
+// for instance adding element for element one array of pdata to another. You can 
+// implement this in Scheme as a loop over each element, but this is slow as the 
+// interpreter is doing all the work. It's much faster if you can use a pdata-op as
+// the same operation will only be one Scheme call.
+// Example:
+// (pdata-op "+" "mydata" (vector 1 2 3)) // add a vector to all the pdata vectors
+// (pdata-op "+" "mydata" "myotherdata") // add two pdata vectors element for element
+// (pdata-op "*" "mydata" (vector 1 2 3)) // multiply a vector to all the pdata vectors
+// (pdata-op "*" "mydata" "myotherdata") // multiply two pdata vectors element for element
+// (pdata-op "closest" "p" (vector 100 0 0)) // returns position of the closest vertex to this point
+// (pdata-op "sin" "mydata" "myotherdata") // sine of one float pdata to another
+// (pdata-op "cos" "mydata" "myotherdata") // cosine of one float pdata to another
+// EndFunctionDoc
 
 Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 {
@@ -264,6 +343,15 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// pdata-copy pdatafrom-string pdatato-string
+// Returns: void
+// Description:
+// Copies the contents of one pdata array to another. Arrays must match types.
+// Example:
+// (pdata-copy "p" "mydata") // copy the vertex positions to a user array
+// EndFunctionDoc
+
 Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 {
  	ArgCheck("pdata-copy", "ss", argc, argv);			
@@ -279,6 +367,25 @@ Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// pdata-size 
+// Returns: count-number
+// Description:
+// Returns the size of the pdata arrays (they must all be the same). This is mainly 
+// used for iterating over the arrays.
+// Example:
+// (define (mashup n)
+//     (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd))) ; randomise the vertex position
+//     (if (zero? n)
+//         0
+//         (mashup (- n 1)))) ; loops till n is 0
+//
+// (define shape (build-sphere 10 10))
+// (grab shape)
+// (mashup (pdata-size)) ; randomise verts on currently grabbed primitive
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 {
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
@@ -289,10 +396,31 @@ Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// finalise
+// Returns: void
+// Description:
+// Doesn't do anything anymore, I need to remove this :)
+// Example:
+// EndFunctionDoc
+
 Scheme_Object *finalise(int argc, Scheme_Object **argv)
 {
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// recalc-normals smoothornot-number
+// Returns: void
+// Description:
+// For polygon primitives only. Looks at the vertex positions and calculates the lighting normals for you 
+// automatically. Call with "1" for smooth normals, "0" for faceted normals.
+// Example:
+// (define shape (build-sphere 10 10)) ; build a sphere (which is smooth by default)
+// (grab shape)
+// (recalc-normals 0) ; make the sphere faceted
+// (ungrab)
+// EndFunctionDoc
 
 Scheme_Object *recalc_normals(int argc, Scheme_Object **argv)
 {

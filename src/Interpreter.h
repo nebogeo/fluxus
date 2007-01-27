@@ -21,6 +21,11 @@
 #include <string>
 #include <scheme.h>
 
+#undef MZ_GC_DECL_REG
+#undef MZ_GC_UNREG
+#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
+#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
+
 namespace fluxus 
 {
 
@@ -34,7 +39,7 @@ public:
 	
 	void SetRepl(Repl *s) { m_Repl=s; }
 	
-	Scheme_Object *Interpret(const std::string &code, bool abort=false);
+	void Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
 	
 private:
 	Scheme_Env *m_Scheme;

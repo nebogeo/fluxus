@@ -23,22 +23,52 @@ using namespace MathsFunctions;
 using namespace SchemeHelper;
 using namespace fluxus;
 
-// description:
-// Multiplies a vector by a scalar value. 
-//
-// example:
+// StartSectionDoc-en
+// Maths
+// These functions are optimised for 3D graphics, and the collision of computer science and maths is apparent here, so 
+// vectors representing "vectors" are in this context taken to be 3 elements long, quaternions are vectors of length 4, 
+// and matrices are vectors of 16 elements long.
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// vmul vector number
+// Returns: result-vector
+// Description:
+// Multiplies a vector by a number
+// Example:
 // (vmul (vector 1 2 3) 2)
+// EndFunctionDoc
+
 Scheme_Object *vmul(int argc, Scheme_Object **argv)
 {
 	ArgCheck("vmul", "vf", argc, argv);
 	return FloatsToScheme((VectorFromScheme(argv[0])*scheme_real_to_double(argv[1])).arr(),3);
 }
 
+// StartFunctionDoc-en
+// vadd vector vector
+// Returns: result-vector
+// Description:
+// Adds two vectors together
+// Example:
+// (vadd (vector 1 2 3) (vector 1 2 3))
+// EndFunctionDoc
+
 Scheme_Object *vadd(int argc, Scheme_Object **argv)
 {
-	ArgCheck("vadd", "vv", argc, argv);
+	ArgCheck("vadd", "vv", argc, argv);	
 	return FloatsToScheme((VectorFromScheme(argv[0])+VectorFromScheme(argv[1])).arr(),3);
 }
+
+// StartFunctionDoc-en
+// vsub vector vector
+// Returns: result-vector
+// Description:
+// Subtracts a vector from another
+// Example:
+// (vsub (vector 1 2 3) (vector 1 2 3))
+// EndFunctionDoc
 
 Scheme_Object *vsub(int argc, Scheme_Object **argv)
 {
@@ -46,11 +76,29 @@ Scheme_Object *vsub(int argc, Scheme_Object **argv)
 	return FloatsToScheme((VectorFromScheme(argv[0])-VectorFromScheme(argv[1])).arr(),3);
 }
 
+// StartFunctionDoc-en
+// vdiv vector number
+// Returns: result-vector
+// Description:
+// Divides a vector by a number
+// Example:
+// (vdiv (vector 1 2 3) 2)
+// EndFunctionDoc
+
 Scheme_Object *vdiv(int argc, Scheme_Object **argv)
 {
 	ArgCheck("vdiv", "vf", argc, argv);
 	return FloatsToScheme((VectorFromScheme(argv[0])/scheme_real_to_double(argv[1])).arr(),3);
 }
+
+// StartFunctionDoc-en
+// vtransform vector matrix
+// Returns: result-vector
+// Description:
+// Multiplies (transforms) a vector by a matrix
+// Example:
+// (vtransform (vector 0 1 0) (mrotate (vector 90 0 0)))
+// EndFunctionDoc
 
 Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 {
@@ -58,11 +106,30 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 	return FloatsToScheme((MatrixFromScheme(argv[1]).transform(VectorFromScheme(argv[0]))).arr(),3);
 }
 
+// StartFunctionDoc-en
+// vtransform-rot vector matrix
+// Returns: result-vector
+// Description:
+// Multiplies (transforms) a vector by a matrix, but leaves out the translation part. For operations 
+// involving normals.
+// Example:
+// (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
+// EndFunctionDoc
+
 Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 {
 	ArgCheck("vtransform-rot", "vm", argc, argv);
 	return FloatsToScheme((MatrixFromScheme(argv[1]).transform_no_trans(VectorFromScheme(argv[0]))).arr(),3);
 }
+
+// StartFunctionDoc-en
+// vnormalise vector
+// Returns: result-vector
+// Description:
+// Returns the normalised form of the vector (length=1)
+// Example:
+// (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
+// EndFunctionDoc
 
 Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
 {
@@ -72,11 +139,29 @@ Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
 	return FloatsToScheme(v.arr(),3);
 }
 
+// StartFunctionDoc-en
+// vdot vector vector
+// Returns: result-number
+// Description:
+// Returns the dot product of two vectors
+// Example:
+// (vdot (vector 0 1 0) (vector 1 0 0))
+// EndFunctionDoc
+
 Scheme_Object *vdot(int argc, Scheme_Object **argv)
 {
 	ArgCheck("vdot", "vv", argc, argv);
 	return scheme_make_float(VectorFromScheme(argv[0]).dot(VectorFromScheme(argv[1])));
 }
+
+// StartFunctionDoc-en
+// vmag vector
+// Returns: result-number
+// Description:
+// Returns the magnitude, or length of the vector
+// Example:
+// (vmag (vector 0 1 1))
+// EndFunctionDoc
 
 Scheme_Object *vmag(int argc, Scheme_Object **argv)
 {
@@ -84,11 +169,29 @@ Scheme_Object *vmag(int argc, Scheme_Object **argv)
 	return scheme_make_float(VectorFromScheme(argv[0]).mag());
 }
 
+// StartFunctionDoc-en
+// vdist vector vector
+// Returns: result-number
+// Description:
+// Treating the vectors as points, returns the distance between them
+// Example:
+// (vdist (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
 Scheme_Object *vdist(int argc, Scheme_Object **argv)
 {
 	ArgCheck("vdist", "vv", argc, argv);
 	return scheme_make_float(VectorFromScheme(argv[0]).dist(VectorFromScheme(argv[1])));
 }
+
+// StartFunctionDoc-en
+// vcross vector vector
+// Returns: result-vector
+// Description:
+// Returns the cross product of two vectors
+// Example:
+// (vcross (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
 
 Scheme_Object *vcross(int argc, Scheme_Object **argv)
 {
@@ -96,11 +199,29 @@ Scheme_Object *vcross(int argc, Scheme_Object **argv)
 	return FloatsToScheme((VectorFromScheme(argv[0]).cross(VectorFromScheme(argv[1]))).arr(),3);
 }
 
+// StartFunctionDoc-en
+// mmul matrix-vector matrix-vector
+// Returns: matrix-vector
+// Description:
+// Multiplies two matrices together
+// Example:
+// (vmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
 Scheme_Object *mmul(int argc, Scheme_Object **argv)
 {
 	ArgCheck("mmul", "mm", argc, argv);
 	return FloatsToScheme((MatrixFromScheme(argv[0])*MatrixFromScheme(argv[1])).arr(),16);
 }
+
+// StartFunctionDoc-en
+// madd matrix-vector matrix-vector
+// Returns: matrix-vector
+// Description:
+// Adds two matrices together
+// Example:
+// (vadd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
 
 Scheme_Object *madd(int argc, Scheme_Object **argv)
 {
@@ -108,11 +229,29 @@ Scheme_Object *madd(int argc, Scheme_Object **argv)
 	return FloatsToScheme((MatrixFromScheme(argv[0])+MatrixFromScheme(argv[1])).arr(),16);
 }
 
+// StartFunctionDoc-en
+// msub matrix-vector matrix-vector
+// Returns: matrix-vector
+// Description:
+// Subtracts a matrix from another
+// Example:
+// (vsub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
 Scheme_Object *msub(int argc, Scheme_Object **argv)
 {
 	ArgCheck("madd", "mm", argc, argv);
 	return FloatsToScheme((MatrixFromScheme(argv[0])-MatrixFromScheme(argv[1])).arr(),16);	
 }
+
+// StartFunctionDoc-en
+// mdiv matrix-vector matrix-vector
+// Returns: matrix-vector
+// Description:
+// Divides a matrix by another
+// Example:
+// (vdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
 
 Scheme_Object *mdiv(int argc, Scheme_Object **argv)
 {
@@ -120,11 +259,29 @@ Scheme_Object *mdiv(int argc, Scheme_Object **argv)
 	return FloatsToScheme((MatrixFromScheme(argv[0])/MatrixFromScheme(argv[1])).arr(),16);	
 }
 
+// StartFunctionDoc-en
+// mident 
+// Returns: matrix-vector
+// Description:
+// Returns the identity matrix
+// Example:
+// (mident)
+// EndFunctionDoc
+
 Scheme_Object *mident(int argc, Scheme_Object **argv)
 {
 	dMatrix m;
 	return FloatsToScheme(m.arr(),16);	
 }
+
+// StartFunctionDoc-en
+// mtranslate vector
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing the specified transform
+// Example:
+// (mtransform (vector 100 0 0))
+// EndFunctionDoc
 
 Scheme_Object *mtranslate(int argc, Scheme_Object **argv)
 {
@@ -134,6 +291,15 @@ Scheme_Object *mtranslate(int argc, Scheme_Object **argv)
 	m.translate(t.x,t.y,t.z);
 	return FloatsToScheme(m.arr(),16);	
 }
+
+// StartFunctionDoc-en
+// mrotate vector
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing the specified rotation. Accepts a vector of euler angles, or a quaternion.
+// Example:
+// (mrotate (vector 0 45 0))
+// EndFunctionDoc
 
 Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 {
@@ -161,6 +327,15 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// mscale vector
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing the specified scaling.
+// Example:
+// (mscale (vector 0.5 2 0.5))
+// EndFunctionDoc
+
 Scheme_Object *mscale(int argc, Scheme_Object **argv)
 {
 	ArgCheck("mscale", "v", argc, argv);
@@ -169,6 +344,15 @@ Scheme_Object *mscale(int argc, Scheme_Object **argv)
 	m.scale(t.x,t.y,t.z);
 	return FloatsToScheme(m.arr(),16);	
 }
+
+// StartFunctionDoc-en
+// mtranspose matrix-vector
+// Returns: matrix-vector
+// Description:
+// Returns the transpose of the input vector
+// Example:
+// (mtranspose (mident))
+// EndFunctionDoc
 
 Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 {
@@ -179,6 +363,15 @@ Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 	return FloatsToScheme(m.arr(),16);	
 }
 
+// StartFunctionDoc-en
+// minverse matrix-vector
+// Returns: matrix-vector
+// Description:
+// Returns the inverse of the input vector
+// Example:
+// (minverse (mscale (vector 0.5 2 0.5)))
+// EndFunctionDoc
+
 Scheme_Object *minverse(int argc, Scheme_Object **argv)
 {
 	ArgCheck("minverse", "m", argc, argv);
@@ -188,6 +381,16 @@ Scheme_Object *minverse(int argc, Scheme_Object **argv)
 	return FloatsToScheme(m.arr(),16);	
 }
 
+// StartFunctionDoc-en
+// maim aim-vector up-vector
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing an aiming rotation so that the x axis points down the aim direction, and 
+// the y axis points up the up vector. Probably suffers from gimbal lock.
+// Example:
+// (maim (vector 0 0 1) (vector 0 1 0))
+// EndFunctionDoc
+
 Scheme_Object *maim(int argc, Scheme_Object **argv)
 {
 	ArgCheck("maim", "vv", argc, argv);
@@ -195,6 +398,15 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 	m.aim(VectorFromScheme(argv[0]),VectorFromScheme(argv[1]));
 	return FloatsToScheme(m.arr(),16);
 }
+
+// StartFunctionDoc-en
+// qaxisangle axis-vector angle-number
+// Returns: quaternion-vector
+// Description:
+// Returns the quaternion representing rotation of angle degrees about the specified axis. 
+// Example:
+// (qaxisangle (vector 0 1 0) 45)
+// EndFunctionDoc
 	
 Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 {
@@ -204,11 +416,29 @@ Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 	return FloatsToScheme(q.arr(),4);
 }
 
+// StartFunctionDoc-en
+// qmul quaternion-vector quaternion-vector
+// Returns: quaternion-vector
+// Description:
+// Multiplies two quaternions together. 
+// Example:
+// (qmul (qaxisangle (vector 0 1 0) 45) (qaxisangle (vector 0 0 1) 180))
+// EndFunctionDoc
+
 Scheme_Object *qmul(int argc, Scheme_Object **argv)
 {
 	ArgCheck("qmul", "qq", argc, argv);
 	return FloatsToScheme((QuatFromScheme(argv[0])*QuatFromScheme(argv[1])).arr(),4);
 }
+
+// StartFunctionDoc-en
+// qnormalise quaternion-vector
+// Returns: quaternion-vector
+// Description:
+// Normalises a quaternion. 
+// Example:
+// (qnormalise (qaxisangle (vector 0 19 0) 45))
+// EndFunctionDoc
 
 Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 {
@@ -219,6 +449,15 @@ Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 	return FloatsToScheme(a.arr(),4);
 }
 
+// StartFunctionDoc-en
+// qtomatrix quaternion-vector
+// Returns: matrix-vector
+// Description:
+// Converts a quaternion into a rotation matrix. 
+// Example:
+// (qtomatrix (qaxisangle (vector 0 1 0) 45))
+// EndFunctionDoc
+
 Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 {
 	ArgCheck("qtomatrix", "q", argc, argv);
@@ -228,6 +467,15 @@ Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 	dMatrix m=a.toMatrix();
 	return FloatsToScheme(m.arr(),16);
 }
+
+// StartFunctionDoc-en
+// qconjugate quaternion-vector
+// Returns: quaternion-vector
+// Description:
+// Conjugatea a quaternion. 
+// Example:
+// (qconjugate (qaxisangle (vector 0 1 0) 45))
+// EndFunctionDoc
 
 Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 {

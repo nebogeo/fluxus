@@ -21,7 +21,6 @@
 #include <sys/time.h>
 #include <iostream>
 #include <string>
-#include <GL/glew.h>
 #include <GL/glut.h>
 #include "FluxusMain.h"
 #include "Interpreter.h"
@@ -35,6 +34,8 @@ static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
 static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d.%d\") \
 									(load (string-append (path->string (find-system-path 'home-dir)) \".fluxus/startup.scm\"))";
+
+static const string POST_STARTUP_SCRIPT="(fluxus-init)";
 
 FluxusMain *app = NULL;
 Interpreter *interpreter = NULL; 
@@ -115,18 +116,17 @@ void IdleCallback()
 
 int main(int argc, char *argv[])
 {
+	
 	void *stack_start;
 	stack_start = (void *)&stack_start;
 	scheme_set_stack_base(stack_start, 1);  
-  
 	interpreter = new Interpreter(scheme_basic_env());
 	
 	char startup[1024];
 	// insert the version number
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
 		COLLECTS_LOCATION,FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
-	interpreter->Interpret(startup,true);
-	
+	interpreter->Interpret(startup,NULL,true);
 	srand(time(NULL));
 		
   	glutInit(&argc,argv);
@@ -145,16 +145,11 @@ int main(int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
-	   
+	
+	
    	if (argc>1) app->LoadScript(argv[1]);
-		
-	if(glewInit() != GLEW_OK)
-	{
-		cerr << "ERROR Unable to check OpenGL extensions" << endl;
-		return false;
-	}
-
-	//GLSLShader::Init();
+	
+	interpreter->Interpret(POST_STARTUP_SCRIPT);
 	
 	glutMainLoop();
 	

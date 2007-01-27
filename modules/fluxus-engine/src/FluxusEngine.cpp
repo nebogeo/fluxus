@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <escheme.h>
+#include <GLSLShader.h>
 #include "Engine.h"
 #include "MathsFunctions.h"
 #include "GlobalStateFunctions.h"
@@ -88,6 +89,20 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
+{
+	#ifdef GLSL
+	if(glewInit() != GLEW_OK)
+	{
+		cerr << "ERROR Unable to check OpenGL extensions" << endl;
+	}
+
+	fluxus::GLSLShader::Init();
+	#endif
+	
+	return scheme_void;
+}
+
 ////////////////////////////////////////////////////////////////////
 
 Scheme_Object *scheme_reload(Scheme_Env *env)
@@ -104,7 +119,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	TurtleFunctions::AddGlobals(menv);
 	LightFunctions::AddGlobals(menv);
 	PhysicsFunctions::AddGlobals(menv);
-		
+	
+	scheme_add_global("fluxus-init", scheme_make_prim_w_arity(fluxus_init, "fluxus-init", 0, 0), menv);
 	scheme_add_global("make-renderer", scheme_make_prim_w_arity(make_renderer, "make-renderer", 0, 0), menv);
 	scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
 	scheme_add_global("renderer-grab", scheme_make_prim_w_arity(renderer_grab, "renderer-grab", 1, 1), menv);

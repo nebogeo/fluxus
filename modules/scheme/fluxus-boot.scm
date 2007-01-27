@@ -44,8 +44,6 @@
 (require (lib "fluxus-camera.ss" "fluxus-0.12"))
 (require (lib "fluxus-obj-import.ss" "fluxus-0.12"))
 
-(clear)
-
 ;-------------------------------------------------
 ; here is the hacking section
 ; todo: remove all below at some point

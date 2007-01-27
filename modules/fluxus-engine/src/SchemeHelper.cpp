@@ -92,8 +92,8 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 {
 	// wrong number of arguments, could mean optional arguments for this function, 
 	// just give up in this case for now...
-	
-	if(argc==(int)format.size())
+		
+	//if(argc==(int)format.size())
 	{
 		for (unsigned int n=0; n<format.size(); n++)
 		{
@@ -110,12 +110,12 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 
 				case 'q':
 					if (!SCHEME_VECTORP(argv[n])) scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
-					if (SCHEME_VEC_SIZE(argv[n])!=4) scheme_wrong_type(funcname.c_str(), "quat (vector size 4)", n, argc, argv);
+					else if (SCHEME_VEC_SIZE(argv[n])!=4) scheme_wrong_type(funcname.c_str(), "quat (vector size 4)", n, argc, argv);
 				break;
 
 				case 'm':
 					if (!SCHEME_VECTORP(argv[n])) scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
-					if (SCHEME_VEC_SIZE(argv[n])!=16) scheme_wrong_type(funcname.c_str(), "matrix (vector size 16)", n, argc, argv);
+					else if (SCHEME_VEC_SIZE(argv[n])!=16) scheme_wrong_type(funcname.c_str(), "matrix (vector size 16)", n, argc, argv);
 				break;
 
 				case 'i':
@@ -129,7 +129,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				case 'l':
 					if (!SCHEME_LISTP(argv[n])) scheme_wrong_type(funcname.c_str(), "list", n, argc, argv);
 				break;
-				
+
 				case '?':
 				break;
 

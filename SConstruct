@@ -38,15 +38,19 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
 if ARGUMENTS.get("MULTITEXTURE","0")=="1":
 	env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
+
+if ARGUMENTS.get("GLSL","1")=="1":
+	env.Append(CCFLAGS=' -DGLSL')
 	
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
+MZDYN = PLTPrefix+"/lib/plt/mzdyn3m.o"
 	
 ################################################################################
 # Figure out which libraries we are going to need
@@ -57,8 +61,7 @@ MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
 LibList = [["m", "math.h"],
 		["pthread", "pthread.h"],
 		["dl", "stdio.h"],
-		["mzgc", "scheme.h"],
-		["mzscheme", "scheme.h"],
+		["mzscheme3m", "scheme.h"],
 		["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
 		["tiff", "tiff.h"],
 		["z", "zlib.h"],

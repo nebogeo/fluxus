@@ -194,7 +194,12 @@ bool Repl::TryEval()
 		m_InsertPos = m_Text.length();
 		Print("\n");
 	
-		Scheme_Object *out = m_Interpreter->Interpret(defun);
+		Scheme_Object *out;
+		MZ_GC_DECL_REG(1);
+
+		m_Interpreter->Interpret(defun,&out);
+		MZ_GC_VAR_IN_REG(0, out);
+    	MZ_GC_REG();
 
 		if (defun[defun.length()-1] == '\n')
         		defun.resize(defun.length()-1,0); 
@@ -205,7 +210,7 @@ bool Repl::TryEval()
         	Print(out);
         	Print("\n");
 		}
-		
+		MZ_GC_UNREG();
 	}
 	PrintPrompt();
 	
