@@ -414,15 +414,16 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// get-camera-transform 
+// get-camera
 // Returns: matrix-vector
 // Description:
-// Gets the current camera transform matrix.
+// Gets the current camera transform matrix. This is the low level function, 
+// use get-camera-transform instead.
 // Example:
-// (get-camera-transform) 
+// (get-camera) 
 // EndFunctionDoc
 
-Scheme_Object *get_camera_transform(int argc, Scheme_Object **argv)
+Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 {
 	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->inverse().arr(),16);
 }
@@ -554,7 +555,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("backfacecull", scheme_make_prim_w_arity(backfacecull, "backfacecull", 1, 1), env);
 	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
-	//scheme_add_global("get-camera-transform", scheme_make_prim_w_arity(get_camera_transform, "get-camera-transform", 0, 0), env);
+	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
 	scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
 	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
