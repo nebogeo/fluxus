@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <escheme.h>
 #include <GLSLShader.h>
+#include "FluxusEngine.h"
 #include "Engine.h"
 #include "MathsFunctions.h"
 #include "GlobalStateFunctions.h"
@@ -107,8 +108,14 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
-	// add all the modules from this extension
-	Scheme_Env *menv=scheme_primitive_module(scheme_intern_symbol("fluxus-engine"), env);
+	Scheme_Env *menv = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_VAR_IN_REG(1, menv);
+
+	MZ_GC_REG();
+  	// add all the modules from this extension
+	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-engine"), env);
 	
 	GlobalStateFunctions::AddGlobals(menv);
 	LocalStateFunctions::AddGlobals(menv);
@@ -132,6 +139,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);
 
 	scheme_finish_primitive_module(menv);	
+	
+	MZ_GC_UNREG();
 	
 	return scheme_void;
 }

@@ -22,21 +22,24 @@ using namespace std;
 using namespace fluxus;
 	
 Interpreter::Interpreter(Scheme_Env *e) : 
-m_Scheme(e),
+m_Scheme(NULL),
 m_Repl(NULL)
 {
+	MZ_REGISTER_STATIC(m_Scheme);
+	m_Scheme=e;
 }
 
 Interpreter::~Interpreter() 
 {
 }
 
+
 void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 {	
 	Scheme_Object *outport=NULL;
 	Scheme_Object *errport=NULL;
 	
-	MZ_GC_DECL_REG(2);
+	MZ_GC_DECL_REG(0);
 
     MZ_GC_VAR_IN_REG(0, outport);
     MZ_GC_VAR_IN_REG(1, errport);
@@ -93,3 +96,4 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 	
 	MZ_GC_UNREG();
 }
+

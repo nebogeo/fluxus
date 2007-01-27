@@ -35,10 +35,8 @@ static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d.%d\") \
 									(load (string-append (path->string (find-system-path 'home-dir)) \".fluxus/startup.scm\"))";
 
-static const string POST_STARTUP_SCRIPT="(fluxus-init)";
-
 FluxusMain *app = NULL;
-Interpreter *interpreter = NULL; 
+static Interpreter *interpreter = NULL; 
 
 void DisplayCallback()
 {    
@@ -116,12 +114,26 @@ void IdleCallback()
 
 int main(int argc, char *argv[])
 {
-	
+	// setup mzscheme 
 	void *stack_start;
 	stack_start = (void *)&stack_start;
-	scheme_set_stack_base(stack_start, 1);  
-	interpreter = new Interpreter(scheme_basic_env());
+	static Scheme_Env *e = NULL;
+	#ifdef MZ_PRECISE_GC
+	MZ_GC_DECL_REG(0);
+	GC_init_type_tags(_scheme_last_type_, scheme_pair_type, scheme_weak_box_type, scheme_ephemeron_type, scheme_rt_weak_array);
+	scheme_set_stack_base( &__gc_var_stack__, 1);
+	#else
+	#error
+	scheme_set_stack_base( NULL, 1);
+	#endif
+ 
+	MZ_REGISTER_STATIC(e);
+	e = scheme_basic_env();
+	scheme_set_can_break(1);
+ 	
+	interpreter = new Interpreter(e);
 	
+	// load the startup script
 	char startup[1024];
 	// insert the version number
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
@@ -129,6 +141,7 @@ int main(int argc, char *argv[])
 	interpreter->Interpret(startup,NULL,true);
 	srand(time(NULL));
 		
+	// init OpenGL
   	glutInit(&argc,argv);
 	glutInitWindowSize(720,576);
 	app = new FluxusMain(interpreter,720,576);
@@ -146,12 +159,11 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	
-	
    	if (argc>1) app->LoadScript(argv[1]);
 	
-	interpreter->Interpret(POST_STARTUP_SCRIPT);
-	
 	glutMainLoop();
+	
+	MZ_GC_UNREG();
 	
 	return 0;
 }

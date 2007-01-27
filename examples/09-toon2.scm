@@ -50,4 +50,5 @@
     (toon-light (pdata-size))
     (ungrab))
 
-(every-frame (render)) 
+
+(every-frame (render))
