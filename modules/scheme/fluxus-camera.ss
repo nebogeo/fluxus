@@ -15,8 +15,8 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ;; StartSectionDoc-en
-;; Camera
-;; Camera functions
+;; CanvasCamera
+;; Camera functions availible in the fluxus canvas.
 ;; Example:
 ;; EndSectionDoc	
 
@@ -57,10 +57,32 @@
 		(set! camera-rot-start (vector 0 0 0 1))
 		(set! camera-locked #f)
 		(update-camera))
-
+	
+;; StartFunctionDoc-en
+;; set-camera-transform transform-matrix
+;; Returns: void 
+;; Description:
+;; Overrides and locks the camera transform with your own. 
+;; To unlock again call reset-camera
+;; Example:
+;; ; ruin the camera transform
+;; (set-camera-transform (mtranslate 0 0 -10)) 
+;; EndFunctionDoc
+	
 	(define (set-camera-transform m)
 		(set! camera-locked #t)
 		(set! camera-matrix m))
+
+;; StartFunctionDoc-en
+;; get-camera-transform 
+;; Returns: transform-matrix
+;; Description:
+;; Returns the current camera transform. 
+;; To unlock again call reset-camera
+;; Example:
+;; ; ruin the camera transform
+;; (define tx (get-camera-transform))
+;; EndFunctionDoc
 
 	(define (get-camera-transform)
 		camera-matrix)

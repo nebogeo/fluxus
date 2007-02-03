@@ -17,13 +17,18 @@
 ; this script plugs the callbacks from the fluxus
 ; application into the fluxus engine module
 
-; DocSection Canvas
+;; StartSectionDoc-en
+;; Canvas
+;; The fluxus canvas is the main application and editor. 
+;; Example:
+;; EndSectionDoc 
 		   
 (module fluxus-canvas mzscheme
 	(require fluxus-engine)
 	(require fluxus-audio)
 	(require (lib "fluxus-input.ss" "fluxus-0.12"))
 	(require (lib "fluxus-camera.ss" "fluxus-0.12"))
+	(require (only (lib "13.ss" "srfi") string-pad))
 	(provide 
 		fluxus-reshape-callback 
 		fluxus-input-callback 
@@ -31,7 +36,9 @@
 		fluxus-frame-callback
 		set-user-callback!
 		every-frame
-		clear)
+		clear
+		start-framedump
+		end-framedump)
 		
 ;-------------------------------------------------
 ; every frame stuff 
@@ -41,8 +48,9 @@
 (define (set-user-callback! s)
 	(set! user-callback s))
 	
-;; StartFunctionDoc
-;; every-frame function
+;; StartFunctionDoc-en
+;; every-frame callback-function
+;; Returns: void
 ;; Description:
 ;; Sets a function to be called every time the render is about to draw a new frame.
 ;; Example:
@@ -62,8 +70,9 @@
     ((every-frame expr)
      (set-user-callback! (lambda () expr)))))
 	 
-;; StartFunctionDoc
+;; StartFunctionDoc-en
 ;; clear
+;; Returns: void
 ;; Description:
 ;; Clears out the renderer of all objects and lights. Clears the physics system
 ;; and resets the every-frame callback. Generally a Good Thing to put this at the
@@ -79,6 +88,48 @@
 	
 (define width 0)
 (define height 0)
+
+(define framedump-frame -1)
+(define framedump-filename "")
+(define framedump-type "")
+
+;; StartFunctionDoc-en
+;; start-framedump name-string type-string
+;; Returns: void
+;; Description:
+;; Starts saving frames to disk. Type can be one of "tif", "jpg" or "ppm". 
+;; Filenames are built with the frame number added, padded to 5 zeros.
+;; Example:
+;; (start-framedump "frame" "jpg") 
+;; EndFunctionDoc	
+
+(define (start-framedump filename type)
+	(set! framedump-frame 0)
+	(set! framedump-filename filename)
+	(set! framedump-type type))
+	
+;; StartFunctionDoc-en
+;; end-framedump 
+;; Returns: void
+;; Description:
+;; Stops saving frames to disk. 
+;; Example:
+;; (end-framedump) 
+;; EndFunctionDoc	
+
+(define (end-framedump)
+	(set! framedump-frame -1))
+	
+(define (framedump-update)
+	(cond 
+  		((>= framedump-frame 0)
+			(let ((filename (string-append framedump-filename 
+	 				(string-pad (number->string framedump-frame) 5 #\0) 
+					"." framedump-type)))
+			(display "saving frame: ")(display filename)(newline)
+  	 		(framedump filename)
+			(set! framedump-frame (+ framedump-frame 1))))))
+
 
 ;-------------------------------------------------
 ; callbacks - these are called directly from the
@@ -102,8 +153,9 @@
 
 ; the main callback every frame
 
-(define (fluxus-frame-callback)
+(define (fluxus-frame-callback) 
   (set-camera (get-camera-transform))
+  (framedump-update)
   (begin-scene)
   (if (not (null? user-callback))
       (user-callback))

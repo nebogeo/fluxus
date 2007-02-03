@@ -122,7 +122,6 @@ Source = ["src/GLEditor.cpp",
 		"src/GLFileDialog.cpp",
 		"src/Interpreter.cpp",
 		"src/Repl.cpp",
-		"src/Utils.cpp",
 		"src/Recorder.cpp",
 		"src/FluxusMain.cpp", 
 		"src/main.cpp"]

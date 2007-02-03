@@ -20,7 +20,6 @@
 #else
 #include <GLUT/glut.h>
 #endif
-#include "Utils.h"
 #include <iostream>
 
 using namespace std;
@@ -30,7 +29,6 @@ using namespace fluxus;
 
 FluxusMain::FluxusMain(Interpreter *interpreter, int x, int y) :
 m_CurrentEditor(0),
-m_Frame(-1),
 m_Width(x),
 m_Height(y),
 m_HideScript(false),
@@ -146,18 +144,6 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	}
 }
 
-void FluxusMain::StartDumpFrames(const string &Filename, const string &Type)
-{
-	m_Frame=0;
-	m_FrameName = Filename;
-	m_FrameType = Type;
-}
-
-void FluxusMain::EndDumpFrames()
-{
-	m_Frame=-1;
-}
-
 void FluxusMain::Reshape(int width, int height)
 {
 	for(int n=0; n<NUM_EDITORS; n++)
@@ -174,33 +160,6 @@ void FluxusMain::Render()
 {		
 	if (m_ShowFileDialog) m_FileDialog.Render();
 	else if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
-	
-	if (m_Frame!=-1)
-	{
-		char Fnum[7];
-		snprintf(Fnum,7,"%06d",m_Frame);
-		
-		if (m_FrameType=="jpg")
-		{
-			string Filename=m_FrameName+"-"+string(Fnum)+".jpg";
-			WriteJPG((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,80,1);
-			cerr<<Filename<<endl;
-		}
-		else if (m_FrameType=="tif")
-		{
-			string Filename=m_FrameName+"-"+string(Fnum)+".tif";
-			WriteTiff((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
-			cerr<<Filename<<endl;
-		}
-		else if (m_FrameType=="ppm")
-		{
-			string Filename=m_FrameName+"-"+string(Fnum)+".ppm";
-			WritePPM((char*)Filename.c_str(),"fluxus pixels",0,0,m_Width,m_Height,1);
-			cerr<<Filename<<endl;
-		}
-		
-		m_Frame++;
-	}
 }
 
 void FluxusMain::LoadScript(const string &Filename) 

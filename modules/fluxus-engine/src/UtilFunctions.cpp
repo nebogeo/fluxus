@@ -19,25 +19,83 @@
 #include "Engine.h"
 #include "UtilFunctions.h"
 #include "Renderer.h"
+#include "Utils.h"
+#include "SearchPaths.h"
 
 using namespace UtilFunctions;
 using namespace SchemeHelper;
 using namespace fluxus;
+
+// StartSectionDoc-en
+// UtilFunctions
+// Handy functions to make your life easier...
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// time
+// Returns: time-number
+// Description:
+// Returns the number of seconds (+ fraction) since midnight January 1st 1970. This is the
+// simpest animation source for your scripts.
+// Example:
+// (define (animate)
+//     (rotate (sin (time)) 0 0)
+//     (draw-cube))
+// (every-frame (animate))    
+// EndFunctionDoc
 
 Scheme_Object *time(int argc, Scheme_Object **argv)
 {
 	return scheme_make_double(Engine::Get()->Renderer()->GetTime());
 }
 
+// StartFunctionDoc-en
+// delta
+// Returns: time-number
+// Description:
+// Time in seconds since the last frame. Used to make animation frame rate independant.
+// Example:
+// (define (animate)
+//     (rotate (* (delta) 10) 0 0) 
+//     (draw-cube))
+// (every-frame (animate))    
+// EndFunctionDoc
+
 Scheme_Object *delta(int argc, Scheme_Object **argv)
 {
 	return scheme_make_double(Engine::Get()->Renderer()->GetDelta());
 }
 
+// StartFunctionDoc-en
+// flxrnd
+// Returns: random-number
+// Description:
+// Returns a random number between 0 and 1
+// Example:
+// (define (animate)
+//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (draw-cube))
+// (every-frame (animate))
+// EndFunctionDoc
+
 Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 {
 	return scheme_make_double(RandFloat());
 }
+
+// StartFunctionDoc-en
+// flxseed seed-number
+// Returns: void
+// Description:
+// Seeds the random number generator so we can get the same sequence.
+// Example:
+// (define (animate)
+//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (draw-cube))
+// (flxseed 10) 
+// (every-frame (animate)) ; the same seqence of colours will be generated
+// EndFunctionDoc
 
 Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 {
@@ -46,6 +104,100 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// searchpaths paths-list
+// Returns: void
+// Description:
+// Sets a list of search path strings to use for looking for fluxus related files, such as
+// textures, shaders etc. Paths will be searched in order each time.
+// Example:
+// (searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// EndFunctionDoc
+
+Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
+{
+	ArgCheck("searchpaths", "l", argc, argv);
+ 	
+	// vectors seem easier to handle than lists with this api
+	Scheme_Object *vec = scheme_list_to_vector(argv[0]);
+	size_t size=0;
+	
+	Scheme_Object **vecptr = SCHEME_VEC_ELS(vec);
+	
+	for (int n=0; n<SCHEME_VEC_SIZE(vec); n++)
+	{
+		if (SCHEME_CHAR_STRINGP(vecptr[n]))
+		{
+			char *argstring=StringFromScheme(vecptr[n]);
+			SearchPaths::Get()->AddPath(argstring);
+		}
+	}
+
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// fullpath filename-string
+// Returns: fullpath-string
+// Description:
+// Searches the search paths for the specified file and returns the first location
+// it finds.
+// Example:
+// (fullpath "myfile")
+// EndFunctionDoc
+
+Scheme_Object *fullpath(int argc, Scheme_Object **argv)
+{
+	ArgCheck("fullpath", "s", argc, argv);
+	char *name=StringFromScheme(argv[0]);
+	string fullpath = SearchPaths::Get()->GetFullPath(name);
+	return scheme_make_utf8_string(fullpath.c_str());
+}
+
+// StartFunctionDoc-en
+// framedump filename
+// Returns: void
+// Description:
+// Saves out the current OpenGL front buffer to disk. Reads the filename extension to 
+// decide on the format used for saving, "tif", "jpg" or "ppm" are supported. This is the 
+// low level form of the frame dumping, use start-framedump and end-framedump instead.
+// Example:
+// (framedump "picture.jpg")
+// EndFunctionDoc
+
+Scheme_Object *framedump(int argc, Scheme_Object **argv)
+{
+	ArgCheck("framedump", "s", argc, argv);
+	
+	int w=0,h=0;
+	Engine::Get()->Renderer()->GetResolution(w,h);
+	
+	char *filename=StringFromScheme(argv[0]);
+	if (strlen(filename)>3)
+	{
+		if (!strcmp(filename+strlen(filename)-3,"tif"))
+		{
+			WriteTiff(filename, "made in fluxus", 0, 0, w, h, 1);
+		}
+		else if (!strcmp(filename+strlen(filename)-3,"jpg"))
+		{
+			WriteJPG(filename, "made in fluxus", 0, 0, w, h, 80);
+		}
+		else if (!strcmp(filename+strlen(filename)-3,"ppm"))
+		{
+			WritePPM(filename, "made in fluxus", 0, 0, w, h, 1);
+		}
+		else
+		{
+			cerr<<"framedump: Unknown image extension "<<filename+strlen(filename)-3<<endl;
+		}
+	}
+	
+	return scheme_void;
+}
+
+
+
 void UtilFunctions::AddGlobals(Scheme_Env *env)
 {	
 	// renderstate operations
@@ -53,4 +205,7 @@ void UtilFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("delta",scheme_make_prim_w_arity(delta,"delta",0,0), env);
 	scheme_add_global("flxrnd",scheme_make_prim_w_arity(flxrnd,"flxrnd",0,0), env);
 	scheme_add_global("flxseed",scheme_make_prim_w_arity(flxseed,"flxseed",1,1), env);	
+	scheme_add_global("searchpaths",scheme_make_prim_w_arity(searchpaths,"searchpaths",1,1), env);	
+	scheme_add_global("fullpath",scheme_make_prim_w_arity(fullpath,"fullpath",1,1), env);	
+	scheme_add_global("framedump",scheme_make_prim_w_arity(framedump,"framedump",1,1), env);	
 }
