@@ -118,15 +118,15 @@ int main(int argc, char *argv[])
 	void *stack_start;
 	stack_start = (void *)&stack_start;
 	static Scheme_Env *e = NULL;
-	#ifdef MZ_PRECISE_GC
 	MZ_GC_DECL_REG(0);
-	GC_init_type_tags(_scheme_last_type_, scheme_pair_type, scheme_weak_box_type, scheme_ephemeron_type, scheme_rt_weak_array);
+	
+	#ifdef MZ_PRECISE_GC
 	scheme_set_stack_base( &__gc_var_stack__, 1);
 	#else
-	#error
 	scheme_set_stack_base( NULL, 1);
 	#endif
- 
+	
+ 	MZ_GC_REG();
 	MZ_REGISTER_STATIC(e);
 	e = scheme_basic_env();
 	scheme_set_can_break(1);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 	app = new FluxusMain(interpreter,720,576);
 	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
 	char windowtitle[256];
-	snprintf(windowtitle,256,"fluxus %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
+	snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
   	glutCreateWindow(windowtitle);
 	glutDisplayFunc(DisplayCallback);
 	glutReshapeFunc(ReshapeCallback);

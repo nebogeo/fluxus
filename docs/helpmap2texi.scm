@@ -28,7 +28,6 @@
     (display "* " output)
     (display (caar helpmap) output)
     (display ":: " output)
-    (display (caar helpmap) output)
     (display #\newline output)
     (if (null? (cdr helpmap))
         0
@@ -100,7 +99,7 @@
           (outfile (open-output-file texifilename)))
       
       (let ((boilerplate (open-input-file boilerplatefilename)))
-        (display (read boilerplate) outfile)
+        (display (read-string 9999999 boilerplate) outfile)
         (display #\newline outfile)
         (close-input-port boilerplate))
       
@@ -118,4 +117,4 @@
   ) ; module help->texi
 
 (require help->texi)
-(help->texi "helpmap.scm" "fluxus.texi" "boilerplate.scm")
+(help->texi "helpmap.scm" "fluxus-all.texi" "fluxus.texi")

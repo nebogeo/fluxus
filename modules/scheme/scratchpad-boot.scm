@@ -14,7 +14,7 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-; this is the startup script for the fluxus canvas
+; this is the startup script for the fluxus scratchpad
 ; this script loads all the modules and sets things up so the 
 ; fluxus application works without having to worry about setup
 
@@ -39,10 +39,14 @@
 (require fluxus-audio)
 (require fluxus-osc)
 
-(require (lib "fluxus-canvas.ss" "fluxus-0.12"))
-(require (lib "fluxus-input.ss" "fluxus-0.12"))
-(require (lib "fluxus-camera.ss" "fluxus-0.12"))
+(require (lib "scratchpad.ss" "fluxus-0.12"))
+(require (lib "scratchpad-input.ss" "fluxus-0.12"))
+(require (lib "scratchpad-camera.ss" "fluxus-0.12"))
 (require (lib "fluxus-obj-import.ss" "fluxus-0.12"))
+
+; load the helpmap
+(init-help (string-append (path->string (car (current-library-collection-paths)))
+	"fluxus-0.12/helpmap.scm"))
 
 ;-------------------------------------------------
 ; here is the hacking section

@@ -15,12 +15,12 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ;; StartSectionDoc-en
-;; CanvasInput
-;; Input functions availible in the fluxus canvas.
+;; ScratchPadInput
+;; Input functions availible in the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	
 
-(module fluxus-input mzscheme
+(module scratchpad-input mzscheme
 	(require fluxus-engine)
 	(provide 
 		key-pressed

@@ -18,16 +18,16 @@
 ; application into the fluxus engine module
 
 ;; StartSectionDoc-en
-;; Canvas
-;; The fluxus canvas is the main application and editor. 
+;; ScratchPad
+;; The scratchpad is the fluxus editor and gl window. 
 ;; Example:
 ;; EndSectionDoc 
 		   
-(module fluxus-canvas mzscheme
+(module scratchpad mzscheme
 	(require fluxus-engine)
 	(require fluxus-audio)
-	(require (lib "fluxus-input.ss" "fluxus-0.12"))
-	(require (lib "fluxus-camera.ss" "fluxus-0.12"))
+	(require (lib "scratchpad-input.ss" "fluxus-0.12"))
+	(require (lib "scratchpad-camera.ss" "fluxus-0.12"))
 	(require (only (lib "13.ss" "srfi") string-pad))
 	(provide 
 		fluxus-reshape-callback 
@@ -38,7 +38,9 @@
 		every-frame
 		clear
 		start-framedump
-		end-framedump)
+		end-framedump
+		init-help
+		help)
 		
 ;-------------------------------------------------
 ; every frame stuff 
@@ -130,6 +132,42 @@
   	 		(framedump filename)
 			(set! framedump-frame (+ framedump-frame 1))))))
 
+;-------------------------------------------------
+; online help system
+
+(define helpmap '())
+
+;; StartFunctionDoc-en
+;; help function-string
+;; Returns: void
+;; Description:
+;; Displays help information on a fluxus function. For running in the repl mainly.
+;; Example:
+;; (help "pop") 
+;; EndFunctionDoc	
+
+(define (help funcname)
+	(define (inner-help l)
+		(let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
+		(cond
+			(ret
+				(display "Function: ")(display (car ret))(newline)
+				(display (cdr ret))(newline))
+			(else
+				(if (null? (cdr l))
+					"Function not found"
+					(inner-help (cdr l)))))))
+	(inner-help helpmap))
+	
+(define (init-help helpmapfile)
+	(cond 
+		((file-exists? helpmapfile)
+			(let ((file (open-input-file helpmapfile)))
+			(set! helpmap (read file))
+			(close-input-port file)))
+		(else
+			(display "Could not open helpmap: ")(display helpmapfile)(newline)
+			(display "Try running \"scons installdocs\" in the fluxus directory")(newline))))
 
 ;-------------------------------------------------
 ; callbacks - these are called directly from the

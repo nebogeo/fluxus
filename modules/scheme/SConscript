@@ -6,10 +6,10 @@
 import os	 
 Import("env", "CollectsInstall")
 
-Scripts    = ["fluxus-boot.scm", 
-			  "fluxus-canvas.ss", 
-			  "fluxus-input.ss",
-			  "fluxus-camera.ss",
+Scripts    = ["scratchpad-boot.scm", 
+			  "scratchpad.ss", 
+			  "scratchpad-input.ss",
+			  "scratchpad-camera.ss",
 			  "fluxus-obj-import.ss" ]
 
 Install        = CollectsInstall

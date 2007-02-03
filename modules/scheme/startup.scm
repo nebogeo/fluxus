@@ -6,9 +6,9 @@
 ; `-'    `-----'`-----'`-'  `-'`-----'`-----'
 ; (c) 2007 dave griffiths dave@pawfal.org GPL
 
-; boot up fluxus 
+; boot up the fluxus scratchpad
 (load (string-append fluxus-collects-location "/fluxus-"  
-	fluxus-version "/fluxus-boot.scm"))
+	fluxus-version "/scratchpad-boot.scm"))
 ; the line above ensures the correct bootup script 
 ; is called for the right version of fluxus
 

@@ -32,12 +32,38 @@
 
 using namespace SchemeHelper;
 
+// StartSectionDoc-en
+// Renderer
+// These commands are the low level renderer controls. You shouldn't need to 
+// deal with these unless you are implementing a fluxus renderer outside of 
+// the scratchpad interface.
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// make-renderer 
+// Returns: rendererid-number
+// Description:
+// Makes a new scenegraph renderer.
+// Example:
+// (make-renderer) 
+// EndFunctionDoc
+
 // base plt bindings & register all other bindings from here
 
 Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 {
 	return scheme_make_integer_value(Engine::Get()->MakeRenderer());
 }
+
+// StartFunctionDoc-en
+// renderer-grab rendererid-number
+// Returns: void
+// Description:
+// Make this renderer the current context for commands.
+// Example:
+// (renderer-grab renderer) 
+// EndFunctionDoc
 
 Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 {
@@ -46,11 +72,29 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// renderer-ungrab
+// Returns: void
+// Description:
+// Pop the renderer context stack.
+// Example:
+// (renderer-grab renderer) 
+// EndFunctionDoc
+
 Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->PopRenderer();
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// begin-scene
+// Returns: void
+// Description:
+// Start rendering on the current renderer. Clears the backbuffer.
+// Example:
+// (begin-scene) 
+// EndFunctionDoc
 
 Scheme_Object *begin_scene(int argc, Scheme_Object **argv)
 {
@@ -58,11 +102,30 @@ Scheme_Object *begin_scene(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// end-scene
+// Returns: void
+// Description:
+// Stop rendering on the current renderer. This is actually the point where the backbuffer
+// gets rendered to.
+// Example:
+// (end-scene) 
+// EndFunctionDoc
+
 Scheme_Object *end_scene(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->EndScene();
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// tick-physics
+// Returns: void
+// Description:
+// Update the physics system.
+// Example:
+// (tick-physics) 
+// EndFunctionDoc
 
 Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 {
@@ -70,17 +133,44 @@ Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// render-physics
+// Returns: void
+// Description:
+// Render the physics system (for helper graphics).
+// Example:
+// (render-physics) 
+// EndFunctionDoc
+
 Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Physics()->Render();
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// reset-renderers
+// Returns: void
+// Description:
+// Deletes all the renderers and makes a new default one.
+// Example:
+// (reset-renderers) 
+// EndFunctionDoc
+
 Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->ResetRenderers();
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// reshape width-number height-number
+// Returns: void
+// Description:
+// Calls reshape on the current renderer
+// Example:
+// (reshape 100 100) 
+// EndFunctionDoc
 
 Scheme_Object *reshape(int argc, Scheme_Object **argv)
 {
@@ -89,6 +179,15 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 	Engine::Get()->Renderer()->SetResolution(IntFromScheme(argv[0]),IntFromScheme(argv[1]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// fluxus-init 
+// Returns: void
+// Description:
+// Inits the whole rendering system, only needs calling once.
+// Example:
+// (fluxus-init) 
+// EndFunctionDoc
 
 Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 {

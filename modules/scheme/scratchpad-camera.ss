@@ -15,12 +15,12 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ;; StartSectionDoc-en
-;; CanvasCamera
-;; Camera functions availible in the fluxus canvas.
+;; ScratchPadCamera
+;; Camera functions availible in the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	
 
-(module fluxus-camera mzscheme
+(module scratchpad-camera mzscheme
 	(require fluxus-engine)
 	(provide 
 		input-camera

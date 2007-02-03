@@ -147,7 +147,7 @@
             (else
              (read-word file) ; comment //
 			 (let ((funcname (read-word file)))
-			 (display funcname)(newline)
+			 ;(display funcname)(newline)
              (parse-functions file (append l (list (list
                                                     funcname 
                                                     (list

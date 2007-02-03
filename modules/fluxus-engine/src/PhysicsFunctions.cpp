@@ -25,12 +25,47 @@ using namespace PhysicsFunctions;
 using namespace SchemeHelper;
 using namespace fluxus;
 
+// StartSectionDoc-en
+// Physics
+// The physics system used in fluxus is based on the ode library, which allows you to add 
+// physical properties to objects and set them in motion. Since ODE is designed for 
+// rigid-body simulations, structures are described in terms of objects, joints and 
+// forces.
+//
+// A much more comprehensive explanation of these concepts can be found in the ODE 
+// documentation, which you have probably downloaded if you have compiled fluxus, or can 
+// be found at @url{http://ode.org/ode-docs.html}
+// 
+// To help with debugging joints, try calling (render-physics) every frame, which will 
+// render locators showing you positions and axes of joints that have positional 
+// information.
+// Example:
+// EndSectionDoc 
+
+// StartFunctionDoc-en
+// collisions on/off-number
+// Returns: void
+// Description:
+// Enables or disables collision detection. Defaults to off.
+// Example:
+// (collisions 1)
+// EndFunctionDoc
+
 Scheme_Object *collisions(int argc, Scheme_Object **argv)
 {
 	ArgCheck("collisions", "i", argc, argv);
 	Engine::Get()->Physics()->SetCollisions(IntFromScheme(argv[0]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// ground-plane plane-vector offset-number
+// Returns: void
+// Description:
+// Create an infinite passive plane for use as the 'ground'
+// Example:
+// (ground-plane (vector 0 1 0) 0)
+// EndFunctionDoc
 
 Scheme_Object *ground_plane(int argc, Scheme_Object **argv)
 {
@@ -41,6 +76,19 @@ Scheme_Object *ground_plane(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// active-box primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a box as the bounding volume. As 
+// an active object, it will be transformed by ode. Note: rotations only work correctly if 
+// you specify your transforms scale first, then rotate (translate doesn't matter) 
+// basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (active-box mycube)
+// EndFunctionDoc
+
 Scheme_Object *active_box(int argc, Scheme_Object **argv)
 {
  	ArgCheck("active-box", "i", argc, argv);
@@ -48,6 +96,19 @@ Scheme_Object *active_box(int argc, Scheme_Object **argv)
 	Engine::Get()->Physics()->MakeActive(name,1.0f,Physics::BOX);
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// active-cylinder primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a cylinder as the bounding volume. As 
+// an active object, it will be transformed by ode. Note: rotations only work correctly if 
+// you specify your transforms scale first, then rotate (translate doesn't matter) 
+// basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (active-cylinder mycube)
+// EndFunctionDoc
 
 Scheme_Object *active_cylinder(int argc, Scheme_Object **argv)
 {
@@ -57,6 +118,19 @@ Scheme_Object *active_cylinder(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// active-sphere primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a sphere as the bounding volume. As 
+// an active object, it will be transformed by ode. Note: rotations only work correctly if 
+// you specify your transforms scale first, then rotate (translate doesn't matter) 
+// basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (active-sphere mycube)
+// EndFunctionDoc
+
 Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 {
  	ArgCheck("active-sphere", "i", argc, argv);
@@ -64,6 +138,19 @@ Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 	Engine::Get()->Physics()->MakeActive(name,1.0f,Physics::SPHERE);
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// passive-box primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a sphere as the bounding volume. As 
+// a passive object, active objects will collide with it, but it will not be transformed. 
+// Note: rotations only work correctly if you specify your transforms scale first, then 
+// rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (passive-box mycube)
+// EndFunctionDoc
 
 Scheme_Object *passive_box(int argc, Scheme_Object **argv)
 {
@@ -73,6 +160,19 @@ Scheme_Object *passive_box(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// passive-cylinder primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a cylinder as the bounding volume. As 
+// a passive object, active objects will collide with it, but it will not be transformed. 
+// Note: rotations only work correctly if you specify your transforms scale first, then 
+// rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (passive-cylinder mycube)
+// EndFunctionDoc
+
 Scheme_Object *passive_cylinder(int argc, Scheme_Object **argv)
 {
  	ArgCheck("passive-cylinder", "i", argc, argv);
@@ -80,6 +180,19 @@ Scheme_Object *passive_cylinder(int argc, Scheme_Object **argv)
 	Engine::Get()->Physics()->MakePassive(name,1.0f,Physics::CYLINDER);
     return scheme_void;
 }
+
+// StartFunctionDoc-en
+// passive-sphere primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a sphere as the bounding volume. As 
+// a passive object, active objects will collide with it, but it will not be transformed. 
+// Note: rotations only work correctly if you specify your transforms scale first, then 
+// rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+// Example:
+// (define mycube (build-cube))
+// (passive-sphere mycube)
+// EndFunctionDoc
 
 Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 {
@@ -89,6 +202,16 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// surface-params slip1-number slip2-number softerp-number softcfm-number
+// Returns: void
+// Description:
+// Sets some global surface attributes that affect friction and bouncyness. see section 
+// 7.3.7 of the ODE docs for an explanation of these parameters 
+// Example:
+// (surface-params 0.1 0.1 0.1 0.1)
+// EndFunctionDoc
+
 Scheme_Object *surface_params(int argc, Scheme_Object **argv)
 {
  	ArgCheck("surface-params", "ffff", argc, argv);
@@ -96,6 +219,19 @@ Scheme_Object *surface_params(int argc, Scheme_Object **argv)
 												 FloatFromScheme(argv[2]),FloatFromScheme(argv[3]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// build-balljoint primitiveid-number primitiveid-number axis-vector 
+// Returns: void
+// Description:
+// Creates a balljoint to connect two objects (see the ode docs for a detailed 
+// description of the differences between the joint types). ODE considers joints to be a 
+// constraint that is enforced between two objects. When creating a joint, it is important 
+// to have the two primitives being joined in the desired positions before creating the 
+// joint. Joints can be created, modified and indexed in a similar way to other primitives. 
+// Example:
+// (build-balljoint shape1 shape2 (vector 0 1 0)) 
+// EndFunctionDoc
 
 Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 {
@@ -107,12 +243,35 @@ Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointBall(name1, name2, dVector(anchor[0],anchor[1],anchor[2])));
 }
 
+// StartFunctionDoc-en
+// build-fixedjoint primitiveid-number
+// Returns: void
+// Description:
+// Creates a joint to connect an object to the global environment. This locks the 
+// object in place.
+// Example:
+// (build-fixedjoint shape) 
+// EndFunctionDoc
+
 Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
 {
  	ArgCheck("build-fixedjoint", "i", argc, argv);
     int name1=IntFromScheme(argv[0]);
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointFixed(name1));
 }
+
+// StartFunctionDoc-en
+// build-hingejoint primitiveid1-number primitiveid2-number anchor-vector axis-vector 
+// Returns: hingeid-number
+// Description:
+// Creates a ball joint to connect two objects (see the ode docs for a detailed 
+// description of the differences between the joint types). ODE considers joints to be a 
+// constraint that is enforced between two objects. When creating a joint, it is important 
+// to have the two primitives being joined in the desired positions before creating the 
+// joint. Joints can be created, modified and indexed in a similar way to other primitives. 
+// Example:
+// (build-hingejoint shape1 shape2 (vector 0 1 0) (vector 0 1 0)) 
+// EndFunctionDoc
 
 Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
 {
@@ -134,6 +293,19 @@ Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointHinge(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
+// StartFunctionDoc-en
+// build-sliderjoint primitiveid1-number primitiveid2-number axis-vector 
+// Returns: hingeid-number
+// Description:
+// Creates a slider joint to connect two objects (see the ode docs for a detailed 
+// description of the differences between the joint types). ODE considers joints to be a 
+// constraint that is enforced between two objects. When creating a joint, it is important 
+// to have the two primitives being joined in the desired positions before creating the 
+// joint. Joints can be created, modified and indexed in a similar way to other primitives. 
+// Example:
+// (build-sliderjoint shape1 shape2 (vector 0 1 0)) 
+// EndFunctionDoc
+
 Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 {
   	ArgCheck("build-sliderjoint", "iiv", argc, argv);
@@ -150,6 +322,19 @@ Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointSlider(name1, name2, Hinge));
 }
+
+// StartFunctionDoc-en
+// build-hinge2joint primitiveid1-number primitiveid2-number anchor-vector axis1-vector axis2-vector 
+// Returns: hingeid-number
+// Description:
+// Creates a hinge2 joint to connect two objects (see the ode docs for a detailed 
+// description of the differences between the joint types). ODE considers joints to be a 
+// constraint that is enforced between two objects. When creating a joint, it is important 
+// to have the two primitives being joined in the desired positions before creating the 
+// joint. Joints can be created, modified and indexed in a similar way to other primitives. 
+// Example:
+// (build-hinge2joint shape1 shape2 (vector 0 100 0) (vector 0 1 0) (vector 0 1 0))
+// EndFunctionDoc
 
 Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
 {
@@ -176,6 +361,19 @@ Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointHinge2(name1, name2, dVector(anchor[0],anchor[1],anchor[2]), Hinge));
 }
 
+// StartFunctionDoc-en
+// build-amotorjoint primitiveid1-number primitiveid2-number axis-vector 
+// Returns: hingeid-number
+// Description:
+// Creates a angular motor joint to connect two objects (see the ode docs for a detailed 
+// description of the differences between the joint types). ODE considers joints to be a 
+// constraint that is enforced between two objects. When creating a joint, it is important 
+// to have the two primitives being joined in the desired positions before creating the 
+// joint. Joints can be created, modified and indexed in a similar way to other primitives. 
+// Example:
+// (build-amotorjoint shape1 shape2 (vector 0 1 0))
+// EndFunctionDoc
+
 Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 {
    	ArgCheck("build-amotorjoint", "iiv", argc, argv);
@@ -185,6 +383,18 @@ Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 	FloatsFromScheme(argv[2],axis,3);
 	return scheme_make_integer_value(Engine::Get()->Physics()->CreateJointAMotor(name1, name2, dVector(axis[0],axis[1],axis[2])));
 }
+
+// StartFunctionDoc-en
+// joint-param jointid-number param-string value-number 
+// Returns: hingeid-number
+// Description:
+// Sets the joint parameter for a joint where param is one of the following: "HiStop", 
+// "Vel", "FMax", "FudgeFactor", "Bounce", "CFM", "StopERP", "StopCFM","SuspensionERP", 
+// "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE docs for an explanation 
+// of each of these parameters, and which joint types they apply to.
+// Example:
+// (joint-param joint "Vel" 0.1)
+// EndFunctionDoc
 
 Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 {
@@ -198,6 +408,15 @@ Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// joint-angle jointid-number param-string value-number 
+// Returns: void
+// Description:
+// Set a new angle for this joint, with a given velocity taken to get there
+// Example:
+// (joint-angle joint "Vel" 0.1)
+// EndFunctionDoc
+
 Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 {
    	ArgCheck("joint-angle", "iff", argc, argv);
@@ -205,12 +424,31 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// set-max-physical max-number 
+// Returns: void
+// Description:
+// Sets the maximum number of objects the physics system can deal with. When the max 
+// level has been reached the oldest objects are automatically destroyed.
+// Example:
+// (set-max-physical 100)
+// EndFunctionDoc
+
 Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
 {
    	ArgCheck("set-max-physical", "i", argc, argv);
     Engine::Get()->Physics()->SetMaxObjectCount(IntFromScheme(argv[0]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// set-mass primitiveid-number mass-number 
+// Returns: void
+// Description:
+// Sets the mass of an active object
+// Example:
+// (set-mass myshape 100)
+// EndFunctionDoc
 
 Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 {
@@ -221,6 +459,15 @@ Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// gravity gravity-vector
+// Returns: void
+// Description:
+// Sets the strength and direction of gravity.
+// Example:
+// (gravity (vector 0 -1 0))
+// EndFunctionDoc
+
 Scheme_Object *gravity(int argc, Scheme_Object **argv)
 {
    	ArgCheck("gravity", "v", argc, argv);
@@ -229,6 +476,15 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 	Engine::Get()->Physics()->SetGravity(dVector(vec[0],vec[1],vec[2]));
 	return scheme_void;
 }
+
+// StartFunctionDoc-en
+// kick primitiveid-number kick-vector
+// Returns: void
+// Description:
+// Applies translation force to the object
+// Example:
+// (kick myshape (vector 0 1 0))
+// EndFunctionDoc
 
 Scheme_Object *kick(int argc, Scheme_Object **argv)
 {
@@ -240,6 +496,15 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// twist primitiveid-number spin-vector
+// Returns: void
+// Description:
+// Applies rotational force to the object
+// Example:
+// (kick myshape (vector 2 0 0))
+// EndFunctionDoc
+
 Scheme_Object *twist(int argc, Scheme_Object **argv)
 {
     ArgCheck("twist", "iv", argc, argv);
@@ -250,6 +515,14 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// has-collided primitiveid-number
+// Returns: void
+// Description:
+// Returns true if the grabbed object collided in the last frame
+// Example:
+// (if (has-collided myshape) (display "bang!"))
+// EndFunctionDoc
 
 Scheme_Object *has_collided(int argc, Scheme_Object **argv)
 {
@@ -263,7 +536,6 @@ Scheme_Object *has_collided(int argc, Scheme_Object **argv)
 		return scheme_make_false();
 	}
 }
-
 
 void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 {	
