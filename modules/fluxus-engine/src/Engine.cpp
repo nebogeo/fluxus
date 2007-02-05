@@ -100,6 +100,17 @@ void Engine::EndScene()
 	Renderer()->EndScene();
 }
 
+void Engine::Reinitialise()     
+{
+	for (vector<pair<fluxus::Renderer *, fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 
+		i!=m_RendererVec.end(); i++)
+	{
+		i->first->Reinitialise();    
+		i->first->InitTextures();
+		i->first->ClearLights();
+	}
+}
+
 void Engine::ResetRenderers()
 {
 	for (vector<pair<fluxus::Renderer *, fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 

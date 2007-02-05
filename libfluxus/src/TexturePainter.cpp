@@ -33,6 +33,9 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
+	m_TextureMap.clear();
+	m_LoadedMap.clear();
+	
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
 		#ifdef ENABLE_MULTITEXTURE

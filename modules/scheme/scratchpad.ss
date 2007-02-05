@@ -147,27 +147,52 @@
 ;; EndFunctionDoc	
 
 (define (help funcname)
+	(define (insert-linebreaks src dst count i n)
+		(if (>= i (string-length src))
+			dst
+			(if (and (> n count) (char=? (string-ref src i) #\space))
+				(insert-linebreaks src 
+					(string-append dst (string (string-ref src i)) (string #\newline)) count (+ i 1) 0)
+				(insert-linebreaks src 
+					(string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
+
 	(define (inner-help l)
 		(let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
 		(cond
 			(ret
-				(display "Function: ")(display (car ret))(newline)
-				(display (cdr ret))(newline))
+				(display "Function")(newline)
+				(display "(")(display (car ret))
+    			(let ((arguments (list-ref (list-ref ret 1) 0)))
+    			  (cond 
+        			((not (zero? (string-length arguments)))
+        			 (display " ")
+        			 (display arguments))))
+    			(display ")")(newline)(newline)
+    			(display "Returns ")
+    			(display (list-ref (list-ref ret 1) 1))(newline)(newline)
+    			(display "Description")(newline)
+    			(display (insert-linebreaks (list-ref (list-ref ret 1) 2) "" 50 0 0))
+    			(newline)(newline)
+    			(display "Example")(newline)
+    			(display (list-ref (list-ref ret 1) 3))
+    			(newline))
 			(else
 				(if (null? (cdr l))
 					"Function not found"
 					(inner-help (cdr l)))))))
-	(inner-help helpmap))
+	(cond 
+		((null? helpmap)
+			(display "No helpmap exists...")(newline)
+			(display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
+		(else
+			(inner-help helpmap))))
 	
 (define (init-help helpmapfile)
 	(cond 
 		((file-exists? helpmapfile)
 			(let ((file (open-input-file helpmapfile)))
 			(set! helpmap (read file))
-			(close-input-port file)))
-		(else
-			(display "Could not open helpmap: ")(display helpmapfile)(newline)
-			(display "Try running \"scons installdocs\" in the fluxus directory")(newline))))
+			(close-input-port file)))))
 
 ;-------------------------------------------------
 ; callbacks - these are called directly from the

@@ -32,6 +32,7 @@ public:
 	bool PushRenderer(unsigned int);
 	void PopRenderer();
 	void ResetRenderers();
+	void Reinitialise();  
 	fluxus::Renderer *Renderer();
 	fluxus::Physics *Physics();
 	void BeginScene(); 

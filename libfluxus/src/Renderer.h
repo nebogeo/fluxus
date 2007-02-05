@@ -105,6 +105,7 @@ public:
 	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
 	
+	void InitTextures() 					 { TexturePainter::Get()->Initialise(); }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void ShowCursor(bool s);

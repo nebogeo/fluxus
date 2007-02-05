@@ -200,6 +200,8 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 	fluxus::GLSLShader::Init();
 	#endif
 	
+	Engine::Get()->Reinitialise();
+	
 	return scheme_void;
 }
 
