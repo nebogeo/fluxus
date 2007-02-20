@@ -38,7 +38,6 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
-env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
@@ -50,8 +49,12 @@ if ARGUMENTS.get("GLSL","1")=="1":
 	
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = PLTPrefix+"/lib/plt/mzdyn3m.o"
+MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
 	
+if ARGUMENTS.get("3M","1")=="1":
+	env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+	MZDYN = PLTPrefix+"/lib/plt/mzdyn3m.o"
+
 ################################################################################
 # Figure out which libraries we are going to need
 
@@ -71,7 +74,7 @@ LibList = [["m", "math.h"],
 		["sndfile", "sndfile.h"],
 		["fftw3", "fftw3.h"],
 		["lo", "lo/lo.h"]]
-		
+				
 if env['PLATFORM'] == 'darwin':
 	env.Replace(LINK = "macos/libtool --mode=link g++")
 	env.Prepend(LINKFLAGS = ["-static"])

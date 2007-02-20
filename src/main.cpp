@@ -117,8 +117,10 @@ int main(int argc, char *argv[])
 	// setup mzscheme 
 	void *stack_start;
 	stack_start = (void *)&stack_start;
-	static Scheme_Env *e = NULL;
-	MZ_GC_DECL_REG(0);
+	Scheme_Env *e = NULL;
+	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, e);
 	
 	#ifdef MZ_PRECISE_GC
 	scheme_set_stack_base( &__gc_var_stack__, 1);
@@ -127,10 +129,8 @@ int main(int argc, char *argv[])
 	#endif
 	
  	MZ_GC_REG();
-	MZ_REGISTER_STATIC(e);
 	e = scheme_basic_env();
-	scheme_set_can_break(1);
- 	
+	
 	interpreter = new Interpreter(e);
 	
 	// load the startup script
@@ -159,11 +159,28 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	
-   	if (argc>1) app->LoadScript(argv[1]);
+   	if (argc>1) 
+	{
+		if (argc>2)
+		{
+			if (!strcmp(argv[1],"-r"))
+			{
+			}
+			else if (!strcmp(argv[1],"-p"))
+			{
+			}
+		}
+		else
+		{
+			app->LoadScript(argv[1]);
+		}
+	}
 	
 	glutMainLoop();
 	
+	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
+	#endif
 	
 	return 0;
 }

@@ -18,6 +18,7 @@
 #include "SchemeHelper.h"
 #include "MathsFunctions.h"
 #include "dada.h"
+#include "FluxusEngine.h"
 
 using namespace MathsFunctions;
 using namespace SchemeHelper;
@@ -42,7 +43,11 @@ using namespace fluxus;
 
 Scheme_Object *vmul(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
 	ArgCheck("vmul", "vf", argc, argv);
+  	MZ_GC_UNREG();
 	return FloatsToScheme((VectorFromScheme(argv[0])*scheme_real_to_double(argv[1])).arr(),3);
 }
 
@@ -57,7 +62,11 @@ Scheme_Object *vmul(int argc, Scheme_Object **argv)
 
 Scheme_Object *vadd(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();	
 	ArgCheck("vadd", "vv", argc, argv);	
+  	MZ_GC_UNREG();
 	return FloatsToScheme((VectorFromScheme(argv[0])+VectorFromScheme(argv[1])).arr(),3);
 }
 
@@ -72,7 +81,11 @@ Scheme_Object *vadd(int argc, Scheme_Object **argv)
 
 Scheme_Object *vsub(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();		
 	ArgCheck("vsub", "vv", argc, argv);
+  	MZ_GC_UNREG();
 	return FloatsToScheme((VectorFromScheme(argv[0])-VectorFromScheme(argv[1])).arr(),3);
 }
 

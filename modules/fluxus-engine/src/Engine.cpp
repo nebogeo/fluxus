@@ -131,9 +131,16 @@ void Engine::ResetRenderers()
 // todo - move the grabstack into the renderer?
 void Engine::PushGrab(int id)
 {	
-	m_GrabStack.push_front(id);
 	m_Grabbed=Renderer()->GetPrimitive(id);
-	Renderer()->Grab(id);
+	if (m_Grabbed)
+	{
+		m_GrabStack.push_front(id);
+		Renderer()->Grab(id);
+	}
+	else
+	{
+		cerr<<"grab: primitive id "<<id<<" not found"<<endl;
+	}
 }
 
 void Engine::PopGrab()

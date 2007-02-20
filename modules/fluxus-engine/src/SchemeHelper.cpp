@@ -17,6 +17,7 @@
 #include <assert.h>
 #include "SchemeHelper.h"
 #include "Engine.h"
+#include "FluxusEngine.h"
 
 using namespace std;
 using namespace SchemeHelper;
@@ -34,28 +35,42 @@ int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 
 char *SchemeHelper::StringFromScheme(Scheme_Object *ob)
 {
-	return scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob),SCHEME_CHAR_STRLEN_VAL(ob),NULL,0);
+	char *ret=NULL;
+	//MZ_GC_DECL_REG(2);
+	//MZ_GC_VAR_IN_REG(0, ob);
+	//MZ_GC_VAR_IN_REG(1, ret);
+	//MZ_GC_REG();	
+	ret=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob),SCHEME_CHAR_STRLEN_VAL(ob),NULL,0);
+  	//MZ_GC_UNREG();
+	return ret;
 }
 
 void SchemeHelper::FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
 {
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, src);
+	MZ_GC_REG();	
 	assert(size==(unsigned int)SCHEME_VEC_SIZE(src));
-	Scheme_Object **array = SCHEME_VEC_ELS(src);
 	for (unsigned int n=0; n<size; n++)
 	{
 	
-		dst[n]=scheme_real_to_double(array[n]);
-	}
+		dst[n]=scheme_real_to_double(SCHEME_VEC_ELS(src)[n]);
+	}  
+	MZ_GC_UNREG();
 }
 
 Scheme_Object *SchemeHelper::FloatsToScheme(float *src, unsigned int size)
 {
-	Scheme_Object *ret = scheme_make_vector(size, NULL);
-	Scheme_Object **array = SCHEME_VEC_ELS(ret);
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+	ret = scheme_make_vector(size, scheme_void);
 	for (unsigned int n=0; n<size; n++)
 	{
-		array[n]=scheme_make_double(src[n]);
+		SCHEME_VEC_ELS(ret)[n]=scheme_make_double(src[n]);
 	}
+	MZ_GC_UNREG();
 	return ret;
 }
 
@@ -90,9 +105,13 @@ dMatrix SchemeHelper::MatrixFromScheme(Scheme_Object *src)
 
 void SchemeHelper::ArgCheck(const string &funcname, const string &format, int argc, Scheme_Object **argv)
 {
+	//MZ_GC_DECL_REG(1);
+	//MZ_GC_VAR_IN_REG(0, argv);
+	//MZ_GC_REG();	
+	
 	// wrong number of arguments, could mean optional arguments for this function, 
 	// just give up in this case for now...
-		
+
 	//if(argc==(int)format.size())
 	{
 		for (unsigned int n=0; n<format.size(); n++)
@@ -139,5 +158,6 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 			};
 		}
 	}
+	//MZ_GC_UNREG();
 }
 

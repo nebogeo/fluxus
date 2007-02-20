@@ -86,7 +86,8 @@
 
 (define (clear)
 	(set! user-callback '())
-	(clear-engine))
+	(clear-engine)
+	(unlock-camera))
 	
 (define width 0)
 (define height 0)

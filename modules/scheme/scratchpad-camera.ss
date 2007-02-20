@@ -26,7 +26,8 @@
 		input-camera
 		set-camera-transform
 		get-camera-transform
-		reset-camera)
+		reset-camera
+		unlock-camera)
 		
 	(define camera-locked #f)
 	(define camera-matrix (mtranslate (vector 0 1 -10)))
@@ -36,6 +37,9 @@
 	(define click-mouse (vector 0 0))
 	(define last-mouse (vector 0 0))
 	(define last-button 0)
+	
+	(define (unlock-camera)
+		(set! camera-locked #f))
 	
 ;; StartFunctionDoc-en
 ;; reset-camera
@@ -65,7 +69,6 @@
 ;; Overrides and locks the camera transform with your own. 
 ;; To unlock again call reset-camera
 ;; Example:
-;; ; ruin the camera transform
 ;; (set-camera-transform (mtranslate 0 0 -10)) 
 ;; EndFunctionDoc
 	
@@ -80,7 +83,6 @@
 ;; Returns the current camera transform. 
 ;; To unlock again call reset-camera
 ;; Example:
-;; ; ruin the camera transform
 ;; (define tx (get-camera-transform))
 ;; EndFunctionDoc
 

@@ -33,9 +33,6 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-	m_TextureMap.clear();
-	m_LoadedMap.clear();
-	
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
 		#ifdef ENABLE_MULTITEXTURE
@@ -55,6 +52,12 @@ void TexturePainter::Initialise()
 	#ifdef ENABLE_MULTITEXTURE
 	glClientActiveTexture(GL_TEXTURE0);
 	#endif
+}
+
+void TexturePainter::ClearCache()
+{
+	m_TextureMap.clear();
+	m_LoadedMap.clear();
 }
 
 unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)

@@ -96,6 +96,7 @@ public:
 	
 	// todo - move camera stuff out of here...
 	dMatrix *GetCamera()                     { return &m_Camera; }
+	dMatrix *GetLockedMatrix()               { return &m_LockedMatrix; }
 	dMatrix GetProjection();
 	void LockCamera(int Prim);
 	void UnlockCamera()						 { m_LockedCamera=false; }

@@ -241,7 +241,9 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_finish_primitive_module(menv);	
 	
+	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
+	#endif
 	
 	return scheme_void;
 }

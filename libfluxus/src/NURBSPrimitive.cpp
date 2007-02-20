@@ -35,8 +35,10 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	PDataDirty();
 
 	m_Surface = gluNewNurbsRenderer();
-	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
-	gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
+	//gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
+	//gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
+	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
+	gluNurbsProperty(m_Surface, GLU_U_STEP, 20);
 	gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
 	gluNurbsProperty(m_Surface, GLU_CULLING, GLU_TRUE);
 }

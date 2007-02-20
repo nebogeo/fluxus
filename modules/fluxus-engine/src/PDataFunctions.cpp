@@ -19,6 +19,7 @@
 #include "Engine.h"
 #include "PDataFunctions.h"
 #include "Renderer.h"
+#include "FluxusEngine.h"
 
 using namespace PDataFunctions;
 using namespace SchemeHelper;
@@ -61,6 +62,14 @@ using namespace fluxus;
 
 Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 {
+	Scheme_Object *ret=NULL;
+	char *name=NULL;
+	
+	MZ_GC_DECL_REG(3);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_VAR_IN_REG(2, name);
+	MZ_GC_REG();	
 	ArgCheck("pdata-get", "si", argc, argv);		
 	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
@@ -68,9 +77,8 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 	{
 		char *name=StringFromScheme(argv[0]);
 		unsigned int index=IntFromScheme(argv[1]);
-		unsigned int size;
+		unsigned int size=0;
 		char type;
-		Scheme_Object *ret=NULL;
 		
 		if (Grabbed->GetDataInfo(name,type,size))
 		{
@@ -96,11 +104,14 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 		if (ret==NULL)
 		{
 			cerr<<"could not find pdata called ["<<name<<"]"<<endl;
+  			MZ_GC_UNREG();
 			return scheme_make_double(0);
 		}
 		
+  		MZ_GC_UNREG();
 		return ret;
 	}
+  	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -115,12 +126,17 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 {
+	char *name=NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, name);
+	MZ_GC_REG();	
 	ArgCheck("pdata-set", "si?", argc, argv);		
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
 		size_t ssize=0;
-		char *name=StringFromScheme(argv[0]);
+		name=StringFromScheme(argv[0]);
 		unsigned int index=IntFromScheme(argv[1]);
 		unsigned int size;
 		char type;
@@ -165,6 +181,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 			}
 		}
 	}
+  	MZ_GC_UNREG();
     return scheme_void;
 }
 

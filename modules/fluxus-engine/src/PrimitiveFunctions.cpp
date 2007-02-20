@@ -33,7 +33,8 @@ using namespace SchemeHelper;
 
 // StartSectionDoc-en
 // Primitives
-// Primitives are cool... 
+// Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
+// except lights, a camera and lots of primitives.
 // Example:
 // EndSectionDoc 
 

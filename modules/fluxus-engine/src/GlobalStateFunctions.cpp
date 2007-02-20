@@ -263,7 +263,7 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// load-texture pngfilename-string
+// force-load-texture pngfilename-string
 // Returns: textureid-number
 // Description:
 // Uncached loading of textures from disk, converts it to a texture, and returns the id number. 
@@ -429,6 +429,20 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// get-locked-matrix
+// Returns: matrix-vector
+// Description:
+// Gets the current camera lock transform matrix. Takes the lag into account
+// Example:
+// (get-locked-matrix) 
+// EndFunctionDoc
+
+Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
+{
+	return FloatsToScheme(Engine::Get()->Renderer()->GetLockedMatrix()->inverse().arr(),16);
+}
+
+// StartFunctionDoc-en
 // set-camera
 // Returns: void
 // Description:
@@ -555,6 +569,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("backfacecull", scheme_make_prim_w_arity(backfacecull, "backfacecull", 1, 1), env);
 	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
+	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
 	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
 	scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);

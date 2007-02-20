@@ -51,18 +51,30 @@ Now press f5 - the script will be executed, and a white cube should appear in th
 To animate this cube, it will have to be called a little differently:
 
 @lisp
-(start-audio "jack-port-to-read-sound-from" 256 44100) ; buffersize and samplerate need to match jack's
+(define (render)
+    (colour (vector (sin (time)) (cos (time)) (sin (* (time) 3))))
+    (draw-cube))
 
+(clear)
+(every-frame (render))
+@end lisp
+
+Briefly, the @code{(every-frame)} function takes a function which is called once per frame by fluxus's internal engine. In this case it calls a function that sets the current colour using a function of the current time, and draws a cube. Note that this time we use @code{(draw-cube)} not @code{(build-cube)}. @xref{Statemachine}, for a explaination of the difference between these functions.
+
+In the next example, instead of using the current time as the source of animation data, we'll use the audio input.
+
+@lisp
 (define (render)
     (colour (vector (gh 1) (gh 2) (gh 3)))
     (draw-cube))
 
+(clear)
 (every-frame (render))
 @end lisp
 
-Briefly, the @code{(every-frame)} function takes a function which is called once per frame by fluxus's internal engine. In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function; and draws a cube. Note that this time we use @code{(draw-cube)} not @code{(build-cube)}. The difference will be explained below.
+In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function.
 
-If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound.
+If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound. You may have to change your $HOME/.fluxus/startup.scm script which does audio setup - (start-audio) to match your jack settings.
 
 
 @node User Guide
@@ -109,6 +121,10 @@ If you press ctrl and 0, instead of getting another script workspace, you will b
 @item F11 : Make text thicker
 @item Escape : Editor panic button, resets the cursor if it gets stuck (let me know if you need to use this)
 @end itemize
+
+@section Init script
+
+The fluxus scratchpad runs a script at startup which you can use to put commands you want set every time you run fluxus. This file is located in $HOME/.fluxus/startup.scm. By default it calls a function which sets up the fluxus environment, after this you can add your own commands. I've added a call to (start-audio) here as an example of a useful startup function.
 
 @node Scheme
 @chapter Scheme
@@ -200,7 +216,7 @@ The state machine is the key to understanding how fluxus works, all it really me
 (draw-cube)
 @end lisp
 
-Will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something).  States can also be stacked, for example:
+Will draw a red cube, then a green cube (in this case, you can think of the @code{(colour)} call as changing a pen colour before drawing something). The state contains most of the things needed to describe an object - its transformation, texture, material properties, shader etc. States can also be stacked, for example:
 
 @lisp
 (colour (vector 1 0 0))
@@ -211,11 +227,11 @@ Will draw a red cube, then a green cube (in this case, you can think of the @cod
 (draw-cube)
 @end lisp
 
-will draw a green, then a red cube. the @code{(push)} command stores the current state, and adds a copy to the top of the stack. @code{(pop)} retrieves the previous state and deletes the current one (so changes to the state between the push and the pop are lost)
+will draw a green, then a red cube. The @code{(push)} command puts a copy of the current state at the top of the state stack. @code{(pop)} overwrites the current state with the one on the top of the stack at that time (so all the changes to the state between the push and the pop are forgotten).
 
 @section The Scenegraph 
 
-Both examples so far have used what is known as immediate mode, you have one state stack, the top of which is the current context, and everything is drawn once per frame. fluxus contains a structure known as a scenegraph for storing objects and their render states.
+Both examples so far have used what is known as immediate mode, you have one state stack, the top of which is the current state, and everything is drawn once per frame. Fluxus contains a structure known as a scenegraph for storing objects and their render states in a heirachy.
 
 Time for another example:
 
@@ -868,7 +884,7 @@ Getting the syncing right when combining audio/keyboard and OSC input can be a b
 
 @subsection Syncing lags, and gets worse with time
 
-The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
+The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus/startup.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
 
 @subsection Syncing is offset in a constant manner
 
@@ -907,7 +923,7 @@ You can load the fluxus modules into the DrScheme interpreter, and use it as a b
 ; load the fluxus-engine binary extension 
 (load-extension "/usr/local/lib/plt/collects/fluxus-0.12/compiled/native/i386-linux/fluxus-engine.so")
 (require fluxus-engine)
-(clear-engine)
+(fluxus-init) ; resets internals
 
 (define fluxus-canvas%
   (class* canvas% ()

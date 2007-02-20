@@ -25,8 +25,11 @@ Interpreter::Interpreter(Scheme_Env *e) :
 m_Scheme(NULL),
 m_Repl(NULL)
 {
-	MZ_REGISTER_STATIC(m_Scheme);
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, e);
+	MZ_GC_VAR_IN_REG(1, m_Scheme);
 	m_Scheme=e;
+	MZ_GC_UNREG();
 }
 
 Interpreter::~Interpreter() 
@@ -40,11 +43,12 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 	Scheme_Object *errport=NULL;
 	mz_jmp_buf * volatile save = NULL, fresh;
 	
-	MZ_GC_DECL_REG(3);
+	MZ_GC_DECL_REG(4);
 
     MZ_GC_VAR_IN_REG(0, outport);
     MZ_GC_VAR_IN_REG(1, errport);
     MZ_GC_VAR_IN_REG(2, save);
+	MZ_GC_VAR_IN_REG(3, m_Scheme);
     MZ_GC_REG();
 	
 	if (m_Repl) 
@@ -94,6 +98,8 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 		if (size>0) m_Repl->Print(string(msg));
 	}	
 	
+	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
+	#endif
 }
 

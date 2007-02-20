@@ -174,6 +174,7 @@
 ;; (grab (mouse-over))
 ;; (colour (vector 1 0 0)) ; paints objects the mouse is over red
 ;; (ungrab)
+;; EndFunctionDoc	
 
 (define (mouse-over)
 	(select (vector-ref mouse 0) (vector-ref mouse 1) 3))

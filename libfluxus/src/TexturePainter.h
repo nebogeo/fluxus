@@ -52,6 +52,7 @@ public:
 	}
 	
 	void Initialise();
+	void ClearCache();
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false);
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
 	void Delete(unsigned int id);	
