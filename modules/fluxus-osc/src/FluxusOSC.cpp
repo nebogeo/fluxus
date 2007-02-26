@@ -18,6 +18,11 @@
 #include <iostream>
 #include "OSCServer.h"
 
+#undef MZ_GC_DECL_REG
+#undef MZ_GC_UNREG
+#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
+#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
+
 using namespace std;
 using namespace fluxus;
 
@@ -76,6 +81,10 @@ Client *OSCClient = NULL;
 
 Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-source", "string", 0, argc, argv);
 	char *port=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 
@@ -89,6 +98,7 @@ Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 		OSCServer->SetPort(port);
 	}
 
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -106,12 +116,18 @@ Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-msg", "string", 0, argc, argv);
 	char *name=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 	if (OSCServer->SetMsg(name))
 	{
+		MZ_GC_UNREG(); 
 		return scheme_make_true();
 	}
+	MZ_GC_UNREG(); 
 	return scheme_make_false();
 }
 
@@ -128,6 +144,12 @@ Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc(int argc, Scheme_Object **argv)
 {
+	Scheme_Object *ret=NULL;
+	MZ_GC_DECL_REG(2); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_VAR_IN_REG(1, ret); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("osc", "number", 0, argc, argv);
  
 	unsigned int index=(unsigned int)scheme_real_to_double(argv[0]);
@@ -137,7 +159,6 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 		OSCServer->GetArgs(args);
 		char type = args[index]->Type();
 		
-		Scheme_Object *ret;
 		if (type=='f') ret=scheme_make_double(static_cast<OSCFloat*>(args[index])->Value);
 		else if (type=='i') ret=scheme_make_integer_value_from_unsigned(static_cast<OSCInt*>(args[index])->Value);
 		else if (type=='s') 
@@ -147,8 +168,10 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 		}
 		else ret=scheme_void;
 		
+		MZ_GC_UNREG(); 
 		return ret;
 	}
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -165,6 +188,10 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc_destination(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-destination", "string", 0, argc, argv);
 	char *port=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 	if (!OSCClient)
@@ -172,6 +199,7 @@ Scheme_Object *osc_destination(int argc, Scheme_Object **argv)
 		OSCClient = new Client();
 	}
 	OSCClient->SetDestination(port);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -205,6 +233,12 @@ Scheme_Object *osc_peek(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc_send(int argc, Scheme_Object **argv)
 {
+	Scheme_Object *argvec = NULL;
+	MZ_GC_DECL_REG(2); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_VAR_IN_REG(1, argvec); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-send", "string", 0, argc, argv);
 	if (!SCHEME_CHAR_STRINGP(argv[1])) scheme_wrong_type("osc-send", "string", 1, argc, argv);
 	if (!SCHEME_LISTP(argv[2])) scheme_wrong_type("osc-send", "list", 2, argc, argv);
@@ -212,39 +246,39 @@ Scheme_Object *osc_send(int argc, Scheme_Object **argv)
 	char *msg=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 	char *types=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[1]),SCHEME_CHAR_STRLEN_VAL(argv[1]),NULL,0);
 	
-	Scheme_Object *argvec = scheme_list_to_vector(argv[2]);
-	Scheme_Object **argptr = SCHEME_VEC_ELS(argvec);
+	argvec = scheme_list_to_vector(argv[2]);
 	
 	vector<OSCData*> oscargs;
 	for (unsigned int n=0; n<(unsigned int)SCHEME_VEC_SIZE(argvec); n++)
 	{
-		Scheme_Object *arg=argptr[n];
-
-		if (SCHEME_NUMBERP(arg))// ||  scm_is_true(scm_exact_p(arg)) || scm_is_true(scm_inexact_p(arg)))
+		if (SCHEME_NUMBERP(SCHEME_VEC_ELS(argvec)[n]))// ||  scm_is_true(scm_exact_p(arg)) || scm_is_true(scm_inexact_p(arg)))
 		{
 			if (n<strlen(types))
 			{
-				if (types[n]=='f') oscargs.push_back(new OSCFloat(scheme_real_to_double(arg)));
+				if (types[n]=='f') oscargs.push_back(new OSCFloat(scheme_real_to_double(SCHEME_VEC_ELS(argvec)[n])));
 				else if (types[n]=='i') 
 				{
 					unsigned long val=0;
-					scheme_get_unsigned_int_val(arg,&val);
+					scheme_get_unsigned_int_val(SCHEME_VEC_ELS(argvec)[n],&val);
 					oscargs.push_back(new OSCInt(val));
 				}
 			}
 		}
-		else if (SCHEME_CHAR_STRINGP(arg))
+		else if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(argvec)[n]))
 		{
-			char *argstring=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(arg),SCHEME_CHAR_STRLEN_VAL(arg),NULL,0);;
+			char *argstring=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(SCHEME_VEC_ELS(argvec)[n]),
+														 SCHEME_CHAR_STRLEN_VAL(SCHEME_VEC_ELS(argvec)[n]),NULL,0);
 			oscargs.push_back(new OSCString(argstring));
 		}
 		else
 		{
 			cerr<<"osc-send has found an argument type it can't send, numbers and strings only"<<endl;
+			MZ_GC_UNREG(); 
     		return scheme_void;
 		}
 	}
 	OSCClient->Send(msg,oscargs);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -252,8 +286,13 @@ Scheme_Object *osc_send(int argc, Scheme_Object **argv)
 
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
+	Scheme_Env *menv=NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_VAR_IN_REG(1, menv);
+	MZ_GC_REG();
 	// add all the modules from this extension
-	Scheme_Env *menv=scheme_primitive_module(scheme_intern_symbol("fluxus-osc"), env);
+	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-osc"), env);
 
 	scheme_add_global("osc-source", scheme_make_prim_w_arity(osc_source, "osc-source", 1, 1), menv);
 	scheme_add_global("osc-msg", scheme_make_prim_w_arity(osc_msg, "osc-msg", 1, 1), menv);
@@ -263,6 +302,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("osc-send", scheme_make_prim_w_arity(osc_send, "osc-send", 3, 3), menv);
 
 	scheme_finish_primitive_module(menv);	
+ 	MZ_GC_UNREG(); 
 	
 	return scheme_void;
 }

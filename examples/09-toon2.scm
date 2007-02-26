@@ -32,7 +32,6 @@
         0
         (deform (- n 1))))
 
-
 (colour (vector 0.9 0.5 1))
 ; build a sphere...
 (define s (build-sphere 20 20))

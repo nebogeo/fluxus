@@ -57,9 +57,11 @@ Scheme_Object *build_cube(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-nurbs", "i", argc, argv);
 	NURBSPrimitive *Prim = new NURBSPrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -76,9 +78,11 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-polygons", "ii", argc, argv);
 	PolyPrimitive *Prim = new PolyPrimitive((PolyPrimitive::Type)IntFromScheme(argv[1]));
 	Prim->Resize(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -94,9 +98,11 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-sphere", "ii", argc, argv);
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(SphPrim, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
 
@@ -128,9 +134,11 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-seg-plane", "ii", argc, argv);
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);	
     MakePlane(PlanePrim,IntFromScheme(argv[0]),IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(PlanePrim));
 }
 
@@ -146,9 +154,11 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-cylinder", "ii", argc, argv);
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(CylPrim, 1, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(CylPrim));
 }
 
@@ -169,9 +179,11 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_line(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-line", "i", argc, argv);
 	LinePrimitive *Prim = new LinePrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -191,13 +203,13 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_text(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-text", "s", argc, argv);
-	
-	char *text=StringFromScheme(argv[0]);
-	
+		
 	// 16*16 grid of letters
 	TextPrimitive *TextPrim = new TextPrimitive(16/256.0f,16/256.0f,16,0);
-	TextPrim->SetText(text,20,-20,0.018);
+	TextPrim->SetText(StringFromScheme(argv[0]),20,-20,0.018);
+	MZ_GC_UNREG(); 
 	
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TextPrim));
 }
@@ -214,9 +226,11 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 	
 Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-nurbs-sphere", "ii", argc, argv);
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
     MakeNURBSSphere(SphPrim, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
 
@@ -232,9 +246,11 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-nurbs-plane", "ii", argc, argv);
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -256,6 +272,7 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-particles", "i", argc, argv);
 	ParticlePrimitive *Prim = new ParticlePrimitive;
 	int count=IntFromScheme(argv[0]);
@@ -263,6 +280,7 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 	{
 		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -296,8 +314,10 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-pixels", "ii", argc, argv);
 	PixelPrimitive *Prim = new PixelPrimitive(IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -343,6 +363,7 @@ Scheme_Object *upload_pixels(int argc, Scheme_Object **argv)
 
 Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 {		
+	DECL_ARGV();
 	ArgCheck("pixels->texture", "i", argc, argv);
 	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
 	if (Prim) 
@@ -351,11 +372,13 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
 		if (pp)
 		{
+			MZ_GC_UNREG(); 
 		    return scheme_make_integer_value(pp->GetTexture());
 		}
 	}
 	
 	cerr<<"pixels->texture can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -380,6 +403,7 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("build-blobby", "ivv", argc, argv);
 	
 	dVector dim;
@@ -393,6 +417,7 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 		Prim->AddInfluence(dVector(0,0,0),0);
 	}
 	
+	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -410,8 +435,10 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 
 Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 {    	
+	DECL_ARGV();
 	ArgCheck("draw-instance", "i", argc, argv);
     Engine::Get()->Renderer()->RenderPrimitive(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -500,6 +527,7 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 
 Scheme_Object *destroy(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("destroy", "i", argc, argv);
 	int name=0;
 	name=IntFromScheme(argv[0]);	
@@ -514,11 +542,15 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
     	Engine::Get()->Renderer()->RemovePrimitive(name);
     }
 
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	scheme_add_global("draw-cube", scheme_make_prim_w_arity(draw_cube, "draw-cube", 0, 0), env);
 	scheme_add_global("build-cube", scheme_make_prim_w_arity(build_cube, "build-cube", 0, 0), env);
 	scheme_add_global("build-polygons", scheme_make_prim_w_arity(build_polygons, "build-polygons", 2, 2), env);
@@ -543,4 +575,5 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
+ 	MZ_GC_UNREG(); 
 }

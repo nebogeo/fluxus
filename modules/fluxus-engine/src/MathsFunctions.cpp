@@ -43,12 +43,11 @@ using namespace fluxus;
 
 Scheme_Object *vmul(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_REG();
+	DECL_ARGV();
 	ArgCheck("vmul", "vf", argc, argv);
+	dVector ret = VectorFromScheme(argv[0])*scheme_real_to_double(argv[1]);
   	MZ_GC_UNREG();
-	return FloatsToScheme((VectorFromScheme(argv[0])*scheme_real_to_double(argv[1])).arr(),3);
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -62,12 +61,11 @@ Scheme_Object *vmul(int argc, Scheme_Object **argv)
 
 Scheme_Object *vadd(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_REG();	
+	DECL_ARGV();
 	ArgCheck("vadd", "vv", argc, argv);	
+	dVector ret = VectorFromScheme(argv[0])+VectorFromScheme(argv[1]);
   	MZ_GC_UNREG();
-	return FloatsToScheme((VectorFromScheme(argv[0])+VectorFromScheme(argv[1])).arr(),3);
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -81,12 +79,11 @@ Scheme_Object *vadd(int argc, Scheme_Object **argv)
 
 Scheme_Object *vsub(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_REG();		
+	DECL_ARGV();
 	ArgCheck("vsub", "vv", argc, argv);
-  	MZ_GC_UNREG();
-	return FloatsToScheme((VectorFromScheme(argv[0])-VectorFromScheme(argv[1])).arr(),3);
+ 	dVector ret = VectorFromScheme(argv[0])-VectorFromScheme(argv[1]);
+ 	MZ_GC_UNREG();
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -100,8 +97,11 @@ Scheme_Object *vsub(int argc, Scheme_Object **argv)
 
 Scheme_Object *vdiv(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vdiv", "vf", argc, argv);
-	return FloatsToScheme((VectorFromScheme(argv[0])/scheme_real_to_double(argv[1])).arr(),3);
+ 	dVector ret = VectorFromScheme(argv[0])/scheme_real_to_double(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -115,8 +115,11 @@ Scheme_Object *vdiv(int argc, Scheme_Object **argv)
 
 Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vtransform", "vm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[1]).transform(VectorFromScheme(argv[0]))).arr(),3);
+	dVector ret = MatrixFromScheme(argv[1]).transform(VectorFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -131,8 +134,11 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 
 Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vtransform-rot", "vm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[1]).transform_no_trans(VectorFromScheme(argv[0]))).arr(),3);
+	dVector ret=MatrixFromScheme(argv[1]).transform_no_trans(VectorFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -146,9 +152,11 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 
 Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vnormalise", "v", argc, argv);
 	dVector v=VectorFromScheme(argv[0]);
 	v.normalise();
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(v.arr(),3);
 }
 
@@ -163,8 +171,11 @@ Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
 
 Scheme_Object *vdot(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vdot", "vv", argc, argv);
-	return scheme_make_float(VectorFromScheme(argv[0]).dot(VectorFromScheme(argv[1])));
+	float ret=VectorFromScheme(argv[0]).dot(VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return scheme_make_float(ret);
 }
 
 // StartFunctionDoc-en
@@ -178,8 +189,11 @@ Scheme_Object *vdot(int argc, Scheme_Object **argv)
 
 Scheme_Object *vmag(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vmag", "v", argc, argv);
-	return scheme_make_float(VectorFromScheme(argv[0]).mag());
+	float ret=VectorFromScheme(argv[0]).mag();
+	MZ_GC_UNREG(); 
+	return scheme_make_float(ret);
 }
 
 // StartFunctionDoc-en
@@ -193,8 +207,11 @@ Scheme_Object *vmag(int argc, Scheme_Object **argv)
 
 Scheme_Object *vdist(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vdist", "vv", argc, argv);
-	return scheme_make_float(VectorFromScheme(argv[0]).dist(VectorFromScheme(argv[1])));
+	float ret=VectorFromScheme(argv[0]).dist(VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return scheme_make_float(ret);
 }
 
 // StartFunctionDoc-en
@@ -208,8 +225,11 @@ Scheme_Object *vdist(int argc, Scheme_Object **argv)
 
 Scheme_Object *vcross(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("vcross", "vv", argc, argv);
-	return FloatsToScheme((VectorFromScheme(argv[0]).cross(VectorFromScheme(argv[1]))).arr(),3);
+	dVector ret=VectorFromScheme(argv[0]).cross(VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
@@ -223,8 +243,11 @@ Scheme_Object *vcross(int argc, Scheme_Object **argv)
 
 Scheme_Object *mmul(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("mmul", "mm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[0])*MatrixFromScheme(argv[1])).arr(),16);
+	dMatrix ret=MatrixFromScheme(argv[0])*MatrixFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -238,8 +261,11 @@ Scheme_Object *mmul(int argc, Scheme_Object **argv)
 
 Scheme_Object *madd(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("madd", "mm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[0])+MatrixFromScheme(argv[1])).arr(),16);
+	dMatrix ret=MatrixFromScheme(argv[0])+MatrixFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -253,8 +279,11 @@ Scheme_Object *madd(int argc, Scheme_Object **argv)
 
 Scheme_Object *msub(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("madd", "mm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[0])-MatrixFromScheme(argv[1])).arr(),16);	
+	dMatrix ret=MatrixFromScheme(argv[0])-MatrixFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),16);	
 }
 
 // StartFunctionDoc-en
@@ -268,8 +297,11 @@ Scheme_Object *msub(int argc, Scheme_Object **argv)
 
 Scheme_Object *mdiv(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("mdiv", "mm", argc, argv);
-	return FloatsToScheme((MatrixFromScheme(argv[0])/MatrixFromScheme(argv[1])).arr(),16);	
+	dMatrix ret=MatrixFromScheme(argv[0])/MatrixFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),16);	
 }
 
 // StartFunctionDoc-en
@@ -298,10 +330,12 @@ Scheme_Object *mident(int argc, Scheme_Object **argv)
 
 Scheme_Object *mtranslate(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("mtranslate", "v", argc, argv);
 	dVector t = VectorFromScheme(argv[0]);
 	dMatrix m;
 	m.translate(t.x,t.y,t.z);
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);	
 }
 
@@ -316,6 +350,7 @@ Scheme_Object *mtranslate(int argc, Scheme_Object **argv)
 
 Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("mrotate", "vector", 0, argc, argv);
 		
 	if (SCHEME_VEC_SIZE(argv[0])==3)
@@ -325,6 +360,7 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 		FloatsFromScheme(argv[0],a.arr(),3);
 		dMatrix m;
 		m.rotxyz(a.x,a.y,a.z);
+		MZ_GC_UNREG(); 
 		return FloatsToScheme(m.arr(),16);	
 	}
 	else if (SCHEME_VEC_SIZE(argv[0])==4)
@@ -333,10 +369,12 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 		dQuat a;
 		FloatsFromScheme(argv[0],a.arr(),4);
 		dMatrix m=a.toMatrix();
+		MZ_GC_UNREG(); 
 		return FloatsToScheme(m.arr(),16);	
 	}
 	
 	cerr<<"mrotate - wrong number of elements in vector"<<endl;
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -351,10 +389,12 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 
 Scheme_Object *mscale(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("mscale", "v", argc, argv);
 	dVector t = VectorFromScheme(argv[0]);
 	dMatrix m;
 	m.scale(t.x,t.y,t.z);
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);	
 }
 
@@ -369,10 +409,12 @@ Scheme_Object *mscale(int argc, Scheme_Object **argv)
 
 Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("mtranspose", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
 	m.transpose();
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);	
 }
 
@@ -387,10 +429,12 @@ Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 
 Scheme_Object *minverse(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("minverse", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
 	m=m.inverse();
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);	
 }
 
@@ -406,9 +450,11 @@ Scheme_Object *minverse(int argc, Scheme_Object **argv)
 
 Scheme_Object *maim(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("maim", "vv", argc, argv);
 	dMatrix m;
 	m.aim(VectorFromScheme(argv[0]),VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);
 }
 
@@ -423,9 +469,11 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 	
 Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("qaxisangle", "vf", argc, argv);
 	dQuat q;
 	q.setaxisangle(VectorFromScheme(argv[0]),scheme_real_to_double(argv[1]));
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(q.arr(),4);
 }
 
@@ -440,8 +488,11 @@ Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 
 Scheme_Object *qmul(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("qmul", "qq", argc, argv);
-	return FloatsToScheme((QuatFromScheme(argv[0])*QuatFromScheme(argv[1])).arr(),4);
+	dQuat ret=QuatFromScheme(argv[0])*QuatFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),4);
 }
 
 // StartFunctionDoc-en
@@ -455,10 +506,12 @@ Scheme_Object *qmul(int argc, Scheme_Object **argv)
 
 Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("qnormalise", "q", argc, argv);
 	dQuat a;
 	FloatsFromScheme(argv[0],a.arr(),4);
 	a.renorm();
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(a.arr(),4);
 }
 
@@ -473,11 +526,13 @@ Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 
 Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("qtomatrix", "q", argc, argv);
 	
 	dQuat a;
 	FloatsFromScheme(argv[0],a.arr(),4);
 	dMatrix m=a.toMatrix();
+	MZ_GC_UNREG(); 
 	return FloatsToScheme(m.arr(),16);
 }
 
@@ -492,12 +547,18 @@ Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 
 Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("qconjugate", "q", argc, argv);
-	return FloatsToScheme(QuatFromScheme(argv[0]).conjugate().arr(),4);
+	dQuat ret=QuatFromScheme(argv[0]).conjugate();
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),4);
 }
 
 void MathsFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	scheme_add_global("vmul", scheme_make_prim_w_arity(vmul, "vmul", 2, 2), env);
 	scheme_add_global("vadd", scheme_make_prim_w_arity(vadd, "vadd", 2, 2), env);
 	scheme_add_global("vsub", scheme_make_prim_w_arity(vsub, "vsub", 2, 2), env);
@@ -525,4 +586,5 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("qnormalise", scheme_make_prim_w_arity(qnormalise, "qnormalise", 1, 1), env);
 	scheme_add_global("qtomatrix", scheme_make_prim_w_arity(qtomatrix, "qtomatrix", 1, 1), env);	
 	scheme_add_global("qconjugate", scheme_make_prim_w_arity(qconjugate, "qconjugate", 1, 1), env);	
+ 	MZ_GC_UNREG(); 
 }

@@ -17,6 +17,11 @@
 #include <escheme.h>
 #include "AudioCollector.h"
 
+#undef MZ_GC_DECL_REG
+#undef MZ_GC_UNREG
+#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
+#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
+
 using namespace std;
 
 AudioCollector *Audio = NULL;
@@ -52,6 +57,10 @@ AudioCollector *Audio = NULL;
 
 Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("start-audio", "string", 0, argc, argv);
 	if (!SCHEME_NUMBERP(argv[1])) scheme_wrong_type("start-audio", "number", 1, argc, argv);
 	if (!SCHEME_NUMBERP(argv[2])) scheme_wrong_type("start-audio", "number", 2, argc, argv);
@@ -61,6 +70,8 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 		char *name = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 		Audio = new AudioCollector(name,(unsigned int)scheme_real_to_double(argv[1]),(int)scheme_real_to_double(argv[2]));
 	}
+	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -81,11 +92,16 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("gh", "number", 0, argc, argv);
 	if (Audio!=NULL)
 	{	
+		MZ_GC_UNREG(); 
     	return scheme_make_double(Audio->GetHarmonic((int)scheme_real_to_double(argv[0])));
 	}
+	MZ_GC_UNREG(); 
 	return scheme_make_double(0);
 }
 
@@ -100,11 +116,15 @@ Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 
 Scheme_Object *gain(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("gain", "number", 0, argc, argv);
 	if (Audio!=NULL)
 	{	
 		Audio->SetGain(scheme_real_to_double(argv[0]));
 	}
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -122,12 +142,16 @@ Scheme_Object *gain(int argc, Scheme_Object **argv)
 
 Scheme_Object *process(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("process", "string", 0, argc, argv);
 	char *wavname=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 	if (Audio!=NULL)
 	{	
 		Audio->Process(wavname);
 	}
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -145,11 +169,15 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 
 Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 {
+	MZ_GC_DECL_REG(1); 
+	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_REG();	
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("smoothing-bias", "number", 0, argc, argv);
 	if (Audio!=NULL)
 	{	
 		Audio->SetSmoothingBias(scheme_real_to_double(argv[0]));
 	}
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -175,8 +203,13 @@ Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
+	Scheme_Env *menv=NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_VAR_IN_REG(1, menv);
+	MZ_GC_REG();
 	// add all the modules from this extension
-	Scheme_Env *menv=scheme_primitive_module(scheme_intern_symbol("fluxus-audio"), env);
+	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-audio"), env);
 
 	scheme_add_global("start-audio", scheme_make_prim_w_arity(start_audio, "start-audio", 3, 3), menv);
 	scheme_add_global("gh", scheme_make_prim_w_arity(get_harmonic, "gh", 1, 1), menv);
@@ -186,6 +219,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("update-audio", scheme_make_prim_w_arity(update_audio, "update-audio", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);	
+ 	MZ_GC_UNREG(); 
 	
 	return scheme_void;
 }

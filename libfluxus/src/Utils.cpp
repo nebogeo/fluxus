@@ -73,7 +73,7 @@ GLubyte *GetScreenBuffer(int x, int y, int &width, int &height, int super)
 	return image2;
 }
 
-int WriteTiff(char *filename, char *description, int x, int y, int width, int height, int compression, int super)
+int WriteTiff(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
 {
 	TIFF *file;
 	GLubyte *image, *p;
@@ -112,7 +112,7 @@ int WriteTiff(char *filename, char *description, int x, int y, int width, int he
 	return 0;
 }	
 
-int WriteJPG(char *filename, char *description, int x, int y, int width, int height, int quality, int super)
+int WriteJPG(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
 {
 	GLubyte *image = GetScreenBuffer(x, y, width, height, super);
 
@@ -159,7 +159,7 @@ int WriteJPG(char *filename, char *description, int x, int y, int width, int hei
 	return 0;
 }	
 
-int WritePPM(char *filename, char *description, int x, int y, int width, int height, int compression, int super)
+int WritePPM(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
 {
 	FILE* file = fopen(filename,"w");
 	if (file == NULL) 

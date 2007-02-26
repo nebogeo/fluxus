@@ -99,8 +99,10 @@ Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 
 Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("flxseed", "i", argc, argv);
 	srand(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -116,23 +118,25 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 
 Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
 {
+	Scheme_Object *vec=NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, vec);
+	MZ_GC_REG();	
 	ArgCheck("searchpaths", "l", argc, argv);
  	
 	// vectors seem easier to handle than lists with this api
-	Scheme_Object *vec = scheme_list_to_vector(argv[0]);
+	vec = scheme_list_to_vector(argv[0]);
 	size_t size=0;
-	
-	Scheme_Object **vecptr = SCHEME_VEC_ELS(vec);
-	
+		
 	for (int n=0; n<SCHEME_VEC_SIZE(vec); n++)
 	{
-		if (SCHEME_CHAR_STRINGP(vecptr[n]))
+		if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(vec)[n]))
 		{
-			char *argstring=StringFromScheme(vecptr[n]);
-			SearchPaths::Get()->AddPath(argstring);
+			SearchPaths::Get()->AddPath(StringFromScheme(SCHEME_VEC_ELS(vec)[n]));
 		}
 	}
-
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -148,9 +152,10 @@ Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
 
 Scheme_Object *fullpath(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("fullpath", "s", argc, argv);
-	char *name=StringFromScheme(argv[0]);
-	string fullpath = SearchPaths::Get()->GetFullPath(name);
+	string fullpath = SearchPaths::Get()->GetFullPath(StringFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_make_utf8_string(fullpath.c_str());
 }
 
@@ -167,32 +172,34 @@ Scheme_Object *fullpath(int argc, Scheme_Object **argv)
 
 Scheme_Object *framedump(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("framedump", "s", argc, argv);
 	
 	int w=0,h=0;
 	Engine::Get()->Renderer()->GetResolution(w,h);
 	
-	char *filename=StringFromScheme(argv[0]);
-	if (strlen(filename)>3)
+	string filename=StringFromScheme(argv[0]);
+	if (strlen(filename.c_str())>3)
 	{
-		if (!strcmp(filename+strlen(filename)-3,"tif"))
+		if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"tif"))
 		{
-			WriteTiff(filename, "made in fluxus", 0, 0, w, h, 1);
+			WriteTiff(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
 		}
-		else if (!strcmp(filename+strlen(filename)-3,"jpg"))
+		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"jpg"))
 		{
-			WriteJPG(filename, "made in fluxus", 0, 0, w, h, 80);
+			WriteJPG(filename.c_str(), "made in fluxus", 0, 0, w, h, 80);
 		}
-		else if (!strcmp(filename+strlen(filename)-3,"ppm"))
+		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"ppm"))
 		{
-			WritePPM(filename, "made in fluxus", 0, 0, w, h, 1);
+			WritePPM(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
 		}
 		else
 		{
-			cerr<<"framedump: Unknown image extension "<<filename+strlen(filename)-3<<endl;
+			cerr<<"framedump: Unknown image extension "<<filename.c_str()+strlen(filename.c_str())-3<<endl;
 		}
 	}
 	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -200,6 +207,9 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 
 void UtilFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	// renderstate operations
 	scheme_add_global("flxtime",scheme_make_prim_w_arity(time,"flxtime",0,0), env);
 	scheme_add_global("delta",scheme_make_prim_w_arity(delta,"delta",0,0), env);
@@ -208,4 +218,5 @@ void UtilFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("searchpaths",scheme_make_prim_w_arity(searchpaths,"searchpaths",1,1), env);	
 	scheme_add_global("fullpath",scheme_make_prim_w_arity(fullpath,"fullpath",1,1), env);	
 	scheme_add_global("framedump",scheme_make_prim_w_arity(framedump,"framedump",1,1), env);	
+ 	MZ_GC_UNREG(); 
 }

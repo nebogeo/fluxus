@@ -47,7 +47,7 @@
     (toon (pdata-size)
         ; transforming a vector gets that vector "into" the space of the transform, so 0,0,0 in camera
         ; space is the camera position...
-        (vtransform (vector 0 0 0) (get-camera-transform)) ; gets the eye position
+        (vtransform (vector 0 0 0) (get-camera)) ; gets the eye position
         
         ; and 0,0,0 in object space is the object position
         (vtransform (vector 0 0 0) (get-transform))) ; gets the object position

@@ -67,8 +67,10 @@ Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 
 Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("renderer-grab", "integer", 0, argc, argv);
 	Engine::Get()->PushRenderer(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -174,9 +176,11 @@ Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 
 Scheme_Object *reshape(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("reshape", "integer", 0, argc, argv);
 	if (!SCHEME_INTP(argv[1])) scheme_wrong_type("reshape", "integer", 1, argc, argv);
 	Engine::Get()->Renderer()->SetResolution(IntFromScheme(argv[0]),IntFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 

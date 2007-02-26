@@ -63,10 +63,12 @@ Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 
 Scheme_Object *blur(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("blur", "f", argc, argv);
 	float blur=FloatFromScheme(argv[0]);	
 	if (!blur) Engine::Get()->Renderer()->SetMotionBlur(false);
     else Engine::Get()->Renderer()->SetMotionBlur(true, blur);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -83,11 +85,13 @@ Scheme_Object *blur(int argc, Scheme_Object **argv)
 
 Scheme_Object *fog(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("fog", "vfff", argc, argv);
 	Engine::Get()->Renderer()->SetFog(ColourFromScheme(argv[0]),
 		FloatFromScheme(argv[1]),
 		FloatFromScheme(argv[2]),
 		FloatFromScheme(argv[3]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -109,8 +113,10 @@ Scheme_Object *fog(int argc, Scheme_Object **argv)
 
 Scheme_Object *feedback(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("feedback", "f", argc, argv);
 	Engine::Get()->Renderer()->SetFeedBack(FloatFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -130,8 +136,10 @@ Scheme_Object *feedback(int argc, Scheme_Object **argv)
 
 Scheme_Object *feedback_transform(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("feedback-transform", "m", argc, argv);
 	Engine::Get()->Renderer()->SetFeedBackMat(MatrixFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;	
 }
 
@@ -147,9 +155,11 @@ Scheme_Object *feedback_transform(int argc, Scheme_Object **argv)
 
 Scheme_Object *show_axis(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("show-axis", "i", argc, argv);
     Engine::Get()->Renderer()->ShowAxis(IntFromScheme(argv[0]));
     //Fluxus->ShowLocators(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -165,8 +175,10 @@ Scheme_Object *show_axis(int argc, Scheme_Object **argv)
 
 Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 {
- 	ArgCheck("show-fps", "i", argc, argv);
+ 	DECL_ARGV();
+	ArgCheck("show-fps", "i", argc, argv);
     Engine::Get()->Renderer()->SetFPSDisplay(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -201,8 +213,10 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 
 Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("lock-camera", "i", argc, argv);
     Engine::Get()->Renderer()->LockCamera(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -238,8 +252,10 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("camera-lag", "f", argc, argv);
     Engine::Get()->Renderer()->SetCameraLag(FloatFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -258,8 +274,11 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 {
- 	ArgCheck("load-texture", "s", argc, argv);		
-    return scheme_make_integer_value(Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0])));
+	DECL_ARGV();
+ 	ArgCheck("load-texture", "s", argc, argv);	
+	int ret=Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0]));	
+ 	MZ_GC_UNREG(); 
+    return scheme_make_integer_value(ret);
 }
 
 // StartFunctionDoc-en
@@ -276,8 +295,11 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *force_load_texture(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("force-load-texture", "s", argc, argv);
-    return scheme_make_integer_value(Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0]),true));
+	int ret=Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0]),true);
+ 	MZ_GC_UNREG(); 
+    return scheme_make_integer_value(ret);
 }
 
 // StartFunctionDoc-en
@@ -291,11 +313,13 @@ Scheme_Object *force_load_texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *frustum(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("frustum", "ffff", argc, argv);
 	Engine::Get()->Renderer()->SetFrustum(FloatFromScheme(argv[0]),
 												FloatFromScheme(argv[1]),
 									 		 	FloatFromScheme(argv[2]),
 												FloatFromScheme(argv[3]));
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -311,9 +335,11 @@ Scheme_Object *frustum(int argc, Scheme_Object **argv)
 
 Scheme_Object *clip(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("clip", "ff", argc, argv);
 	Engine::Get()->Renderer()->SetClip(FloatFromScheme(argv[0]),
 											 FloatFromScheme(argv[1]));
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -358,8 +384,10 @@ Scheme_Object *persp(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("set-ortho-zoom", "f", argc, argv);
 	Engine::Get()->Renderer()->SetOrthoZoom(FloatFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -376,8 +404,10 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 
 Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("backfacecull", "i", argc, argv);
 	Engine::Get()->Renderer()->SetBackFaceCull(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -392,8 +422,10 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 {
- 	ArgCheck("clear-colour", "v", argc, argv);
+ 	DECL_ARGV();
+	ArgCheck("clear-colour", "v", argc, argv);
     Engine::Get()->Renderer()->SetBGColour(ColourFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -408,8 +440,10 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 {
- 	ArgCheck("clear-frame", "i", argc, argv);
+ 	DECL_ARGV();
+	ArgCheck("clear-frame", "i", argc, argv);
 	Engine::Get()->Renderer()->SetClearFrame(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -454,10 +488,12 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("set-camera", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
 	(*Engine::Get()->Renderer()->GetCamera())=m;
+ 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -504,12 +540,14 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("set-screen-size", "vector", 0, argc, argv);
 	if (SCHEME_VEC_SIZE(argv[0])!=2) scheme_wrong_type("set-screen-size", "vector size 2", 0, argc, argv);
 	float v[2];
 	FloatsFromScheme(argv[0],v,2);
 	// hmmm, seems a bit wrong, but hey...
 	glutReshapeWindow((int)v[0],(int)v[1]);
+ 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -525,10 +563,13 @@ Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 
 Scheme_Object *select(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("select", "iii", argc, argv);
-	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(IntFromScheme(argv[0]), 
-																	   IntFromScheme(argv[1]),
-																	   IntFromScheme(argv[2])));
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	int s=IntFromScheme(argv[2]);
+ 	MZ_GC_UNREG(); 
+	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(x,y,s));
 }
 
 // StartFunctionDoc-en
@@ -543,13 +584,19 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 
 Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("desiredfps", "f", argc, argv);
 	Engine::Get()->Renderer()->SetDesiredFPS(scheme_real_to_double(argv[0]));
+ 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
+
 	scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
 	scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
 	scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
@@ -577,4 +624,6 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
 	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
+ 
+ 	MZ_GC_UNREG(); 
 }

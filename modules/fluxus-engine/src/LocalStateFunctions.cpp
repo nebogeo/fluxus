@@ -106,8 +106,10 @@ Scheme_Object *pop(int argc, Scheme_Object **argv)
 
 Scheme_Object *grab(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("grab", "i", argc, argv);
 	Engine::Get()->PushGrab(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -145,8 +147,10 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 
 Scheme_Object *apply(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("apply", "i", argc, argv);
 	Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -162,8 +166,10 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 
 Scheme_Object *opacity(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("opacity", "f", argc, argv);
     Engine::Get()->State()->Opacity=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -181,8 +187,10 @@ Scheme_Object *opacity(int argc, Scheme_Object **argv)
 
 Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("shinyness", "f", argc, argv);
     Engine::Get()->State()->Shinyness=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -198,8 +206,10 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 
 Scheme_Object *colour(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("colour", "v", argc, argv);
     Engine::Get()->State()->Colour=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -217,8 +227,10 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
 
 Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("wire-colour", "v", argc, argv);
    	Engine::Get()->State()->WireColour=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -235,8 +247,10 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 
 Scheme_Object *specular(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("specular", "v", argc, argv);
     Engine::Get()->State()->Specular=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -253,8 +267,10 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
 
 Scheme_Object *ambient(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("ambient", "v", argc, argv);
     Engine::Get()->State()->Ambient=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -271,8 +287,10 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
 
 Scheme_Object *emissive(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("emissive", "v", argc, argv);
     Engine::Get()->State()->Emissive=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -311,10 +329,12 @@ Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
 
 Scheme_Object *concat(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("concat", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
     Engine::Get()->State()->Transform*=m;
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -330,10 +350,12 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
 
 Scheme_Object *translate(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("translate", "v", argc, argv);
 	dVector t;
 	FloatsFromScheme(argv[0],t.arr(),3);
     Engine::Get()->State()->Transform.translate(t.x,t.y,t.z);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -349,6 +371,7 @@ Scheme_Object *translate(int argc, Scheme_Object **argv)
 
 Scheme_Object *rotate(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("rotate", "vector", 0, argc, argv);
 	
 	if (SCHEME_VEC_SIZE(argv[0])==3)
@@ -370,6 +393,7 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 	{
 		cerr<<"rotate - wrong number of elements in vector"<<endl;
 	}
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -385,10 +409,12 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 
 Scheme_Object *scale(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("scale", "v", argc, argv);
 	dVector t;
 	FloatsFromScheme(argv[0],t.arr(),3);
     Engine::Get()->State()->Transform.scale(t.x,t.y,t.z);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -432,8 +458,10 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 
 Scheme_Object *parent(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("parent", "i", argc, argv);
     Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -451,8 +479,10 @@ Scheme_Object *parent(int argc, Scheme_Object **argv)
 
 Scheme_Object *line_width(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("line-width", "f", argc, argv);
     Engine::Get()->State()->LineWidth=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -470,8 +500,10 @@ Scheme_Object *line_width(int argc, Scheme_Object **argv)
 
 Scheme_Object *point_width(int argc, Scheme_Object **argv)
 {
-  	ArgCheck("point-width", "f", argc, argv);
+ 	DECL_ARGV();
+ 	ArgCheck("point-width", "f", argc, argv);
     Engine::Get()->State()->PointWidth=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -489,10 +521,12 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 
 Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("blend-mode", "ss", argc, argv);
-	char *s=StringFromScheme(argv[0]);	
-	char *d=StringFromScheme(argv[1]);	
+	string s=StringFromScheme(argv[0]);	
+	string d=StringFromScheme(argv[1]);	
     Engine::Get()->State()->SetBlendMode(s,d);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -757,8 +791,10 @@ Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 
 Scheme_Object *texture(int argc, Scheme_Object **argv)
 {
-  	ArgCheck("texture", "i", argc, argv);
+ 	DECL_ARGV();
+ 	ArgCheck("texture", "i", argc, argv);
 	Engine::Get()->State()->Textures[0]=(int)IntFromScheme(argv[0]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -787,8 +823,10 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *multitexture(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("multitexture", "ii", argc, argv);
 	Engine::Get()->State()->Textures[IntFromScheme(argv[0])]=IntFromScheme(argv[1]);
+	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -822,11 +860,13 @@ Scheme_Object *print_scene_graph(int argc, Scheme_Object **argv)
 
 Scheme_Object *hide(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("hide", "i", argc, argv);
 	if (Engine::Get()->Grabbed()) 
 	{
 		Engine::Get()->Grabbed()->Hide(FloatFromScheme(argv[0]));
 	}
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -844,11 +884,13 @@ Scheme_Object *hide(int argc, Scheme_Object **argv)
 
 Scheme_Object *selectable(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("selectable", "i", argc, argv);
 	if (Engine::Get()->Grabbed()) 
 	{
 		Engine::Get()->Grabbed()->Selectable(FloatFromScheme(argv[0]));
 	}
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -884,10 +926,11 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 
 Scheme_Object *shader(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
   	ArgCheck("shader", "ss", argc, argv);
 	
-	char *vert=StringFromScheme(argv[0]);
-	char *frag=StringFromScheme(argv[1]);
+	string vert=StringFromScheme(argv[0]);
+	string frag=StringFromScheme(argv[1]);
 	
  	GLSLShader *shader = new GLSLShader(vert,frag);
 	
@@ -899,6 +942,7 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 		
 	Engine::Get()->State()->Shader=shader;
 	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -933,46 +977,53 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 
 Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 {	
+	Scheme_Object *paramvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_REG();
+			
    	ArgCheck("shader-set!", "l", argc, argv);
 	GLSLShader *shader=Engine::Get()->State()->Shader;
 
 	if (shader)
 	{
 		// vectors seem easier to handle than lists with this api
-		Scheme_Object *paramvec = scheme_list_to_vector(argv[0]);
+		paramvec = scheme_list_to_vector(argv[0]);
 
 		// apply to set parameters
 		shader->Apply();
 
-		Scheme_Object **vecptr = SCHEME_VEC_ELS(paramvec);
-
 		for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
 		{
-			if (SCHEME_CHAR_STRINGP(vecptr[n]))
+			if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]))
 			{
 				// get the parameter name
-				char *param = StringFromScheme(vecptr[n]);
+				string param = StringFromScheme(SCHEME_VEC_ELS(paramvec)[n]);
 
-				// get the value
-				Scheme_Object *arg=vecptr[n+1];
-
-				if (SCHEME_NUMBERP(arg))
+				if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]))
 				{
-					if (SCHEME_EXACT_INTEGERP(arg)) shader->SetInt(param,IntFromScheme(arg));
-					else shader->SetFloat(param,(float)FloatFromScheme(arg));
+					if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1])) 
+					{
+						shader->SetInt(param,IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+					}
+					else 
+					{
+						shader->SetFloat(param,(float)FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+					}
 				}
-				else if (SCHEME_VECTORP(arg))
+				else if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]))
 				{
-					if (SCHEME_VEC_SIZE(arg) == 3)
+					if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 3)
 					{
 						dVector vec;
-						FloatsFromScheme(arg,vec.arr(),3);
+						FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),3);
 						shader->SetVector(param,vec);
 					}
-					else if (SCHEME_VEC_SIZE(arg) == 4)
+					else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
 					{
 						dColour vec;
-						FloatsFromScheme(arg,vec.arr(),4);
+						FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
 						shader->SetColour(param,vec);
 					}
 					else
@@ -993,11 +1044,15 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 		GLSLShader::Unapply();
 	}   
 	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
 void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	// renderstate operations
 	scheme_add_global("push",scheme_make_prim_w_arity(push,"push",0,0), env);
 	scheme_add_global("pop",scheme_make_prim_w_arity(pop,"pop",0,0), env);
@@ -1041,4 +1096,5 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
 	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
+ 	MZ_GC_UNREG(); 
 }

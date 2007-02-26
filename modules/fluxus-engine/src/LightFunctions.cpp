@@ -46,27 +46,28 @@ using namespace SchemeHelper;
 
 Scheme_Object *make_light(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("make-light", "ss", argc, argv);
 	
-	char *type=StringFromScheme(argv[0]);
-	char *cameralocked=StringFromScheme(argv[1]);
+	string type=StringFromScheme(argv[0]);
+	string cameralocked=StringFromScheme(argv[1]);
 	
 	Light *l=new Light;
 	
-	if (!strcmp(type,"point"))
+	if (type=="point")
 	{
 		l->SetType(Light::POINT);
 	}
-	else if (!strcmp(type,"directional"))
+	else if (type=="directional")
 	{
 		l->SetType(Light::DIRECTIONAL);
 	}
-	else if (!strcmp(type,"spot"))
+	else if (type=="spot")
 	{
 		l->SetType(Light::SPOT);
 	}
 
-	if (!strcmp(cameralocked,"free"))
+	if (cameralocked=="free")
 	{
 		l->SetCameraLock(0);
 	}
@@ -75,6 +76,7 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 		l->SetCameraLock(1);
 	}
 	
+	MZ_GC_UNREG(); 
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddLight(l));
 }
 
@@ -89,11 +91,13 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-ambient", "iv", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetAmbient(dColour(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -108,11 +112,13 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-diffuse", "iv", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -127,11 +133,13 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-specular", "iv", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetSpecular(dColour(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -146,11 +154,13 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_position(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-position", "iv", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetPosition(dVector(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -165,9 +175,11 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 	
 Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-spot-angle", "if", argc, argv);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetSpotAngle(FloatFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 	
@@ -182,9 +194,11 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-spot-exponent", "if", argc, argv);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetSpotExponent(FloatFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -200,25 +214,27 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-attenuation", "isf", argc, argv);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) 
 	{
-		char *type=StringFromScheme(argv[1]);	
-		if (!strcmp(type,"constant"))
+		string type=StringFromScheme(argv[1]);	
+		if (type=="constant")
 		{
 			light->SetAttenuation(0,FloatFromScheme(argv[2]));
 		}
-		else if (!strcmp(type,"linear"))
+		else if (type=="linear")
 		{
 			light->SetAttenuation(1,FloatFromScheme(argv[2]));
 		}
-		else if (!strcmp(type,"quadratic"))
+		else if (type=="quadratic")
 		{
 			light->SetAttenuation(2,FloatFromScheme(argv[2]));
 		}
 	}
 	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -233,16 +249,21 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 
 Scheme_Object *light_direction(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("light-direction", "iv", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetDirection(dVector(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
 void LightFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	scheme_add_global("make-light", scheme_make_prim_w_arity(make_light, "make-light", 2, 2), env);
 	scheme_add_global("light-ambient", scheme_make_prim_w_arity(light_ambient, "light-ambient", 2, 2), env);
 	scheme_add_global("light-diffuse", scheme_make_prim_w_arity(light_diffuse, "light-diffuse", 2, 2), env);
@@ -252,4 +273,5 @@ void LightFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("light-spot-exponent", scheme_make_prim_w_arity(light_spot_exponent, "light-spot-exponent", 2, 2), env);
 	scheme_add_global("light-attenuation", scheme_make_prim_w_arity(light_attenuation, "light-attenuation", 3, 3), env);
 	scheme_add_global("light-direction", scheme_make_prim_w_arity(light_direction, "light-direction", 2, 2), env);
+ 	MZ_GC_UNREG(); 
 }

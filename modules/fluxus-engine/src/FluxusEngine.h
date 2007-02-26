@@ -15,8 +15,4 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ///
 
-#undef MZ_GC_DECL_REG
-#undef MZ_GC_UNREG
-#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
-#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
-
+#include "SchemeHelper.h"

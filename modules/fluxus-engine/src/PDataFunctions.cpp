@@ -63,19 +63,17 @@ using namespace fluxus;
 Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret=NULL;
-	char *name=NULL;
 	
-	MZ_GC_DECL_REG(3);
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, ret);
-	MZ_GC_VAR_IN_REG(2, name);
 	MZ_GC_REG();	
 	ArgCheck("pdata-get", "si", argc, argv);		
 	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		char *name=StringFromScheme(argv[0]);
+		string name=StringFromScheme(argv[0]);
 		unsigned int index=IntFromScheme(argv[1]);
 		unsigned int size=0;
 		char type;
@@ -98,6 +96,10 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 			{
 				ret=FloatsToScheme(Grabbed->GetData<dMatrix>(name,index%size).arr(),16); 
 			}
+			else
+			{
+				cerr<<"unknown pdata type ["<<type<<"]"<<endl;
+			}
 		
 		}
 		
@@ -110,7 +112,9 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 		
   		MZ_GC_UNREG();
 		return ret;
-	}
+	}			
+	
+	cerr<<"pdata-get called without an objected being grabbed"<<endl;
   	MZ_GC_UNREG();
     return scheme_void;
 }
@@ -126,17 +130,15 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 {
-	char *name=NULL;
-	MZ_GC_DECL_REG(2);
+	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_VAR_IN_REG(1, name);
 	MZ_GC_REG();	
 	ArgCheck("pdata-set", "si?", argc, argv);		
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
 		size_t ssize=0;
-		name=StringFromScheme(argv[0]);
+		string name=StringFromScheme(argv[0]);
 		unsigned int index=IntFromScheme(argv[1]);
 		unsigned int size;
 		char type;
@@ -197,12 +199,13 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("pdata-add", "ss", argc, argv);			
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		char *names=StringFromScheme(argv[0]);
-		char *types=StringFromScheme(argv[1]);
+		string names=StringFromScheme(argv[0]);
+		string types=StringFromScheme(argv[1]);
 		char type=0;
 		unsigned int size=0;
 		
@@ -223,6 +226,7 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 			Grabbed->AddData(names,ptr);
 		}
 	}
+	MZ_GC_UNREG(); 
 	
 	return scheme_void;
 }
@@ -248,19 +252,20 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV(); 
 	ArgCheck("pdata-op", "ss?", argc, argv);			
     PData *ret=NULL;
 	
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		char *op=StringFromScheme(argv[0]);
-		char *pd=StringFromScheme(argv[1]);
+		string op=StringFromScheme(argv[0]);
+		string pd=StringFromScheme(argv[1]);
 		
 		// find out what the inputs are, and call the corresponding function
 		if (SCHEME_CHAR_STRINGP(argv[2]))
 		{
-			char *operand=StringFromScheme(argv[2]);
+			string operand=StringFromScheme(argv[2]);
 			
 			PData* pd2 = Grabbed->GetDataRaw(operand);
 			
@@ -323,6 +328,7 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 		{
 			dVector r = data->m_Data[0];
 			delete ret;
+			MZ_GC_UNREG();
 			return FloatsToScheme(r.arr(),3);
 		}
 		else
@@ -332,6 +338,7 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 			{
 				dColour r = data->m_Data[0];
 				delete ret;
+				MZ_GC_UNREG();
 				return FloatsToScheme(r.arr(),4);
 			}
 			else 
@@ -341,6 +348,7 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 				{		
 					float r = data->m_Data[0];
 					delete ret;
+					MZ_GC_UNREG();
 					return scheme_make_double(r);
 				}
 				else 
@@ -350,12 +358,14 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 					{
 						dMatrix r = data->m_Data[0];
 						delete ret;
+						MZ_GC_UNREG();
 						return FloatsToScheme(r.arr(),16);
 					}
 				}
 			}
 		}
 	}
+	MZ_GC_UNREG();
 	
 	return scheme_void;
 }
@@ -371,16 +381,17 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 
 Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
  	ArgCheck("pdata-copy", "ss", argc, argv);			
   	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
-		char *source=StringFromScheme(argv[0]);
-		char *dest=StringFromScheme(argv[1]);
+		string source=StringFromScheme(argv[0]);
+		string dest=StringFromScheme(argv[1]);
 		Grabbed->CopyData(source,dest);
 	}
-	
+	MZ_GC_UNREG(); 	
 	return scheme_void;
 }
 
@@ -441,14 +452,19 @@ Scheme_Object *finalise(int argc, Scheme_Object **argv)
 
 Scheme_Object *recalc_normals(int argc, Scheme_Object **argv)
 {
- 	ArgCheck("recalc-normals", "i", argc, argv);			
+ 	DECL_ARGV();
+	ArgCheck("recalc-normals", "i", argc, argv);			
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) Grabbed->RecalculateNormals(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
 void PDataFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	scheme_add_global("pdata-get", scheme_make_prim_w_arity(pdata_get, "pdata-get", 2, 2), env);
 	scheme_add_global("pdata-set", scheme_make_prim_w_arity(pdata_set, "pdata-set", 3, 3), env);
 	scheme_add_global("pdata-add", scheme_make_prim_w_arity(pdata_add, "pdata-add", 2, 2), env);
@@ -457,4 +473,5 @@ void PDataFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pdata-size", scheme_make_prim_w_arity(pdata_size, "pdata-size", 0, 0), env);
 	scheme_add_global("finalise", scheme_make_prim_w_arity(finalise, "finalise", 0, 0), env);
 	scheme_add_global("recalc-normals", scheme_make_prim_w_arity(recalc_normals, "recalc-normals", 1, 1), env);
+ 	MZ_GC_UNREG(); 
 }

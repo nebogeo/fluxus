@@ -56,8 +56,10 @@ using namespace fluxus;
 
 Scheme_Object *turtle_prim(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-prim", "i", argc, argv);		
 	Engine::Get()->GetTurtle()->Prim(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -102,8 +104,10 @@ Scheme_Object *turtle_build(int argc, Scheme_Object **argv)
 
 Scheme_Object *turtle_move(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-move", "f", argc, argv);		
 	Engine::Get()->GetTurtle()->Move(FloatFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -149,10 +153,12 @@ Scheme_Object *turtle_pop(int argc, Scheme_Object **argv)
 
 Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-turn", "v", argc, argv);		
 	float rot[3];
 	FloatsFromScheme(argv[0],rot,3);
 	Engine::Get()->GetTurtle()->Turn(dVector(rot[0],rot[1],rot[2]));
+	MZ_GC_UNREG(); 
 	return scheme_void;	
 }
 
@@ -184,6 +190,7 @@ Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 
 Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-attach", "i", argc, argv);		
 	PolyPrimitive *poly = dynamic_cast<PolyPrimitive*>(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
 	if (poly)
@@ -194,6 +201,7 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 	{
 		cerr<<"turtle-attach only works on polys"<<endl;
 	}
+	MZ_GC_UNREG(); 
 	
 	return scheme_void;	
 }
@@ -210,8 +218,10 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 
 Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-skip", "i", argc, argv);		
 	Engine::Get()->GetTurtle()->Skip(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;	
 }
 
@@ -240,13 +250,18 @@ Scheme_Object *turtle_position(int argc, Scheme_Object **argv)
 
 Scheme_Object *turtle_seek(int argc, Scheme_Object **argv)
 {
+	DECL_ARGV();
 	ArgCheck("turtle-seek", "i", argc, argv);		
 	Engine::Get()->GetTurtle()->SetPosition(IntFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
 	return scheme_void;	
 }
 
 void TurtleFunctions::AddGlobals(Scheme_Env *env)
 {	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 	scheme_add_global("turtle-prim", scheme_make_prim_w_arity(turtle_prim, "turtle-prim", 1, 1), env);
 	scheme_add_global("turtle-vert", scheme_make_prim_w_arity(turtle_vert, "turtle-vert", 0, 0), env);
 	scheme_add_global("turtle-build", scheme_make_prim_w_arity(turtle_build, "turtle-build", 0, 0), env);
@@ -259,4 +274,5 @@ void TurtleFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("turtle-skip", scheme_make_prim_w_arity(turtle_skip, "turtle-skip", 1, 1), env);
 	scheme_add_global("turtle-position", scheme_make_prim_w_arity(turtle_position, "turtle-position", 0, 0), env);
 	scheme_add_global("turtle-seek", scheme_make_prim_w_arity(turtle_seek, "turtle-seek", 1, 1), env);
+ 	MZ_GC_UNREG(); 
 }
