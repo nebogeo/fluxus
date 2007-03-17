@@ -38,6 +38,10 @@ void SceneGraph::Render(Mode rendermode)
 	{
 		RenderWalk((SceneNode*)*i,0,rendermode);
 	}
+	
+	// now render the depth sorted primitives:
+	m_DepthSorter.Render();
+	m_DepthSorter.Clear();
 }
 
 void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
@@ -52,13 +56,29 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	if (node->Prim->Hidden()) return;
 	if (rendermode==SELECT && !node->Prim->IsSelectable()) return;
 	
+	dMatrix parent;
+	// see if we need the parent (result of all the parents) transform
+	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
+	{
+		glGetFloatv(GL_MODELVIEW_MATRIX,parent.arr());
+	}
+	
 	glPushMatrix();		
 	node->Prim->ApplyState();
-	glPushName(node->ID);
-	node->Prim->Prerender();
-	node->Prim->Render();
-	glPopName();
-    
+	
+	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
+	{
+		// render it later, and after depth sorting
+		m_DepthSorter.Add(parent,node->Prim,node->ID);
+	}
+	else
+	{
+		glPushName(node->ID);
+		node->Prim->Prerender();
+		node->Prim->Render();
+		glPopName();
+    }
+	
 	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
 	{
 		m_ShadowVolumeGen.Generate(node->Prim);

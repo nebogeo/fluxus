@@ -19,6 +19,7 @@
 #include "Primitive.h"
 #include "State.h"
 #include "ShadowVolumeGen.h"
+#include "DepthSorter.h"
 
 using namespace std;
 
@@ -60,6 +61,7 @@ private:
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	
 	ShadowVolumeGen m_ShadowVolumeGen;
+	DepthSorter m_DepthSorter;
 };
 
 }

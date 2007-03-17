@@ -35,6 +35,7 @@ Source = Split("src/PData.cpp \
 		src/GLSLShader.cpp \
 		src/ShadowVolumeGen.cpp \
 		src/Physics.cpp \
+		src/DepthSorter.cpp \
 		src/Utils.cpp")
 		
 env.StaticLibrary(source = Source, target = Target)

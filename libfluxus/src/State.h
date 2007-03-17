@@ -50,6 +50,7 @@ namespace fluxus
 #define HINT_ORIGIN       0x0200
 #define HINT_CAST_SHADOW  0x0400
 #define HINT_IGNORE_DEPTH 0x0800
+#define HINT_DEPTH_SORT   0x1000
 
 // todo: use glew for this
 #ifdef ENABLE_MULTITEXTURE

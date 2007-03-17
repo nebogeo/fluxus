@@ -759,6 +759,25 @@ Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-depth-sort
+// Returns: void
+// Description: 
+// Sets the render hints to depth sort for the current drawing state, or the 
+// currently grabbed primitive. Render hints change the way that primitives are rendered, 
+// but may have different effects - or no effect on certain primitive types, hence the 
+// name hint. 
+// Example:
+// (hint-depth-sort)
+// (build-sphere 10 10) 
+// EndFunctionDoc
+
+Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_DEPTH_SORT;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // hint-ignore-depth
 // Returns: void
 // Description: 
@@ -1088,6 +1107,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-origin",scheme_make_prim_w_arity(hint_origin,"hint-origin",0,0), env);
     scheme_add_global("hint-cast-shadow",scheme_make_prim_w_arity(hint_cast_shadow,"hint-cast-shadow",0,0), env);
     scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
+    scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
 	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);

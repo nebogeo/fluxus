@@ -81,12 +81,14 @@ Client *OSCClient = NULL;
 
 Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1); 
+	char *port=NULL;
+	MZ_GC_DECL_REG(2); 
 	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_VAR_IN_REG(1, port); 
 	MZ_GC_REG();	
 	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-source", "string", 0, argc, argv);
-	char *port=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
+	port=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 
 	if (!OSCServer)
 	{
@@ -116,12 +118,14 @@ Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1); 
+	char *name=NULL;
+	MZ_GC_DECL_REG(2); 
 	MZ_GC_VAR_IN_REG(0, argv); 
+	MZ_GC_VAR_IN_REG(1, name); 
 	MZ_GC_REG();	
 	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-msg", "string", 0, argc, argv);
-	char *name=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
+	name=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
 	if (OSCServer->SetMsg(name))
 	{
 		MZ_GC_UNREG(); 
