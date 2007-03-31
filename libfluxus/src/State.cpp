@@ -42,7 +42,7 @@ void State::Apply()
 {
 	glMultMatrixf(Transform.arr());
 	Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
-	glColor3f(Colour.r,Colour.g,Colour.b);
+	glColor4f(Colour.r,Colour.g,Colour.b,Colour.a);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Ambient.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emissive.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_DIFFUSE,Colour.arr());
