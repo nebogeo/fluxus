@@ -203,8 +203,6 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
-
-
 void UtilFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);

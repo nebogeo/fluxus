@@ -322,7 +322,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// upload-pixels pixelprimitiveid-number
+// upload-pixels 
 // Returns: void
 // Description:
 // Uploads the texture data, you need to call this when you've finished writing to the 
@@ -566,7 +566,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
-	scheme_add_global("pload-pixels", scheme_make_prim_w_arity(upload_pixels, "upload-pixels", 0, 0), env);
+	scheme_add_global("upload-pixels", scheme_make_prim_w_arity(upload_pixels, "upload-pixels", 0, 0), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);
