@@ -3,7 +3,6 @@
 ; build a randomly shaded sphere
 (define (sphere)
     (push)
-    (if (eq? (random 10) 0) (hint-wire))
     (opacity (flxrnd))
     (colour (vector (flxrnd) (flxrnd) (flxrnd)))    
     ; emissive tends to take over somewhat, try it 

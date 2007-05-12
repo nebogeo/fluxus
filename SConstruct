@@ -8,7 +8,7 @@
 MajorVersion = "0"
 MinorVersion = "12"
 FluxusVersion = MajorVersion+"."+MinorVersion
-Target = "fluxus-"+FluxusVersion
+Target = "fluxus"
 Prefix = "/usr/local"
 PLTPrefix = "/usr/local"
 PLTInclude = PLTPrefix+"/include/plt"

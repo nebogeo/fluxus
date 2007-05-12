@@ -83,7 +83,11 @@
     (joint-param back-right-joint "SuspensionCFM" 0.8)           
     (joint-param front-right-joint "SuspensionERP" 0.4)       
     (joint-param front-right-joint "SuspensionCFM" 0.8)       
-     
+    
+    (joint-param back-right-joint "FMax" 20)
+    (joint-param back-left-joint "FMax" 20)
+
+
     (joint-param back-left-joint "LoStop" 0)       
     (joint-param back-right-joint "HiStop" 0)
     (joint-param back-right-joint "LoStop" 0)
@@ -92,9 +96,9 @@
 (pop)
 
 (define (update)
-    
+
     (joint-param front-right-joint "Vel2" speed)
-    (joint-param front-right-joint "FMax2" 0.2)
+    (joint-param front-right-joint "FMax2" 20)
     
     (joint-param front-right-joint "Vel" steer)
     (joint-param front-right-joint "FMax" 0.2)
@@ -153,9 +157,9 @@
         (set! steer 0)))
     
     (if (key-pressed "q")
-        (set! speed (+ speed 0.3)))
+        (set! speed (+ speed 0.03)))
     (if (key-pressed "a")
-        (set! speed (- speed 0.3)))
+        (set! speed (- speed 0.03)))
     (if (key-pressed "o")
         (set! steer (- steer 0.03)))
     (if (key-pressed "p")

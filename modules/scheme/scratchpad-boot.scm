@@ -26,8 +26,8 @@
 
 ; the path to load extensions from
 (define fluxus-extension-path 
-	(build-path (path->string (car (current-library-collection-paths))) "fluxus-0.12"
-               "compiled" "native" (system-library-subpath #f)))
+	(build-path (path->string (car (current-library-collection-paths))) 
+		"fluxus-0.12" "extensions"))
 			   
 ; load the binary module extensions
 (load-extension (build-path fluxus-extension-path "fluxus-engine.so"))

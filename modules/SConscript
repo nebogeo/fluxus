@@ -5,12 +5,9 @@
 
 Import("env", "CollectsInstall", "MZDYN")
 
-# Don't know what the name for this for osx is - probably doesn't matter, but 
-# we should use the convention PLT uses (I guess it's used for a networked 
-# multi architecture install)
-Arch = "/i386-linux"
-BinaryModulesLocation = CollectsInstall + "/compiled/native" + Arch
+BinaryModulesLocation = CollectsInstall + "/extensions"
 
 SConscript(dirs = ["fluxus-engine", "fluxus-audio", "fluxus-osc", "scheme"], 
            exports = ["env", "CollectsInstall", "BinaryModulesLocation", "MZDYN"])
 
+env.Install(CollectsInstall, "../docs/helpmap.scm")

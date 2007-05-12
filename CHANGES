@@ -1,4 +1,4 @@
-Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
+Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.12
 
@@ -13,6 +13,8 @@ Fluxus : (C) 2005 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * ported lots of application code into scheme modules
 * removed the (edit) and (save-name) commands and added a minimal script 
   file browser interface to the scratchpad
+* added (hint-depth-sort) for correctly ordering and rendering transparent
+  objects
 
 0.11
 
