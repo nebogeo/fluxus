@@ -33,7 +33,8 @@ static const string INPUT_CALLBACK="fluxus-input-callback";
 static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
 static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d.%d\") \
-									(load (string-append (path->string (find-system-path 'home-dir)) \".fluxus/startup.scm\"))";
+									(load (string-append fluxus-collects-location \"/fluxus-\"\
+										fluxus-version \"/scratchpad-boot.scm\"))";
 
 FluxusMain *app = NULL;
 static Interpreter *interpreter = NULL; 

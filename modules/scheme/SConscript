@@ -13,8 +13,5 @@ Scripts    = ["scratchpad-boot.scm",
 			  "fluxus-obj-import.ss" ]
 
 Install        = CollectsInstall
-InstallStartup = os.environ["HOME"]+"/.fluxus/"
 
 env.Install(Install, Scripts)
-env.Install(InstallStartup, ["startup.scm"])
-env.Alias('install', InstallStartup)

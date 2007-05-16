@@ -48,7 +48,7 @@ AudioCollector *Audio = NULL;
 // Returns: void
 // Description:
 // Starts up the audio with the specified settings, you'll need to call this first, or put it into 
-// $HOME/.fluxus/startup.scm to call it automatically at startup. Make the jack port name an empty 
+// $HOME/.fluxus.scm to call it automatically at startup. Make the jack port name an empty 
 // string and it won't try to connect to anything for you. You can use qjackctrl or equivelent to 
 // do the connection manually. Fluxus reads a single mono source.
 // Example:

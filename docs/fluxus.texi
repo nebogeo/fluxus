@@ -74,7 +74,7 @@ In the next example, instead of using the current time as the source of animatio
 
 In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function.
 
-If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound. You may have to change your $HOME/.fluxus/startup.scm script which does audio setup - (start-audio) to match your jack settings.
+If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound. You may have to change your $HOME/.fluxus.scm script which does audio setup - (start-audio) to match your jack settings.
 
 
 @node User Guide
@@ -124,7 +124,7 @@ If you press ctrl and 0, instead of getting another script workspace, you will b
 
 @section Init script
 
-The fluxus scratchpad runs a script at startup which you can use to put commands you want set every time you run fluxus. This file is located in $HOME/.fluxus/startup.scm. By default it calls a function which sets up the fluxus environment, after this you can add your own commands. I've added a call to (start-audio) here as an example of a useful startup function.
+The fluxus scratchpad looks for a script at startup which it will run if it's present. You can use this to put commands you want run every time you start fluxus up. This file is located in $HOME/.fluxus.scm.
 
 @node Scheme
 @chapter Scheme
@@ -884,7 +884,7 @@ Getting the syncing right when combining audio/keyboard and OSC input can be a b
 
 @subsection Syncing lags, and gets worse with time
 
-The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus/startup.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
+The call to (start-audio) has the wrong buffer size. As I set this in my .fluxus.scm I often forget this. Set it correctly and re-render. Some lagging may happen unavoidably with really long (over 20 minutes or so) animations.
 
 @subsection Syncing is offset in a constant manner
 
