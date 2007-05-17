@@ -1,10 +1,77 @@
 Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
-act of a flowing; a continuous moving on or passing by, as of a flowing stream; a continuous 
-succession of changes
+"act of a flowing; a continuous moving on or passing by, as of a flowing stream; 
+a continuous succession of changes"
 
-fluxus is a small realtime render engine for linux that generates animation from sound.
-released under the GPL licence (see COPYING)
+Fluxus is a small realtime render engine for linux that generates animation from 
+sound. Released under the GPL licence (see COPYING)
 
-see INSTALL for information on building
+Installing
+----------
+
+Fluxus is a dependancy heavy application, and installing it can be a bit of a 
+challenge - anyone who can help in this regard, please get in contact!
+
+It requires:
+
+ode (0.5)           http://opende.sourceforge.net/
+plt scheme (369.10) http://www.plt-scheme.org/ (see below)
+fftw (3.0.1)        http://www.fftw.org/
+jack (1.0)          http://jackit.sourceforge.net/
+libsndfile (1.0.12) http://www.mega-nerd.com/libsndfile/
+liblo (0.5.0)       http://plugin.org.uk/liblo/
+glew (1.3.4)        http://glew.sourceforge.net/
+
+The version numbers in brackets are the version I've built it with, later versions
+should also be ok, let me know (via the mailing list) if you run into problems.
+
+And if that's not enough, you'll also need scons (http://www.scons.org/) to 
+actually build fluxus.
+
+PLT install instructions
+------------------------
+
+For the moment you need a version of PLT which isn't officially released yet 
+(369.10 or greater), this has bug fixes in which fluxus needs to run correctly. 
+Look on the fluxus website for a source download. If you have an older version 
+of PLT installed already, you'll need to delete the /usr/local/lib/plt directory 
+to uninstall it first. 
+
+./configure --enable-shared --prefix=/usr/local
+make
+sudo make install
+
+Fluxus install instructions
+---------------------------
+
+To build and install, type:
+
+scons 
+sudo scons install
+
+Build options:
+
+X11=1          : Build with the X11 libraries - rather than Xorg which is 
+                 default.
+				 
+MULTITEXTURE=1 : Multitexturing is bad tempered on some drivers - set this to 
+				 enable the multitexturing code.
+				 
+GLSL=0         : Set this to disable GLSL hardware shaders.
+
+There are more settings at the top of the SConstruct file which may need to be
+tweaked to correctly find things.
+
+Building the documentation
+--------------------------
+
+The fluxus distribution contains extensive html documentation, along with online
+help which can be accessed by running (help "functionname") in the fluxus console.
+
+To build the html documentation:
+
+cd docs/
+./makedocs.sh
+
+This will make a fluxus directory containing the html docs.
 

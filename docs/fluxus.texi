@@ -64,6 +64,8 @@ Briefly, the @code{(every-frame)} function takes a function which is called once
 In the next example, instead of using the current time as the source of animation data, we'll use the audio input.
 
 @lisp
+(start-audio "alsa_pcm:capture_1" 1024 44100) ; start the audio system up, and attach to jack
+
 (define (render)
     (colour (vector (gh 1) (gh 2) (gh 3)))
     (draw-cube))
@@ -74,7 +76,7 @@ In the next example, instead of using the current time as the source of animatio
 
 In this case it calls a function that sets the current colour using harmonics from the incoming sound with the @code{(gh)} - get harmonic - function.
 
-If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound. You may have to change your $HOME/.fluxus.scm script which does audio setup - (start-audio) to match your jack settings.
+If everything goes as planned, and the audio is connected with some input - the cube will flash in a colourful manner along with the sound. You may have to change audio settings to match your jack settings and input port.
 
 
 @node User Guide

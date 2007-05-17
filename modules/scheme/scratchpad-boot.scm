@@ -48,9 +48,6 @@
 (init-help (string-append (path->string (car (current-library-collection-paths)))
 	"fluxus-0.12/helpmap.scm"))
 
-; start the audio system
-(start-audio "alsa_pcm:capture_1" 1024 44100)
-
 ;-------------------------------------------------
 ; here is the hacking section
 ; todo: remove all below at some point

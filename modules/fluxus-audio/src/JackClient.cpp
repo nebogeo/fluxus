@@ -63,7 +63,7 @@ bool JackClient::Attach(const string &ClientName)
 	m_InputPortMap.clear();
 	m_OutputPortMap.clear();
 	
-        	// tell the JACK server that we are ready to roll
+    // tell the JACK server that we are ready to roll
 	if (jack_activate (m_Client))
 	{
 		cerr<<"cannot activate client"<<endl;
