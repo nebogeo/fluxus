@@ -6,9 +6,9 @@
 # the fluxus PLT modules 
 
 MajorVersion = "0"
-MinorVersion = "12"
+MinorVersion = "13"
 FluxusVersion = MajorVersion+"."+MinorVersion
-Target = "fluxus"
+Target = "fluxus-0.13"
 Prefix = "/usr/local"
 PLTPrefix = "/usr/local"
 PLTInclude = PLTPrefix+"/include/plt"
@@ -46,7 +46,10 @@ if ARGUMENTS.get("MULTITEXTURE","0")=="1":
 
 if ARGUMENTS.get("GLSL","1")=="1":
 	env.Append(CCFLAGS=' -DGLSL')
-	
+
+if ARGUMENTS.get("STEREODEFAULT","0")=="1":
+ 	env.Append(CCFLAGS=' -DSTEREODEFAULT')
+
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"

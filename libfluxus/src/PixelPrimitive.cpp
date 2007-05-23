@@ -76,6 +76,15 @@ void PixelPrimitive::Upload()
 	GetState()->Textures[0]=m_Texture;
 }
 
+void PixelPrimitive::Load(const string &filename)
+{
+	TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(GetDataRaw("c"));
+	if (data)
+	{
+		TexturePainter::Get()->LoadPData(filename,m_Width,m_Height,*data);
+	}
+}
+
 void PixelPrimitive::Render()
 {		
 	glDisable(GL_LIGHTING);

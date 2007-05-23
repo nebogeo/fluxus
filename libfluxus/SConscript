@@ -16,7 +16,6 @@ Source = Split("src/PData.cpp \
 		src/PNGLoader.cpp \
 		src/PolyPrimitive.cpp \
 		src/TextPrimitive.cpp \
-		src/CompiledPrimitive.cpp \
 		src/LinePrimitive.cpp \
 		src/ParticlePrimitive.cpp \
 		src/PixelPrimitive.cpp \
@@ -24,6 +23,8 @@ Source = Split("src/PData.cpp \
 		src/NURBSPrimitive.cpp \
 		src/LocatorPrimitive.cpp \
 		src/Primitive.cpp \
+		src/Camera.cpp \
+		src/ImmediateMode.cpp \
 		src/Light.cpp \
 		src/Renderer.cpp \
 		src/SceneGraph.cpp \

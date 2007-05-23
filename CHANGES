@@ -1,5 +1,20 @@
 Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.13
+
+* stereo rendering support by Alex Norman, adding:
+	- (set-stereo-mode ['no-stereo 'crystal-eyes 'colour])
+	- (get-stereo-mode)
+	- (get-eye-separation) 
+	- (set-eye-separation)
+* (draw-buffer) added by Alex Norman
+* libfluxus clean up, removed old cruft, simplified renderer
+* removed (begin-scene) and (end-scene), added (render)
+* removed feedback for aesthetic reasons
+* added (clear-zbuffer)
+* added (pixels-load) for loading pngs into pixel prims
+* renamed (upload-pixels) to (pixels-upload)
+
 0.12
 
 * now uses plt scheme

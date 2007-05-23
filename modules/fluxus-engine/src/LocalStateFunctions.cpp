@@ -860,7 +860,7 @@ Scheme_Object *multitexture(int argc, Scheme_Object **argv)
 
 Scheme_Object *print_scene_graph(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->PrintSceneGraph();
+	Engine::Get()->Renderer()->GetSceneGraph().Dump();
 	return scheme_void;
 }
 

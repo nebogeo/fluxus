@@ -32,7 +32,7 @@ enum PixelFormat {NONE,RGB,RGBA};
 class PNGLoader
 {
 public:
-	static char *Load(const string &Filename, int &w, int &h, PixelFormat &p);
+	static unsigned char *Load(const string &Filename, int &w, int &h, PixelFormat &p);
 private:
 
 };

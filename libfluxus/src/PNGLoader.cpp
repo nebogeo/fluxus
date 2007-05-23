@@ -19,9 +19,9 @@
 
 using namespace fluxus;
 
-char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelFormat &pf)
+unsigned char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelFormat &pf)
 {
-	char *ImageData = NULL;
+	unsigned char *ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
 	if (!fp) cerr<<"Couldn't open image ["<<Filename<<"]"<<endl;
 	else
@@ -35,13 +35,13 @@ char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelFormat &pf)
 		png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);		
 		fclose(fp);
 		
-		ImageData = new char[png_ptr->rowbytes*png_ptr->height];
+		ImageData = new unsigned char[png_ptr->rowbytes*png_ptr->height];
 		int p=0;
 		for (unsigned int row = 0; row < png_ptr->height; row++)
 		{
 			for (unsigned int i=0; i<png_ptr->rowbytes; i++)
 			{
-				ImageData[p]=(char)info_ptr->row_pointers[row][i];
+				ImageData[p]=(unsigned char)info_ptr->row_pointers[row][i];
 				p++;
 			}
 		}

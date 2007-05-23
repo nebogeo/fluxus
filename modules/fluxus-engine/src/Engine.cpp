@@ -90,14 +90,9 @@ Physics *Engine::Physics()
 	assert(*m_RendererStack.rbegin()<m_RendererVec.size());
 	return m_RendererVec[*m_RendererStack.rbegin()].second;
 }
-void Engine::BeginScene()
+void Engine::Render()
 {
-	Renderer()->BeginScene();
-}
-
-void Engine::EndScene()
-{
-	Renderer()->EndScene();
+	Renderer()->Render();
 }
 
 void Engine::Reinitialise()     

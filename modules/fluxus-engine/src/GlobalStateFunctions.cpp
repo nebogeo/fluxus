@@ -96,54 +96,6 @@ Scheme_Object *fog(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// feedback amount-number
-// Returns: void
-// Description:
-// Full screen feedback for Jeff Minter style crazyness (renders the last frame in the background, 
-// including the previous feedback background...). This allocates large amounts of texture
-// space and seems to be unstable, so it's probably better not to use it. If you do, use with 
-// feedback-transform, but don't say I didn't warn you.
-// Example:
-// (feedback 0.1) ; set the feedback amount
-// (build-cube)
-// (define (animate)
-//     (feedback-transform (mrotate (vector 1 1 (* 45 (sin (time))))))) ; change the transform
-// (every-frame (animate))
-// EndFunctionDoc
-
-Scheme_Object *feedback(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
- 	ArgCheck("feedback", "f", argc, argv);
-	Engine::Get()->Renderer()->SetFeedBack(FloatFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
-    return scheme_void;
-}
-
-// StartFunctionDoc-en
-// feedback-transform matrix-vector
-// Returns: void
-// Description:
-// Sets the transform for the feedback plane. See feedback for more details, probably shouldn't be  
-// used.
-// Example:
-// (feedback 0.1) ; set the feedback amount
-// (build-cube)
-// (define (animate)
-//     (feedback-transform (mrotate (vector 1 1 (* 45 (sin (time))))))) ; change the transform
-// (every-frame (animate))
-// EndFunctionDoc
-
-Scheme_Object *feedback_transform(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
- 	ArgCheck("feedback-transform", "m", argc, argv);
-	Engine::Get()->Renderer()->SetFeedBackMat(MatrixFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
-	return scheme_void;	
-}
-
-// StartFunctionDoc-en
 // show-axis show-number
 // Returns: void
 // Description:
@@ -215,7 +167,8 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("lock-camera", "i", argc, argv);
-    Engine::Get()->Renderer()->LockCamera(IntFromScheme(argv[0]));
+    Engine::Get()->Renderer()->GetCamera()->LockCamera(
+		Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -254,7 +207,7 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("camera-lag", "f", argc, argv);
-    Engine::Get()->Renderer()->SetCameraLag(FloatFromScheme(argv[0]));
+    Engine::Get()->Renderer()->GetCamera()->SetCameraLag(FloatFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -315,7 +268,7 @@ Scheme_Object *frustum(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("frustum", "ffff", argc, argv);
-	Engine::Get()->Renderer()->SetFrustum(FloatFromScheme(argv[0]),
+	Engine::Get()->Renderer()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
 												FloatFromScheme(argv[1]),
 									 		 	FloatFromScheme(argv[2]),
 												FloatFromScheme(argv[3]));
@@ -337,8 +290,8 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("clip", "ff", argc, argv);
-	Engine::Get()->Renderer()->SetClip(FloatFromScheme(argv[0]),
-											 FloatFromScheme(argv[1]));
+	Engine::Get()->Renderer()->GetCamera()->SetClip(FloatFromScheme(argv[0]),
+											        FloatFromScheme(argv[1]));
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -354,7 +307,7 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 
 Scheme_Object *ortho(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->SetOrtho(true);
+	Engine::Get()->Renderer()->GetCamera()->SetOrtho(true);
     return scheme_void;
 }
 
@@ -369,7 +322,7 @@ Scheme_Object *ortho(int argc, Scheme_Object **argv)
 
 Scheme_Object *persp(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->SetOrtho(false);
+	Engine::Get()->Renderer()->GetCamera()->SetOrtho(false);
     return scheme_void;
 }
 
@@ -386,7 +339,7 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("set-ortho-zoom", "f", argc, argv);
-	Engine::Get()->Renderer()->SetOrthoZoom(FloatFromScheme(argv[0]));
+	Engine::Get()->Renderer()->GetCamera()->SetOrthoZoom(FloatFromScheme(argv[0]));
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -433,7 +386,7 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // clear-frame setting-number
 // Returns: void
 // Description:
-// Sets the frame and zbuffer clearing on or off. 
+// Sets the frame clearing on or off. 
 // Example:
 // (clear-frame 0) 
 // EndFunctionDoc
@@ -443,6 +396,24 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
  	DECL_ARGV();
 	ArgCheck("clear-frame", "i", argc, argv);
 	Engine::Get()->Renderer()->SetClearFrame(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// clear-zbuffer setting-number
+// Returns: void
+// Description:
+// Sets the zbuffer clearing on or off. 
+// Example:
+// (clear-zbuffer 0) 
+// EndFunctionDoc
+
+Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
+{
+ 	DECL_ARGV();
+	ArgCheck("clear-zbuffer", "i", argc, argv);
+	Engine::Get()->Renderer()->SetClearZBuffer(IntFromScheme(argv[0]));
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -459,7 +430,7 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->inverse().arr(),16);
+	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -473,7 +444,7 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetLockedMatrix()->inverse().arr(),16);
+	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetLockedMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -492,7 +463,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 	ArgCheck("set-camera", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
-	(*Engine::Get()->Renderer()->GetCamera())=m;
+	Engine::Get()->Renderer()->GetCamera()->SetMatrix(m);
  	MZ_GC_UNREG(); 
 	return scheme_void;
 }
@@ -508,7 +479,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetProjection().arr(),16);
+	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetProjection().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -591,6 +562,135 @@ Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// draw-buffer buffer_name
+// Returns: void
+// Description:
+// Select which buffer to draw in
+// for stereo mode you'd do 'back-right and 'back-left
+// Example:
+// (draw-buffer 'back)
+// EndFunctionDoc
+
+Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
+{
+  DECL_ARGV();
+  Scheme_Object * mode = NULL;
+  ArgCheck("draw-buffer", "S", argc, argv);   
+  mode = argv[0];
+
+  if(SAME_OBJ(mode, scheme_intern_symbol("back")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("back-right")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("back-left")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-right")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-left")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("right")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("left")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-and-back")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_AND_BACK);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("none")))
+	  Engine::Get()->Renderer()->DrawBuffer(GL_NONE);
+  else {
+	  //XXX should indicate an error
+  }
+
+  MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// set-stereo-mode mode
+// Returns: bool
+// Description:
+// select which stereo mode to use
+// currently only 'crystal-eyes and 'no-stereo are supported
+// the return indicates if the operation was successful or not
+// 'crystal-eyes will return false if you don't have a stereo window
+// Example:
+// (set-stereo-mode 'crystal-eyes)
+// EndFunctionDoc
+
+Scheme_Object *set_stereo_mode(int argc, Scheme_Object **argv)
+{
+  bool success;
+  Scheme_Object * mode = NULL;
+  DECL_ARGV();
+  ArgCheck("set-stereo-mode", "S", argc, argv);   
+  mode = argv[0];
+  if(SAME_OBJ(mode, scheme_intern_symbol("crystal-eyes")))
+	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::crystalEyes);  
+  else if(SAME_OBJ(mode, scheme_intern_symbol("colour")))
+	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::colourStereo); 
+  else if(SAME_OBJ(mode, scheme_intern_symbol("no-stereo")))
+	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo); 
+  else {
+	  Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo);   
+	  success = false;
+  }
+  MZ_GC_UNREG(); 
+
+  if(success)
+	  return scheme_true;
+  else
+	  return scheme_false;
+}
+
+Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
+{
+  Renderer::stereo_mode_t mode;
+  DECL_ARGV();
+  mode = Engine::Get()->Renderer()->GetStereoMode();
+  MZ_GC_UNREG(); 
+
+  switch(mode){
+		case Renderer::noStereo:
+			return scheme_intern_symbol("no-stereo");
+		case Renderer::crystalEyes:
+			return scheme_intern_symbol("crystal-eyes");
+		case Renderer::colourStereo:
+			return scheme_intern_symbol("colour");	  
+		default:
+			return scheme_intern_symbol("no_stereo");
+  }
+}
+
+// StartFunctionDoc-en
+// (set-colour-mask vec)
+// Returns: void
+// Description:
+// sets the colour mask
+// give it a quat of booleans which correspond to the 
+// red, green, blue and alpha channels respectively
+// after this operation you'll only see those colour which you
+// set to true (this is useful for stereo with red-blue glasses)
+// Example:
+// (set-colour-mask #(#t #f #f #t))
+// EndFunctionDoc
+
+Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
+{
+  bool rgba[4];
+  DECL_ARGV();
+  ArgCheck("set-colour-mask", "q", argc, argv);   
+  for(unsigned int n = 0; n < 4; n++){
+	  if(!SCHEME_BOOLP(SCHEME_VEC_ELS(argv[0])[n]))
+		  scheme_wrong_type("set-colour-mask", "quat of booleans", 0, argc, argv);
+	  rgba[n] = SCHEME_TRUEP(SCHEME_VEC_ELS(argv[0])[n]) ? true : false;
+  }
+  Engine::Get()->Renderer()->SetColourMask(rgba[0],rgba[1],rgba[2],rgba[3]);
+  MZ_GC_UNREG(); 
+
+  return scheme_void;
+}
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -600,8 +700,6 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
 	scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
 	scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
-	scheme_add_global("feedback", scheme_make_prim_w_arity(feedback, "feedback", 1, 1), env);
-	scheme_add_global("feedback-transform", scheme_make_prim_w_arity(feedback_transform, "feedback-transform", 1, 1), env);
 	scheme_add_global("show-axis", scheme_make_prim_w_arity(show_axis, "show-axis", 1, 1), env);
 	scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
 	scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
@@ -616,6 +714,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("backfacecull", scheme_make_prim_w_arity(backfacecull, "backfacecull", 1, 1), env);
 	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
+	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
 	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
 	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
@@ -624,6 +723,10 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
 	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
+ 	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
+ 	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
+ 	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
+ 	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
  
  	MZ_GC_UNREG(); 
 }

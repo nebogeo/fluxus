@@ -35,8 +35,7 @@ public:
 	void Reinitialise();  
 	fluxus::Renderer *Renderer();
 	fluxus::Physics *Physics();
-	void BeginScene(); 
-	void EndScene(); 
+	void Render(); 
 	
 	void PushGrab(int id);
 	void PopGrab();

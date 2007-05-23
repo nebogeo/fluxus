@@ -13,35 +13,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ 
+#ifndef FLUX_IMMEDIATE_MODE
+#define FLUX_IMMEDIATE_MODE
 
-#include "Renderer.h"
-#include "CompiledPrimitive.h"
+/////////////////////////////////////////////////////
+// Immediate-ish mode
+// So we can be sent immediate mode primitives at any
+// time, we store them up and render them all in one
+// go later on
+
+#include "Primitive.h"
 #include "State.h"
 
-using namespace fluxus;
+namespace fluxus
+{
+
+class ImmediateMode
+{
+public:
 	
-CompiledPrimitive::CompiledPrimitive(const Renderer::LibraryEntry &entry) :
-m_ID(entry.ID),
-m_BBox(entry.BBox)
-{
+	ImmediateMode();
+	~ImmediateMode();
+	
+	void Add(Primitive *p, State *s);
+    void Render();
+    void Clear();
+	
+private:
+    struct IMItem
+    {
+    	State m_State;
+    	Primitive *m_Primitive;
+   	};
+	
+   	vector<IMItem*> m_IMRecord;
+};
+
 }
 
-CompiledPrimitive::~CompiledPrimitive()
-{	
-}
-
-void CompiledPrimitive::Render()
-{
-	glCallList(m_ID);
-}
-
-dBoundingBox CompiledPrimitive::GetBoundingBox()
-{	
-	return m_BBox;
-}
-
-void CompiledPrimitive::ApplyTransform(bool ScaleRotOnly)
-{
-	cerr<<"cannot ApplyTransform to compiled prims"<<endl;
-}
-
+#endif

@@ -217,6 +217,21 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 					}
 				break;
 
+				case 'S':
+ 					if (!SCHEME_SYMBOLP(argv[n]))
+ 					{
+ 						MZ_GC_UNREG();
+ 						scheme_wrong_type(funcname.c_str(), "symbol", n, argc, argv);
+ 					}
+ 				break;
+ 				case 'b':
+					if (!SCHEME_BOOLP(argv[n])) 
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "boolean", n, argc, argv);
+					}
+				break;
+
 				case '?':
 				break;
 

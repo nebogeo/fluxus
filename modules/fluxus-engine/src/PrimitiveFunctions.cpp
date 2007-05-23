@@ -322,17 +322,17 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// upload-pixels 
+// pixels-upload
 // Returns: void
 // Description:
 // Uploads the texture data, you need to call this when you've finished writing to the 
 // pixelprim, and while it's grabbed.
 // Example:
 // (define mynewshape (build-pixels 100 100))
-// (upload-pixels mynewshape)
+// (pixels-upload mynewshape)
 // EndFunctionDoc
 
-Scheme_Object *upload_pixels(int argc, Scheme_Object **argv)
+Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 {	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed) 
@@ -346,7 +346,30 @@ Scheme_Object *upload_pixels(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"upload-pixels can only be called while a pixelprimitive is grabbed"<<endl;
+	cerr<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+ 	ArgCheck("pixels-load", "s", argc, argv);	
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->Load(StringFromScheme(argv[0]));
+		    MZ_GC_UNREG();
+			return scheme_void;
+		}
+	}
+	
+	cerr<<"pixels-load can only be called while a pixelprimitive is grabbed"<<endl;
+ 	MZ_GC_UNREG(); 
     return scheme_void;
 }
 
@@ -566,7 +589,8 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
-	scheme_add_global("upload-pixels", scheme_make_prim_w_arity(upload_pixels, "upload-pixels", 0, 0), env);
+	scheme_add_global("pixels-upload", scheme_make_prim_w_arity(pixels_upload, "pixels-upload", 0, 0), env);
+	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);

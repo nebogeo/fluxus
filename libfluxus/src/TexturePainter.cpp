@@ -82,7 +82,7 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecach
 	
 	GLuint ID=0;
 	
-	char *ImageData;
+	unsigned char *ImageData;
     TextureDesc *desc = new TextureDesc;
     ImageData=PNGLoader::Load(Fullpath,desc->Width,desc->Height,desc->Format);
 	
@@ -108,6 +108,52 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecach
 	
 	m_LoadedMap[Fullpath]=0;
     return 0;
+}
+
+bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels)
+{
+	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
+
+	unsigned char *ImageData;
+    TextureDesc desc;
+    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
+	
+	if (ImageData!=NULL)
+    {
+		pixels.Resize(desc.Width*desc.Height);
+		w=desc.Width;
+		h=desc.Height;
+
+		if (desc.Format==RGB)
+		{
+			for (int n=0; n<desc.Width*desc.Height; n++)
+			{
+				pixels.m_Data[n]=dColour(ImageData[n*3]/255.0f, 
+				                         ImageData[n*3+1]/255.0f,
+										 ImageData[n*3+2]/255.0f,1.0f);
+				
+			}	
+		}	
+		else if (desc.Format==RGBA)
+		{
+			for (int n=0; n<desc.Width*desc.Height; n++)
+			{
+				pixels.m_Data[n]=dColour(ImageData[n*4]/255.0f, 
+				                         ImageData[n*4+1]/255.0f,
+										 ImageData[n*4+2]/255.0f,
+										 ImageData[n*4+3]/255.0f);
+				
+			}	
+		}
+		else
+		{
+			return false;
+		}
+			
+		return true;
+	}
+	
+	return false;
 }
 
 unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *data)

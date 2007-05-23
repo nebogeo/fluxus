@@ -54,6 +54,7 @@ public:
 	void Initialise();
 	void ClearCache();
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false);
+	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
 	void Delete(unsigned int id);	
 	bool SetCurrent(unsigned int *ids);

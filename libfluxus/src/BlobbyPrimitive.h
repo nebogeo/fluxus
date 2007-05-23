@@ -16,7 +16,6 @@
 
 #include <set>
 
-#include "Renderer.h"
 #include "Primitive.h"
 
 #ifndef N_BLOBBYPRIM

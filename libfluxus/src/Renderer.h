@@ -23,7 +23,9 @@
 #include "map"
 #include "vector"
 #include "string"
+#include "Camera.h"
 #include "SceneGraph.h"
+#include "ImmediateMode.h"
 #include "Light.h"
 #include "TexturePainter.h"
 
@@ -35,7 +37,6 @@ namespace fluxus
 class State;
 class Primitive;
 
-// todo - this has become a "god object", move some stuff out...
 class Renderer
 {
 public:
@@ -43,9 +44,8 @@ public:
 	~Renderer();
 	
 	//////////////////////////////////////////////////////////////////////
-	// Rendering control (retained mode)
-	void BeginScene();
-	void EndScene();	
+	// Rendering control 
+	void Render();
 	void Clear();
 	
 	///////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ public:
 	void         DetachPrimitive(int ID);
 	dMatrix      GetGlobalTransform(int ID);
 	dBoundingBox GetBoundingBox(int ID);
-	// immediate mode (don't delete prim before frame end - it's immediate-ish :))
+	// immediate mode (don't delete prim till after Render() - it's immediate-ish :))
 	void         RenderPrimitive(Primitive *Prim);
 	// Get primitive ID from screen space
 	int          Select(int x, int y, int size);
@@ -82,29 +82,21 @@ public:
 	void ClearLights();
 
 	////////////////////////////////////////////////////////////////////////
+	// Camera
+	Camera *GetCamera() { return &m_Camera; }
+
+	////////////////////////////////////////////////////////////////////////
 	// Scenegraph access
 	const SceneGraph &GetSceneGraph()        { return m_World; }
-	void PrintSceneGraph()                   { m_World.Dump(); }
 		
 	////////////////////////////////////////////////////////////////////////
 	// Global state control
 	void DrawText(const string &Text);
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
-	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; InitFeedback(); }
+	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
-	
-	// todo - move camera stuff out of here...
-	dMatrix *GetCamera()                     { return &m_Camera; }
-	dMatrix *GetLockedMatrix()               { return &m_LockedMatrix; }
-	dMatrix GetProjection();
-	void LockCamera(int Prim);
-	void UnlockCamera()						 { m_LockedCamera=false; }
-	void SetCameraLag(float s)               { m_CameraLag=s; }
-	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
-	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
-	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
-	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
+	void DrawBuffer(GLenum mode);
 	
 	void InitTextures() 					 { TexturePainter::Get()->Initialise(); }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
@@ -118,53 +110,32 @@ public:
 	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
-	void SetFeedBack(bool s)                 { m_FeedBack=s; }
-	void SetFeedBackMat(const dMatrix &s)    { m_FeedBackMat=s; }
-	typedef void (cb)();
-	void SetEngineCallback(cb *s)            { EngineCallback=s; }
 	void SetFog(const dColour &c, float d, float s, float e)    
 		{ m_FogColour=c; m_FogDensity=d; m_FogStart=s; m_FogEnd=e; m_Initialised=false; }
 	
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
 	
-	struct LibraryEntry
-	{	
-		int ID;
-		dBoundingBox BBox;
-	};
+	enum stereo_mode_t {noStereo, crystalEyes, colourStereo};
+ 	bool SetStereoMode(stereo_mode_t mode);
+ 	stereo_mode_t GetStereoMode(){ return m_StereoMode;}
+	void SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha);
 	
-	// must be called after the render has been run once.
-	// used for building a library of shapes to use for
-	// compiled primitives. the primitive p may be deleted
-	// after this call.
-	void AddToLibrary(const string &name, Primitive *p);
-	bool GetFromLibrary(const string &name, LibraryEntry &li);
-
-
 private:
 	void PreRender(bool PickMode=false);
 	void PostRender();
 	void RenderLights(bool camera);
-	void InitFeedback();
 	
 	bool  m_Initialised;
 	bool  m_InitLights;
 	int   m_Width,m_Height;
 	bool  m_MotionBlur;
 	float m_Fade;
-	bool  m_Ortho;
-	int   m_CameraAttached;
-	bool  m_LockedCamera;
-	float m_CameraLag;
-	dMatrix  m_LockedMatrix;
 	bool  m_ShowAxis;
 	Primitive *m_Grabbed;
 	dColour m_BGColour;
 	bool m_ClearFrame;
 	bool m_ClearZBuffer;
-	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
-	float m_OrthZoom;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
 	dColour m_FogColour; 
@@ -172,34 +143,12 @@ private:
 	float m_FogStart; 
 	float m_FogEnd;
 	
-	bool m_FeedBack;
-	char *m_FeedBackData;
-	GLuint m_FeedBackID;
-	dMatrix m_FeedBackMat;
-	
-	dMatrix m_Camera;
     deque<State> m_StateStack;
     SceneGraph m_World;
 	vector<Light*> m_LightVec;
-		
-    /////////////////////////////////////////////////////
-    // Immediate-ish mode
-    // we need to keep a record of immediate mode requests to
-    // potentially save in the flx file. as primitive pointers
-    // are stored, prims drawn in immediate mode have to stick
-    // around till the end of frame at least.
-    struct IMItem
-    {
-    	State m_State;
-    	Primitive *m_Primitive;
-   	};
+	Camera m_Camera;
+	ImmediateMode m_ImmediateMode;
 	
-   	vector<IMItem*> m_IMRecord;
-    // also renders the IM stuff in one batch, as they could have been
-    // loaded from an flx file
-    void RenderIMPrimitives();
-    void ClearIMPrimitives();
-
 	// info for picking mode
 	struct SelectInfo
 	{
@@ -208,16 +157,13 @@ private:
 	};
 	
 	SelectInfo m_SelectInfo;
+	stereo_mode_t m_StereoMode;
 	
 	timeval m_LastTime;
 	float m_Deadline;
 	bool m_FPSDisplay;
 	double m_Time;
 	double m_Delta;
-	
-	map<string,LibraryEntry> m_CompiledLibrary;
-	
-    cb *EngineCallback;
 };
 	
 };

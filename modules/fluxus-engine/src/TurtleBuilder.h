@@ -16,6 +16,7 @@
 
 #include <deque>
 #include "PolyPrimitive.h"
+#include "Renderer.h"
 
 #ifndef N_TURTLE_BUILDER
 #define N_TURTLE_BUILDER

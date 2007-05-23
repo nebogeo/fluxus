@@ -14,7 +14,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Renderer.h"
 #include "Primitive.h"
 
 #ifndef N_PIXELPRIM
@@ -36,6 +35,8 @@ public:
 	virtual string GetTypeName() { return "PixelPrimitive"; }
 	
 	void Upload();
+	void Load(const string &filename);
+	
 	unsigned int GetTexture() { return m_Texture; }
 	
 protected:

@@ -141,12 +141,18 @@ int main(int argc, char *argv[])
 		COLLECTS_LOCATION,FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
 	interpreter->Interpret(startup,NULL,true);
 	srand(time(NULL));
-		
+	
+	#ifdef STEREODEFAULT
+ 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_STEREO;
+ 	#else
+ 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+ 	#endif
+	
 	// init OpenGL
   	glutInit(&argc,argv);
 	glutInitWindowSize(720,576);
 	app = new FluxusMain(interpreter,720,576);
-	glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL);
+	glutInitDisplayMode(flags);
 	char windowtitle[256];
 	snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
   	glutCreateWindow(windowtitle);

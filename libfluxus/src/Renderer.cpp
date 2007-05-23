@@ -45,42 +45,24 @@ m_Width(640),
 m_Height(480),
 m_MotionBlur(false),
 m_Fade(0.02f),
-m_Ortho(false),
-m_LockedCamera(false),
-m_CameraLag(0),
 m_ShowAxis(false),
 m_Grabbed(NULL),
 m_ClearFrame(true),
-m_ClearZBuffer(false),
-m_Up(-1),
-m_Down(1),
-m_Left(-0.75),
-m_Right(0.75),
-m_Front(1),
-m_Back(10000),
-m_OrthZoom(1.0f),
+m_ClearZBuffer(true),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_FogDensity(0), 
 m_FogStart(0),
 m_FogEnd(100),
-m_FeedBack(false),
-m_FeedBackData(NULL),
-m_FeedBackID(0),
+m_StereoMode(noStereo),
 m_Deadline(1/25.0f),
 m_FPSDisplay(false),
 m_Time(0),
-m_Delta(0),
-EngineCallback(NULL)
+m_Delta(0)
 {
 	State InitialState;
 	m_StateStack.push_back(InitialState);
 	
-
-	InitFeedback();
-	
-	m_Camera.translate(0,0,-10);
-
 	// stop valgrind complaining
 	m_LastTime.tv_sec=0;
 	m_LastTime.tv_usec=0;
@@ -92,10 +74,51 @@ Renderer::~Renderer()
 }
 
 /////////////////////////////////////	
-// retained mode
+
+void Renderer::Render()
+{	
+	if (m_ClearFrame && !m_MotionBlur)
+	{
+		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
+		glClear(GL_COLOR_BUFFER_BIT);	
+	}
+	
+	if (m_ClearZBuffer)
+	{
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+	
+	PreRender();
+	m_World.Render();
+	m_ImmediateMode.Render();
+	m_ImmediateMode.Clear();		
+	PostRender();
+			
+	timeval ThisTime;
+	// stop valgrind complaining
+	ThisTime.tv_sec=0;
+	ThisTime.tv_usec=0;
+	
+	gettimeofday(&ThisTime,NULL);
+	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
+			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
+
+	if (m_Delta<m_Deadline)
+	{
+		//min 1 hz
+		if(m_Deadline-m_Delta<1.0f)
+		{
+			usleep((int)((m_Deadline-m_Delta)*1000000));
+		}
+	}
+	
+	m_LastTime=ThisTime;
+	if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
+}
+
 void Renderer::PreRender(bool PickMode)
 {
-    if (!m_Initialised || PickMode)
+    if (!m_Initialised || PickMode || m_Camera.NeedsInit())
     {
     	glViewport(0,0,m_Width,m_Height);
 
@@ -109,9 +132,8 @@ void Renderer::PreRender(bool PickMode)
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
 		}
 		
-  		if (m_Ortho) glOrtho(m_Down*m_OrthZoom,m_Up*m_OrthZoom,m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Front,m_Back);
-  		else glFrustum(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
-		
+  		m_Camera.DoProjection();
+  		
     	glEnable(GL_BLEND);
     	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 		glEnable(GL_LIGHTING);
@@ -191,49 +213,25 @@ void Renderer::PreRender(bool PickMode)
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_COLOR_MATERIAL);
 	}
-	
-	if (m_FeedBack)
-	{       	
-		glEnable(GL_TEXTURE_2D);
-		glDisable(GL_DEPTH_TEST);
-		glDisable(GL_LIGHTING);
-		glPolygonMode(GL_FRONT,GL_FILL);
-		glBindTexture(GL_TEXTURE_2D,m_FeedBackID);
 		
-		glPushMatrix();
-		glMultMatrixf(m_FeedBackMat.arr());
-		glTranslatef(0,0,-10);
-		glBegin(GL_QUADS);
-			glTexCoord2f(0,0);
-			glVertex3f(-10,-10,0);
-			glTexCoord2f(1,0);
-			glVertex3f(10,-10,0);
-			glTexCoord2f(1,1);
-			glVertex3f(10,10,0);
-			glTexCoord2f(0,1);
-			glVertex3f(-10,10,0);
-		glEnd();
-		glPopMatrix();
-		
-		glEnable(GL_DEPTH_TEST);
-		glEnable(GL_LIGHTING);
-		glDisable(GL_TEXTURE_2D);
-	}
-	
 	if (m_FPSDisplay && !PickMode)
 	{
 		PushState();
-		GetState()->Transform.translate(m_Up,m_Left,0);
+		GetState()->Transform.translate(m_Camera.GetUp(),m_Camera.GetLeft(),0);
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
     	DrawText(s);
     	PopState();
 	}
+
+	RenderLights(true); // camera locked
+	m_Camera.DoCamera();
+	RenderLights(false); // world space
 	
+	/* ???
 	RenderLights(true); // camera locked
 	
-	//GetState()->Transform*=m_Camera;
 	glMultMatrixf(m_Camera.arr());
 	
 	RenderLights(false); // world space
@@ -255,56 +253,12 @@ void Renderer::PreRender(bool PickMode)
 			glMultMatrixf(m_LockedMatrix.arr());		
 		}
 		else m_LockedCamera=false;
-	}
+	}*/
 
 	//m_World.GetShadowVolumeGen()->SetLightPosition(m_Camera.inverse().transform((*m_LightVec.begin())->GetPosition()));
 
 }
 
-void Renderer::BeginScene()
-{
-	if (m_ClearFrame)
-	{
-		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
-		if (m_MotionBlur || m_FeedBack) glClear(GL_DEPTH_BUFFER_BIT);
-		else glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
-	}
-	
-	if (m_ClearZBuffer)
-	{
-		glClear(GL_DEPTH_BUFFER_BIT);
-	}
-}
-	
-void Renderer::EndScene()
-{
-	PreRender();
-	m_World.Render();
-	RenderIMPrimitives();
-	ClearIMPrimitives();		
-	PostRender();
-			
-	timeval ThisTime;
-	// stop valgrind complaining
-	ThisTime.tv_sec=0;
-	ThisTime.tv_usec=0;
-	
-	gettimeofday(&ThisTime,NULL);
-	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
-			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
-
-	if (m_Delta<m_Deadline)
-	{
-		//min 1 hz
-		if(m_Deadline-m_Delta<1.0f)
-		{
-			usleep((int)((m_Deadline-m_Delta)*1000000));
-		}
-	}
-	
-	m_LastTime=ThisTime;
-	if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
-}
 
 void Renderer::PostRender()
 {
@@ -331,18 +285,6 @@ void Renderer::PostRender()
     		gettimeofday(&StartTime,NULL);
     	}
     	TimeCounter++;
-	}
-	
-	if (m_FeedBack)
-	{  
-		// grab the display
-		glPixelStorei(GL_PACK_ALIGNMENT, 1);
-		glReadPixels(0, 0, m_Width, m_Height, GL_RGB, GL_UNSIGNED_BYTE, m_FeedBackData);
-		glDeleteTextures(1,&m_FeedBackID);
-		glGenTextures(1,&m_FeedBackID);
-		glBindTexture(GL_TEXTURE_2D,m_FeedBackID);
-		//glTexImage2D(GL_TEXTURE_2D, 0, 3, m_Width, m_Height, 0, GL_RGB, GL_UNSIGNED_BYTE, m_FeedBackData);
-		gluBuild2DMipmaps(GL_TEXTURE_2D,3,m_Width, m_Height,GL_RGB,GL_UNSIGNED_BYTE,m_FeedBackData);
 	}
 	
 	//if (m_StateStack.size()!=1)
@@ -443,26 +385,6 @@ int Renderer::Select(int x, int y, int size)
 	return ID;
 }
 
-dMatrix Renderer::GetProjection()
-{
-	dMatrix Projection;
-	glGetFloatv(GL_PROJECTION_MATRIX,Projection.arr());
-	return Projection;
-}
-
-void Renderer::LockCamera(int Prim)
-{
-     Primitive *p = GetPrimitive(Prim);
-     if (!p)
-     {
-     	m_CameraAttached=0;
-     	m_LockedCamera=false;
-     	return;
-     }
-     m_LockedCamera=true;
-     m_CameraAttached=Prim;
-}
-
 void Renderer::Clear()
 {
 	m_World.Clear();
@@ -502,6 +424,12 @@ void Renderer::DetachPrimitive(int ID)
 	if (node) m_World.Detach(node);
 }
 
+// immediate mode
+void Renderer::RenderPrimitive(Primitive *Prim)
+{	
+	m_ImmediateMode.Add(Prim,GetState());
+}
+
 dMatrix Renderer::GetGlobalTransform(int ID)
 {
 	dMatrix mat;
@@ -516,43 +444,6 @@ dBoundingBox Renderer::GetBoundingBox(int ID)
 	SceneNode *node=(SceneNode*)m_World.FindNode(ID);
 	if (node) m_World.GetBoundingBox(node,bbox);
 	return bbox;
-}
-
-////////////////////////////	
-// immediate mode
-void Renderer::RenderPrimitive(Primitive *Prim)
-{	
-	// store the primitive and current state
-	// to err, render them later!!!
-	IMItem *newitem = new IMItem;
-	newitem->m_State = *GetState();
-	newitem->m_Primitive = Prim;
-	m_IMRecord.push_back(newitem);
-}
-
-void Renderer::RenderIMPrimitives()
-{
-	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
-	{
-		glPushMatrix();
-		(*i)->m_State.Apply();
-		// need to set the state to the primitive to update the parts of the state the 
-		// render call acts on. need to look at this.
-	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
-		(*i)->m_Primitive->Prerender();
-		(*i)->m_Primitive->Render();
-		glPopMatrix();
-	}
-}
-
-void Renderer::ClearIMPrimitives()
-{
-	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
-	{
-		delete *i;
-	}
-	
-	m_IMRecord.clear();
 }
 
 ///////////////////////////////	
@@ -641,46 +532,6 @@ void Renderer::DrawText(const string &Text)
 	glPopMatrix();	
 }
 
-void Renderer::AddToLibrary(const string &name, Primitive *p)
-{
-	map<string,LibraryEntry>::iterator i = m_CompiledLibrary.find(name);
-	if (i==m_CompiledLibrary.end())
-	{
-		int list = glGenLists(1);
-		glNewList(list,GL_COMPILE);
-		p->Render();
-		glEndList();
-		LibraryEntry newentry;
-		newentry.ID=list;
-		newentry.BBox=p->GetBoundingBox();
-		m_CompiledLibrary[name]=newentry;
-	}
-	else
-	{
-		cerr<<name<<" already exists in the library"<<endl;
-	}
-}	
-
-bool Renderer::GetFromLibrary(const string &name, Renderer::LibraryEntry &li)
-{
-	map<string,LibraryEntry>::iterator i = m_CompiledLibrary.find(name);
-	if (i!=m_CompiledLibrary.end())
-	{
-		li=i->second;
-		return true;
-	}
-	
-	cerr<<name<<" doesn't exist in the library"<<endl;
-	return false;
-}
-
-void Renderer::InitFeedback()
-{
-	if (m_FeedBackData)	delete[] m_FeedBackData;
-	m_FeedBackData = new char[m_Width * m_Height * 3];
-	if (m_FeedBackID==0) glGenTextures(1,&m_FeedBackID);
-}
-
 void Renderer::ShowCursor(bool s)
 {
 	if (s)
@@ -692,4 +543,42 @@ void Renderer::ShowCursor(bool s)
 		glutSetCursor(GLUT_CURSOR_NONE); 
 	}
 
+}
+
+void Renderer::DrawBuffer(GLenum mode)
+{
+	glDrawBuffer(mode);
+}
+
+bool Renderer::SetStereoMode(stereo_mode_t mode)
+{
+ 	GLboolean stereoWindowTest;
+ 	switch(mode){
+ 		case noStereo: m_StereoMode = noStereo;
+ 			return true;
+ 		case crystalEyes:
+ 			//test for a stereo window
+ 			glGetBooleanv (GL_STEREO, &stereoWindowTest);
+ 			if(stereoWindowTest){
+ 				m_StereoMode = crystalEyes;
+ 				return true;
+ 			} else {
+ 				m_StereoMode = noStereo;
+ 				return false;
+ 			}
+ 		case colourStereo:
+ 			m_StereoMode = colourStereo;
+ 			return true;
+ 	};
+ 	return false;
+}
+
+void Renderer::SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha)
+{
+	bool r,g,b,a;
+	r = inred ? GL_TRUE : GL_FALSE;
+	g = ingreen ? GL_TRUE : GL_FALSE;
+	b = inblue ? GL_TRUE : GL_FALSE;
+	a = inalpha ? GL_TRUE : GL_FALSE;
+	glColorMask(r,g,b,a);
 }

@@ -90,33 +90,17 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// begin-scene
+// render
 // Returns: void
 // Description:
-// Start rendering on the current renderer. Clears the backbuffer.
+// Clears the backbuffer, and renders everything
 // Example:
-// (begin-scene) 
+// (render) 
 // EndFunctionDoc
 
-Scheme_Object *begin_scene(int argc, Scheme_Object **argv)
+Scheme_Object *render(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->BeginScene();
-	return scheme_void;
-}
-
-// StartFunctionDoc-en
-// end-scene
-// Returns: void
-// Description:
-// Stop rendering on the current renderer. This is actually the point where the backbuffer
-// gets rendered to.
-// Example:
-// (end-scene) 
-// EndFunctionDoc
-
-Scheme_Object *end_scene(int argc, Scheme_Object **argv)
-{
-	Engine::Get()->EndScene();
+	Engine::Get()->Render();
 	return scheme_void;
 }
 
@@ -237,8 +221,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
 	scheme_add_global("renderer-grab", scheme_make_prim_w_arity(renderer_grab, "renderer-grab", 1, 1), menv);
 	scheme_add_global("renderer-ungrab", scheme_make_prim_w_arity(renderer_ungrab, "renderer-ungrab", 0, 0), menv);
-	scheme_add_global("begin-scene", scheme_make_prim_w_arity(begin_scene, "begin-scene", 0, 0), menv);
-	scheme_add_global("end-scene", scheme_make_prim_w_arity(end_scene, "end-scene", 0, 0), menv);
+	scheme_add_global("render", scheme_make_prim_w_arity(render, "render", 0, 0), menv);
 	scheme_add_global("tick-physics", scheme_make_prim_w_arity(tick_physics, "tick-physics", 0, 0), menv);
 	scheme_add_global("render-physics", scheme_make_prim_w_arity(render_physics, "render-physics", 0, 0), menv);
 	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);

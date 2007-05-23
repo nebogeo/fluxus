@@ -24,10 +24,12 @@
 		(or (getenv "PLTCOLLECTS") fluxus-collects-location)
 		(current-library-collection-paths)))
 
+(define fluxus-name (string-append "fluxus-" fluxus-version))
+
 ; the path to load extensions from
 (define fluxus-extension-path 
 	(build-path (path->string (car (current-library-collection-paths))) 
-		"fluxus-0.12" "extensions"))
+		fluxus-name "extensions"))
 			   
 ; load the binary module extensions
 (load-extension (build-path fluxus-extension-path "fluxus-engine.so"))
@@ -39,14 +41,15 @@
 (require fluxus-audio)
 (require fluxus-osc)
 
-(require (lib "scratchpad.ss" "fluxus-0.12"))
-(require (lib "scratchpad-input.ss" "fluxus-0.12"))
-(require (lib "scratchpad-camera.ss" "fluxus-0.12"))
-(require (lib "fluxus-obj-import.ss" "fluxus-0.12"))
+; todo: find out how to get rid of the burnt in version no
+(require (lib "scratchpad.ss" "fluxus-0.13"))
+(require (lib "scratchpad-input.ss" "fluxus-0.13"))
+(require (lib "scratchpad-camera.ss" "fluxus-0.13"))
+(require (lib "fluxus-obj-import.ss" "fluxus-0.13"))
 
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))
-	"fluxus-0.12/helpmap.scm"))
+	fluxus-name "/helpmap.scm"))
 
 ;-------------------------------------------------
 ; here is the hacking section
