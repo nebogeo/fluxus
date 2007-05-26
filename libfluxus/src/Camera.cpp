@@ -17,9 +17,11 @@
 #include "Camera.h"
 
 using namespace fluxus;
-
+	
 Camera::Camera() :
+m_Initialised(false),
 m_Ortho(false),
+m_CameraAttached(NULL),
 m_CameraLag(0),
 m_Up(-1),
 m_Down(1),

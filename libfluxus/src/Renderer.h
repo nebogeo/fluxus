@@ -158,6 +158,7 @@ private:
 	
 	SelectInfo m_SelectInfo;
 	stereo_mode_t m_StereoMode;
+	bool m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha;
 	
 	timeval m_LastTime;
 	float m_Deadline;

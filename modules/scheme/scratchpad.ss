@@ -239,6 +239,7 @@
 	((eq? stereo-mode 'colour)
          ;left
          (set-colour-mask left-eye-colour-mask)
+		 (clear-frame 1)
          (set-camera 
           (mmul 
            (mtranslate (vector (- half_sep) 0 0))
@@ -250,6 +251,7 @@
          
          ;right
          (set-colour-mask right-eye-colour-mask)
+		 (clear-frame 0)
          (set-camera 
           (mmul 
            (mtranslate (vector half_sep 0 0))

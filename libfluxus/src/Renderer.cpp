@@ -55,6 +55,10 @@ m_FogDensity(0),
 m_FogStart(0),
 m_FogEnd(100),
 m_StereoMode(noStereo),
+m_MaskRed(true),
+m_MaskGreen(true),
+m_MaskBlue(true),
+m_MaskAlpha(true),
 m_Deadline(1/25.0f),
 m_FPSDisplay(false),
 m_Time(0),
@@ -88,6 +92,7 @@ void Renderer::Render()
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 	
+
 	PreRender();
 	m_World.Render();
 	m_ImmediateMode.Render();
@@ -229,6 +234,8 @@ void Renderer::PreRender(bool PickMode)
 	m_Camera.DoCamera();
 	RenderLights(false); // world space
 	
+	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);
+		
 	/* ???
 	RenderLights(true); // camera locked
 	
@@ -264,12 +271,12 @@ void Renderer::PostRender()
 {
 	// clear the texture, if the last primitive assigned one...
 	glDisable(GL_TEXTURE_2D);
-
 	GLSLShader::Unapply();
 
 	glDisable(GL_DEPTH_TEST);
 	if (m_ShowAxis) Primitive::RenderAxes();
 	glEnable(GL_DEPTH_TEST);
+	glColorMask(true,true,true,true);
 	
 	PopState();
 	
@@ -575,10 +582,8 @@ bool Renderer::SetStereoMode(stereo_mode_t mode)
 
 void Renderer::SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha)
 {
-	bool r,g,b,a;
-	r = inred ? GL_TRUE : GL_FALSE;
-	g = ingreen ? GL_TRUE : GL_FALSE;
-	b = inblue ? GL_TRUE : GL_FALSE;
-	a = inalpha ? GL_TRUE : GL_FALSE;
-	glColorMask(r,g,b,a);
+	m_MaskRed=inred;
+	m_MaskGreen=ingreen;
+	m_MaskBlue=inblue;
+	m_MaskAlpha=inalpha;
 }
