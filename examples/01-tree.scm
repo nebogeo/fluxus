@@ -1,8 +1,6 @@
 ; a recursivly branching tree
 
 (clear)
-(set-stereo-mode 'colour)
-(set-eye-separation 0.1)
 (show-axis 1)
 
 (define (tree n)

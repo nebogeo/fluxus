@@ -24,6 +24,7 @@
 using namespace fluxus;
 	
 PolyPrimitive::PolyPrimitive(Type t) :
+m_IndexMode(false),
 m_Type(t)
 {
 	AddData("p",new TypedPData<dVector>);
@@ -67,7 +68,14 @@ void PolyPrimitive::Render()
 		case TRISTRIP : type=GL_TRIANGLE_STRIP; break;
 		case QUADS : 
 			// some drivers crash if they don't get enough data for a primitive...
-			if (m_VertData->size()<4) return; 
+			if (m_IndexMode)
+			{
+				if (m_IndexData.size()<4) return; 
+			}
+			else
+			{
+				if (m_VertData->size()<4) return; 
+			}
 			type=GL_QUADS; 	
 		break;
 		case TRILIST : type=GL_TRIANGLES; break;
@@ -79,7 +87,6 @@ void PolyPrimitive::Render()
 	else glDisable(GL_LINE_SMOOTH);		
 
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	
 	if (m_State.Hints & HINT_NORMAL)
 	{
 		glColor3f(1,0,0);
@@ -130,7 +137,8 @@ void PolyPrimitive::Render()
 	
 	if (m_State.Hints & HINT_SOLID)
 	{
-		glDrawArrays(type,0,m_VertData->size());
+		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
+		else glDrawArrays(type,0,m_VertData->size());
 	}	
 	
 	if (m_State.Hints & HINT_WIRE)
@@ -140,7 +148,8 @@ void PolyPrimitive::Render()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glColor3fv(m_State.WireColour.arr());
 		glDisable(GL_LIGHTING);	
-		glDrawArrays(type,0,m_VertData->size());	
+		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
+		else glDrawArrays(type,0,m_VertData->size());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
@@ -152,11 +161,13 @@ void PolyPrimitive::Render()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
 		glColor3fv(m_State.WireColour.arr());
 		glDisable(GL_LIGHTING);	
-		glDrawArrays(type,0,m_VertData->size());	
+		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
+		else glDrawArrays(type,0,m_VertData->size());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 	}
+	
 	
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
@@ -168,30 +179,110 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 
 	if (!m_GeometricNormals.empty()) 
 	{
-		for (unsigned int i=0; i<m_VertData->size(); i++)
+		if (m_IndexMode) // smooth mode only for indexed polys
 		{
-			(*m_NormData)[i]=m_GeometricNormals[i];
+			vector<int> count(m_VertData->size());
+			
+			// clear the normals
+			for (unsigned int i=0; i<m_NormData->size(); i++)
+			{
+				(*m_NormData)[i]=dVector(0,0,0);
+				count[i]=0;
+			}
+			
+			// add all the contributing normals
+			for (unsigned int i=0; i<m_IndexData.size(); i++)
+			{
+				(*m_NormData)[m_IndexData[i]]+=m_GeometricNormals[i];
+				count[m_IndexData[i]]++;
+			}
+
+			// scale back
+			for (unsigned int i=0; i<m_NormData->size(); i++)
+			{
+				(*m_NormData)[i]/=(float)count[i];
+			}
 		}
-	
-		if (smooth)
+		else
 		{
-			// smooth the normals
-			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
 			for (unsigned int i=0; i<m_VertData->size(); i++)
 			{
-				float count=1;
-				dVector n = (*m_NormData)[i];
-				for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
-						b!=m_ConnectedVerts[i].end(); b++)
-				{
-					n+=(*m_NormData)[*b];
-					count+=1;
-				}
-				newnorms->m_Data.push_back((n/count).normalise());
+				(*m_NormData)[i]=m_GeometricNormals[i];
 			}
-			SetDataRaw("n", newnorms);
+
+			if (smooth)
+			{
+				// smooth the normals
+				TypedPData<dVector> *newnorms = new TypedPData<dVector>;
+				for (unsigned int i=0; i<m_VertData->size(); i++)
+				{
+					float count=1;
+					dVector n = (*m_NormData)[i];
+					for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
+							b!=m_ConnectedVerts[i].end(); b++)
+					{
+						n+=(*m_NormData)[*b];
+						count+=1;
+					}
+					newnorms->m_Data.push_back((n/count).normalise());
+				}
+				SetDataRaw("n", newnorms);
+			}
 		}
 	}
+}
+
+void PolyPrimitive::ConvertToIndexed()
+{
+	if (m_ConnectedVerts.empty())
+	{
+		CalculateConnected();
+	}
+		
+	TypedPData<dVector> *NewVerts = new TypedPData<dVector>;
+	TypedPData<dVector> *NewNorms = new TypedPData<dVector>;
+	TypedPData<dColour> *NewCols = new TypedPData<dColour>;
+	TypedPData<dVector> *NewTex = new TypedPData<dVector>;
+
+	m_IndexData.clear();
+	int vert=0;
+	int index=0;
+	map<int,int> verttoindex;
+	for (vector<vector<int> >::iterator i=m_ConnectedVerts.begin();
+		 i!=m_ConnectedVerts.end(); i++)
+	{
+		if (verttoindex.find(vert)==verttoindex.end())
+		{
+			// take the first connected as our new point - will trash non-shared
+			// normals, texture coords and colours
+			NewVerts->m_Data.push_back((*m_VertData)[(*i)[0]]);
+			NewNorms->m_Data.push_back((*m_NormData)[(*i)[0]]);
+			NewCols->m_Data.push_back((*m_ColData)[(*i)[0]]);
+			NewTex->m_Data.push_back((*m_TexData)[(*i)[0]]);
+			m_IndexData.push_back(index);
+			
+			// record all the verts that can point to this index
+			for (vector<int>::iterator v=i->begin(); v!=i->end(); v++)
+			{
+				verttoindex[*v]=index;
+			}
+			
+			index++;
+		}
+		else
+		{
+			m_IndexData.push_back(verttoindex[vert]);
+		}
+		
+		vert++;
+	}
+	
+	SetDataRaw("p", NewVerts);
+	SetDataRaw("n", NewNorms);
+	SetDataRaw("c", NewCols);
+	SetDataRaw("t", NewTex);
+		
+	m_IndexMode=true;
 }
 
 void PolyPrimitive::GenerateTopology()
@@ -253,17 +344,38 @@ void PolyPrimitive::CalculateGeometricNormals()
 	if (stride>0)
 	{
 		m_GeometricNormals.clear();
-		for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+		
+		if (m_IndexMode)
 		{
-			if (i+2<m_VertData->size())
+			for (unsigned int i=0; i<m_IndexData.size(); i+=stride)
 			{
-				dVector a((*m_VertData)[i]-(*m_VertData)[i+1]);
-				dVector b((*m_VertData)[i+1]-(*m_VertData)[i+2]);
-				dVector normal(a.cross(b));
-				normal.normalise();
-				for (int n=0; n<stride; n++)
+				if (i+2<m_IndexData.size())
 				{
-					m_GeometricNormals.push_back(normal);
+					dVector a((*m_VertData)[m_IndexData[i]]-(*m_VertData)[m_IndexData[i+1]]);
+					dVector b((*m_VertData)[m_IndexData[i+1]]-(*m_VertData)[m_IndexData[i+2]]);
+					dVector normal(a.cross(b));
+					normal.normalise();
+					for (int n=0; n<stride; n++)
+					{
+						m_GeometricNormals.push_back(normal);
+					}
+				}
+			}
+		}
+		else
+		{
+			for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+			{
+				if (i+2<m_VertData->size())
+				{
+					dVector a((*m_VertData)[i]-(*m_VertData)[i+1]);
+					dVector b((*m_VertData)[i+1]-(*m_VertData)[i+2]);
+					dVector normal(a.cross(b));
+					normal.normalise();
+					for (int n=0; n<stride; n++)
+					{
+						m_GeometricNormals.push_back(normal);
+					}
 				}
 			}
 		}

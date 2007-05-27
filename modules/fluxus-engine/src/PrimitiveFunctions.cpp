@@ -569,6 +569,109 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// poly-set-index index-list
+// Returns: void
+// Description:
+// Switches the primitive to indexed mode, and uses the 
+// list as the index values for this primitive.
+// primitive.
+// Example:
+// (clear)
+// (define p (build-polygons 8 1))
+// 
+// (grab p)
+// ; setup the vertex data
+// (pdata-set "p" 0 (vector -1 -1 -1))
+// (pdata-set "p" 1 (vector  1 -1 -1))
+// (pdata-set "p" 2 (vector  1 -1  1))
+// (pdata-set "p" 3 (vector -1 -1  1))
+// (pdata-set "p" 4 (vector -1  1 -1))
+// (pdata-set "p" 5 (vector  1  1 -1))
+// (pdata-set "p" 6 (vector  1  1  1))
+// (pdata-set "p" 7 (vector -1  1  1))
+// 
+// (hint-wire)
+// (hint-unlit)
+// 
+// ; connect the verts together into faces
+// (poly-set-index (list 7 6 5 4  5 6 2 1 
+//                        4 5 1 0  1 2 3 0
+//                        3 7 4 0  6 7 3 2))
+// 
+// (ungrab)
+// EndFunctionDoc
+
+Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *indexvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, indexvec);
+	MZ_GC_REG();
+
+	ArgCheck("poly-set-index", "l", argc, argv);
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
+		if (pp)
+		{
+			indexvec = scheme_list_to_vector(argv[0]);
+			pp->GetIndex().resize(SCHEME_VEC_SIZE(indexvec));
+			for (int n=0; n<SCHEME_VEC_SIZE(indexvec); n++)
+			{
+				if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(indexvec)[n])) 
+				{					
+					pp->GetIndex()[n]=IntFromScheme(SCHEME_VEC_ELS(indexvec)[n]);
+				}
+			}
+			pp->SetIndexMode(true);
+			MZ_GC_UNREG(); 
+		    return scheme_void;
+		}
+	}
+	
+	cerr<<"poly-set-index! can only be called while a polyprimitive is grabbed"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// poly-convert-to-indexed
+// Returns: void
+// Description:
+// Converts the currently grabbed polygon primitive from
+// raw vertex arrays to indexed arrays. This removes duplicate
+// vertices from the polygon, making the pdata arrays shorter, 
+// which speeds up processing time.
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (grab mynewshape)
+// (poly-convert-to-indexed)
+// (ungrab)
+// EndFunctionDoc
+
+Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
+{		
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->ConvertToIndexed();
+		    return scheme_void;
+		}
+	}
+	
+	cerr<<"poly-convert-to-indexed can only be called while a polyprimitive is grabbed"<<endl;
+    return scheme_void;
+}
+
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -599,5 +702,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
+	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
+	scheme_add_global("poly-convert-to-indexed", scheme_make_prim_w_arity(poly_convert_to_indexed, "poly-convert-to-indexed", 0, 0), env);
  	MZ_GC_UNREG(); 
 }

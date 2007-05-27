@@ -44,6 +44,11 @@ public:
 	const vector<vector<int> > &GetConnectedVerts() { GenerateTopology(); return m_ConnectedVerts; }
 	const vector<dVector> &GetGeometricNormals() { GenerateTopology(); return m_GeometricNormals; }
 	const vector<vector<pair<int,int> > > &GetUniqueEdges() { CalculateUniqueEdges(); return m_UniqueEdges; }
+
+	void SetIndexMode(bool s) { m_IndexMode=s; }
+	bool IsIndexed() { return m_IndexMode; }
+	vector<unsigned int> &GetIndex() { return m_IndexData; }
+	void ConvertToIndexed();
 	
 protected:
 
@@ -56,12 +61,17 @@ protected:
 	void UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> > firstpass, set<pair<int,int> > &stored);
 	
 	virtual void PDataDirty();
+
+	void RecalculateNormalsIndexed();
 	
 	vector<vector<int> > m_ConnectedVerts;
 	vector<dVector> m_GeometricNormals;
 	vector<vector<int> > m_Faces;
 	vector<vector<pair<int,int> > >  m_UniqueEdges;
-		
+	
+	bool m_IndexMode;
+	vector<unsigned int> m_IndexData;
+	
 	Type m_Type;
 	vector<dVector> *m_VertData;
 	vector<dVector> *m_NormData;
