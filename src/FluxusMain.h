@@ -16,7 +16,6 @@
 
 #include "GLEditor.h"
 #include "GLFileDialog.h"
-#include "Recorder.h"
 #include "Repl.h"
 #include "Interpreter.h"
 
@@ -49,14 +48,9 @@ public:
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void HideCursor() { m_ShowCursor=!m_ShowCursor; }
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; } 
-    void LoadRecordedCode(const string &Filename) { m_Recorder.Load(Filename); }
-    void SaveRecordedCode(const string &Filename) { m_Recorder.Save(Filename); }
-	
+  	
 	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
     void SwitchToRepl() { m_CurrentEditor = 9; }
-
-protected:
-	EventRecorder m_Recorder;
 	
 private:
 	

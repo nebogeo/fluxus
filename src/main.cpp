@@ -24,6 +24,7 @@
 #include <GL/glut.h>
 #include "FluxusMain.h"
 #include "Interpreter.h"
+#include "Recorder.h"
 
 using namespace std;
 
@@ -38,6 +39,105 @@ static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 
 FluxusMain *app = NULL;
 static Interpreter *interpreter = NULL; 
+EventRecorder *recorder = NULL;
+int modifiers = 0;
+
+void ReshapeCallback(int width, int height)
+{
+	app->Reshape(width,height);
+	char code[256];
+	snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	interpreter->Interpret(code);
+}
+
+void KeyboardCallback(unsigned char key,int x, int y)
+{
+	int mod=modifiers;
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();	
+	app->Handle(key, -1, -1, -1, x, y, mod);
+	char code[256];
+	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("keydown",key,mod));
+}
+
+void KeyboardUpCallback(unsigned char key,int x, int y)
+{
+	char code[256];
+	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("keyup",key,0));
+}
+
+void SpecialKeyboardCallback(int key,int x, int y)
+{
+	int mod=modifiers;
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();	
+	app->Handle(0, -1, key, -1, x, y, mod);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("specialkeydown",key,mod));
+}
+
+void SpecialKeyboardUpCallback(int key,int x, int y)
+{
+	//app->Handle( 0, 0, key, 1, x, y);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("specialkeyup",key,0));
+}
+
+void MouseCallback(int button, int state, int x, int y)
+{
+	app->Handle(0, button, -1, state, x, y, 0);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("mouse",x,y,button,state));
+}
+
+void MotionCallback(int x, int y)
+{
+	app->Handle(0, -1, -1, -1, x, y, 0);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	interpreter->Interpret(code);
+	recorder->Record(RecorderMessage("motion",x,y));
+}
+
+void IdleCallback()
+{
+	glutPostRedisplay();
+}
+
+void DoRecorder()
+{
+	vector<RecorderMessage> events;
+	if (recorder->Get(events))
+	{
+		for (vector<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
+		{
+			if (i->Name=="keydown") 
+			{
+				modifiers=i->Mod;
+				KeyboardCallback(i->Data,0,0);
+			}
+			else if (i->Name=="keyup") KeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="specialkeydown") 
+			{
+				modifiers=i->Mod;
+				SpecialKeyboardCallback(i->Data,0,0);
+			}
+			else if (i->Name=="specialkeyup") SpecialKeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="mouse") MouseCallback(i->Button,i->State,i->Data,i->Mod);
+			else if (i->Name=="motion") MotionCallback(i->Data,i->Mod);
+		}
+	}
+	recorder->UpdateClock();
+	recorder->Save();
+}
 
 void DisplayCallback()
 {    
@@ -50,68 +150,10 @@ void DisplayCallback()
 	interpreter->Interpret(ENGINE_CALLBACK);
 	app->Render();	
 	glutSwapBuffers();
-		
+
+	DoRecorder();		
 }
 
-void ReshapeCallback(int width, int height)
-{
-	app->Reshape(width,height);
-	char code[256];
-	snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
-	interpreter->Interpret(code);
-}
-
-void KeyboardCallback(unsigned char key,int x, int y)
-{
-	app->Handle(key, -1, -1, -1, x, y, glutGetModifiers());
-	char code[256];
-	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,glutGetModifiers());
-	interpreter->Interpret(code);
-}
-
-void KeyboardUpCallback(unsigned char key,int x, int y)
-{
-	char code[256];
-	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
-	interpreter->Interpret(code);
-}
-
-void SpecialKeyboardCallback(int key,int x, int y)
-{
-	app->Handle(0, -1, key, -1, x, y, glutGetModifiers());
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,glutGetModifiers());
-	interpreter->Interpret(code);
-}
-
-void SpecialKeyboardUpCallback(int key,int x, int y)
-{
-	//app->Handle( 0, 0, key, 1, x, y);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,glutGetModifiers());
-	interpreter->Interpret(code);
-}
-
-void MouseCallback(int button, int state, int x, int y)
-{
-	app->Handle(0, button, -1, state, x, y, 0);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
-	interpreter->Interpret(code);
-}
-
-void MotionCallback(int x, int y)
-{
-	app->Handle(0, -1, -1, -1, x, y, 0);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
-	interpreter->Interpret(code);
-}
-
-void IdleCallback()
-{
-	glutPostRedisplay();
-}
 
 int main(int argc, char *argv[])
 {
@@ -166,21 +208,43 @@ int main(int argc, char *argv[])
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	
-   	if (argc>1) 
+	recorder = new EventRecorder;
+	
+	int arg=1;
+	while(arg<argc)
 	{
-		if (argc>2)
+		if (!strcmp(argv[arg],"-r"))
 		{
-			if (!strcmp(argv[1],"-r"))
+			if (arg+1 < argc) 
 			{
+				recorder->SetFilename(argv[arg+1]);
+				recorder->SetMode(EventRecorder::RECORD);
+				arg++;
 			}
-			else if (!strcmp(argv[1],"-p"))
+		}
+		else if (!strcmp(argv[arg],"-p"))
+		{				
+			if (arg+1 < argc) 
 			{
+				recorder->SetFilename(argv[arg+1]);
+				recorder->Load();
+				recorder->SetMode(EventRecorder::PLAYBACK);
+				arg++;
+			}
+		}
+		else if (!strcmp(argv[arg],"-d"))
+		{				
+			if (arg+1 < argc) 
+			{
+				recorder->SetDelta(atof(argv[arg+1]));
+				arg++;
 			}
 		}
 		else
 		{
-			app->LoadScript(argv[1]);
+			app->LoadScript(argv[arg]);
 		}
+		arg++;
 	}
 	
 	glutMainLoop();

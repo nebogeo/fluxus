@@ -19,8 +19,6 @@
 #include <fstream>
 #include "Recorder.h"
 
-using namespace fluxus;
-
 EventRecorder::EventRecorder() :
 m_Mode(OFF),
 m_LastTimeSeconds(0),
@@ -32,32 +30,34 @@ EventRecorder::~EventRecorder()
 {
 }
 
-bool EventRecorder::Get(vector<RecorderMessage*> &events)
+bool EventRecorder::Get(vector<RecorderMessage> &events)
 {
 	bool found=false;
-	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+	if (m_Mode==PLAYBACK)
 	{
-		if ((*i)->Time>m_LastTimeSeconds && (*i)->Time<=m_TimeSeconds)
+		for (vector<RecorderMessage>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
 		{
-			events.push_back(*i);
-			found=true;
-		}		
+			if (i->Time>m_LastTimeSeconds && i->Time<=m_TimeSeconds)
+			{
+				events.push_back(*i);
+				found=true;
+			}		
+		}
 	}
 	return found;
 }
 
-void EventRecorder::Record(RecorderMessage *event)
+void EventRecorder::Record(RecorderMessage event)
 {
-	event->Time=m_TimeSeconds;
-	m_EventVec.push_back(event);
+	if (m_Mode==RECORD)
+	{
+		event.Time=m_TimeSeconds;
+		m_EventVec.push_back(event);
+	}
 }
 
 void EventRecorder::Reset()
 {
-	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
-	{
-		delete *i;
-	}
 	m_EventVec.clear();
 }
 
@@ -70,39 +70,44 @@ void EventRecorder::ResetClock()
 void EventRecorder::UpdateClock()
 {
 	double Delta;
-	timeval ThisTime;
-	gettimeofday(&ThisTime,NULL);
-	Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
-		  (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
-	m_LastTime=ThisTime;
-	IncClock(Delta);
-}
-
-void EventRecorder::IncClock(double delta)
-{
-	m_LastTimeSeconds=m_TimeSeconds;
-	if (delta>0 && delta<1000) m_TimeSeconds+=delta;
-	//cerr<<m_TimeSeconds<<" "<<delta<<endl;
-}
-
-void EventRecorder::Save(const string &filename)
-{
-	ofstream os(filename.c_str());
-	int version = 1;
-	os<<version<<endl;
-	os<<m_EventVec.size()<<endl;
-	for (vector<RecorderMessage*>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+	if (m_Delta==0)
 	{
-		os<<(*i)->Name<<" "<<(*i)->Time<<" "<<(*i)->Data<<endl;
+		timeval ThisTime;
+		gettimeofday(&ThisTime,NULL);
+		Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
+			  (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
+		m_LastTime=ThisTime;
 	}
-	
-	os.close();		
+	else
+	{
+		Delta=m_Delta;
+	}
+
+	m_LastTimeSeconds=m_TimeSeconds;
+	if (Delta>0 && Delta<1000) m_TimeSeconds+=Delta;
 }
 
-void EventRecorder::Load(const string &filename)
+void EventRecorder::Save()
+{
+	if (m_Mode==RECORD)
+	{
+		ofstream os(m_Filename.c_str());
+		int version = 1;
+		os<<version<<endl;
+		os<<m_EventVec.size()<<endl;
+		for (vector<RecorderMessage>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+		{
+			os<<i->Name<<" "<<i->Time<<" "<<i->Data<<" "<<i->Mod<<" "<<i->Button<<" "<<i->State<<endl;
+		}
+
+		os.close();	
+	}	
+}
+
+void EventRecorder::Load()
 {
 	Reset();
-	ifstream is(filename.c_str());
+	ifstream is(m_Filename.c_str());
 	int version;
 	is>>version;
 	unsigned int size;
@@ -112,10 +117,13 @@ void EventRecorder::Load(const string &filename)
 	
 	while(count<size)
 	{
-		RecorderMessage *event = new RecorderMessage;
-		is>>event->Name;
-		is>>event->Time;
-		is>>event->Data;
+		RecorderMessage event;
+		is>>event.Name;
+		is>>event.Time;
+		is>>event.Data;
+		is>>event.Mod;
+		is>>event.Button;
+		is>>event.State;
 		m_EventVec.push_back(event);
 		count++;
 	}

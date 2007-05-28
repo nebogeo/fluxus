@@ -21,6 +21,10 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 	- (shadow-light)
 	- (shadow-length)
 	- (shadow-debug)
+* livecode recorder startup flags
+	- -r filename : record to file
+	- -p filename : playback from file
+	- -d time : seconds per frame time override (for use with frame-dump)
 
 0.12
 

@@ -22,17 +22,21 @@
 
 using namespace std;
 
-namespace fluxus
-{
-
 class RecorderMessage
 {
 public:
-	RecorderMessage() : Time(0){}
-	
+	RecorderMessage() : Time(0) {}
+	RecorderMessage(const string &n, int d, int m) : 
+		Name(n), Time(0), Data(d), Mod(m), Button(0), State(0) {}
+	RecorderMessage(const string &n, int d, int m, int b, int s) : 
+		Name(n), Time(0), Data(d), Mod(m), Button(b), State(s) {}
+
 	string Name;
 	double Time;
 	int Data;
+	int Mod;
+	int Button;
+	int State;
 };
 
 class EventRecorder
@@ -46,16 +50,18 @@ public:
 	void SetMode(Mode mode) { m_Mode=mode; }
 	Mode GetMode() { return m_Mode; }
 	
-	bool Get(vector<RecorderMessage*> &events);
-	void Record(RecorderMessage *event);
+	bool Get(vector<RecorderMessage> &events);
+	void Record(RecorderMessage event);
 
 	void Reset();
 	void ResetClock();
 	void UpdateClock();
-	void IncClock(double delta);
+	void SetDelta(float s) { m_Delta=s; }
 	
-	void Save(const string &filename);
-	void Load(const string &filename);
+	void SetFilename(const string &filename) { m_Filename=filename; }
+	
+	void Save();
+	void Load();
 	
 private:
 	
@@ -63,11 +69,11 @@ private:
 	timeval m_LastTime;
 	double m_LastTimeSeconds;
 	double m_TimeSeconds;
+	string m_Filename;
+	float m_Delta;
 	
-	vector<RecorderMessage*> m_EventVec;
+	vector<RecorderMessage> m_EventVec;
 };
-
-}
 
 #endif
 
