@@ -42,6 +42,9 @@ public:
 	void Clear();
 	void Generate(Primitive *prim);
 	PolyPrimitive *GetVolume();
+	void SetLength(float s) { m_Length=s; }
+	void SetDebug(bool s) { m_Debug=s; }
+	bool GetDebug() { return m_Debug; }
 	
 private:
 
@@ -58,6 +61,8 @@ private:
 	PolyPrimitive m_ShadowVolume;
 	dVector m_LightPosition;
 	bool m_Active;
+	float m_Length;
+	bool m_Debug;
 };
 
 };

@@ -301,18 +301,37 @@ void PolyPrimitive::GenerateTopology()
 void PolyPrimitive::CalculateConnected()
 {
 	// cache the connected verts for edge lists
-	for (unsigned int i=0; i<m_VertData->size(); i++)
-	{
-		vector<int> connected;
-		for (unsigned int b=0; b<m_VertData->size(); b++)
+	if (m_IndexMode)
+	{		
+		for (unsigned int i=0; i<m_IndexData.size(); i++)
 		{
-			// find all close verts
-			if (i!=b && (*m_VertData)[i].feq((*m_VertData)[b]))
+			vector<int> connected;
+			for (unsigned int b=0; b<m_IndexData.size(); b++)
 			{
-				connected.push_back(b);
+				// find all close verts
+				if (i!=b && m_IndexData[i]==m_IndexData[b])
+				{
+					connected.push_back(b);
+				}
 			}
+			m_ConnectedVerts.push_back(connected);
 		}
-		m_ConnectedVerts.push_back(connected);
+	}
+	else
+	{
+		for (unsigned int i=0; i<m_VertData->size(); i++)
+		{
+			vector<int> connected;
+			for (unsigned int b=0; b<m_VertData->size(); b++)
+			{
+				// find all close verts
+				if (i!=b && (*m_VertData)[i].feq((*m_VertData)[b]))
+				{
+					connected.push_back(b);
+				}
+			}
+			m_ConnectedVerts.push_back(connected);
+		}
 	}
 }
 
@@ -395,27 +414,51 @@ void PolyPrimitive::CalculateUniqueEdges()
 		{		
 			set<pair<int,int> > firstpass;
 
-			for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+			if (m_IndexMode)
 			{
-				for (int n=0; n<stride-1; n++)
+				for (unsigned int i=0; i<m_IndexData.size(); i+=stride)
 				{
-					firstpass.insert(pair<int,int>(n+i,n+i+1));
-					firstpass.insert(pair<int,int>(n+i+1,n+i));
+					for (int n=0; n<stride-1; n++)
+					{
+						firstpass.insert(pair<int,int>(n+i,n+i+1));
+					}
+					firstpass.insert(pair<int,int>(i+stride-1,i));
 				}
-				firstpass.insert(pair<int,int>(i,i+stride-1));
-				firstpass.insert(pair<int,int>(i+stride-1,i));
+
+				set<pair<int,int> > stored;
+				pair<int,int> key;
+
+				for (unsigned int i=0; i<m_IndexData.size(); i+=stride)
+				{
+					for (int n=0; n<stride-1; n++)
+					{	
+						UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
+					}	
+					UniqueEdgesFindShared(pair<int,int>(i+stride-1,i), firstpass, stored);	
+				}
 			}
-
-			set<pair<int,int> > stored;
-			pair<int,int> key;
-
-			for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+			else
 			{
-				for (int n=0; n<stride-1; n++)
-				{	
-					UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
-				}	
-				UniqueEdgesFindShared(pair<int,int>(i,i+stride-1), firstpass, stored);	
+				for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+				{
+					for (int n=0; n<stride-1; n++)
+					{
+						firstpass.insert(pair<int,int>(n+i,n+i+1));
+					}
+					firstpass.insert(pair<int,int>(i+stride-1,i));
+				}
+
+				set<pair<int,int> > stored;
+				pair<int,int> key;
+
+				for (unsigned int i=0; i<m_VertData->size(); i+=stride)
+				{
+					for (int n=0; n<stride-1; n++)
+					{	
+						UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
+					}	
+					UniqueEdgesFindShared(pair<int,int>(i+stride-1,i), firstpass, stored);	
+				}
 			}
 		}
 	}
@@ -427,24 +470,36 @@ void PolyPrimitive::UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> 
 	
 	if (stored.find(edge)==stored.end() && stored.find(pair<int,int>(edge.second,edge.first))==stored.end())
 	{
+		// first, store the test edge
 		edges.push_back(edge);
 		stored.insert(edge);
 		
-		cerr<<"::edge::"<<edge.first<<" "<<edge.second<<endl;
-
+		//cerr<<"edge:"<<edge.first<<" "<<edge.second<<endl;
+		
+		// make all combinations of verts connected to the edge verts
 		for (vector<int>::iterator a=m_ConnectedVerts[edge.first].begin();
 			a!=m_ConnectedVerts[edge.first].end(); a++)
 		{
 			for (vector<int>::iterator b=m_ConnectedVerts[edge.second].begin();
 					b!=m_ConnectedVerts[edge.second].end(); b++)
 			{
+				//cerr<<*a<<" "<<*b<<endl;
 				pair<int, int> candidate(*a,*b);
 				if (firstpass.find(candidate)!=firstpass.end() && // if this is a real edge
 					stored.find(candidate)==stored.end() )        // and we've not stored it already
 				{
 					edges.push_back(candidate);
 					stored.insert(candidate);
-					cerr<<candidate.first<<" "<<candidate.second<<endl;
+					//cerr<<"^ "<<candidate.first<<" "<<candidate.second<<endl;
+				}						
+
+				pair<int, int> rcandidate(*b,*a);
+				if (firstpass.find(rcandidate)!=firstpass.end() && // if this is a real edge
+					stored.find(rcandidate)==stored.end() )        // and we've not stored it already
+				{
+					edges.push_back(rcandidate);
+					stored.insert(rcandidate);
+					//cerr<<"^ "<<rcandidate.first<<" "<<rcandidate.second<<endl;
 				}						
 			}
 		}

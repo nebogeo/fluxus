@@ -79,11 +79,6 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 		glPopName();
     }
 	
-	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
-	{
-		m_ShadowVolumeGen.Generate(node->Prim);
-	}
-	
 	depth++;
 
 	for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
@@ -91,6 +86,11 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 		RenderWalk((SceneNode*)*i,depth,rendermode);
 	}
 	glPopMatrix();
+	
+	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
+	{
+		m_ShadowVolumeGen.Generate(node->Prim);
+	}
 }
 
 void SceneGraph::Detach(SceneNode *node)

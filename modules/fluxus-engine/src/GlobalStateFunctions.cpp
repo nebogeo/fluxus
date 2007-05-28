@@ -691,6 +691,64 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 
   return scheme_void;
 }
+
+// StartFunctionDoc-en
+// desiredfps shadow-light
+// Returns: void
+// Description:
+// Sets the light to use for generating shadows, set to 0 to disable shadow
+// rendering.
+// Example:
+// (shadow-light 1) 
+// EndFunctionDoc 
+
+Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("shadow-light", "i", argc, argv);
+	Engine::Get()->Renderer()->ShadowLight(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// desiredfps shadow-length
+// Returns: void
+// Description:
+// Sets the length of the shadow volume
+// rendering.
+// Example:
+// (shadow-length 10) 
+// EndFunctionDoc 
+
+Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("shadow-length", "f", argc, argv);
+	Engine::Get()->Renderer()->ShadowLength(FloatFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// desiredfps shadow-debug
+// Returns: void
+// Description:
+// Turns on debug rendering of the shadow volume
+// rendering.
+// Example:
+// (debug-shadows 1) 
+// EndFunctionDoc 
+
+Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("shadow-debug", "i", argc, argv);
+	Engine::Get()->Renderer()->DebugShadows(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -727,6 +785,9 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
  	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
  	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
  	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
- 
+  	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
+    scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
+	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
+
  	MZ_GC_UNREG(); 
 }

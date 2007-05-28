@@ -53,7 +53,8 @@ m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_FogDensity(0), 
 m_FogStart(0),
-m_FogEnd(100),
+m_FogEnd(100),	
+m_ShadowLight(0),
 m_StereoMode(noStereo),
 m_MaskRed(true),
 m_MaskGreen(true),
@@ -92,12 +93,18 @@ void Renderer::Render()
 		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 	
-
-	PreRender();
-	m_World.Render();
-	m_ImmediateMode.Render();
-	m_ImmediateMode.Clear();		
-	PostRender();
+	if (m_ShadowLight!=0)
+	{		
+		RenderStencilShadows();
+	}
+	else
+	{
+		PreRender();
+		m_World.Render();
+		m_ImmediateMode.Render();
+		m_ImmediateMode.Clear();
+		PostRender();
+	}		
 			
 	timeval ThisTime;
 	// stop valgrind complaining
@@ -119,6 +126,65 @@ void Renderer::Render()
 	
 	m_LastTime=ThisTime;
 	if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
+}
+
+void Renderer::RenderStencilShadows()
+{
+	m_World.GetShadowVolumeGen()->Clear();
+	
+	if (m_LightVec.size()>m_ShadowLight)
+	{
+		m_World.GetShadowVolumeGen()->SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());
+	}
+	
+	PreRender();
+	glDisable(GL_LIGHT0+m_ShadowLight); 
+	m_World.Render();
+	m_ImmediateMode.Render();
+
+	glClear(GL_STENCIL_BUFFER_BIT);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glDepthMask(GL_FALSE);
+	glEnable(GL_CULL_FACE);
+
+	glCullFace(GL_BACK);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
+	m_World.GetShadowVolumeGen()->GetVolume()->Render();
+
+    glCullFace(GL_FRONT);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
+	m_World.GetShadowVolumeGen()->GetVolume()->Render();
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glDepthFunc(GL_EQUAL);
+	glStencilFunc(GL_EQUAL, 0, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glCullFace(GL_BACK);
+
+	glEnable(GL_LIGHT0+m_ShadowLight);
+
+	m_World.Render();
+	m_ImmediateMode.Render();
+
+	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+	glStencilFunc(GL_ALWAYS, 0, ~0);
+
+	if (m_World.GetShadowVolumeGen()->GetDebug())
+	{
+		m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
+		m_World.GetShadowVolumeGen()->GetVolume()->Render();
+		m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
+	}
+
+	PostRender();
 }
 
 void Renderer::PreRender(bool PickMode)

@@ -22,7 +22,8 @@ using namespace fluxus;
 ShadowVolumeGen::ShadowVolumeGen() :
 m_ShadowVolume(PolyPrimitive::QUADS),
 m_LightPosition(5,5,0),
-m_Active(false)
+m_Active(false),
+m_Length(10)
 {
 }
 
@@ -76,112 +77,118 @@ void ShadowVolumeGen::PolyGen(PolyPrimitive *src)
 		SharedEdgeContainer edges = src->GetUniqueEdges();
 		vector<pair<dVector,dVector> > silhouette;
 			
-		// loop over all the edges
-		for (SharedEdgeContainer::iterator i=edges.begin(); i!=edges.end(); ++i)
+		if (src->IsIndexed())
 		{
-			EdgeContainer sharededges = *i;
-
-			dVector lightdir = transform.transform(points->m_Data[sharededges.begin()->first])-m_LightPosition;
-			lightdir.normalise();
-				
-			bool backface=false;
-			bool frontface=false;
-
-			// loop over the edges shared by this one
-			for (EdgeContainer::iterator edge=sharededges.begin(); edge!=sharededges.end(); ++edge)
-			{			
-				// only check the first vert, as they should have 
-				// the same geometric normal if the poly is planar..
-				if (lightdir.dot(transform.transform_no_trans(normals[edge->first]))>0) frontface=true;
-				else backface=true;
-			}
-
-			// if we contain both front and back facing normals (from the light's pov) 
-			if (backface == frontface) 
-			{			
-				silhouette.push_back(pair<dVector,dVector>(transform.transform(points->m_Data[sharededges.begin()->first]),
-					                                       transform.transform(points->m_Data[sharededges.begin()->second])));
-			}						
-		}
-		
-		AddEdge(silhouette[0].first,silhouette[0].second);
-		bool flip=false;
-		int edge=FindNextEdge(0, silhouette, flip);
-		
-		// loop round the silhouette building the shadow volume
-		while(edge>0)
-		{
-			if (flip) AddEdge(silhouette[edge].second,silhouette[edge].first);
-			else AddEdge(silhouette[edge].first,silhouette[edge].second);
-			
-			edge=FindNextEdge(edge, silhouette, flip);
-		}
-	}
-}
-
-int ShadowVolumeGen::FindNextEdge(unsigned int index, vector<pair<dVector,dVector> > &silhouette, bool &flip)
-{
-	// find a point connecting to the one specified
-	for (unsigned int i=0; i<silhouette.size()-1; i++)
-	{
-		if (i!=index)
-		{
-			if (flip)
+			vector<unsigned int> index = src->GetIndex();
+			// loop over all the edges
+			for (SharedEdgeContainer::iterator i=edges.begin(); i!=edges.end(); ++i)
 			{
-				if (silhouette[i].first.feq(silhouette[index].first))
-				{
-					flip=false;
-					return i;
-				}
+				EdgeContainer sharededges = *i;
 
-				if (silhouette[i].second.feq(silhouette[index].first))
+				dVector lightdir = transform.transform(points->m_Data[index[sharededges.begin()->first]])-m_LightPosition;
+				lightdir.normalise();
+
+				if (sharededges.size()==2)
 				{
-					flip=true;
-					return i;
+					bool backface=false;
+					bool frontface=false;
+
+					EdgeContainer::iterator frontedge;
+
+					// loop over the edges shared by this one
+					for (EdgeContainer::iterator edge=sharededges.begin(); edge!=sharededges.end(); ++edge)
+					{			
+						// only check the first vert, as they should have 
+						// the same geometric normal if the poly is planar..
+						if (lightdir.dot(transform.transform_no_trans(normals[edge->first]))>0) 
+						{
+							frontedge=edge;
+							frontface=true;
+						}
+						else backface=true;
+					}
+
+					// if we contain both front and back facing normals (from the light's pov) 
+					if (backface && frontface) 
+					{			
+						silhouette.push_back(pair<dVector,dVector>(transform.transform(points->m_Data[index[frontedge->first]]),
+					                                    		   transform.transform(points->m_Data[index[frontedge->second]])));
+					}
 				}
 			}
-			else
+		}
+		else
+		{
+			// loop over all the edges
+			for (SharedEdgeContainer::iterator i=edges.begin(); i!=edges.end(); ++i)
 			{
-				if (silhouette[i].first.feq(silhouette[index].second))
-				{
-					flip=false;
-					return i;
-				}
+				EdgeContainer sharededges = *i;
 
-				if (silhouette[i].second.feq(silhouette[index].second))
+				dVector lightdir = transform.transform(points->m_Data[sharededges.begin()->first])-m_LightPosition;
+				lightdir.normalise();
+
+
+				if (sharededges.size()==2)
 				{
-					flip=true;
-					return i;
+					bool backface=false;
+					bool frontface=false;
+
+					EdgeContainer::iterator frontedge;
+
+					// loop over the edges shared by this one
+					for (EdgeContainer::iterator edge=sharededges.begin(); edge!=sharededges.end(); ++edge)
+					{			
+						// only check the first vert, as they should have 
+						// the same geometric normal if the poly is planar..
+						if (lightdir.dot(transform.transform_no_trans(normals[edge->first]))>0) 
+						{
+							frontedge=edge;
+							frontface=true;
+						}
+						else backface=true;
+					}
+
+					// if we contain both front and back facing normals (from the light's pov) 
+					if (backface && frontface) 
+					{			
+						silhouette.push_back(pair<dVector,dVector>(transform.transform(points->m_Data[frontedge->first]),
+					                                    		   transform.transform(points->m_Data[frontedge->second])));
+					}
 				}
-			}			
+			}
+		}
+		
+		for (vector<pair<dVector,dVector> >::iterator i=silhouette.begin();
+		     i!=silhouette.end(); i++)
+		{
+			AddEdge(i->first,i->second);
 		}
 	}
-	cerr<<"not found"<<endl;
-	// shouldn't happen
-	return -1;
 }
 
 void ShadowVolumeGen::AddEdge(dVector start, dVector end)
 {
-	glPushMatrix();
-	glDisable(GL_LIGHTING);
-	glBegin(GL_LINES);					
-		glColor3f(1,0,0);
-		glVertex3fv(start.arr());
-		glColor3f(0,0,1);
-		glVertex3fv(end.arr());
-	glEnd();
-	glEnable(GL_LIGHTING);
-	glPopMatrix();
+	if (m_Debug)
+	{
+		glDisable(GL_LIGHTING);
+		glLineWidth(3);
+		glBegin(GL_LINES);					
+			glColor3f(1,0,0);
+			glVertex3fv(start.arr());
+			glColor3f(0,0,1);
+			glVertex3fv(end.arr());
+		glEnd();
+		glEnable(GL_LIGHTING);
+	}
 
 	m_ShadowVolume.AddVertex(dVertex(start,dVector(0,0,0),0,0));
 	m_ShadowVolume.AddVertex(dVertex(end,dVector(0,0,0),0,0));
 
-	dVector proj = start-m_LightPosition;
-	m_ShadowVolume.AddVertex(dVertex(end+proj*10,dVector(0,0,0),0,0));
+	dVector proj = end-m_LightPosition;
+	m_ShadowVolume.AddVertex(dVertex(end+proj*m_Length,dVector(0,0,0),0,0));
 
-	proj = end-m_LightPosition;
-	m_ShadowVolume.AddVertex(dVertex(start+proj*10,dVector(0,0,0),0,0));
+	proj = start-m_LightPosition;
+	m_ShadowVolume.AddVertex(dVertex(start+proj*m_Length,dVector(0,0,0),0,0));
 }
 
 void ShadowVolumeGen::NURBSGen(NURBSPrimitive *src)

@@ -112,7 +112,9 @@ public:
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
 	void SetFog(const dColour &c, float d, float s, float e)    
 		{ m_FogColour=c; m_FogDensity=d; m_FogStart=s; m_FogEnd=e; m_Initialised=false; }
-	
+	void ShadowLight(unsigned int s)		 { m_ShadowLight=s; }
+	void DebugShadows(bool s)				 { m_World.GetShadowVolumeGen()->SetDebug(s); }
+	void ShadowLength(float s)				 { m_World.GetShadowVolumeGen()->SetLength(s); }
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
 	
@@ -125,6 +127,7 @@ private:
 	void PreRender(bool PickMode=false);
 	void PostRender();
 	void RenderLights(bool camera);
+	void RenderStencilShadows();
 	
 	bool  m_Initialised;
 	bool  m_InitLights;
@@ -142,6 +145,7 @@ private:
 	float m_FogDensity; 
 	float m_FogStart; 
 	float m_FogEnd;
+	unsigned int m_ShadowLight;
 	
     deque<State> m_StateStack;
     SceneGraph m_World;
