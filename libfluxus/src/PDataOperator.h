@@ -22,9 +22,17 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+///////////////////////////////////////////////////////////////
+/// An object for general purpose operations on PData. 
+/// Basically we are trying to abstract SIMD instructions 
+/// on vertex arrays into the engine. This could be 
+/// optimised much further but the rationale for doing 
+/// it here was get it into C++, and away from the scheme layer 
+/// of fluxus. You would not want to use this for C++ 
+/// programming. 
 class PDataOperator
 {
 public:

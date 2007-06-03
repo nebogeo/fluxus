@@ -21,9 +21,11 @@
 #ifndef N_POLYPRIM
 #define N_POLYPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+///////////////////////////////////////////////////
+/// A Polygon primitive
 class PolyPrimitive : public Primitive
 {
 public:
@@ -32,43 +34,72 @@ public:
 	PolyPrimitive(Type t=TRISTRIP);
 	virtual  ~PolyPrimitive();
 	
-	virtual void AddVertex(const dVertex &Vert);	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals(bool smooth);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
+	///@}
 	
 	Type GetType() { return m_Type; }
+	virtual void AddVertex(const dVertex &Vert);	
 
-	// in indexed mode the topology vectors are filled with indices
+	///////////////////////////////////////////////////
+	///@name Topology functions
+	/// Functions to get topological information 
+	/// about the primitive. These are lazily computed
+	/// and stored as they can take some time.
+	///@{
+
+	/// Connected verts is a list of lists of vertices 
+	/// which are coincident. If this polyprimitive is 
+	/// indexed the coincident verts are calculated by
+	/// looking at the index values and the position 
+	/// of the index is stored, otherwise it's done by 	
+	/// looking at the actual vertex positions, with a 
+	/// small allowed error, and the index is stored.
 	const vector<vector<int> > &GetConnectedVerts() { GenerateTopology(); return m_ConnectedVerts; }
-	const vector<dVector> &GetGeometricNormals() { GenerateTopology(); return m_GeometricNormals; }
+	
+	/// Unique edges is a list of coincident edges in 
+	/// the topology, formed by pairs of vert indexes, 
+	/// or index positions if the poly is indexed.
 	const vector<vector<pair<int,int> > > &GetUniqueEdges() { CalculateUniqueEdges(); return m_UniqueEdges; }
+	
+	/// In indexed mode there is a geometric normal 
+	/// for every index
+	const vector<dVector> &GetGeometricNormals() { GenerateTopology(); return m_GeometricNormals; }
+	///@}
 
+	//////////////////////////////////////////////////
+	///@name Indexed mode access
+	///@{
 	void SetIndexMode(bool s) { m_IndexMode=s; }
 	bool IsIndexed() { return m_IndexMode; }
 	vector<unsigned int> &GetIndex() { return m_IndexData; }
+	/// Look at coincident verts and compress the poly
+	/// primitive into an indexed form
 	void ConvertToIndexed();
+	///@}
+	
 	
 protected:
 
-	void GenerateTopology();
+	virtual void PDataDirty();
 	
+	// Topology generation commands
+	void GenerateTopology();
 	void CalculateConnected();
 	void CalculateGeometricNormals();
 	void CalculateUniqueEdges();
-	
 	void UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> > firstpass, set<pair<int,int> > &stored);
-	
-	virtual void PDataDirty();
-
 	void RecalculateNormalsIndexed();
 	
 	vector<vector<int> > m_ConnectedVerts;
 	vector<dVector> m_GeometricNormals;
-	vector<vector<int> > m_Faces;
-	vector<vector<pair<int,int> > >  m_UniqueEdges;
+	vector<vector<pair<int,int> > > m_UniqueEdges;
 	
 	bool m_IndexMode;
 	vector<unsigned int> m_IndexData;

@@ -19,7 +19,7 @@
 #include "State.h"
 #include "ImplicitSurface.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 BlobbyPrimitive::BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size) 
 {

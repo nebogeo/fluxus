@@ -18,7 +18,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace fluxus;
+using namespace Fluxus;
 
 bool GLSLShader::m_Enabled(false);
 

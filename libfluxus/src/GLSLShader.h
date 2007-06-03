@@ -36,28 +36,42 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// A hardware shader
 class GLSLShader
 {
 public:
+	/// The constructor attempts to load the shader pair immediately
 	GLSLShader(const string &vertexfilename, const string &fragmentfilename);
 	~GLSLShader();
 
+	/////////////////////////////////////////////
+	///@name Renderer interface
+	///@{
 	static void Init();
-
 	void Apply();
 	static void Unapply();
+	///@}
 	
+	/////////////////////////////////////////////
+	///@name Uniform variables
+	///@{
 	void SetInt(const string &name, int s);
 	void SetFloat(const string &name, float s);
 	void SetVector(const string &name, dVector s);
 	void SetColour(const string &name, dColour s);
-
+	///@}
+	
+	/////////////////////////////////////////////
+	///@name Attribute variables
+	///@{
 	void SetFloatArray(const string &name, const vector<float> &s);
 	void SetVectorArray(const string &name, const vector<dVector> &s);
 	void SetColourArray(const string &name, const vector<dColour> &s);
+	///@}
 	
 private:
 	/// Returns a handle to a compiled and linked GLSL program

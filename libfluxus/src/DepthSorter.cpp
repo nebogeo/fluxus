@@ -16,7 +16,7 @@
 
 #include "DepthSorter.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 DepthSorter::DepthSorter()
 {

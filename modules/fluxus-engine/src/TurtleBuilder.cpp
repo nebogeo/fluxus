@@ -16,7 +16,7 @@
 
 #include "TurtleBuilder.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 TurtleBuilder::TurtleBuilder() : 
 m_BuildingPrim(NULL),

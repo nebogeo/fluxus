@@ -17,7 +17,7 @@
 #include "SceneGraph.h"
 #include "PolyPrimitive.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 SceneGraph::SceneGraph()
 {

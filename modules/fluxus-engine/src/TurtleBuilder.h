@@ -21,7 +21,7 @@
 #ifndef N_TURTLE_BUILDER
 #define N_TURTLE_BUILDER
 
-namespace fluxus
+namespace Fluxus
 {
 
 class TurtleBuilder

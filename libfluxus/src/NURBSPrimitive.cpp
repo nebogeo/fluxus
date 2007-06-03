@@ -18,7 +18,7 @@
 #include "NURBSPrimitive.h"
 #include "State.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 NURBSPrimitive::NURBSPrimitive() :
 m_UOrder(0),

@@ -35,6 +35,7 @@
    fluxus-input-callback 
    fluxus-input-release-callback
    fluxus-frame-callback
+   override-frame-callback
    set-user-callback!
    every-frame
    clear
@@ -263,6 +264,21 @@
          ;reset
          (set-colour-mask #(#t #t #t #t))))))
   
+  ;-------------------------------------------------
+  ; callback-override
+  
+  ;; StartFunctionDoc-en
+  ;; callback-override callback-function
+  ;; Returns: void
+  ;; Description:
+  ;; Allows you to override the frame callback, to control
+  ;; the rendering loop of fluxus in a more detailed way.
+  ;; Example:
+  ;; (callback-override myfunc) 
+  ;; EndFunctionDoc	
+  
+  (define (override-frame-callback fn)
+  	(set! fluxus-frame-callback fn))
   
   ;-------------------------------------------------
   ; callbacks - these are called directly from the
@@ -289,14 +305,14 @@
   (define (fluxus-frame-callback) 
     (cond 
       ((eq? (get-stereo-mode) 'no-stereo)
-       (draw-buffer 'back)
-       (set-camera (get-camera-transform))
-       (framedump-update)
-       (if (not (null? user-callback))
-           (user-callback))
-       (render)
-       (tick-physics)
-       (update-audio))
+	        (draw-buffer 'back)
+            (set-camera (get-camera-transform))
+            (framedump-update)
+            (if (not (null? user-callback))
+               (user-callback))
+            (render)
+            (tick-physics)
+            (update-audio))
       (else
        (stereo-render))))
   )

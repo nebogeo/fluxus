@@ -36,6 +36,8 @@
 ; build a sphere...
 (define s (build-sphere 20 20))
 (grab s)
+; compress the mesh to indexed mode (reduces the no of points by sharing)
+(poly-convert-to-indexed) 
 ; and copy it's points and normals before we deform them
 (pdata-copy "p" "pref")
 (pdata-copy "n" "nref")

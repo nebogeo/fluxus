@@ -21,7 +21,7 @@
 
 using namespace std;
 using namespace SchemeHelper;
-using namespace fluxus;
+using namespace Fluxus;
 
 float SchemeHelper::FloatFromScheme(Scheme_Object *ob)
 {

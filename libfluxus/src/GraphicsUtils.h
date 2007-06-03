@@ -22,7 +22,7 @@
 #ifndef GRAPHICS_UTILS
 #define GRAPHICS_UTILS
 
-namespace fluxus
+namespace Fluxus
 {
 
 void MakeCube(PolyPrimitive *p, float size = 1);

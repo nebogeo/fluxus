@@ -23,7 +23,7 @@
 
 using namespace PDataFunctions;
 using namespace SchemeHelper;
-using namespace fluxus;
+using namespace Fluxus;
 
 // StartSectionDoc-en
 // PrimitiveData

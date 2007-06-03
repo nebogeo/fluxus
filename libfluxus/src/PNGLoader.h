@@ -24,7 +24,7 @@ using namespace std;
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
 enum PixelFormat {NONE,RGB,RGBA};
@@ -32,6 +32,7 @@ enum PixelFormat {NONE,RGB,RGBA};
 class PNGLoader
 {
 public:
+	/// A utility for loading png files and returns the raw pixel data
 	static unsigned char *Load(const string &Filename, int &w, int &h, PixelFormat &p);
 private:
 

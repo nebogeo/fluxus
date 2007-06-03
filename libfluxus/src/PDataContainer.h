@@ -24,44 +24,81 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
-// All this template code makes the pdata operators easier to write, as it means the compiler
-// generates a lot of the code for type/function mapping and also all the combinations that
-// an operator doesn't support don't have to be written by hand (the default one returns 
-// an warning message). I'm not too fond of templates personally, but here they have taken
-// over, and it seems to work well at this point.
-
+///////////////////////////////////////////////////
+/// The base pdata container class. Primitive data (pdata)
+/// means vertex data, colours, positions, etc etc which are
+/// not generated internally and need to be accessed by 
+/// users. All primitive data should be stored using pdata 
+/// arrays, with the following caviats: 
+/// - The number of elements is global to all PData 
+/// arrays in a primitive.
+/// - Only supported types are used.
+/// All primitive data stored in this way can be accessed 
+/// by this interface, the primitive need not expose it 
+/// itself at all - and we can use one common interface
+/// for all access.
 class PDataContainer
 {
 public:
 	PDataContainer();
 	virtual ~PDataContainer(); 
 	
+	/// Make a new pdata array, fails if one already exists 
+	/// with this name
 	void AddData(const string &name, PData* pd);
+	
+	/// Copy data from one array to another - deletes the 
+	/// old one if it exists
 	void CopyData(const string &name, string newname);
+	
+	/// Retrieves a pointer to the internal vector by name
+	/// Returns NULL if it doesn't exist, or is not the 
+	/// type given in the template call.
 	template<class T> vector<T>* GetDataVec(const string &name);
+	
+	/// Destroys a pdata array
 	void RemoveDataVec(const string &name);
-	// returns existance
+	
+	/// From the supplied name, fills in information about this pdata,
+	/// returns false if it doesn't actually exist
 	bool GetDataInfo(const string &name, char &type, unsigned int &size);
-	// unchecked for speed - use GetDataInfo()
-	template<class T> void SetData(const string &name, unsigned int index, T s);	
+	
+	/// Sets an element of the array. Not checked, for 
+	/// speed - use GetDataInfo() to check
+	template<class T> void SetData(const string &name, unsigned int index, T s);
+	
+	/// Gets an element of the array. Not checked, for 
+	/// speed - use GetDataInfo() to check
 	template<class T> T    GetData(const string &name, unsigned int index);
+	
+	/// Runs a pdata operation on the given pdata array
 	template<class T> PData *DataOp(const string &op, const string &name, T operand);
+	
+	/// Gets the whole pdata array, returns NULL if it doesn't exist
 	PData* GetDataRaw(const string &name);
+	
+	/// Sets the whole pdata array
 	void SetDataRaw(const string &name, PData* pd);
+	
+	/// Maps the name of a pdata operator to the actual object, all pdata ops
+	/// need to be registered inside this function (see below)
 	template <class S, class T> PData *FindOperate(const string &name, TypedPData<S> *a, T b);
-	// erases all current data
+	
+	/// Erases all current data!
 	void Resize(unsigned int size);
+	
+	/// Returns the size of pdata for this object
 	unsigned int Size();
 
 protected:
 
-	// called when a named pdata mapping changes 
+	/// Called when a named pdata mapping changes 
 	virtual void PDataDirty() = 0;
 	
-	// todo: replace with a hashmap
+	///\todo replace with a hashmap?
 	map<string,PData*> m_PData;
 
 };

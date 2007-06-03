@@ -19,19 +19,26 @@
 #ifndef N_LOCATORPRIM
 #define N_LOCATORPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// The Locator is an invisible primitive of use for
+/// parenting and other indirect things
 class LocatorPrimitive : public Primitive
 {
 public:
 	LocatorPrimitive();
 	virtual ~LocatorPrimitive();
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "LocatorPrimitive"; }
+	///@}
 	
 protected:
 

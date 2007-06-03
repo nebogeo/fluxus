@@ -18,7 +18,7 @@
 #include "LocatorPrimitive.h"
 #include "State.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 LocatorPrimitive::LocatorPrimitive() 
 {

@@ -22,7 +22,7 @@
  
 using namespace GlobalStateFunctions;
 using namespace SchemeHelper;
-using namespace fluxus;
+using namespace Fluxus;
 
 // StartSectionDoc-en
 // GlobalState
@@ -419,6 +419,24 @@ Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// clear-accum setting-number
+// Returns: void
+// Description:
+// Sets the accumulation buffer clearing on or off. 
+// Example:
+// (clear-accum 1) 
+// EndFunctionDoc
+
+Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
+{
+ 	DECL_ARGV();
+	ArgCheck("clear-accum", "i", argc, argv);
+	Engine::Get()->Renderer()->SetClearAccum(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // get-camera
 // Returns: matrix-vector
 // Description:
@@ -608,6 +626,50 @@ Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// read-buffer buffer_name
+// Returns: void
+// Description:
+// Select which buffer to read from
+// Example:
+// (read-buffer 'back)
+// EndFunctionDoc
+
+Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
+{
+  DECL_ARGV();
+  Scheme_Object * mode = NULL;
+  ArgCheck("read-buffer", "S", argc, argv);   
+  mode = argv[0];
+
+  if(SAME_OBJ(mode, scheme_intern_symbol("back")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("back-right")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("back-left")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-right")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-left")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("right")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_RIGHT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("left")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_LEFT);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("front-and-back")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_AND_BACK);
+  else if(SAME_OBJ(mode, scheme_intern_symbol("none")))
+	  Engine::Get()->Renderer()->ReadBuffer(GL_NONE);
+  else {
+	  //XXX should indicate an error
+  }
+
+  MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // set-stereo-mode mode
 // Returns: bool
 // Description:
@@ -749,6 +811,38 @@ Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// accum mode-symbol value-number
+// Returns: void
+// Description:
+// Controls the accumulation buffer (just calls glAccum under the hood)
+// Example:
+// (accum 'add 1) 
+// EndFunctionDoc 
+
+Scheme_Object *accum(int argc, Scheme_Object **argv)
+{
+  DECL_ARGV();
+  ArgCheck("accum", "Sf", argc, argv);   
+
+  if(SAME_OBJ(argv[0], scheme_intern_symbol("accum")))
+	  Engine::Get()->Renderer()->Accum(GL_ACCUM,FloatFromScheme(argv[1]));
+  else if(SAME_OBJ(argv[0], scheme_intern_symbol("load")))
+	  Engine::Get()->Renderer()->Accum(GL_LOAD,FloatFromScheme(argv[1]));
+  else if(SAME_OBJ(argv[0], scheme_intern_symbol("return")))
+	  Engine::Get()->Renderer()->Accum(GL_RETURN,FloatFromScheme(argv[1]));
+  else if(SAME_OBJ(argv[0], scheme_intern_symbol("add")))
+	  Engine::Get()->Renderer()->Accum(GL_ADD,FloatFromScheme(argv[1]));
+  else if(SAME_OBJ(argv[0], scheme_intern_symbol("mult")))
+	  Engine::Get()->Renderer()->Accum(GL_MULT,FloatFromScheme(argv[1]));
+  else {
+	  //XXX should indicate an error
+  }
+
+  MZ_GC_UNREG(); 
+  return scheme_void;
+}
+
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -773,6 +867,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
 	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
+	scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
 	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
 	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
@@ -782,12 +877,14 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
 	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
  	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
+ 	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
  	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
  	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
  	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
   	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
     scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
 	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
+	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
 
  	MZ_GC_UNREG(); 
 }

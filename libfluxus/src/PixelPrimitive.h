@@ -19,24 +19,39 @@
 #ifndef N_PIXELPRIM
 #define N_PIXELPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// A pixel primitive - this allows you to make 
+/// procedural textures, as the pixel values are
+/// accessable as pdata in this primitive. The 
+/// resulting texture can then be uploaded and 
+/// applied to other primitives.
 class PixelPrimitive : public Primitive
 {
 public:	
 	PixelPrimitive(unsigned int w, unsigned int h);
 	virtual  ~PixelPrimitive();
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals(bool smooth) {}
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PixelPrimitive"; }
+	///@}
 	
+	/// Upload the texture to the graphics card
 	void Upload();
+	
+	/// Load a png file into this primitive
+	///\todo add a save too
 	void Load(const string &filename);
 	
+	/// Get the uploaded texture ID - call Upload() first.
 	unsigned int GetTexture() { return m_Texture; }
 	
 protected:

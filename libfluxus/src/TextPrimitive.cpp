@@ -18,7 +18,7 @@
 #include "TextPrimitive.h"
 #include "State.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 TextPrimitive::TextPrimitive(float charw, float charh, int charstride, int wrapchars) :
 PolyPrimitive(PolyPrimitive::QUADS),
@@ -84,12 +84,12 @@ void TextPrimitive::Render()
 	glEnable(GL_CULL_FACE);
 }
 
-istream &fluxus::operator>>(istream &s, TextPrimitive &o)
+istream &Fluxus::operator>>(istream &s, TextPrimitive &o)
 {
 	return s;
 }
 
-ostream &fluxus::operator<<(ostream &s, TextPrimitive &o)
+ostream &Fluxus::operator<<(ostream &s, TextPrimitive &o)
 {
 	return s;
 }

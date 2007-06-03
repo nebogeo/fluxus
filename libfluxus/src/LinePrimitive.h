@@ -19,19 +19,28 @@
 #ifndef N_LINEPRIM
 #define N_LINEPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// The LinePrimitive is constructed from line vertices
+/// and widths, and generates geometry which is constantly
+/// camera facing. 
+///\todo rename to ribbon? 
 class LinePrimitive : public Primitive
 {
 public:
 	LinePrimitive();
 	virtual ~LinePrimitive();
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "LinePrimitive"; }
+	///@}
 
 protected:
 

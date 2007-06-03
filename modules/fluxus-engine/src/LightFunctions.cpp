@@ -21,7 +21,7 @@
 #include "LightFunctions.h"
 
 using namespace LightFunctions;
-using namespace fluxus;
+using namespace Fluxus;
 using namespace SchemeHelper;
 
 // StartSectionDoc-en

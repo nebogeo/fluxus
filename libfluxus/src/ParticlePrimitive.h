@@ -19,19 +19,25 @@
 #ifndef N_PARTICLEPRIM
 #define N_PARTICLEPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// The particle system primitive
 class ParticlePrimitive : public Primitive
 {
 public:
 	ParticlePrimitive();
 	virtual ~ParticlePrimitive();
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "ParticlePrimitive"; }
+	///@}
 	
 	void AddParticle(const dVector &v, const dColour &c, const dVector &s) 
 		{ m_VertData->push_back(v); m_ColData->push_back(c); m_SizeData->push_back(s); }

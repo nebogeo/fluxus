@@ -24,7 +24,7 @@
 
 using namespace UtilFunctions;
 using namespace SchemeHelper;
-using namespace fluxus;
+using namespace Fluxus;
 
 // StartSectionDoc-en
 // UtilFunctions

@@ -21,7 +21,7 @@
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h) : 
 m_Texture(0),

@@ -28,23 +28,47 @@
 #ifndef N_SHADOWGEN
 #define N_SHADOWGEN
 
-namespace fluxus
+namespace Fluxus
 {
 
+/////////////////////////////////////
+/// Generates shadow volumes from 
+/// extruding light silhouette edges. These 
+/// volumes are then concatenated into a 
+/// single polygon primitive for rendering 
+/// into a stencil buffer for shadow 
+/// rendering.
 class ShadowVolumeGen
 {
 public:
 	ShadowVolumeGen();
 	~ShadowVolumeGen();	
 
-	bool IsActive() { return m_Active; }
+	/// Sets the light position to generate the silhouette 
+	/// edges and shadow volume from 
 	void SetLightPosition(dVector pos) { Clear(); m_LightPosition=pos; }
+	
+	/// Clears the current shadow volume - should call this at 
+	/// start of the frame, or after rendering the shadows.
 	void Clear();
+	
+	/// Adds the volumes for a primitive to the polygon 
+	/// primitive
 	void Generate(Primitive *prim);
+	
+	/// Gets the volume generated so far
 	PolyPrimitive *GetVolume();
+	
+	/// Sets the length to extrude the volume by, in world space
 	void SetLength(float s) { m_Length=s; }
+	
+	///@name Accessors for debug mode
+	/// When in debug mode, the silhoette edges are drawn, 
+	/// indicating direction by colour gradient
+	///@{
 	void SetDebug(bool s) { m_Debug=s; }
 	bool GetDebug() { return m_Debug; }
+	///@}
 	
 private:
 
@@ -60,7 +84,6 @@ private:
 
 	PolyPrimitive m_ShadowVolume;
 	dVector m_LightPosition;
-	bool m_Active;
 	float m_Length;
 	bool m_Debug;
 };

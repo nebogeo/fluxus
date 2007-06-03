@@ -21,9 +21,12 @@
 #ifndef FLUXUS_PHYSICS
 #define FLUXUS_PHYSICS
 
-namespace fluxus
+///\todo rename to Fluxus
+namespace Fluxus
 {
 
+///////////////////////////////////////////////////////////////
+/// Interface object to the ODE library
 class Physics
 {
 public:
@@ -32,13 +35,27 @@ public:
 	
 	enum BoundingType {BOX,CYLINDER,SPHERE};
 	enum ObjectType {ACTIVE,PASSIVE};
+	
+	/// Run the simulation for one frame
     void Tick();
-	// just for visualisation of joints
+	
+	/// Just for visualisation of joints
    	void Render();
+	
+	/////////////////////////////////
+	///@name Object types
+	/// These funtions add primitives to the simulation
+	/// world. From here on their transforms will be 
+	/// controlled by the physics system.
+	///@{
 	void MakeActive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	void MakePassive(int ID,float MassBoundingType, BoundingType Bound=BOX);
+	///@}
+	
     void Free(int ID);
     void Clear();
+	///\todo Remove the dependancy on the renderer (use primitive 
+	///pointers directly etc???)
     void RegisterRenderer(Renderer* s) { m_Renderer=s; }
     void GroundPlane(dVector ori, float off);
     void Kick(int ID, dVector v);
@@ -49,16 +66,19 @@ public:
 	void SetGlobalSurfaceParams(float slip1, float slip2, float softerp, float softcfm) 
 		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
 		
+	/////////////////////////////////
+	///@name Joints
+	///@{
     int CreateJointFixed(int Ob1);
     int CreateJointBall(int Ob1, int Ob2, dVector Anchor);
 	int CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge);
     int CreateJointSlider(int Ob1, int Ob2, dVector Hinge);
     int CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2]);
 	int CreateJointAMotor(int Ob1, int Ob2, dVector Axis);
-
 	void SetJointAngle(int ID, float force, float angle); 
     void SetJointParam(int ID, const string &Param, float Value);
-
+	///@}
+	
     int GetMaxObjectCount() { return m_MaxObjectCount; }
     void SetMaxObjectCount(int s) { m_MaxObjectCount=s; }
 

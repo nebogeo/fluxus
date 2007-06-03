@@ -22,7 +22,7 @@
 
 using namespace MathsFunctions;
 using namespace SchemeHelper;
-using namespace fluxus;
+using namespace Fluxus;
 
 // StartSectionDoc-en
 // Maths

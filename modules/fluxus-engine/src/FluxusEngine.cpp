@@ -185,7 +185,7 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 		cerr << "ERROR Unable to check OpenGL extensions" << endl;
 	}
 
-	fluxus::GLSLShader::Init();
+	Fluxus::GLSLShader::Init();
 	#endif
 	
 	Engine::Get()->Reinitialise();

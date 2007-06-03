@@ -23,9 +23,11 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+////////////////////////////////////////////////
+/// A tree node
 class Node
 {
 public:
@@ -39,17 +41,32 @@ public:
 	int ID;
 };
 
+////////////////////////////////////////////////
+/// A tree of nodes.
+/// This is the base class for the scene graph,
+/// Just a basic tree structure
 class Tree
 {
 public:
     Tree();
     virtual ~Tree();
 
+	/// Adds a node onto a parent node (0 is the root)
     virtual int AddNode(int ParentID, Node *);
+	
+	/// Finds a node in the tree from its ID
     virtual Node *FindNode(int ID) const;
+	
+	/// Frees a node - and all it's children too
     virtual void RemoveNode(Node *node);
+	
+	/// Clear the tree
     virtual void Clear() { if (m_Root) RemoveNode(m_Root); m_Root=NULL; m_CurrentID=1; }
+	
+	/// Print out the tree for debugging
     virtual void Dump(int Depth=0,Node *node=NULL) const;
+	
+	/// Is the child attached to the parent?
 	bool IsDecendedFrom(Node *Parent, Node *Child) const;
 
 protected:

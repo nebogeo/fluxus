@@ -17,10 +17,10 @@
 #include "PolyPrimitive.h"
 #include "GraphicsUtils.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 
-void fluxus::MakeCube(PolyPrimitive *p, float size)
+void Fluxus::MakeCube(PolyPrimitive *p, float size)
 {
     dVector boxv0; dVector boxv1;
     dVector boxv2; dVector boxv3;
@@ -76,7 +76,7 @@ void fluxus::MakeCube(PolyPrimitive *p, float size)
     p->AddVertex(dVertex(boxv1,Normal,0,1));
 }
 
-void fluxus::MakePlane(PolyPrimitive *p)
+void Fluxus::MakePlane(PolyPrimitive *p)
 {
     p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,1),0,0));
     p->AddVertex(dVertex(dVector(0.5,-0.5,0),dVector(0,0,1),1,0));
@@ -89,7 +89,7 @@ void fluxus::MakePlane(PolyPrimitive *p)
     p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,-1),0,0));
 }
 
-void fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
+void Fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
 {
 	float usegsize=1/(float)xsegs;
 	float vsegsize=1/(float)ysegs;
@@ -108,7 +108,7 @@ void fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
 	}
 }
 
-void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hsegments, int rsegments)
+void Fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hsegments, int rsegments)
 {
 	float heightpersegment = height/hsegments;
 	float radpersegment = (360/rsegments)*DEG_CONV;
@@ -161,7 +161,7 @@ void fluxus::MakeCylinder(PolyPrimitive *p, float height, float radius, int hseg
 	}	
 }
 
-void fluxus::MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegments)
+void Fluxus::MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegments)
 {
 	float radpersegment = (360/(float)rsegments)*DEG_CONV;
 	for (int j=0; j<hsegments; j++)
@@ -211,7 +211,7 @@ void fluxus::MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegm
 	}
 }
 
-void fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int rsegments)
+void Fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int rsegments)
 {
 	p->Init(3,3,hsegments,rsegments);
 			
@@ -233,7 +233,7 @@ void fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int
 	}
 }
 
-void fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
+void Fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
 {
 	p->Init(3,3,usegments,vsegments);
 	

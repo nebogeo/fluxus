@@ -21,7 +21,7 @@
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 PolyPrimitive::PolyPrimitive(Type t) :
 m_IndexMode(false),
@@ -300,7 +300,7 @@ void PolyPrimitive::GenerateTopology()
 
 void PolyPrimitive::CalculateConnected()
 {
-	// cache the connected verts for edge lists
+	// cache the connected verts 
 	if (m_IndexMode)
 	{		
 		for (unsigned int i=0; i<m_IndexData.size(); i++)
@@ -308,7 +308,7 @@ void PolyPrimitive::CalculateConnected()
 			vector<int> connected;
 			for (unsigned int b=0; b<m_IndexData.size(); b++)
 			{
-				// find all close verts
+				// compare index value
 				if (i!=b && m_IndexData[i]==m_IndexData[b])
 				{
 					connected.push_back(b);
@@ -338,7 +338,7 @@ void PolyPrimitive::CalculateConnected()
 
 void PolyPrimitive::CalculateGeometricNormals()
 {
-	// todo - need different approach for TRIFAN
+	///\todo - need different approach for TRIFAN
 	// one face 
 	if (m_Type==POLYGON && m_VertData->size()>2) 
 	{
@@ -413,52 +413,31 @@ void PolyPrimitive::CalculateUniqueEdges()
 		if (stride>0)
 		{		
 			set<pair<int,int> > firstpass;
-
-			if (m_IndexMode)
+			
+			unsigned int vertcount=m_VertData->size();
+			if (m_IndexMode) vertcount=m_IndexData.size();
+			
+			// first, record all valid edges from the topology type
+			for (unsigned int i=0; i<vertcount; i+=stride)
 			{
-				for (unsigned int i=0; i<m_IndexData.size(); i+=stride)
+				for (int n=0; n<stride-1; n++)
 				{
-					for (int n=0; n<stride-1; n++)
-					{
-						firstpass.insert(pair<int,int>(n+i,n+i+1));
-					}
-					firstpass.insert(pair<int,int>(i+stride-1,i));
+					firstpass.insert(pair<int,int>(n+i,n+i+1));
 				}
-
-				set<pair<int,int> > stored;
-				pair<int,int> key;
-
-				for (unsigned int i=0; i<m_IndexData.size(); i+=stride)
-				{
-					for (int n=0; n<stride-1; n++)
-					{	
-						UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
-					}	
-					UniqueEdgesFindShared(pair<int,int>(i+stride-1,i), firstpass, stored);	
-				}
+				firstpass.insert(pair<int,int>(i+stride-1,i));
 			}
-			else
+
+			set<pair<int,int> > stored;
+			pair<int,int> key;
+
+			// now find all edges which share points and group them together
+			for (unsigned int i=0; i<vertcount; i+=stride)
 			{
-				for (unsigned int i=0; i<m_VertData->size(); i+=stride)
-				{
-					for (int n=0; n<stride-1; n++)
-					{
-						firstpass.insert(pair<int,int>(n+i,n+i+1));
-					}
-					firstpass.insert(pair<int,int>(i+stride-1,i));
-				}
-
-				set<pair<int,int> > stored;
-				pair<int,int> key;
-
-				for (unsigned int i=0; i<m_VertData->size(); i+=stride)
-				{
-					for (int n=0; n<stride-1; n++)
-					{	
-						UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
-					}	
-					UniqueEdgesFindShared(pair<int,int>(i+stride-1,i), firstpass, stored);	
-				}
+				for (int n=0; n<stride-1; n++)
+				{	
+					UniqueEdgesFindShared(pair<int,int>(n+i,n+i+1), firstpass, stored);
+				}	
+				UniqueEdgesFindShared(pair<int,int>(i+stride-1,i), firstpass, stored);	
 			}
 		}
 	}

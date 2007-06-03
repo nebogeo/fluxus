@@ -16,7 +16,7 @@
 
 #include "ImmediateMode.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 ImmediateMode::ImmediateMode()
 {

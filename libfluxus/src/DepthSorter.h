@@ -26,17 +26,26 @@
 #ifndef N_DEPTHSORTER
 #define N_DEPTHSORTER
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// Sorts primitives according to depth, for correctly
+/// rendering transparent objects.
 class DepthSorter
 {
 public:
 	DepthSorter();
 	~DepthSorter();	
 
+	/// Clear all stored primitives
 	void Clear();
+	
+	/// Add a primitive to the sorter
 	void Add(const dMatrix &globaltransform, Primitive *prim, int id);
+	
+	/// Render the stored primitives, using the Z
+	/// depth to order the rendering
 	void Render();
 	
 private:

@@ -19,17 +19,28 @@
 #ifndef N_TEXTPRIM
 #define N_TEXTPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////
+/// A dodgy font drawing primitive, uses texture
+/// mapping and quads to form words.
+///\todo add support for proportional fonts, 
+/// also rendering ttf would be super...
 class TextPrimitive : public PolyPrimitive
 {
 public:
-	// charw,h are in _texture_ coords not pixels
+	/// charw,h are in _texture_ coords not pixels
 	TextPrimitive(float charw, float charh, int charstride, int wrapchars=0);
+	
+	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual ~TextPrimitive() {}
 	virtual void Render();
 	virtual string GetTypeName() { return "TextPrimitive"; }
+	///@}
 	
 	void SetText(const string &s, float Width=10, float Height=10, float Zoom=0);
 	float GetTextWidth() { return m_TextWidth; }
@@ -48,6 +59,7 @@ protected:
 	friend ostream &operator<<(ostream &s, TextPrimitive &o);
 };
 
+//\todo remove all ancient streaming... ?
 istream &operator>>(istream &s, TextPrimitive &o);
 ostream &operator<<(ostream &s, TextPrimitive &o);
 

@@ -17,18 +17,17 @@
 #ifndef FLUX_IMMEDIATE_MODE
 #define FLUX_IMMEDIATE_MODE
 
-/////////////////////////////////////////////////////
-// Immediate-ish mode
-// So we can be sent immediate mode primitives at any
-// time, we store them up and render them all in one
-// go later on
-
 #include "Primitive.h"
 #include "State.h"
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// Immediate Mode
+/// A store for immediate mode primitives, which we can
+/// be given at any time, we keep pointers to them and 
+/// render them all in one when the renderer is ready
 class ImmediateMode
 {
 public:

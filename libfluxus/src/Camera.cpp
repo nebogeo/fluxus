@@ -16,7 +16,7 @@
 
 #include "Camera.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 Camera::Camera() :
 m_Initialised(false),

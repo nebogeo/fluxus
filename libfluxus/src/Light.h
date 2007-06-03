@@ -21,18 +21,29 @@
 #ifndef FLUXUSLIGHT
 #define FLUXUSLIGHT
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// The fluxus light
+/// This is a fairly simple and stupid abstraction 
+/// of OpenGL lights.
 class Light
 {
 public:
 	Light();
 	virtual ~Light();
+	///////////////////////////
+	///@name Renderer Interface
+	///@{
 	void Render();
+	///@}
 	
 	enum Type {POINT,DIRECTIONAL,SPOT};
 
+	///////////////////////////
+	///@name Accessors
+	///@{
 	void SetType(Type s) { m_Type=s; }
 	void SetIndex(int s);
 	void SetAmbient(dColour s);
@@ -43,11 +54,18 @@ public:
 	void SetPosition(dVector s);
 	void SetAttenuation(int type, float s);
 	void SetDirection(dVector s);
+	dVector GetPosition() { return m_Position; }
+	///@}
 	
+	///////////////////////////
+	///@name Camera Locking
+	/// Whether the light is to be locked
+	/// onto the camera
+	///@{
 	void SetCameraLock(bool s)  { m_CameraLock=s; }
 	bool GetCameraLock()   { return m_CameraLock; }
+	///@}
 	
-	dVector GetPosition() { return m_Position; }
 	
 protected:
 

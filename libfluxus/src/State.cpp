@@ -18,7 +18,7 @@
 #include "TexturePainter.h"
 #include "State.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 State::State() :
 Colour(1,1,1),

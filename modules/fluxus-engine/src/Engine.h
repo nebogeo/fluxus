@@ -33,24 +33,24 @@ public:
 	void PopRenderer();
 	void ResetRenderers();
 	void Reinitialise();  
-	fluxus::Renderer *Renderer();
-	fluxus::Physics *Physics();
+	Fluxus::Renderer *Renderer();
+	Fluxus::Physics *Physics();
 	void Render(); 
 	
 	void PushGrab(int id);
 	void PopGrab();
 	void ClearGrabStack();
-	fluxus::Primitive *Grabbed() { return m_Grabbed; }
+	Fluxus::Primitive *Grabbed() { return m_Grabbed; }
 	
-	static fluxus::PolyPrimitive* StaticCube;
-	static fluxus::PolyPrimitive* StaticPlane;
-	static fluxus::PolyPrimitive* StaticSphere;
-	static fluxus::PolyPrimitive* StaticCylinder;
+	static Fluxus::PolyPrimitive* StaticCube;
+	static Fluxus::PolyPrimitive* StaticPlane;
+	static Fluxus::PolyPrimitive* StaticSphere;
+	static Fluxus::PolyPrimitive* StaticCylinder;
 	
-	fluxus::TurtleBuilder *GetTurtle() { return &m_Turtle; }
+	Fluxus::TurtleBuilder *GetTurtle() { return &m_Turtle; }
 	
 	// helper for the bindings
-	fluxus::State *State();
+	Fluxus::State *State();
 
 private:
 	Engine();
@@ -58,9 +58,9 @@ private:
 	
 	static Engine *m_Engine;
 	
-	vector<pair<fluxus::Renderer *, fluxus::Physics *> > m_RendererVec;
+	vector<pair<Fluxus::Renderer *, Fluxus::Physics *> > m_RendererVec;
 	deque<unsigned int> m_RendererStack;
 	deque<unsigned int> m_GrabStack;
-	fluxus::Primitive *m_Grabbed;
-	fluxus::TurtleBuilder m_Turtle;
+	Fluxus::Primitive *m_Grabbed;
+	Fluxus::TurtleBuilder m_Turtle;
 };

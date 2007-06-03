@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "SearchPaths.h"
 
+using namespace Fluxus;
+
 SearchPaths *SearchPaths::m_Singleton = NULL;
 
 SearchPaths* SearchPaths::Get()

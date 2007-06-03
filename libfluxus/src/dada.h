@@ -29,7 +29,7 @@ using namespace std;
 #ifndef DADA
 #define DADA
 
-namespace fluxus
+namespace Fluxus
 {
 
 static const float TWO_PI=3.141592654*2.0f;

@@ -16,7 +16,7 @@
 
 #include "PDataArithmetic.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 template <>
 PData *AddOperator::Operate(TypedPData<float> *a, float b)

@@ -25,9 +25,11 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// A texture descriptor
 class TextureDesc
 {
 public:
@@ -37,9 +39,18 @@ public:
 	PixelFormat Format;
 };
 
+//////////////////////////////////////////////////////
+/// The texture painter is resposible for making
+/// textures - initialising, loading, generating them 
+/// from pdata for the pixel primitive, and uploading 
+/// them ready for use. The TexturePainter also contains
+/// a cache, so it knows which filenames map to which
+/// texture ID's - so it won't load and upload files 
+/// which are already on the graphics card.
 class TexturePainter
 {
 public:
+	///\todo stop this being a singleton...
 	static TexturePainter* Get()
 	{
 		if (m_Singleton==NULL) m_Singleton=new TexturePainter;
@@ -51,14 +62,39 @@ public:
 		if (m_Singleton!=NULL) delete m_Singleton;
 	}
 	
+	/// Initialise all texture units
 	void Initialise();
+	
+	/// Clear the texture cache
 	void ClearCache();
+		
+	////////////////////////////////////
+	///@name Texture Generation/Conversion
+	///@{
+	
+	/// Loads a texture, use ignore cache to force it to load. 
+	/// Returns the OpenGL ID number 
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false);
+	
+	/// Loads texture information into a pdata array of colour type
 	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
+	
+	/// Uploads texture data from pdata - returns OpenGL ID number
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
-	void Delete(unsigned int id);	
+	///@}
+	
+	////////////////////////////////////
+	///@name State control
+	/// Controls the texture rendering state 
+	///@{
+	
+	/// Sets the current texture state - allow settings for each unit if multitexturing is enabled.
+	/// The size of ids is expexted to be the same as MAX_TEXTURES
 	bool SetCurrent(unsigned int *ids);
+	
+	/// Disables all texturing
 	void DisableAll();
+	///@}
 	
 private:
 	TexturePainter();

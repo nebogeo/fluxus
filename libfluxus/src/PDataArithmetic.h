@@ -22,9 +22,19 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+///////////////////////////////////////////////////////////////
+/// A collection of common arithmetic which may be useful for 
+/// operations on pdata arrays. The way this works is a little
+/// bit strange at present, and will be changed in a future 
+/// release...
+
+/// All this template code makes the pdata operators easier to write, as it means the compiler
+/// generates a lot of the code for type/function mapping and also all the combinations that
+/// an operator doesn't support don't have to be written by hand (the default one returns 
+/// a warning message). This is admittedly a bit odd and may all be replaced at some point. 
 class AddOperator : public PDataOperator
 {
 public:

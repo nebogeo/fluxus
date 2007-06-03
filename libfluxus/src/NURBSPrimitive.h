@@ -19,21 +19,30 @@
 #ifndef N_NURBSPRIM
 #define N_NURBSPRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// A Non Uniform Rational B Spline patch primitive
 class NURBSPrimitive : public Primitive
 {
 public:	
 	NURBSPrimitive();
 	virtual  ~NURBSPrimitive();
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	virtual void Render();
 	virtual void RecalculateNormals(bool smooth);
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "NURBSPrimitive"; }
+	///@}
 
+	///////////////////////////////////////////////////
+	///@name Piecewise construction
+	///@{
 	/// Sets the order of the patches - call this first
 	void Init(int orderu, int orderv, int ucvs, int vcvs) { m_UOrder=orderu; m_VOrder=orderv; m_UCVCount=ucvs; m_VCVCount=vcvs; }
 	void AddCV(const dVector &CV) { m_CVVec->push_back(CV); }	
@@ -41,7 +50,7 @@ public:
 	void AddTex(const dVector &ST) { m_STVec->push_back(ST); }	
 	void AddUKnot(float k) { m_UKnotVec.push_back(k); }	
 	void AddVKnot(float k) { m_VKnotVec.push_back(k); }	
-
+	///@}
 	
 protected:
 	

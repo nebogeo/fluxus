@@ -19,7 +19,7 @@
 #include "PNGLoader.h"
 #include "SearchPaths.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 TexturePainter *TexturePainter::m_Singleton=NULL;
 
@@ -29,6 +29,7 @@ TexturePainter::TexturePainter()
 
 TexturePainter::~TexturePainter()
 {
+	///\todo Shouldn't we delete all textures here?
 }
 
 void TexturePainter::Initialise()
@@ -170,11 +171,6 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
 	}
     return 0;
 }
-
-void TexturePainter::Delete(unsigned int id)
-{
-	glDeleteTextures(1,(GLuint*)&id);
-}	
 
 bool TexturePainter::SetCurrent(unsigned int *ids)
 {

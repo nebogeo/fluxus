@@ -16,7 +16,7 @@
 
 #include "Primitive.h"                      	
 
-using namespace fluxus; 
+using namespace Fluxus; 
                
 Primitive::~Primitive()
 {
@@ -24,7 +24,7 @@ Primitive::~Primitive()
 			
 void Primitive::Prerender()
 {
-	// todo: put other common state things here...
+	///\todo put other common state things here...
 	// (not all, as they are often primitive dependant)
 	if (m_State.Hints & HINT_ORIGIN) RenderAxes();	
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();

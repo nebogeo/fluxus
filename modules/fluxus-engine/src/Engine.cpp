@@ -18,7 +18,7 @@
 #include "Engine.h"
 #include "GraphicsUtils.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 Engine *Engine::m_Engine=NULL;
 
@@ -46,9 +46,9 @@ Engine::Engine()
 
 unsigned int Engine::MakeRenderer()
 {
-	fluxus::Renderer *r = new fluxus::Renderer;
-	fluxus::Physics *p = new fluxus::Physics(r);
-	m_RendererVec.push_back(pair<fluxus::Renderer*, fluxus::Physics*>(r,p));
+	Fluxus::Renderer *r = new Fluxus::Renderer;
+	Fluxus::Physics *p = new Fluxus::Physics(r);
+	m_RendererVec.push_back(pair<Fluxus::Renderer*, Fluxus::Physics*>(r,p));
 	return m_RendererVec.size()-1;
 }
 
@@ -97,7 +97,7 @@ void Engine::Render()
 
 void Engine::Reinitialise()     
 {
-	for (vector<pair<fluxus::Renderer *, fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 
+	for (vector<pair<Fluxus::Renderer *, Fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 
 		i!=m_RendererVec.end(); i++)
 	{
 		i->first->Reinitialise();    
@@ -108,7 +108,7 @@ void Engine::Reinitialise()
 
 void Engine::ResetRenderers()
 {
-	for (vector<pair<fluxus::Renderer *, fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 
+	for (vector<pair<Fluxus::Renderer *, Fluxus::Physics *> >::iterator i=m_RendererVec.begin(); 
 		i!=m_RendererVec.end(); i++)
 	{
 		delete i->first;
@@ -160,7 +160,7 @@ void Engine::ClearGrabStack()
 	m_Grabbed=NULL;
 }
 
-fluxus::State *Engine::State()
+Fluxus::State *Engine::State()
 {
     if (Grabbed()) 
 	{

@@ -16,7 +16,7 @@
 
 #include "Tree.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 void Node::RemoveChild(int ID)
 {

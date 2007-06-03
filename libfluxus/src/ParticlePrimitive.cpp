@@ -18,7 +18,7 @@
 #include "ParticlePrimitive.h"
 #include "State.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 	
 ParticlePrimitive::ParticlePrimitive() 
 {

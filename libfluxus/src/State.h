@@ -34,7 +34,7 @@
 #ifndef N_STATE
 #define N_STATE
 
-namespace fluxus
+namespace Fluxus
 {
 
 #define HINT_NONE         0x0000
@@ -52,13 +52,18 @@ namespace fluxus
 #define HINT_IGNORE_DEPTH 0x0800
 #define HINT_DEPTH_SORT   0x1000
 
-// todo: use glew for this
+///\todo use glew for this
 #ifdef ENABLE_MULTITEXTURE
 #define MAX_TEXTURES  8
 #else
 #define MAX_TEXTURES  1
 #endif
 
+///////////////////////////////////////
+/// The fluxus graphics state
+/// This is used to form the state stack 
+/// for immediate mode, and is contained
+/// inside each primitive in retained mode.
 class State
 {
 public:

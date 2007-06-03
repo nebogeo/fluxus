@@ -28,7 +28,7 @@
 #include "BlobbyPrimitive.h"
 
 using namespace PrimitiveFunctions;
-using namespace fluxus;
+using namespace Fluxus;
 using namespace SchemeHelper;
 
 // StartSectionDoc-en

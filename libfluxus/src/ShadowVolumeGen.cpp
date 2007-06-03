@@ -17,12 +17,11 @@
 #include <algorithm>
 #include "ShadowVolumeGen.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 ShadowVolumeGen::ShadowVolumeGen() :
 m_ShadowVolume(PolyPrimitive::QUADS),
 m_LightPosition(5,5,0),
-m_Active(false),
 m_Length(10)
 {
 }
@@ -33,7 +32,6 @@ ShadowVolumeGen::~ShadowVolumeGen()
 
 void ShadowVolumeGen::Generate(Primitive *prim)
 {	
-	m_Active=true;
 	PolyPrimitive *poly = dynamic_cast<PolyPrimitive*>(prim);
 	if (poly)
 	{
@@ -51,7 +49,6 @@ void ShadowVolumeGen::Generate(Primitive *prim)
 
 void ShadowVolumeGen::Clear()
 { 
-	m_Active=false;
 	m_ShadowVolume.Resize(0);
 }
 
@@ -214,7 +211,7 @@ void ShadowVolumeGen::NURBSGen(NURBSPrimitive *src)
 			bool backface=false;
 			bool frontface=false;
 
-			// todo - figure out the neighbouring faces from the implicit topology
+			///\todo - figure out the neighbouring faces from the implicit topology
 			
 			// loop over the verts connected to this one
 			/*for (vector<int>::const_iterator cv=connected[vert+facevert].begin(); 

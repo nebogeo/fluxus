@@ -17,7 +17,7 @@
 #include <png.h>
 #include "PNGLoader.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 unsigned char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelFormat &pf)
 {

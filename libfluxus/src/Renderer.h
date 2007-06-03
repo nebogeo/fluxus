@@ -31,12 +31,18 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
 class State;
 class Primitive;
 
+///@section Main
+/// blah blah
+
+//////////////////////////////////////////////////////////////////////
+/// This is the main interface for the fluxus renderer, all
+/// control should come through this interface
 class Renderer
 {
 public:
@@ -44,60 +50,74 @@ public:
 	~Renderer();
 	
 	//////////////////////////////////////////////////////////////////////
-	// Rendering control 
+	///@name Rendering control 
+	///@{ 
 	void Render();
 	void Clear();
+	///@}
 	
 	///////////////////////////////////////////////////////////////////////
-	// State accessors
+	///@name State accessors
+	///@{ 
 	State *GetState();
 	void ApplyState();
 	void PushState();
 	void PopState();
-	// grabs the object state and makes it current
+	/// Grabs the object state and makes it current
 	void Grab(int ID);
 	void UnGrab();
 	Primitive *Grabbed() { return m_Grabbed; }
+	///@}
 	
 	//////////////////////////////////////////////////////////////////////
-	// Primitive handling
+	///@name Primitive handling
+	///@{ 
 	int          AddPrimitive(Primitive *Prim);
 	Primitive   *GetPrimitive(int ID);
-	// make sure it's removed from the physics engine too
+	/// Make sure it's removed from the physics engine too
 	void         RemovePrimitive(int ID);
-	// moves the primitive (and it's subtree) from it's position in the
-	// graph and adds it to the root.
+	/// Moves the primitive (and it's subtree) from it's position in the
+	/// graph and adds it to the root.
 	void         DetachPrimitive(int ID);
 	dMatrix      GetGlobalTransform(int ID);
 	dBoundingBox GetBoundingBox(int ID);
-	// immediate mode (don't delete prim till after Render() - it's immediate-ish :))
+	/// Immediate mode (don't delete prim till after Render() - when it
+	/// will actually be rendered
 	void         RenderPrimitive(Primitive *Prim);
-	// Get primitive ID from screen space
+	/// Get primitive ID from screen space
 	int          Select(int x, int y, int size);
+	///@}
 	
 	///////////////////////////////////////////////////////////////////////
-	// Lights
+	///@name Lights
+	///@{ 
 	int AddLight(Light *l);
 	Light *GetLight(int id);
 	void ClearLights();
+	///@}
 
 	////////////////////////////////////////////////////////////////////////
-	// Camera
+	///@name Camera
+	///@{ 
 	Camera *GetCamera() { return &m_Camera; }
+	///@}
 
 	////////////////////////////////////////////////////////////////////////
-	// Scenegraph access
+	///@name Scenegraph access
+	///@{ 
 	const SceneGraph &GetSceneGraph()        { return m_World; }
+	///@}
 		
+	enum stereo_mode_t {noStereo, crystalEyes, colourStereo};
+	
 	////////////////////////////////////////////////////////////////////////
-	// Global state control
+	///@name Global state control
+	///@{ 
 	void DrawText(const string &Text);
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
-	void DrawBuffer(GLenum mode);
-	
 	void InitTextures() 					 { TexturePainter::Get()->Initialise(); }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
@@ -105,8 +125,9 @@ public:
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
 	void SetClearZBuffer(bool s)             { m_ClearZBuffer=s; }
+	void SetClearAccum(bool s)               { m_ClearAccum=s; }
 	void SetBackFaceCull(bool s)             { m_BackFaceCull=s; m_Initialised=false; }
-	// default to ccw
+	/// Default to ccw
 	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
@@ -117,11 +138,19 @@ public:
 	void ShadowLength(float s)				 { m_World.GetShadowVolumeGen()->SetLength(s); }
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
-	
-	enum stereo_mode_t {noStereo, crystalEyes, colourStereo};
  	bool SetStereoMode(stereo_mode_t mode);
  	stereo_mode_t GetStereoMode(){ return m_StereoMode;}
+	///@}
+	
+	////////////////////////////////////////////////////////////////////////
+	///@name Thin interface to some hardware features 
+	///@{ 
 	void SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha);
+	void Accum(int mode, float factor);
+	void DrawBuffer(GLenum mode);
+	void ReadBuffer(GLenum mode);
+	///@}
+	
 	
 private:
 	void PreRender(bool PickMode=false);
@@ -139,6 +168,7 @@ private:
 	dColour m_BGColour;
 	bool m_ClearFrame;
 	bool m_ClearZBuffer;
+	bool m_ClearAccum;
 	bool m_BackFaceCull;
 	bool m_FaceOrderClockwise;
 	dColour m_FogColour; 

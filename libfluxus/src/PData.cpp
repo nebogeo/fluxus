@@ -16,5 +16,5 @@
 
 #include "PData.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 

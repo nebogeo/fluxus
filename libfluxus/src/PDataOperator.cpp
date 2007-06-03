@@ -1,4 +1,4 @@
 #include "PDataOperator.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 

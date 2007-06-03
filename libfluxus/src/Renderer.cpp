@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-using namespace fluxus;
+using namespace Fluxus;
 
 //#define DEBUG_TRACE
 
@@ -49,6 +49,7 @@ m_ShowAxis(false),
 m_Grabbed(NULL),
 m_ClearFrame(true),
 m_ClearZBuffer(true),
+m_ClearAccum(false),
 m_BackFaceCull(true),
 m_FaceOrderClockwise(false),
 m_FogDensity(0), 
@@ -82,6 +83,7 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {	
+	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{
 		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
@@ -91,6 +93,11 @@ void Renderer::Render()
 	if (m_ClearZBuffer)
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
+	}
+
+	if (m_ClearAccum)
+	{
+		glClear(GL_ACCUM_BUFFER_BIT);
 	}
 	
 	if (m_ShadowLight!=0)
@@ -623,6 +630,11 @@ void Renderer::DrawBuffer(GLenum mode)
 	glDrawBuffer(mode);
 }
 
+void Renderer::ReadBuffer(GLenum mode)
+{
+	glReadBuffer(mode);
+}
+
 bool Renderer::SetStereoMode(stereo_mode_t mode)
 {
  	GLboolean stereoWindowTest;
@@ -652,4 +664,9 @@ void Renderer::SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha
 	m_MaskGreen=ingreen;
 	m_MaskBlue=inblue;
 	m_MaskAlpha=inalpha;
+}
+
+void Renderer::Accum(int mode, float factor)
+{
+	glAccum(mode,factor);
 }

@@ -26,9 +26,13 @@ using namespace std;
 #ifndef N_SCENEGRAPH
 #define N_SCENEGRAPH
 
-namespace fluxus
+namespace Fluxus
 {
 
+/////////////////////////////////////
+/// A scene graph node 
+/// The state is contained within the 
+/// primitive itself.
 class SceneNode : public Node
 {
 public:
@@ -40,6 +44,8 @@ public:
 istream &operator>>(istream &s, SceneNode &o);
 ostream &operator<<(ostream &s, SceneNode &o);
 
+/////////////////////////////////////
+/// A scene graph
 class SceneGraph : public Tree
 {
 public:
@@ -48,12 +54,27 @@ public:
 
 	enum Mode{RENDER,SELECT};
 
+	/// Traverses the graph depth first, rendering
+	/// all nodes
 	void Render(Mode rendermode=RENDER);
+	
+	/// Clears the graph of all primtives
 	virtual void Clear();
+	
+	/// Parents the node to the root, and sets its 
+	/// transform to keep it physically in the same 
+	/// place in the world. 
+	///\todo make the maintain transform optional
 	void Detach(SceneNode *node);
+	
+	/// Gets the world space transfrom of the node
 	dMatrix GetGlobalTransform(SceneNode *node);
+	
+	/// Gets the bounding box of the node, and all 
+	/// its children too
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
 
+	/// Accessor for the shadow volume generator
 	ShadowVolumeGen *GetShadowVolumeGen() { return &m_ShadowVolumeGen; }
 
 private:

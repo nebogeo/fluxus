@@ -16,7 +16,7 @@
 
 #include "PDataContainer.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 PDataContainer::PDataContainer() 
 {

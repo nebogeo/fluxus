@@ -19,7 +19,7 @@
 #include "State.h"
 #include "Primitive.h"
 
-using namespace fluxus;
+using namespace Fluxus;
 
 Physics::Object::Object()
 {

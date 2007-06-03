@@ -23,9 +23,11 @@
 
 using namespace std;
 
-namespace fluxus
+namespace Fluxus
 {
 
+/////////////////////////////////////////////////
+/// The base pdata array class
 class PData
 {
 public:
@@ -36,6 +38,8 @@ public:
 	virtual void Resize(unsigned int size)=0;
 };
 
+/////////////////////////////////////////////////
+/// The templated pdata array class
 template<class T>
 class TypedPData : public PData
 {

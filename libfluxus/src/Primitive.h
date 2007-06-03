@@ -23,26 +23,37 @@
 #ifndef N_PRIM
 #define N_PRIM
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////
+/// The base primitive class. 
 class Primitive : public PDataContainer
 {
 public:
 	Primitive() : m_IsPhysical(false),m_Hidden(false),m_Selectable(true) {}
 	virtual ~Primitive();
+
+	///////////////////////////////////////////////////
+	///@name Abstract Primitive Interface
+	///@{
 	virtual void Render()=0;
 	virtual dBoundingBox GetBoundingBox()=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
-    virtual string GetTypeName()    { return "Primitive"; }
+	///@}
+    
+	/// This needs to be set appropriately for all derived types
+	virtual string GetTypeName()    { return "Primitive"; }
 		
+	/// Only makes sense for certain primitive types
 	virtual void RecalculateNormals(bool smooth) {}
 	
+	///////////////////////////////////////////////////
+	///@name Primitive Interface
+	///@{
 	void RenderBoundingBox();
 	static void RenderAxes();
-
 	void Prerender();
-	
 	void ApplyState()               { m_State.Apply(); }
 	void SetState(State *s)         { assert(s); m_State=*s; }
 	void SetPhysicalHint(bool s)    { m_IsPhysical=s; }
@@ -52,7 +63,8 @@ public:
 	bool IsSelectable()      		{ return m_Selectable; }
 	void Selectable(bool s)      	{ m_Selectable=s; }
 	State *GetState()               { return &m_State; }
-	
+	///@}
+
 protected:
 	State m_State;
 	

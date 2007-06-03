@@ -185,9 +185,9 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	
 	#ifdef STEREODEFAULT
- 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_STEREO;
+ 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM|GLUT_STEREO;
  	#else
- 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+ 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM;
  	#endif
 	
 	// init OpenGL

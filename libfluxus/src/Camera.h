@@ -19,32 +19,50 @@
 
 #include "Primitive.h"
 
-namespace fluxus
+namespace Fluxus
 {
 
+//////////////////////////////////////////////////////
+/// The fluxus camera
 class Camera
 {
 public:
 	Camera();
 	~Camera();
 
-	bool NeedsInit() { return !m_Initialised; }
-	void DoProjection();
-	void DoCamera();
+	/////////////////////////////////////////////
+	///@name Renderer interface
+	///@{
 	
+	/// Whether the camera needs the renderer to
+	/// reinitialise itself - due to the camera
+	/// having changed
+	bool NeedsInit() { return !m_Initialised; }
+	
+	/// Apply the projection matrix to the stack
+	void DoProjection();
+	
+	/// Apply the camera matrix to the stack
+	void DoCamera();
+	///@}
+	
+	/////////////////////////////////////////////
+	///@name Accessors
+	///@{
 	dMatrix *GetMatrix()                     { return &m_Transform; }
 	void SetMatrix(const dMatrix &m)         { m_Transform=m; }
 	dMatrix *GetLockedMatrix()               { return &m_LockedMatrix; }
 	dMatrix GetProjection();
 	float GetUp() { return m_Up; }
 	float GetLeft() { return m_Left; }
-	
+	/// Lock the camera to this primitive's position
 	void LockCamera(Primitive *p);
 	void SetCameraLag(float s)               { m_CameraLag=s; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
+	///@}
 
 private:
 

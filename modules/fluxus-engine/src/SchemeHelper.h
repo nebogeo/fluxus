@@ -35,10 +35,10 @@ namespace SchemeHelper
 	void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size);
 	string StringFromScheme(Scheme_Object *ob);
 	Scheme_Object *FloatsToScheme(float *src, unsigned int size);
-	fluxus::dVector VectorFromScheme(Scheme_Object *src);
-	fluxus::dColour ColourFromScheme(Scheme_Object *src);
-	fluxus::dQuat QuatFromScheme(Scheme_Object *src);
-	fluxus::dMatrix MatrixFromScheme(Scheme_Object *src);
+	Fluxus::dVector VectorFromScheme(Scheme_Object *src);
+	Fluxus::dColour ColourFromScheme(Scheme_Object *src);
+	Fluxus::dQuat QuatFromScheme(Scheme_Object *src);
+	Fluxus::dMatrix MatrixFromScheme(Scheme_Object *src);
 	void ArgCheck(const std::string &funcname, const std::string &format, int argc, Scheme_Object **argv);
 	
 	#define DECL_ARGV() MZ_GC_DECL_REG(1); \
