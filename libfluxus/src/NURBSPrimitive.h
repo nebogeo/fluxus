@@ -28,11 +28,13 @@ class NURBSPrimitive : public Primitive
 {
 public:	
 	NURBSPrimitive();
+	NURBSPrimitive(const NURBSPrimitive &other);
 	virtual  ~NURBSPrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual NURBSPrimitive* Clone() const;
 	virtual void Render();
 	virtual void RecalculateNormals(bool smooth);
 	virtual dBoundingBox GetBoundingBox();
@@ -55,6 +57,7 @@ public:
 protected:
 	
 	virtual void PDataDirty();
+	void SetupSurface();
 	
 	vector<dVector> *m_CVVec;
 	vector<dVector> *m_STVec;

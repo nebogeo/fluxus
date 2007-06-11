@@ -32,12 +32,13 @@ class TextPrimitive : public PolyPrimitive
 public:
 	/// charw,h are in _texture_ coords not pixels
 	TextPrimitive(float charw, float charh, int charstride, int wrapchars=0);
-	
+	TextPrimitive(const TextPrimitive &other);
+	virtual ~TextPrimitive() {}
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
-	virtual ~TextPrimitive() {}
+	virtual TextPrimitive* Clone() const;
 	virtual void Render();
 	virtual string GetTypeName() { return "TextPrimitive"; }
 	///@}

@@ -22,7 +22,8 @@ Source = Split("src/Engine.cpp \
 		src/TurtleFunctions.cpp \
 		src/LightFunctions.cpp \
 		src/PhysicsFunctions.cpp \
-		src/TurtleBuilder.cpp " + 
+		src/TurtleBuilder.cpp \
+		src/PFuncContainer.cpp " + 
 		MZDYN)
 		
 env.SharedLibrary(source = Source, 

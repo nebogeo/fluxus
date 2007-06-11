@@ -29,11 +29,13 @@ class LocatorPrimitive : public Primitive
 {
 public:
 	LocatorPrimitive();
+	LocatorPrimitive(const LocatorPrimitive &other);
 	virtual ~LocatorPrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual LocatorPrimitive* Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);

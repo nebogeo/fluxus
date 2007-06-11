@@ -71,6 +71,34 @@ dVector dVector::operator-(dVector const &rhs) const
     return t;
 }
 
+dVector dVector::operator*(dVector const &rhs) const
+{
+    dVector t;
+    t.x=x*rhs.x; t.y=y*rhs.y; t.z=z*rhs.z; //t.w=w+rhs.w;
+    return t;
+}
+
+dVector dVector::operator/(dVector const &rhs) const
+{
+    dVector t;
+    t.x=x/rhs.x; t.y=y/rhs.y; t.z=z/rhs.z; //t.w=w-rhs.w;
+    return t;
+}
+
+dVector dVector::operator+(float rhs) const
+{
+    dVector t;
+    t.x=x+rhs; t.y=y+rhs; t.z=z+rhs; //t.w=w*rhs;
+    return t;
+}
+
+dVector dVector::operator-(float rhs) const
+{
+    dVector t;
+    t.x=x-rhs; t.y=y-rhs; t.z=z-rhs; //t.w=w/rhs;
+    return t;
+}
+
 dVector dVector::operator*(float rhs) const
 {
     dVector t;
@@ -168,7 +196,7 @@ istream &Fluxus::operator>>(istream &is, dVector &om)
 }
 
 void dVector::get_rot(float m[16],dVector up)
-	{
+{
 	dVector a,b,c;
 	a.x=this->x; a.y=this->y; a.z=this->z;
 	a.normalise();
@@ -179,14 +207,16 @@ void dVector::get_rot(float m[16],dVector up)
 	c.normalise();
 	
 	for (int n=0; n<16; n++)
+	{
 		m[n]=0;
+	}
 
 	m[15]=1;
 
 	m[0]=a.x; m[1]=a.y;	m[2]=a.z;	
 	m[4]=b.x; m[5]=b.y;	m[6]=b.z;	
 	m[8]=c.x; m[9]=c.y;	m[10]=c.z;
-	}
+}
 
 bool dVector::feq(const dVector &other, float epsilon)
 {
@@ -212,6 +242,34 @@ dColour dColour::operator-(dColour const &rhs) const
 {
     dColour t;
     t.r=r-rhs.r; t.g=g-rhs.g; t.b=b-rhs.b; t.a=a-rhs.a;
+    return t;
+}
+
+dColour dColour::operator*(dColour const &rhs) const
+{
+    dColour t;
+    t.r=r*rhs.r; t.g=g*rhs.g; t.b=b*rhs.b; t.a=a*rhs.a;
+    return t;
+}
+
+dColour dColour::operator/(dColour const &rhs) const
+{
+    dColour t;
+    t.r=r/rhs.r; t.g=g/rhs.g; t.b=b/rhs.b; t.a=a/rhs.a;
+    return t;
+}
+
+dColour dColour::operator+(float rhs) const
+{
+    dColour t;
+    t.r=r+rhs; t.g=g+rhs; t.b=b+rhs; t.a=a+rhs;
+    return t;
+}
+
+dColour dColour::operator-(float rhs) const
+{
+    dColour t;
+    t.r=r-rhs; t.g=g-rhs; t.b=b-rhs; t.a=a-rhs;
     return t;
 }
 
@@ -279,27 +337,42 @@ ostream &Fluxus::operator<<(ostream &os, dVertex const &v)
 
 ////
 
+dMatrix::dMatrix(float m00, float m10, float m20, float m30, 
+			float m01, float m11, float m21, float m31, 
+			float m02, float m12, float m22, float m32, 
+			float m03, float m13, float m23, float m33)
+{
+	m[0][0]=m00; m[1][0]=m10; m[2][0]=m20; m[3][0]=m30;
+	m[0][1]=m01; m[1][1]=m11; m[2][1]=m21; m[3][1]=m31;
+	m[0][2]=m02; m[1][2]=m12; m[2][2]=m22; m[3][2]=m32;
+	m[0][3]=m03; m[1][3]=m13; m[2][3]=m23; m[3][3]=m33;
+}
+
 void dMatrix::init()
 {
-memset(m,0,sizeof(float)*16);
-m[0][0]=m[1][1]=m[2][2]=m[3][3]=1;
+	memset(m,0,sizeof(float)*16);
+	m[0][0]=m[1][1]=m[2][2]=m[3][3]=1;
 }
 
 const dMatrix &dMatrix::operator=(dMatrix const &rhs)
 {
-m[0][0]=rhs.m[0][0]; m[0][1]=rhs.m[0][1]; m[0][2]=rhs.m[0][2]; m[0][3]=rhs.m[0][3];
-m[1][0]=rhs.m[1][0]; m[1][1]=rhs.m[1][1]; m[1][2]=rhs.m[1][2]; m[1][3]=rhs.m[1][3];
-m[2][0]=rhs.m[2][0]; m[2][1]=rhs.m[2][1]; m[2][2]=rhs.m[2][2]; m[2][3]=rhs.m[2][3];
-m[3][0]=rhs.m[3][0]; m[3][1]=rhs.m[3][1]; m[3][2]=rhs.m[3][2]; m[3][3]=rhs.m[3][3];
-return rhs;
+	m[0][0]=rhs.m[0][0]; m[0][1]=rhs.m[0][1]; m[0][2]=rhs.m[0][2]; m[0][3]=rhs.m[0][3];
+	m[1][0]=rhs.m[1][0]; m[1][1]=rhs.m[1][1]; m[1][2]=rhs.m[1][2]; m[1][3]=rhs.m[1][3];
+	m[2][0]=rhs.m[2][0]; m[2][1]=rhs.m[2][1]; m[2][2]=rhs.m[2][2]; m[2][3]=rhs.m[2][3];
+	m[3][0]=rhs.m[3][0]; m[3][1]=rhs.m[3][1]; m[3][2]=rhs.m[3][2]; m[3][3]=rhs.m[3][3];
+	return rhs;
 }
 
 dMatrix dMatrix::operator+(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             t.m[i][j]=m[i][j]+rhs.m[i][j];
+		}
+	}
     return t;
 }
 
@@ -307,8 +380,12 @@ dMatrix dMatrix::operator-(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             t.m[i][j]=m[i][j]-rhs.m[i][j];
+		}
+	}
     return t;
 }
 
@@ -355,27 +432,91 @@ dMatrix dMatrix::operator/(dMatrix const &rhs) const
 {
     dMatrix t;
     for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             t.m[i][j]=m[i][0]/rhs.m[0][j]+
                       m[i][1]/rhs.m[1][j]+
                       m[i][2]/rhs.m[2][j]+
                       m[i][3]/rhs.m[3][j];
+		}
+	}
+    return t;
+}
+
+dMatrix dMatrix::operator+(float rhs) const
+{
+	dMatrix t;
+    for (int i=0; i<4; i++)
+	{
+        for (int j=0; j<4; j++)
+		{
+            t.m[i][j]=m[i][j]+rhs;
+		}
+	}
+    return t;
+}
+
+dMatrix dMatrix::operator-(float rhs) const
+{
+	dMatrix t;
+    for (int i=0; i<4; i++)
+	{
+        for (int j=0; j<4; j++)
+		{
+            t.m[i][j]=m[i][j]-rhs;
+		}
+	}
+    return t;
+}
+
+dMatrix dMatrix::operator*(float rhs) const
+{
+	dMatrix t;
+    for (int i=0; i<4; i++)
+	{
+        for (int j=0; j<4; j++)
+		{
+            t.m[i][j]=m[i][j]*rhs;
+		}
+	}
+    return t;
+}
+
+dMatrix dMatrix::operator/(float rhs) const
+{
+	dMatrix t;
+    for (int i=0; i<4; i++)
+	{
+        for (int j=0; j<4; j++)
+		{
+            t.m[i][j]=m[i][j]/rhs;
+		}
+	}
     return t;
 }
 
 dMatrix &dMatrix::operator+=(dMatrix const &rhs)
 {
     for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             m[i][j]+=rhs.m[i][j];
+		}
+	}
     return *this;
 }
 
 dMatrix &dMatrix::operator-=(dMatrix const &rhs)
 {
     for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             m[i][j]-=rhs.m[i][j];
+		}
+	}
     return *this;
 }
 

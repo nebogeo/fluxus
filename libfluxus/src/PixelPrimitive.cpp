@@ -49,12 +49,27 @@ m_Height(h)
 	glGenTextures(1,(GLuint*)&m_Texture);
 }
 
+PixelPrimitive::PixelPrimitive(const PixelPrimitive &other) :
+Primitive(other),
+m_Points(other.m_Points),
+m_Width(other.m_Width),
+m_Height(other.m_Height)
+{
+	PDataDirty();
+	glGenTextures(1,(GLuint*)&m_Texture);
+}
+
 PixelPrimitive::~PixelPrimitive()
 {
 	if (m_Texture!=0)
 	{
 		glDeleteTextures(1,(GLuint*)&m_Texture);
 	}
+}
+
+PixelPrimitive* PixelPrimitive::Clone() const 
+{
+	return new PixelPrimitive(*this); 
 }
 
 void PixelPrimitive::PDataDirty()

@@ -31,11 +31,13 @@ class LinePrimitive : public Primitive
 {
 public:
 	LinePrimitive();
+	LinePrimitive(const LinePrimitive &other);
 	virtual ~LinePrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual LinePrimitive* Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);

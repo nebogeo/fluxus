@@ -67,6 +67,18 @@ BlobbyPrimitive::BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size)
 	}
 }
 
+BlobbyPrimitive::BlobbyPrimitive(const BlobbyPrimitive &other) :
+Primitive(other), 
+m_Voxels(other.m_Voxels)
+{
+	PDataDirty();
+}
+
+BlobbyPrimitive* BlobbyPrimitive::Clone() const 
+{
+	return new BlobbyPrimitive(*this); 
+}
+
 BlobbyPrimitive::~BlobbyPrimitive()
 {
 }

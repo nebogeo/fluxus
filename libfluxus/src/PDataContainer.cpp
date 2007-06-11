@@ -22,14 +22,29 @@ PDataContainer::PDataContainer()
 {
 }
 
+PDataContainer::PDataContainer(const PDataContainer &other) 
+{
+	Clear();
+	for (map<string,PData*>::const_iterator i=other.m_PData.begin(); 
+		i!=other.m_PData.end(); i++)
+	{
+		m_PData[i->first] = i->second->Copy();
+	}
+}
+
 PDataContainer::~PDataContainer() 
+{
+	Clear();
+}
+
+void PDataContainer::Clear()
 {
 	for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
 	{
 		delete i->second;
 	}
-}
-	
+}	
+
 void PDataContainer::Resize(unsigned int size)
 {
 	for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)

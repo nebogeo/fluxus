@@ -593,29 +593,27 @@ Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  Scheme_Object * mode = NULL;
   ArgCheck("draw-buffer", "S", argc, argv);   
-  mode = argv[0];
 
-  if(SAME_OBJ(mode, scheme_intern_symbol("back")))
+  if(IsSymbol(argv[0], "back"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("back-right")))
+  else if(IsSymbol(argv[0],"back-right"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("back-left")))
+  else if(IsSymbol(argv[0],"back-left"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front")))
+  else if(IsSymbol(argv[0], "front"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-right")))
+  else if(IsSymbol(argv[0], "front-right"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-left")))
+  else if(IsSymbol(argv[0], "front-left"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("right")))
+  else if(IsSymbol(argv[0], "right"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("left")))
+  else if(IsSymbol(argv[0], "left"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-and-back")))
+  else if(IsSymbol(argv[0], "front-and-back"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_AND_BACK);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("none")))
+  else if(IsSymbol(argv[0], "none"))
 	  Engine::Get()->Renderer()->DrawBuffer(GL_NONE);
   else {
 	  //XXX should indicate an error
@@ -637,29 +635,27 @@ Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  Scheme_Object * mode = NULL;
   ArgCheck("read-buffer", "S", argc, argv);   
-  mode = argv[0];
 
-  if(SAME_OBJ(mode, scheme_intern_symbol("back")))
+  if(IsSymbol(argv[0], "back"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("back-right")))
+  else if(IsSymbol(argv[0], "back-right"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("back-left")))
+  else if(IsSymbol(argv[0], "back-left"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front")))
+  else if(IsSymbol(argv[0], "front"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-right")))
+  else if(IsSymbol(argv[0], "front-right"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-left")))
+  else if(IsSymbol(argv[0], "front-left"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("right")))
+  else if(IsSymbol(argv[0], "right"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_RIGHT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("left")))
+  else if(IsSymbol(argv[0], "left"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_LEFT);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("front-and-back")))
+  else if(IsSymbol(argv[0], "front-and-back"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_AND_BACK);
-  else if(SAME_OBJ(mode, scheme_intern_symbol("none")))
+  else if(IsSymbol(argv[0], "none"))
 	  Engine::Get()->Renderer()->ReadBuffer(GL_NONE);
   else {
 	  //XXX should indicate an error
@@ -684,15 +680,13 @@ Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
 Scheme_Object *set_stereo_mode(int argc, Scheme_Object **argv)
 {
   bool success;
-  Scheme_Object * mode = NULL;
   DECL_ARGV();
   ArgCheck("set-stereo-mode", "S", argc, argv);   
-  mode = argv[0];
-  if(SAME_OBJ(mode, scheme_intern_symbol("crystal-eyes")))
+  if(IsSymbol(argv[0], "crystal-eyes"))
 	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::crystalEyes);  
-  else if(SAME_OBJ(mode, scheme_intern_symbol("colour")))
+  else if(IsSymbol(argv[0], "colour"))
 	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::colourStereo); 
-  else if(SAME_OBJ(mode, scheme_intern_symbol("no-stereo")))
+  else if(IsSymbol(argv[0], "no-stereo"))
 	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo); 
   else {
 	  Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo);   
@@ -815,7 +809,8 @@ Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 // accum mode-symbol value-number
 // Returns: void
 // Description:
-// Controls the accumulation buffer (just calls glAccum under the hood)
+// Controls the accumulation buffer (just calls glAccum under the hood).
+// Possible symbols are: accum load return add mult
 // Example:
 // (accum 'add 1) 
 // EndFunctionDoc 

@@ -31,12 +31,14 @@ namespace Fluxus
 class Primitive : public PDataContainer
 {
 public:
-	Primitive() : m_IsPhysical(false),m_Hidden(false),m_Selectable(true) {}
+	Primitive();
+	Primitive(const Primitive &other);
 	virtual ~Primitive();
 
 	///////////////////////////////////////////////////
 	///@name Abstract Primitive Interface
 	///@{
+	virtual Primitive *Clone() const=0;
 	virtual void Render()=0;
 	virtual dBoundingBox GetBoundingBox()=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;

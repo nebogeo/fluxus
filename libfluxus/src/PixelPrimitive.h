@@ -32,11 +32,13 @@ class PixelPrimitive : public Primitive
 {
 public:	
 	PixelPrimitive(unsigned int w, unsigned int h);
+	PixelPrimitive(const PixelPrimitive &other);
 	virtual  ~PixelPrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual PixelPrimitive* Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals(bool smooth) {}

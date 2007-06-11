@@ -29,6 +29,22 @@ m_WrapChars(wrapchars)
 {
 }
 
+TextPrimitive::TextPrimitive(const TextPrimitive &other) :
+PolyPrimitive(other),
+m_CharWidth(other.m_CharWidth),
+m_CharHeight(other.m_CharHeight),
+m_CharStride(other.m_CharStride),
+m_TextWidth(other.m_TextWidth),
+m_TextHeight(other.m_TextHeight),
+m_WrapChars(other.m_WrapChars)
+{
+}
+
+TextPrimitive* TextPrimitive::Clone() const 
+{
+	return new TextPrimitive(*this); 
+}
+
 void TextPrimitive::SetText(const string &s, float Width, float Height, float Zoom)
 {
 	float x=0,y=0;

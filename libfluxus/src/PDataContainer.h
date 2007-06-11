@@ -44,7 +44,12 @@ class PDataContainer
 {
 public:
 	PDataContainer();
-	virtual ~PDataContainer(); 
+	PDataContainer(const PDataContainer &other);
+	virtual ~PDataContainer();
+	virtual PDataContainer *Clone() const=0;
+
+	/// Clear all pdata, leaves the container empty
+	void Clear();
 	
 	/// Make a new pdata array, fails if one already exists 
 	/// with this name
@@ -96,7 +101,7 @@ public:
 protected:
 
 	/// Called when a named pdata mapping changes 
-	virtual void PDataDirty() = 0;
+	virtual void PDataDirty()=0;
 	
 	///\todo replace with a hashmap?
 	map<string,PData*> m_PData;

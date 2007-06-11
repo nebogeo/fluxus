@@ -32,11 +32,13 @@ public:
 	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN,POLYGON};
 	
 	PolyPrimitive(Type t=TRISTRIP);
-	virtual  ~PolyPrimitive();
+	PolyPrimitive(const PolyPrimitive &other);
+	virtual ~PolyPrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual PolyPrimitive *Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals(bool smooth);

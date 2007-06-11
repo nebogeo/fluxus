@@ -27,8 +27,19 @@ LinePrimitive::LinePrimitive()
 	PDataDirty();
 }
 
+LinePrimitive::LinePrimitive(const LinePrimitive &other) :
+Primitive(other) 
+{
+	PDataDirty();
+}
+
 LinePrimitive::~LinePrimitive()
 {
+}
+
+LinePrimitive* LinePrimitive::Clone() const 
+{
+	return new LinePrimitive(*this); 
 }
 
 void LinePrimitive::PDataDirty()

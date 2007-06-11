@@ -100,6 +100,9 @@ void Renderer::Render()
 		glClear(GL_ACCUM_BUFFER_BIT);
 	}
 	
+	// need to clear this even if we aren't using shadows
+	m_World.GetShadowVolumeGen()->Clear();
+	
 	if (m_ShadowLight!=0)
 	{		
 		RenderStencilShadows();
@@ -137,8 +140,6 @@ void Renderer::Render()
 
 void Renderer::RenderStencilShadows()
 {
-	m_World.GetShadowVolumeGen()->Clear();
-	
 	if (m_LightVec.size()>m_ShadowLight)
 	{
 		m_World.GetShadowVolumeGen()->SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());

@@ -18,6 +18,7 @@
 #include "Physics.h"
 #include "PolyPrimitive.h"
 #include "TurtleBuilder.h"
+#include "PFuncContainer.h"
 
 class Engine
 {
@@ -48,6 +49,7 @@ public:
 	static Fluxus::PolyPrimitive* StaticCylinder;
 	
 	Fluxus::TurtleBuilder *GetTurtle() { return &m_Turtle; }
+	Fluxus::PFuncContainer *GetPFuncContainer() { return &m_PFuncContainer; }
 	
 	// helper for the bindings
 	Fluxus::State *State();
@@ -63,4 +65,5 @@ private:
 	deque<unsigned int> m_GrabStack;
 	Fluxus::Primitive *m_Grabbed;
 	Fluxus::TurtleBuilder m_Turtle;
+	Fluxus::PFuncContainer m_PFuncContainer;
 };

@@ -14,45 +14,24 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Renderer.h"
-#include "LocatorPrimitive.h"
-#include "State.h"
+#include "PrimitiveFunction.h"
 
 using namespace Fluxus;
-	
-LocatorPrimitive::LocatorPrimitive() 
+
+PrimitiveFunction::PrimitiveFunction()
 {
 }
 
-LocatorPrimitive::LocatorPrimitive(const LocatorPrimitive &other) :
-Primitive(other) 
+PrimitiveFunction::~PrimitiveFunction() 
 {
 }
 
-LocatorPrimitive::~LocatorPrimitive()
+void PrimitiveFunction::ClearArgs()
 {
-}
+	for (map<string,Arg*>::iterator i=m_Args.begin(); i!=m_Args.end(); i++)
+	{
+		delete i->second;
+	}
+	m_Args.clear();
+}	
 
-LocatorPrimitive* LocatorPrimitive::Clone() const 
-{
-	return new LocatorPrimitive(*this); 
-}
-
-void LocatorPrimitive::PDataDirty()
-{	
-}
-
-void LocatorPrimitive::Render()
-{
-}
-
-dBoundingBox LocatorPrimitive::GetBoundingBox()
-{	
-	dBoundingBox box;
-	return box;
-}
-
-void LocatorPrimitive::ApplyTransform(bool ScaleRotOnly)
-{
-	GetState()->Transform.init();
-}

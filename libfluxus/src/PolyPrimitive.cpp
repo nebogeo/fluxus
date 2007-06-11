@@ -36,8 +36,22 @@ m_Type(t)
 	PDataDirty();
 }
 
+PolyPrimitive::PolyPrimitive(const PolyPrimitive &other) :
+Primitive(other),
+m_IndexMode(other.m_IndexMode),
+m_IndexData(other.m_IndexData),
+m_Type(other.m_Type)
+{
+	PDataDirty();
+}
+
 PolyPrimitive::~PolyPrimitive()
 {
+}
+
+PolyPrimitive *PolyPrimitive::Clone() const
+{
+	return new PolyPrimitive(*this);
 }
 
 void PolyPrimitive::PDataDirty()

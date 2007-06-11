@@ -37,6 +37,8 @@ Source = Split("src/PData.cpp \
 		src/ShadowVolumeGen.cpp \
 		src/Physics.cpp \
 		src/DepthSorter.cpp \
+		src/PrimitiveFunction.cpp \
+		src/ArithmeticPrimFunc.cpp \
 		src/Utils.cpp")
 		
 env.StaticLibrary(source = Source, target = Target)

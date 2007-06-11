@@ -28,11 +28,13 @@ class ParticlePrimitive : public Primitive
 {
 public:
 	ParticlePrimitive();
+	ParticlePrimitive(const ParticlePrimitive &other);
 	virtual ~ParticlePrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual ParticlePrimitive* Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);

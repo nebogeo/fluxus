@@ -30,8 +30,19 @@ ParticlePrimitive::ParticlePrimitive()
 	PDataDirty();
 }
 
+ParticlePrimitive::ParticlePrimitive(const ParticlePrimitive &other) :
+Primitive(other) 
+{
+	PDataDirty();
+}
+
 ParticlePrimitive::~ParticlePrimitive()
 {
+}
+
+ParticlePrimitive* ParticlePrimitive::Clone() const 
+{
+	return new ParticlePrimitive(*this); 
 }
 
 void ParticlePrimitive::PDataDirty()

@@ -672,6 +672,156 @@ Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// build-copy src-primitive-number
+// Returns: primitiveid-number
+// Description:
+// Returns a copy of a primitive
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (define myothernewshape (build-copy mynewshape))
+// EndFunctionDoc
+	
+Scheme_Object *build_copy(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-copy", "i", argc, argv);
+	Primitive *src = Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (src==NULL)
+	{
+		MZ_GC_UNREG(); 
+		return scheme_make_integer_value(0);
+	}
+	MZ_GC_UNREG(); 
+    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(src->Clone()));
+}
+
+// StartFunctionDoc-en
+// make-pfunc name-string
+// Returns: pfuncid-number
+// Description:
+// Makes a new primitive function. PFunc types are as follows:
+// arithmetic
+// Example:
+// (define mypfunc (make-pfunc "arithmetic"))
+// EndFunctionDoc
+	
+Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("make-pfunc", "s", argc, argv);
+	int id = Engine::Get()->GetPFuncContainer()->Make(StringFromScheme(argv[0]));
+	MZ_GC_UNREG(); 
+    return scheme_make_integer_value(id);
+}
+
+// StartFunctionDoc-en
+// pfunc-set! pfuncid-number argument-list
+// Returns: void
+// Description:
+// Sets arguments on a primitive function. 
+// arithmetic
+// Example:
+// (define mypfunc (make-pfunc "arithmetic"))
+// (pfunc-set! mypfunc '(list "operator" "add"
+//                            "src" "p"
+//                            "const" 0.4
+//                            "dst" "p"))
+// EndFunctionDoc
+	
+Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *paramvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_REG();
+			
+   	ArgCheck("pfunc-set!", "il", argc, argv);
+
+	// vectors seem easier to handle than lists with this api
+	paramvec = scheme_list_to_vector(argv[1]);
+	int id = IntFromScheme(argv[0]);
+	for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
+	{
+		if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]))
+		{
+			// get the parameter name
+			string param = StringFromScheme(SCHEME_VEC_ELS(paramvec)[n]);
+	
+			if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n+1]))
+			{
+				Engine::Get()->GetPFuncContainer()->SetArg<string>(id,param,StringFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+			}
+			else if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+			{
+				if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1])) 
+				{
+					Engine::Get()->GetPFuncContainer()->SetArg<int>(id,param,IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+				}
+				else 
+				{
+					Engine::Get()->GetPFuncContainer()->SetArg<float>(id,param,FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+				}
+			}
+			else if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]))
+			{
+				if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 3)
+				{
+					dVector vec;
+					FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),3);
+					Engine::Get()->GetPFuncContainer()->SetArg<dVector>(id,param,vec);
+				}
+				else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
+				{
+					dColour vec;
+					FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
+					Engine::Get()->GetPFuncContainer()->SetArg<dColour>(id,param,vec);
+				}
+				else
+				{	
+					cerr<<"pfunc-set! has found an argument vector of a strange size"<<endl;
+				}
+			}
+			else
+			{
+				cerr<<"pfunc-set! has found an argument type it can't send, numbers and vectors only"<<endl;
+			}
+		}
+		else
+		{
+			cerr<<"pfunc-set! has found a mal-formed parameter list"<<endl;
+		}
+	}
+	
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// pfunc-run id-number
+// Returns: void
+// Description:
+// Runs a primitive function on the currently grabbed primitive.
+// arithmetic
+// Example:
+// (define mypfunc (make-pfunc "arithmetic"))
+// EndFunctionDoc
+	
+Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("pfunc-run", "i", argc, argv);
+	if (Engine::Get()->Grabbed()) 
+	{
+		Engine::Get()->GetPFuncContainer()->Run(IntFromScheme(argv[0]),
+						Engine::Get()->Grabbed(),
+						&Engine::Get()->Renderer()->GetSceneGraph());
+	}
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -704,5 +854,9 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-convert-to-indexed", scheme_make_prim_w_arity(poly_convert_to_indexed, "poly-convert-to-indexed", 0, 0), env);
+	scheme_add_global("build-copy", scheme_make_prim_w_arity(build_copy, "build-copy", 1, 1), env);
+	scheme_add_global("make-pfunc", scheme_make_prim_w_arity(make_pfunc, "make-pfunc", 1, 1), env);
+	scheme_add_global("pfunc-set!", scheme_make_prim_w_arity(pfunc_set, "pfunc-set!", 2, 2), env);
+	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
  	MZ_GC_UNREG(); 
 }

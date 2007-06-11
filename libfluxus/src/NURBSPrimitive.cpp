@@ -33,20 +33,32 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	
 	// direct access for speed
 	PDataDirty();
-
-	m_Surface = gluNewNurbsRenderer();
-	//gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
-	//gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
-	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
-	gluNurbsProperty(m_Surface, GLU_U_STEP, 20);
-	gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
-	gluNurbsProperty(m_Surface, GLU_CULLING, GLU_TRUE);
+	
+	SetupSurface();
 }
 
+NURBSPrimitive::NURBSPrimitive(const NURBSPrimitive &other) :
+Primitive(other),
+m_UKnotVec(other.m_UKnotVec),
+m_VKnotVec(other.m_VKnotVec),
+m_UOrder(other.m_UOrder),
+m_VOrder(other.m_VOrder),
+m_UCVCount(other.m_UCVCount),
+m_VCVCount(other.m_VCVCount),
+m_Stride(other.m_Stride)
+{
+	SetupSurface();
+	PDataDirty();
+}
 
 NURBSPrimitive::~NURBSPrimitive()
 {
 	gluDeleteNurbsRenderer(m_Surface);
+}
+
+NURBSPrimitive* NURBSPrimitive::Clone() const 
+{
+	return new NURBSPrimitive(*this); 
 }
 
 void NURBSPrimitive::PDataDirty()
@@ -55,6 +67,17 @@ void NURBSPrimitive::PDataDirty()
 	m_CVVec=GetDataVec<dVector>("p");
 	m_STVec=GetDataVec<dVector>("t");
 	m_NVec=GetDataVec<dVector>("n");
+}
+
+void NURBSPrimitive::SetupSurface()
+{
+	m_Surface = gluNewNurbsRenderer();
+	//gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_PARAMETRIC_ERROR);
+	//gluNurbsProperty(m_Surface, GLU_PARAMETRIC_TOLERANCE, 5.0);
+	gluNurbsProperty(m_Surface, GLU_SAMPLING_METHOD, GLU_DOMAIN_DISTANCE);
+	gluNurbsProperty(m_Surface, GLU_U_STEP, 20);
+	gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
+	gluNurbsProperty(m_Surface, GLU_CULLING, GLU_TRUE);
 }
 
 void NURBSPrimitive::Render()

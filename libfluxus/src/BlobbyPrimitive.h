@@ -34,11 +34,13 @@ class BlobbyPrimitive : public Primitive
 public:
 	
 	BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size);
+	BlobbyPrimitive(const BlobbyPrimitive &other);
 	virtual  ~BlobbyPrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
+	virtual BlobbyPrimitive* Clone() const;
 	virtual void Render();
 	virtual dBoundingBox GetBoundingBox();
 	virtual void RecalculateNormals(bool smooth);

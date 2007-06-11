@@ -86,6 +86,16 @@ Scheme_Object *SchemeHelper::FloatsToScheme(float *src, unsigned int size)
 	return ret;
 }
 
+bool SchemeHelper::IsSymbol(Scheme_Object *src, const string &symbol)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_REG();
+	bool ret = SAME_OBJ(src, scheme_intern_symbol(symbol.c_str()));
+	MZ_GC_UNREG();
+	return ret;
+}
+
 dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);

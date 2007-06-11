@@ -17,11 +17,27 @@
 #include "Primitive.h"                      	
 
 using namespace Fluxus; 
-               
+
+Primitive::Primitive() : 
+m_IsPhysical(false),
+m_Hidden(false),
+m_Selectable(true) 
+{
+}
+
+Primitive::Primitive(const Primitive &other) :
+PDataContainer(other),
+m_State(other.m_State),
+m_IsPhysical(other.m_IsPhysical),
+m_Hidden(other.m_IsPhysical),
+m_Selectable(other.m_IsPhysical) 
+{
+}
+           
 Primitive::~Primitive()
 {
-}		   
-			
+}	
+	   			
 void Primitive::Prerender()
 {
 	///\todo put other common state things here...

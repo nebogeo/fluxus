@@ -33,8 +33,8 @@ class PData
 public:
 	PData() {}
 	virtual ~PData() {}
-	virtual PData *Copy()=0;
-	virtual unsigned int Size()=0;
+	virtual PData *Copy() const=0;
+	virtual unsigned int Size() const=0;
 	virtual void Resize(unsigned int size)=0;
 };
 
@@ -44,16 +44,19 @@ template<class T>
 class TypedPData : public PData
 {
 public:
-	TypedPData() {}
+	TypedPData() {}	
+	TypedPData(T first) { m_Data.push_back(first); }	
+	TypedPData(unsigned int size) { Resize(size); }	
 	virtual ~TypedPData() {}
-	virtual PData *Copy()
+	
+	virtual PData *Copy() const
 	{
 		TypedPData<T> *newdata = new TypedPData<T>;
 		newdata->m_Data=m_Data;
 		return newdata;
 	}
 	
-	virtual unsigned int Size()
+	virtual unsigned int Size() const
 	{
 		return m_Data.size();
 	}
@@ -62,10 +65,9 @@ public:
 	{
 		m_Data.resize(size);
 	}
-
+	
 	vector<T> m_Data;
 };
-
 
 }
 
