@@ -107,22 +107,22 @@ void SceneGraph::Detach(SceneNode *node)
 	}
 }
 
-dMatrix SceneGraph::GetGlobalTransform(SceneNode *node)
+dMatrix SceneGraph::GetGlobalTransform(const SceneNode *node) const
 {
 	dMatrix Mat,Ret;
 	
-	list<SceneNode*> Path;
+	list<const SceneNode*> Path;
 	
-	SceneNode* current=node;
+	const SceneNode* current=node;
 	// iterate back up the tree storing parents...
 	while(current!=NULL)
 	{
 		if (current && current->Prim) Path.push_front(current);
-		current=(SceneNode*)current->Parent;
+		current=(const SceneNode*)current->Parent;
 	}
 	
 	// concatenate the matrices together to get the global
-	for (list<SceneNode*>::iterator i=Path.begin(); i!=Path.end(); ++i)
+	for (list<const SceneNode*>::iterator i=Path.begin(); i!=Path.end(); ++i)
 	{
 		Mat*=(*i)->Prim->GetState()->Transform;
 	}

@@ -141,6 +141,42 @@ dMatrix SchemeHelper::MatrixFromScheme(Scheme_Object *src)
 	return ret;
 }
 
+vector<int> SchemeHelper::IntVectorFromScheme(Scheme_Object *src)
+{	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, src);
+	MZ_GC_REG();
+	
+	vector<int> ret;
+	for (int n=0; n<SCHEME_VEC_SIZE(src); n++)
+	{
+		if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(src)[n]))
+		{
+			ret.push_back(IntFromScheme(SCHEME_VEC_ELS(src)[n]));
+		}
+	}
+	MZ_GC_UNREG(); 
+	return ret;
+}
+
+vector<float> SchemeHelper::FloatVectorFromScheme(Scheme_Object *src)
+{	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, src);
+	MZ_GC_REG();
+	
+	vector<float> ret;
+	for (int n=0; n<SCHEME_VEC_SIZE(src); n++)
+	{
+		if (SCHEME_NUMBERP(SCHEME_VEC_ELS(src)[n]))
+		{
+			ret.push_back(FloatFromScheme(SCHEME_VEC_ELS(src)[n]));
+		}
+	}
+	MZ_GC_UNREG(); 
+	return ret;
+}
+
 void SchemeHelper::ArgCheck(const string &funcname, const string &format, int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);

@@ -48,6 +48,7 @@ Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 	Engine::Get()->Renderer()->ClearLights();
 	Engine::Get()->ClearGrabStack();
 	Engine::Get()->Renderer()->UnGrab();
+	Engine::Get()->GetPFuncContainer()->Clear();
 	return scheme_void;
 }
 

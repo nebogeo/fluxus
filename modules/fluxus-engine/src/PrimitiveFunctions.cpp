@@ -732,9 +732,11 @@ Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *paramvec = NULL;
-	MZ_GC_DECL_REG(2);
+	Scheme_Object *innerlist = NULL;
+	MZ_GC_DECL_REG(3);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_VAR_IN_REG(2, innerlist);
 	MZ_GC_REG();
 			
    	ArgCheck("pfunc-set!", "il", argc, argv);
@@ -780,12 +782,34 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 				}
 				else
 				{	
-					cerr<<"pfunc-set! has found an argument vector of a strange size"<<endl;
+					cerr<<"pfunc-set! has found a strange sized vector"<<endl;
 				}
+			}
+			else if (SCHEME_LISTP(SCHEME_VEC_ELS(paramvec)[n+1]))
+			{
+				innerlist = scheme_list_to_vector(SCHEME_VEC_ELS(paramvec)[n+1]);
+				if (SCHEME_NUMBERP(SCHEME_VEC_ELS(innerlist)[0])) 
+				{
+					if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(innerlist)[0])) 
+					{
+						Engine::Get()->GetPFuncContainer()->SetArg<vector<int> >(id,param,
+							IntVectorFromScheme(innerlist));
+					}
+					else
+					{
+						Engine::Get()->GetPFuncContainer()->SetArg<vector<float> >(id,param,
+							FloatVectorFromScheme(innerlist));
+					}
+				}
+				else
+				{	
+					cerr<<"pfunc-set! only takes lists of numbers"<<endl;
+				}
+				
 			}
 			else
 			{
-				cerr<<"pfunc-set! has found an argument type it can't send, numbers and vectors only"<<endl;
+				cerr<<"pfunc-set! has found an argument type it can't send, numbers, vectors or lists only"<<endl;
 			}
 		}
 		else

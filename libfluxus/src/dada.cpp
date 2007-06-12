@@ -24,6 +24,8 @@ static float SinTab[SINCOS_TABLESIZE];
 static float CosTab[SINCOS_TABLESIZE];
 static const float SINCOS_LOOKUP=SINCOS_TABLESIZE/(float)TWO_PI;
 
+///\todo optimisations! inline, sort out mag/normalise 
+
 float Fluxus::RandFloat()
 {
 	return rand()%10000/10000.0f;
@@ -151,6 +153,7 @@ dVector dVector::cross(dVector const &rhs) const
 
 float dVector::dist(dVector const &rhs) const
 {
+	///\todo fabs?
     return sqrt((rhs.x-x)*(rhs.x-x)+
                 (rhs.y-y)*(rhs.y-y)+
                 (rhs.z-z)*(rhs.z-z));

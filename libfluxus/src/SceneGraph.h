@@ -68,7 +68,7 @@ public:
 	void Detach(SceneNode *node);
 	
 	/// Gets the world space transfrom of the node
-	dMatrix GetGlobalTransform(SceneNode *node);
+	dMatrix GetGlobalTransform(const SceneNode *node) const;
 	
 	/// Gets the bounding box of the node, and all 
 	/// its children too

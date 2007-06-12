@@ -66,6 +66,7 @@ public:
 		m_Data.resize(size);
 	}
 	
+	///\todo add operator[] and make m_Data private
 	vector<T> m_Data;
 };
 
