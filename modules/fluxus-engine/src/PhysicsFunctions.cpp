@@ -439,12 +439,12 @@ Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// joint-angle jointid-number param-string value-number 
+// joint-angle jointid-number angle-number vel-number 
 // Returns: void
 // Description:
 // Set a new angle for this joint, with a given velocity taken to get there
 // Example:
-// (joint-angle joint "Vel" 0.1)
+// (joint-angle joint 90 0.1)
 // EndFunctionDoc
 
 Scheme_Object *joint_angle(int argc, Scheme_Object **argv)

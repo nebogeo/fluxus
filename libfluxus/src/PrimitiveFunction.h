@@ -66,7 +66,7 @@ public:
 	
 	/// Get the result
 	template<class T>
-	TypedArg<T> GetResult()=0;
+	TypedArg<T> GetResult() {}
 	///@}
 	
 protected:

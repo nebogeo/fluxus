@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <float.h>
 #include "GenSkinWeightsPrimFunc.h"
 #include "Primitive.h"
 #include "SceneGraph.h"
@@ -36,33 +37,41 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	vector<TypedPData<float> *> weights;
 	int bone=0;
 	
-	// first pass, put inverse distances in for each bone
-	for (vector<int>::iterator i=skeleton.begin(); i!=skeleton.end(); i++)
+	// first pass, put inverse distances for each bone
+	for (unsigned int i=0; i<skeleton.size()-1; i++)
 	{
 		// get the bone
-		const SceneNode *bonenode = (const SceneNode *)world.FindNode(*i);
-		if (bonenode)
+		const SceneNode *thisbonenode = (const SceneNode *)world.FindNode(skeleton[i]);
+		const SceneNode *nextbonenode = (const SceneNode *)world.FindNode(skeleton[i+1]);
+		if (thisbonenode && nextbonenode)
 		{
 			// make a skinweight pdata array
 			weights.push_back(new TypedPData<float>(prim.Size()));
 
 			// find the bone position
-			dVector bonepos = world.GetGlobalTransform(bonenode).transform(dVector(0,0,0));
+			dVector startbone = world.GetGlobalTransform(thisbonenode).transform(dVector(0,0,0));
+			dVector endbone   = world.GetGlobalTransform(nextbonenode).transform(dVector(0,0,0));
 
 			for (unsigned int n=0; n<prim.Size(); n++)
 			{
-				float d=bonepos.dist((*p)[n]);
-				if (d==0) weights[bone]->m_Data[n]=1;
+				float d=dGeometry::pointlinedist((*p)[n],startbone,endbone);
+				if (d==0) weights[bone]->m_Data[n]=2;
 				else weights[bone]->m_Data[n]=(1/d);
 			}
 		}
 		else
 		{
-			cerr<<"GenSkinWeightsPrimFunc::Run: aborting - couldn't find bone id "<<*i<<endl;
+			cerr<<"GenSkinWeightsPrimFunc::Run: aborting - couldn't find bone id "<<skeleton[i]<<endl;
 			return;
 		}
 		bone++;
-	}	
+	}				
+	
+	weights.push_back(new TypedPData<float>(prim.Size()));
+	for (unsigned int n=0; n<prim.Size(); n++)
+	{
+		weights[bone]->m_Data[n]=0;
+	}
 	
 	// second pass, pow the weights to allow 
 	// us to control the creasing
@@ -77,18 +86,15 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	// third pass, normalise the weights
 	for (unsigned int n=0; n<prim.Size(); n++)
 	{
-		// find the magnitude for this vert
 		float m=0;
 		for (unsigned int bone=0; bone<weights.size(); bone++)
 		{
-			m+=(weights[bone]->m_Data[n]*weights[bone]->m_Data[n]);
+			m+=weights[bone]->m_Data[n];
 		}
-		float d=sqrt(fabs(m));
-		float total=0;
+		
 		for (unsigned int bone=0; bone<weights.size(); bone++)
 		{
-			weights[bone]->m_Data[n]/=d;
-			total+=weights[bone]->m_Data[n];
+			weights[bone]->m_Data[n]/=m;
 		}
 	}
 	

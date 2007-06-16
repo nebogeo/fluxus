@@ -60,6 +60,11 @@ PolyPrimitive *ShadowVolumeGen::GetVolume()
 void ShadowVolumeGen::PolyGen(PolyPrimitive *src)
 {	
 	TypedPData<dVector> *points = dynamic_cast<TypedPData<dVector>* >(src->GetDataRaw("p"));
+	
+	///\todo using geometric normals, as we need them to be non smoothed
+	/// to tell the difference between faces, but this doesn't update with
+	/// n (from things like skinning and user deformation). recalc-normals
+	/// is ok though as it regenerates them... not sure what the answer is.
 	const vector<dVector> &normals = src->GetGeometricNormals();
 	const vector<vector<int> > &connected=src->GetConnectedVerts();
 	
@@ -188,6 +193,7 @@ void ShadowVolumeGen::AddEdge(dVector start, dVector end)
 	m_ShadowVolume.AddVertex(dVertex(start+proj*m_Length,dVector(0,0,0),0,0));
 }
 
+///\todo shadow volumes for nurbs
 void ShadowVolumeGen::NURBSGen(NURBSPrimitive *src)
 {	
 	TypedPData<dVector> *points = dynamic_cast<TypedPData<dVector>* >(src->GetDataRaw("p"));

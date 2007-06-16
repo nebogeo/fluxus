@@ -61,9 +61,13 @@ public:
 	
 	/// Sets the length to extrude the volume by, in world space
 	void SetLength(float s) { m_Length=s; }
+
+	/// Sets the amount to expand the volume by, to minimise 
+	/// silhouette edge artifacts
+	void SetExpand(float s) { m_Expand=s; }
 	
 	///@name Accessors for debug mode
-	/// When in debug mode, the silhoette edges are drawn, 
+	/// When in debug mode, the silhouette edges are drawn, 
 	/// indicating direction by colour gradient
 	///@{
 	void SetDebug(bool s) { m_Debug=s; }
@@ -85,6 +89,7 @@ private:
 	PolyPrimitive m_ShadowVolume;
 	dVector m_LightPosition;
 	float m_Length;
+	float m_Expand;
 	bool m_Debug;
 };
 

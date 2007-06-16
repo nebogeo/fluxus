@@ -32,14 +32,29 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 {
 	vector<int> skeleton = GetArg<vector<int> >("skeleton",vector<int>());
 	vector<int> bindposeskeleton = GetArg<vector<int> >("bindpose-skeleton",vector<int>());
+	bool skinnormals = GetArg<int>("skin-normals",0);
 	vector<dVector> *p = prim.GetDataVec<dVector>("p");
 	vector<dVector> *pref = prim.GetDataVec<dVector>("pref");
-
+	vector<dVector> *n = NULL;
+	vector<dVector> *nref = NULL;
+	
 	if (!pref)
 	{
 		cerr<<"SkinningPrimFunc::Run: aborting: primitive needs a pref (copy of p)"<<endl;
 		return;
 	}
+	
+	if (skinnormals)
+	{
+		n = prim.GetDataVec<dVector>("n");
+		nref = prim.GetDataVec<dVector>("nref");
+		if (!nref)
+		{
+			cerr<<"SkinningPrimFunc::Run: aborting: primitive needs an nref (copy of n)"<<endl;
+			return;
+		}
+	}
+	
 
 	if (skeleton.size()!=bindposeskeleton.size())
 	{
@@ -75,15 +90,20 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		weights.push_back(prim.GetDataVec<float>(wname));
 	}
 	
-	for (unsigned int n=0; n<prim.Size(); n++)
+	for (unsigned int i=0; i<prim.Size(); i++)
 	{
 		dMatrix mat;
+		mat.zero();
 		for	(unsigned int bone=0; bone<skeleton.size(); bone++)
 		{
-			mat+=transforms[bone]*(*weights[bone])[n];
+			mat+=(transforms[bone]*(*weights[bone])[i]);
 		}
-		mat=mat/skeleton.size();
-		(*p)[n]=mat.transform((*pref)[n]);
+		
+		(*p)[i]=mat.transform((*pref)[i]);
+		
+		if (skinnormals)
+		{
+			(*n)[i]=mat.transform_no_trans((*nref)[i]);
+		}
 	}
-	
 }

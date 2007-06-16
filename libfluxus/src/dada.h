@@ -152,6 +152,7 @@ public:
 			float m03, float m13, float m23, float m33);
 			
     void init();
+	void zero();
     float *arr() {return &m[0][0];}
     const dMatrix &operator=(dMatrix const &rhs);
     dMatrix operator+(dMatrix const &rhs) const;
@@ -206,6 +207,7 @@ class dBoundingBox
 {
 public:
 	dBoundingBox() : m_Empty(true) {}
+	dBoundingBox(const dVector &cmin, const dVector &cmax) : min(cmin), max(cmax) {}
 	virtual ~dBoundingBox() {}
 	
 	bool empty() { return m_Empty; }
@@ -243,6 +245,14 @@ public:
 	
 	// the data
 	float x,y,z,w;
+};
+
+/// A place for useful geometry operations
+namespace dGeometry
+{
+
+float pointlinedist(const dVector &p, const dVector &start, const dVector &end);
+
 };
 
 ////

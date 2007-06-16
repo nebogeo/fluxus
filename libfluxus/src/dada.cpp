@@ -353,8 +353,13 @@ dMatrix::dMatrix(float m00, float m10, float m20, float m30,
 
 void dMatrix::init()
 {
-	memset(m,0,sizeof(float)*16);
+	zero();
 	m[0][0]=m[1][1]=m[2][2]=m[3][3]=1;
+}
+
+void dMatrix::zero()
+{
+	memset(m,0,sizeof(float)*16);
 }
 
 const dMatrix &dMatrix::operator=(dMatrix const &rhs)
@@ -969,4 +974,30 @@ void dQuat::setaxisangle(dVector axis, float angle)
 	z=axis.z;
 }
 
+float dGeometry::pointlinedist(const dVector &p, const dVector &start, const dVector &end)
+{
+    float linemag;
+    dVector intersection;
+ 
+    float len = end.dist(start);
+ 
+    float t = ((p.x-start.x)*(end.x-start.x) +
+               (p.y-start.y)*(end.y-start.y) +
+               (p.z-start.z)*(end.z-start.z)) / (len*len);
+ 
+    if (t<0.0f) // off the end
+	{
+		return p.dist(start);
+	}
+    if (t>1.0f) // off the end
+	{
+		return p.dist(end);
+	}
+	
+    intersection.x = start.x+t*(end.x-start.x);
+    intersection.y = start.y+t*(end.y-start.y);
+    intersection.z = start.z+t*(end.z-start.z);
+ 
+    return p.dist(intersection);
+}
 
