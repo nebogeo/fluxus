@@ -30,7 +30,27 @@ using namespace Fluxus;
 // UtilFunctions
 // Handy functions to make your life easier...
 // Example:
+// time
+// delta
+// flxrnd
+// flxseed
+// searchpaths
+// fullpath
+// framedump
 // EndSectionDoc 
+
+// StartSectionDoc-pt
+// UtilFunctions
+// Funções práticas para fazer a sua vida mais fácil.
+// Exemplos:
+// time
+// delta
+// flxrnd
+// flxseed
+// searchpaths
+// fullpath
+// framedump
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // time
@@ -40,7 +60,20 @@ using namespace Fluxus;
 // simpest animation source for your scripts.
 // Example:
 // (define (animate)
-//     (rotate (sin (time)) 0 0)
+//     (rotate (vector (sin (time)) 0 0))
+//     (draw-cube))
+// (every-frame (animate))    
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// time
+// Retorna: numero do tempo(transcorrido, passado)
+// Descricao:
+// Retorna o numero de segundos (+ fracao) desde meia noite do dia 1 de janeiro de 1970.
+// Essa e a forma mais simples de animacao para seus scripts
+// Exemplo:
+// (define (animate)
+//     (rotate (vector (sin (time)) 0 0))
 //     (draw-cube))
 // (every-frame (animate))    
 // EndFunctionDoc
@@ -57,6 +90,18 @@ Scheme_Object *time(int argc, Scheme_Object **argv)
 // Time in seconds since the last frame. Used to make animation frame rate independant.
 // Example:
 // (define (animate)
+//     (rotate ((vector * (delta) 10) 0 0) 
+//     (draw-cube))
+// (every-frame (animate))    
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// delta
+// Retorna: numero do tempo(transcorrido, passado)
+// Descricao:
+// Tempo em segundos desde o ultimo frame. Usado pra fazer animacoes com taxa de frames independendente(constante).
+// Exemplo:
+// (define (animate)
 //     (rotate (* (delta) 10) 0 0) 
 //     (draw-cube))
 // (every-frame (animate))    
@@ -71,8 +116,20 @@ Scheme_Object *delta(int argc, Scheme_Object **argv)
 // flxrnd
 // Returns: random-number
 // Description:
-// Returns a random number between 0 and 1
+// Returns a random number between 0 and 1.
 // Example:
+// (define (animate)
+//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (draw-cube))
+// (every-frame (animate))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// flxrnd
+// Retorna: número randômico
+// Descrição:
+// Retorna um número randômico entre 0 e 1.
+// Exemplo:
 // (define (animate)
 //     (colour (flxrnd) (flxrnd) (flxrnd)) 
 //     (draw-cube))
@@ -94,7 +151,20 @@ Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 //     (colour (flxrnd) (flxrnd) (flxrnd)) 
 //     (draw-cube))
 // (flxseed 10) 
-// (every-frame (animate)) ; the same seqence of colours will be generated
+// (every-frame (animate)) ; the same sequence of colours will be generated
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// flxseed número da semente
+// Retorna: void
+// Descrição:
+// Alimenta o gerador de número randômico de forma que nós consigamos a mesma sequência.
+// Exemplo:
+// (define (animate)
+//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (draw-cube))
+// (flxseed 10) 
+// (every-frame (animate)) ; a mesma sequência de cores será gerada
 // EndFunctionDoc
 
 Scheme_Object *flxseed(int argc, Scheme_Object **argv)
@@ -113,6 +183,16 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 // Sets a list of search path strings to use for looking for fluxus related files, such as
 // textures, shaders etc. Paths will be searched in order each time.
 // Example:
+// (searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// searchpaths lista de diretórios
+// Retorna: void
+// Descrição:
+// Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
+// como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
+// Exemplo:
 // (searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
 // EndFunctionDoc
 
@@ -150,6 +230,16 @@ Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
 // (fullpath "myfile")
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// fullpath string do nome do arquivo
+// Retorna: fullpath-string
+// Descrição:
+// Busca os diretórios de procura para o arquivo especificado e retorna a primeira 
+// localização que encontra.
+// Exemplo:
+// (fullpath "myfile")
+// EndFunctionDoc
+
 Scheme_Object *fullpath(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -169,6 +259,18 @@ Scheme_Object *fullpath(int argc, Scheme_Object **argv)
 // Example:
 // (framedump "picture.jpg")
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// framedump nome-do-arquivo
+// Retorna: void
+// Descrição:
+// Salva o buffer OpenGL da frente no disco. Lê a extensão do arquivo pra decidir qual
+// qual formato será usado pra salvar, "tif", "jpg" ou "ppm" são suportados. Esta é a 
+// forma de frame dumping de baixo nivel, use start-framedump e end-framedump ao invés.
+// Exemplo:
+// (framedump "picture.jpg")
+// EndFunctionDoc
+
 
 Scheme_Object *framedump(int argc, Scheme_Object **argv)
 {

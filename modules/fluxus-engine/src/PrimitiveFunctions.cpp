@@ -35,17 +35,36 @@ using namespace SchemeHelper;
 // Primitives
 // Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
 // except lights, a camera and lots of primitives.
-// Example:
+// Example: 
 // EndSectionDoc 
+
+// StartSectionDoc-pt
+// Primitivas
+// Primitivas são objetos que você pode renderizar. Não há muito mais coisas
+// numa cena do fluxus, exceto luzes, uma camera e muitas primitivas.
+// Exemplo:
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // build-cube
 // Returns: primitiveid-number
 // Description:
-// A simple cube, texture mapped placement per face
+// A simple cube, texture mapped placement per face.
 // @image{images/cube}
 // Example:
 // (define mynewcube (build-cube))
+// (every-frame (mynewcube))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-cube
+// Retorna: número-de-id-da-primitiva
+// Descrição:
+// Um simples cubo, mapeamento de textura por face.
+// @image{images/cube}
+// Example:
+// (define mynewcube (build-cube))
+// (every-frame (mynewcube))
 // EndFunctionDoc
 
 Scheme_Object *build_cube(int argc, Scheme_Object **argv)
@@ -66,7 +85,7 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-polygins verts-number type-number
+// build-polygons verts-number type-number
 // Returns: primitiveid-number
 // Description:
 // Builds a raw polygon primitive with size vertices (everything is initially set to zero). 
@@ -74,6 +93,22 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 // and can be one of the following: 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON
 // Example:
 // (define mynewshape (build-polygons 100 0))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-polygons número-de-vértices tipo-de-número
+// Retorna: número-de-id-primitiva 
+// Descrição:
+// Cónstroi uma primitiva de polígono cru com tamanho de vértices
+// (tudo é inicialmente tido como zero).
+// Tipo é um número que referencia a forma as quais os vértices são
+// interpretados para construir os poligonos, e podem ser os
+// seguintes: 
+// 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON.
+// Example:
+// (define mynewshape (build-polygons 100 0))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
@@ -94,6 +129,19 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // @image{images/sphere}
 // Example:
 // (define mynewshape (build-sphere 10 10))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-sphere número-de-cortes-horizontais número-de-cortes-verticais
+// Retorna: número-id-primitiva
+// Descrição:
+// Uma esfera com a resolução especificada, a textura mapeada no
+// estilo normal "world map".
+// @image{images/sphere}
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
@@ -107,13 +155,25 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-plane
+// build-plane 
 // Returns: primitiveid-number
 // Description:
 // A single quad plane, texture mapped from 0->1 in both dimensions.
 // @image{images/plane}
 // Example:
 // (define mynewshape (build-plane))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-plane
+// Retorna: número-id-primitiva
+// Descrição:
+// Um único plano quadrado, mapeado de 0->1 em ambas as dimensões.
+// @image{images/plane}
+// Example:
+// (define mynewshape (build-plane))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_plane(int argc, Scheme_Object **argv)
@@ -130,6 +190,17 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 // A tesselated poly plane, texture mapped from 0->1 in both dimensions.
 // Example:
 // (define mynewshape (build-plane))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-seg-plane número-de-vértices-x número-de-vértices-y
+// Retorna: número-id-primitiva
+// Descrição:
+// Um plano poligonal tesselado, mapeado de 0->1 em ambas dimensões.
+// Example:
+// (define mynewshape (build-plane))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
@@ -150,6 +221,19 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // @image{images/cylinder}
 // Example:
 // (define mynewshape (build-cylinder 10 10))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-cylinder h-segmentos r-segmentos
+// Retorna: número-id-primitiva
+// Descrição:
+// Um cilindro coberto, textura mapeada em volta, e mal mapeada em
+// volta do fim.
+// @image{images/cylinder}
+// Example:
+// (define mynewshape (build-cylinder 10 10))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
@@ -175,6 +259,25 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // @image{images/line}
 // Example:
 // (define mynewshape (build-line 10))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-line numpoints-número
+// Retorna: número-id-primitiva
+// Descrição:
+// Cónstroi uma linha consistindo de numpoints pontos. A geometria
+// aponta para a câmera constantemente e a textura é mapeada de forma
+// que se alonga na linha do início ao fim. Você usa as funções pdata
+// para editar as posições e largura das linhas. Se usado iluminado,
+// as normais são falseadas para aproximar uma seção circular
+// cruzada. Adicionalmente, se renderização sólida for limpa com
+// (hint-none) e (hint-wire) ativado, uma rápida linha constante vai
+// ser desenhada - largura específicada pelo comando (line-width).
+// @image{images/line}
+// Example:
+// (define mynewshape (build-line 10))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_line(int argc, Scheme_Object **argv)
@@ -199,6 +302,23 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // Example:
 // (texture (texture-load "font.png"))
 // (define mynewshape (build-text "hello"))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-text string-texto
+// Retorna: número-id-primitiva
+// Descrição:
+// Constrói uma sequencia de planos, mapeados de forma que uma textura
+// de fonte possa ser usada para visualização. Pode vir a ser útil para
+// coisas mais abstratas. A fonte é assumida como não proporcional -
+// tem um exemplo de fonte acompanhando o fluxus.
+// @image{images/text}
+// Ok, so this isn't a very good font texture :) 
+// Example:
+// (texture (texture-load "font.png"))
+// (define mynewshape (build-text "hello"))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_text(int argc, Scheme_Object **argv)
@@ -222,6 +342,19 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // @image{images/nurbs-sphere}
 // Example:
 // (define mynewshape (build-nurbs-sphere 10 10))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-nurbs-sphere h-segmentos r-segmentos
+// Retorna: número-id-primitiva
+// Descrição:
+// Constrói uma esfera nurbs tesselada, mapead da mesma forma que a
+// esfera poligonal.
+// @image{images/nurbs-sphere}
+// Example:
+// (define mynewshape (build-nurbs-sphere 10 10))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 	
 Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
@@ -242,6 +375,18 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // @image{images/nurbs-plane}
 // Example:
 // (define mynewshape (build-nurbs-plane 10 10))
+// (every-frame (mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-nurbs-plane h-segmento r-segmento
+// Retorna: número-id-primitiva
+// Descrição:
+// Constrói um plano nurbs tesselado, mapeado na direção uv.
+// @image{images/nurbs-plane}
+// Example:
+// (define mynewshape (build-nurbs-plane 10 10))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
@@ -267,8 +412,27 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // @image{images/sprites}
 // Example:
 // (define mynewshape (build-particles 100))
+// (every-frame (mynewshape))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// build-particles número-contagem
+// Retorna: número-id-primitiva
+// Descrição:
+// Cónstroi uma primitiva de partículas contendo num pontos, tudo
+// inicialmente aplicado à origem. Você usa as funções pdata para
+// editar as posições, cores e tamanhos. Partículas vêm em dois tipos,
+// sprites apontando pra câmera, que são o padrão, podem ser
+// texturizadas e escaladas individualmente; e pontuais (quando
+// hint-points está aplicado), que não podem ser texturizadas mas são
+// muito mais rápidas de renderizar, já que elas são pontos gl
+// suportados pelo hardware. Por defeito essas partículas pontuais são
+// quadradas, ligue hint-anti-alias para faze-las circulares.
+// @image{images/sprites}
+// Example:
+// (define mynewshape (build-particles 100))
+// (every-frame (mynewshape))
+// EndFunctionDoc
 
 Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 {
@@ -295,6 +459,18 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 // (define mynewshape (build-locator))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// build-locator
+// Retorna: número-id-primitiva
+// Descrição:
+// Um locator é uma primitiva vazia, útil para parentesco (quando você
+// não quer ter o objeto pai visivel). Essa primitiva só pode ser
+// visualizada com (hint-origin) para mostrar sua origem de
+// transformação local.
+// Example:
+
+// EndFunctionDoc
+
 Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 {
 	LocatorPrimitive *Prim = new LocatorPrimitive();
@@ -308,6 +484,19 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 // Makes a new pixel primitive. A pixel primitive is used for making procedural textures, which 
 // can then be applied to other primitives. For this reason, pixel primitives probably wont be 
 // rendered much, but you can render them to preview the texture on a flat plane.
+// Example:
+// (define mynewshape (build-pixels 100 100))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-pixels número-largura número-altura
+// Retorna: número-id-primitiva
+// Descrição:
+// Faz uma nova primitiva pixel. Uma primitiva pixel é usada pra fazer
+// texturas procedurais, que podem então ser aplicadas em outras
+// primitivas. Por essa razão, primitivas pixel não vão ser
+// renderizadas muito, mas você pode renderizar elas para visualizar a
+// texturas em um plano.
 // Example:
 // (define mynewshape (build-pixels 100 100))
 // EndFunctionDoc
@@ -332,6 +521,17 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 // (pixels-upload mynewshape)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// pixels-upload
+// Retorna: void
+// Descrição:
+// Traz os dados da textura, você precisa chamar isto quando você
+// finalizou escrever ao pixelprim, e enquanto ele está "grabbed".
+// Example:
+// (define mynewshape (build-pixels 100 100))
+// (pixels-upload mynewshape)
+// EndFunctionDoc
+
 Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 {	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -349,6 +549,8 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 	cerr<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
     return scheme_void;
 }
+
+// TODO:document 
 
 Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 {
@@ -378,6 +580,18 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 // Returns: textureid-number
 // Description:
 // Returns a texture you can use exactly like a normal loaded one.
+// Example:
+// (define mynewshape (build-pixels 100 100))
+// (upload-pixels mynewshape)
+// (texture (pixels->texture mynewshape))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pixels->texture número-id-pixelprim
+// Retorna: número-id-textura
+// Descrição:
+// Retorna uma textura que você pode usar exatamente igual uma que foi
+// carregada normalmente.
 // Example:
 // (define mynewshape (build-pixels 100 100))
 // (upload-pixels mynewshape)
@@ -424,6 +638,15 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 // (define mynewshape (build-blobby 7 (vector 30 30 30) (vector 3 3 3)))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// 
+// Retorna:
+// Descrição:
+// 
+// Example:
+
+// EndFunctionDoc
+
 Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -456,6 +679,18 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 // (draw-instance mynewshape) ; draws a copy of mynewshape
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// draw-instance número-id-primitiva
+// Retorna: void
+// Descrição:
+// Copia um modo retido da primitiva e desenha ela no estado corrente
+// como um no modo imediato.
+// Example:
+// (define mynewshape (build-cube))
+// (colour (vector 1 0 0))
+// (draw-instance mynewshape) ; draws a copy of mynewshape
+// EndFunctionDoc
+
 Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 {    	
 	DECL_ARGV();
@@ -471,6 +706,17 @@ Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 // Description:
 // Draws a cube in the current state in immediate mode
 // primitive.
+// Example:
+// (define (render)
+//     (draw-cube))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// draw-cube
+// Retorna: void
+// Descrição:
+// Desenha um cubo no estado imediato corrente.
 // Example:
 // (define (render)
 //     (draw-cube))
@@ -495,6 +741,17 @@ Scheme_Object *draw_cube(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// draw-plane
+// Retorna: void
+// Descrição:
+// Desenha um plano no estado corrente em modo imediato
+// Example:
+// (define (render)
+//     (draw-plane))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_plane(int argc, Scheme_Object **argv)
 {    	
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticPlane);
@@ -507,6 +764,17 @@ Scheme_Object *draw_plane(int argc, Scheme_Object **argv)
 // Description:
 // Draws a sphere in the current state in immediate mode
 // primitive.
+// Example:
+// (define (render)
+//     (draw-sphere))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// draw-sphere
+// Retorna: void
+// Descrição:
+// Desenha uma esfera no estado corrente em modo imediato.
 // Example:
 // (define (render)
 //     (draw-sphere))
@@ -531,6 +799,17 @@ Scheme_Object *draw_sphere(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// draw-cylinder
+// Retorna: void
+// Descrição:
+// Desenha um cilindro no estado corrente em modo imediato.
+// Example:
+// (define (render)
+//     (draw-cylinder))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 {    	
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticCylinder);
@@ -543,6 +822,16 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 // Description:
 // Deletes a built primitive from the renderer.
 // primitive.
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (destroy mynewshape)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// destroy número-id-primitive
+// Retorna: void
+// Descrição:
+// Deleta uma primitiva construída do renderizador.
 // Example:
 // (define mynewshape (build-sphere 10 10))
 // (destroy mynewshape)
@@ -576,6 +865,38 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 // Switches the primitive to indexed mode, and uses the 
 // list as the index values for this primitive.
 // primitive.
+// Example:
+// (clear)
+// (define p (build-polygons 8 1))
+// 
+// (grab p)
+// ; setup the vertex data
+// (pdata-set "p" 0 (vector -1 -1 -1))
+// (pdata-set "p" 1 (vector  1 -1 -1))
+// (pdata-set "p" 2 (vector  1 -1  1))
+// (pdata-set "p" 3 (vector -1 -1  1))
+// (pdata-set "p" 4 (vector -1  1 -1))
+// (pdata-set "p" 5 (vector  1  1 -1))
+// (pdata-set "p" 6 (vector  1  1  1))
+// (pdata-set "p" 7 (vector -1  1  1))
+// 
+// (hint-wire)
+// (hint-unlit)
+// 
+// ; connect the verts together into faces
+// (poly-set-index (list 7 6 5 4  5 6 2 1 
+//                        4 5 1 0  1 2 3 0
+//                        3 7 4 0  6 7 3 2))
+// 
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// poly-set-index lista-indexada
+// Retorna: void
+// Descrição:
+// Troca a primitiva por modo indexado,e usa a lista como valores de
+// index para essa primitiva.
 // Example:
 // (clear)
 // (define p (build-polygons 8 1))
@@ -647,6 +968,21 @@ Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
 // raw vertex arrays to indexed arrays. This removes duplicate
 // vertices from the polygon, making the pdata arrays shorter, 
 // which speeds up processing time.
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (grab mynewshape)
+// (poly-convert-to-indexed)
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// poly-convert-to-indexed
+// Retorna: void
+// Descrição:
+// Converte o atual poligono primitivo que está "grabbed" de arrays de
+// vértices crus para arrays indexadas. Isto remove vértices
+// duplicados do polígono, fazendo a array de pdata menor, o que
+// aumenta a velocidade do processo.
 // Example:
 // (define mynewshape (build-sphere 10 10))
 // (grab mynewshape)
