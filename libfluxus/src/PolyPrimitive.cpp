@@ -75,6 +75,7 @@ void PolyPrimitive::Render()
 {
 	// some drivers crash if they don't get enough data for a primitive...
 	if (m_VertData->size()<3) return; 
+	if (m_IndexMode && m_IndexData.size()<3) return;
 	
 	int type=0;
 	switch (m_Type)

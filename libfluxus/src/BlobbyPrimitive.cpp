@@ -306,6 +306,101 @@ void BlobbyPrimitive::Draw(float isolevel, bool calcnormals, bool colour)
 	}
 }
 
+// generate a poly mesh
+void BlobbyPrimitive::ConvertToPoly(PolyPrimitive &poly, float isolevel)
+{
+	// evaluate the field
+	for (unsigned int i=0; i<m_Voxels.size(); i++)
+	{
+		for (int c=0; c<8; c++)
+		{
+			dVector pos = m_Voxels[i].p[c];
+			
+			if (m_State.Hints & HINT_VERTCOLS)
+			{
+				m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
+			}
+			else
+			{
+				m_Voxels[i].val[c]=Sample(pos);
+			}	
+		}
+	}
+	
+   int i;
+   int cubeindex;
+   dVertex vertlist[12];
+
+	for (unsigned int cell=0; cell<m_Voxels.size(); cell++)
+	{ 
+		//  Determine the index into the edge table which
+		//  tells us which vertices are inside of the surface
+		cubeindex = 0;
+		if (m_Voxels[cell].val[0] < isolevel) cubeindex |= 1;
+		if (m_Voxels[cell].val[1] < isolevel) cubeindex |= 2;
+		if (m_Voxels[cell].val[2] < isolevel) cubeindex |= 4;
+		if (m_Voxels[cell].val[3] < isolevel) cubeindex |= 8;
+		if (m_Voxels[cell].val[4] < isolevel) cubeindex |= 16;
+		if (m_Voxels[cell].val[5] < isolevel) cubeindex |= 32;
+		if (m_Voxels[cell].val[6] < isolevel) cubeindex |= 64;
+		if (m_Voxels[cell].val[7] < isolevel) cubeindex |= 128;
+
+		// Cube is entirely in/out of the surface 
+		if (ImplicitSurfaceEdges[cubeindex] != 0)
+		{
+
+			// Find the vertices where the surface intersects the cube
+			if (ImplicitSurfaceEdges[cubeindex] & 1) Interpolate(vertlist[0],isolevel,cell,0,1);
+			if (ImplicitSurfaceEdges[cubeindex] & 2) Interpolate(vertlist[1],isolevel,cell,1,2);
+			if (ImplicitSurfaceEdges[cubeindex] & 4) Interpolate(vertlist[2],isolevel,cell,2,3);
+			if (ImplicitSurfaceEdges[cubeindex] & 8) Interpolate(vertlist[3],isolevel,cell,3,0);
+			if (ImplicitSurfaceEdges[cubeindex] & 16) Interpolate(vertlist[4],isolevel,cell,4,5);
+			if (ImplicitSurfaceEdges[cubeindex] & 32) Interpolate(vertlist[5],isolevel,cell,5,6);
+			if (ImplicitSurfaceEdges[cubeindex] & 64) Interpolate(vertlist[6],isolevel,cell,6,7);
+			if (ImplicitSurfaceEdges[cubeindex] & 128) Interpolate(vertlist[7],isolevel,cell,7,4);
+			if (ImplicitSurfaceEdges[cubeindex] & 256) Interpolate(vertlist[8],isolevel,cell,0,4);
+			if (ImplicitSurfaceEdges[cubeindex] & 512) Interpolate(vertlist[9],isolevel,cell,1,5);
+			if (ImplicitSurfaceEdges[cubeindex] & 1024) Interpolate(vertlist[10],isolevel,cell,2,6);
+			if (ImplicitSurfaceEdges[cubeindex] & 2048) Interpolate(vertlist[11],isolevel,cell,3,7);
+
+			// Create the triangle 
+			for (i=0; ImplicitSurfaceTriangles[cubeindex][i]!=-1; i+=3) 
+			{
+				dVertex a=vertlist[ImplicitSurfaceTriangles[cubeindex][i]];
+				dVertex b=vertlist[ImplicitSurfaceTriangles[cubeindex][i+1]];
+				dVertex c=vertlist[ImplicitSurfaceTriangles[cubeindex][i+2]];
+			
+				dVector normal;
+				float val=0;
+				
+				val=Sample(a.point);
+				normal.x=val-Sample(a.point+dVector(0.001,0,0));
+				normal.y=val-Sample(a.point+dVector(0,0.001,0));
+				normal.z=val-Sample(a.point+dVector(0,0,0.001));
+				normal.normalise();
+				
+				poly.AddVertex(dVertex(a.point,normal,a.col));
+				
+				val=Sample(b.point);
+				normal.x=val-Sample(b.point+dVector(0.001,0,0));
+				normal.y=val-Sample(b.point+dVector(0,0.001,0));
+				normal.z=val-Sample(b.point+dVector(0,0,0.001));
+				normal.normalise();
+				
+				poly.AddVertex(dVertex(b.point,normal,b.col));
+							
+				val=Sample(c.point);
+				normal.x=val-Sample(c.point+dVector(0.001,0,0));
+				normal.y=val-Sample(c.point+dVector(0,0.001,0));
+				normal.z=val-Sample(c.point+dVector(0,0,0.001));
+				normal.normalise();
+				
+				poly.AddVertex(dVertex(c.point,normal,c.col));
+			}
+		}
+	}
+}
+
 //   Linearly interpolate the position where an isosurface cuts
 //   an edge between two vertices, each with their own scalar value
 void BlobbyPrimitive::Interpolate(dVertex &vert, float isolevel, int cell, int a, int b)

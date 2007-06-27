@@ -76,6 +76,13 @@ public:
 
 	/// Accessor for the shadow volume generator
 	ShadowVolumeGen *GetShadowVolumeGen() { return &m_ShadowVolumeGen; }
+	
+	/// A utility for getting all the node in a subtree, as a flat list
+	void SceneGraph::GetNodes(const Node *node, vector<const SceneNode*> &nodes) const;
+
+	/// A utility for getting all the connections in a subtree, as a flat list
+	void GetConnections(const Node *node, 
+		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
 private:
 	void RenderWalk(SceneNode *node, int depth, Mode rendermode);
@@ -83,6 +90,7 @@ private:
 	
 	ShadowVolumeGen m_ShadowVolumeGen;
 	DepthSorter m_DepthSorter;
+	dMatrix m_TopTransform;
 };
 
 }

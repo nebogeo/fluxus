@@ -35,22 +35,22 @@ using namespace SchemeHelper;
 // EndSectionDoc 
 
 // StartFunctionDoc-en
-// make-light type-string cameralocked-string
+// make-light type-symbol cameralocked-symbol
 // Returns: lightid-number
 // Description:
-// Makes a new light. The type can be one of: "point", "directional" or "spot". If the cameralocked string is not
-// "free" then it will be attached to the camera, and move around when you move the camera.
+// Makes a new light. The type can be one of: point, directional or spot. If the cameralocked string is not
+// free then it will be attached to the camera, and move around when you move the camera.
 // Example:
-// (make-light "spot" "locked")
+// (make-light 'spot 'locked)
 // EndFunctionDoc
 
 Scheme_Object *make_light(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("make-light", "ss", argc, argv);
+	ArgCheck("make-light", "SS", argc, argv);
 	
-	string type=StringFromScheme(argv[0]);
-	string cameralocked=StringFromScheme(argv[1]);
+	string type=SymbolName(argv[0]);
+	string cameralocked=SymbolName(argv[1]);
 	
 	Light *l=new Light;
 	
@@ -203,23 +203,23 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// light-attenuation lightid-number type-string attenuation-number
+// light-attenuation lightid-number type-symbol attenuation-number
 // Returns: void
 // Description:
 // Sets the light attenuation (fade off with distance) of the specified light. 
-// The type string can be one of: "constant", "linear" or "quadratic".
+// The type symbol can be one of: constant, linear or quadratic.
 // Example:
-// (light-spot-exponent mylight 0.1) 
+// (light-attenuation 'constant 0.1) 
 // EndFunctionDoc
 
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("light-attenuation", "isf", argc, argv);
+	ArgCheck("light-attenuation", "iSf", argc, argv);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) 
 	{
-		string type=StringFromScheme(argv[1]);	
+		string type=SymbolName(argv[1]);	
 		if (type=="constant")
 		{
 			light->SetAttenuation(0,FloatFromScheme(argv[2]));

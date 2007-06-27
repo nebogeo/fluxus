@@ -31,6 +31,23 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 	- (pfunc-run)
 	- (pfunc-set!)
 	- arithmetic pfunc
+* skinning
+	- genskinweights pfunc
+	- skinweights->vertcolours pfunc
+	- skinning pfunc
+* changed from strings to symbols
+	make-light
+	light-attenuation
+	blend-mode
+* changed from int's to symbols
+	build_polygons
+* changed pdata-set to pdata-set!
+* changed pdata-get to pdata-ref
+* (hint-lazy-parent) for building scenegraph subtrees which don't
+  inherit transforms - this makes building skeletons which are controlled
+  by the physics possible
+* (blobby->poly) extracts the blobbies mesh into a polygon primitive
+* (hint-box) fix
 
 0.12
 

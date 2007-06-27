@@ -53,7 +53,6 @@ using namespace SchemeHelper;
 // @image{images/cube}
 // Example:
 // (define mynewcube (build-cube))
-// (every-frame (mynewcube))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -64,7 +63,6 @@ using namespace SchemeHelper;
 // @image{images/cube}
 // Example:
 // (define mynewcube (build-cube))
-// (every-frame (mynewcube))
 // EndFunctionDoc
 
 Scheme_Object *build_cube(int argc, Scheme_Object **argv)
@@ -85,15 +83,14 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-polygons verts-number type-number
+// build-polygons verts-number type-symbol
 // Returns: primitiveid-number
 // Description:
 // Builds a raw polygon primitive with size vertices (everything is initially set to zero). 
-// Type is a number that refers to the way the vertices are interpreted to build polygons, 
-// and can be one of the following: 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON
+// Type is a symbol that refers to the way the vertices are interpreted to build polygons, 
+// and can be one of the following: triangle-strip quad-list triangle-list triangle-fan polygon
 // Example:
-// (define mynewshape (build-polygons 100 0))
-// (every-frame (mynewshape))
+// (define mynewshape (build-polygons 100 'triangle-strip))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -107,15 +104,27 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 // seguintes: 
 // 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON.
 // Example:
-// (define mynewshape (build-polygons 100 0))
-// (every-frame (mynewshape))
+// (define mynewshape (build-polygons 100 'triangle-strip))
 // EndFunctionDoc
 
 Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("build-polygons", "ii", argc, argv);
-	PolyPrimitive *Prim = new PolyPrimitive((PolyPrimitive::Type)IntFromScheme(argv[1]));
+	ArgCheck("build-polygons", "iS", argc, argv);
+	
+	string t = SymbolName(argv[1]);
+	PolyPrimitive::Type type=PolyPrimitive::TRISTRIP;
+	if (t=="triangle-strip") type=PolyPrimitive::TRISTRIP;
+	else if (t=="quad-list") type=PolyPrimitive::QUADS;
+	else if (t=="triangle-list") type=PolyPrimitive::TRILIST;
+	else if (t=="triangle-fan") type=PolyPrimitive::TRIFAN;
+	else if (t=="polygon") type=PolyPrimitive::POLYGON;
+	else 
+	{
+		cerr<<"build-polygons: unknown poly type: "<<t<<endl;
+	}
+	
+	PolyPrimitive *Prim = new PolyPrimitive(type);
 	Prim->Resize(IntFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
@@ -129,7 +138,6 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // @image{images/sphere}
 // Example:
 // (define mynewshape (build-sphere 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -141,7 +149,6 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // @image{images/sphere}
 // Example:
 // (define mynewshape (build-sphere 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
@@ -162,7 +169,6 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // @image{images/plane}
 // Example:
 // (define mynewshape (build-plane))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -173,7 +179,6 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // @image{images/plane}
 // Example:
 // (define mynewshape (build-plane))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_plane(int argc, Scheme_Object **argv)
@@ -190,7 +195,6 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 // A tesselated poly plane, texture mapped from 0->1 in both dimensions.
 // Example:
 // (define mynewshape (build-plane))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -200,7 +204,6 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 // Um plano poligonal tesselado, mapeado de 0->1 em ambas dimensões.
 // Example:
 // (define mynewshape (build-plane))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
@@ -221,7 +224,6 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // @image{images/cylinder}
 // Example:
 // (define mynewshape (build-cylinder 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -233,7 +235,6 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // @image{images/cylinder}
 // Example:
 // (define mynewshape (build-cylinder 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
@@ -259,7 +260,6 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // @image{images/line}
 // Example:
 // (define mynewshape (build-line 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -277,7 +277,6 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // @image{images/line}
 // Example:
 // (define mynewshape (build-line 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_line(int argc, Scheme_Object **argv)
@@ -302,7 +301,6 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // Example:
 // (texture (texture-load "font.png"))
 // (define mynewshape (build-text "hello"))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -318,7 +316,6 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // Example:
 // (texture (texture-load "font.png"))
 // (define mynewshape (build-text "hello"))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_text(int argc, Scheme_Object **argv)
@@ -342,7 +339,6 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // @image{images/nurbs-sphere}
 // Example:
 // (define mynewshape (build-nurbs-sphere 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -354,7 +350,6 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // @image{images/nurbs-sphere}
 // Example:
 // (define mynewshape (build-nurbs-sphere 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 	
 Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
@@ -375,7 +370,6 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // @image{images/nurbs-plane}
 // Example:
 // (define mynewshape (build-nurbs-plane 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -386,7 +380,6 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // @image{images/nurbs-plane}
 // Example:
 // (define mynewshape (build-nurbs-plane 10 10))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
@@ -412,7 +405,6 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // @image{images/sprites}
 // Example:
 // (define mynewshape (build-particles 100))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -431,7 +423,6 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // @image{images/sprites}
 // Example:
 // (define mynewshape (build-particles 100))
-// (every-frame (mynewshape))
 // EndFunctionDoc
 
 Scheme_Object *build_particles(int argc, Scheme_Object **argv)
@@ -468,7 +459,7 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 // visualizada com (hint-origin) para mostrar sua origem de
 // transformação local.
 // Example:
-
+// (define mynewshape (build-locator))
 // EndFunctionDoc
 
 Scheme_Object *build_locator(int argc, Scheme_Object **argv)
@@ -665,6 +656,38 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 	
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+}
+
+// StartFunctionDoc-en
+// blobby->poly blobbyprimitiveid-number
+// Returns: polyprimid-number
+// Description:
+// Converts the mesh of a blobby primitive into a triangle list polygon primitive.
+// Example:
+// (define mynewshape (blobby->poly myblobby))
+// EndFunctionDoc
+
+Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("blobby->poly", "i", argc, argv);
+	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (Prim) 
+	{
+		// only if this is a pixel primitive
+		BlobbyPrimitive *bp = dynamic_cast<BlobbyPrimitive *>(Prim);
+		if (bp)
+		{
+			PolyPrimitive *np = new PolyPrimitive(PolyPrimitive::TRILIST);
+			bp->ConvertToPoly(*np);
+			MZ_GC_UNREG();
+    		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(np));
+		}
+	}
+	
+	cerr<<"blobby->poly can only be called on a blobbyprimitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1036,17 +1059,48 @@ Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 // make-pfunc name-string
 // Returns: pfuncid-number
 // Description:
-// Makes a new primitive function. PFunc types are as follows:
-// arithmetic
+// Makes a new primitive function. pfuncs range from general purpose to complex and specialised operations 
+// which you can run on primitives. All pfuncs share the same interface for controlling and setting them up - 
+// pfunc-set! All pfunc types and arguments are as follows:
+//
+// arithmetic 
+//     For applying general arithmetic to any pdata array
+//
+//     operator string : one of add sub mul div
+//     src string : pdata array name
+//     other string : pdata array name (optional)
+//     constant float : constant value (optional)
+//     dst string : pdata array name
+//
+// genskinweights 
+//     Generates skinweights - adds float pdata called "s1" -> "sn" 
+//     where n is the number of nodes in the skeleton - 1 
+//
+//     skeleton-root primid-number : the root of the bindpose skeleton for skinning
+//     sharpness float : a control of how sharp the creasing will be when skinned 
+//
+// skinweights->vertcols
+//     A utility for visualising skinweights for debugging. 
+//     no arguments
+//
+// skinning 
+//     Skins a primitive - deforms it to follow a skeleton's movements. Primitives we want to run
+//     this on have to contain extra pdata - copies of the starting vert positions called "pref" and
+//     the same for normals, if normals are being skinned, called "nref". 
+//    
+//     skeleton-root primid-number : the root primitive of the animating skeleton
+//     bindpose-root primid-number : the root primitive of the bindpose skeleton
+//     skin-normals number : whether to skin the normals as well as the positions
+//     
 // Example:
-// (define mypfunc (make-pfunc "arithmetic"))
+// (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
 	
 Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("make-pfunc", "s", argc, argv);
-	int id = Engine::Get()->GetPFuncContainer()->Make(StringFromScheme(argv[0]));
+	ArgCheck("make-pfunc", "S", argc, argv);
+	int id = Engine::Get()->GetPFuncContainer()->Make(SymbolName(argv[0]));
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(id);
 }
@@ -1055,14 +1109,14 @@ Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 // pfunc-set! pfuncid-number argument-list
 // Returns: void
 // Description:
-// Sets arguments on a primitive function. 
+// Sets arguments on a primitive function. See docs for make-pfunc for all the arguments.
 // arithmetic
 // Example:
-// (define mypfunc (make-pfunc "arithmetic"))
-// (pfunc-set! mypfunc '(list "operator" "add"
-//                            "src" "p"
-//                            "const" 0.4
-//                            "dst" "p"))
+// (define mypfunc (make-pfunc 'arithmetic))
+// (pfunc-set! mypfunc (list 'operator "add"
+//                           'src "p"
+//                           'const 0.4
+//                           'dst "p"))
 // EndFunctionDoc
 	
 Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
@@ -1082,10 +1136,10 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 	int id = IntFromScheme(argv[0]);
 	for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
 	{
-		if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]))
+		if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]))
 		{
 			// get the parameter name
-			string param = StringFromScheme(SCHEME_VEC_ELS(paramvec)[n]);
+			string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
 	
 			if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n+1]))
 			{
@@ -1206,6 +1260,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
+	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);
 	scheme_add_global("draw-cube", scheme_make_prim_w_arity(draw_cube, "draw-cube", 0, 0), env);
 	scheme_add_global("draw-plane", scheme_make_prim_w_arity(draw_plane, "draw-plane", 0, 0), env);

@@ -57,14 +57,24 @@ public:
 	static void RenderAxes();
 	void Prerender();
 	void ApplyState()               { m_State.Apply(); }
+	
+	/// The primitives state stores everything 
+	/// general to all primitives
 	void SetState(State *s)         { assert(s); m_State=*s; }
+	State *GetState()               { return &m_State; }
+	
+	/// A hint if we are in the physics system or not
 	void SetPhysicalHint(bool s)    { m_IsPhysical=s; }
 	bool IsPhysicalHint()           { return m_IsPhysical; }
+	
+	///\todo would this be better in the scenegraph node?	
+	/// Hidden status - prevents rendering
 	bool Hidden()      		        { return m_Hidden; }
 	void Hide(bool s)      		    { m_Hidden=s; }
+	
+	/// Whether we should be included in the selection pass
 	bool IsSelectable()      		{ return m_Selectable; }
 	void Selectable(bool s)      	{ m_Selectable=s; }
-	State *GetState()               { return &m_State; }
 	///@}
 
 protected:
@@ -72,6 +82,7 @@ protected:
 	
 private:
 	
+	///\todo: make these into an enum/bitfield?
 	bool  m_IsPhysical;
 	bool  m_Hidden;
 	bool  m_Selectable;

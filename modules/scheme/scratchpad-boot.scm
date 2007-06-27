@@ -61,6 +61,10 @@
 ; override the built in time function for pre 0.12 compatibility
 (define time flxtime)
 
+; for compatibility pre 0.13 
+(define pdata-set pdata-set!)
+(define pdata-get pdata-ref)
+
 ;-------------------------------------------------
 ; execute the user config script, if it exists
 

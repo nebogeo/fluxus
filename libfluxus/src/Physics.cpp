@@ -555,6 +555,8 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	dJointSetHinge2Anchor(j,Anchor.x,Anchor.y,Anchor.z);
 	dJointSetHinge2Axis1(j,Hinge[0].x, Hinge[0].y, Hinge[0].z);
 	dJointSetHinge2Axis2(j,Hinge[1].x, Hinge[1].y, Hinge[1].z);
+	dJointSetHinge2Param(j,dParamFMax,100); // unlock the joint by default
+	dJointSetHinge2Param(j,dParamFMax2,100); // unlock the joint by default
 	
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
@@ -591,6 +593,7 @@ int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
 	dJointAttach (j,i1->second->Body,i2->second->Body);
 	dJointSetHingeAnchor(j,Anchor.x,Anchor.y,Anchor.z);
 	dJointSetHingeAxis(j,Hinge.x, Hinge.y, Hinge.z);
+	dJointSetHingeParam(j,dParamFMax,100); // unlock the joint by default
 	
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;

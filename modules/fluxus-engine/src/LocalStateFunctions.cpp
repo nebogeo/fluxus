@@ -799,12 +799,46 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 // Returns: void
 // Description: 
 // Sets the blend mode of the current drawing state, or the currently grabbed primitive. 
-// This is the way that alpha is composited to the rendering surface.
+// This is the way that alpha is composited to the rendering surface. Blendmode symbols can
+// consist of:
+// zero one dst-color one-minus-dst-color src-alpha one-minus-src-alpha dst-alpha 
+// one-minus-dst-alpha
+// Also src-alpha-saturate as an option for the source blendmode only.
 // Example:
-// TODO: missing example
-// (point-width 5)
-// (hint-points)
-// (build-sphere 10 10) ; make a sphere with thick points
+// ; list out all the possible blendmodes
+// 
+// (define src-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha
+//                     'src-alpha-saturate))
+// 
+// (define dst-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha))
+// 
+// ; picks a random element
+// (define (pick-rnd-item l)
+//     (vector-ref l (random (vector-length l))))
+// 
+// ; make lots of random spheres
+// (define (rnd-sphere n)
+//     (push)
+//     (hint-depth-sort)
+//     (opacity 0.5)
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
+// 
+//     ; set a random blendmode
+//     (blend-mode (pick-rnd-item src-blend) (pick-rnd-item dst-blend))
+// 
+//     (translate (vector (flxrnd) (flxrnd) (flxrnd)))
+//     (scale (vector 0.1 0.1 0.1))
+//     (build-sphere 10 10)
+//     (pop)
+//     (if (zero? n)
+//         0
+//         (rnd-sphere (- n 1))))
+// 
+// (clear)
+// (clear-colour (vector 0.5 0.5 0.5))
+// (rnd-sphere 100)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -815,16 +849,70 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 // primitiva pega. Esse é o modo que o alpha é composto no superficie
 // renderizada.
 // Exemplo:
-//
+// ; list out all the possible blendmodes
+// 
+// (define src-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha
+//                     'src-alpha-saturate))
+// 
+// (define dst-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha))
+// 
+// ; picks a random element
+// (define (pick-rnd-item l)
+//     (vector-ref l (random (vector-length l))))
+// 
+// ; make lots of random spheres
+// (define (rnd-sphere n)
+//     (push)
+//     (hint-depth-sort)
+//     (opacity 0.5)
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
+// 
+//     ; set a random blendmode
+//     (blend-mode (pick-rnd-item src-blend) (pick-rnd-item dst-blend))
+// 
+//     (translate (vector (flxrnd) (flxrnd) (flxrnd)))
+//     (scale (vector 0.1 0.1 0.1))
+//     (build-sphere 10 10)
+//     (pop)
+//     (if (zero? n)
+//         0
+//         (rnd-sphere (- n 1))))
+// 
+// (clear)
+// (clear-colour (vector 0.5 0.5 0.5))
+// (rnd-sphere 100)
 // EndFunctionDoc
 
 Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-  	ArgCheck("blend-mode", "ss", argc, argv);
-	string s=StringFromScheme(argv[0]);	
-	string d=StringFromScheme(argv[1]);	
-    Engine::Get()->State()->SetBlendMode(s,d);
+  	ArgCheck("blend-mode", "SS", argc, argv);
+	string s=SymbolName(argv[0]);	
+	string d=SymbolName(argv[1]);	
+		
+	if (s=="zero") Engine::Get()->State()->SourceBlend=GL_ZERO;
+	else if (s=="one") Engine::Get()->State()->SourceBlend=GL_ONE;
+	else if (s=="dst-color") Engine::Get()->State()->SourceBlend=GL_DST_COLOR;  
+	else if (s=="one-minus-dst-color") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (s=="src-alpha") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA;		   
+	else if (s=="one-minus-src-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (s=="dst-alpha") Engine::Get()->State()->SourceBlend=GL_DST_ALPHA;
+	else if (s=="one-minus-dst-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_ALPHA;
+	else if (s=="src-alpha-saturate") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA_SATURATE;
+	else cerr<<"source blend mode not recognised: "<<s<<endl;
+	
+	if (d=="zero") Engine::Get()->State()->DestinationBlend=GL_ZERO;
+	else if (d=="one") Engine::Get()->State()->DestinationBlend=GL_ONE;
+	else if (d=="dst-color") Engine::Get()->State()->DestinationBlend=GL_DST_COLOR;  
+	else if (d=="one-minus-dst-color") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (d=="src-alpha") Engine::Get()->State()->DestinationBlend=GL_SRC_ALPHA;		   
+	else if (d=="one-minus-src-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (d=="dst-alpha") Engine::Get()->State()->DestinationBlend=GL_DST_ALPHA;
+	else if (d=="one-minus-dst-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
+	else cerr<<"dest blend mode not recognised: "<<d<<endl;
+	
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -1289,6 +1377,26 @@ Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-lazy-parent
+// Returns: void
+// Description: 
+// Sets the render hints to prevent this primitive passing it's transform to it's children.
+// Render hints change the way that primitives are rendered, 
+// but may have different effects - or no effect on certain primitive types, hence the 
+// name hint. This feature is useful for rendering transparent objects, as it means objects 
+// will be shown behind previously rendered ones.
+// Example:
+// (hint-lazy-parent)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
+
+Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_LAZY_PARENT;	
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // texture textureid-number
 // Returns: void
 // Description: 
@@ -1735,9 +1843,11 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-cast-shadow",scheme_make_prim_w_arity(hint_cast_shadow,"hint-cast-shadow",0,0), env);
     scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
     scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
+    scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
 	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
+    scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
     scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
 	scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);

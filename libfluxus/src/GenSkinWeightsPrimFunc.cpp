@@ -31,39 +31,42 @@ GenSkinWeightsPrimFunc::~GenSkinWeightsPrimFunc()
 
 void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 {
-	vector<int> skeleton = GetArg<vector<int> >("skeleton",vector<int>());
+	int rootid = GetArg<int>("skeleton-root",0);
 	float sharpness = GetArg<float>("sharpness",0);
 	vector<dVector> *p = prim.GetDataVec<dVector>("p");
 	vector<TypedPData<float> *> weights;
 	int bone=0;
+	vector<pair<const SceneNode*,const SceneNode*> > skeleton;
 	
-	// first pass, put inverse distances for each bone
-	for (unsigned int i=0; i<skeleton.size()-1; i++)
+	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
+	if (!root)
 	{
-		// get the bone
-		const SceneNode *thisbonenode = (const SceneNode *)world.FindNode(skeleton[i]);
-		const SceneNode *nextbonenode = (const SceneNode *)world.FindNode(skeleton[i+1]);
-		if (thisbonenode && nextbonenode)
-		{
-			// make a skinweight pdata array
-			weights.push_back(new TypedPData<float>(prim.Size()));
+		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node"<<endl;
+		return;
+	}
+	
+	world.GetConnections(root, skeleton);
+		
+	// first pass, put inverse distances for each bone
+	for (vector<pair<const SceneNode*,const SceneNode*> >::iterator i=skeleton.begin();
+		 i!=skeleton.end(); i++)
+	{
+		assert(i->first && i->second);
+				
+		// make a skinweight pdata array
+		weights.push_back(new TypedPData<float>(prim.Size()));
 
-			// find the bone position
-			dVector startbone = world.GetGlobalTransform(thisbonenode).transform(dVector(0,0,0));
-			dVector endbone   = world.GetGlobalTransform(nextbonenode).transform(dVector(0,0,0));
+		// find the bone position
+		dVector startbone = world.GetGlobalTransform(i->first).transform(dVector(0,0,0));
+		dVector endbone   = world.GetGlobalTransform(i->second).transform(dVector(0,0,0));
 
-			for (unsigned int n=0; n<prim.Size(); n++)
-			{
-				float d=dGeometry::pointlinedist((*p)[n],startbone,endbone);
-				if (d==0) weights[bone]->m_Data[n]=2;
-				else weights[bone]->m_Data[n]=(1/d);
-			}
-		}
-		else
+		for (unsigned int n=0; n<prim.Size(); n++)
 		{
-			cerr<<"GenSkinWeightsPrimFunc::Run: aborting - couldn't find bone id "<<skeleton[i]<<endl;
-			return;
+			float d=dGeometry::pointlinedist((*p)[n],startbone,endbone);
+			if (d==0) weights[bone]->m_Data[n]=2;
+			else weights[bone]->m_Data[n]=(1/d);
 		}
+		
 		bone++;
 	}				
 	

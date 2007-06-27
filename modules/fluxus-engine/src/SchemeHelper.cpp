@@ -96,6 +96,16 @@ bool SchemeHelper::IsSymbol(Scheme_Object *src, const string &symbol)
 	return ret;
 }
 
+string SchemeHelper::SymbolName(Scheme_Object *src)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_REG();
+	string ret = scheme_symbol_name(src);
+	MZ_GC_UNREG();
+	return ret;
+}
+
 dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);

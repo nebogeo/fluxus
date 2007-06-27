@@ -788,7 +788,7 @@ Scheme_Object *qmul(int argc, Scheme_Object **argv)
 // Returns: quaternion-vector
 // Description:
 // Normalises a quaternion. 
-// Example
+// Example:
 // (qnormalise (qaxisangle (vector 0 19 0) 45))
 // EndFunctionDoc
 
@@ -817,7 +817,7 @@ Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 // Returns: matrix-vector
 // Description:
 // Converts a quaternion into a rotation matrix. 
-// Example
+// Example:
 // (qtomatrix (qaxisangle (vector 0 1 0) 45))
 // EndFunctionDoc
 

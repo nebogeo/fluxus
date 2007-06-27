@@ -30,8 +30,8 @@ SkinningPrimFunc::~SkinningPrimFunc()
 
 void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 {
-	vector<int> skeleton = GetArg<vector<int> >("skeleton",vector<int>());
-	vector<int> bindposeskeleton = GetArg<vector<int> >("bindpose-skeleton",vector<int>());
+	int rootid = GetArg<int>("skeleton-root",0);
+	int bindposerootid = GetArg<int>("bindpose-root",0);
 	bool skinnormals = GetArg<int>("skin-normals",0);
 	vector<dVector> *p = prim.GetDataVec<dVector>("p");
 	vector<dVector> *pref = prim.GetDataVec<dVector>("pref");
@@ -40,6 +40,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	
 	if (!pref)
 	{
+		///\todo sort out a proper error messaging thing
 		cerr<<"SkinningPrimFunc::Run: aborting: primitive needs a pref (copy of p)"<<endl;
 		return;
 	}
@@ -55,30 +56,39 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		}
 	}
 	
+	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
+	if (!root)
+	{
+		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node "<<rootid<<endl;
+		return;
+	}
+	
+	const SceneNode *bindposeroot = static_cast<const SceneNode *>(world.FindNode(bindposerootid));
+	if (!root)
+	{
+		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find bindopose skeleton root node "<<bindposerootid<<endl;
+		return;
+	}
+	
+	// get the nodes as flat lists
+	vector<const SceneNode*> skeleton;
+	world.GetNodes(root, skeleton);
+	vector<const SceneNode*> bindposeskeleton;
+	world.GetNodes(bindposeroot, bindposeskeleton);
 
 	if (skeleton.size()!=bindposeskeleton.size())
 	{
-		cerr<<"SkinningPrimFunc::Run: aborting: skeleton sizes do not match!"<<endl;
+		cerr<<"SkinningPrimFunc::Run: aborting: skeleton sizes do not match! "<<
+			skeleton.size()<<" vs "<<bindposeskeleton.size()<<endl;
 		return;
 	}
 	
 	// make a vector of all the transforms
 	vector<dMatrix> transforms;
-	for (unsigned int bone=0; bone<skeleton.size(); bone++)
+	for (unsigned int i=0; i<skeleton.size(); i++)
 	{
-		const SceneNode *fromnode = (const SceneNode *)world.FindNode(bindposeskeleton[bone]);
-		const SceneNode *tonode = (const SceneNode *)world.FindNode(skeleton[bone]);
-		
-		if (fromnode && tonode)
-		{
-			transforms.push_back(world.GetGlobalTransform(tonode)*
-								 world.GetGlobalTransform(fromnode).inverse());
-		}
-		else
-		{
-			cerr<<"SkinningPrimFunc::Run: aborting: can't find a bone node"<<endl;
-			return;
-		}
+		transforms.push_back(world.GetGlobalTransform(skeleton[i])*
+        					 world.GetGlobalTransform(bindposeskeleton[i]).inverse());
 	}
 	
 	// get pointers to all the weights
@@ -87,7 +97,13 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	{
 		char wname[235];
 		snprintf(wname,256,"w%d",bone);
-		weights.push_back(prim.GetDataVec<float>(wname));
+		vector<float> *w = prim.GetDataVec<float>(wname);
+		if (w==NULL)
+		{
+			cerr<<"SkinningPrimFunc::Run: can't find weights, aborting"<<endl;
+			return;
+		}
+		weights.push_back(w);
 	}
 	
 	for (unsigned int i=0; i<prim.Size(); i++)

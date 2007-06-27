@@ -36,7 +36,7 @@ using namespace Fluxus;
 // Example:
 // ; a function to deform the points of an object
 // (define (deform n)
-//     (pdata-set "p" n (vadd  (pdata-get "p" n)                ; the original point, plus
+//     (pdata-set! "p" n (vadd  (pdata-ref "p" n)                ; the original point, plus
 //         (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; a small random vector
 //     (if (zero? n)
 //         0
@@ -52,15 +52,15 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartFunctionDoc-en
-// pdata-get type-string index-number
+// pdata-ref type-string index-number
 // Returns: value-vector/colour/matrix/number
 // Description:
 // Returns the corresponding pdata element.
 // Example:
-// (pdata-get "p" 1)
+// (pdata-ref "p" 1)
 // EndFunctionDoc
 
-Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
+Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret=NULL;
 	
@@ -68,7 +68,7 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, ret);
 	MZ_GC_REG();	
-	ArgCheck("pdata-get", "si", argc, argv);		
+	ArgCheck("pdata-ref", "si", argc, argv);		
 	
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
@@ -120,12 +120,12 @@ Scheme_Object *pdata_get(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// pdata-set type-string index-number value-vector/colour/matrix/number
+// pdata-set! type-string index-number value-vector/colour/matrix/number
 // Returns: void
 // Description:
 // Writes to the corresponding pdata element.
 // Example:
-// (pdata-get "p" 1)
+// (pdata-set! "p" 1 (vector 0 100 0))
 // EndFunctionDoc
 
 Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
@@ -133,7 +133,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_REG();	
-	ArgCheck("pdata-set", "si?", argc, argv);		
+	ArgCheck("pdata-set!", "si?", argc, argv);		
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
 	if (Grabbed) 
 	{
@@ -465,8 +465,8 @@ void PDataFunctions::AddGlobals(Scheme_Env *env)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
-	scheme_add_global("pdata-get", scheme_make_prim_w_arity(pdata_get, "pdata-get", 2, 2), env);
-	scheme_add_global("pdata-set", scheme_make_prim_w_arity(pdata_set, "pdata-set", 3, 3), env);
+	scheme_add_global("pdata-ref", scheme_make_prim_w_arity(pdata_ref, "pdata-ref", 2, 2), env);
+	scheme_add_global("pdata-set!", scheme_make_prim_w_arity(pdata_set, "pdata-set!", 3, 3), env);
 	scheme_add_global("pdata-add", scheme_make_prim_w_arity(pdata_add, "pdata-add", 2, 2), env);
 	scheme_add_global("pdata-op", scheme_make_prim_w_arity(pdata_op, "pdata-op", 3, 3), env);
 	scheme_add_global("pdata-copy", scheme_make_prim_w_arity(pdata_copy, "pdata-copy", 2, 2), env);

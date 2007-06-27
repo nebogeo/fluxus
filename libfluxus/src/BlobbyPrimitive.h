@@ -17,6 +17,7 @@
 #include <set>
 
 #include "Primitive.h"
+#include "PolyPrimitive.h"
 
 #ifndef N_BLOBBYPRIM
 #define N_BLOBBYPRIM
@@ -53,6 +54,9 @@ public:
 	/// The strength corresponds to the size of the 'blob'.
 	virtual void AddInfluence(const dVector &Vert, float Strength);	
 	
+	/// Fills supplied polygon primitive with the mesh
+	/// (needs to be an empty triangle list) 
+	void ConvertToPoly(PolyPrimitive &poly, float isolevel=1.0f);
 	
 protected:
 	class Triangle 

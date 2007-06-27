@@ -79,29 +79,3 @@ void State::Spew()
 		<<"Transform: "<<Transform<<endl;
 }
 	
-void State::SetBlendMode(string s, string d)
-{
-	// Zzzzz
-	if (s=="zero") SourceBlend=GL_ZERO;
-	else if (s=="one") SourceBlend=GL_ONE;
-	else if (s=="dst-color") SourceBlend=GL_DST_COLOR;  
-	else if (s=="one-minus-dst-color") SourceBlend=GL_ONE_MINUS_DST_COLOR;
-	else if (s=="src-alpha") SourceBlend=GL_SRC_ALPHA;		   
-	else if (s=="one-minus-src-alpha") SourceBlend=GL_ONE_MINUS_SRC_ALPHA;
-	else if (s=="dst-alpha") SourceBlend=GL_DST_ALPHA;
-	else if (s=="one-minus-dst-alpha") SourceBlend=GL_ONE_MINUS_DST_ALPHA;
-	else if (s=="src-alpha-saturate") SourceBlend=GL_SRC_ALPHA_SATURATE;
-	else cerr<<"source blend mode not recognised"<<endl;
-	
-	if (d=="zero") DestinationBlend=GL_ZERO;
-	else if (d=="one") DestinationBlend=GL_ONE;
-	else if (d=="dst-color") DestinationBlend=GL_DST_COLOR;  
-	else if (d=="one-minus-dst-color") DestinationBlend=GL_ONE_MINUS_DST_COLOR;
-	else if (d=="src-alpha") DestinationBlend=GL_SRC_ALPHA;		   
-	else if (d=="one-minus-src-alpha") DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
-	else if (d=="dst-alpha") DestinationBlend=GL_DST_ALPHA;
-	else if (d=="one-minus-dst-alpha") DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
-	else cerr<<"dest blend mode not recognised"<<endl;
-}
-
-

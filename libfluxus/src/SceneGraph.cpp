@@ -32,7 +32,9 @@ SceneGraph::~SceneGraph()
 void SceneGraph::Render(Mode rendermode)
 {
 	//RenderWalk((SceneNode*)m_Root,0);
-	
+
+	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());	
+
 	// render all the children of the root
 	for (vector<Node*>::iterator i=m_Root->Children.begin(); i!=m_Root->Children.end(); ++i)
 	{
@@ -64,8 +66,17 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	}
 	
 	glPushMatrix();		
-	node->Prim->ApplyState();
 	
+	// if we are a lazy parent then we need to ignore 
+	// the effects of the heirachical transform - we 
+	// treat their transform as a world space one
+	if (node->Prim->GetState()->Hints & HINT_LAZY_PARENT)
+	{
+		glLoadMatrixf(m_TopTransform.arr());
+	}
+	
+	node->Prim->ApplyState();
+
 	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
 	{
 		// render it later, and after depth sorting
@@ -114,13 +125,22 @@ dMatrix SceneGraph::GetGlobalTransform(const SceneNode *node) const
 	list<const SceneNode*> Path;
 	
 	const SceneNode* current=node;
+	
 	// iterate back up the tree storing parents...
-	while(current!=NULL)
+	// lazy parent objects are treated as non-heirachical,
+	// so we can stop if we find one of them - and
+	// use it's transform as world space
+	bool foundlazy=false;
+	while(current!=NULL && !foundlazy)
 	{
-		if (current && current->Prim) Path.push_front(current);
+		if (current && current->Prim) 
+		{
+			Path.push_front(current);
+			foundlazy = current->Prim->GetState()->Hints & HINT_LAZY_PARENT;
+		}
 		current=(const SceneNode*)current->Parent;
 	}
-	
+		
 	// concatenate the matrices together to get the global
 	for (list<const SceneNode*>::iterator i=Path.begin(); i!=Path.end(); ++i)
 	{
@@ -156,6 +176,28 @@ void SceneGraph::GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &resu
 	}
 }
 
+void SceneGraph::GetNodes(const Node *node, vector<const SceneNode*> &nodes) const
+{		
+	nodes.push_back(static_cast<const SceneNode*>(node));
+	
+	for (vector<Node*>::const_iterator i=node->Children.begin(); 
+			i!=node->Children.end(); i++)
+	{
+		GetNodes(*i,nodes);
+	}
+}
+
+void SceneGraph::GetConnections(const Node *node, vector<pair<const SceneNode*,const SceneNode*> > &connections) const
+{		
+	for (vector<Node*>::const_iterator i=node->Children.begin(); 
+			i!=node->Children.end(); i++)
+	{
+		connections.push_back(pair<const SceneNode *,const SceneNode *>
+								(static_cast<const SceneNode*>(node),
+		                    	 static_cast<const SceneNode*>(*i)));
+		GetConnections(*i,connections);
+	}
+}
 void SceneGraph::Clear()
 {
 	Tree::Clear();

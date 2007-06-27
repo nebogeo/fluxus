@@ -156,7 +156,7 @@
 	; loops through a face, setting the vertices
 	(define make-face-vertices
     	(lambda (vertices n)
-        	(pdata-set "p" n (car vertices)) ; set the vert position
+        	(pdata-set! "p" n (car vertices)) ; set the vert position
         	(set! n (+ n 1))    ; this is the global index, which we also have to return
         	(if (eq? (cdr vertices) '())
             	n

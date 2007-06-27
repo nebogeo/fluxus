@@ -51,6 +51,7 @@ namespace Fluxus
 #define HINT_CAST_SHADOW  0x0400
 #define HINT_IGNORE_DEPTH 0x0800
 #define HINT_DEPTH_SORT   0x1000
+#define HINT_LAZY_PARENT  0x2000
 
 ///\todo use glew for this
 #ifdef ENABLE_MULTITEXTURE
@@ -87,10 +88,7 @@ public:
 	
 	int SourceBlend;
 	int DestinationBlend;
-	
-	dColour WireColour;
-	
-	void SetBlendMode(string s, string d);
+	dColour WireColour;	
 	
 	dMatrix Transform;
 	

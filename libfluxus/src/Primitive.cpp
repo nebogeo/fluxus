@@ -21,7 +21,7 @@ using namespace Fluxus;
 Primitive::Primitive() : 
 m_IsPhysical(false),
 m_Hidden(false),
-m_Selectable(true) 
+m_Selectable(true)
 {
 }
 
@@ -103,18 +103,33 @@ void Primitive::RenderAxes()
 void Primitive::RenderBoundingBox()
 {
 	dBoundingBox b = GetBoundingBox();
-	glBegin(GL_LINES);
 	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
 	glVertex3f(b.min.x,b.min.y,b.min.z);
 	glVertex3f(b.max.x,b.min.y,b.min.z);
+	glVertex3f(b.max.x,b.min.y,b.min.z);
+	glVertex3f(b.max.x,b.max.y,b.min.z);
 	glVertex3f(b.max.x,b.max.y,b.min.z);
 	glVertex3f(b.min.x,b.max.y,b.min.z);
-	
+	glVertex3f(b.min.x,b.max.y,b.min.z);
+	glVertex3f(b.min.x,b.min.y,b.min.z);
 	glVertex3f(b.min.x,b.min.y,b.max.z);
 	glVertex3f(b.max.x,b.min.y,b.max.z);
+	glVertex3f(b.max.x,b.min.y,b.max.z);
+	glVertex3f(b.max.x,b.max.y,b.max.z);
 	glVertex3f(b.max.x,b.max.y,b.max.z);
 	glVertex3f(b.min.x,b.max.y,b.max.z);
-	glEnable(GL_LIGHTING);
+	glVertex3f(b.min.x,b.max.y,b.max.z);
+	glVertex3f(b.min.x,b.min.y,b.max.z);
+	glVertex3f(b.min.x,b.min.y,b.min.z);
+	glVertex3f(b.min.x,b.min.y,b.max.z);
+	glVertex3f(b.min.x,b.max.y,b.min.z);
+	glVertex3f(b.min.x,b.max.y,b.max.z);
+	glVertex3f(b.max.x,b.min.y,b.min.z);
+	glVertex3f(b.max.x,b.min.y,b.max.z);
+	glVertex3f(b.max.x,b.max.y,b.min.z);
+	glVertex3f(b.max.x,b.max.y,b.max.z);
 	glEnd();
+	glEnable(GL_LIGHTING);
 }
 
