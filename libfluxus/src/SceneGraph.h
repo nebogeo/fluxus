@@ -78,7 +78,7 @@ public:
 	ShadowVolumeGen *GetShadowVolumeGen() { return &m_ShadowVolumeGen; }
 	
 	/// A utility for getting all the node in a subtree, as a flat list
-	void SceneGraph::GetNodes(const Node *node, vector<const SceneNode*> &nodes) const;
+	void GetNodes(const Node *node, vector<const SceneNode*> &nodes) const;
 
 	/// A utility for getting all the connections in a subtree, as a flat list
 	void GetConnections(const Node *node, 
