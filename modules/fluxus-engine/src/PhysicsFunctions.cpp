@@ -42,12 +42,41 @@ using namespace Fluxus;
 // Example:
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// Physics
+// O sistema de física em fluxus é baseado na biblioteca ODE, que
+// permite a você adicionar propriedades físicas a objetos e
+// colocá-los em movimento. Já que ODE foi projetada para simulações
+// em corpos rígidos, estruturas são descritas em termos de objetos,
+// dobras e forças.
+// 
+// Uma explicação muito mais compreensiva destes conceitos pode ser
+// encontrada na documentação de ODE, que você provavelmente baixou se
+// teve que compilar fluxus, ou pode ser encontrado em
+// @url{http://ode.org/ode-docs.html}
+//
+// Para ajudar com a depuração de dobras, tente chamar
+// (render-physics) em cada frame, o que vai renderizar locators
+// mostrando a você posições e eixos de dobras que possuem informação
+// posicional.
+// Exemplo:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // collisions on/off-number
 // Returns: void
 // Description:
 // Enables or disables collision detection. Defaults to off.
 // Example:
+// (collisions 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// collisions on/off-número
+// Retorna: void
+// Descrição:
+// Habilita ou desabilita detecção de colisão. Padrão é desligado.
+// Exemplo:
 // (collisions 1)
 // EndFunctionDoc
 
@@ -66,6 +95,15 @@ Scheme_Object *collisions(int argc, Scheme_Object **argv)
 // Description:
 // Create an infinite passive plane for use as the 'ground'
 // Example:
+// (ground-plane (vector 0 1 0) 0)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// ground-plane vetor-plano número-offset
+// Retorna: void
+// Descrição:
+// Cria um plano passivo infinito pra usar como 'chão'.
+// Exemplo:
 // (ground-plane (vector 0 1 0) 0)
 // EndFunctionDoc
 
@@ -93,6 +131,21 @@ Scheme_Object *ground_plane(int argc, Scheme_Object **argv)
 // (active-box mycube)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// active-box número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja afetado pelo sistema físico, usando uma
+// caixa como um volume limite. Como um objeto ativo, ele vai ser
+// transformado por ODE. Nota: rotações só funcionam corretamente se
+// você específicar suas escalagens primeiro, depois rotacionar
+// (translação não importa) basicamente, ode não pode lidar com
+// tranformações cortadas.
+// Exemplo:
+// (define mycube (build-cube))
+// (active-box mycube)
+// EndFunctionDoc
+
 Scheme_Object *active_box(int argc, Scheme_Object **argv)
 {
  	DECL_ARGV();
@@ -112,6 +165,21 @@ Scheme_Object *active_box(int argc, Scheme_Object **argv)
 // you specify your transforms scale first, then rotate (translate doesn't matter) 
 // basically, ode can't deal with shearing transforms. 
 // Example:
+// (define mycube (build-cube))
+// (active-cylinder mycube)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// active-cylinder número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja afetado pelo sistema físico, usando um
+// cilindro como um volume limite. Como um objeto ativo, ele vai ser
+// transformado por ODE. Nota: rotações só funcionam corretamente se
+// você específicar suas escalagens primeiro, depois rotacionar
+// (translação não importa) basicamente, ode não pode lidar com
+// tranformações cortadas. 
+// Exemplo:
 // (define mycube (build-cube))
 // (active-cylinder mycube)
 // EndFunctionDoc
@@ -139,6 +207,21 @@ Scheme_Object *active_cylinder(int argc, Scheme_Object **argv)
 // (active-sphere mycube)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// active-sphere número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja afetado pelo sistema físico, usando uma
+// esfera como um volume limite. Como um objeto ativo, ele vai ser
+// transformado por ODE. Nota: rotações só funcionam corretamente se
+// você específicar suas escalagens primeiro, depois rotacionar
+// (translação não importa) basicamente, ode não pode lidar com
+// tranformações cortadas. 
+// Exemplo:
+// (define mycube (build-cube))
+// (active-sphere mycube)
+// EndFunctionDoc
+
 Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -153,11 +236,27 @@ Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 // passive-box primitiveid-number
 // Returns: void
 // Description:
-// Enable the object to be acted upon by the physics system, using a sphere as the bounding volume. As 
+// Enable the object to be acted upon by the physics system, using a box as the bounding volume. As 
 // a passive object, active objects will collide with it, but it will not be transformed. 
 // Note: rotations only work correctly if you specify your transforms scale first, then 
 // rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
 // Example:
+// (define mycube (build-cube))
+// (passive-box mycube)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// passive-box número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja resolvido pelo sistema de física, usando
+// uma caixa como o limite. Como um objeto passivo, objetos ativos vão
+// colidir com ele, mas este não vai ser transformado.
+// Nota: rotações só funcionam corretamente se você especificar suas
+// transformaçoes de escala primeiro, depois rotacionar (translação
+// não importa) basicamente, ode não pode lidar com transformações
+// cortadas. 
+// Exemplo:
 // (define mycube (build-cube))
 // (passive-box mycube)
 // EndFunctionDoc
@@ -185,6 +284,22 @@ Scheme_Object *passive_box(int argc, Scheme_Object **argv)
 // (passive-cylinder mycube)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// passive-cylinder número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja resolvido pelo sistema de física, usando
+// um cilindro como o limite. Como um objeto passivo, objetos ativos vão
+// colidir com ele, mas este não vai ser transformado.
+// Nota: rotações só funcionam corretamente se você especificar suas
+// transformaçoes de escala primeiro, depois rotacionar (translação
+// não importa) basicamente, ode não pode lidar com transformações
+// cortadas.  
+// Exemplo:
+// (define mycube (build-cube))
+// (passive-cylinder mycube)
+// EndFunctionDoc
+
 Scheme_Object *passive_cylinder(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -208,6 +323,22 @@ Scheme_Object *passive_cylinder(int argc, Scheme_Object **argv)
 // (passive-sphere mycube)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// passive-sphere número-id-primitiva
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja resolvido pelo sistema de física, usando
+// uma esfera como o limite. Como um objeto passivo, objetos ativos vão
+// colidir com ele, mas este não vai ser transformado.
+// Nota: rotações só funcionam corretamente se você especificar suas
+// transformaçoes de escala primeiro, depois rotacionar (translação
+// não importa) basicamente, ode não pode lidar com transformações
+// cortadas. 
+// Exemplo:
+// (define mycube (build-cube))
+// (passive-sphere mycube)
+// EndFunctionDoc
+
 Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -225,6 +356,17 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 // Sets some global surface attributes that affect friction and bouncyness. see section 
 // 7.3.7 of the ODE docs for an explanation of these parameters 
 // Example:
+// (surface-params 0.1 0.1 0.1 0.1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// surface-params slip1-número slip2-número softerp-número softcfm-número
+// Retorna: void
+// Descrição:
+// Ajusta alguns parâmetros globais de superfície que afetam o atrito
+// e reflexão. Veja seção 7.3.7 dos docs de ODE para uma explicação
+// desses parâmetros.
+// Exemplo:
 // (surface-params 0.1 0.1 0.1 0.1)
 // EndFunctionDoc
 
@@ -251,11 +393,26 @@ Scheme_Object *surface_params(int argc, Scheme_Object **argv)
 // (build-balljoint shape1 shape2 (vector 0 1 0)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// build-balljoint número-id-primitiva número-id-primitiva vetor-eixo
+// Retorna: void
+// Descrição:
+// Cria um balljoint para conectar dois objetos (veja os docs de ode
+// para uma descrição detalhada das diferenças entre os tipos de
+// dobras). ODE considera as juntas(joints) serem uma restrição
+// imposta entre dois objetos. Quando criando uma junção, é importante
+// ter as duas primitivas sendo juntas na posição desejada antes de
+// criar uma junção. Junções podem ser criadas, modificadas e
+// indexadas de uma maneira similar a outras primitivas.
+// Exemplo:
+// (build-balljoint shape1 shape2 (vector 0 1 0)) 
+// EndFunctionDoc
+
 Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("build-balljoint", "iiv", argc, argv);
-    int name1=IntFromScheme(argv[0]);
+	int name1=IntFromScheme(argv[0]);
 	int name2=IntFromScheme(argv[1]);	
 	float anchor[3];
 	FloatsFromScheme(argv[2],anchor,3);
@@ -271,6 +428,16 @@ Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 // object in place.
 // Example:
 // (build-fixedjoint shape) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-fixedjoint número-id-primitiva
+// Retorna: void
+// Descrição:
+// Cria uma junção para conectar um objeto ao ambiente global. Isto
+// trava o objeto no lugar.
+// Exemplo:
+// (build-fixedjoint shape)
 // EndFunctionDoc
 
 Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
@@ -292,6 +459,21 @@ Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
+// (build-hingejoint shape1 shape2 (vector 0 1 0) (vector 0 1 0)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-hingejoint numero-id-primitiva1 número-id-primitiva2 vetor-ancora vetor eixo
+// Retorna: void
+// Descrição:
+// Cria uma junção circular para conectar dois objetos ( veja os docs
+// de ODE para uma descrição detalhada entre tipos de junções).
+// ODE considera as juntas(joints) serem uma restrição
+// imposta entre dois objetos. Quando criando uma junção, é importante
+// ter as duas primitivas sendo juntas na posição desejada antes de
+// criar uma junção. Junções podem ser criadas, modificadas e
+// indexadas de uma maneira similar a outras primitivas.
+// Exemplo:
 // (build-hingejoint shape1 shape2 (vector 0 1 0) (vector 0 1 0)) 
 // EndFunctionDoc
 
@@ -330,6 +512,21 @@ Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
 // (build-sliderjoint shape1 shape2 (vector 0 1 0)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// build-sliderjoint número-id-primitiva1 número-id-primitiva2 vetor-eixo
+// Retorna: hingeid-number
+// Descrição:
+// Cria uma junção deslizante entre dois objetos (veja a documentação
+// de ODE para uma descrição detalhada das diferenças entre os tipos
+// de conexões). ODE considera as juntas(joints) serem uma restrição
+// imposta entre dois objetos. Quando criando uma junção, é importante
+// ter as duas primitivas sendo juntas na posição desejada antes de
+// criar uma junção. Junções podem ser criadas, modificadas e
+// indexadas de uma maneira similar a outras primitivas.
+// Exemplo:
+// (build-sliderjoint shape1 shape2 (vector 0 1 0)) 
+// EndFunctionDoc
+
 Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -359,6 +556,21 @@ Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
+// (build-hinge2joint shape1 shape2 (vector 0 100 0) (vector 0 1 0) (vector 0 1 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-hinge2joint número-id-primitiva1 número-id-primitiva2 vetor-ancora vetor-eixo1 vetor-eixo2
+// Retorna: numero-id-dobradiça(hinge)
+// Descrição:
+// Cria uma dobradiça de junções para conectar dois objetos (veja a documentação
+// de ODE para uma descrição detalhada das diferenças entre os tipos
+// de conexões). ODE considera as juntas(joints) serem uma restrição
+// imposta entre dois objetos. Quando criando uma junção, é importante
+// ter as duas primitivas sendo juntas na posição desejada antes de
+// criar uma junção. Junções podem ser criadas, modificadas e
+// indexadas de uma maneira similar a outras primitivas.
+// Exemplo:
 // (build-hinge2joint shape1 shape2 (vector 0 100 0) (vector 0 1 0) (vector 0 1 0))
 // EndFunctionDoc
 
@@ -402,6 +614,21 @@ Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
 // (build-amotorjoint shape1 shape2 (vector 0 1 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// build-amotorjoint número-id-primitiva1 número-id-primitiva2 vetor-eixo
+// Retorna: número-id-dobradiça(hinge)
+// Descrição:
+// Cria uma junção com mobilidade angular para conectar dois objetos (veja a documentação
+// de ODE para uma descrição detalhada das diferenças entre os tipos
+// de conexões). ODE considera as juntas(joints) serem uma restrição
+// imposta entre dois objetos. Quando criando uma junção, é importante
+// ter as duas primitivas sendo juntas na posição desejada antes de
+// criar uma junção. Junções podem ser criadas, modificadas e
+// indexadas de uma maneira similar a outras primitivas.
+// Exemplo:
+// (build-amotorjoint shape1 shape2 (vector 0 1 0))
+// EndFunctionDoc
+
 Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 {
  	DECL_ARGV();
@@ -426,6 +653,20 @@ Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 // (joint-param joint "Vel" 0.1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// joint-param número-id-junção param-string número-valor
+// Retorna: número-id-dobradiça(hinge)
+// Descrição:
+// Ajusta o parâmetro da junção para uma junta onde param é um dos
+// seguintes: "HiStop", "Vel", "FMax", "FudgeFactor", "Bounce, "CFM",
+// "StopERP", "StopCFM", "SuspensionERP", "SuspensionCFM", "Vel2",
+// "FMax2". Veja Seção 7.5.1 da documentação de ODE para uma
+// explicação de cada um desses parâmetros, e a qual tipos de junções
+// eles aplicam.
+// Exemplo:
+// (joint-param joint "Vel" 0.1)
+// EndFunctionDoc
+
 Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -444,6 +685,16 @@ Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 // Description:
 // Set a new angle for this joint, with a given velocity taken to get there
 // Example:
+// (joint-angle joint 90 0.1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// joint-angles jointid-number número-angulo número-vel
+// Retorna: void
+// Descrição:
+// Ajusta um novo ângulo para este joint, com uma velocidade dada para
+// chegar lá.
+// Exemplo:
 // (joint-angle joint 90 0.1)
 // EndFunctionDoc
 
@@ -466,6 +717,17 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 // (set-max-physical 100)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-max-physical número-max
+// Retorna: void
+// Descrição:
+// Ajusta o máximo número de objetos que o sistema de física pode
+// lidar. Quando o máximo nível foi alcançado os objetos mais antigos
+// são automaticamente destroidos.
+// Exemplo:
+// (set-max-physical 100)
+// EndFunctionDoc
+
 Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -481,6 +743,15 @@ Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
 // Description:
 // Sets the mass of an active object
 // Example:
+// (set-mass myshape 100)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// set-mass número-id-primitiva número-massa
+// Retorna: void
+// Descrição:
+// Ajusta a massa de um objeto ativo no sistema de física
+// Exemplo:
 // (set-mass myshape 100)
 // EndFunctionDoc
 
@@ -504,6 +775,15 @@ Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 // (gravity (vector 0 -1 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// gravity vetor-gravidade
+// Retorna: void
+// Descrição:
+// Ajusta a força e direção da gravidade.
+// Exemplo:
+// (gravity (vector 0 -1 0))
+// EndFunctionDoc
+
 Scheme_Object *gravity(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -521,6 +801,15 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 // Description:
 // Applies translation force to the object
 // Example:
+// (kick myshape (vector 0 1 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// kick número-id-primitiva vetor-chute
+// Retorna: void
+// Descrição:
+// Aplica força de translação ao objeto.
+// Exemplo:
 // (kick myshape (vector 0 1 0))
 // EndFunctionDoc
 
@@ -542,7 +831,16 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 // Description:
 // Applies rotational force to the object
 // Example:
-// (kick myshape (vector 2 0 0))
+// (twist myshape (vector 2 0 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// twist número-id-primitiva vetor-giro
+// Retorna: void
+// Descrição:
+// Aplica força rotacional ao objeto
+// Exemplo:
+// (twist myshape (vector 2 0 0))
 // EndFunctionDoc
 
 Scheme_Object *twist(int argc, Scheme_Object **argv)
@@ -563,6 +861,15 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 // Description:
 // Returns true if the grabbed object collided in the last frame
 // Example:
+// (if (has-collided myshape) (display "bang!"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// has-collided número-id-primitiva
+// Retorna: void
+// Descrição:
+// Retorna verdadeiro se a primitiva pega colidiu no ultimo frame.
+// Exemplo:
 // (if (has-collided myshape) (display "bang!"))
 // EndFunctionDoc
 
