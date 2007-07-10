@@ -44,6 +44,17 @@ using namespace Fluxus;
 //         (build-loop (- n 1) t)))
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// Turtle
+// O construtor polygonal Turtle é um modo experimental de construir
+// objetos poligonais usando uma tartaruga do estilo logo no espaço
+// 3d. Em que você pode dirigir a tartaruga ao redor colocando vértices
+// e construindo formas proceduralmente. A tartaruga também pode ser usa
+// para deformar objetos poligonais existentes, fixando ela a objetos
+// que você já criou.
+// Exemplo:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // turtle-prim type-number
 // Returns: void
@@ -51,6 +62,17 @@ using namespace Fluxus;
 // Starts building a new polygon primitive with the turtle. The type specifies the polygon face type and is one 
 // of the following: 0: triangle strip, 1: quad list, 2: triangle list, 3: triangle fan, 4: general polygon
 // Example:
+// (turtle-prim 0)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-prim número-tipo
+// Retorna: void
+// Descrição:
+// Inicia a construção de uma nova primitiva poligonal com a
+// tartaruga. O tipo especifica o tipo da face do poligono e é um dos
+// seguintes: 0: triangle strip, 1: quad list, 2: triangle list, 3: triangle fan, 4: general polygon
+// Exemplo:
 // (turtle-prim 0)
 // EndFunctionDoc
 
@@ -72,6 +94,16 @@ Scheme_Object *turtle_prim(int argc, Scheme_Object **argv)
 // (turtle-vert)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-vert
+// Retorna: void
+// Descrição:
+// Cria um novo vértice na posição atual, ou ajusta o vértice atual se o
+// construtor tartaruga estiver fixado.
+// Exemplo:
+// (turtle-vert)
+// EndFunctionDoc
+
 Scheme_Object *turtle_vert(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Vert();
@@ -88,6 +120,17 @@ Scheme_Object *turtle_vert(int argc, Scheme_Object **argv)
 // (define mynewshape (turtle-build))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-build
+// Retorna: void
+// Descrição:
+// Constrói o objeto com a lista de vértices definida e dá isto ao
+// renderizador. Não tem efeito se o construtor tartaruga estive fixado
+// a uma primitiva.
+// Exemplo:
+// (define mynewshape (turtle-build))
+// EndFunctionDoc
+
 Scheme_Object *turtle_build(int argc, Scheme_Object **argv)
 {
 	return scheme_make_integer_value(Engine::Get()->GetTurtle()->Build(Engine::Get()->Renderer()));
@@ -99,6 +142,15 @@ Scheme_Object *turtle_build(int argc, Scheme_Object **argv)
 // Description:
 // Moves the turtle forward in it's current orientation.
 // Example:
+// (turtle-move 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-move número-distância
+// Retorna: void
+// Descrição:
+// Move a tartaruga pra frente na sua orientação atual.
+// Exemplo:
 // (turtle-move 1)
 // EndFunctionDoc
 
@@ -120,6 +172,16 @@ Scheme_Object *turtle_move(int argc, Scheme_Object **argv)
 // (turtle-push)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-push
+// Retorna: void
+// Descrição:
+// O construtor tartaruga tem sua própria pilha de transformações, Push
+// lembra a posição atual e orientação.
+// Exemplo:
+// (turtle-push)
+// EndFunctionDoc
+
 Scheme_Object *turtle_push(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Push();
@@ -133,6 +195,17 @@ Scheme_Object *turtle_push(int argc, Scheme_Object **argv)
 // The turtle build has it's own transform stack. Pop forgets the current position and orientation, and 
 // goes back to the state at the last push.
 // Example:
+// (turtle-pop)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-pop
+// Retorna: void
+// Descrição:
+// O construtor tartaruga tem sua própria pilha de transformações. Pop
+// esquece a posição atual e orientação, e vai de volta para o estado do
+// último push.
+// Exemplo:
 // (turtle-pop)
 // EndFunctionDoc
 
@@ -151,6 +224,16 @@ Scheme_Object *turtle_pop(int argc, Scheme_Object **argv)
 // (turtle-turn (vector 45 0 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-turn vetor-rotação
+// Retorna: void
+// Descrição:
+// Rotaciona a orientação da tartaruga com o ângulos euler fornecidos
+// (rotações em x, y e z)
+// Exemplo:
+// (turtle-turn (vector 45 0 0))
+// EndFunctionDoc
+
 Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -166,8 +249,17 @@ Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 // turtle-reset 
 // Returns: void
 // Description:
-// Resets the current postion and rotation of the turtle to the origin.
+// Resets the current position and rotation of the turtle to the origin.
 // Example:
+// (turtle-reset)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-reset
+// Retorna: void
+// Descrição:
+// Reinicia a atual posição e rotação da tartaruga para a origem.
+// Exemplo:
 // (turtle-reset)
 // EndFunctionDoc
 
@@ -184,6 +276,18 @@ Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 // Attaches the turtle to an existing poly primitive. This means you are able to 
 // deform an existing objects points using the turtle builder.
 // Example:
+// (define myshape (build-sphere 10 10))
+// (turtle-attach myshape)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-attach número-id-primitiva
+// Retorna: void
+// Descrição:
+// Anexa a tartaruga a uma primitiva poligonal existente. Isso significa
+// que você será capaz de deformar pontos de objetos existentes usando o
+// construtor tartaruga. 
+// Exemplo:
 // (define myshape (build-sphere 10 10))
 // (turtle-attach myshape)
 // EndFunctionDoc
@@ -216,6 +320,17 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 // (turtle-skip -1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-skip número-contador
+// Retorna: void
+// Descrição:
+// Quando anexado, faz com que a tartaruga pule vértices. Este valor
+// pode ser negativo, o que vai resultar na tartaruga escrevendo para
+// vértices anteriores.
+// Exemplo:
+// (turtle-skip -1)
+// EndFunctionDoc
+
 Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -234,6 +349,16 @@ Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 // (display (turtle-position))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// turtle-position
+// Retorna: void
+// Descrição:
+// Quando anexado, retorna o índice atual da pdata que a tartaruga esta
+// escrevendo para.
+// Exemplo:
+// (display (turtle-position))(newline)
+// EndFunctionDoc
+
 Scheme_Object *turtle_position(int argc, Scheme_Object **argv)
 {
 	return scheme_make_integer_value(Engine::Get()->GetTurtle()->Position());
@@ -245,6 +370,16 @@ Scheme_Object *turtle_position(int argc, Scheme_Object **argv)
 // Description:
 // When attached, sets the absolute pdata index the turtle is writing to.
 // Example:
+// (turtle-seek 0)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// turtle-seek número-posição
+// Retorna: void
+// Descrição:
+// Quando anexado, ajusta o índice absoluto da pdata que a tartaruga
+// está escrevendo para.
+// Exemplo:
 // (turtle-seek 0)
 // EndFunctionDoc
 

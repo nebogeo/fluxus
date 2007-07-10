@@ -29,7 +29,86 @@ using namespace Fluxus;
 // Global state is really anything that controls the renderer globally, so it affects all primitives
 // or controls the renderer directly - ie camera control or full screen effects like blurring.  
 // Example:
+// accum
+// shadow-debug
+// shadow-length
+// shadow-light
+// set-colour-mask
+// set-stereo-mode
+// read-buffer
+// draw-buffer
+// desiredfps
+// select
+// set-screen-size
+// get-screen-size
+// get-projection-transform
+// set-camera 
+// get-locked-matrix
+// get-camera
+// clear-accum
+// clear-zbuffer
+// clear-frame
+// clear-colour
+// backfacecull
+// set-ortho-zoom
+// persp
+// ortho
+// clip
+// frustum
+// force-load-texture
+// load-texture
+// camera-lag
+// lock-camera
+// show-fps
+// show-axis
+// fog
+// blur
+// clear-engine
 // EndSectionDoc 
+
+// StartSectionDoc-pt
+// GlobalState
+// Estado global é realmente qualquer coisa que controla o
+// renderizador globalmente, então ele afeta todas as primitivas ou
+// controla o renderizador diretamente - p.e. controle de câmera ou
+// efeitos de tela cheia como "embaçamento".
+// Exemplo:
+// accum
+// shadow-debug
+// shadow-length
+// shadow-light
+// set-colour-mask
+// set-stereo-mode
+// read-buffer
+// draw-buffer
+// desiredfps
+// select
+// set-screen-size
+// get-screen-size
+// get-projection-transform
+// set-camera 
+// get-locked-matrix
+// get-camera
+// clear-accum
+// clear-zbuffer
+// clear-frame
+// clear-colour
+// backfacecull
+// set-ortho-zoom
+// persp
+// ortho
+// clip
+// frustum
+// force-load-texture
+// load-texture
+// camera-lag
+// lock-camera
+// show-fps
+// show-axis
+// fog
+// blur
+// clear-engine
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // clear-engine 
@@ -38,6 +117,17 @@ using namespace Fluxus;
 // Clears the renderer, and physics system. This command should not be called directly, use clear 
 // instead, as this clears a few other things, and calls clear-engine itself.
 // Example:
+// (clear-engine) ; woo hoo!
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// clear-engine
+// Retorna: void
+// Descrição:
+// Limpa o renderizador, e o sistema de física. Este comando não deve
+// ser chamado diretamente, use clear ao invés, já que limpa algumas
+// outras coisas também, e chama clear-engine ele mesmo.
+// Exemplo:
 // (clear-engine) ; woo hoo!
 // EndFunctionDoc
 
@@ -62,6 +152,17 @@ Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 // (blur 0.1) ; for nice trails
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// blur número-quantidade
+// Retorna: void
+// Descrição:
+// Ajusta a opção de blur na tela inteira. Menos é mais, mas se você
+// ajustar isto muito baixo vai fazer com que a edição na tela fique
+// impossível de ler, então salve seus scripts primeiro :).
+// Exemplo:
+// (blur 0.1) ; para belos rastros
+// EndFunctionDoc
+
 Scheme_Object *blur(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -84,6 +185,18 @@ Scheme_Object *blur(int argc, Scheme_Object **argv)
 // (fog (vector 0 0 1) 0.01 1 100) ; blue fog
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// fog cor-nuvem-vetor número-quantidade número-ínicio númeor-final
+// Retorna: void
+// Descrição:
+// Ajusta os paramêtros da neblina pra dar uma indicação de
+// profundidade visual (perspectiva aérea no jargão de pintores). Isto
+// pode obscurecer a edição na tela, então mantenha a quantidade baixa.
+// Exemplo:
+// (clear-colour (vector 0 0 1)) ; fica legal se o fundo de tela bate.
+// (fog (vector 0 0 1) 0.01 1 100) ; neblina azul
+// EndFunctionDoc
+
 Scheme_Object *fog(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -100,9 +213,17 @@ Scheme_Object *fog(int argc, Scheme_Object **argv)
 // show-axis show-number
 // Returns: void
 // Description:
-// Shows the worldspace origin axis. 
-// used.
+// Shows the worldspace origin axis used.
 // Example:
+// (show-axis 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// show-axis número-mostrar
+// Retorna: void
+// Descrição:
+// Mostra os eixos de origem do espaço usado; 
+// Exemplo:
 // (show-axis 1)
 // EndFunctionDoc
 
@@ -126,6 +247,15 @@ Scheme_Object *show_axis(int argc, Scheme_Object **argv)
 // (show-fps 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// show-fps número-mostrar
+// Retorna: void
+// Descrição:
+// Mostra uma contaem de fps na parte inferior esquerda da tela.
+// Exemplo:
+// (show-fps 1)
+// EndFunctionDoc
+
 Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 {
  	DECL_ARGV();
@@ -143,6 +273,36 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 // to the object. This is the easiest way to procedurally drive the camera. Use an id number of 0 to 
 // unlock the camera.
 // Example:
+// (clear)
+// (define obj (build-cube)) ; make a cube for the camera to lock to
+// 
+// (push) ; make a background cube so we can tell what's happening
+// (hint-wire)  
+// (hint-unlit) 
+// (colour (vector 0 0.4 0))
+// (scale (vector -50 -50 -50))
+// (build-cube)
+// (pop)
+// 
+// (lock-camera obj) ; lock the camera to our first cube
+// 
+// (define (animate)
+//     (grab obj)
+//     (rotate (vector 1 0 0)) ; rotate the cube
+//     (ungrab))
+// 
+// (every-frame (animate))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// lock-camera número-id-primitiva
+// Retorna: void
+// Descrição:
+// Trava a transformação da camera em cima da transformação do objeto
+// específicado. É como parentear a câmera ao objeto. Esta é a forma
+// mais fácil de dirigir a câmera proceduralmente. Use um número id de
+// 0 para destravar a câmera.
+// Exemplo:
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
 // 
@@ -204,6 +364,37 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 // (every-frame (animate))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// camera-lag número-quantidade
+// Retorna: void
+// Descrição:
+// O travamento da câmera tem um atraso construído junto o que
+// significa que o movimento vai ser macio em relativo a primitiva ao
+// qual ela está travada.
+// Exemplo:
+// (clear)
+// (define obj (build-cube)) ; make a cube for the camera to lock to
+// 
+// (push) ; make a background cube so we can tell what's happening
+// (hint-wire)
+// (hint-unlit)
+// (colour (vector 0 0.4 0))
+// (scale (vector -50 -50 -50))
+// (build-cube)
+// (pop)
+// 
+// (lock-camera obj) ; lock the camera to our first cube
+// (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
+// 
+// (define (animate)
+//     (grab obj)
+//     (identity)
+//     (translate (vector (modulo (round (inexact->exact (time))) 6) 0 0)) ; make a jittery movement
+//     (ungrab))
+// 
+// (every-frame (animate))
+// EndFunctionDoc
+
 Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -224,6 +415,21 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // Example:
 // (texture (load-texture "mytexture.png"))
 // (build-cube) ; the cube will be texture mapped with the image
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// load-texture pngnomedoarquivo-string
+// Retorna: void
+// Descrição:
+// Carrega uma imagem do disco, converte esta a uma textura e retorna
+// o número id. O carregamento da textura se dá no cache de memória,
+// então repetidamente chamar esta função não vai causar que carregue
+// de novo. Use force-load-texture se você está mudando a textura
+// enquanto o script estiver rodando. O png pode ser RGB ou RGBA para
+// usar transparência alpha.
+// Exemplo:
+// (texture (load-texture "mytexture.png"))
+// (build-cube) ; o cubo vai ser mapeado com a textura da imagem
 // EndFunctionDoc
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
@@ -247,6 +453,20 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 // (build-cube) ; the cube will be texture mapped with the image
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// force-load-texture pngnomedoarquivo-string
+// Retorna: void
+// Descrição:
+// Carregamento de texturas do disco sem cache, converte esta a uma
+// textura e retorna o número id. Útil se você está mudando a textura
+// enquanto está rodando o script, ou então usando load-texture, o que
+// vai ser muito mais rápido. A png pode ser RGB ou RGBA para usar
+// transparência alpha. 
+// Exemplo:
+// (texture (force-load-texture "mytexture.png"))
+// (build-cube) ; o cubo vai ser mapeado com a textura da imagem
+// EndFunctionDoc
+
 Scheme_Object *force_load_texture(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -263,6 +483,16 @@ Scheme_Object *force_load_texture(int argc, Scheme_Object **argv)
 // Sets the camera frustum, and thus the aspect ratio of the frame. 
 // Example:
 // (frustum -1 1 -0.75 0.75) ; default settings
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// frustum número-topo número-baixo número-esquerda número-direita
+// Retorna: void
+// Descrição:
+// Ajusta o frustum da camera, e portanto o quociente de aspecto do
+// frame. 
+// Exemplo:
+// (frustum -1 1 -0.75 0.75) ; definições padrão
 // EndFunctionDoc
 
 Scheme_Object *frustum(int argc, Scheme_Object **argv)
@@ -287,6 +517,17 @@ Scheme_Object *frustum(int argc, Scheme_Object **argv)
 // (clip 1 10000) ; default settings
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// clip número-frente número-trás
+// Retorna: void
+// Descrição:
+// Ajusta os planos de clipagem da frente e de trás para o frustum da
+// câmera, portanto o ângulo de visão. Mude a distância da frente do
+// clip para alterar a perspectiva de telephoto para fisheye.
+// Exemplo:
+// (clip 1 10000) ; default settings
+// EndFunctionDoc
+
 Scheme_Object *clip(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -306,6 +547,15 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 // (ortho) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// ortho
+// Retorna: void
+// Descrição:
+// Ajusta a projeção ortográfica - p.e. sem perspectiva.
+// Exemplo:
+// (ortho)
+// EndFunctionDoc
+
 Scheme_Object *ortho(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Renderer()->GetCamera()->SetOrtho(true);
@@ -321,6 +571,16 @@ Scheme_Object *ortho(int argc, Scheme_Object **argv)
 // (persp) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// persp
+// Retorna: void
+// Descrição:
+// Ajusta a projeção como perspectiva (o padrão) depois que ortho foi
+// acionada. 
+// Exemplo:
+// (persp)
+// EndFunctionDoc
+
 Scheme_Object *persp(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Renderer()->GetCamera()->SetOrtho(false);
@@ -334,6 +594,15 @@ Scheme_Object *persp(int argc, Scheme_Object **argv)
 // Sets the zoom level for the orthographic projection. 
 // Example:
 // (set-ortho-zoom 2) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// set-ortho-zoom número-quantidade
+// Retorna: void
+// Descrição:
+// Ajusta o nível de zoom para a projeção ortográfica.
+// Exemplo:
+// (set-ortho-zoom 2)
 // EndFunctionDoc
 
 Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
@@ -356,6 +625,18 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 // (backfacecull 0) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// backfacecull número-ajuste
+// Retorna: void
+// Descrição:
+// Liga ou desliga o corte de face-traseira. Backface culling acelera
+// a renderização removendo faces não orientadas em direção da
+// câmera. É ligado por padrão, mas isto não é desejado sempre, eg
+// para poligonos com dupla face.
+// Exemplo:
+// (backfacecull 0)
+// EndFunctionDoc
+
 Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -371,6 +652,16 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // Description:
 // Sets the colour we clear the renderer with, this forms the background colour for the scene.
 // Example:
+// (clear-colour (vector 1 0 0)) ; RED!!! 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// clear-colour vetor-cor
+// Retorna: void
+// Descrição:
+// Ajusta a cor que vai limpar o renderizador, isto forma a cor do
+// fundo da cena.
+// Exemplo:
 // (clear-colour (vector 1 0 0)) ; RED!!! 
 // EndFunctionDoc
 
@@ -392,6 +683,15 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // (clear-frame 0) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// clear-frame número-ajuste
+// Retorna: void
+// Descrição:
+// ajusta a limpeza do frame, desligado ou ligado.
+// Exemplo:
+// (clear-frame 0)
+// EndFunctionDoc
+
 Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 {
  	DECL_ARGV();
@@ -410,6 +710,15 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 // (clear-zbuffer 0) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// clear-zbuffer número-ajuste
+// Retorna: void
+// Descrição:
+// Ajusta a limpeza do zbuffer, desligado ou ligado.
+// Exemplo:
+// (clear-zbuffer 0)
+// EndFunctionDoc
+
 Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 {
  	DECL_ARGV();
@@ -426,6 +735,15 @@ Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 // Sets the accumulation buffer clearing on or off. 
 // Example:
 // (clear-accum 1) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// clear-accum número-ajuste
+// Retorna: void
+// Descrição:
+// Ajusta a limpeza do buffer de acumulação, ligado ou desligado
+// Exemplo:
+// (clear-accum 1)
 // EndFunctionDoc
 
 Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
@@ -447,6 +765,16 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 // (get-camera) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// get-camera
+// Retorna: vetor-matriz
+// Descrição:
+// Pega a transformação da camera. Esta é a função de baixo nível, use
+// get-camera-transform ao invés.
+// Exemplo:
+// (get-camera)
+// EndFunctionDoc
+
 Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 {
 	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetMatrix()->inverse().arr(),16);
@@ -459,6 +787,16 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 // Gets the current camera lock transform matrix. Takes the lag into account
 // Example:
 // (get-locked-matrix) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// get-locked-matrix
+// Retorna: vetor-matriz
+// Descrição:
+// Pega a matriz de tranformação da câmera travada. Leva em
+// consideração o atraso.
+// Exemplo:
+// (get-locked-matrix)
 // EndFunctionDoc
 
 Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
@@ -476,6 +814,17 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 // (set-camera) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-camera 
+// Retorna: void
+// Descrição:
+// Ajusta a matriz de transformação da câmera. Esta é a interface de
+// baixo nível usada por set-camera-transform, a qual você devia usar
+// geralmente ao invés.
+// Exemplo:
+// (set-camera)
+// EndFunctionDoc
+
 Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -488,12 +837,21 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// get-projection-transfrom
+// get-projection-transform
 // Returns: projection-matrix
 // Description:
 // Gets the current projection matrix.
 // Example:
-// (get-projection-transfrom) 
+// (get-projection-transform) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// get-projection-transform
+// Retorna: matriz-de-projeção
+// Descrição:
+// Pega a matriz de projeção atual.
+// Exemplo:
+// (get-projection-transform)
 // EndFunctionDoc
 
 Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
@@ -508,6 +866,15 @@ Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 // Returns a vector containing the current width and height of the window.
 // Example:
 // (get-screen-size) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// get-screen-size
+// Retorna: vetor-tamanho
+// Descrição:
+// Retorna um vetor contendo a atual largura e altura da janela
+// Exemplo:
+// (get-screen-size)
 // EndFunctionDoc
 
 Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
@@ -526,6 +893,15 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Sets the window width and height.
 // Example:
 // (set-screen-size (vector 10 10)) ; small window time :) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// set-screen-size vetor-tamanho
+// Retorna: void
+// Descrição:
+// Ajusta a altura e largura da janela.
+// Exemplo:
+// (set-screen-size (vector 10 10)) ; small window time :)
 // EndFunctionDoc
 
 Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
@@ -551,6 +927,16 @@ Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 // (display (select 10 10 2))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// select número-janelaposX número-janelaposY número-tamanho-pixel 
+// Retorna: número-id-primitiva
+// Descrição:
+// Olha na região específicada e retorna a id da primitiva mais
+// próxima à renderização da câmera lá, ou 0 se não existente.
+// Exemplo:
+// (display (select 10 10 2))(newline)
+// EndFunctionDoc
+
 Scheme_Object *select(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -572,6 +958,18 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 // (desiredfps 100000) ; makes fluxus render as fast as it can, and take 100% cpu.
 // EndFunctionDoc 
 
+// StartFunctionDoc-pt
+// desiredfps número-fps
+// Retorna: void
+// Descrição:
+// Desacelera o renderizador de forma a não pegar 100% de cpu. Isto dá
+// um limite acima na taxa de fps, o que não completamente bate o
+// número dado, mas nós estamos trabalhando nisto...
+// Exemplo:
+// (desiredfps 100000) ; faz fluxus renderizar tão rápido quanto pode
+//                     ; e levar 100% de cpu.
+// EndFunctionDoc
+
 Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -588,6 +986,16 @@ Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 // Select which buffer to draw in
 // for stereo mode you'd do 'back-right and 'back-left
 // Example:
+// (draw-buffer 'back)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// draw-buffer nome-buffer
+// Retorna: void
+// Descrição:
+// Seleciona qual buffer para desenhar, se em modo estéreo você iria
+// fazer 'back-right e 'back-left
+// Exemplo:
 // (draw-buffer 'back)
 // EndFunctionDoc
 
@@ -630,6 +1038,15 @@ Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 // Description:
 // Select which buffer to read from
 // Example:
+// (read-buffer 'back)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// read-buffer nome-buffer
+// Retorna: void
+// Descrição:
+// Seleciona qual buffer para ler.
+// Exemplo:
 // (read-buffer 'back)
 // EndFunctionDoc
 
@@ -678,6 +1095,18 @@ Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
 // (set-stereo-mode 'crystal-eyes)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-stereo-mode modo
+// Retorna: bool
+// Descrição:
+// seleciona qual modo estéreo a usar, atualmente somente 
+// 'cristal-eyes e 'no-stereo são suportados o retorno indica se a
+// operação foi bem sucedida ou não 'crystal-eyes vai retornar falso
+// se você não tem uma janela estéreo.
+// Exemplo:
+// (set-stereo-mode 'crystal-eyes)
+// EndFunctionDoc
+
 Scheme_Object *set_stereo_mode(int argc, Scheme_Object **argv)
 {
   bool success;
@@ -721,7 +1150,7 @@ Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// (set-colour-mask vec)
+// set-colour-mask vector
 // Returns: void
 // Description:
 // sets the colour mask
@@ -730,6 +1159,19 @@ Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
 // after this operation you'll only see those colour which you
 // set to true (this is useful for stereo with red-blue glasses)
 // Example:
+// (set-colour-mask #(#t #f #f #t))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// set-colour-mask vetor
+// Retorna: void
+// Descrição:
+// Ajusta a máscara de cor dando a esta um quatérnio de booleanos que
+// correspondem aos canais vermelho, verde, azul e alpha
+// respectivamente depois desta operação você vai ver apenas aquelas
+// cores que você ajustar como verdadeiras (isto é útil apenas para
+// estéreo com óculos azul-vermelhos)
+// Exemplo:
 // (set-colour-mask #(#t #f #f #t))
 // EndFunctionDoc
 
@@ -750,7 +1192,7 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// desiredfps shadow-light
+// shadow-light number-setting
 // Returns: void
 // Description:
 // Sets the light to use for generating shadows, set to 0 to disable shadow
@@ -758,6 +1200,16 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 // Example:
 // (shadow-light 1) 
 // EndFunctionDoc 
+
+// StartFunctionDoc-pt
+// shadow-light número-ajuste
+// Retorna: void
+// Descrição:
+// Ajusta a luz para usar na geração de sombras, ajuste para 0 para
+// desativar renderização de sombras.
+// Exemplo:
+// (shadow-light 1)
+// EndFunctionDoc
 
 Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 {
@@ -769,7 +1221,7 @@ Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// desiredfps shadow-length
+// shadow-length number-setting
 // Returns: void
 // Description:
 // Sets the length of the shadow volume
@@ -777,6 +1229,15 @@ Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 // Example:
 // (shadow-length 10) 
 // EndFunctionDoc 
+
+// StartFunctionDoc-pt
+// shadow-length número-ajuste
+// Retorna: void
+// Descrição:
+// Ajusta o alcance do volume da renderização da sombra.
+// Exemplo:
+// (shadow-length 10)
+// EndFunctionDoc
 
 Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
 {
@@ -788,14 +1249,23 @@ Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// desiredfps shadow-debug
+// shadow-debug number-setting
 // Returns: void
 // Description:
 // Turns on debug rendering of the shadow volume
 // rendering.
 // Example:
-// (debug-shadows 1) 
+// (shadow-debug 1) 
 // EndFunctionDoc 
+
+// StartFunctionDoc-pt
+// shadow-debug número-ajuste
+// Retorna: void
+// Descrição:
+// Liga debug na renderização do volume da sombra.
+// Exemplo:
+// (shadow-debug 1)
+// EndFunctionDoc
 
 Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 {
@@ -815,6 +1285,17 @@ Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 // Example:
 // (accum 'add 1) 
 // EndFunctionDoc 
+
+// StartFunctionDoc-pt
+// accum simbolo-modo número-valor
+// Retorna: void
+// Descrição:
+// Controla o buffer de acumulação (somente chama glAccum embaixo do
+// tapete).
+// Símbolos possíveis são: accum load return add mult
+// Exemplo:
+// (accum 'add 1)
+// EndFunctionDoc
 
 Scheme_Object *accum(int argc, Scheme_Object **argv)
 {
