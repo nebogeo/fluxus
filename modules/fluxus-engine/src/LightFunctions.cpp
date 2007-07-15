@@ -34,6 +34,19 @@ using namespace SchemeHelper;
 // Example:
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// Lights
+// Sem luzes você não seria capaz de ver nada. Por sorte fluxus te dá
+// uma de graça por padrão, uma luz pontual difusa e branca fixa à
+// camêra. Para iluminações mais interessantes, você vai precisar
+// destas funções. Usando as funções fixas de pipeline gráfico padrão,
+// falando simplisticamente, OpenGL multiplica estes valores pela
+// superficie do material (ajustado com comandos do estado local
+// [local state] como ambient e diffuse) e o valor cor da textura
+// dando a cor final.
+// Exemplo:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // make-light type-symbol cameralocked-symbol
 // Returns: lightid-number
@@ -41,6 +54,17 @@ using namespace SchemeHelper;
 // Makes a new light. The type can be one of: point, directional or spot. If the cameralocked string is not
 // free then it will be attached to the camera, and move around when you move the camera.
 // Example:
+// (make-light 'spot 'locked)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// make-light simbolo-tipo simbolo-travado-camera[cameralocked]
+// Retorna: lightid-number
+// Descrição:
+// Faz uma luz nova. O tipo pode ser um destes: point, directional ou
+// spot. Se a string de cameralocked não estiver livre então esta vai
+// ser fixa à câmera, e mexer ao redor quando você mover a câmera.
+// Exemplo:
 // (make-light 'spot 'locked)
 // EndFunctionDoc
 
@@ -89,6 +113,15 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // (light-ambient mylight (vector 1 1 1)) ; a boring light
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// light-ambient número-id-luz colour
+// Retorna: void
+// Descrição:
+// Ajusta a contribuição do ambiente para a luz especificada.
+// Exemplo:
+// (light-ambient mylight (vector 1 1 1)) ; a boring light
+// EndFunctionDoc
+
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -107,6 +140,15 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // Description:
 // Sets the diffuse contribution for the specified light.
 // Example:
+// (light-diffuse mylight (vector 1 1 1)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// light-diffuse número-id-luz colour
+// Retorna: void
+// Descrição:
+// Ajusta a contribuição difusa para a luz especificada.
+// Exemplo:
 // (light-diffuse mylight (vector 1 1 1)) 
 // EndFunctionDoc
 
@@ -131,6 +173,15 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // (light-specular mylight (vector 1 1 1)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// light-specular número-id-luz colour
+// Retorna: void
+// Descrição:
+// Ajusta a contribuição especular para a luz específicada.
+// Exemplo:
+// (light-specular mylight (vector 1 1 1)) 
+// EndFunctionDoc
+
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -149,6 +200,16 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 // Description:
 // Sets the position of the specified light. In worldspace if free, in camera space is attached.
 // Example:
+// (light-position mylight (vector 0 100 0)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// light-position número-id-luz vetor-posição
+// Retorna: void
+// Descrição:
+// Ajusta a posição da luz especificada. Em espaço global se livre, em
+// espaço da câmera se fixa.
+// Exemplo:
 // (light-position mylight (vector 0 100 0)) 
 // EndFunctionDoc
 
@@ -172,6 +233,16 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 // Example:
 // (light-position mylight (vector 0 100 0)) 
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// light-spot-angle número-id-luz número-ângulo
+// Retorna: void
+// Descrição:
+// Ajusta o ângulo do cone da luz spot especificada. Se não é uma luz
+// spot este comando não tem nenhum efeito.
+// Exemplo:
+// (light-position mylight (vector 0 100 0)) 
+// EndFunctionDoc
 	
 Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 {
@@ -192,6 +263,16 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 // (light-spot-exponent mylight 0.1) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// light-spot-exponent número-id-luz número-exponente
+// Retorna: void
+// Descrição:
+// Ajusta a exponencial da luz spot (dispersão do cone)
+// específicada. Não funciona com outra lâmpada senão a spot.
+// Exemplo:
+// (light-spot-exponent mylight 0.1) 
+// EndFunctionDoc
+
 Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -209,6 +290,16 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 // Sets the light attenuation (fade off with distance) of the specified light. 
 // The type symbol can be one of: constant, linear or quadratic.
 // Example:
+// (light-attenuation 'constant 0.1) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// light-attenuation número-id-luz símbolo-tipo número-atenuação
+// Retorna: void
+// Descrição:
+// Ajusta a atenuação da luz (decaimento com distância) da luz
+// especificada. O símbolo-tipo, pode ser um dos: constant, linear ou quadratic.
+// Exemplo:
 // (light-attenuation 'constant 0.1) 
 // EndFunctionDoc
 
@@ -244,6 +335,16 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // Description:
 // Sets the direction of a directional light. If it's not a directional light, this command has no effect. 
 // Example:
+// (light-spot-exponent mylight 0.1) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// light-direction número-id-luz vetor-direção
+// Retorna: void
+// Descrição:
+// Ajusta a direção da luz direcional. Se não é uma luz direcional,
+// este comando não tem efeito.
+// Exemplo:
 // (light-spot-exponent mylight 0.1) 
 // EndFunctionDoc
 

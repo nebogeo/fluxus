@@ -36,6 +36,35 @@ using namespace SchemeHelper;
 // Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
 // except lights, a camera and lots of primitives.
 // Example: 
+// build-cube
+// build-polygons
+// build-sphere
+// build-plane
+// build-seg-plane
+// build-cylinder
+// build-line
+// build-text
+// build-nurbs-sphere
+// build-nurbs-plane
+// build-particles
+// build-locator
+// build-pixels
+// pixels-upload
+// pixels->texture
+// build-blobby
+// blobby->poly
+// draw-instance
+// draw-cube 
+// draw-plane
+// draw-sphere
+// draw-cylinder
+// destroy
+// poly-set-index
+// poly-convert-to-indexed
+// build-copy
+// make-pfunc
+// pfunc-set!
+// pfunc-run
 // EndSectionDoc 
 
 // StartSectionDoc-pt
@@ -43,6 +72,35 @@ using namespace SchemeHelper;
 // Primitivas são objetos que você pode renderizar. Não há muito mais coisas
 // numa cena do fluxus, exceto luzes, uma camera e muitas primitivas.
 // Exemplo:
+// build-cube
+// build-polygons
+// build-sphere
+// build-plane
+// build-seg-plane
+// build-cylinder
+// build-line
+// build-text
+// build-nurbs-sphere
+// build-nurbs-plane
+// build-particles
+// build-locator
+// build-pixels
+// pixels-upload
+// pixels->texture
+// build-blobby
+// blobby->poly
+// draw-instance
+// draw-cube 
+// draw-plane
+// draw-sphere
+// draw-cylinder
+// destroy
+// poly-set-index
+// poly-convert-to-indexed
+// build-copy
+// make-pfunc
+// pfunc-set!
+// pfunc-run
 // EndSectionDoc
 
 // StartFunctionDoc-en
@@ -630,12 +688,25 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// 
-// Retorna:
+// build-blobby número-influencias vecsubdvision vecfronteira
+// Retorna: número-id-primitiva
 // Descrição:
+// Primitivas blobby no fluxus são uma representação de superfície
+// implicita de alto nível que é definida usando influências no espaço
+// em 3 dimensões. Estas influências são então somadas, e um valor
+// particular é "malheado" (usando o algorítmo dos cubos marchando)
+// para formar uma superfície macia. Estas influências podem ser
+// animadas, e a superfície macia mexe e deforma para adaptar, dando a
+// primitiva seu nome blobby.
 // 
+// build-blobby retorna uma nova primitiva blobby. número-influências
+// é o número de "blobs", Subdivisão permite a você controlar a
+// resolução da superfície em cada dimensão, enquanto vecfronteira
+// ajusta a área fronteriça da primitiva em espaço de objeto local. A
+// malha não vai ser calculada fora desta área limite. Influências de
+// cores e posições precisam ser ajustadas usando pdata-set.
 // Example:
-
+// (define mynewshape (build-blobby 7 (vector 30 30 30) (vector 3 3 3)))
 // EndFunctionDoc
 
 Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
@@ -663,6 +734,16 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 // Returns: polyprimid-number
 // Description:
 // Converts the mesh of a blobby primitive into a triangle list polygon primitive.
+// Example:
+// (define mynewshape (blobby->poly myblobby))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// blobby->poly número-id-blobbyprimitiva
+// Retorna: número-id-primitivapoly
+// Descrição:
+// Converte a malha de uma primitiva blobby em uma primitiva poligonal
+// de lista de triângulos.
 // Example:
 // (define mynewshape (blobby->poly myblobby))
 // EndFunctionDoc
@@ -1040,6 +1121,16 @@ Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
 // (define mynewshape (build-sphere 10 10))
 // (define myothernewshape (build-copy mynewshape))
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-copy número-primitiva-fonte
+// Retorna: número-id-primitiva
+// Descrição:
+// Retorna uma cópia da primitiva
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (define myothernewshape (build-copy mynewshape))
+// EndFunctionDoc
 	
 Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 {
@@ -1095,6 +1186,52 @@ Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 // Example:
 // (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// make-pfunc string-nome
+// Retorna: número-pfuncid
+// Descrição:
+// Faz uma nova primitiva funcional. Pfuncs variam de propósito geral
+// até operações complexas e especializadas que você pode rodar em
+// primitivas. Todas as pfuncs dividem a mesma interface para
+// controlar e ajustar - pfunc-set! Todos os tipos e argumentos pfunc
+// são como os seguintes:
+//
+// arithmetic 
+//     Para aplicar aritmética geral para qualquer array pdata.
+//
+//     operator string : um dos add sub mul div
+//     src string : nome pdata array 
+//     other string : nome pdata array (opcional)
+//     constant float : valor constante (opcional)
+//     dst string : nome pdata array 
+//
+// genskinweights 
+//     Gera pesos de skinning - adiciona float pdata chamada "s1" -> "sn" 
+//     aonde n é o número de nós no esqueleto - 1 
+//
+//     skeleton-root primid-number : a raiz da posebind do esqueleto para skinning
+//     sharpness float : um controle de quão afiado o vinco vai ser
+//     quando "skineado". 
+//
+// skinweights->vertcols
+//     Uma utilidade para visualizar pesos de skin para debugar. 
+//     sem argumentos.
+//
+// skinning 
+//     Skin uma primitiva - deforma ela para seguir os movimentos de
+//     um esqueleto. Primitivas que a gente quer usar isto deve conter
+//     extra pdata - cópias das posições iniciais das posições dos
+//     vértices chamadas "pref" e o mesmo para normais, se as normais
+//     estão sendo skineadas , chamada "nref". 
+//    
+//     skeleton-root primid-number : a primitiva raiz do esqueleto animado
+//     bindpose-root primid-number : a raiz primitiva da pose bind do esqueleto
+//     skin-normals number : se devemos usar skin nas normais como nas posições
+// 
+// Example:
+// (define mypfunc (make-pfunc 'arithmetic))
+// EndFunctionDoc
 	
 Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 {
@@ -1110,7 +1247,20 @@ Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Sets arguments on a primitive function. See docs for make-pfunc for all the arguments.
-// arithmetic
+// Example:
+// (define mypfunc (make-pfunc 'arithmetic))
+// (pfunc-set! mypfunc (list 'operator "add"
+//                           'src "p"
+//                           'const 0.4
+//                           'dst "p"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pfunc-set! número-id-pfunc lista-argumento
+// Retorna: void
+// Descrição:
+// Ajusta argumentos na função primitiva. Veja a documentação de
+// make-pfunc para todos os argumentos.
 // Example:
 // (define mypfunc (make-pfunc 'arithmetic))
 // (pfunc-set! mypfunc (list 'operator "add"
@@ -1217,7 +1367,16 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Runs a primitive function on the currently grabbed primitive.
-// arithmetic
+// Example:
+// (define mypfunc (make-pfunc "arithmetic"))
+// EndFunctionDoc
+
+
+// StartFunctionDoc-pt
+// pfunc-run número-id
+// Retorna: void
+// Descrição:
+// Roda uma função primitiva na primitiva atualmente pega.
 // Example:
 // (define mypfunc (make-pfunc "arithmetic"))
 // EndFunctionDoc

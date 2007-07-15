@@ -40,12 +40,30 @@ using namespace SchemeHelper;
 // Example:
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// Renderer
+// Estes comandos são os controladores de baixo nível do
+// renderizador. Você não deveria usá-los a menos que esteja
+// implementando um renderizador do fluxus fora da interface
+// scratchpad. 
+// Example:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // make-renderer 
 // Returns: rendererid-number
 // Description:
 // Makes a new scenegraph renderer.
 // Example:
+// (make-renderer) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// make-renderer
+// Retorna: número-render-id
+// Descrição:
+// Faz um novo renderizador de gráfico da cena [scenegraph]
+// Exemplo:
 // (make-renderer) 
 // EndFunctionDoc
 
@@ -62,6 +80,15 @@ Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 // Description:
 // Make this renderer the current context for commands.
 // Example:
+// (renderer-grab renderer) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// renderer-grab número-id-renderizador
+// Retorna: void
+// Descrição:
+// Faz este renderizador o atual contexto para comandos.
+// Exemplo:
 // (renderer-grab renderer) 
 // EndFunctionDoc
 
@@ -83,6 +110,15 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 // (renderer-grab renderer) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// renderer-ungrab
+// Retorna: void
+// Descrição:
+// Pop o contexto da pilha do renderizador.
+// Exemplo:
+// (renderer-grab renderer) 
+// EndFunctionDoc
+
 Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->PopRenderer();
@@ -98,6 +134,15 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 // (render) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// render
+// Retorna: void
+// Descrição:
+// Limpa o buffer de fundo, e renderiza tudo.
+// Exemplo:
+// (render)
+// EndFunctionDoc
+
 Scheme_Object *render(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Render();
@@ -110,6 +155,15 @@ Scheme_Object *render(int argc, Scheme_Object **argv)
 // Description:
 // Update the physics system.
 // Example:
+// (tick-physics) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// tick-physics
+// Retorna: void
+// Descrição:
+// Atualiza o sistema de física.
+// Exemplo:
 // (tick-physics) 
 // EndFunctionDoc
 
@@ -128,6 +182,15 @@ Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 // (render-physics) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// render-physics
+// Retorna: void
+// Descrição:
+// Renderiza o sistema de física (para gráficos ajudantes).
+// Exemplo:
+// (render-physics)
+// EndFunctionDoc
+
 Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Physics()->Render();
@@ -143,6 +206,15 @@ Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 // (reset-renderers) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// reset-renderers
+// Retorna: void
+// Descrição:
+// Deleta todos os renderizadores e faz um novo como padrão.
+// Exemplo:
+// (reset-renderers)
+// EndFunctionDoc
+
 Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->ResetRenderers();
@@ -155,6 +227,15 @@ Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 // Description:
 // Calls reshape on the current renderer
 // Example:
+// (reshape 100 100) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// reshape número-largura número-altura
+// Retorna: void
+// Descrição:
+// Chama reshapa no render atual.
+// Exemplo:
 // (reshape 100 100) 
 // EndFunctionDoc
 
@@ -175,6 +256,15 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 // Inits the whole rendering system, only needs calling once.
 // Example:
 // (fluxus-init) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// fluxus-init
+// Retorna: void
+// Descrição:
+// Inicia todo o sistema de renderização, só precisa ser chamado uma vez.
+// Exemplo:
+// (fluxus-init)
 // EndFunctionDoc
 
 Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)

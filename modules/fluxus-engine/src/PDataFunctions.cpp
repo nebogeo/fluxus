@@ -51,12 +51,38 @@ using namespace Fluxus;
 // (ungrab)
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// PrimitiveData
+// Dados primitivos (pdata para diminuir) é o nome fluxus' para dados
+// que formam primitivas. Em primitivas poligonais isto significa
+// informação dos vértices, em primitivas de partículas isto
+// corresponde a informação da partícula, em primitivas NURBS são os
+// vértices de controle. Acesso a pdata dá a você a habilidade de usar
+// primitivas que de outra forma não seria tão interessante, e
+// deformar e fazer outras primitivas resultando em modelos muito mais
+// detalhados e animações. Você pode também adicionar sua própria
+// pdata, que é tratado exatamente como os tipos já existentes. Dados
+// primitivos são nomeados por strings de tipo, os nomes de qual
+// depende a ordem da primitiva. Todos os comandos Pdata operam na
+// primitiva atualmente pega [grabbed].
+// Exemplos:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // pdata-ref type-string index-number
 // Returns: value-vector/colour/matrix/number
 // Description:
 // Returns the corresponding pdata element.
 // Example:
+// (pdata-ref "p" 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pdata-ref string-tipo número-index
+// Retorna: vetor-valor/cor/matriz/número
+// Descrição:
+// Retorna o elemento pdata correspondente.
+// Exemplo:
 // (pdata-ref "p" 1)
 // EndFunctionDoc
 
@@ -125,6 +151,15 @@ Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 // Description:
 // Writes to the corresponding pdata element.
 // Example:
+// (pdata-set! "p" 1 (vector 0 100 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pdata-set! string-tipo número-index vetor-valor/cor/matriz/número
+// Retorna: void
+// Descrição:
+// Escreve ao elemento pdata correspondente.
+// Exemplo:
 // (pdata-set! "p" 1 (vector 0 100 0))
 // EndFunctionDoc
 
@@ -197,6 +232,17 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 // (pdata-set "mydata" 0 (vector 1 2 3))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// pdata-add string-tipo nome-string
+// Retorna: void
+// Descrição:
+// Adiciona um novo usuario de disposição ao pdata. Tipo é um dos
+// sequintes "v":vector, "c":colour, "f":float ou "m":matrix.
+// Exemplo:
+// (pdata-add "v" "mydata")
+// (pdata-set "mydata" 0 (vector 1 2 3))
+// EndFunctionDoc
+
 Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -247,6 +293,27 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 // (pdata-op "*" "mydata" "myotherdata") // multiply two pdata vectors element for element
 // (pdata-op "closest" "p" (vector 100 0 0)) // returns position of the closest vertex to this point
 // (pdata-op "sin" "mydata" "myotherdata") // sine of one float pdata to another
+// (pdata-op "cos" "mydata" "myotherdata") // cosine of one float pdata to another
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pdata-op string-nomefunc string-nomepdata operador
+// Retorna: void
+// Descrição:
+// Esta é uma função experimental que permite a você fazer operações
+// na pdata muito rapidamente, para constar adicionar elemento por
+// elemento de uma array de pdata para outra. Você pode implementar
+// isto em scheme como um loop sobre cada elemento, mas isto é devagar
+// já que o interpretador está fazendo todo o trabalho. É muito mais
+// rápido se você puder usar um pdata-op já que a mesma operação vai
+// ser apenas uma chamada à scheme.
+// Exemplo:
+// (pdata-op "+" "mydata" (vector 1 2 3)) // adiciona um vetor a todos os vetores pdata
+// (pdata-op "+" "mydata" "myotherdata") // adiciona dois vetores pdata elemento por elemento
+// (pdata-op "*" "mydata" (vector 1 2 3)) // multiplica um vetor a todos os vetores pdata
+// (pdata-op "*" "mydata" "myotherdata") // multiplica dois vetores pdata elemento por elemento
+// (pdata-op "closest" "p" (vector 100 0 0)) // retorna posição do vertice mais perto a este ponto
+// (pdata-op "sin" "mydata" "myotherdata") // seno de um pdata float a outro
 // (pdata-op "cos" "mydata" "myotherdata") // cosine of one float pdata to another
 // EndFunctionDoc
 
@@ -376,7 +443,17 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 // Description:
 // Copies the contents of one pdata array to another. Arrays must match types.
 // Example:
-// (pdata-copy "p" "mydata") // copy the vertex positions to a user array
+// (pdata-copy "p" "mydata") ; copy the vertex positions to a user array
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pdata-copy string-pdata-de string-pdata-para
+// Retorna: void
+// Descrição:
+// Copia o conteúdo de uma array pdata para outra. As arrays tem que
+// ser do mesmo tipo.
+// Exemplo:
+// (pdata-copy "p" "mydata") ; copia as posições de vértices para uma array do usuário
 // EndFunctionDoc
 
 Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
@@ -414,6 +491,25 @@ Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 // (ungrab)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// pdata-size
+// Retorna: número-contador
+// Descrição:
+// Retorna o tamanho das arrays pdata (elas precisam ser todas a
+// mesma). Isto é principal para iterar através das arrays.
+// Exemplo:
+// (define (mashup n)
+//     (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd))) ; randomise the vertex position
+//     (if (zero? n)
+//         0
+//         (mashup (- n 1)))) ; loops till n is 0
+//
+// (define shape (build-sphere 10 10))
+// (grab shape)
+// (mashup (pdata-size)) ; randomise verts on currently grabbed primitive
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 {
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
@@ -432,6 +528,14 @@ Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 // Example:
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// finalise
+// Retorna: void
+// Descrição:
+// Não faz nada mais, precisa ser removido :)
+// Exemplo:
+// EndFunctionDoc
+
 Scheme_Object *finalise(int argc, Scheme_Object **argv)
 {
 	return scheme_void;
@@ -444,6 +548,20 @@ Scheme_Object *finalise(int argc, Scheme_Object **argv)
 // For polygon primitives only. Looks at the vertex positions and calculates the lighting normals for you 
 // automatically. Call with "1" for smooth normals, "0" for faceted normals.
 // Example:
+// (define shape (build-sphere 10 10)) ; build a sphere (which is smooth by default)
+// (grab shape)
+// (recalc-normals 0) ; make the sphere faceted
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// recalc-normals número-macioounão
+// Retorna: void
+// Descrição:
+// Para primitivas poligonais apenas. Olha a posição dos vértices e
+// cálcula as normais da luz pra você automaticamente. Chame com "1"
+// para normais macias, "0" para normais facetadas.
+// Exemplo:
 // (define shape (build-sphere 10 10)) ; build a sphere (which is smooth by default)
 // (grab shape)
 // (recalc-normals 0) ; make the sphere faceted
