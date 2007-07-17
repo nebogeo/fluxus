@@ -26,7 +26,7 @@
    write-helpmapfile)
   
   ; tells us which language to extract documentation for
-  (define locale "en")
+  (define locale "pt")
   
   ; returns a string of characters from the current position
   ; using the delimit function to mark beginning and end

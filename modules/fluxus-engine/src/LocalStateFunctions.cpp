@@ -31,6 +31,50 @@ using namespace Fluxus;
 // either turning on and off rendering features, changing the style of different features, or altering 
 // the current transform. 
 // Example:
+// push 
+// pop
+// grab
+// ungrab
+// apply
+// opacity
+// shinyness
+// colour
+// wire-colour
+// specular
+// ambient
+// opacity
+// identity
+// concat
+// translate
+// rotate
+// scale
+// get-transform
+// parent
+// line-width
+// point-width
+// blend-mode
+// hint-solid
+// hint-wire
+// hint-normal
+// hint-points
+// hint-anti-alias
+// hint-unlit
+// hint-vertcols
+// hint-box
+// hint-multitex
+// hint-none
+// hint-origin
+// hint-cast-shadow
+// hint-depth-sort
+// hint-ignore-depth
+// hint-lazy-parent
+// texture
+// multitexture
+// print-scene-graph 
+// hide
+// selectable
+// shader
+// shader-set!
 // EndSectionDoc 
 
 // StartSectionDoc-pt
@@ -42,6 +86,50 @@ using namespace Fluxus;
 // mudando o estilo de diferentes opções, ou alterando a transformação
 // corrente.
 // Exemplo:
+// push 
+// pop
+// grab
+// ungrab
+// apply
+// opacity
+// shinyness
+// colour
+// wire-colour
+// specular
+// ambient
+// opacity
+// identity
+// concat
+// translate
+// rotate
+// scale
+// get-transform
+// parent
+// line-width
+// point-width
+// blend-mode
+// hint-solid
+// hint-wire
+// hint-normal
+// hint-points
+// hint-anti-alias
+// hint-unlit
+// hint-vertcols
+// hint-box
+// hint-multitex
+// hint-none
+// hint-origin
+// hint-cast-shadow
+// hint-depth-sort
+// hint-ignore-depth
+// hint-lazy-parent
+// texture
+// multitexture
+// print-scene-graph 
+// hide
+// selectable
+// shader
+// shader-set!
 // EndSectionDoc
 
 // StartFunctionDoc-en
@@ -970,10 +1058,10 @@ Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
 // as primitivas são renderizadas, mas podem ter efeitos diferentes -
 // ou nenhum efeito em certas primitivas portanto o nome dicas.
 // Exemplo:
-
-// EndFunctionDoc
 // (hint-wire)
 // (build-cube) ; faz um cubo em wireframe 
+// EndFunctionDoc
+
 
 Scheme_Object *hint_wire(int argc, Scheme_Object **argv)
 {
@@ -1271,7 +1359,8 @@ Scheme_Object *hint_none(int argc, Scheme_Object **argv)
 // mas podem ter efeitos diferentes - ou nenhum efeito em certas
 // primitivas portanto o nome dicas.
 // Exemplo:
-
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
 // EndFunctionDoc
 
 Scheme_Object *hint_origin(int argc, Scheme_Object **argv)
@@ -1295,12 +1384,17 @@ Scheme_Object *hint_origin(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-//
-// Retorna: 
+// hint-cast-shadow
+// Retorna: void
 // Descrição:
-//
+// (nota: não implementado ainda)                         
+// Ajusta as dicas de render para fazer sombra para o estado de
+// desenho atual, ou a primitiva pega. Dicas de render podem mudar a
+// forma que as primitivas são renderizadas, mas pode ter efeitos
+// diferentes- ou nenhum efeito em certas primitivas, portanto o nome dica.
 // Exemplo:
-
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
 // EndFunctionDoc
 
 Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
@@ -1352,7 +1446,6 @@ Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
 // will be shown behind previously rendered ones.
 // Example:
 // TODO:) examples
-//
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1367,7 +1460,6 @@ Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
 // objetos transparentes, já que ela significa que objetos vão
 // aparecer atrás de outros já renderizados. 
 // Exemplo:
-//
 // EndFunctionDoc
 
 Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
@@ -1383,11 +1475,22 @@ Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 // Sets the render hints to prevent this primitive passing it's transform to it's children.
 // Render hints change the way that primitives are rendered, 
 // but may have different effects - or no effect on certain primitive types, hence the 
-// name hint. This feature is useful for rendering transparent objects, as it means objects 
-// will be shown behind previously rendered ones.
+// name hint. 
 // Example:
 // (hint-lazy-parent)
 // (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// hint-lazy-parent
+// Retorna: void
+// Descrição:
+// Ajusta as dicas de render para prevenir esta primitiva de passar
+// suas transformações a um filho. Dicas de render
+// mudam a forma como as primitivas são renderizadas, mas podem ter
+// efeitos diferentes - ou nenhum efeito em certas primitivas
+// portanto o nome dicas.
+// Example:
 // EndFunctionDoc
 
 Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)
