@@ -9,16 +9,19 @@ MajorVersion = "0"
 MinorVersion = "13"
 FluxusVersion = MajorVersion+"."+MinorVersion
 Target = "fluxus-0.13"
-Prefix = "/usr/local"
-PLTPrefix = "/usr/local"
-PLTInclude = PLTPrefix+"/include/plt"
-PLTLib = PLTPrefix+"/lib"
+
+# changed prefix and pltprefix so they can be invoked at runtime
+# like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
+
+Prefix = ARGUMENTS.get('Prefix','/usr/local')
+PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
+PLTInclude = PLTPrefix + "/include/plt"
+PLTLib = PLTPrefix + "/lib/plt"
 
 CollectsLocation = PLTPrefix + "/lib/plt/collects/"
 CollectsInstall = CollectsLocation + "fluxus-"+FluxusVersion
 
-LibPaths     = ["/usr/local/lib", 
-				"/usr/lib", 
+LibPaths     = ["/usr/lib", 
 				PLTLib,
 				"../../libfluxus"]
 				
