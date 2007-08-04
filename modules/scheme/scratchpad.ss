@@ -326,13 +326,9 @@
   ;; Returns: 
   ;; Description:
   ;; Example:
-  ;; Fluxus authors
-  ;; -------------
+  ;; Misc
+  ;; ----
   ;;
-  ;; Thanks to
-  ;; ---------
-  ;; 
-  ;; ....
   ;;
   ;; EndFunctionDoc
 
