@@ -24,7 +24,7 @@
 
 using namespace fluxus;
 
-string Repl::m_Banner = string("Welcome to fluxus\n");
+string Repl::m_Banner = string("Welcome to fluxus.\nType (help) for info.\n");
 string Repl::m_Prompt = string("fluxus> ");
 
 Repl::Repl(Interpreter *i) : 

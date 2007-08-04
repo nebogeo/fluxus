@@ -20,6 +20,7 @@
 #include <GLUT/glut.h>
 #endif
 #include <iostream>
+#include <vector>
 #include "GLEditor.h"
 
 using namespace fluxus;
@@ -35,10 +36,7 @@ float GLEditor::m_TextColourBlue(1);
 GLEditor::GLEditor():
 m_PosX(0),
 m_PosY(0),
-m_PosZ(0),
-m_RotX(0),
-m_RotY(0),
-m_DisY(-10),
+m_Scale(8.0f),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),
@@ -49,7 +47,8 @@ m_CloseChars(")]>}"),
 m_VisibleLines(40),
 m_TopTextPosition(0),
 m_BottomTextPosition(0),
-m_LineCount(0)
+m_LineCount(0),
+m_FollowCursor(true)
 { 
 	// mono font - yay!
 	m_CharWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
@@ -63,8 +62,8 @@ GLEditor::~GLEditor()
 
 void GLEditor::Reset()
 {
-	m_PosX=m_PosY=m_PosZ=m_RotX=m_RotY=0;
-	m_DisY=-10;
+	m_PosX=m_PosY=0;
+	m_Scale=1;
 	m_TextWidth=1;
 	m_TextColourRed=1;
 	m_TextColourGreen=1;
@@ -94,7 +93,7 @@ void GLEditor::DrawCharBlock()
 }
 
 void GLEditor::DrawCursor()
-{
+{	
 	float half = m_CursorWidth/2.0f;
 	glBegin(GL_QUADS);
 	glVertex2f(half,-30);				
@@ -104,32 +103,36 @@ void GLEditor::DrawCursor()
 	glEnd();
 }
 
+void GLEditor::BBExpand(float x, float y)
+{
+	if (x<m_BBMinX) m_BBMinX=x;
+	if (x>m_BBMaxX) m_BBMaxX=x;
+	if (y<m_BBMinY) m_BBMinY=y;
+	if (y>m_BBMaxY) m_BBMaxY=y;
+}
+
 void GLEditor::Render()
 {
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	//gluPerspective(40.0, (GLfloat) m_Width/(GLfloat) m_Height, 0.1, 10000.0);
-	glFrustum(-1,1,-0.75,0.75,1,10);
+	//glOrtho(-10,90,-65,10,0,10);
+	glOrtho(-100/2,100/2,-75/2,75/2,0,10);
+	
 	glMatrixMode(GL_MODELVIEW);
-
 	glDisable(GL_TEXTURE_2D);
-
+	
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_LINE_STIPPLE);
    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	glLineWidth(m_TextWidth);
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
-	glLoadIdentity();
-	glTranslatef(-4,3,-5);
-	glColor4f(0.7,0.7,0.7,1);
-	glScalef(0.001,0.001,0.001);
 	
-	glTranslatef(m_PosX,m_PosY,m_DisY);
-	glRotatef(-m_RotY,0,1,0);
-	glRotatef(-m_RotX,1,0,0);
+	glLoadIdentity();
+	glTranslatef(-40,0,0);
+	glScalef(0.01*m_Scale,0.01*m_Scale,1); // scale so char width is around 1
+	glTranslatef(m_PosX,m_PosY,0);
 	
 	glPushMatrix();
 	
@@ -143,7 +146,8 @@ void GLEditor::Render()
 		type++;
 	}
 		
-	if (m_Position > 0) {
+	if (m_Position > 0) 
+	{
 		type=0;	
 		for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
 		{
@@ -153,9 +157,11 @@ void GLEditor::Render()
 		}
 	}
 	
+	float xpos=0;
 	float ypos=0;
 	float width;
 	bool drawncursor=false;
+	BBClear();
 	
 	unsigned int n=m_TopTextPosition;
 	m_LineCount=0;
@@ -183,6 +189,8 @@ void GLEditor::Render()
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
+			m_CursorPosX=-xpos;
+			m_CursorPosY=-ypos;
 		}
 		
 		if (m_ParenthesesHighlight[0]==(int)n ||
@@ -204,13 +212,16 @@ void GLEditor::Render()
 		{
 			glPopMatrix();
 			glPushMatrix();
+			xpos=0;
 			ypos-=150;
 			glTranslatef(0,ypos,0);
 		}
 		else 
 		{
 			glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
+			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);			
+			BBExpand(xpos,ypos);
+			xpos+=width;
 		}
 		
 		n++;
@@ -225,13 +236,38 @@ void GLEditor::Render()
 		glColor4f(1,1,0,0.5);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
+		m_CursorPosX=-xpos;
+		m_CursorPosY=-ypos;
 	}
+
+	float drift=0.05;
+	m_PosY=m_PosY*(1-drift) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*drift;
+	
+	float TEXT_BOX_WIDTH = 7000.0f;
+	float TEXT_BOX_HEIGHT = 5000.0f;
+	float TEXT_BOX_ERROR = 1000.0f;
+	
+	float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
+	float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
+	if (boxwidth>100)
+	{
+		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=0.99; 
+		else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
+			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1.01;
+		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=0.99; 
+		else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
+		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1.01;
+	}
+
+	if (m_Scale>8.0f) m_Scale=8.0f; // clamp
+	if (m_Scale<1.0f) m_Scale=1.0f; // clamp
+	
+	m_TextWidth=4*(m_Scale/8.0f); // adjust the line width to suit the scale
 	
 	glPopMatrix();
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_LINE_STIPPLE);	
 	
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
@@ -329,7 +365,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		
 		
 	if (mod&GLUT_ACTIVE_CTRL)
-	{
+	{	
 		switch (key)
 		{
 			case GLEDITOR_CUT: // cut
@@ -350,6 +386,12 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				m_Text.insert(m_Position,m_CopyBuffer);
 				m_Selection=false;
 				m_Position+=m_CopyBuffer.size();
+			break;
+			case GLEDITOR_PLUS: // zoom in
+				m_Scale*=1.1f;
+			break;
+			case GLEDITOR_MINUS: // zoom out
+				m_Scale/=1.1f;
 			break;
 			default: break;
 		}

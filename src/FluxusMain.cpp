@@ -28,7 +28,7 @@ using namespace fluxus;
 ////////////////////////////////////////////////////////////////
 
 FluxusMain::FluxusMain(Interpreter *interpreter, int x, int y) :
-m_CurrentEditor(0),
+m_CurrentEditor(9),
 m_Width(x),
 m_Height(y),
 m_HideScript(false),

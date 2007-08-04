@@ -32,6 +32,8 @@
 #define GLEDITOR_CUT 24 
 #define GLEDITOR_COPY 3 
 #define GLEDITOR_PASTE 22 
+#define GLEDITOR_PLUS 61 
+#define GLEDITOR_MINUS 45 
 
 using namespace std;
 
@@ -53,14 +55,15 @@ public:
 	void SetText(const string& s) { m_Text=s; ProcessTabs(); }
 	void Reset();
 	
-	float m_PosX,m_PosY,m_PosZ;
-	float m_RotX,m_RotY,m_DisY;
+	float m_PosX,m_PosY;
+	float m_Scale;
 	static float m_TextWidth;
 	static float m_TextColourRed;
 	static float m_TextColourGreen;
 	static float m_TextColourBlue;
 	
 protected:
+
 
 	void DrawCharBlock();
 	void DrawCursor();
@@ -73,6 +76,9 @@ protected:
 	unsigned int LineEnd(int pos);
 	void ParseOpenParentheses(int pos, int type);
 	void ParseCloseParentheses(int pos, int type);
+	
+	void BBExpand(float x, float y);
+	void BBClear() { m_BBMinX=m_BBMinY=m_BBMaxX=m_BBMaxY=0; }
 	
 	string m_Text;
 	static string m_CopyBuffer;
@@ -92,6 +98,16 @@ protected:
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;
 	unsigned int m_LineCount;
+	
+	bool m_FollowCursor;
+	float m_CursorPosX;
+	float m_CursorPosY;
+	float m_CursorPosZ;
+	
+	float m_BBMinX;
+	float m_BBMinY;
+	float m_BBMaxX;
+	float m_BBMaxY;
 	
 	int m_Width;
 	int m_Height;

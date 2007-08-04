@@ -72,7 +72,6 @@ void GLFileDialog::Render()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	//gluPerspective(40.0, (GLfloat) m_Width/(GLfloat) m_Height, 0.1, 10000.0);
 	glFrustum(-1,1,-0.75,0.75,1,10);
 	glMatrixMode(GL_MODELVIEW);
 
@@ -90,10 +89,8 @@ void GLFileDialog::Render()
 	glColor4f(0.7,0.7,0.7,1);
 	glScalef(0.001,0.001,0.001);
 	
-	glTranslatef(m_PosX,m_PosY,m_DisY);
-	glRotatef(-m_RotY,0,1,0);
-	glRotatef(-m_RotX,1,0,0);
-	
+	glTranslatef(m_PosX,m_PosY,0);
+		
 	glTranslatef(0,-2500,0);	
 	
 	if (m_SaveAs) RenderSaveAs();
