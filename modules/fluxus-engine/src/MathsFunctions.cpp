@@ -230,7 +230,7 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("vtransform", "vm", argc, argv);
-	dVector ret = MatrixFromScheme(argv[1]).transform(VectorFromScheme(argv[0]));
+	dVector ret = MatrixFromScheme(argv[1]).transform_persp(VectorFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
 	return FloatsToScheme(ret.arr(),3);
 }

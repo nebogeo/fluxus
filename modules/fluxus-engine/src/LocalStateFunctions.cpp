@@ -1490,7 +1490,7 @@ Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 // mudam a forma como as primitivas são renderizadas, mas podem ter
 // efeitos diferentes - ou nenhum efeito em certas primitivas
 // portanto o nome dicas.
-// Example:
+// Exemplo:
 // EndFunctionDoc
 
 Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)

@@ -65,7 +65,7 @@ using namespace Fluxus;
 // primitivos são nomeados por strings de tipo, os nomes de qual
 // depende a ordem da primitiva. Todos os comandos Pdata operam na
 // primitiva atualmente pega [grabbed].
-// Exemplos:
+// Exemplo:
 // EndSectionDoc
 
 // StartFunctionDoc-en

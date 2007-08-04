@@ -46,7 +46,7 @@ using namespace SchemeHelper;
 // renderizador. Você não deveria usá-los a menos que esteja
 // implementando um renderizador do fluxus fora da interface
 // scratchpad. 
-// Example:
+// Exemplo:
 // EndSectionDoc
 
 // StartFunctionDoc-en
@@ -126,24 +126,24 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// render
+// fluxus-render
 // Returns: void
 // Description:
 // Clears the backbuffer, and renders everything
 // Example:
-// (render) 
+// (fluxus-render) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// render
+// fluxus-render
 // Retorna: void
 // Descrição:
 // Limpa o buffer de fundo, e renderiza tudo.
 // Exemplo:
-// (render)
+// (fluxus-render)
 // EndFunctionDoc
 
-Scheme_Object *render(int argc, Scheme_Object **argv)
+Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->Render();
 	return scheme_void;
@@ -311,7 +311,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
 	scheme_add_global("renderer-grab", scheme_make_prim_w_arity(renderer_grab, "renderer-grab", 1, 1), menv);
 	scheme_add_global("renderer-ungrab", scheme_make_prim_w_arity(renderer_ungrab, "renderer-ungrab", 0, 0), menv);
-	scheme_add_global("render", scheme_make_prim_w_arity(render, "render", 0, 0), menv);
+	scheme_add_global("fluxus-render", scheme_make_prim_w_arity(fluxus_render, "fluxus-render", 0, 0), menv);
 	scheme_add_global("tick-physics", scheme_make_prim_w_arity(tick_physics, "tick-physics", 0, 0), menv);
 	scheme_add_global("render-physics", scheme_make_prim_w_arity(render_physics, "render-physics", 0, 0), menv);
 	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);

@@ -119,7 +119,7 @@ using namespace SchemeHelper;
 // Descrição:
 // Um simples cubo, mapeamento de textura por face.
 // @image{images/cube}
-// Example:
+// Exemplo:
 // (define mynewcube (build-cube))
 // EndFunctionDoc
 
@@ -161,7 +161,7 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 // interpretados para construir os poligonos, e podem ser os
 // seguintes: 
 // 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON.
-// Example:
+// Exemplo:
 // (define mynewshape (build-polygons 100 'triangle-strip))
 // EndFunctionDoc
 
@@ -205,7 +205,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // Uma esfera com a resolução especificada, a textura mapeada no
 // estilo normal "world map".
 // @image{images/sphere}
-// Example:
+// Exemplo:
 // (define mynewshape (build-sphere 10 10))
 // EndFunctionDoc
 
@@ -235,7 +235,7 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // Descrição:
 // Um único plano quadrado, mapeado de 0->1 em ambas as dimensões.
 // @image{images/plane}
-// Example:
+// Exemplo:
 // (define mynewshape (build-plane))
 // EndFunctionDoc
 
@@ -260,7 +260,7 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Um plano poligonal tesselado, mapeado de 0->1 em ambas dimensões.
-// Example:
+// Exemplo:
 // (define mynewshape (build-plane))
 // EndFunctionDoc
 
@@ -291,7 +291,7 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // Um cilindro coberto, textura mapeada em volta, e mal mapeada em
 // volta do fim.
 // @image{images/cylinder}
-// Example:
+// Exemplo:
 // (define mynewshape (build-cylinder 10 10))
 // EndFunctionDoc
 
@@ -333,7 +333,7 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // (hint-none) e (hint-wire) ativado, uma rápida linha constante vai
 // ser desenhada - largura específicada pelo comando (line-width).
 // @image{images/line}
-// Example:
+// Exemplo:
 // (define mynewshape (build-line 10))
 // EndFunctionDoc
 
@@ -371,7 +371,7 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // tem um exemplo de fonte acompanhando o fluxus.
 // @image{images/text}
 // Ok, so this isn't a very good font texture :) 
-// Example:
+// Exemplo:
 // (texture (texture-load "font.png"))
 // (define mynewshape (build-text "hello"))
 // EndFunctionDoc
@@ -406,7 +406,7 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // Constrói uma esfera nurbs tesselada, mapead da mesma forma que a
 // esfera poligonal.
 // @image{images/nurbs-sphere}
-// Example:
+// Exemplo:
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
 	
@@ -436,7 +436,7 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // Descrição:
 // Constrói um plano nurbs tesselado, mapeado na direção uv.
 // @image{images/nurbs-plane}
-// Example:
+// Exemplo:
 // (define mynewshape (build-nurbs-plane 10 10))
 // EndFunctionDoc
 
@@ -479,7 +479,7 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // suportados pelo hardware. Por defeito essas partículas pontuais são
 // quadradas, ligue hint-anti-alias para faze-las circulares.
 // @image{images/sprites}
-// Example:
+// Exemplo:
 // (define mynewshape (build-particles 100))
 // EndFunctionDoc
 
@@ -516,7 +516,7 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 // não quer ter o objeto pai visivel). Essa primitiva só pode ser
 // visualizada com (hint-origin) para mostrar sua origem de
 // transformação local.
-// Example:
+// Exemplo:
 // (define mynewshape (build-locator))
 // EndFunctionDoc
 
@@ -546,7 +546,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 // primitivas. Por essa razão, primitivas pixel não vão ser
 // renderizadas muito, mas você pode renderizar elas para visualizar a
 // texturas em um plano.
-// Example:
+// Exemplo:
 // (define mynewshape (build-pixels 100 100))
 // EndFunctionDoc
 
@@ -576,7 +576,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 // Descrição:
 // Traz os dados da textura, você precisa chamar isto quando você
 // finalizou escrever ao pixelprim, e enquanto ele está "grabbed".
-// Example:
+// Exemplo:
 // (define mynewshape (build-pixels 100 100))
 // (pixels-upload mynewshape)
 // EndFunctionDoc
@@ -641,7 +641,7 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna uma textura que você pode usar exatamente igual uma que foi
 // carregada normalmente.
-// Example:
+// Exemplo:
 // (define mynewshape (build-pixels 100 100))
 // (upload-pixels mynewshape)
 // (texture (pixels->texture mynewshape))
@@ -705,7 +705,7 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 // ajusta a área fronteriça da primitiva em espaço de objeto local. A
 // malha não vai ser calculada fora desta área limite. Influências de
 // cores e posições precisam ser ajustadas usando pdata-set.
-// Example:
+// Exemplo:
 // (define mynewshape (build-blobby 7 (vector 30 30 30) (vector 3 3 3)))
 // EndFunctionDoc
 
@@ -744,7 +744,7 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 // Descrição:
 // Converte a malha de uma primitiva blobby em uma primitiva poligonal
 // de lista de triângulos.
-// Example:
+// Exemplo:
 // (define mynewshape (blobby->poly myblobby))
 // EndFunctionDoc
 
@@ -789,7 +789,7 @@ Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 // Descrição:
 // Copia um modo retido da primitiva e desenha ela no estado corrente
 // como um no modo imediato.
-// Example:
+// Exemplo:
 // (define mynewshape (build-cube))
 // (colour (vector 1 0 0))
 // (draw-instance mynewshape) ; draws a copy of mynewshape
@@ -821,7 +821,7 @@ Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Desenha um cubo no estado imediato corrente.
-// Example:
+// Exemplo:
 // (define (render)
 //     (draw-cube))
 // (every-frame (render))
@@ -850,7 +850,7 @@ Scheme_Object *draw_cube(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Desenha um plano no estado corrente em modo imediato
-// Example:
+// Exemplo:
 // (define (render)
 //     (draw-plane))
 // (every-frame (render))
@@ -879,7 +879,7 @@ Scheme_Object *draw_plane(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Desenha uma esfera no estado corrente em modo imediato.
-// Example:
+// Exemplo:
 // (define (render)
 //     (draw-sphere))
 // (every-frame (render))
@@ -908,7 +908,7 @@ Scheme_Object *draw_sphere(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Desenha um cilindro no estado corrente em modo imediato.
-// Example:
+// Exemplo:
 // (define (render)
 //     (draw-cylinder))
 // (every-frame (render))
@@ -936,7 +936,7 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Deleta uma primitiva construída do renderizador.
-// Example:
+// Exemplo:
 // (define mynewshape (build-sphere 10 10))
 // (destroy mynewshape)
 // EndFunctionDoc
@@ -1001,7 +1001,7 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 // Descrição:
 // Troca a primitiva por modo indexado,e usa a lista como valores de
 // index para essa primitiva.
-// Example:
+// Exemplo:
 // (clear)
 // (define p (build-polygons 8 1))
 // 
@@ -1087,7 +1087,7 @@ Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
 // vértices crus para arrays indexadas. Isto remove vértices
 // duplicados do polígono, fazendo a array de pdata menor, o que
 // aumenta a velocidade do processo.
-// Example:
+// Exemplo:
 // (define mynewshape (build-sphere 10 10))
 // (grab mynewshape)
 // (poly-convert-to-indexed)
@@ -1127,7 +1127,7 @@ Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Retorna uma cópia da primitiva
-// Example:
+// Exemplo:
 // (define mynewshape (build-sphere 10 10))
 // (define myothernewshape (build-copy mynewshape))
 // EndFunctionDoc
@@ -1229,7 +1229,7 @@ Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 //     bindpose-root primid-number : a raiz primitiva da pose bind do esqueleto
 //     skin-normals number : se devemos usar skin nas normais como nas posições
 // 
-// Example:
+// Exemplo:
 // (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
 	
@@ -1261,7 +1261,7 @@ Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta argumentos na função primitiva. Veja a documentação de
 // make-pfunc para todos os argumentos.
-// Example:
+// Exemplo:
 // (define mypfunc (make-pfunc 'arithmetic))
 // (pfunc-set! mypfunc (list 'operator "add"
 //                           'src "p"
@@ -1377,7 +1377,7 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Roda uma função primitiva na primitiva atualmente pega.
-// Example:
+// Exemplo:
 // (define mypfunc (make-pfunc "arithmetic"))
 // EndFunctionDoc
 	
