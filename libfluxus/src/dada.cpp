@@ -705,6 +705,17 @@ dVector dMatrix::transform(dVector const &p) const
     return t;
 }
 
+dVector dMatrix::transform_persp(dVector const &p) const
+{
+    dVector t;
+    t.x=p.x*m[0][0] + p.y*m[1][0] + p.z*m[2][0] + p.w*m[3][0];
+    t.y=p.x*m[0][1] + p.y*m[1][1] + p.z*m[2][1] + p.w*m[3][1];
+    t.z=p.x*m[0][2] + p.y*m[1][2] + p.z*m[2][2] + p.w*m[3][2];
+    t.w=p.x*m[0][3] + p.y*m[1][3] + p.z*m[2][3] + p.w*m[3][3];
+	t.homog();
+    return t;
+}
+
 dVertex dMatrix::transform(dVertex const &p) const
 {
     dVertex t=p;
@@ -751,8 +762,12 @@ void dMatrix::transpose()
 {
 	dMatrix t;
 	for (int i=0; i<4; i++)
+	{
         for (int j=0; j<4; j++)
+		{
             t.m[i][j]=m[j][i];
+		}
+	}
     *this=t;
 }
 
@@ -852,8 +867,13 @@ void dMatrix::blend(dMatrix other, float amount)
 ostream &Fluxus::operator<<(ostream &os, dMatrix const &om)
 {
     for (int j=0; j<4; j++)
+	{
         for (int i=0; i<4; i++)
+		{
             os<<om.m[i][j]<<" ";
+		}
+		os<<endl;
+	}
 
     return os;
 }

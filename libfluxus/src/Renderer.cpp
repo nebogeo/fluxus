@@ -310,6 +310,7 @@ void Renderer::PreRender(bool PickMode)
 	
 	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);
 		
+	///\todo : check camera locked lights
 	/* ???
 	RenderLights(true); // camera locked
 	

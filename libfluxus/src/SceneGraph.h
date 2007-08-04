@@ -87,6 +87,8 @@ public:
 private:
 	void RenderWalk(SceneNode *node, int depth, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
+	bool FrustumClip(SceneNode *node);
+	void CohenSutherland(const dVector &p, char &cs);
 	
 	ShadowVolumeGen m_ShadowVolumeGen;
 	DepthSorter m_DepthSorter;

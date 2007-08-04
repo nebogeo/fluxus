@@ -58,6 +58,7 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	if (node->Prim->Hidden()) return;
 	if (rendermode==SELECT && !node->Prim->IsSelectable()) return;
 	
+	
 	dMatrix parent;
 	// see if we need the parent (result of all the parents) transform
 	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
@@ -76,25 +77,29 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	}
 	
 	node->Prim->ApplyState();
-
-	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
-	{
-		// render it later, and after depth sorting
-		m_DepthSorter.Add(parent,node->Prim,node->ID);
-	}
-	else
-	{
-		glPushName(node->ID);
-		node->Prim->Prerender();
-		node->Prim->Render();
-		glPopName();
-    }
 	
-	depth++;
-
-	for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
+	///\todo fix frustum culling
+	//if (!FrustumClip(node))
 	{
-		RenderWalk((SceneNode*)*i,depth,rendermode);
+		if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
+		{
+			// render it later, and after depth sorting
+			m_DepthSorter.Add(parent,node->Prim,node->ID);
+		}
+		else
+		{
+			glPushName(node->ID);
+			node->Prim->Prerender();
+			node->Prim->Render();
+			glPopName();
+    	}
+
+		depth++;
+
+		for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
+		{
+			RenderWalk((SceneNode*)*i,depth,rendermode);
+		}
 	}
 	glPopMatrix();
 	
@@ -102,6 +107,60 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	{
 		m_ShadowVolumeGen.Generate(node->Prim);
 	}
+}
+
+// this is working the wrong way - need to write proper 
+// frustum culling by building planes from the camera 
+// frustum and checking is any points are inside
+bool SceneGraph::FrustumClip(SceneNode *node)
+{
+	// do the frustum clip
+	dBoundingBox box; 
+	GetBoundingBox(node,box);
+	dMatrix mat,proj;
+	glGetFloatv(GL_MODELVIEW_MATRIX,mat.arr());
+	glGetFloatv(GL_PROJECTION_MATRIX,proj.arr());
+	mat=proj*mat;
+	char cs = 0xffff;
+	
+	dVector p = mat.transform_persp(box.min);
+	CohenSutherland(p,cs);
+ 	p=mat.transform_persp(box.max);
+	CohenSutherland(p,cs);
+ 	p=mat.transform_persp(dVector(box.min.x,box.min.y,box.max.z));
+	CohenSutherland(p,cs);
+	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.min.z));
+	CohenSutherland(p,cs);
+ 	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.max.z));
+	CohenSutherland(p,cs);
+	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.min.z));
+	CohenSutherland(p,cs);
+ 	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.max.z));
+	CohenSutherland(p,cs);
+	p=mat.transform_persp(dVector(box.max.x,box.max.y,box.min.z));
+	CohenSutherland(p,cs);
+
+	return cs!=0;
+}
+
+void SceneGraph::CohenSutherland(const dVector &p, char &cs)
+{
+	char t=0;
+	if (p.z>0.0f) // in front of the camera
+	{
+		if (p.x>1)       t |= 0x01;
+		else if (p.x<-1) t |= 0x02;
+		if (p.y>1)       t |= 0x04;
+		else if (p.y<-1) t |= 0x08;
+	}
+	else // behind the camera
+	{
+		if (p.x<-1)    t |= 0x01;
+		else if (p.x>1) t |= 0x02;
+		if (p.y<-1)     t |= 0x04;
+		else if (p.y>1) t |= 0x08;
+	}
+	cs&=t;
 }
 
 void SceneGraph::Detach(SceneNode *node)
@@ -164,10 +223,10 @@ void SceneGraph::GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &resu
 	{
 		dVector point(0,0,0);
 		dBoundingBox bbox=node->Prim->GetBoundingBox();
-		mat*=node->Prim->GetState()->Transform;
 		bbox.min=mat.transform(bbox.min);
 		bbox.max=mat.transform(bbox.max);
 		result.expand(bbox);
+		mat*=node->Prim->GetState()->Transform;
     }
 
 	for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)

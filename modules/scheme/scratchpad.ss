@@ -140,28 +140,19 @@
   
   ;-------------------------------------------------
   ; online help system
-  
+      
   (define helpmap '())
   
-  ;; StartFunctionDoc-en
-  ;; help function-string
-  ;; Returns: void
-  ;; Description:
-  ;; Displays help information on a fluxus function. For running in the repl mainly.
-  ;; Example:
-  ;; (help "pop") 
-  ;; EndFunctionDoc	
-  
-  (define (help funcname)
-    (define (insert-linebreaks src dst count i n)
-      (if (>= i (string-length src))
-          dst
-          (if (and (> n count) (char=? (string-ref src i) #\space))
-              (insert-linebreaks src 
-                                 (string-append dst (string (string-ref src i)) (string #\newline)) count (+ i 1) 0)
-              (insert-linebreaks src 
-                                 (string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
-    
+  (define (insert-linebreaks src dst count i n)
+    (if (>= i (string-length src))
+        dst
+        (if (and (> n count) (char=? (string-ref src i) #\space))
+            (insert-linebreaks src 
+                               (string-append dst (string (string-ref src i)) (string #\newline)) count (+ i 1) 0)
+            (insert-linebreaks src 
+                               (string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
+ 
+  (define (func-help funcname)  
     (define (inner-help l)
       (let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
         (cond
@@ -192,6 +183,26 @@
        (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
       (else
        (inner-help helpmap))))
+
+  ; just print out the example for (preformatted) documentation which isn't
+  ; really a function - need to do this in a more general way...!
+  (define (func-help-example funcname)  
+    (define (inner-help l)
+      (let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
+        (cond
+          (ret
+           (display (list-ref (list-ref ret 1) 3))
+           (newline))
+          (else
+           (if (null? (cdr l))
+               "Function not found"
+               (inner-help (cdr l)))))))
+    (cond 
+      ((null? helpmap)
+       (display "No helpmap exists...")(newline)
+       (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
+      (else
+       (inner-help helpmap))))
   
   (define (init-help helpmapfile)
     (cond 
@@ -199,6 +210,152 @@
        (let ((file (open-input-file helpmapfile)))
          (set! helpmap (read file))
          (close-input-port file)))))
+
+  ; (these aren't really functions, but the documentation printed when you
+  ; type (help) for more general things - maybe I need to make the documentation 
+  ; more general to cope better with bits of extra documentation like this)
+  
+  ;; StartFunctionDoc-en
+  ;; tophelp
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus documentation
+  ;; --------------------
+  ;; 
+  ;; Fluxus is a realtime rendering engine for livecoding in Scheme.
+  ;; 
+  ;; The fluxus scratchpad has two modes of operation, the console
+  ;; (you are using this now) which allows you to enter commands and
+  ;; see the results immediately. The other mode is the editor which 
+  ;; is more like a normal text editor - there are 9 workspaces,
+  ;; (which allow you to edit more than one script at once) switch to 
+  ;; them using ctrl-1 to ctrl-9 and switch back to the console with 
+  ;; ctrl-0.
+  ;;
+  ;; More help topics:
+  ;; (help "keys") for keyboard commands for controlling fluxus 
+  ;; (help "console") for more help on the console 
+  ;; (help "editor") for more help on the livecoding editor
+  ;; (help "camera") for help on the camera controls 
+  ;; (help "functionname") to find out more information about a function
+  ;; (help "misc") for miscellaneous fluxus info 
+  ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-en
+  ;; keys
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus keys
+  ;; -----------
+  ;;
+  ;; ctrl-f : Fullscreen mode.
+  ;; ctrl-w : Windowed mode.
+  ;; ctrl-h : Hide/show the editor.
+  ;; ctrl-l : Load a new script (navigate with cursors and return).
+  ;; ctrl-s : Save current script.
+  ;; ctrl-d : Save as - current script (opens a filename dialog).
+  ;; ctrl-1 to 9 : Switch to selected workspace.
+  ;; ctrl-0 : Switch to the REPL.
+  ;; F3 : Resets the scene camera.
+  ;; F5 : Execute the selected text, or all if none is selected.
+  ;; F9 : Randomise the text colour (aka the panic button)
+  ;; F10 : Make text thinner (these two are for use with projectors to make the 
+  ;; EndFunctionDoc
+ 
+  
+  ;; StartFunctionDoc-en
+  ;; console
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus console (or REPL) 
+  ;; ------------------------
+  ;;
+  ;; If you press ctrl and 0, instead of getting another script workspace, 
+  ;; you will be presented with a Read Evaluate Print Loop interpreter, or 
+  ;; repl for short. This is really just an interactive interpreter similar 
+  ;; to the commandline, where you can enter scheme code for immediate 
+  ;; evaluation. This code is evaluated in the same interpreter as the other 
+  ;; scripts, so you can use the repl to debug or inspect global variables 
+  ;; and functions they define. This window is also where error reporting is
+  ;; printed, along with the terminal window you started fluxus from.
+  ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-en
+  ;; editor
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus editor 
+  ;; -------------
+  ;;
+  ;; When using the fluxus scratchpad, the idea is that you only need the one 
+  ;; window to build scripts, or play live. f5 is the key that runs the script 
+  ;; when you are ready.  Selecting some text (using shift) and pressing f5 will 
+  ;; execute the selected text only. This is handy for reevaluating functions 
+  ;; without running the whole script each time.
+  ;;
+  ;; Workspaces
+  ;; ----------
+  ;;
+  ;; The script editor allows you to edit 9 scripts simultaneously by using
+  ;; workspaces. To switch workspaces, use ctrl+number key. Only one can be run 
+  ;; at once though, hitting f5 will execute the currently active workspace
+  ;; script. 
+  ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-en
+  ;; camera
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus camera control
+  ;; ---------------------
+  ;;
+  ;; The camera is controlled by moving the mouse and pressing mouse buttons.
+  ;;
+  ;; Left mouse button: Rotate
+  ;; Middle mouse button: Move
+  ;; Right mouse button: Zoom
+  ;; EndFunctionDoc
+
+  ;; StartFunctionDoc-en
+  ;; misc
+  ;; Returns: 
+  ;; Description:
+  ;; Example:
+  ;; Fluxus authors
+  ;; -------------
+  ;;
+  ;; Thanks to
+  ;; ---------
+  ;; 
+  ;; ....
+  ;;
+  ;; EndFunctionDoc
+
+  ;; StartFunctionDoc-en
+  ;; help function-string
+  ;; Returns: void
+  ;; Description:
+  ;; Displays help information on a fluxus function. For running in the repl mainly.
+  ;; Example:
+  ;; (help "pop") 
+  ;; EndFunctionDoc	
+  
+  (define (help . args)
+    (if (null? args) ; help without an argument prints out some 
+        (func-help-example "tophelp")   ; top level help information (defined above)
+        (cond
+          ((string=? (car args) "keys") (func-help-example (car args)))
+          ((string=? (car args) "console") (func-help-example (car args)))
+          ((string=? (car args) "editor") (func-help-example (car args)))
+          ((string=? (car args) "camera") (func-help-example (car args)))
+          ((string=? (car args) "misc") (func-help-example (car args)))
+          (else
+           (func-help (car args))))))
   
   ;-------------------------------------------------
   ; stereo mode
@@ -222,7 +379,7 @@
            (get-camera-transform)))
          (if (not (null? user-callback))
              (user-callback))
-         (render)
+         (fluxus-render)
          
          ; draw for right eye
          (draw-buffer 'back-right)
@@ -232,7 +389,7 @@
            (get-camera-transform)))
          (if (not (null? user-callback))
              (user-callback))
-         (render)
+         (fluxus-render)
          
          ; reset for other drawing
          (draw-buffer 'back))
@@ -248,7 +405,7 @@
            ))
          (if (not (null? user-callback))
              (user-callback))
-         (render)
+         (fluxus-render)
          
          ;right
          (set-colour-mask right-eye-colour-mask)
@@ -260,7 +417,7 @@
            ))
          (if (not (null? user-callback))
              (user-callback))
-         (render)
+         (fluxus-render)
          ;reset
          (set-colour-mask #(#t #t #t #t))))))
   
@@ -303,6 +460,8 @@
   ; the main callback every frame
   
   (define (fluxus-frame-callback) 
+  	(identity) ; clear the last transform (I can't decide if this should 
+	           ; be the standard behavour, so it's here for now)
     (cond 
       ((eq? (get-stereo-mode) 'no-stereo)
 	        (draw-buffer 'back)
@@ -310,7 +469,7 @@
             (framedump-update)
             (if (not (null? user-callback))
                (user-callback))
-            (render)
+            (fluxus-render)
             (tick-physics)
             (update-audio))
       (else

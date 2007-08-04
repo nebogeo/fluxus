@@ -36,7 +36,7 @@
 ; load the fluxus renderer extension
 (load-extension (string-append 
                  (path->string (car (cdr (current-library-collection-paths))))
-                 "/fluxus-0.12/extensions/fluxus-engine.so"))
+                 "/fluxus-0.13/extensions/fluxus-engine.so"))
 
 (require fluxus-engine)
 (clear-engine)
@@ -47,7 +47,7 @@
 (define (setup)
   (clear-colour (vector 0 0 0))
   
-  (let ((l (make-light "point" "free")))
+  (let ((l (make-light 'point 'free)))
     (light-position l (vector 10 50 10)))
   
   (shinyness 80)
@@ -72,9 +72,9 @@
 
 ; some sinewave deformation with time
 (define (deform n)
-  (let ((v (vector (* 1 (sin (+ (flxtime) (* (vector-ref (pdata-get "pref" n) 1) 5.4)))) 0 0)))
+  (let ((v (vector (* 1 (sin (+ (flxtime) (* (vector-ref (pdata-ref "pref" n) 1) 5.4)))) 0 0)))
     (set! v (vmul v (* (sin (flxtime)) 0.5)))
-    (pdata-set "p" n (vadd v (pdata-get "pref" n))))
+    (pdata-set! "p" n (vadd v (pdata-ref "pref" n))))
   (if (< n 0)
       0
       (deform (- n 1))))    
@@ -94,14 +94,14 @@
 ; is getting the incident direction, from the camera space transform (see below) and the vertex position
 ; in worldspace.
 (define (toon n camerapos obpos)
-  (let ((v (vadd obpos (pdata-get "p" n))))             ; find the vertex in worldspace 
+  (let ((v (vadd obpos (pdata-ref "p" n))))             ; find the vertex in worldspace 
     (let ((i (vnormalise (vsub v camerapos))))          ; incident direction (normalised)
-      (pdata-set "t" n (reflect i (pdata-get "n" n))))) ; set s to the facing ratio (i dot n) 
+      (pdata-set! "t" n (reflect i (pdata-ref "n" n))))) ; set s to the facing ratio (i dot n) 
   (if (< n 0)
       0
       (toon (- n 1) camerapos obpos)))    
 
-(define (render)
+(define (myrender)
   (grab ob)
   (deform (pdata-size))
   (recalc-normals 1)
@@ -129,18 +129,14 @@
          ; it doesn't hurt - just need to call it inside
          ; the gl context
          (fluxus-init)
-         
-         ; start fluxus calls
-         (begin-scene)
-         
+                  
          ; if it's the first time, setup the scene
          (if (null? ob) (setup))
          
-         ; render stuff
-         (render)
+         (myrender)
          
-         ; stop fluxus calls
-         (end-scene)
+         ; render stuff
+         (fluxus-render)
          
          ; swap the buffers 
          (swap-gl-buffers)
@@ -156,3 +152,9 @@
 (define frame (instantiate frame% ("fluxus in mred")))
 (define fluxus-canvas (instantiate fluxus-canvas% (frame) (min-width 640) (min-height 400)))
 (send frame show #t)
+
+(define (loop)
+  (send fluxus-canvas on-paint)
+  (loop))
+
+(define thr (thread loop))

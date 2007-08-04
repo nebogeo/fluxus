@@ -178,6 +178,7 @@ public:
     dMatrix &scale(float x, float y, float z);
     dVector transform_no_trans(dVector const &p) const;
     dVector transform(dVector const &p) const;
+    dVector transform_persp(dVector const &p) const;
     dVertex transform(dVertex const &p) const;
 	void    transpose();
 	dMatrix inverse() const;
