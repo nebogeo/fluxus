@@ -40,6 +40,8 @@
         (parse-helpmap (cdr helpmap) output)))
   
   (define (parse-section section output)
+  	;(display section)(newline)
+	
     (display "@node " output)
     (display (car section) output)
     (display #\newline output)

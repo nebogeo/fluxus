@@ -23,10 +23,37 @@
 (module makehelpmap mzscheme
   (provide 
    makehelpmap
-   write-helpmapfile)
+   write-helpmapfile
+   set-locale)
+ 
+  ; print out debug info
+  (define debug-mode #f)
+  
+  (define (debug data)
+  	(cond 
+		(debug-mode
+	  		(display (car data))
+			(if (null? (cdr data))
+				(newline)
+				(debug (cdr data))))))
   
   ; tells us which language to extract documentation for
   (define locale "pt")
+  
+  ; the tags to use for each language - override them 
+  ; in set-locale
+  (define locale-returns "Returns:")
+  (define locale-description "Description:")
+  (define locale-example "Example:")
+   
+  (define (set-locale s)
+  	(debug (list "setting locale to:" s))
+  	(set! locale s)
+	(cond 
+		((string=? s "pt")
+		    (set! locale-returns "Retorna:")
+		    (set! locale-description "Descrição:")
+		    (set! locale-example "Exemplo:"))))
   
   ; returns a string of characters from the current position
   ; using the delimit function to mark beginning and end
@@ -86,6 +113,8 @@
            (inner-gather (string-append w)))
           (else
            (inner-gather (string-append str " " w))))))
+		   
+	(debug (list "Gather - looking for: " end))
     (inner-gather ""))
   
   ; gather all words up to end word including newlines
@@ -128,6 +157,7 @@
       
       (list->string (inner-remove-comments (string->list str) '())))
     
+	(debug (list "Gather formatted, looking for: " end))
     (let ((first-char (car (string->list end))))
       (remove-comments (inner-gather "" first-char))))
   
@@ -147,13 +177,13 @@
             (else
              (read-word file) ; comment //
 			 (let ((funcname (read-word file)))
-			 ;(display funcname)(newline)
+			 (debug (list funcname))
              (parse-functions file (append l (list (list
                                                     funcname 
                                                     (list
-                                                     (gather file "Returns:")
-                                                     (gather file "Description:")
-                                                     (gather file "Example:")
+                                                     (gather file locale-returns)
+                                                     (gather file locale-description)
+                                                     (gather file locale-example)
                                                      (gather-formatted file "EndFunctionDoc"))))))))))))
   
   (define (parse-section file l)
@@ -168,7 +198,7 @@
              (append l (list (list
                               (read-word file) ; section name
                               (list
-                               (gather file "Example:")
+                               (gather file locale-example)
                                (gather-formatted file "EndSectionDoc")
                                (parse-functions file '()))))))))))
   
@@ -193,7 +223,7 @@
       (close-output-port helpmapfile)))
   
   (define (makehelpmap file)
-    ;(display "parsing ")(display file)(newline)
+    (debug (list "parsing " file))
     (set! helpmaplist (parse-file file helpmaplist)))
   
   ) ; module makehelpmap
@@ -228,11 +258,13 @@
            (makehelpmap path))))))
 
 (cond 
-  ((eq? (vector-length (current-command-line-arguments)) 2)
+  ((eq? (vector-length (current-command-line-arguments)) 3)
    (let ((args (vector->list (current-command-line-arguments))))
-     (recurse-dir (car args) visitor)
-     (write-helpmapfile (car (cdr args)))))
+	 (set-locale (car args))
+     (recurse-dir (cadr args) visitor)
+     (write-helpmapfile (caddr args))))
   (else
-   (display "usage: makehelpmap.scm path helpfile")(newline)))
+   (display "usage: makehelpmap.scm locale path helpfile")(newline)
+   (display "where locale is one of: en pt")(newline)))
 
 
