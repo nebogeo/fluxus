@@ -43,7 +43,7 @@ public:
 	template <class S, class T>
 	static PData *Operate(TypedPData<S> *a, T b)
 	{
-		cerr<<"AddOperator has no operator for types: "<<typeid(a).name()<<" and "	
+		Trace::Stream<<"AddOperator has no operator for types: "<<typeid(a).name()<<" and "	
 			<<typeid(b).name()<<endl;
 		return NULL;
 	}
@@ -71,7 +71,7 @@ public:
 	template <class S, class T>
 	static PData *Operate(TypedPData<S> *a, T b)
 	{
-		cerr<<"MultOperator has no operator for types: "<<typeid(a).name()<<" and "	
+		Trace::Stream<<"MultOperator has no operator for types: "<<typeid(a).name()<<" and "	
 			<<typeid(b).name()<<endl;
 		return NULL;
 	}
@@ -101,7 +101,7 @@ public:
 	template <class S, class T>
 	static PData *Operate(TypedPData<S> *a, T b)
 	{
-		cerr<<"SineOperator has no operator for types: "<<typeid(a).name()<<" and "	
+		Trace::Stream<<"SineOperator has no operator for types: "<<typeid(a).name()<<" and "	
 			<<typeid(b).name()<<endl;
 		return NULL;
 	}
@@ -119,7 +119,7 @@ public:
 	template <class S, class T>
 	static PData *Operate(TypedPData<S> *a, T b)
 	{
-		cerr<<"CosineOperator has no operator for types: "<<typeid(a).name()<<" and "	
+		Trace::Stream<<"CosineOperator has no operator for types: "<<typeid(a).name()<<" and "	
 			<<typeid(b).name()<<endl;
 		return NULL;
 	}
@@ -137,7 +137,7 @@ public:
 	template <class S, class T>
 	static PData *Operate(TypedPData<S> *a, T b)
 	{
-		cerr<<"ClosestOperator has no operator for types: "<<typeid(a).name()<<" and "	
+		Trace::Stream<<"ClosestOperator has no operator for types: "<<typeid(a).name()<<" and "	
 			<<typeid(b).name()<<endl;
 		return NULL;
 	}

@@ -100,7 +100,7 @@ void PDataContainer::AddData(const string &name, PData* pd)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i!=m_PData.end())
 	{
-		cerr<<"Primitive::AddData: pdata: "<<name<<" already exists"<<endl;
+		Trace::Stream<<"Primitive::AddData: pdata: "<<name<<" already exists"<<endl;
 		return;
 	}
 	
@@ -112,7 +112,7 @@ void PDataContainer::CopyData(const string &name, string newname)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
-		cerr<<"Primitive::CopyData: pdata source: "<<name<<" doesn't exist"<<endl;
+		Trace::Stream<<"Primitive::CopyData: pdata source: "<<name<<" doesn't exist"<<endl;
 		return;
 	}
 	
@@ -133,7 +133,7 @@ void PDataContainer::RemoveDataVec(const string &name)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
-		cerr<<"Primitive::RemovePDataVec: pdata: "<<name<<" doesn't exist"<<endl;
+		Trace::Stream<<"Primitive::RemovePDataVec: pdata: "<<name<<" doesn't exist"<<endl;
 		return;
 	}
 	
@@ -157,7 +157,7 @@ void PDataContainer::SetDataRaw(const string &name, PData* pd)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
-		cerr<<"Primitive::SetDataRaw: pdata: "<<name<<" doesn't exist"<<endl;
+		Trace::Stream<<"Primitive::SetDataRaw: pdata: "<<name<<" doesn't exist"<<endl;
 		return;
 	}
 	delete i->second;

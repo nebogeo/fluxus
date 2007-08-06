@@ -23,6 +23,7 @@
 #include <math.h>
 #include <iostream>
 #include <list>
+#include "Trace.h"
 
 using namespace std;
 
@@ -36,7 +37,7 @@ static const float TWO_PI=3.141592654*2.0f;
 static const float DEG_CONV = 0.017453292;
 static const float RAD_CONV = 1/0.017453292;
 
-inline void debug(char *s) {cerr<<"dada debug: "<<s<<endl;}
+inline void debug(char *s) {Trace::Stream<<"dada debug: "<<s<<endl;}
 
 void  InitDada();
 float RandFloat();

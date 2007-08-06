@@ -172,7 +172,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 {	
 	if (m_ObjectMap.find(ID)!=m_ObjectMap.end())
 	{
-		cerr<<"Physics::AddToGroup : Object ["<<ID<<"] already registered"<<endl;
+		Trace::Stream<<"Physics::AddToGroup : Object ["<<ID<<"] already registered"<<endl;
 		return;
 	}
 	
@@ -287,7 +287,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 {	
 	if (m_ObjectMap.find(ID)!=m_ObjectMap.end())
 	{
-		cerr<<"Physics::AddToGroup : Object ["<<ID<<"] already registered"<<endl;
+		Trace::Stream<<"Physics::AddToGroup : Object ["<<ID<<"] already registered"<<endl;
 		return;
 	}
 	
@@ -384,13 +384,13 @@ void Physics::SetMass(int ID, float mass)
 	map<int,Object*>::iterator i = m_ObjectMap.find(ID);
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::SetMass : Object ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::SetMass : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 	
 	if (i->second->Type!=ACTIVE)
 	{
-		cerr<<"Physics::SetMass : Object ["<<ID<<"] isn't active"<<endl;
+		Trace::Stream<<"Physics::SetMass : Object ["<<ID<<"] isn't active"<<endl;
 		return;
 	}
 	
@@ -405,7 +405,7 @@ void Physics::Free(int ID)
 	map<int,Object*>::iterator i = m_ObjectMap.find(ID);
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 
@@ -466,7 +466,7 @@ void Physics::Kick(int ID, dVector v)
     map<int,Object*>::iterator i = m_ObjectMap.find(ID);
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::Kick : Object ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::Kick : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 	
@@ -482,7 +482,7 @@ void Physics::Twist(int ID, dVector v)
     map<int,Object*>::iterator i = m_ObjectMap.find(ID);
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::Twist : Object ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::Twist : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 	
@@ -534,19 +534,19 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointHinge2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge2 : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointHinge2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge2 : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i1->second->Body==0 || i2->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointHinge2 : cant connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge2 : cant connect passive objects"<<endl;
 		return 0;
 	}
 
@@ -573,19 +573,19 @@ int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointHinge : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointHinge : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i1->second->Body==0 || i2->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointHinge : cant connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointHinge : cant connect passive objects"<<endl;
 		return 0;
 	}
 	
@@ -609,13 +609,13 @@ int Physics::CreateJointFixed(int Ob)
 	
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointFixed : Object ["<<Ob<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointFixed : Object ["<<Ob<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointFixed : can't connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointFixed : can't connect passive objects"<<endl;
 		return 0;
 	}
 
@@ -638,19 +638,19 @@ int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointSlider : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointSlider : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointSlider : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointSlider : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 
 	if (i1->second->Body==0 || i2->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointSlider : cant connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointSlider : cant connect passive objects"<<endl;
 		return 0;
 	}
 	
@@ -673,19 +673,19 @@ int Physics::CreateJointAMotor(int Ob1, int Ob2, dVector Axis)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointAMotor : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointAMotor : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointAMotor : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointAMotor : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 
 	if (i1->second->Body==0 || i2->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointAMotor : cant connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointAMotor : cant connect passive objects"<<endl;
 		return 0;
 	}
 
@@ -711,19 +711,19 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 	
 	if (i1==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointBall : Object ["<<Ob1<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointBall : Object ["<<Ob1<<"] doesn't exist"<<endl;
 		return 0;
 	}
 	
 	if (i2==m_ObjectMap.end())
 	{
-		cerr<<"Physics::CreateJointBall : Object ["<<Ob2<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::CreateJointBall : Object ["<<Ob2<<"] doesn't exist"<<endl;
 		return 0;
 	}
 
 	if (i1->second->Body==0 || i2->second->Body==0)
 	{
-		cerr<<"Physics::CreateJointBall : cant connect passive objects"<<endl;
+		Trace::Stream<<"Physics::CreateJointBall : cant connect passive objects"<<endl;
 		return 0;
 	}
 
@@ -744,7 +744,7 @@ void Physics::SetJointAngle(int ID, float vel, float angle)
 	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
 	if (i==m_JointMap.end())
 	{
-		cerr<<"Physics::SetJointAngle : Joint ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::SetJointAngle : Joint ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 	
@@ -763,7 +763,7 @@ void Physics::SetJointParam(int ID, const string &Param, float Value)
 	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
 	if (i==m_JointMap.end())
 	{
-		cerr<<"Physics::SetJointParam : Joint ["<<ID<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::SetJointParam : Joint ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
 
@@ -783,7 +783,7 @@ void Physics::SetJointParam(int ID, const string &Param, float Value)
 	else if (Param=="FMax2")  	     p=dParamFMax2; 
 	else 
 	{
-		cerr<<"unknown parameter "<<Param<<endl;
+		Trace::Stream<<"unknown parameter "<<Param<<endl;
 		return;
 	}
 	
@@ -797,7 +797,7 @@ void Physics::SetJointParam(int ID, const string &Param, float Value)
 		case Hinge2Joint    : dJointSetHinge2Param(i->second->Joint,p,Value); break;	
 		case FixedJoint     : break;	// no set param required
 		case AMotorJoint    : dJointSetAMotorParam(i->second->Joint,p,Value); break;
-		default : cerr<<"unknown joint type "<<i->second->Type<<endl; return; break;	
+		default : Trace::Stream<<"unknown joint type "<<i->second->Type<<endl; return; break;	
 	} 	
 }
 
@@ -806,7 +806,7 @@ bool Physics::HasCollided(int Ob)
 	map<int,Object*>::iterator i = m_ObjectMap.find(Ob);
 	if (i==m_ObjectMap.end())
 	{
-		cerr<<"Physics::HasCollided : Object ["<<Ob<<"] doesn't exist"<<endl;
+		Trace::Stream<<"Physics::HasCollided : Object ["<<Ob<<"] doesn't exist"<<endl;
 		return false;
 	}
 	

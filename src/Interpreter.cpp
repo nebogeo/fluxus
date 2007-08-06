@@ -87,15 +87,22 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 		long size=0;
 		char *msg;
 		msg=scheme_get_sized_byte_string_output(outport,&size);	
-		if (size>0) m_Repl->Print(string(msg));
+		if (size>0) 
+		{
+			m_Repl->Print(string(msg));
+		}
 	}	
-	
+		
 	if (errport!=NULL)
 	{
 		long size=0;
 		char *msg;
 		msg=scheme_get_sized_byte_string_output(errport,&size);
-		if (size>0) m_Repl->Print(string(msg));
+		if (size>0) 
+		{	
+			m_Repl->Print(string(msg));
+			*ret=NULL; // don't want to try to do anything with ret if there was an error
+		}
 	}	
 	
 	#ifdef MZ_PRECISE_GC

@@ -42,7 +42,8 @@ Source = Split("src/PData.cpp \
 		src/GenSkinWeightsPrimFunc.cpp \
 		src/SkinWeightsToVertColsPrimFunc.cpp \
 		src/SkinningPrimFunc.cpp \
-		src/Utils.cpp")
+		src/Utils.cpp \
+		src/Trace.cpp")
 		
 env.StaticLibrary(source = Source, target = Target)
 

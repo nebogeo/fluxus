@@ -185,7 +185,7 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 
 	if (fread(code,1,size,file)!=size)
 	{
-		cerr<<"Error reading shader ["<<filename<<"]"<<endl;
+		Trace::Stream<<"Error reading shader ["<<filename<<"]"<<endl;
 		delete[] code;
 		return 0;
 	}
@@ -203,8 +203,8 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 			char log[1024];
 
 			glGetShaderInfoLog(shader, 1024, &size, log);
-			cerr<<"compile errors for ["<<filename<<"]"<<endl;
-			cerr<<log<<endl;
+			Trace::Stream<<"compile errors for ["<<filename<<"]"<<endl;
+			Trace::Stream<<log<<endl;
 
 			glDeleteShader(shader);
 			delete[] code;

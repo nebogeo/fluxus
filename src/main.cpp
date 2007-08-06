@@ -242,6 +242,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
+			app->SetCurrentEditor(0); // flip it out of the repl
 			app->LoadScript(argv[arg]);
 		}
 		arg++;

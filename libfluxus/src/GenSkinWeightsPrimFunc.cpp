@@ -41,7 +41,7 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
 	if (!root)
 	{
-		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node"<<endl;
+		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node"<<endl;
 		return;
 	}
 	

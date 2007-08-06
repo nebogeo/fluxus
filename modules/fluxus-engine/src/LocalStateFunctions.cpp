@@ -167,7 +167,7 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 {
 	if (Engine::Get()->Grabbed())
 	{
-		cerr<<"error: can't (push) while an object is (grab)bed"<<endl;
+		Trace::Stream<<"error: can't (push) while an object is (grab)bed"<<endl;
 		return scheme_void;
 	}
 	
@@ -212,7 +212,7 @@ Scheme_Object *pop(int argc, Scheme_Object **argv)
 {
 	if (Engine::Get()->Grabbed())
 	{
-		cerr<<"error: can't (pop) while an object is (grab)bed"<<endl;
+		Trace::Stream<<"error: can't (pop) while an object is (grab)bed"<<endl;
 		return scheme_void;
 	}
 
@@ -696,7 +696,7 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 	}
 	else
 	{
-		cerr<<"rotate - wrong number of elements in vector"<<endl;
+		Trace::Stream<<"rotate - wrong number of elements in vector"<<endl;
 	}
 	MZ_GC_UNREG(); 
     return scheme_void;
@@ -989,7 +989,7 @@ Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 	else if (s=="dst-alpha") Engine::Get()->State()->SourceBlend=GL_DST_ALPHA;
 	else if (s=="one-minus-dst-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_ALPHA;
 	else if (s=="src-alpha-saturate") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA_SATURATE;
-	else cerr<<"source blend mode not recognised: "<<s<<endl;
+	else Trace::Stream<<"source blend mode not recognised: "<<s<<endl;
 	
 	if (d=="zero") Engine::Get()->State()->DestinationBlend=GL_ZERO;
 	else if (d=="one") Engine::Get()->State()->DestinationBlend=GL_ONE;
@@ -999,7 +999,7 @@ Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 	else if (d=="one-minus-src-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
 	else if (d=="dst-alpha") Engine::Get()->State()->DestinationBlend=GL_DST_ALPHA;
 	else if (d=="one-minus-dst-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
-	else cerr<<"dest blend mode not recognised: "<<d<<endl;
+	else Trace::Stream<<"dest blend mode not recognised: "<<d<<endl;
 	
 	MZ_GC_UNREG(); 
     return scheme_void;
@@ -1885,17 +1885,17 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 					}
 					else
 					{	
-						cerr<<"shader has found an argument vector of a strange size"<<endl;
+						Trace::Stream<<"shader has found an argument vector of a strange size"<<endl;
 					}
 				}
 				else
 				{
-					cerr<<"shader has found an argument type it can't send, numbers and vectors only"<<endl;
+					Trace::Stream<<"shader has found an argument type it can't send, numbers and vectors only"<<endl;
 				}
 			}
 			else
 			{
-				cerr<<"shader has found a mal-formed parameter list"<<endl;
+				Trace::Stream<<"shader has found a mal-formed parameter list"<<endl;
 			}
 		}
 		GLSLShader::Unapply();

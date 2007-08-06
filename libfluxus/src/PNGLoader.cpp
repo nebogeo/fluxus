@@ -16,6 +16,7 @@
 
 #include <png.h>
 #include "PNGLoader.h"
+#include "Trace.h"
 
 using namespace Fluxus;
 
@@ -23,7 +24,7 @@ unsigned char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelForm
 {
 	unsigned char *ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
-	if (!fp) cerr<<"Couldn't open image ["<<Filename<<"]"<<endl;
+	if (!fp) Trace::Stream<<"Couldn't open image ["<<Filename<<"]"<<endl;
 	else
 	{
 		png_structp png_ptr;
@@ -53,7 +54,7 @@ unsigned char *PNGLoader::Load(const string &Filename, int &w, int &h, PixelForm
 		{
 			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
         	case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
-        	default : cerr<<"PNG pixel format not supported : "<<png_ptr->color_type<<endl;
+        	default : Trace::Stream<<"PNG pixel format not supported : "<<png_ptr->color_type<<endl;
         }
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);	

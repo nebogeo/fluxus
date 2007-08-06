@@ -66,7 +66,7 @@ void State::Apply()
 
 void State::Spew()
 {
-	cerr<<"Colour: "<<Colour<<endl
+	Trace::Stream<<"Colour: "<<Colour<<endl
 		<<"Specular: "<<Specular<<endl
 		<<"Ambient: "<<Ambient<<endl
 		<<"Emissive: "<<Emissive<<endl

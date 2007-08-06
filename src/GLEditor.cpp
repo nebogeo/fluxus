@@ -369,15 +369,19 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		switch (key)
 		{
 			case GLEDITOR_CUT: // cut
-				if (m_Selection && m_HighlightEnd>m_HighlightStart) 
+				if (m_Selection) 
 				{
 					m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 					m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+					if (m_Position>=m_HighlightEnd) 
+					{
+						m_Position-=m_HighlightEnd-m_HighlightStart;
+					}	
 					m_Selection=false;
 				}
 			break;
 			case GLEDITOR_COPY: // copy
-				if (m_Selection && m_HighlightEnd>m_HighlightStart) 
+				if (m_Selection) 
 				{
 					m_CopyBuffer=m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 				}
@@ -407,10 +411,13 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				{
 					if (!m_Text.empty() && m_Position!=0)
 					{
-						if (m_Selection)
+						if (m_Selection) 
 						{
 							m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart); 
-							m_Position-=m_HighlightEnd-m_HighlightStart;						
+							if (m_Position>=m_HighlightEnd) 
+							{
+								m_Position-=m_HighlightEnd-m_HighlightStart;
+							}						
 							m_Selection=false;
 						}
 						else
@@ -452,13 +459,14 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 			}
 		}
 	}
-			
+	
 	if (m_Position<0) m_Position=0;
 	if (m_Position>m_Text.size()) m_Position=m_Text.size();
 	
 	if (key==0 && !m_ShiftState && mod&GLUT_ACTIVE_SHIFT)
 	{ 
 		m_HighlightStart=startpos;
+		m_HighlightEnd=startpos;
 		m_ShiftState=true;
 		m_Selection=true;
 	}
@@ -469,8 +477,12 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		m_Selection=false;
 	}
 	
-	if (m_ShiftState) m_HighlightEnd=m_Position;	
-		
+	if (m_ShiftState) 
+	{
+		if (m_Position<m_HighlightStart) m_HighlightStart=m_Position;	
+		else m_HighlightEnd=m_Position;
+	}
+	
 	/*cerr<<"----------------"<<endl;
 	cerr<<PreviousLineLength(m_Position)<<endl;
 	cerr<<LineLength(m_Position)<<endl;

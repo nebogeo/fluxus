@@ -51,7 +51,7 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 	// max gl matrix stack is 32 
 	/*if (depth>=30)
 	{
-		cerr<<"SceneGraph::RenderWalk: max stack reached"<<endl;
+		Trace::Stream<<"SceneGraph::RenderWalk: max stack reached"<<endl;
 		return;
 	}*/
 	

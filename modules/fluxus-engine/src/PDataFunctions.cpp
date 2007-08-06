@@ -124,14 +124,14 @@ Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 			}
 			else
 			{
-				cerr<<"unknown pdata type ["<<type<<"]"<<endl;
+				Trace::Stream<<"unknown pdata type ["<<type<<"]"<<endl;
 			}
 		
 		}
 		
 		if (ret==NULL)
 		{
-			cerr<<"could not find pdata called ["<<name<<"]"<<endl;
+			Trace::Stream<<"could not find pdata called ["<<name<<"]"<<endl;
   			MZ_GC_UNREG();
 			return scheme_make_double(0);
 		}
@@ -140,7 +140,7 @@ Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 		return ret;
 	}			
 	
-	cerr<<"pdata-get called without an objected being grabbed"<<endl;
+	Trace::Stream<<"pdata-get called without an objected being grabbed"<<endl;
   	MZ_GC_UNREG();
     return scheme_void;
 }
@@ -183,7 +183,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 			if (type=='f')	
 			{
 				if (SCHEME_NUMBERP(argv[2])) Grabbed->SetData<float>(name,index%size,FloatFromScheme(argv[2]));
-				else cerr<<"expected number value in pdata-set"<<endl;
+				else Trace::Stream<<"expected number value in pdata-set"<<endl;
 			}
 			else if (type=='v')	
 			{
@@ -193,7 +193,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 					FloatsFromScheme(argv[2],v.arr(),3);
 					Grabbed->SetData<dVector>(name,index%size,v);
 				}
-				else cerr<<"expected vector (size 3) value in pdata-set"<<endl;
+				else Trace::Stream<<"expected vector (size 3) value in pdata-set"<<endl;
 			}
 			else if (type=='c')	
 			{
@@ -204,7 +204,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 					else FloatsFromScheme(argv[2],c.arr(),4);
 					Grabbed->SetData<dColour>(name,index%size,c);
 				}
-				else cerr<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
+				else Trace::Stream<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
 			}
 			else if (type=='m')	
 			{
@@ -214,7 +214,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 					FloatsFromScheme(argv[2],m.arr(),16);
 					Grabbed->SetData<dMatrix>(name,index%size,m);
 				}
-				else cerr<<"expected matrix vector (size 16) value in pdata-set"<<endl;
+				else Trace::Stream<<"expected matrix vector (size 16) value in pdata-set"<<endl;
 			}
 		}
 	}
@@ -264,7 +264,7 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 			case 'c': ptr = new TypedPData<dColour>; ((TypedPData<dColour>*)ptr)->m_Data.resize(size); break;
 			case 'f': ptr = new TypedPData<float>; ((TypedPData<float>*)ptr)->m_Data.resize(size); break;
 			case 'm': ptr = new TypedPData<dMatrix>; ((TypedPData<dMatrix>*)ptr)->m_Data.resize(size); break;
-			default : cerr<<"pdata-new: unknown type "<<types[0]<<endl; break;
+			default : Trace::Stream<<"pdata-new: unknown type "<<types[0]<<endl; break;
 		}
 		
 		if (ptr)

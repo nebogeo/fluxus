@@ -18,6 +18,7 @@
 #include <escheme.h>
 #include "dada.h"
 #include "Renderer.h"
+#include "Trace.h"
 
 #undef MZ_GC_DECL_REG
 #undef MZ_GC_UNREG

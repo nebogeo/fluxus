@@ -833,11 +833,11 @@ void dMatrix::extract_euler(float &x, float &y, float &z) const
 	dVector zvec = get_hori_k().normalise();
 	float d1,d2;
 	xvec.get_euler(x,d1,d2);
-	cerr<<x<<" "<<d1<<" "<<d2<<endl;
+	Trace::Stream<<x<<" "<<d1<<" "<<d2<<endl;
 	yvec.get_euler(d1,y,d2);
-	cerr<<d1<<" "<<y<<" "<<d2<<endl;
+	Trace::Stream<<d1<<" "<<y<<" "<<d2<<endl;
 	zvec.get_euler(d1,d2,z);
-	cerr<<d1<<" "<<d2<<" "<<z<<endl;*/
+	Trace::Stream<<d1<<" "<<d2<<" "<<z<<endl;*/
 }
 	
 void dMatrix::aim(dVector v, dVector up)

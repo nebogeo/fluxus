@@ -179,7 +179,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	else if (t=="polygon") type=PolyPrimitive::POLYGON;
 	else 
 	{
-		cerr<<"build-polygons: unknown poly type: "<<t<<endl;
+		Trace::Stream<<"build-polygons: unknown poly type: "<<t<<endl;
 	}
 	
 	PolyPrimitive *Prim = new PolyPrimitive(type);
@@ -595,7 +595,7 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
+	Trace::Stream<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
     return scheme_void;
 }
 
@@ -619,7 +619,7 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"pixels-load can only be called while a pixelprimitive is grabbed"<<endl;
+	Trace::Stream<<"pixels-load can only be called while a pixelprimitive is grabbed"<<endl;
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -663,7 +663,7 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"pixels->texture can only be called on a pixelprimitive"<<endl;
+	Trace::Stream<<"pixels->texture can only be called on a pixelprimitive"<<endl;
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -766,7 +766,7 @@ Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"blobby->poly can only be called on a blobbyprimitive"<<endl;
+	Trace::Stream<<"blobby->poly can only be called on a blobbyprimitive"<<endl;
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -1059,7 +1059,7 @@ Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"poly-set-index! can only be called while a polyprimitive is grabbed"<<endl;
+	Trace::Stream<<"poly-set-index! can only be called while a polyprimitive is grabbed"<<endl;
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -1108,7 +1108,7 @@ Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
 		}
 	}
 	
-	cerr<<"poly-convert-to-indexed can only be called while a polyprimitive is grabbed"<<endl;
+	Trace::Stream<<"poly-convert-to-indexed can only be called while a polyprimitive is grabbed"<<endl;
     return scheme_void;
 }
 
@@ -1322,7 +1322,7 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 				}
 				else
 				{	
-					cerr<<"pfunc-set! has found a strange sized vector"<<endl;
+					Trace::Stream<<"pfunc-set! has found a strange sized vector"<<endl;
 				}
 			}
 			else if (SCHEME_LISTP(SCHEME_VEC_ELS(paramvec)[n+1]))
@@ -1343,18 +1343,18 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 				}
 				else
 				{	
-					cerr<<"pfunc-set! only takes lists of numbers"<<endl;
+					Trace::Stream<<"pfunc-set! only takes lists of numbers"<<endl;
 				}
 				
 			}
 			else
 			{
-				cerr<<"pfunc-set! has found an argument type it can't send, numbers, vectors or lists only"<<endl;
+				Trace::Stream<<"pfunc-set! has found an argument type it can't send, numbers, vectors or lists only"<<endl;
 			}
 		}
 		else
 		{
-			cerr<<"pfunc-set! has found a mal-formed parameter list"<<endl;
+			Trace::Stream<<"pfunc-set! has found a mal-formed parameter list"<<endl;
 		}
 	}
 	

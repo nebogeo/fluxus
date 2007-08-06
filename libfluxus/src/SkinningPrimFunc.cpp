@@ -41,7 +41,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	if (!pref)
 	{
 		///\todo sort out a proper error messaging thing
-		cerr<<"SkinningPrimFunc::Run: aborting: primitive needs a pref (copy of p)"<<endl;
+		Trace::Stream<<"SkinningPrimFunc::Run: aborting: primitive needs a pref (copy of p)"<<endl;
 		return;
 	}
 	
@@ -51,7 +51,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		nref = prim.GetDataVec<dVector>("nref");
 		if (!nref)
 		{
-			cerr<<"SkinningPrimFunc::Run: aborting: primitive needs an nref (copy of n)"<<endl;
+			Trace::Stream<<"SkinningPrimFunc::Run: aborting: primitive needs an nref (copy of n)"<<endl;
 			return;
 		}
 	}
@@ -59,14 +59,14 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
 	if (!root)
 	{
-		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node "<<rootid<<endl;
+		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node "<<rootid<<endl;
 		return;
 	}
 	
 	const SceneNode *bindposeroot = static_cast<const SceneNode *>(world.FindNode(bindposerootid));
 	if (!root)
 	{
-		cerr<<"GenSkinWeightsPrimFunc::Run: couldn't find bindopose skeleton root node "<<bindposerootid<<endl;
+		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find bindopose skeleton root node "<<bindposerootid<<endl;
 		return;
 	}
 	
@@ -78,7 +78,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 
 	if (skeleton.size()!=bindposeskeleton.size())
 	{
-		cerr<<"SkinningPrimFunc::Run: aborting: skeleton sizes do not match! "<<
+		Trace::Stream<<"SkinningPrimFunc::Run: aborting: skeleton sizes do not match! "<<
 			skeleton.size()<<" vs "<<bindposeskeleton.size()<<endl;
 		return;
 	}
@@ -100,7 +100,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		vector<float> *w = prim.GetDataVec<float>(wname);
 		if (w==NULL)
 		{
-			cerr<<"SkinningPrimFunc::Run: can't find weights, aborting"<<endl;
+			Trace::Stream<<"SkinningPrimFunc::Run: can't find weights, aborting"<<endl;
 			return;
 		}
 		weights.push_back(w);

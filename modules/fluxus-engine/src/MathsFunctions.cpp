@@ -606,7 +606,7 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 		return FloatsToScheme(m.arr(),16);	
 	}
 	
-	cerr<<"mrotate - wrong number of elements in vector"<<endl;
+	Trace::Stream<<"mrotate - wrong number of elements in vector"<<endl;
 	MZ_GC_UNREG(); 
 	return scheme_void;
 }

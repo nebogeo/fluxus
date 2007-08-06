@@ -126,14 +126,14 @@ vector<T>* PDataContainer::GetDataVec(const string &name)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
-		cerr<<"Primitive::GetPDataVec: pdata: "<<name<<" doesn't exists"<<endl;
+		Trace::Stream<<"Primitive::GetPDataVec: pdata: "<<name<<" doesn't exists"<<endl;
 		return NULL;
 	}
 	
 	TypedPData<T> *ptr=dynamic_cast<TypedPData<T> *>(i->second);
 	if (!ptr) 
 	{
-		cerr<<"Primitive::GetPDataVec: pdata: "<<name<<" is not of type: "<<typeid(TypedPData<T>).name()<<endl;
+		Trace::Stream<<"Primitive::GetPDataVec: pdata: "<<name<<" is not of type: "<<typeid(TypedPData<T>).name()<<endl;
 		return NULL;
 	}
 	
@@ -146,7 +146,7 @@ PData *PDataContainer::DataOp(const string &op, const string &name, T operand)
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
-		cerr<<"Primitive::DataOp: pdata: "<<name<<" doesn't exists"<<endl;
+		Trace::Stream<<"Primitive::DataOp: pdata: "<<name<<" doesn't exists"<<endl;
 		return NULL;
 	}
 	
@@ -180,7 +180,7 @@ PData *PDataContainer::FindOperate(const string &name, TypedPData<S> *a, T b)
 	else if (name=="sin") return SineOperator::Operate<S,T>(a,b);
 	else if (name=="cos") return CosineOperator::Operate<S,T>(a,b);
 	
-	cerr<<"operator "<<name<<" not found"<<endl;
+	Trace::Stream<<"operator "<<name<<" not found"<<endl;
 	return NULL;
 }
 

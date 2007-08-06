@@ -29,6 +29,7 @@
 #include "LightFunctions.h"
 #include "PhysicsFunctions.h"
 #include "SchemeHelper.h"
+#include "Trace.h"
 
 using namespace SchemeHelper;
 
@@ -272,7 +273,7 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 	#ifdef GLSL
 	if(glewInit() != GLEW_OK)
 	{
-		cerr << "ERROR Unable to check OpenGL extensions" << endl;
+		Trace::Stream << "ERROR Unable to check OpenGL extensions" << endl;
 	}
 
 	Fluxus::GLSLShader::Init();
@@ -281,6 +282,20 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 	Engine::Get()->Reinitialise();
 	
 	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// fluxus-error-log
+// Returns: void
+// Description:
+// Returns a string containing error information for the last frame.
+// Example:
+// (display (fluxus-error-log))
+// EndFunctionDoc
+
+Scheme_Object *fluxus_error_log(int argc, Scheme_Object **argv)
+{
+	return scheme_make_utf8_string(Trace::Get().c_str());
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -315,6 +330,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("tick-physics", scheme_make_prim_w_arity(tick_physics, "tick-physics", 0, 0), menv);
 	scheme_add_global("render-physics", scheme_make_prim_w_arity(render_physics, "render-physics", 0, 0), menv);
 	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);
+	scheme_add_global("fluxus-error-log", scheme_make_prim_w_arity(fluxus_error_log, "fluxus-error-log", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);	
 	

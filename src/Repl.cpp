@@ -50,7 +50,7 @@ void Repl::Print(string what)
 
 	EnsureCursorVisible();
 
-	cout << what;
+	//cout << what;
 }
 
 void Repl::PrintPrompt()
@@ -67,9 +67,16 @@ void Repl::PrintPrompt()
 
 void Repl::Print(Scheme_Object *obj)
 {
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, obj);
+    MZ_GC_REG();
 	long length=0;
-	char *str = scheme_display_to_string(obj, &length);
-	Print(str);
+	if (obj)
+	{
+		char *str = scheme_display_to_string(obj, &length);
+		Print(str);
+	}
+	MZ_GC_UNREG();	
 }
 
 void Repl::Handle(int button, int key, int special, int state, 
@@ -206,7 +213,8 @@ bool Repl::TryEval()
 		m_History.push_back(defun);
 		m_HistoryNavStarted = false;
 
-		if (out != NULL && out != scheme_void) {
+		if (out != NULL && out != scheme_void) 
+		{
         	Print(out);
         	Print("\n");
 		}

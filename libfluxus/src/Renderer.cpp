@@ -18,6 +18,7 @@
 #include "State.h"
 #include "Primitive.h"
 #include "PNGLoader.h"
+#include "Trace.h"
 #include <sys/time.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -83,6 +84,9 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {	
+	// clear the error log
+	Trace::Stream.clear();
+	
 	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{
@@ -371,7 +375,7 @@ void Renderer::PostRender()
 	
 	//if (m_StateStack.size()!=1)
 	//{
-	//	cerr<<"State mismatch: stack size "<<m_StateStack.size()<<" at end scene"<<endl;
+	//	Trace::Stream<<"State mismatch: stack size "<<m_StateStack.size()<<" at end scene"<<endl;
 	//}
 }
 
@@ -534,7 +538,7 @@ State *Renderer::GetState()
 {
 	if (m_StateStack.empty())
 	{
-		cerr<<"Renderer::GetState : State stack is empty"<<endl;
+		Trace::Stream<<"Renderer::GetState : State stack is empty"<<endl;
 		return NULL;
 	}
 	
@@ -549,7 +553,7 @@ void Renderer::ApplyState()
 void Renderer::PushState()
 {
 	#ifdef DEBUG_TRACE
-	cerr<<"Renderer::PushState"<<endl;
+	Trace::Stream<<"Renderer::PushState"<<endl;
 	#endif
 	
 	m_StateStack.push_front(*GetState());
@@ -558,12 +562,12 @@ void Renderer::PushState()
 void Renderer::PopState()
 {
 	#ifdef DEBUG_TRACE
-	cerr<<"Renderer::PopState"<<endl;
+	Trace::Stream<<"Renderer::PopState"<<endl;
 	#endif
 	
 	if (m_StateStack.size()<2)
 	{
-		cerr<<"Renderer::PopState : only one state left, not popping"<<endl;
+		Trace::Stream<<"Renderer::PopState : only one state left, not popping"<<endl;
 	}
 	else
 	{

@@ -469,5 +469,6 @@
             (tick-physics)
             (update-audio))
       (else
-       (stereo-render))))
+       (stereo-render)))
+	 (display (fluxus-error-log)))
   )

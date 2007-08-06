@@ -303,7 +303,7 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 	}
 	else
 	{
-		cerr<<"turtle-attach only works on polys"<<endl;
+		Trace::Stream<<"turtle-attach only works on polys"<<endl;
 	}
 	MZ_GC_UNREG(); 
 	

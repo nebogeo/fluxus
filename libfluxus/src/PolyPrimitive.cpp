@@ -468,7 +468,7 @@ void PolyPrimitive::UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> 
 		edges.push_back(edge);
 		stored.insert(edge);
 		
-		//cerr<<"edge:"<<edge.first<<" "<<edge.second<<endl;
+		//Trace::Stream<<"edge:"<<edge.first<<" "<<edge.second<<endl;
 		
 		// make all combinations of verts connected to the edge verts
 		for (vector<int>::iterator a=m_ConnectedVerts[edge.first].begin();
@@ -477,14 +477,14 @@ void PolyPrimitive::UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> 
 			for (vector<int>::iterator b=m_ConnectedVerts[edge.second].begin();
 					b!=m_ConnectedVerts[edge.second].end(); b++)
 			{
-				//cerr<<*a<<" "<<*b<<endl;
+				//Trace::Stream<<*a<<" "<<*b<<endl;
 				pair<int, int> candidate(*a,*b);
 				if (firstpass.find(candidate)!=firstpass.end() && // if this is a real edge
 					stored.find(candidate)==stored.end() )        // and we've not stored it already
 				{
 					edges.push_back(candidate);
 					stored.insert(candidate);
-					//cerr<<"^ "<<candidate.first<<" "<<candidate.second<<endl;
+					//Trace::Stream<<"^ "<<candidate.first<<" "<<candidate.second<<endl;
 				}						
 
 				pair<int, int> rcandidate(*b,*a);
@@ -493,7 +493,7 @@ void PolyPrimitive::UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> 
 				{
 					edges.push_back(rcandidate);
 					stored.insert(rcandidate);
-					//cerr<<"^ "<<rcandidate.first<<" "<<rcandidate.second<<endl;
+					//Trace::Stream<<"^ "<<rcandidate.first<<" "<<rcandidate.second<<endl;
 				}						
 			}
 		}

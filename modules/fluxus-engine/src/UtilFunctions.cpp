@@ -297,7 +297,7 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 		}
 		else
 		{
-			cerr<<"framedump: Unknown image extension "<<filename.c_str()+strlen(filename.c_str())-3<<endl;
+			Trace::Stream<<"framedump: Unknown image extension "<<filename.c_str()+strlen(filename.c_str())-3<<endl;
 		}
 	}
 	

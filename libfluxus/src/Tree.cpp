@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Tree.h"
+#include "Trace.h"
 
 using namespace Fluxus;
 
@@ -29,7 +30,7 @@ void Node::RemoveChild(int ID)
 		}
 	}
 	
-	cerr<<"Node::RemoveChild : could not find "<<ID<<endl;
+	Trace::Stream<<"Node::RemoveChild : could not find "<<ID<<endl;
 }
 
 //////////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ int Tree::AddNode(int ParentID, Node *node)
 		Node *parent=FindNode(ParentID);
 		if (!parent)
 		{
-			cerr<<"Tree::AddNode : can't find parent node "<<ParentID<<endl;
+			Trace::Stream<<"Tree::AddNode : can't find parent node "<<ParentID<<endl;
 			return 0;
 		}
 		
@@ -142,8 +143,8 @@ void Tree::Dump(int Depth,Node *node) const
 	if (node==NULL) node=m_Root;
 	if (node==NULL) return;
 	
-	for (int n=0; n<Depth; n++) cerr<<" ";
-	cerr<<node->ID<<endl;
+	for (int n=0; n<Depth; n++) Trace::Stream<<" ";
+	Trace::Stream<<node->ID<<endl;
 	
 	Depth++;
 	

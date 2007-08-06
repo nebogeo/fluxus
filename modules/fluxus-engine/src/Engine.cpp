@@ -134,7 +134,7 @@ void Engine::PushGrab(int id)
 	}
 	else
 	{
-		cerr<<"grab: primitive id "<<id<<" not found"<<endl;
+		Trace::Stream<<"grab: primitive id "<<id<<" not found"<<endl;
 	}
 }
 
