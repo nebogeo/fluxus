@@ -69,6 +69,49 @@ Client *OSCClient = NULL;
 // #X connect 5 0 1 0;
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// OSC
+// OSC significa Open Sound Control, e é um protocolo amplamente usado
+// para passar dados entre aplicações multimidia. Fluxus pode enviar e/ou
+// receber mensagens.
+// Exemplo:
+// Um exemplo de uso de osc para comunicar entre pd e fluxus.
+// Um script fluxus para mover um cubo baseado em mensagens osc
+// entrando.
+// -- osc.scm
+//
+// (define value 0)
+//
+// (define (test)
+//     (push)
+//     (if (osc-msg "/zzz")
+//         (set! value (osc 0)))
+//     (translate (vector 1 0 value))
+//     (draw-cube)
+//     (pop))
+// 
+// (osc-source "6543")
+// (every-frame (test))
+// 
+// --- EOF
+//
+// Um patch PD para enviar mensagens de controle ao fluxus:
+// --- zzz.pd
+// #N canvas 618 417 286 266 10;
+// #X obj 58 161 sendOSC;
+// #X msg 73 135 connect localhost 6543;
+// #X msg 58 82 send /zzz \$1;
+// #X floatatom 58 29 5 0 0 0 - - -;
+// #X obj 58 54 / 100;
+// #X obj 73 110 loadbang;
+// #X connect 1 0 0 0;
+// #X connect 2 0 0 0;
+// #X connect 3 0 4 0;
+// #X connect 4 0 2 0;
+// #X connect 5 0 1 0;
+// EndSectionDoc 
+
+
 // StartFunctionDoc-en
 // osc-source port-string
 // Returns: void
@@ -76,6 +119,16 @@ Client *OSCClient = NULL;
 // Starts up the osc server, or changes port. Known bug: seems to fail if you set 
 // it back to a port used previously.
 // Example:
+// (osc-source "4444")	 ; listen to port 4444 for osc messages
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// osc-source string-porta
+// Retorna: void
+// Descrição:
+// Inicia o servidor osc, ou muda a porta. Bug conhecido: parece
+// falhar se você usa de volta pra uma mesma porta já usada anteriormente.
+// Exemplo:
 // (osc-source "4444")	 ; listen to port 4444 for osc messages
 // EndFunctionDoc
 
@@ -116,6 +169,19 @@ Scheme_Object *osc_source(int argc, Scheme_Object **argv)
 //         (display (osc 1))(newline)))	; print out the first argument
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// osc-msg string-nome
+// Retorna: void
+// Descrição:
+// Retorna verdadeiro se a mensagem foi recebida desde o último
+// quadro, e ajusta ela como a mensagem atual para chamadas
+// subsequente ao (osc) para ler argumentos.
+// Exemplo:
+// (cond 
+//     ((osc-msg "/hello")              ; if a the /hello message is recieved
+//         (display (osc 1))(newline)))	; print out the first argument
+// EndFunctionDoc
+
 Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 {
 	char *name=NULL;
@@ -141,6 +207,17 @@ Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 // Description:
 // Returns the argument from the current osc message. 
 // Example:
+// (cond 
+//     ((osc-msg "/hello")              ; if a the /hello message is recieved
+//         (display (osc 1))(newline)))	; print out the first argument
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// osc número-argumento
+// Retorna: void
+// Descrição:
+// Retorna o argumento da mensagem osc atual.
+// Exemplo:
 // (cond 
 //     ((osc-msg "/hello")              ; if a the /hello message is recieved
 //         (display (osc 1))(newline)))	; print out the first argument
@@ -190,6 +267,18 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 // (osc-send "/hello" "s" (list "boo!"))  ; send a message to this destination
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// osc-destination string-porta
+// Retorna: void
+// Descrição:
+// Específica o destino para mensagens osc que estejam saindo. O nome
+// da porta precisa ser específicado com todo o url e deve ser algo do
+// tipo "osc.udp://localhost:4444"
+// Exemplo:
+// (osc-destination "osc.udp://localhost:4444")
+// (osc-send "/hello" "s" (list "boo!"))  ; send a message to this destination
+// EndFunctionDoc
+
 Scheme_Object *osc_destination(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -217,6 +306,17 @@ Scheme_Object *osc_destination(int argc, Scheme_Object **argv)
 // (display (osc-peek))(newline) 
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// osc-peek
+// Retorna: msg-string
+// Descrição:
+// Esta útil função retorna o nome, formato da string e número/string
+// dos argumentos da última mensagem enviada como uma string - para
+// debugar sua rede osc.
+// Exemplo:
+// (display (osc-peek))(newline) 
+// EndFunctionDoc
+
 Scheme_Object *osc_peek(int argc, Scheme_Object **argv)
 {
 	return scheme_make_utf8_string(OSCServer->GetLastMsg().c_str());	
@@ -231,6 +331,21 @@ Scheme_Object *osc_peek(int argc, Scheme_Object **argv)
 // and must match the types given in the list. This could probably be removed by using the types 
 // directly, but doing it this way allows you to explicitly set the typing for the osc message.
 // Example:
+// (osc-destination "osc.udp://localhost:4444")
+// (osc-send "/hello" "sif" (list "boo!" 3 42.3))  ; send a message to this destination
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// osc-send string-nome string-formato lista-argumento
+// Retorna: void
+// Descrição:
+// Envia uma mensagem osc com o argumento da lista como dado
+// osc. Somente suporta floats, ints e strings como dados. O
+// formato-string deve ser composto de "i", "f" e "s", e deve bater
+// com os tipos dados na lista. Isto poderia ser removido
+// provavelmente, usando os tipos diretamente, mas fazendo isto desta
+// forma permite que você diga o tipo da mensagem osc explicitamente.
+// Exemplo:
 // (osc-destination "osc.udp://localhost:4444")
 // (osc-send "/hello" "sif" (list "boo!" 3 42.3))  ; send a message to this destination
 // EndFunctionDoc

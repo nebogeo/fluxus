@@ -23,6 +23,12 @@
 ;; Example:
 ;; EndSectionDoc 
 
+;; StartSectionDoc-pt
+;; ScratchPad
+;; O scratchpad é o editor fluxus e a janela gl.
+;; Example:
+;; EndSectionDoc
+
 (module scratchpad mzscheme
   (require fluxus-engine)
   (require fluxus-audio)
@@ -70,7 +76,24 @@
   ;;
   ;; (every-frame (myfunc)) 
   ;; EndFunctionDoc	
-  
+
+  ;; StartFunctionDoc-pt
+  ;; every-frame função-callback
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Ajusta uma função pra ser chamada todo o tempo em que o render
+  ;; está para desenhar um novo quadro.
+  ;; Exemplo:
+  ;; (define count 0)
+  ;;
+  ;; (define (myfunc)
+  ;;     (display count)(display " frames have been rendered!")
+  ;;     (newline)
+  ;;     (set! count (+ count 1)))
+  ;;
+  ;; (every-frame (myfunc)) 
+  ;; EndFunctionDoc
+
   ; define the every-frame syntax
   (define-syntax every-frame
     (syntax-rules ()
@@ -89,6 +112,20 @@
   ;; (build-cube) 
   ;; EndFunctionDoc	
   
+  ;; StartFunctionDoc-pt
+  ;; clear
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Limpa o renderizador de todos os objetos e luzes. Limpa o sistema
+  ;; de física e re-inicializa a chamada de volta em
+  ;; every-frame. Geralmente uma boa coisa a fazer é colocar isto no
+  ;; ínicio dos scripts pra ter certeza que tudo esta limpo cada vez
+  ;; que você chamar a execução.
+  ;; Exemplo:
+  ;; (clear) ; sem isso a gente ia acumular um novo cubo toda vez que F5 fosse pressionado
+  ;; (build-cube) 
+  ;; EndFunctionDoc
+
   (define (clear)
     (set! user-callback '())
     (clear-engine)
@@ -111,6 +148,17 @@
   ;; (start-framedump "frame" "jpg") 
   ;; EndFunctionDoc	
   
+  ;; StartFunctionDoc-pt
+  ;; start-framedump string-nome string-tipo
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Inicia a gravação de quadros no disco. Tipo pode ser um dos:
+  ;; "tif", "jpg" ou "ppm". Nomes dos arquivos são construidos junto
+  ;; com o número do quadro adicionado, prefixado em 5 zeros.
+  ;; Exemplo:
+  ;; (start-framedump "frame" "jpg")
+  ;; EndFunctionDoc
+
   (define (start-framedump filename type)
     (set! framedump-frame 0)
     (set! framedump-filename filename)
@@ -124,6 +172,15 @@
   ;; Example:
   ;; (end-framedump) 
   ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-pt
+  ;; end-framedump
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Para a gravação de quadros para o disco.
+  ;; Exemplo:
+  ;; (end-framedump)
+  ;; EndFunctionDoc
   
   (define (end-framedump)
     (set! framedump-frame -1))
@@ -214,6 +271,11 @@
   ; (these aren't really functions, but the documentation printed when you
   ; type (help) for more general things - maybe I need to make the documentation 
   ; more general to cope better with bits of extra documentation like this)
+  ; -greb- i agree here, not that it is bad as it is, what we need are
+  ; ways to navigate trough functions definitions, perhaps we could
+  ; make it more fancy using those "thought bubbles" and make it
+  ; toggleable  to appear with a key like F1 when the cursor is over a
+  ; function name? (just an idea)
   
   ;; StartFunctionDoc-en
   ;; tophelp
@@ -241,6 +303,33 @@
   ;; (help "functionname") to find out more information about a function
   ;; (help "misc") for miscellaneous fluxus info 
   ;; EndFunctionDoc	
+  
+  ;; StartFunctiondoc-pt
+  ;; tophelp
+  ;; Retorna:
+  ;; Descrição:
+  ;; Exemplo:
+  ;; Fluxus docs
+  ;; -----------
+  ;; Fluxus é uma máquina de renderização em tempo real para
+  ;; livecoding em Scheme.
+  ;; 
+  ;; O scratchpad de Fluxus têm dois modos de operação, o console
+  ;; (você está usando ele agora) que permite que você entre comandos
+  ;; e veja o resultado imediatamente. O outro modo é o editor que se
+  ;; parece mais com um editor de texto normal -  você tem 9 áreas de
+  ;; trabalho( que permite que você edite mais de um script de uma
+  ;; vez) vá para eles usando ctrl-1 até ctrl-9 e venha de volta para
+  ;; o console através do atalho ctrl-0.                                   
+  ;;
+  ;; Mais tópicos de ajuda:
+  ;; (help "keys") para comandos do teclado que controlam o fluxus.
+  ;; (help "console") para mais ajuda sobre o console
+  ;; (help "editor") para mais ajuda no editor de livecoding
+  ;; (help "camera") para ajuda nos controles da câmera.
+  ;; (help "functionname") para encontrar mais informação sobre uma função.
+  ;; (help "misc") para informações miscelâneas sobre o fluxus
+  ;; EndFunctionDoc
 
   ;; StartFunctionDoc-en
   ;; keys
@@ -261,10 +350,33 @@
   ;; F3 : Resets the scene camera.
   ;; F5 : Execute the selected text, or all if none is selected.
   ;; F9 : Randomise the text colour (aka the panic button)
-  ;; F10 : Make text thinner (these two are for use with projectors to make the 
+  ;; F10-F11 : Make text thinner/thicker (these two are for use with
+  ;; projectors to make the text more visible)
   ;; EndFunctionDoc
  
-  
+  ;; StartFunctionDoc-pt
+  ;; keys
+  ;; Retorna: 
+  ;; Descrição:
+  ;; Exemplo:
+  ;; Teclas do Fluxus
+  ;; ----------------
+  ;; 
+  ;; ctrl-f : modo Tela cheia.
+  ;; ctrl-w : modo Janela.
+  ;; ctrl-h : esconder/mostrar o editor.
+  ;; ctrl-l : Carregar um novo script (navegue com os cursores e enter)
+  ;; ctrl-s : Salve o script atual.
+  ;; ctrl-d : Salvar como - o script atual (abre um caixa com nome)
+  ;; ctrl-1 to 9 : Vai para a área de trabalho selecionada.
+  ;; ctrl-0 : Vai para o REPL.
+  ;; F3 : Reinicia a câmera.
+  ;; F5 : Executa o texto selecionado, ou tudo se não tem nada selecionado.
+  ;; F9 : Randomisa a cor do texto (aka botão panico)
+  ;; F10-F11 ; Faz o texto mais fino/grosso (estes dois são para uso com
+  ;; projetores para fazer com que o texto fique visivel)
+  ;; EndFunctionDoc
+
   ;; StartFunctionDoc-en
   ;; console
   ;; Returns: 
@@ -282,6 +394,26 @@
   ;; and functions they define. This window is also where error reporting is
   ;; printed, along with the terminal window you started fluxus from.
   ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-pt
+  ;; console
+  ;; Retorna: 
+  ;; Descrição:
+  ;; Exemplo:
+  ;; Console do Fluxus (ou REPL)
+  ;; ---------------------------
+  ;;
+  ;; Se você pressionar ctrl e 0, ao invés de abrir outra área de
+  ;; trabalho para scripts você vai ser apresentado a um interpretador
+  ;; de Leitura Evaluação Impressão e Loop, ou repl por
+  ;; diminutivo. Isto realmente é um interpretador interativo similar
+  ;; a uma linha de comando, onde você pode entrar código scheme para
+  ;; evaluação imediata. Este código é evaluado no mesmo interpretador
+  ;; que os outros scripts, então você pode usar o repl para debug ou
+  ;; inspecionar variáveis globais e funções que elas definem. Esta
+  ;; janela é também onde todo os erros são impressos, junto com a
+  ;; janela de terminal que você iniciou o fluxus.
+  ;; EndFunctionDoc
 
   ;; StartFunctionDoc-en
   ;; editor
@@ -306,6 +438,31 @@
   ;; script. 
   ;; EndFunctionDoc	
 
+  ;; StartFunctionDoc-pt
+  ;; editor
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Exemplo:
+  ;; Editor Fluxus
+  ;; -------------
+  ;;
+  ;; Quando usar o scratchpad do fluxus, a idéia é que você só precise
+  ;; da única tela para construir os scripts, ou tocar ao vivo, F5 é a
+  ;; chave que roda o script quando vc estiver pronto. Selecionando
+  ;; texto (usando shift) e pressionando F5 vai executar somente o
+  ;; texto selecionado. Isto é uma mão na roda para re-evaluar funções
+  ;; sem rodar o script inteiro toda vez.
+  ;;
+  ;; Áreas de trabalho
+  ;; -----------------
+  ;;
+  ;; O editor de script permite que voce edite até 9 scripts
+  ;; simultaneamente usando diferentes áreas de trabalho. Para trocas
+  ;; de área, use ctrl+tecla de número. Somente um script pode rodar
+  ;; de uma vez no entanto, apertando F5 vai executar o script da área
+  ;; de trabalho ativa atualmente.
+  ;; EndFunctionDoc
+
   ;; StartFunctionDoc-en
   ;; camera
   ;; Returns: 
@@ -321,11 +478,39 @@
   ;; Right mouse button: Zoom
   ;; EndFunctionDoc
 
+  ;; StartFunctionDoc-pt
+  ;; camera
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Exemplo:
+  ;; Fluxus camera control
+  ;; ---------------------
+  ;; 
+  ;; A câmera é controlada ao mover o mouse e pressionar os botões ao
+  ;; mesmo tempo.
+  ;;
+  ;; Botão esquerdo do mouse: Rotaciona
+  ;; Botão do meio do mouse: Movimenta
+  ;; Botão direito do mouse: Afasta/Aproxima(zoom)
+  ;; EndFunctionDoc
+
   ;; StartFunctionDoc-en
   ;; misc
   ;; Returns: 
   ;; Description:
   ;; Example:
+  ;; Misc
+  ;; ----
+  ;;
+  ;;
+  ;; EndFunctionDoc
+
+  ;; StartFunctionDoc-pt
+  ;; misc
+  ;; Retorna: void
+  ;; Descrição:
+  ;;
+  ;; Exemplo:
   ;; Misc
   ;; ----
   ;;
@@ -340,6 +525,16 @@
   ;; Example:
   ;; (help "pop") 
   ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-pt
+  ;; help string-função
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Mostra informação de ajuda numa função do fluxus. Para rodar no
+  ;; repl principalmente.
+  ;; Exemplo:
+  ;; (help "pop")
+  ;; EndFunctionDoc
   
   (define (help . args)
     (if (null? args) ; help without an argument prints out some 
@@ -429,6 +624,16 @@
   ;; Example:
   ;; (callback-override myfunc) 
   ;; EndFunctionDoc	
+
+  ;; StartFunctionDoc-pt
+  ;; callback-override
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Permite que você substitua a chama de volta (callback) do quadro,
+  ;; para controlar o loop de renderização do fluxus de uma forma mais detalhada.
+  ;; Exemplo:
+  ;; (callback-override myfunc)
+  ;; EndFunctionDoc
   
   (define (override-frame-callback fn)
   	(set! fluxus-frame-callback fn))

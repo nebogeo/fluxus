@@ -42,6 +42,23 @@ AudioCollector *Audio = NULL;
 // (every-frame (animate))
 // EndSectionDoc
 
+// StartSectionDoc-pt
+// Audio
+// Esta parte do fluxus é responsável por capturar o som entrando, e
+// processar ele em dados harmonicos, usando fft (Fast Fourier
+// Transform). As harmonicas são bandas de frequência em que o som é
+// dividido, dando alguma indicação da qualidade do som. É o mesmo que
+// você ve num equalisador gráfico - de fato, um dos scripts de
+// exemplo (bars.scm) age como tal, e pode ser usado para testar se o
+// áudio está funcionando.
+// Exemplo:
+// (start-audio "alsa_pcm:capture_1" 1024 44100)
+// (define (animate)
+//		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
+//		(draw-cube)) ; draw a cube with this colour
+// (every-frame (animate))
+// EndSectionDoc
+
 
 // StartFunctionDoc-en
 // start-audio jackport-string buffersize-number samplerate-number
@@ -54,6 +71,20 @@ AudioCollector *Audio = NULL;
 // Example:
 // (start-audio "alsa_pcm:capture_1" 1024 44100)
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// start-audio string-porta-do-jack número-tamanho-buffer número-taxa-amostragem
+// Retorna: void
+// Descrição:
+// Inicia o áudio com as configurações específicadas, você precisa
+// chamar isto primeiro, ou colocar isto em $HOME/.fluxus.scm para
+// chamar automaticamente na inícialização. Tenha a porta do jack como
+// uma string vazia ("") e ele não vai tentar conectar em nada para
+// você. Que pode então usar qjackctrl ou equivalente para fazer a
+// conexão manualmente. Fluxus lè uma única fonte mono.
+// Exemplo:
+// (start-audio "alsa_pcm:capture_1" 1024 44100)
+// EndSectionDoc
 
 Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 {
@@ -90,6 +121,22 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 // (every-frame (animate))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// gh número-harmonico
+// Retorna: void
+// Descrição:
+// Fluxus converte áudio entrando em frequências harmônicas, que pode
+// então ser ligada em suas animações através desse comando. Existem
+// 16 bandas harmônicas disponiveis, o argumento do valor-harmônico
+// vai ser arredondado se maior ou menor que 16, então você pode usar
+// esse comando sem se preocupar sobre erros fora do alcance.
+// Exemplo:
+// (define (animate)
+//		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
+//		(draw-cube)) ; draw a cube with this colour
+// (every-frame (animate))
+// EndSectionDoc
+
 Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -113,6 +160,15 @@ Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 // Example:
 // (gain 100) ; too quiet?!
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// gain número-gain
+// Retorna: void
+// Descrição:
+// Ajusta o nível de amplificação para o som fft, é 1 por padrão.
+// Exemplo:
+// (gain 100) ; muito quieto?!
+// EndSectionDoc
 
 Scheme_Object *gain(int argc, Scheme_Object **argv)
 {
@@ -139,6 +195,20 @@ Scheme_Object *gain(int argc, Scheme_Object **argv)
 // Example:
 // (process "somemusic.wav") ; read a precorded audio file
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// process wavfile-string
+// Retorna: void
+// Descrição:
+// Este comando desativa temporariamente a leitura em tempo real da
+// entrada da pista de áudio e lê um arquivo wav ao invés. Para usar
+// com o comando framedump para processar audio offline para fazer
+// videos musicais. A vantagem disto é que ele trava a taxa de quadros
+// então a quantidade certa de áudio é lida para cada quadro - fazendo
+// com que a sincrônia entre quadros e audio seja possível.
+// Exemplo:
+// (process "somemusic.wav") ; read a precorded audio file
+// EndSectionDoc
 
 Scheme_Object *process(int argc, Scheme_Object **argv)
 {
@@ -167,6 +237,19 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // (smoothing-bias 0) ; no smoothing
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// smoothing-bias número-valor
+// Retorna: void
+// Descrição:
+// Uma espécie de média balanceada para as bandas harmônicas que as
+// acalmam com o tempo. Esta opção é por padrão definida como 1.5. O
+// melhor valor realmente depende da qualidade da música, e do tamanho
+// do buffer, e varia de 0 -> 2. Fica mais óbvio se você tentar com o
+// script bars.scm
+// Exemplo:
+// (smoothing-bias 0) ; no smoothing
+// EndSectionDoc
+
 Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -189,6 +272,16 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // Example:
 // (smoothing-bias 0) ; no smoothing
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// update-audio
+// Retorna: void
+// Descrição:
+// Atualiza o subsistema de áudio. Esta função é chamada para você
+// (por frame) no fluxus-canvas.ss
+// Exemplo:
+
+// EndSectionDoc
 
 Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 {
