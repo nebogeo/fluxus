@@ -192,6 +192,12 @@ inline bool Empty(string s) {
 
 bool Repl::TryEval()
 {
+	Scheme_Object *out=NULL;
+	MZ_GC_DECL_REG(1);
+
+	MZ_GC_VAR_IN_REG(0, out);
+    MZ_GC_REG();
+	
 	string defun = m_Text.substr(m_PromptPos);
 	
 	if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
@@ -201,11 +207,6 @@ bool Repl::TryEval()
 		m_InsertPos = m_Text.length();
 		Print("\n");
 	
-		Scheme_Object *out;
-		MZ_GC_DECL_REG(1);
-
-		MZ_GC_VAR_IN_REG(0, out);
-    	MZ_GC_REG();
 		m_Interpreter->Interpret(defun,&out);
 
 		if (defun[defun.length()-1] == '\n')
@@ -218,11 +219,10 @@ bool Repl::TryEval()
         	Print(out);
         	Print("\n");
 		}
-		#ifdef MZ_PRECISE_GC
-		MZ_GC_UNREG();
-		#endif
 	}
 	PrintPrompt();
+	
+	MZ_GC_UNREG();
 	
 	return false;
 }

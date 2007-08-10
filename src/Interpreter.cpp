@@ -101,7 +101,7 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 		if (size>0) 
 		{	
 			m_Repl->Print(string(msg));
-			*ret=NULL; // don't want to try to do anything with ret if there was an error
+			if (ret!=NULL) *ret=NULL; // don't want to try to do anything with ret if there was an error
 		}
 	}	
 	
