@@ -123,9 +123,9 @@ void GLFileDialog::RenderSaveAs()
 	glPushMatrix();
 	for (unsigned int n=0; n<m_SaveAsInfoText.size(); n++)
 	{
-		float width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_SaveAsInfoText[n]);
+		float width=StrokeWidth(m_SaveAsInfoText[n]);
 		glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_SaveAsInfoText[n]);
+		StrokeCharacter(m_SaveAsInfoText[n]);
 	}
 	glPopMatrix();
 	
@@ -134,7 +134,7 @@ void GLFileDialog::RenderSaveAs()
 	bool drawncursor=false;
 	for (unsigned int n=0; n<m_Text.size(); n++)
 	{
-		float width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
+		float width=StrokeWidth(m_Text[n]);
 
 		if (width==0) // bad character
 		{
@@ -154,7 +154,7 @@ void GLFileDialog::RenderSaveAs()
 		}	
 
 		glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-		glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
+		StrokeCharacter(m_Text[n]);
 	}
 
 	// draw cursor if we have no text, or if we're at the end of the buffer
@@ -186,7 +186,7 @@ void GLFileDialog::RenderLoad()
 
 		while (n<i->size())
 		{
-			float width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,(*i)[n]);
+			float width=StrokeWidth((*i)[n]);
 
 			if (width==0) // bad character
 			{
@@ -208,7 +208,7 @@ void GLFileDialog::RenderLoad()
 							     1-m_TextColourGreen+0.5,
 								 1-m_TextColourBlue+0.5);
 			else glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,(*i)[n]);
+			StrokeCharacter((*i)[n]);
 
 			n++;
 		}			

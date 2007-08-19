@@ -50,7 +50,7 @@ void Repl::Print(string what)
 
 	EnsureCursorVisible();
 
-	//cout << what;
+	cout << what;
 }
 
 void Repl::PrintPrompt()

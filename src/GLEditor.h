@@ -18,6 +18,7 @@
 #define _GL_EDITOR_H_
 
 #include <string>
+#include "PolyGlyph.h"
 
 #ifndef __APPLE__
 #define GLEDITOR_DELETE 127
@@ -62,6 +63,10 @@ public:
 	static float m_TextColourGreen;
 	static float m_TextColourBlue;
 	
+	static void InitFont(const string &ttf);
+	void StrokeCharacter(wchar_t c);
+	float StrokeWidth(wchar_t c);
+	
 protected:
 
 
@@ -91,18 +96,16 @@ protected:
 	bool m_CtrlState;
 	float m_CursorWidth;
 	float m_CharWidth;
+	float m_CharHeight;
 	int m_ParenthesesHighlight[2];
 	string m_OpenChars;
 	string m_CloseChars;
 	unsigned int m_VisibleLines;
+	unsigned int m_VisibleColumns;
+	unsigned int m_LeftTextPosition;
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;
 	unsigned int m_LineCount;
-	
-	bool m_FollowCursor;
-	float m_CursorPosX;
-	float m_CursorPosY;
-	float m_CursorPosZ;
 	
 	float m_BBMinX;
 	float m_BBMinY;
@@ -111,6 +114,11 @@ protected:
 	
 	int m_Width;
 	int m_Height;
+	
+	static PolyGlyph *m_PolyGlyph;
+	timeval m_Time;
+	float m_Delta;
+	
 };
 
 } // namespace fluxus

@@ -21,7 +21,10 @@
 #endif
 #include <iostream>
 #include <vector>
+#include <sys/time.h>
 #include "GLEditor.h"
+#include "PolyGlyph.h"
+#include "assert.h"
 
 using namespace fluxus;
 
@@ -31,29 +34,44 @@ float GLEditor::m_TextWidth(1);
 float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
-	
+PolyGlyph* GLEditor::m_PolyGlyph = NULL;
+
+static const float TEXT_BOX_WIDTH = 70000.0f;
+static const float TEXT_BOX_HEIGHT = 50000.0f;
+static const float TEXT_BOX_ERROR = 1000.0f;
+static const float TEXT_BOX_DRIFT = 1.0;
 
 GLEditor::GLEditor():
 m_PosX(0),
 m_PosY(0),
-m_Scale(8.0f),
+m_Scale(1),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),
+m_DesiredXPos(0),
 m_Selection(false),
 m_ShiftState(false),
 m_OpenChars("([<{"),
 m_CloseChars(")]>}"),
 m_VisibleLines(40),
+m_VisibleColumns(60),
 m_TopTextPosition(0),
 m_BottomTextPosition(0),
 m_LineCount(0),
-m_FollowCursor(true)
+m_Delta(0.0)
 { 
-	// mono font - yay!
-	m_CharWidth=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN, ' ')+1;
-	m_CursorWidth=m_CharWidth/3.0f;
+	assert(m_PolyGlyph!=NULL);
 	
+	m_CharWidth=StrokeWidth('#')+1;
+	m_CharHeight=m_PolyGlyph->CharacterHeight('#');
+	m_CursorWidth=m_CharWidth/3.0f;
+	m_Time.tv_sec=0;
+	m_Time.tv_usec=0;	
+}
+
+void GLEditor::InitFont(const string &ttf)
+{
+	m_PolyGlyph = new PolyGlyph(ttf);
 }
 
 GLEditor::~GLEditor() 
@@ -75,6 +93,16 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 	m_Width=w;
 	m_Height=h;
 }
+	
+void GLEditor::StrokeCharacter(wchar_t c)
+{
+	m_PolyGlyph->Render(c);
+}
+
+float GLEditor::StrokeWidth(wchar_t c)
+{
+	return m_PolyGlyph->CharacterWidth(c);
+}
 
 string GLEditor::GetText() 
 {
@@ -85,10 +113,10 @@ string GLEditor::GetText()
 void GLEditor::DrawCharBlock()
 {		
 	glBegin(GL_QUADS);
-	glVertex3f(m_CharWidth,-30,0);				
-	glVertex3f(m_CharWidth,130,0);
-	glVertex3f(0,130,0);
-	glVertex3f(0,-30,0);
+	glVertex3f(m_CharWidth,0,0);				
+	glVertex3f(m_CharWidth,m_CharHeight,0);
+	glVertex3f(0,m_CharHeight,0);
+	glVertex3f(0,0,0);
 	glEnd();
 }
 
@@ -96,10 +124,10 @@ void GLEditor::DrawCursor()
 {	
 	float half = m_CursorWidth/2.0f;
 	glBegin(GL_QUADS);
-	glVertex2f(half,-30);				
-	glVertex2f(half,130);
-	glVertex2f(-half,130);
-	glVertex2f(-half,-30);
+	glVertex2f(half,0);				
+	glVertex2f(half,m_CharHeight);
+	glVertex2f(-half,m_CharHeight);
+	glVertex2f(-half,0);
 	glEnd();
 }
 
@@ -116,7 +144,6 @@ void GLEditor::Render()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	//glOrtho(-10,90,-65,10,0,10);
 	glOrtho(-100/2,100/2,-75/2,75/2,0,10);
 	
 	glMatrixMode(GL_MODELVIEW);
@@ -127,11 +154,11 @@ void GLEditor::Render()
 	glDisable(GL_DEPTH_TEST);
    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	glLineWidth(m_TextWidth);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	glPolygonMode(GL_FRONT,GL_FILL);
 	
 	glLoadIdentity();
-	glTranslatef(-40,0,0);
-	glScalef(0.01*m_Scale,0.01*m_Scale,1); // scale so char width is around 1
+	glTranslatef(-45,0,0);
+	glScalef(0.0010f*m_Scale,0.0010f*m_Scale,1); 
 	glTranslatef(m_PosX,m_PosY,0);
 	
 	glPushMatrix();
@@ -157,6 +184,7 @@ void GLEditor::Render()
 		}
 	}
 	
+	unsigned int xcount=0;
 	float xpos=0;
 	float ypos=0;
 	float width;
@@ -165,32 +193,26 @@ void GLEditor::Render()
 	
 	unsigned int n=m_TopTextPosition;
 	m_LineCount=0;
+	
 	while (n<m_Text.size() && m_LineCount<m_VisibleLines)
 	{
-		width=glutStrokeWidth(GLUT_STROKE_MONO_ROMAN,m_Text[n]);
+		width=m_CharWidth; //\todo fix bounding box with non-mono fonts
 		
 		if (m_Text[n]=='\n') 
 		{
 			width=m_CursorWidth;
 			m_LineCount++;
 		}
-		else if (width==0) // bad character
-		{
-			width=m_CursorWidth;
-			glColor4f(1,1,0,0.5);
-			DrawCharBlock();
-			glColor4f(0.7,0.7,0.7,1);
-			glTranslatef(width,0,0);
-		}
 		
 		if (m_Position==n) // draw cursor
 		{ 
+			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
+			else m_LeftTextPosition=0;
+			
 			glColor4f(1,1,0,0.5);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
-			m_CursorPosX=-xpos;
-			m_CursorPosY=-ypos;
 		}
 		
 		if (m_ParenthesesHighlight[0]==(int)n ||
@@ -213,15 +235,31 @@ void GLEditor::Render()
 			glPopMatrix();
 			glPushMatrix();
 			xpos=0;
-			ypos-=150;
+			xcount=0;
+			ypos-=m_CharHeight;
 			glTranslatef(0,ypos,0);
 		}
 		else 
 		{
-			glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-			glutStrokeCharacter(GLUT_STROKE_MONO_ROMAN,m_Text[n]);			
-			BBExpand(xpos,ypos);
-			xpos+=width;
+			if (xcount>=m_LeftTextPosition)
+			{
+				glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
+			
+				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8
+				{
+					wchar_t dst[1];
+					mbstowcs(dst,&(m_Text[n]),1);
+					StrokeCharacter(dst[0]);
+					n++;		
+				}
+				else
+				{
+					StrokeCharacter(m_Text[n]);			
+				}
+				BBExpand(xpos,ypos);
+				xpos+=width;
+			}
+			xcount++;
 		}
 		
 		n++;
@@ -233,46 +271,53 @@ void GLEditor::Render()
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
 	{
+		if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
+		else m_LeftTextPosition=0;
+		
 		glColor4f(1,1,0,0.5);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
-		m_CursorPosX=-xpos;
-		m_CursorPosY=-ypos;
 	}
 
-	float drift=0.05;
-	m_PosY=m_PosY*(1-drift) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*drift;
-	
-	float TEXT_BOX_WIDTH = 7000.0f;
-	float TEXT_BOX_HEIGHT = 5000.0f;
-	float TEXT_BOX_ERROR = 1000.0f;
+	m_PosY=m_PosY*(1-TEXT_BOX_DRIFT*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*TEXT_BOX_DRIFT*m_Delta;
 	
 	float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
 	float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
+
 	if (boxwidth>100)
 	{
-		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=0.99; 
+		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_DRIFT*m_Delta; 
 		else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
-			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1.01;
-		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=0.99; 
+			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_DRIFT*m_Delta;
+		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_DRIFT*m_Delta; 
 		else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
-		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1.01;
+		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_DRIFT*m_Delta;
 	}
 
-	if (m_Scale>8.0f) m_Scale=8.0f; // clamp
-	if (m_Scale<1.0f) m_Scale=1.0f; // clamp
-	
-	m_TextWidth=4*(m_Scale/8.0f); // adjust the line width to suit the scale
+	if (m_Scale>5.0f) m_Scale=5.0f; // clamp
+	if (m_Scale<0.5f) m_Scale=0.5f; // clamp
+
+	//m_TextWidth=4*(m_Scale/8.0f); // adjust the line width to suit the scale
 	
 	glPopMatrix();
 	glPopMatrix();
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
-	
+
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-
+	
+	timeval ThisTime;
+	// stop valgrind complaining
+	ThisTime.tv_sec=0;
+	ThisTime.tv_usec=0;
+	
+	gettimeofday(&ThisTime,NULL);
+	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
+			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
+	m_Time=ThisTime;
+	if (m_Delta>1.0f) m_Delta=0.000001f;
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)

@@ -158,7 +158,7 @@ using namespace Fluxus;
 // (colour (vector 1 0 0)) ; aplica cor corrente pra vermelho
 // (push)                  ; copia e empurra estado de desenho
 // (colour (vector 0 1 0)) ; aplica cor corrente pra verde
-// (draw-cube)             ; desenha um cubo verde
+// (draw-cube)			   ; desenha um cubo verde
 // (pop)				   ; esquece estado de desenho antigo
 // ; cor corrente é vermelha de novo.
 // EndFunctionDoc
@@ -187,7 +187,7 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 // (push)                  ; copy and push drawing state
 // (colour (vector 0 1 0)) ; set current colour to green
 // (draw-cube)             ; draws a green cube
-// (pop)				   ; forget old drawing state
+// (pop)                   ; forget old drawing state
 // ; current colour is now red again
 // EndFunctionDoc
 
@@ -204,7 +204,7 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 // (push)                  ; copia e empurra estado de desenho
 // (colour (vector 0 1 0)) ; aplica cor corrente pra verde
 // (draw-cube)             ; desenha um cubo verde
-// (pop)				   ; esquece estado de desenho antigo
+// (pop)                   ; esquece estado de desenho antigo
 // ; cor corrente é vermelha de novo.
 // EndFunctionDoc
 

@@ -51,6 +51,10 @@
 (init-help (string-append (path->string (car (current-library-collection-paths)))
 	fluxus-name "/helpmap.scm"))
 
+; set the font for the scratchpad
+(define fluxus-scratchpad-font (string-append (path->string (car (current-library-collection-paths)))
+	fluxus-name "/Bitstream-Vera-Sans-Mono.ttf"))
+
 ;-------------------------------------------------
 ; here is the hacking section
 ; todo: remove all below at some point

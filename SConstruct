@@ -27,6 +27,8 @@ LibPaths     = ["/usr/lib",
 				
 IncludePaths = ["/usr/local/include", 
 				"/usr/include", 
+				"/usr/include/freetype2",        # arg - freetype needs to be
+				"/usr/local/include/freetype2",  # on the include path :(
 				PLTInclude, 
 				"../../libfluxus/src"]
 
@@ -73,6 +75,7 @@ LibList = [["m", "math.h"],
 		["mzscheme3m", "scheme.h"],
 		["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
 		["tiff", "tiff.h"],
+		["freetype", "ft2build.h"],
 		["z", "zlib.h"],
 		["png", "png.h"],
 		["ode", "ode/ode.h"],
@@ -133,6 +136,7 @@ Source = ["src/GLEditor.cpp",
 		"src/Repl.cpp",
 		"src/Recorder.cpp",
 		"src/FluxusMain.cpp", 
+		"src/PolyGlyph.cpp", 
 		"src/main.cpp"]
 
 env.Program(source = Source, target = Target)

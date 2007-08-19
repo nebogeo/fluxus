@@ -35,6 +35,19 @@ m_HideScript(false),
 m_ShowCursor(true),
 m_ShowFileDialog(false)
 {
+	// use the interpreter to get the font name
+	//\todo expand this for more editor prefs
+	Scheme_Object *txt;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, txt);
+	MZ_GC_REG();	
+	interpreter->Interpret("fluxus-scratchpad-font", &txt);
+	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
+  	MZ_GC_UNREG();
+	
+	GLEditor::InitFont(s);
+	m_FileDialog = new GLFileDialog;
+
 	for(int i=0; i<9; i++) 
 	{
 		m_Editor[i] = new GLEditor();
@@ -73,11 +86,11 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			case 8: HideScript(); break; // h
 			case 13: HideCursor(); break; // m
 			case 12: 
-				m_FileDialog.SetSaveAsMode(false);
+				m_FileDialog->SetSaveAsMode(false);
 				m_ShowFileDialog=!m_ShowFileDialog; 
 			break; // l
 			case 4: // d
-				m_FileDialog.SetSaveAsMode(true);
+				m_FileDialog->SetSaveAsMode(true);
 				m_ShowFileDialog=!m_ShowFileDialog; 
 			break; // l
 #ifndef __APPLE__
@@ -121,19 +134,19 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		// the editors only take keyboard events
 		if (m_ShowFileDialog) 
 		{
-			m_FileDialog.Handle(button,key,special,state,x,y,mod);
-			if (m_FileDialog.GetOutput()!="")
+			m_FileDialog->Handle(button,key,special,state,x,y,mod);
+			if (m_FileDialog->GetOutput()!="")
 			{
-				if (m_FileDialog.GetSaveAsMode()) 
+				if (m_FileDialog->GetSaveAsMode()) 
 				{
-					m_SaveName[m_CurrentEditor]=m_FileDialog.GetOutput();
+					m_SaveName[m_CurrentEditor]=m_FileDialog->GetOutput();
 					SaveScript();
 				}
 				else 
 				{
-					LoadScript(m_FileDialog.GetOutput());
+					LoadScript(m_FileDialog->GetOutput());
 				}
-				m_FileDialog.Clear();
+				m_FileDialog->Clear();
 				m_ShowFileDialog=false;
 			}
 		}
@@ -158,7 +171,7 @@ void FluxusMain::Reshape(int width, int height)
 
 void FluxusMain::Render()
 {		
-	if (m_ShowFileDialog) m_FileDialog.Render();
+	if (m_ShowFileDialog) m_FileDialog->Render();
 	else if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 }
 

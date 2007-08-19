@@ -1,4 +1,4 @@
-#!/usr/bin/mzscheme -r
+#!/usr/local/bin/mzscheme -r
 ; Copyright (C) 2007 Dave Griffiths
 ;
 ; This program is free software; you can redistribute it and/or modify

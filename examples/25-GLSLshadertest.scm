@@ -9,6 +9,7 @@
         (set-cols (- n 1))))
 
 (clear)
+(fluxus-init)
 (push)
 ; assign the shaders to the surface
 (shader "simplevert.glsl" "simplefrag.glsl")
@@ -24,7 +25,7 @@
 
 (define (animate)
     (grab s)
-	; animate the deformamount uniform input parameter 
+    ; animate the deformamount uniform input parameter 
     (shader-set! (list "deformamount" (cos (time))))
     (ungrab))
 

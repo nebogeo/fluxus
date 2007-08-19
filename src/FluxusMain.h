@@ -54,10 +54,10 @@ public:
 	
 private:
 	
-	GLEditor * m_Editor[NUM_EDITORS];
+	GLEditor *m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
 	string m_SaveName[NUM_EDITORS];
-	GLFileDialog m_FileDialog;
+	GLFileDialog *m_FileDialog;
 	
 	int m_Width;
 	int m_Height;
