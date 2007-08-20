@@ -235,6 +235,7 @@ void GLEditor::Render()
 		{
 			glPopMatrix();
 			glPushMatrix();
+			BBExpand(xpos,ypos);
 			xpos=0;
 			xcount=0;
 			ypos-=m_CharHeight;
@@ -285,15 +286,12 @@ void GLEditor::Render()
 	float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
 	float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
 
-	if (boxwidth>100)
-	{
-		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
-		else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
-			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
-		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
-		else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
-		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
-	}
+	if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
+	else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
+			 boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
+	else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
+	else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
+		     boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
 
 	if (m_Scale>5.0f) m_Scale=5.0f; // clamp
 	if (m_Scale<0.5f) m_Scale=0.5f; // clamp
