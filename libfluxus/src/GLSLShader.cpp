@@ -16,6 +16,7 @@
 
 #include "GLSLShader.h"
 #include <iostream>
+#include "Trace.h"
 
 using namespace std;
 using namespace Fluxus;
@@ -162,7 +163,7 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 		GLsizei size = 0;
 		char log[1024];
 		glGetProgramInfoLog(m_Program, 1024, &size, log);
-		cout<<log<<endl;
+		Trace::Stream<<log<<endl;
 	}
 	#endif
 	return true;

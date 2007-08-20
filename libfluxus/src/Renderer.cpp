@@ -83,10 +83,7 @@ Renderer::~Renderer()
 /////////////////////////////////////	
 
 void Renderer::Render()
-{	
-	// clear the error log
-	Trace::Stream.clear();
-	
+{			
 	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{

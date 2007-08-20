@@ -31,7 +31,7 @@ m_CurrentFile(0),
 m_SaveAs(true)
 { 
 	m_Path="";
-	m_SaveAsInfoText="Save as (ctrl-d to exit)";
+	m_SaveAsInfoText="Save as (esc to exit)";
 	m_Text="";
 	ReadPath();
 }
@@ -87,11 +87,11 @@ void GLFileDialog::Render()
 	glLoadIdentity();
 	glTranslatef(-4,3,-5);
 	glColor4f(0.7,0.7,0.7,1);
-	glScalef(0.001,0.001,0.001);
+	glScalef(0.0001,0.0001,1);
 	
 	glTranslatef(m_PosX,m_PosY,0);
 		
-	glTranslatef(0,-2500,0);	
+	glTranslatef(0,-25000,0);	
 	
 	if (m_SaveAs) RenderSaveAs();
 	else RenderLoad();
@@ -129,7 +129,7 @@ void GLFileDialog::RenderSaveAs()
 	}
 	glPopMatrix();
 	
-	glTranslatef(0,-150,0);
+	glTranslatef(0,-m_CharHeight,0);
 
 	bool drawncursor=false;
 	for (unsigned int n=0; n<m_Text.size(); n++)
@@ -172,7 +172,7 @@ void GLFileDialog::RenderLoad()
 {
 	glPushMatrix();
 
-	float lineheight=150;
+	float lineheight=m_CharHeight;
 	float ypos=(m_CurrentFile/(float)m_Filenames.size())*
 				lineheight*(float)m_Filenames.size();
 
@@ -217,8 +217,8 @@ void GLFileDialog::RenderLoad()
 		glPushMatrix();
 		ypos-=lineheight;
 		glTranslatef(0,ypos,0);
+		//glRotatef((m_CurrentFile-(float)count-1)*15.0f,0,0,1);
 		// can't resist the foolishness...
-		glRotatef((m_CurrentFile-(float)count-1)*5.0f,0,0,1);
 		count++;
 	}	
 	glPopMatrix();

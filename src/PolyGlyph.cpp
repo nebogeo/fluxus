@@ -40,6 +40,7 @@ void PolyGlyph::Render(wchar_t ch)
 		RenderGeometry(*geo);
 		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
         glEndList();
+		delete geo;
 		
 		m_Cache[ch]=glList;
 		glCallList(glList);    

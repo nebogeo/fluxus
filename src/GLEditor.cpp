@@ -38,8 +38,9 @@ PolyGlyph* GLEditor::m_PolyGlyph = NULL;
 
 static const float TEXT_BOX_WIDTH = 70000.0f;
 static const float TEXT_BOX_HEIGHT = 50000.0f;
-static const float TEXT_BOX_ERROR = 1000.0f;
+static const float TEXT_BOX_ERROR = 5000.0f;
 static const float TEXT_BOX_DRIFT = 1.0;
+static const float TEXT_BOX_SCALE_DRIFT = 0.3;
 
 GLEditor::GLEditor():
 m_PosX(0),
@@ -158,7 +159,7 @@ void GLEditor::Render()
 	
 	glLoadIdentity();
 	glTranslatef(-45,0,0);
-	glScalef(0.0010f*m_Scale,0.0010f*m_Scale,1); 
+	glScalef(0.001f*m_Scale,0.001f*m_Scale,1); 
 	glTranslatef(m_PosX,m_PosY,0);
 	
 	glPushMatrix();
@@ -286,12 +287,12 @@ void GLEditor::Render()
 
 	if (boxwidth>100)
 	{
-		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_DRIFT*m_Delta; 
+		if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
 		else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
-			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_DRIFT*m_Delta;
-		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_DRIFT*m_Delta; 
+			     boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
+		else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
 		else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
-		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_DRIFT*m_Delta;
+		         boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
 	}
 
 	if (m_Scale>5.0f) m_Scale=5.0f; // clamp

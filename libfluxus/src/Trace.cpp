@@ -21,5 +21,6 @@ stringstream Trace::Stream;
 string Trace::Get()
 {
 	string ret = Stream.str();
+	Stream.str("");
 	return ret;
 }

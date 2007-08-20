@@ -147,7 +147,12 @@ void DisplayCallback()
 		interpreter->Interpret(fragment);
     }
 	
-	interpreter->Interpret(ENGINE_CALLBACK);
+	if (!interpreter->Interpret(ENGINE_CALLBACK))
+	{		
+		// the callback has failed, so clear the screen so we can fix the error...
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
+	}
+
 	app->Render();	
 	glutSwapBuffers();
 

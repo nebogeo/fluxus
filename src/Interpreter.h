@@ -39,7 +39,7 @@ public:
 	
 	void SetRepl(Repl *s) { m_Repl=s; }
 	
-	void Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
+	bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
 	
 private:
 	Scheme_Env *m_Scheme;

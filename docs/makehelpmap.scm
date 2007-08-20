@@ -27,7 +27,7 @@
    set-locale)
  
   ; print out debug info
-  (define debug-mode #f)
+  (define debug-mode #t)
   
   (define (debug data)
   	(cond 
@@ -53,7 +53,11 @@
 		((string=? s "pt")
 		    (set! locale-returns "Retorna:")
 		    (set! locale-description "Descrição:")
-		    (set! locale-example "Exemplo:"))))
+		    (set! locale-example "Exemplo:"))
+		((string=? s "en")
+		    (set! locale-returns "Returns:")
+		    (set! locale-description "Description:")
+		    (set! locale-example "Example:"))))
   
   ; returns a string of characters from the current position
   ; using the delimit function to mark beginning and end
@@ -213,58 +217,68 @@
         helpmap
         (parse-files (cdr inputfilenames) (parse-file (car inputfilenames) helpmap))))
   
-  (define helpmaplist '())
-  
-  (define (write-helpmapfile filename)
+  (define (write-helpmapfile filename helpmap)
     ;(display (string-append "deleting " filename))(newline)
     ;    (delete-file filename)
     (let ((helpmapfile (open-output-file filename)))
-      (write helpmaplist helpmapfile)
+      (write helpmap helpmapfile)
       (close-output-port helpmapfile)))
   
-  (define (makehelpmap file)
+  (define (makehelpmap file helpmap)
     (debug (list "parsing " file))
-    (set! helpmaplist (parse-file file helpmaplist)))
+    (parse-file file helpmap))
   
   ) ; module makehelpmap
 
 (require makehelpmap)
 (require (lib "file.ss"))
 
-(define (recurse-dir path visitor)
-  (define (inner l)
-    (let ((newpath (build-path path (car l))))
-      (cond 
-        ((directory-exists? newpath)
-         (recurse-dir (path->string newpath) visitor))
-        (else
-         (visitor newpath)))
-      (if (null? (cdr l))
-          0
-          (inner (cdr l)))))
+(define (recurse-dir locale path visitor helpmap)
+  (define (inner l helpmap)
+  	(cond 
+		((null? l) helpmap)
+		(else
+		    (let ((newpath (build-path path (car l))))
+    		(cond 
+    		    ((directory-exists? newpath)
+   		      		(inner (cdr l) (recurse-dir locale (path->string newpath) visitor helpmap)))
+  		      	(else
+  		       		(inner (cdr l) (visitor newpath helpmap))))))))
+  		   		 
   (let ((pathlist (directory-list path)))
-    (if (not (null? pathlist))
-        (inner (directory-list path)))))
+    (cond 
+		((null? pathlist) helpmap)
+		(else
+			(set-locale locale)
+        	(inner pathlist helpmap)))))
 
-(define (visitor path)
+(define (visitor path helpmap)
   (let ((extn (filename-extension path)))
-    (if extn
+    (if (not extn)
+		helpmap
         (cond 
           ((string=? (bytes->string/utf-8 extn) "scm")
-           (makehelpmap path))
+           (makehelpmap path helpmap))
           ((string=? (bytes->string/utf-8 extn) "ss")
-           (makehelpmap path))
+           (makehelpmap path helpmap))
           ((string=? (bytes->string/utf-8 extn) "cpp")
-           (makehelpmap path))))))
+           (makehelpmap path helpmap))
+		  (else helpmap)))))
+
+(define (gather-locales path localelist helpmap)
+	(cond
+		((null? localelist) helpmap)
+		(else (gather-locales path (cdr localelist) 
+			(cons (list (car localelist) 
+				(recurse-dir (car localelist) path visitor '())) helpmap)))))
+
+(define localelist '("pt" "en"))
 
 (cond 
-  ((eq? (vector-length (current-command-line-arguments)) 3)
+  ((eq? (vector-length (current-command-line-arguments)) 2)
    (let ((args (vector->list (current-command-line-arguments))))
-	 (set-locale (car args))
-     (recurse-dir (cadr args) visitor)
-     (write-helpmapfile (caddr args))))
+     (write-helpmapfile (cadr args) (gather-locales (car args) localelist '()))))	 
   (else
-   (display "usage: makehelpmap.scm locale path helpfile")(newline)
-   (display "where locale is one of: en pt")(newline)))
+   (display "usage: makehelpmap.scm path helpfile")(newline)))
 
 

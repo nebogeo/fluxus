@@ -127,13 +127,16 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
 		}	
-		else if (special==GLUT_KEY_F10) m_Editor[m_CurrentEditor]->m_TextWidth--;
-		else if (special==GLUT_KEY_F11) m_Editor[m_CurrentEditor]->m_TextWidth++;
 		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) m_Script=m_Editor[m_CurrentEditor]->GetText();
 	
 		// the editors only take keyboard events
 		if (m_ShowFileDialog) 
 		{
+			if (key==27) // escape 
+			{
+				m_ShowFileDialog=false;
+			}
+			
 			m_FileDialog->Handle(button,key,special,state,x,y,mod);
 			if (m_FileDialog->GetOutput()!="")
 			{

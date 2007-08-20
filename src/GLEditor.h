@@ -53,7 +53,7 @@ public:
 
 	string GetText();
 	string GetAllText() { return m_Text; }
-	void SetText(const string& s) { m_Text=s; ProcessTabs(); }
+	void SetText(const string& s) { m_Text=s; m_Position=0; ProcessTabs(); }
 	void Reset();
 	
 	float m_PosX,m_PosY;

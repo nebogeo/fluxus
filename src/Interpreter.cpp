@@ -37,7 +37,7 @@ Interpreter::~Interpreter()
 }
 
 
-void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
+bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 {	
 	Scheme_Object *outport=NULL;
 	Scheme_Object *errport=NULL;
@@ -102,11 +102,12 @@ void Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 		{	
 			m_Repl->Print(string(msg));
 			if (ret!=NULL) *ret=NULL; // don't want to try to do anything with ret if there was an error
+			MZ_GC_UNREG();
+			return false;
 		}
 	}	
 	
-	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
-	#endif
+	return true;
 }
 

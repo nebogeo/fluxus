@@ -48,6 +48,13 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
   by the physics possible
 * (blobby->poly) extracts the blobbies mesh into a polygon primitive
 * (hint-box) fix
+* huge text possible with auto livecoding zoom and tracking
+* editor and repl fixes
+* all error reporting goes to the repl
+* new scratchpad font renderer, uses truetype fonts
+* minimal unicode support added
+* unified helpmap locales, added (set-help-locale!)
+* added (help "sections") & section information with function lists
 
 0.12
 
