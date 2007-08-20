@@ -47,9 +47,8 @@
 ;; (help "console") for more help on the console 
 ;; (help "editor") for more help on the livecoding editor
 ;; (help "camera") for help on the camera controls 
-;; (help "language") to browse functions
+;; (help "language") for more info on the fluxus commands
 ;; (help "misc") for miscellaneous fluxus info 
-;; (help "name-of-any-function") to find out more information about a function
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt
@@ -243,9 +242,18 @@
 ;; Returns: 
 ;; Description:
 ;; Example:
-;; Misc
-;; ----
+;; "Computers are useless. They can only give you answers". 
+;;     Pablo Picasso Spanish Cubist painter (1881 - 1973).
 ;;
+;; Authors
+;; -------
+;; Alex Norman 
+;; Artem Baguinski
+;; Dan Bethell
+;; Dave Griffiths 
+;; Glauber Alex Dias Prado
+;; Nik Gaffney
+;; James Tittle
 ;;
 ;; EndFunctionDoc
 
@@ -255,9 +263,18 @@
 ;; Descrição:
 ;;
 ;; Exemplo:
-;; Misc
-;; ----
+;; "Computers are useless. They can only give you answers". 
+;;     Pablo Picasso Spanish Cubist painter (1881 - 1973).
 ;;
+;; Authors
+;; -------
+;; Alex Norman 
+;; Artem Baguinski
+;; Dan Bethell
+;; Dave Griffiths 
+;; Glauber Alex Dias Prado
+;; Nik Gaffney
+;; James Tittle
 ;;
 ;; EndFunctionDoc
 
@@ -270,7 +287,11 @@
 ;; -------------
 ;; 
 ;; Fluxus is comprised of a set of functions which
-;; extend Scheme for use in realtime computer graphics.
+;; extend Scheme for use in realtime computer graphics. 
+;; Scheme itself is out of the scope of this documentation,
+;; I reccommend "The Little Schemer" by by Daniel P. 
+;; Friedman and Matthias Felleisen.
+;; 
 ;; The functions are grouped into sections to make things
 ;; a bit easier.
 ;;
