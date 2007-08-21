@@ -22,13 +22,12 @@
 (clear)
 
 (hint-ignore-depth)
-(blend-mode "src-alpha" "one")
-(texture (load-texture "textures/smoke.png"))
+(blend-mode 'src-alpha 'one)
+(texture (load-texture "smoke.png"))
 (define p (build-particles 200))
 (grab p)
 (pdata-add "vel" "v")
 (init (pdata-size))
 (ungrab)
-(show-axis 1)
 
 (every-frame (move))

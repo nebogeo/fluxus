@@ -2,7 +2,7 @@
 
 (clear)
 (clear-colour (vector 0.5 0.5 0.5))
-(define tex (load-texture "textures/test.png"))
+(define tex (load-texture "test.png"))
 
 ; poly cube
 ;(clear-colour (vector 1 1 1))

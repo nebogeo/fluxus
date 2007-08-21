@@ -9,7 +9,7 @@
 (clear)
 (clear-colour (vector 0 0 0))
 
-(let ((l (make-light "point" "free")))
+(let ((l (make-light 'point 'free)))
     (light-position l (vector 10 50 10)))
 
 ;(hint-unlit)
@@ -17,7 +17,7 @@
 (specular (vector 1 1 1))
 (line-width 4)
 ;(hint-wire)
-(texture (load-texture "textures/refmap.png"))
+(texture (load-texture "refmap.png"))
 
 (push)
 (hint-unlit)

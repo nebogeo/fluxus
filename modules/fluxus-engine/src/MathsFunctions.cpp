@@ -30,74 +30,22 @@ using namespace Fluxus;
 // 2)could be good if we had browseable links in the scratch pad too,
 // to travel alond the docs and find what you want, a basic menu could already solve this. Ive prototyped something down here.
 
+// nearly there... ;)
+
 // StartSectionDoc-en
-// Maths
+// maths
 // These functions are optimised for 3D graphics, and the collision of computer science and maths is apparent here, so 
-// vectors representing "vectors" are in this context taken to be 3 elements long, quaternions are vectors of length 4, 
+// scheme vectors representing maths vectors are in this context taken to be 3 elements long, quaternions are vectors of length 4, 
 // and matrices are vectors of 16 elements long.
 // Example:
-// vmul
-// vadd
-// vsub
-// vdiv
-// vtransform
-// vtransform-rot
-// vnormalise
-// vdot
-// vmag
-// vdist
-// vcross
-// mmul
-// madd
-// msub
-// mdiv
-// mident
-// mtranslate
-// mrotate
-// mscale
-// mtranspose
-// minverse
-// maim
-// qaxisangle
-// qmul
-// qnormalise
-// qtomatrix
-// qconjugate
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Matemática
+// matemática
 // Estas funções sao optimizadas para gráficos em 3d, e a colisão entre ciência da computação e matemática é aparente 
 // aqui, então vetores representando "vectors" são nesse contexto tidos como 3 elementos em tamanho, quaternions são vetores de 
 // tamanho 4, e matrizes são vetores de 16 elementos.
 // Exemplo:
-// vmul
-// vadd
-// vsub
-// vdiv
-// vtransform
-// vtransform-rot
-// vnormalise
-// vdot
-// vmag
-// vdist
-// vcross
-// mmul
-// madd
-// msub
-// mdiv
-// mident
-// mtranslate
-// mrotate
-// mscale
-// mtranspose
-// minverse
-// maim
-// qaxisangle
-// qmul
-// qnormalise
-// qtomatrix
-// qconjugate
 // EndSectionDoc
 
 // StartFunctionDoc-en

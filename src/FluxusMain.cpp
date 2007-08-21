@@ -26,6 +26,8 @@ using namespace std;
 using namespace fluxus;
 
 ////////////////////////////////////////////////////////////////
+// despite attempts at clearing all this up, this 
+// is still an area of awkward code...
 
 FluxusMain::FluxusMain(Interpreter *interpreter, int x, int y) :
 m_CurrentEditor(9),
@@ -82,16 +84,22 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				glutPositionWindow(100,100);
 			} 
 			break;
-			case 19: SaveScript(); break; // s			
+			case 19: if (m_CurrentEditor!=9) SaveScript(); break; // s			
 			case 8: HideScript(); break; // h
 			case 13: HideCursor(); break; // m
 			case 12: 
-				m_FileDialog->SetSaveAsMode(false);
-				m_ShowFileDialog=!m_ShowFileDialog; 
+				if (m_CurrentEditor!=9) // don't go into the dialogs from the repl
+				{
+					m_FileDialog->SetSaveAsMode(false);
+					m_ShowFileDialog=!m_ShowFileDialog;
+				} 
 			break; // l
 			case 4: // d
-				m_FileDialog->SetSaveAsMode(true);
-				m_ShowFileDialog=!m_ShowFileDialog; 
+				if (m_CurrentEditor!=9) // don't go into the dialogs from the repl
+				{
+					m_FileDialog->SetSaveAsMode(true);
+					m_ShowFileDialog=!m_ShowFileDialog; 
+				}
 			break; // l
 #ifndef __APPLE__
 			case 49: SetCurrentEditor(0); break; // 1

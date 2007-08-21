@@ -24,7 +24,7 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// Turtle
+// turtle
 // The turtle polybuilder is an experimental way of building polygonal objects using a logo style turtle in 
 // 3D space. As you drive the turtle around you can place vertices and build shapes procedurally. The turtle 
 // can also be used to deform existing polygonal primitives, by attaching it to objects you have already created. 
@@ -45,7 +45,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Turtle
+// turtle
 // O construtor polygonal Turtle é um modo experimental de construir
 // objetos poligonais usando uma tartaruga do estilo logo no espaço
 // 3d. Em que você pode dirigir a tartaruga ao redor colocando vértices

@@ -26,7 +26,7 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// PrimitiveData
+// primitive-data
 // Primitive data (pdata for short) is fluxus' name for data which comprises primitives. In polygon primitives this means 
 // the vertex information, in particle primitives it corresponds to the particle information, in NURBS primitives it's 
 // the control vertices. Access to pdata gives you the ability to use primitives which are otherwise not very 
@@ -52,7 +52,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// PrimitiveData
+// primitive-data
 // Dados primitivos (pdata para diminuir) é o nome fluxus' para dados
 // que formam primitivas. Em primitivas poligonais isto significa
 // informação dos vértices, em primitivas de partículas isto

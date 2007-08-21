@@ -25,89 +25,19 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// GlobalState
+// global-state
 // Global state is really anything that controls the renderer globally, so it affects all primitives
 // or controls the renderer directly - ie camera control or full screen effects like blurring.  
 // Example:
-// accum
-// shadow-debug
-// shadow-length
-// shadow-light
-// set-colour-mask
-// set-stereo-mode
-// read-buffer
-// draw-buffer
-// desiredfps
-// select
-// set-screen-size
-// get-screen-size
-// get-projection-transform
-// set-camera 
-// get-locked-matrix
-// get-camera
-// clear-accum
-// clear-zbuffer
-// clear-frame
-// clear-colour
-// backfacecull
-// set-ortho-zoom
-// persp
-// ortho
-// clip
-// frustum
-// force-load-texture
-// load-texture
-// camera-lag
-// lock-camera
-// show-fps
-// show-axis
-// fog
-// blur
-// clear-engine
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// GlobalState
+// global-state
 // Estado global é realmente qualquer coisa que controla o
 // renderizador globalmente, então ele afeta todas as primitivas ou
 // controla o renderizador diretamente - p.e. controle de câmera ou
 // efeitos de tela cheia como "embaçamento".
 // Exemplo:
-// accum
-// shadow-debug
-// shadow-length
-// shadow-light
-// set-colour-mask
-// set-stereo-mode
-// read-buffer
-// draw-buffer
-// desiredfps
-// select
-// set-screen-size
-// get-screen-size
-// get-projection-transform
-// set-camera 
-// get-locked-matrix
-// get-camera
-// clear-accum
-// clear-zbuffer
-// clear-frame
-// clear-colour
-// backfacecull
-// set-ortho-zoom
-// persp
-// ortho
-// clip
-// frustum
-// force-load-texture
-// load-texture
-// camera-lag
-// lock-camera
-// show-fps
-// show-axis
-// fog
-// blur
-// clear-engine
 // EndSectionDoc
 
 // StartFunctionDoc-en

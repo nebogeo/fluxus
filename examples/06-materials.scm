@@ -34,12 +34,12 @@
 
 (clear)
 ; make a fixed light
-(define l1 (make-light "point" "free"))
+(define l1 (make-light 'point 'free))
 (light-position l1 (vector 0 10 10))
 
 ; put a plane in to show the transparency better
 (push)
-(texture (load-texture "textures/test.png"))
+(texture (load-texture "test.png"))
 (scale (vector 12 12 12))
 (translate (vector 0.5 0.5 -0.05))
 (build-plane)

@@ -2,13 +2,13 @@
 ;; Fluxus scratchpad docs
 
 ;; StartSectionDoc-en
-;; ScratchPadDocs
-;; The scratchpad is the fluxus editor and gl window. 
+;; scratchpad-docs
+;; Some useful high level documentation lives here
 ;; Example:
 ;; EndSectionDoc 
 
 ;; StartSectionDoc-pt
-;; ScratchPadDocs
+;; scratchpad-docs
 ;; O scratchpad é o editor fluxus e a janela gl.
 ;; Exemplo:
 ;; EndSectionDoc
@@ -21,9 +21,13 @@
 ; make it more fancy using those "thought bubbles" and make it
 ; toggleable  to appear with a key like F1 when the cursor is over a
 ; function name? (just an idea)
+;
 ; -dave- I've moved this stuff here...
-; I like that idea a lot, but simple things first! ;)
-
+; I like that idea a lot (thought bubbles), but simple things first! ;)
+; BTW, the text here is preformatted, and the font has got
+; bigger, so the line breaks need tweaking (I was scared to do 
+; the portuguese as my editor can't handle utf-8 (ironically :)
+;
 ;; StartFunctionDoc-en
 ;; tophelp
 ;; Returns: 
@@ -31,9 +35,13 @@
 ;; Example:
 ;; Fluxus documentation
 ;; --------------------
-;; 
+;; "act of a flowing; a continuous moving on or passing by, as of a 
+;; flowing stream; a continuous succession of changes"
+;;
 ;; Fluxus is a realtime rendering engine for livecoding in Scheme.
-;; 
+;; You are encouraged to browse these texts while performing 
+;; livecoding...
+;;
 ;; The fluxus scratchpad has two modes of operation, the console
 ;; (you are using this now) which allows you to enter commands and
 ;; see the results immediately. The other mode is the editor which 
@@ -42,6 +50,9 @@
 ;; them using ctrl-1 to ctrl-9 and switch back to the console with 
 ;; ctrl-0.
 ;;
+;; My apologies for the lack of copy/paste for the examples here,
+;; it's being worked on...
+;;
 ;; More help topics:
 ;; (help "keys") for keyboard commands for controlling fluxus 
 ;; (help "console") for more help on the console 
@@ -49,6 +60,8 @@
 ;; (help "camera") for help on the camera controls 
 ;; (help "language") for more info on the fluxus commands
 ;; (help "misc") for miscellaneous fluxus info 
+;; (help "toplap") for the toplap manefesto
+;; (help "authors") who made this?
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt
@@ -88,13 +101,13 @@
 ;;
 ;; ctrl-f : Fullscreen mode.
 ;; ctrl-w : Windowed mode.
-;; ctrl-h : Hide/show the editor.
+;; ctrl-h : Hide/show the text.
 ;; ctrl-l : Load a new script (navigate with cursors and return).
 ;; ctrl-s : Save current script.
 ;; ctrl-d : Save as - current script (opens a filename dialog).
 ;; ctrl-1 to 9 : Switch to selected workspace.
-;; ctrl-0 : Switch to the REPL.
-;; F3 : Resets the scene camera.
+;; ctrl-0 : Switch to the REPL. 
+;; F3 : Resets the camera if you get lost.
 ;; F5 : Execute the selected text, or all if none is selected.
 ;; F9 : Randomise the text colour (aka the panic button)
 ;; EndFunctionDoc
@@ -128,14 +141,16 @@
 ;; Fluxus console (or REPL) 
 ;; ------------------------
 ;;
-;; If you press ctrl and 0, instead of getting another script workspace, 
-;; you will be presented with a Read Evaluate Print Loop interpreter, or 
-;; repl for short. This is really just an interactive interpreter similar 
-;; to the commandline, where you can enter scheme code for immediate 
-;; evaluation. This code is evaluated in the same interpreter as the other 
-;; scripts, so you can use the repl to debug or inspect global variables 
-;; and functions they define. This window is also where error reporting is
-;; printed, along with the terminal window you started fluxus from.
+;; If you press ctrl and 0, instead of getting another script 
+;; workspace, you will be presented with a Read Evaluate Print
+;; Loop interpreter, or repl for short. This is really just an 
+;; interactive interpreter similar to the commandline, where 
+;; you can enter scheme code for immediate evaluation. This code 
+;; is evaluated in the same interpreter as the other scripts, so
+;; you can use the repl to debug or inspect global variables and 
+;; functions they define. This window is also where error 
+;; reporting is printed, along with the terminal window you 
+;; started fluxus from.
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt
@@ -166,19 +181,20 @@
 ;; Fluxus editor 
 ;; -------------
 ;;
-;; When using the fluxus scratchpad, the idea is that you only need the one 
-;; window to build scripts, or play live. f5 is the key that runs the script 
-;; when you are ready.  Selecting some text (using shift) and pressing f5 will 
-;; execute the selected text only. This is handy for reevaluating functions 
-;; without running the whole script each time.
+;; When using the fluxus scratchpad, the idea is that you only 
+;; need the one window to build scripts, or play live. f5 is the 
+;; key that runs the script when you are ready.  Selecting some 
+;; text (using shift) and pressing f5 will execute the selected 
+;; text only. This is handy for reevaluating functions without 
+;; running the whole script each time.
 ;;
 ;; Workspaces
 ;; ----------
 ;;
-;; The script editor allows you to edit 9 scripts simultaneously by using
-;; workspaces. To switch workspaces, use ctrl+number key. Only one can be run 
-;; at once though, hitting f5 will execute the currently active workspace
-;; script. 
+;; The script editor allows you to edit 9 scripts simultaneously 
+;; by using workspaces. To switch workspaces, use ctrl+number 
+;; key. Only one can be run at once though, hitting f5 will 
+;; execute the currently active workspace script. 
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt
@@ -214,11 +230,56 @@
 ;; Fluxus camera control
 ;; ---------------------
 ;;
-;; The camera is controlled by moving the mouse and pressing mouse buttons.
+;; The camera is controlled by moving the mouse and pressing 
+;; mouse buttons.
 ;;
 ;; Left mouse button: Rotate
 ;; Middle mouse button: Move
 ;; Right mouse button: Zoom
+;; EndFunctionDoc
+
+;; StartFunctionDoc-en
+;; misc
+;; Returns: 
+;; Description:
+;; Example:
+;; Fluxus init script
+;; ------------------
+;; Fluxus looks for a script in your home directory called
+;; .fluxus.scm which it will run if it is found. This is useful
+;; for putting init commands (like connecting to jack or setting
+;; the help text language etc)
+;;
+;; Frame rate throttling
+;; ---------------------
+;; By default fluxus throttles the framerate to around 40fps.
+;; to disable this (and run at 100% cpu), use desiredfps with
+;; some arbitrary large number:
+;; (desiredfps 100000000)
+;; To display the fps use (show-fps 1)
+;;
+;; Command line options
+;; ---------------------
+;; The easiest way to load a script into fluxus is to specify it on 
+;; the command line, eg:
+;; $ fluxus myscript.scm
+;; Will launch fluxus and load the script into the editor.
+;; $ fluxus -x myscript.scm
+;; Will launch fluxus, load, hide and execute the script.
+;;
+;; Fluxus also contains a keypress and mouse event recorder for 
+;; recording livecoding sessions:
+;; $ fluxus -r filename : record to keypresses file
+;; $ fluxus -p filename : playback from file
+;; $ fluxus -p filename -d time : seconds per frame time override for
+;;                                playback (for use with frame-dump)
+;;
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; misc
+;; Retorna: void
+;; Descrição:
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -238,12 +299,13 @@
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
-;; misc
+;; authors
 ;; Returns: 
 ;; Description:
 ;; Example:
+;;
 ;; "Computers are useless. They can only give you answers". 
-;;     Pablo Picasso Spanish Cubist painter (1881 - 1973).
+;;     Pablo Picasso (1881 - 1973).
 ;;
 ;; Authors
 ;; -------
@@ -258,13 +320,14 @@
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
-;; misc
+;; authors
 ;; Retorna: void
 ;; Descrição:
 ;;
 ;; Exemplo:
+;;
 ;; "Computers are useless. They can only give you answers". 
-;;     Pablo Picasso Spanish Cubist painter (1881 - 1973).
+;;     Pablo Picasso (1881 - 1973).
 ;;
 ;; Authors
 ;; -------
@@ -287,13 +350,15 @@
 ;; -------------
 ;; 
 ;; Fluxus is comprised of a set of functions which
-;; extend Scheme for use in realtime computer graphics. 
+;; extend Scheme for use in realtime computer graphics.
+;; 
 ;; Scheme itself is out of the scope of this documentation,
-;; I reccommend "The Little Schemer" by by Daniel P. 
-;; Friedman and Matthias Felleisen.
+;; but fluxus is a good way of learning it. I reccommend 
+;; "The Little Schemer" by by Daniel P. Friedman and Matthias 
+;; Felleisen.
 ;; 
 ;; The functions are grouped into sections to make things
-;; a bit easier.
+;; a bit easier to find.
 ;;
 ;; (help "sections") for a list of all sections
 ;; (help "sectionname") to find out more about a section
@@ -310,4 +375,47 @@
 ;;    ... details about the function with example ...
 ;;
 ;;
+;; EndFunctionDoc
+
+;; StartFunctionDoc-en
+;; toplap
+;; Returns: 
+;; Description:
+;; Example:
+;; TOPLAP MANEFESTO 
+;; We demand:
+;;  * Give us access to the performer's mind, to the whole human 
+;;    instrument.
+;;  * Obscurantism is dangerous. Show us your screens.
+;;  * Programs are instruments that can change themselves
+;;  * The program is to be transcended - Artificial language is the way.
+;;  * Code should be seen as well as heard, underlying algorithms viewed as well as their visual outcome.
+;;  * Live coding is not about tools. Algorithms are thoughts. 
+;;    Chainsaws are tools. That's why algorithms are sometimes 
+;;    harder to notice than chainsaws.
+;; 
+;; We recognise continuums of interaction and profundity, but prefer: 
+;;  * Insight into algorithms
+;;  * The skillful extemporisation of algorithm as an 
+;;    expressive/impressive display of mental dexterity
+;;  * No backup (minidisc, DVD, safety net computer)
+;; 
+;; We acknowledge that:
+;;  * It is not necessary for a lay audience to understand the 
+;;    code to appreciate it, much as it is not necessary to know 
+;;    how to play guitar in order to appreciate watching a guitar 
+;;    performance.
+;;  * Live coding may be accompanied by an impressive display of 
+;;    manual dexterity and the glorification of the typing interface.
+;;  * Performance involves continuums of interaction, covering 
+;;    perhaps the scope of controls with respect to the parameter 
+;;    space of the artwork, or gestural content, particularly 
+;;    directness of expressive detail. Whilst the traditional 
+;;    haptic rate timing deviations of expressivity in 
+;;    instrumental music are not approximated in code, why repeat 
+;;    the past? No doubt the writing of code and expression of 
+;;    thought will develop its own nuances and customs.
+;; 
+;; Performances and events closely meeting these manifesto 
+;; conditions may apply for TOPLAP approval and seal. 
 ;; EndFunctionDoc

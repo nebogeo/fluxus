@@ -30,7 +30,7 @@ Server *OSCServer = NULL;
 Client *OSCClient = NULL;
 
 // StartSectionDoc-en
-// OSC
+// osc
 // OSC stands for Open Sound Control, and is a widely used protocol for passing data 
 // between multimedia applications. Fluxus can send or receive messages.
 // Example:
@@ -70,7 +70,7 @@ Client *OSCClient = NULL;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// OSC
+// osc
 // OSC significa Open Sound Control, e é um protocolo amplamente usado
 // para passar dados entre aplicações multimidia. Fluxus pode enviar e/ou
 // receber mensagens.

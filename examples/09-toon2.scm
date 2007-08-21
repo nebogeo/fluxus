@@ -1,13 +1,10 @@
-(desiredfps 100000)
-(show-fps 1)
-;17.3
 ; a smaller example of toonshading that should be fast enough to 
 ; light every frame - also an example of reference geometry
 
 (clear)
 
 (define dirlight1 (vtransform (vector 0 1 0) (mrotate (vector 45 45 0))))
-(texture (load-texture "textures/gradient.png"))
+(texture (load-texture "gradient.png"))
 (hint-unlit)
 
 ; the software lighting function, uses a dot product to calculate the amount
@@ -51,5 +48,17 @@
     (toon-light (pdata-size))
     (ungrab))
 
-
 (every-frame (render))
+
+; this is my benchmarking script, so go as fast as possible:
+(desiredfps 100000)
+
+; and show the framerate:
+(show-fps 1)
+
+; on my machine, fullscreen with text... 
+; this used to go at (in 0.11 I think)
+; 17.3 fps
+; now it goes at (0.13):
+; 95-100 fps ish
+

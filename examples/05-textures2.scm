@@ -1,3 +1,7 @@
+; THIS DOESN'T WORK ANYMORE
+; (and it wasn't very good anyway)
+; to be replaced with something better soon...
+
 ; a script adapted from a live one I use
 ; just a simple textured plane thing that animates to sound
 ; it's better when you use textures that acually look good of course...

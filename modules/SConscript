@@ -7,7 +7,12 @@ Import("env", "CollectsInstall", "MZDYN")
 
 BinaryModulesLocation = CollectsInstall + "/extensions"
 
-SConscript(dirs = ["fluxus-engine", "fluxus-audio", "fluxus-osc", "scheme"], 
+SConscript(dirs = ["fluxus-engine", 
+                   "fluxus-audio", 
+				   "fluxus-osc", 
+				   "scheme",
+				   "material"], 
+				   
            exports = ["env", "CollectsInstall", "BinaryModulesLocation", "MZDYN"])
 
 env.Install(CollectsInstall, "../docs/helpmap.scm")

@@ -313,7 +313,7 @@
     (ungrab)))
 
 (define (build-ship)
-    (let ((p (build-polygons 48 2)))
+    (let ((p (build-polygons 48 'triangle-list)))
     (grab p)
     ; nose
     (pdata-set "p" 0 (vector 2 0 0))

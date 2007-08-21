@@ -9,10 +9,12 @@
         (set-cols (- n 1))))
 
 (clear)
-(fluxus-init)
+(fluxus-init) ; this is important to add when using shaders 
+              ; at the moment, it will be moved somewhere
+              ; to run automatically...
 (push)
 ; assign the shaders to the surface
-(shader "simplevert.glsl" "simplefrag.glsl")
+(shader "simple.vert.glsl" "simple.frag.glsl")
 (define s (build-sphere 20 20))
 (pop)
 

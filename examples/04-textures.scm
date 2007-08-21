@@ -13,7 +13,7 @@
     (push)
     (opacity 1)
     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
-    (texture (load-texture "textures/transp.png"))
+    (texture (load-texture "transp.png"))
 ; uncomment the line below to play with some of the blendmodes
     ;(blend-mode "src-alpha" "src-color")
     (set! objs (cons (build-plane) objs))

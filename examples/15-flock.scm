@@ -58,5 +58,6 @@
 
 (every-frame (anim))
 
+(desiredfps 100000)
 (blur 0.1)
 

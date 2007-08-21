@@ -8,7 +8,7 @@
 (light-specular 0 (vector 0 0 0))
 
 ; make a big fat key light
-(define key (make-light "spot" "free"))
+(define key (make-light 'spot 'free))
 (light-position key (vector 5 5 0))
 (light-diffuse key (vector 1 0.95 0.8))
 (light-specular key (vector 0.6 0.3 0.1))
@@ -17,7 +17,7 @@
 (light-direction key (vector -1 -1 0))
 
 ; make a fill light
-(define fill (make-light "spot" "free"))
+(define fill (make-light 'spot 'free))
 (light-position fill (vector -7 7 12))
 (light-diffuse fill (vector 0.5 0.3 0.1))
 (light-specular fill (vector 0.5 0.3 0.05))
@@ -26,7 +26,7 @@
 (light-direction fill (vector 0.6 -0.6 -1))
 
 ; make a rim light
-(define rim (make-light "spot" "free"))
+(define rim (make-light 'spot 'free))
 (light-position rim (vector 0.5 7 -12))
 (light-diffuse rim (vector 0 0.3 0.5))
 (light-specular rim (vector 0.4 0.6 1))

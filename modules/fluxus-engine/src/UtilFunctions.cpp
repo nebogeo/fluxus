@@ -27,29 +27,15 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// UtilFunctions
+// util-functions
 // Handy functions to make your life easier...
 // Example:
-// time
-// delta
-// flxrnd
-// flxseed
-// searchpaths
-// fullpath
-// framedump
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// UtilFunctions
+// util-functions
 // FunÅÁÅıes prÅ·ticas para fazer a sua vida mais fÅ·cil.
 // Exemplo:
-// time
-// delta
-// flxrnd
-// flxseed
-// searchpaths
-// fullpath
-// framedump
 // EndSectionDoc
 
 // StartFunctionDoc-en

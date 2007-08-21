@@ -147,7 +147,7 @@
         	; ((list of vectors) (list of normals) (list of texture coordinates) (...))
         	(define obdata '(() () ()))
 
-        	(define tokens (tokenise (open-input-file filename) '() '() '()))
+        	(define tokens (tokenise (open-input-file (fullpath filename)) '() '() '()))
         	(build tokens (parse tokens obdata) '())))
 
 	;---------------------------------------------------------------------------------------------------
@@ -174,7 +174,7 @@
 	; builds a new primitive and sets it up with the supplied data
 	(define obj-make 
     	(lambda (vertices)
-        	(let ((shape (build-polygons (* (length vertices) 3) 2))) ; make our primitive
+        	(let ((shape (build-polygons (* (length vertices) 3) 'triangle-list))) ; make our primitive
         	(grab shape)
         	(make-vertices vertices 0) ; set the data
         	(recalc-normals 1)           

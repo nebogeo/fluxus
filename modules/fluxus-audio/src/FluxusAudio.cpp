@@ -27,7 +27,7 @@ using namespace std;
 AudioCollector *Audio = NULL;
 
 // StartSectionDoc-en
-// Audio
+// audio
 // This part of fluxus is responsible for capturing the incoming sound, and processing it 
 // into harmonic data, using fft (Fast Fourier Transform). The harmonics are bands of 
 // frequency which the sound is split into, giving some indication of 
@@ -43,7 +43,7 @@ AudioCollector *Audio = NULL;
 // EndSectionDoc
 
 // StartSectionDoc-pt
-// Audio
+// audio
 // Esta parte do fluxus é responsável por capturar o som entrando, e
 // processar ele em dados harmonicos, usando fft (Fast Fourier
 // Transform). As harmonicas são bandas de frequência em que o som é

@@ -25,60 +25,16 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// LocalState
+// local-state
 // The local state functions control rendering either for the current state - or the state of 
 // the currently grabbed primitive. In fluxus state means the way that things are displayed, 
 // either turning on and off rendering features, changing the style of different features, or altering 
 // the current transform. 
 // Example:
-// push 
-// pop
-// grab
-// ungrab
-// apply
-// opacity
-// shinyness
-// colour
-// wire-colour
-// specular
-// ambient
-// opacity
-// identity
-// concat
-// translate
-// rotate
-// scale
-// get-transform
-// parent
-// line-width
-// point-width
-// blend-mode
-// hint-solid
-// hint-wire
-// hint-normal
-// hint-points
-// hint-anti-alias
-// hint-unlit
-// hint-vertcols
-// hint-box
-// hint-multitex
-// hint-none
-// hint-origin
-// hint-cast-shadow
-// hint-depth-sort
-// hint-ignore-depth
-// hint-lazy-parent
-// texture
-// multitexture
-// print-scene-graph 
-// hide
-// selectable
-// shader
-// shader-set!
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// LocalState
+// local-state
 // As funções de estado local controlam a renderização ou do estado
 // corrente - ou do estado da primitiva correntemente
 // pega(grabbed). Em Fluxus estado significa significa a forma que as
@@ -86,50 +42,6 @@ using namespace Fluxus;
 // mudando o estilo de diferentes opções, ou alterando a transformação
 // corrente.
 // Exemplo:
-// push 
-// pop
-// grab
-// ungrab
-// apply
-// opacity
-// shinyness
-// colour
-// wire-colour
-// specular
-// ambient
-// opacity
-// identity
-// concat
-// translate
-// rotate
-// scale
-// get-transform
-// parent
-// line-width
-// point-width
-// blend-mode
-// hint-solid
-// hint-wire
-// hint-normal
-// hint-points
-// hint-anti-alias
-// hint-unlit
-// hint-vertcols
-// hint-box
-// hint-multitex
-// hint-none
-// hint-origin
-// hint-cast-shadow
-// hint-depth-sort
-// hint-ignore-depth
-// hint-lazy-parent
-// texture
-// multitexture
-// print-scene-graph 
-// hide
-// selectable
-// shader
-// shader-set!
 // EndSectionDoc
 
 // StartFunctionDoc-en

@@ -1,0 +1,42 @@
+###############################################################
+# SConscript for fluxus material
+
+import os	 
+Import("env", "CollectsInstall")
+
+Shaders    = ["shaders/simple.frag.glsl",
+              "shaders/simple.vert.glsl",
+              "shaders/blinn.frag.glsl",
+              "shaders/blinn.vert.glsl",    
+              "shaders/lambert.frag.glsl",
+              "shaders/lambert.vert.glsl",
+			  "shaders/wrapped.frag.glsl",
+              "shaders/wrapped.vert.glsl",
+              "shaders/facingratio.frag.glsl",  
+              "shaders/facingratio.vert.glsl", 
+              "shaders/reflect.frag.glsl", 
+              "shaders/reflect.vert.glsl", 
+              "shaders/toon.frag.glsl",
+              "shaders/toon.vert.glsl"]
+
+Textures =   ["textures/gradient.png",
+              "textures/green.png",
+              "textures/refmap.png",  
+              "textures/smoke.png",  
+              "textures/test.png",
+              "textures/track.png",
+              "textures/transp.png"]
+
+Meshes =      ["meshes/bot.obj"]
+
+Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
+
+InstallShaders = CollectsInstall+"/material/shaders"
+InstallTextures = CollectsInstall+"/material/textures"
+InstallMeshes = CollectsInstall+"/material/meshes"
+InstallFonts = CollectsInstall+"/material/fonts"
+
+env.Install(InstallShaders, Shaders)
+env.Install(InstallTextures, Textures)
+env.Install(InstallMeshes, Meshes)
+env.Install(InstallFonts, Fonts)

@@ -15,7 +15,7 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ;; StartSectionDoc-en
-;; ScratchPadCamera
+;; scratchpad-camera
 ;; Camera functions availible in the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	

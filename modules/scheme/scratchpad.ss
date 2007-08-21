@@ -18,13 +18,13 @@
 ; application into the fluxus engine module
 
 ;; StartSectionDoc-en
-;; ScratchPad
+;; scratchpad
 ;; The scratchpad is the fluxus editor and gl window. 
 ;; Example:
 ;; EndSectionDoc 
 
 ;; StartSectionDoc-pt
-;; ScratchPad
+;; scratchpad
 ;; O scratchpad é o editor fluxus e a janela gl.
 ;; Exemplo:
 ;; EndSectionDoc
@@ -217,7 +217,7 @@
   ;  ...)	
   
   ;; StartFunctionDoc-en
-  ;; set-help-locale locale-string
+  ;; set-help-locale! locale-string
   ;; Returns: void
   ;; Description:
   ;; Sets the language for the documentation
@@ -262,6 +262,8 @@
           ((string=? (car args) "language") (func-help-example (car args)))
           ((string=? (car args) "sections") (section-summary))
           ((string=? (car args) "misc") (func-help-example (car args)))
+          ((string=? (car args) "toplap") (func-help-example (car args)))
+          ((string=? (car args) "authors") (func-help-example (car args)))
           (else
 		  	(if (not (section-help (car args))) ; first look in the section help
            		(func-help (car args)))))))     ; if it fails fall through to function help
@@ -355,9 +357,11 @@
 				(print-functions (cdr l) (+ c 1)))))
  
  	(define (print-section section)
+		(display "Section: ")
 		(display (car section))(newline) ; section name
-		(display (car (cadr section)))(newline) ; section desc
+		(display (insert-linebreaks (car (cadr section)) "" 50 0 0))(newline)(newline) ; section desc
 		(display (cadr (cadr section)))(newline) ; section example
+		(display "Functions:")(newline)
 		(print-functions (caddr (cadr section)) 1)(newline) ; functions
 		#t) 
 		

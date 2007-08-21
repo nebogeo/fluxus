@@ -33,7 +33,7 @@
 (light-diffuse 0 (vector 0.4 0.4 0.4))
 
 ; make a new light for the shadowing
-(define l (make-light "point" "free"))
+(define l (make-light 'point 'free))
 (light-diffuse l (vector 0 1 1))
 (light-position l (vector 50 20 50))
 (shadow-light l)

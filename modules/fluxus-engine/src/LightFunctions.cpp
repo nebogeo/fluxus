@@ -25,7 +25,7 @@ using namespace Fluxus;
 using namespace SchemeHelper;
 
 // StartSectionDoc-en
-// Lights
+// lights
 // Without lights you wouldn't be able to see anything. Luckily fluxus gives you one for free by default, a white 
 // diffuse point light attached to the camera. For more interesting lighting, you'll need these functions. Using the 
 // standard fixed function graphics pipeline, simplistically speaking, OpenGL multiplies these values with the surface 
@@ -35,7 +35,7 @@ using namespace SchemeHelper;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Lights
+// lights
 // Sem luzes você não seria capaz de ver nada. Por sorte fluxus te dá
 // uma de graça por padrão, uma luz pontual difusa e branca fixa à
 // camêra. Para iluminações mais interessantes, você vai precisar

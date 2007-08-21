@@ -8,7 +8,7 @@
 
 ; this is a texture which define the lighting falloff as a gradient, hard
 ; boundries give a toon shaded look
-(texture (load-texture "textures/gradient.png"))
+(texture (load-texture "gradient.png"))
 
 ; turn off normal gl lighting
 (hint-unlit)

@@ -1,3 +1,4 @@
+; sends a message to itself and prints it out
 
 (define (osctest)
     (osc-send "/hello?" "ifs" (list 23 40.3 "fluxus"))

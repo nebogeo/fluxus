@@ -26,7 +26,7 @@ using namespace SchemeHelper;
 using namespace Fluxus;
 
 // StartSectionDoc-en
-// Physics
+// physics
 // The physics system used in fluxus is based on the ode library, which allows you to add 
 // physical properties to objects and set them in motion. Since ODE is designed for 
 // rigid-body simulations, structures are described in terms of objects, joints and 
@@ -43,7 +43,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Physics
+// physics
 // O sistema de física em fluxus é baseado na biblioteca ODE, que
 // permite a você adicionar propriedades físicas a objetos e
 // colocá-los em movimento. Já que ODE foi projetada para simulações

@@ -17,7 +17,7 @@
 (scale (vector 100 100 100))
 (rotate (vector 90 0 0))
 (translate (vector -0.4 -0.2 -0.4))
-(texture (load-texture "textures/transp.png"))
+(texture (load-texture "transp.png"))
 ; make a new nurbs plane
 (define p (build-nurbs-plane 5 5))
 (pop)

@@ -32,75 +32,17 @@ using namespace Fluxus;
 using namespace SchemeHelper;
 
 // StartSectionDoc-en
-// Primitives
+// primitives
 // Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
 // except lights, a camera and lots of primitives.
 // Example: 
-// build-cube
-// build-polygons
-// build-sphere
-// build-plane
-// build-seg-plane
-// build-cylinder
-// build-line
-// build-text
-// build-nurbs-sphere
-// build-nurbs-plane
-// build-particles
-// build-locator
-// build-pixels
-// pixels-upload
-// pixels->texture
-// build-blobby
-// blobby->poly
-// draw-instance
-// draw-cube 
-// draw-plane
-// draw-sphere
-// draw-cylinder
-// destroy
-// poly-set-index
-// poly-convert-to-indexed
-// build-copy
-// make-pfunc
-// pfunc-set!
-// pfunc-run
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Primitivas
+// primitivas
 // Primitivas são objetos que você pode renderizar. Não há muito mais coisas
 // numa cena do fluxus, exceto luzes, uma camera e muitas primitivas.
 // Exemplo:
-// build-cube
-// build-polygons
-// build-sphere
-// build-plane
-// build-seg-plane
-// build-cylinder
-// build-line
-// build-text
-// build-nurbs-sphere
-// build-nurbs-plane
-// build-particles
-// build-locator
-// build-pixels
-// pixels-upload
-// pixels->texture
-// build-blobby
-// blobby->poly
-// draw-instance
-// draw-cube 
-// draw-plane
-// draw-sphere
-// draw-cylinder
-// destroy
-// poly-set-index
-// poly-convert-to-indexed
-// build-copy
-// make-pfunc
-// pfunc-set!
-// pfunc-run
 // EndSectionDoc
 
 // StartFunctionDoc-en

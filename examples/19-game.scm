@@ -125,7 +125,7 @@
     
 
 (push)
-(texture (load-texture "textures/track.png"))
+(texture (load-texture "track.png"))
 (hint-unlit)
 (translate (vector 0 -0.5 0))
 (scale (vector 100 1 100))
@@ -167,4 +167,5 @@
     
     (set! steer (* steer 0.9)))
     
+(desiredfps 100000)
 (every-frame (run-loop))

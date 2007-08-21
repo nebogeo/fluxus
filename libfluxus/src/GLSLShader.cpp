@@ -17,6 +17,7 @@
 #include "GLSLShader.h"
 #include <iostream>
 #include "Trace.h"
+#include "SearchPaths.h"
 
 using namespace std;
 using namespace Fluxus;
@@ -135,7 +136,7 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 	m_Program = glCreateProgram();
 
 	bool bOk = true;
-	unsigned int vertex = LoadShader(vertexfilename,GL_VERTEX_SHADER);
+	unsigned int vertex = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
 
 	if (vertex==0) 
 	{ 
@@ -145,7 +146,7 @@ bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilena
 	}
 	glAttachShader(m_Program, vertex);
 
-	unsigned int fragment = LoadShader(fragmentfilename,GL_FRAGMENT_SHADER);
+	unsigned int fragment = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
 	if (fragment==0) 
 	{ 
 		glDeleteProgram(m_Program);
@@ -175,7 +176,11 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 	#ifdef GLSL
 	if (!m_Enabled) return 0;
 	FILE* file = fopen(filename.c_str(), "r");
-	if (!file) return 0;
+	if (!file) 
+	{
+		Trace::Stream<<"Couldn't open shader ["<<filename<<"]"<<endl;
+		return 0;
+	}
 
 	fseek(file, 0, SEEK_END);
 	unsigned int size = ftell(file);

@@ -34,15 +34,15 @@
 using namespace SchemeHelper;
 
 // StartSectionDoc-en
-// Renderer
+// renderer
 // These commands are the low level renderer controls. You shouldn't need to 
-// deal with these unless you are implementing a fluxus renderer outside of 
-// the scratchpad interface.
+// deal with these unless you are being wily, or implementing a fluxus 
+// renderer outside of the scratchpad interface.
 // Example:
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// Renderer
+// renderer
 // Estes comandos são os controladores de baixo nível do
 // renderizador. Você não deveria usá-los a menos que esteja
 // implementando um renderizador do fluxus fora da interface

@@ -53,8 +53,18 @@
 
 ; set the font for the scratchpad
 (define fluxus-scratchpad-font (string-append (path->string (car (current-library-collection-paths)))
-	fluxus-name "/Bitstream-Vera-Sans-Mono.ttf"))
+	fluxus-name "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
 
+; setup the standard searchpaths
+; add to these, or overwrite them in your .fluxus.scm
+(searchpaths (list
+	(string-append (path->string (car (current-library-collection-paths)))
+		fluxus-name "/material/textures/")
+	(string-append (path->string (car (current-library-collection-paths)))
+		fluxus-name "/material/shaders/")
+	(string-append (path->string (car (current-library-collection-paths)))
+		fluxus-name "/material/meshes/")))
+	
 ;-------------------------------------------------
 ; here is the hacking section
 ; todo: remove all below at some point

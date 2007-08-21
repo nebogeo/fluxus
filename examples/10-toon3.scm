@@ -11,7 +11,7 @@
 
 (hint-unlit)
 (line-width 4)
-(texture (load-texture "textures/gradient.png"))
+(texture (load-texture "gradient.png"))
 (colour (vector 0.5 0.5 1))
 (define ob (build-nurbs-sphere 10 20))
 (grab ob)

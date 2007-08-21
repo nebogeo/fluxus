@@ -1,19 +1,11 @@
+; load a model from a obj file
+; models have to be triangulated at present
+
 (clear)
 
-(define dirlight1 (vtransform (vector 0 1 0) (mrotate (vector 45 45 0))))
-(texture (load-texture "textures/gradient.png"))
-(hint-unlit)
+(define obj (obj-make (obj-load "bot.obj")))
 
-(define (toon-light n)
-    (let ((lighting (vdot (pdata-get "n" n) dirlight1)))
-        (if (< lighting 0) (set! lighting 0.1))     ; reverse facing polys are nearly black
-        (pdata-set "t" n (vector lighting 0 0)))
-    (if (< n 1)
-        0
-        (toon-light (- n 1))))
-
-(scale (vector 20 20 20))
-(let ((obj (obj-make (obj-load "meshes/bunny-1500.obj"))))
+; fix the normals
 (grab obj)
-(toon-light (pdata-size))
-(ungrab))
+(recalc-normals 0)
+(ungrab)
