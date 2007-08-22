@@ -121,7 +121,7 @@ bool SceneGraph::FrustumClip(SceneNode *node)
 	glGetFloatv(GL_MODELVIEW_MATRIX,mat.arr());
 	glGetFloatv(GL_PROJECTION_MATRIX,proj.arr());
 	mat=proj*mat;
-	char cs = 0xffff;
+	char cs = 0xff;
 	
 	dVector p = mat.transform_persp(box.min);
 	CohenSutherland(p,cs);
