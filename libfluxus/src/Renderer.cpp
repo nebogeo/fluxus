@@ -132,6 +132,10 @@ void Renderer::Render()
 	cerr<<"raw values from gettimeofday: "<<ThisTime.tv_sec<<" "<<ThisTime.tv_usec<<endl;
 	cerr<<"sizeof tv_sec: "<<sizeof(ThisTime.tv_sec)<<endl;
 	cerr<<"usecs to seconds: "<<ThisTime.tv_usec*0.000001f<<endl;
+	cerr<<"delta calc: "<<(ThisTime.tv_sec-m_LastTime.tv_sec)+
+			              (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f<<endl;
+	cerr<<"delta val: "<<m_Delta<<endl;
+	cerr<<"time: "<<m_Time<<endl;  
 #endif
 
 	if (m_Delta<m_Deadline)
@@ -144,7 +148,8 @@ void Renderer::Render()
 	}
 	
 	m_LastTime=ThisTime;
-	if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
+	//if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
+	if (m_Delta>0.0f && m_Delta<100.0f) m_Time+=m_Delta;
 }
 
 void Renderer::RenderStencilShadows()

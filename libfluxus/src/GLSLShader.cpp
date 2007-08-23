@@ -193,6 +193,7 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 	{
 		Trace::Stream<<"Error reading shader ["<<filename<<"]"<<endl;
 		delete[] code;
+		fclose(file);
 		return 0;
 	}
 	else
@@ -214,11 +215,13 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 
 			glDeleteShader(shader);
 			delete[] code;
+			fclose(file);
 			return 0;
 		}
 		
 		delete[] code;
 		return shader;
+		fclose(file);
 	}
 	#endif
 	return 0;
