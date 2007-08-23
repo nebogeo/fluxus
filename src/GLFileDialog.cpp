@@ -40,6 +40,7 @@ GLFileDialog::~GLFileDialog()
 {
 }
 
+
 void GLFileDialog::ReadPath()
 {
 	m_Filenames.clear();
@@ -47,6 +48,19 @@ void GLFileDialog::ReadPath()
 	
 	// all this seems horribly linux specific...
 	glob_t g;
+
+// NOTE: the following snippet is from dirscan.c in ldglite, 
+//       Copyright (C) 1997-1998  Thomas Kern. 
+//       it might even do something useful....
+#ifndef GLOB_PERIOD
+// Some BSD systems do NOT have the GNU implementation of glob,
+// so we must do the GLOB_PERIOD work by hand to get the ".." dir.
+#define GLOB_PERIOD GLOB_APPEND
+glob(".", 0, 0, &g);
+glob("..", GLOB_PERIOD, 0, &g);
+#endif
+
+
 	glob(string(m_Path+"*").c_str(),GLOB_PERIOD,NULL,&g);
 	
 	for (unsigned int n=0; n<g.gl_pathc; n++)

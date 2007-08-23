@@ -26,7 +26,6 @@
 #include "OpenGL/glu.h"
 #include "GLUT/glut.h"
 #endif
-
 #include <string>
 #include <vector>
 #include "dada.h"

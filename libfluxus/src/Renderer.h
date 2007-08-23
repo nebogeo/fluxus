@@ -29,6 +29,11 @@
 #include "Light.h"
 #include "TexturePainter.h"
 
+// TODO: check this works for Apple's OpenGL
+#ifndef GL_POLYGON_OFFSET_EXT
+#define GL_POLYGON_OFFSET_EXT ((GLenum)0x8037) 
+#endif
+
 using namespace std;
 
 namespace Fluxus

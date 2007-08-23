@@ -15,7 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <FL/Fl.h>
-#include"GUI.h"
+#include "GUI.h"
 #include <GL/glut.h>
 #include <FL/fl_draw.h>
 #include <FL/fl_file_chooser.h>

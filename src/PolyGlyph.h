@@ -3,8 +3,14 @@
 #include <vector>
 #include <string>
 #include <map>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
+#ifndef __APPLE__
+#include "GL/gl.h"
+#include "GL/glu.h"
+#else
+#include "OpenGL/gl.h"
+#include "OpenGL/glu.h"
+#endif
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
