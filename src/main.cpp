@@ -21,7 +21,13 @@
 #include <sys/time.h>
 #include <iostream>
 #include <string>
-#include <GL/glut.h>
+
+#ifndef __APPLE__
+#include "GL/glut.h"
+#else
+#include "GLUT/glut.h"
+#endif
+
 #include "FluxusMain.h"
 #include "Interpreter.h"
 #include "Recorder.h"

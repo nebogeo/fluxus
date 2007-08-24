@@ -68,11 +68,11 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	vector<GlyphGeometry::Vec3<double> > points;
 	GLUtesselator* t = gluNewTess();
 
-	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())PolyGlyph::TessBegin);
-	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())PolyGlyph::TessVertex);
-	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (void (*)())PolyGlyph::TessCombine);
-	gluTessCallback(t, GLU_TESS_END_DATA, (void (*)())PolyGlyph::TessEnd);
-	gluTessCallback(t, GLU_TESS_ERROR_DATA, (void (*)())PolyGlyph::TessError);
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (*)(...))PolyGlyph::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (*)(...))PolyGlyph::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (*)(...))PolyGlyph::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))PolyGlyph::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))PolyGlyph::TessError);
 
 	gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 
