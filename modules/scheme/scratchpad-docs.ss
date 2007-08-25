@@ -71,8 +71,16 @@
 ;; Exemplo:
 ;; Fluxus docs
 ;; -----------
+;; "act of a flowing; a continuous moving on or passing by, as of a 
+;; flowing stream; a continuous succession of changes"
+;;
+;; "ato de fluir; um movimento contínuo ou um passar, como a corrente
+;; do rio; uma sucessão contínua de mudanças"
+;;
 ;; Fluxus é uma máquina de renderização em tempo real para
 ;; livecoding em Scheme.
+;; Você é encorajado a viajar por estes textos enquanto performar
+;; códigos ao vivo...
 ;; 
 ;; O scratchpad de Fluxus têm dois modos de operação, o console
 ;; (você está usando ele agora) que permite que você entre comandos
@@ -80,15 +88,17 @@
 ;; parece mais com um editor de texto normal -  você tem 9 áreas de
 ;; trabalho( que permite que você edite mais de um script de uma
 ;; vez) vá para eles usando ctrl-1 até ctrl-9 e venha de volta para
-;; o console através do atalho ctrl-0.                                   
+;; o console com ctrl-0.                                   
 ;;
 ;; Mais tópicos de ajuda:
 ;; (help "keys") para comandos do teclado que controlam o fluxus.
 ;; (help "console") para mais ajuda sobre o console
 ;; (help "editor") para mais ajuda no editor de livecoding
 ;; (help "camera") para ajuda nos controles da câmera.
-;; (help "functionname") para encontrar mais informação sobre uma função.
-;; (help "misc") para informações miscelâneas sobre o fluxus
+;; (help "linguagem") informação sobre os comandos no fluxus.
+;; (help "misc") para informações miscelâneas sobre o fluxus.
+;; (help "toplap") para o manifesto toplap.
+;; (help "autores") quem fez isso?
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
@@ -199,7 +209,7 @@
 
 ;; StartFunctionDoc-pt
 ;; editor
-;; Retorna: void
+;; Retorna: 
 ;; Descrição:
 ;; Exemplo:
 ;; Editor Fluxus
@@ -236,6 +246,22 @@
 ;; Left mouse button: Rotate
 ;; Middle mouse button: Move
 ;; Right mouse button: Zoom
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; camera
+;; Retorna: void
+;; Descrição:
+;; Exemplo:
+;; Fluxus camera control
+;; ---------------------
+;; 
+;; A câmera é controlada ao mover o mouse e pressionar os botões ao
+;; mesmo tempo.
+;;
+;; Botão esquerdo do mouse: Rotaciona
+;; Botão do meio do mouse: Movimenta
+;; Botão direito do mouse: Afasta/Aproxima(zoom)
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
@@ -278,24 +304,38 @@
 
 ;; StartFunctionDoc-pt
 ;; misc
-;; Retorna: void
-;; Descrição:
-;; EndFunctionDoc
-
-;; StartFunctionDoc-pt
-;; camera
-;; Retorna: void
+;; Retorna: 
 ;; Descrição:
 ;; Exemplo:
-;; Fluxus camera control
+;; Script init do fluxus
 ;; ---------------------
-;; 
-;; A câmera é controlada ao mover o mouse e pressionar os botões ao
-;; mesmo tempo.
+;; Fluxus procura por um script no seu diretório casa ($HOME) chamado
+;; .fluxus.scm o qual vai ser executado se encontrado. Isto é útil
+;; para colocar comandos de inicialização (como conectar ao jack ou
+;; ajustar a linguagem para o texto de ajuda e etc)
 ;;
-;; Botão esquerdo do mouse: Rotaciona
-;; Botão do meio do mouse: Movimenta
-;; Botão direito do mouse: Afasta/Aproxima(zoom)
+;; Aceleração da taxa de quadros
+;; -----------------------------
+;; Por padrão fluxus mantém a taxa de quadros em volta de 40 fps. para
+;; desligar (e rodar em 100% de cpu), use desiredfps com algum número
+;; arbitrariamente grande:
+;; (desiredfps 1000000000)
+;; Para mostrar a fps use (show-fps 1)
+;;
+;; Opções de linha de comando
+;; --------------------------
+;; O jeito mais fácil de carregar um script no fluxus é específicar o
+;; mesmo na linha de comando, eg:
+;; $ fluxus -x myscript.scm
+;; Vai lançar o fluxus, carregar, esconder e executar o script.
+;;
+;; Fluxus também possui um gravador de teclas apertadas e cliques do
+;; mouse para gravar sessões de códificação ao vivo (livecoding):
+;; $ fluxus -r nome-do-arquivo : gravar em arquivo as teclas apertadas
+;; $ fluxus -p nome-do-arquivo : tocar a partir do arquivo
+;; $ fluxus -p nome-do-arquivo -d tempo : segundos por quadro
+;; substituidos para tocar (pra usar com frame-dump)
+;;
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
@@ -321,15 +361,14 @@
 
 ;; StartFunctionDoc-pt
 ;; authors
-;; Retorna: void
+;; Retorna: 
 ;; Descrição:
-;;
 ;; Exemplo:
 ;;
-;; "Computers are useless. They can only give you answers". 
+;; "Computadores são inúteis. Eles só podem te dar respostas". 
 ;;     Pablo Picasso (1881 - 1973).
 ;;
-;; Authors
+;; Autores
 ;; -------
 ;; Alex Norman 
 ;; Artem Baguinski
@@ -377,6 +416,34 @@
 ;;
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-pt
+;; language
+;; Retorna:
+;; Descrição:
+;; Exemplo:
+;; Docs da Linguagem
+;; -----------------
+;; 
+;; Fluxus é composto de uma série de funções que extendem Scheme pra
+;; uso em computação gráfica em tempo real.
+;;
+;; Scheme em si está fora do escopo desta documentação, mas fluxus é
+;; uma boa forma de aprender ele. Eu recomendo "The Little Schemer"
+;; por Daniel P. Friedman e Matthias Felleisen.
+;;
+;; As funções estão agrupadas em seções para fazer coisas um pouco
+;; mais fáceis de encontrar.
+;;
+;; (help "sections")
+;;    ... lista de seções ...
+;; (help "maths")
+;;    ... descrição e lista das funções matemáticas ...
+;; (help "vmul")
+;;    ... detalhes sobre a função com exemplos ...
+;;
+;;
+;; EndFunctionDoc
+
 ;; StartFunctionDoc-en
 ;; toplap
 ;; Returns: 
@@ -419,3 +486,50 @@
 ;; Performances and events closely meeting these manifesto 
 ;; conditions may apply for TOPLAP approval and seal. 
 ;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; toplap
+;; Retorna:
+;; Descrição:
+;; Exemplo:
+;; MANEFESTO TOPLAP
+;; Nós queremos:
+;;  * Nos dê acesso a mente do performante, a todo o instrumento humano.
+;;  * Obscurantismo é perigoso. Nos mostre suas telas.
+;;  * O Programa é pra ser transcendentalizado - Linguagem Artificial é
+;; o caminho.
+;;  * Programas são instrumentos que se alteram eles mesmo.
+;;  * Código deve ser visto tanto quanto ouvido, algoritmos e sua
+;; estrutura mostrados como seus resultados visuais.
+;;  * Codificação ao vivo(livecoding) não é sobre ferramentas.
+;;  * Algoritmos são pensamentos. Serras-elétrica são ferramentas.
+;;  * É por isso que algoritmos são mais difíceis de notar que
+;;  moto-serras.
+;;
+;; Nós reconhecemos continuos de interação e profundidade, mas
+;; preferimos:
+;;  * Introspecção nos algoritmos.
+;;  * A habilidosa extemporização de algoritmos como uma amostra
+;;  expressiva/impressiva da destreza mental.
+;;  * Sem estoque (minidisc, DVD, computador seguro na net)
+;;
+;; Nos sabemos que:
+;;  * Não é necessário para a audiência entender código para
+;;  apreciá-lo, da mesma forma em que não é necessário saber tocar uma
+;;  guitarra para gostar de assistir a uma perfomance de guitarra.
+;;  * Códificação ao vivo pode ser acompanhado de uma impressionante
+;;  mostra de destreza manual e a glorificação da interface de
+;;  datilografia.
+;;  * Perfomances envolvem continuos de interação, cobrindo talvez o
+;;  escopo do controle a respeito dos parametros espaciais do trabalho
+;;  artistico, ou conteudo gestual, particularmente direção de detalhe
+;;  expressivo. Enquanto o tradicional taxa de tempo táctil variante
+;;  de expressividade na música tradicional não são aproximadas no
+;;  código, porque repetir o passado? Sem dúvida a escrita de código e
+;;  expressão do pensamento daí derivado vai desenvolver suas próprias
+;;  nuances e particularidades.
+;;
+;; Perfomancs e eventos próximamente alcançando os critérios desse
+;; manifesto podem aplicar pela aprovação e selo TOPLAP.
+;; EndFunctionDoc
+
