@@ -147,7 +147,6 @@ float *AudioCollector::GetFFT()
 		{
 			m_FFT.Impulse2Freq(m_ProcessBuffer+m_ProcessPos,m_FFTBuffer);
 			m_ProcessPos+=m_BufferLength;
-			cerr<<m_ProcessPos<<endl;
 		}
 		else
 		{

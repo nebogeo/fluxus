@@ -58,6 +58,7 @@
 ; setup the standard searchpaths
 ; add to these, or overwrite them in your .fluxus.scm
 (searchpaths (list
+	"./"
 	(string-append (path->string (car (current-library-collection-paths)))
 		fluxus-name "/material/textures/")
 	(string-append (path->string (car (current-library-collection-paths)))
