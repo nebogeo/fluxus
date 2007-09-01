@@ -55,7 +55,7 @@
           "AmbientIntensity" 0.0    
           "DiffuseIntensity" 1.0    
           "SpecularIntensity" 1.0    
-          "SpecDirection" (vector 0 1 -0.4)))
+          "SpecDirection" (vector 0 1 0)))
 
 (test-shader "blinn.vert.glsl" "blinn.frag.glsl"
     (list 
