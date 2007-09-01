@@ -11,6 +11,9 @@
 ; will be added later, probably along with some more interesting NPR 
 ; rendering shaders.
 ; 
+; These shaders are kept in the materials directory - installed as
+; part of fluxus which will be somewhere like:
+; /usr/local/lib/plt/collects/fluxus-0.13/materials/shaders
 
 (clear)
 (clear-colour (vector 0.6 0.2 0.1))
