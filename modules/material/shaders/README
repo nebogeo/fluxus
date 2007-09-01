@@ -1,1 +1,13 @@
-Not much here yet, but this will hopefully expand in future releases.
+The Fluxus GLSL Shader Library
+------------------------------
+
+This collection is a basic set of standalone shaders for you to use 
+or modify to suit your needs. These shaders don't have any fluxus
+specific code, so they should be suitable for use in any application 
+supporting GLSL.
+
+They are currently very much inspired by illumination models used for
+general renderman shaders. There is no texturing support yet, this 
+will be added later, probably along with some more interesting NPR 
+rendering shaders.
+

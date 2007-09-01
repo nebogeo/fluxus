@@ -1,10 +1,20 @@
-uniform vec4 Tint;
+// Copyright (C) 2005 Dave Griffiths
+// Licence: GPLv2 (see COPYING)
+// Fluxus Shader Library
+// ---------------------
+// Wrapped Diffuse Shader
+// A diffuse lighting model which allows you 
+// to change the shading to approximate (very
+// approximately) global illumination.
+
+uniform vec3 Tint;
 uniform float WrapAngle;
-varying vec3 Normal;
-varying vec3 LightVec;
+
+varying vec3 N;
+varying vec3 L;
 
 void main()
 { 
-    float lambert = dot(normalize(LightVec),normalize(Normal));
-    gl_FragColor = Tint*1-acos(lambert)/WrapAngle;
+    float lambert = dot(normalize(L),normalize(N));
+    gl_FragColor = vec4(Tint*1-acos(lambert)/WrapAngle,1.0);
 }

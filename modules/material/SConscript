@@ -17,7 +17,17 @@ Shaders    = ["shaders/simple.frag.glsl",
               "shaders/reflect.frag.glsl", 
               "shaders/reflect.vert.glsl", 
               "shaders/toon.frag.glsl",
-              "shaders/toon.vert.glsl"]
+              "shaders/toon.vert.glsl",
+              "shaders/aniso.frag.glsl",
+			  "shaders/aniso.vert.glsl",
+              "shaders/badprint.frag.glsl",
+			  "shaders/badprint.vert.glsl",
+              "shaders/glossy.frag.glsl",
+			  "shaders/glossy.vert.glsl",
+              "shaders/gooch.frag.glsl",
+			  "shaders/gooch.vert.glsl",
+              "shaders/wood.frag.glsl",
+			  "shaders/wood.vert.glsl"]
 
 Textures =   ["textures/gradient.png",
               "textures/green.png",

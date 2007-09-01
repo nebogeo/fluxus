@@ -1,9 +1,18 @@
-varying vec3 Normal;
-varying vec3 EyeDir;
+// Copyright (C) 2005 Dave Griffiths
+// Licence: GPLv2 (see COPYING)
+// Fluxus Shader Library
+// ---------------------
+// Facing Ratio Shader
+// Blends from inner to outer colour depending
+// on the facing ratio of the fragment. Useful for
+// getting the scanning electron microscope look.
+
+varying vec3 N;
+varying vec3 V;
 
 void main()
 {    
-    Normal = normalize(gl_NormalMatrix*gl_Normal); 
-	EyeDir = -vec3(gl_ModelViewMatrix*gl_Vertex);
+    N = normalize(gl_NormalMatrix*gl_Normal); 
+	V = -vec3(gl_ModelViewMatrix*gl_Vertex);
     gl_Position = ftransform();
 }

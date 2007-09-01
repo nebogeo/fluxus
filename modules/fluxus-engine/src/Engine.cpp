@@ -26,6 +26,7 @@ PolyPrimitive*  Engine::StaticCube=NULL;
 PolyPrimitive*  Engine::StaticPlane=NULL;
 PolyPrimitive*  Engine::StaticSphere=NULL;
 PolyPrimitive*  Engine::StaticCylinder=NULL;
+PolyPrimitive*  Engine::StaticTorus=NULL;
 
 Engine::Engine()
 {
@@ -40,6 +41,9 @@ Engine::Engine()
 
 	StaticCylinder = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(StaticCylinder,1,1,5,10);
+
+	StaticTorus = new PolyPrimitive(PolyPrimitive::QUADS);
+    MakeTorus(StaticTorus,0.5,1,12,12);
 
 	ResetRenderers();	
 }

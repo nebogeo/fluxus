@@ -19,6 +19,12 @@ PolyGlyph::PolyGlyph(const string &ttffilename)
 	m_Slot = m_Face->glyph;
 }
 
+PolyGlyph::~PolyGlyph()
+{
+	FT_Done_Face(m_Face);
+	FT_Done_FreeType(m_Library);
+}
+
 void PolyGlyph::Render(wchar_t ch)
 {	
 	map<wchar_t,int>::iterator i = m_Cache.find(ch);

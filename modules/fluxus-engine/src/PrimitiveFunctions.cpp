@@ -50,7 +50,6 @@ using namespace SchemeHelper;
 // Returns: primitiveid-number
 // Description:
 // A simple cube, texture mapped placement per face.
-// @image{images/cube}
 // Example:
 // (define mynewcube (build-cube))
 // EndFunctionDoc
@@ -60,7 +59,6 @@ using namespace SchemeHelper;
 // Retorna: número-de-id-da-primitiva
 // Descrição:
 // Um simples cubo, mapeamento de textura por face.
-// @image{images/cube}
 // Exemplo:
 // (define mynewcube (build-cube))
 // EndFunctionDoc
@@ -135,7 +133,6 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // A sphere with the resolution specified, texture mapped in normal "world map" style.
-// @image{images/sphere}
 // Example:
 // (define mynewshape (build-sphere 10 10))
 // EndFunctionDoc
@@ -146,7 +143,6 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // Descrição:
 // Uma esfera com a resolução especificada, a textura mapeada no
 // estilo normal "world map".
-// @image{images/sphere}
 // Exemplo:
 // (define mynewshape (build-sphere 10 10))
 // EndFunctionDoc
@@ -162,11 +158,41 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// build-torus inner-radius-number outer-radius-number slices-number stacks-number
+// Returns: primitiveid-number
+// Description:
+// A torus with the resolution specified, control the size and thickness of the
+// donut with the inner and outer radius.
+// Example:
+// (define mynewshape (build-torus 0.5 1 12 12))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build-torus número-de-cortes-horizontais número-de-cortes-verticais
+// Retorna: número-id-primitiva
+// Descrição:
+// Uma esfera com a resolução especificada, a textura mapeada no
+// estilo normal "world map".
+// Exemplo:
+// (define mynewshape (build-sphere 10 10))
+// EndFunctionDoc
+
+Scheme_Object *build_torus(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-torus", "ffii", argc, argv);
+	PolyPrimitive *Prim = new PolyPrimitive(PolyPrimitive::QUADS);
+    MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), 
+				    IntFromScheme(argv[2]), IntFromScheme(argv[3]));
+	MZ_GC_UNREG(); 
+    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+}
+
+// StartFunctionDoc-en
 // build-plane 
 // Returns: primitiveid-number
 // Description:
 // A single quad plane, texture mapped from 0->1 in both dimensions.
-// @image{images/plane}
 // Example:
 // (define mynewshape (build-plane))
 // EndFunctionDoc
@@ -176,7 +202,6 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Um único plano quadrado, mapeado de 0->1 em ambas as dimensões.
-// @image{images/plane}
 // Exemplo:
 // (define mynewshape (build-plane))
 // EndFunctionDoc
@@ -221,7 +246,6 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // A capped cylinder, texture map wrapped around, and badly wrapped around the ends.
-// @image{images/cylinder}
 // Example:
 // (define mynewshape (build-cylinder 10 10))
 // EndFunctionDoc
@@ -232,7 +256,6 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // Descrição:
 // Um cilindro coberto, textura mapeada em volta, e mal mapeada em
 // volta do fim.
-// @image{images/cylinder}
 // Exemplo:
 // (define mynewshape (build-cylinder 10 10))
 // EndFunctionDoc
@@ -257,7 +280,6 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // are faked to approximate a circular cross section. Additionally, if solid rendering is 
 // cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be 
 // drawn - width specified by the (line-width) command.
-// @image{images/line}
 // Example:
 // (define mynewshape (build-line 10))
 // EndFunctionDoc
@@ -274,7 +296,6 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // cruzada. Adicionalmente, se renderização sólida for limpa com
 // (hint-none) e (hint-wire) ativado, uma rápida linha constante vai
 // ser desenhada - largura específicada pelo comando (line-width).
-// @image{images/line}
 // Exemplo:
 // (define mynewshape (build-line 10))
 // EndFunctionDoc
@@ -296,7 +317,6 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // Builds a sequence of planes, texture mapped so that a font texture can be used to display 
 // text. Might also be useful for more abstract things. The font assumed to be non proportional 
 // - there is an example font shipped with fluxus
-// @image{images/text}
 // Ok, so this isn't a very good font texture :)
 // Example:
 // (texture (texture-load "font.png"))
@@ -311,7 +331,6 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 // de fonte possa ser usada para visualização. Pode vir a ser útil para
 // coisas mais abstratas. A fonte é assumida como não proporcional -
 // tem um exemplo de fonte acompanhando o fluxus.
-// @image{images/text}
 // Ok, so this isn't a very good font texture :) 
 // Exemplo:
 // (texture (texture-load "font.png"))
@@ -336,7 +355,6 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // Builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere.
-// @image{images/nurbs-sphere}
 // Example:
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
@@ -347,7 +365,6 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // Descrição:
 // Constrói uma esfera nurbs tesselada, mapead da mesma forma que a
 // esfera poligonal.
-// @image{images/nurbs-sphere}
 // Exemplo:
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
@@ -367,7 +384,6 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // Builds a tesselated nurbs plane, texture mapped in uv direction.
-// @image{images/nurbs-plane}
 // Example:
 // (define mynewshape (build-nurbs-plane 10 10))
 // EndFunctionDoc
@@ -377,7 +393,6 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Constrói um plano nurbs tesselado, mapeado na direção uv.
-// @image{images/nurbs-plane}
 // Exemplo:
 // (define mynewshape (build-nurbs-plane 10 10))
 // EndFunctionDoc
@@ -402,7 +417,6 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // scaled; and points (when hint-points is set), which cannot be textured but are much faster 
 // to render, as they are hardware supported gl points. By default these point particles are 
 // square, turn on hint-anti-alias to make them circular.
-// @image{images/sprites}
 // Example:
 // (define mynewshape (build-particles 100))
 // EndFunctionDoc
@@ -420,7 +434,6 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // muito mais rápidas de renderizar, já que elas são pontos gl
 // suportados pelo hardware. Por defeito essas partículas pontuais são
 // quadradas, ligue hint-anti-alias para faze-las circulares.
-// @image{images/sprites}
 // Exemplo:
 // (define mynewshape (build-particles 100))
 // EndFunctionDoc
@@ -859,6 +872,35 @@ Scheme_Object *draw_sphere(int argc, Scheme_Object **argv)
 Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 {    	
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticCylinder);
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// draw-torus 
+// Returns: void
+// Description:
+// Draws a torus in the current state in immediate mode
+// primitive.
+// Example:
+// (define (render)
+//     (draw-torus))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// draw-torus
+// Retorna: void
+// Descrição:
+// Desenha um torus no estado imediato corrente.
+// Exemplo:
+// (define (render)
+//     (draw-torus))
+// (every-frame (render))
+// EndFunctionDoc
+
+Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
+{    	
+    Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTorus);
     return scheme_void;
 }
 
@@ -1347,6 +1389,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-polygons", scheme_make_prim_w_arity(build_polygons, "build-polygons", 2, 2), env);
 	scheme_add_global("build-nurbs", scheme_make_prim_w_arity(build_nurbs, "build-nurbs", 1, 1), env);
 	scheme_add_global("build-sphere", scheme_make_prim_w_arity(build_sphere, "build-sphere", 2, 2), env);
+	scheme_add_global("build-torus", scheme_make_prim_w_arity(build_torus, "build-torus", 4, 4), env);
 	scheme_add_global("build-plane", scheme_make_prim_w_arity(build_plane, "build-plane", 0, 0), env);
 	scheme_add_global("build-seg-plane", scheme_make_prim_w_arity(build_seg_plane, "build-seg-plane", 2, 2), env);
 	scheme_add_global("build-cylinder", scheme_make_prim_w_arity(build_cylinder, "build-cylinder", 2, 2), env);
@@ -1367,6 +1410,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-plane", scheme_make_prim_w_arity(draw_plane, "draw-plane", 0, 0), env);
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
+	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-convert-to-indexed", scheme_make_prim_w_arity(poly_convert_to_indexed, "poly-convert-to-indexed", 0, 0), env);

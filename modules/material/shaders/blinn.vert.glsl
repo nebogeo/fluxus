@@ -1,10 +1,22 @@
+// Copyright (C) 2005 Dave Griffiths
+// Licence: GPLv2 (see COPYING)
+// Fluxus Shader Library
+// ---------------------
+// Blinn/Phong Shader
+// This is the standard per-fragment lighting
+// shading model
+
 uniform vec3 LightPos;
-varying vec3 Normal;
-varying vec3 Position;
+varying vec3 N;
+varying vec3 P;
+varying vec3 V;
+varying vec3 L;
 
 void main()
 {    
-    Normal = normalize(gl_NormalMatrix*gl_Normal);
-	Position = gl_Vertex.xyz;
+    N = normalize(gl_NormalMatrix*gl_Normal);
+    P = gl_Vertex.xyz;
+    V = -vec3(gl_ModelViewMatrix*gl_Vertex);
+	L = vec3(gl_ModelViewMatrix*(vec4(LightPos,1)-gl_Vertex));
     gl_Position = ftransform();
 }

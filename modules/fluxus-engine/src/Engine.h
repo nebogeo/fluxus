@@ -47,6 +47,7 @@ public:
 	static Fluxus::PolyPrimitive* StaticPlane;
 	static Fluxus::PolyPrimitive* StaticSphere;
 	static Fluxus::PolyPrimitive* StaticCylinder;
+	static Fluxus::PolyPrimitive* StaticTorus;
 	
 	Fluxus::TurtleBuilder *GetTurtle() { return &m_Turtle; }
 	Fluxus::PFuncContainer *GetPFuncContainer() { return &m_PFuncContainer; }

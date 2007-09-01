@@ -22,8 +22,11 @@
 EventRecorder::EventRecorder() :
 m_Mode(OFF),
 m_LastTimeSeconds(0),
-m_TimeSeconds(0)
+m_TimeSeconds(0),
+m_Delta(0.0f)
 {
+	m_LastTime.tv_sec=0;
+	m_LastTime.tv_usec=0;
 }
 
 EventRecorder::~EventRecorder()
@@ -69,18 +72,16 @@ void EventRecorder::ResetClock()
 
 void EventRecorder::UpdateClock()
 {
-	double Delta;
-	if (m_Delta==0)
+	double Delta=m_Delta;
+	if (Delta==0)
 	{
 		timeval ThisTime;
+		ThisTime.tv_sec=0;
+		ThisTime.tv_usec=0;
 		gettimeofday(&ThisTime,NULL);
 		Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
 			  (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
 		m_LastTime=ThisTime;
-	}
-	else
-	{
-		Delta=m_Delta;
 	}
 
 	m_LastTimeSeconds=m_TimeSeconds;

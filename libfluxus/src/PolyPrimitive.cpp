@@ -61,6 +61,10 @@ void PolyPrimitive::PDataDirty()
 	m_NormData=GetDataVec<dVector>("n");
 	m_ColData=GetDataVec<dColour>("c");
 	m_TexData=GetDataVec<dVector>("t");
+	
+	m_ConnectedVerts.clear();
+	m_GeometricNormals.clear();
+	m_UniqueEdges.clear();
 }
 
 void PolyPrimitive::AddVertex(const dVertex &Vert) 
@@ -251,6 +255,7 @@ void PolyPrimitive::ConvertToIndexed()
 {
 	if (m_ConnectedVerts.empty())
 	{
+		
 		CalculateConnected();
 	}
 		
@@ -266,7 +271,7 @@ void PolyPrimitive::ConvertToIndexed()
 	for (vector<vector<int> >::iterator i=m_ConnectedVerts.begin();
 		 i!=m_ConnectedVerts.end(); i++)
 	{
-		if (verttoindex.find(vert)==verttoindex.end())
+		if (!i->empty() && verttoindex.find(vert)==verttoindex.end())
 		{
 			// take the first connected as our new point - will trash non-shared
 			// normals, texture coords and colours

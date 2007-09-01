@@ -22,7 +22,8 @@ using namespace Fluxus;
 ShadowVolumeGen::ShadowVolumeGen() :
 m_ShadowVolume(PolyPrimitive::QUADS),
 m_LightPosition(5,5,0),
-m_Length(10)
+m_Length(10),
+m_Debug(false)
 {
 }
 

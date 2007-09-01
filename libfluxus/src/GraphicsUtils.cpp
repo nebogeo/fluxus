@@ -19,6 +19,7 @@
 
 using namespace Fluxus;
 
+///\todo preallocate all these arrays
 
 void Fluxus::MakeCube(PolyPrimitive *p, float size)
 {
@@ -207,6 +208,67 @@ void Fluxus::MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegm
 			p->AddVertex(dVertex(verts[0],normals[0],tex[0].x,tex[0].y));
 			p->AddVertex(dVertex(verts[1],normals[1],tex[1].x,tex[1].y));
 			p->AddVertex(dVertex(verts[3],normals[3],tex[3].x,tex[3].y));
+		}
+	}
+}
+
+void Fluxus::MakeTorus(PolyPrimitive *p, float innerradius, float outerradius, int hsegments, int rsegments)
+{
+	float radperouter = (360/(float)rsegments)*DEG_CONV;
+	float radperinner = (360/(float)hsegments)*DEG_CONV;
+	
+	for(int j=0; j<rsegments; j++)
+  	{
+		float cpsi = cos(j*radperouter);
+		float spsi = sin(j*radperouter);
+		float cpsi2 = cos((j+1)*radperouter);
+		float spsi2 = sin((j+1)*radperouter);
+ 
+		for(int i=0; i<hsegments; i++)
+		{
+			float cphi = cos(i*radperinner);
+			float sphi = sin(i*radperinner);
+			float cphi2 = cos((i+1)*radperinner);
+			float sphi2 = sin((i+1)*radperinner);
+			
+			dVector verts[4];
+			verts[0].x = cpsi * (outerradius + cphi * innerradius);
+			verts[0].y = spsi * (outerradius + cphi * innerradius);
+			verts[0].z = sphi * innerradius;
+			verts[1].x = cpsi * (outerradius + cphi2 * innerradius);
+			verts[1].y = spsi * (outerradius + cphi2 * innerradius);
+			verts[1].z = sphi2 * innerradius;
+			verts[2].x = cpsi2 * (outerradius + cphi2 * innerradius);
+			verts[2].y = spsi2 * (outerradius + cphi2 * innerradius);
+			verts[2].z = sphi2 * innerradius;
+			verts[3].x = cpsi2 * (outerradius + cphi * innerradius);
+			verts[3].y = spsi2 * (outerradius + cphi * innerradius);
+			verts[3].z = sphi * innerradius;
+			
+			dVector normals[4];
+			normals[0].x = cpsi*cphi;
+			normals[0].y = spsi*cphi;
+			normals[0].z = sphi;
+			normals[1].x = cpsi*cphi2;
+			normals[1].y = spsi*cphi2;
+			normals[1].z = sphi2;
+			normals[2].x = cpsi2*cphi2;
+			normals[2].y = spsi2*cphi2;
+			normals[2].z = sphi2;
+			normals[3].x = cpsi2*cphi;
+			normals[3].y = spsi2*cphi;
+			normals[3].z = sphi;
+
+			dVector tex[4];
+			tex[0]=dVector((i+1)/(float)rsegments,j/(float)hsegments,0);
+			tex[1]=dVector(i/(float)rsegments,(j+1)/(float)hsegments,0);
+			tex[2]=dVector(i/(float)rsegments,j/(float)hsegments,0);
+			tex[3]=dVector((i+1)/(float)rsegments,(j+1)/(float)hsegments,0);
+
+			p->AddVertex(dVertex(verts[3],normals[3],tex[3].x,tex[3].y));
+			p->AddVertex(dVertex(verts[2],normals[2],tex[2].x,tex[2].y));
+			p->AddVertex(dVertex(verts[1],normals[1],tex[1].x,tex[1].y));
+			p->AddVertex(dVertex(verts[0],normals[0],tex[0].x,tex[0].y));			
 		}
 	}
 }

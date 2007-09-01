@@ -220,8 +220,8 @@ unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
 		}
 		
 		delete[] code;
-		return shader;
 		fclose(file);
+		return shader;
 	}
 	#endif
 	return 0;

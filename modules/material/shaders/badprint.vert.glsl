@@ -2,21 +2,22 @@
 // Licence: GPLv2 (see COPYING)
 // Fluxus Shader Library
 // ---------------------
-// Toon (Cel) NPR Shader
-// Standard toon model with configurable
-// colours for the different shading areas
+// BadPrint NPR Shader
+// This shader tries to emulate the effect
+// of a bad printing process. Can be controlled
+// with different settings for RGB
 
 uniform vec3 LightPos;
 varying vec3 N;
 varying vec3 P;
-varying vec3 V;
+varying vec4 S;
 varying vec3 L;
 
 void main()
 {    
     N = normalize(gl_NormalMatrix*gl_Normal);
     P = gl_Vertex.xyz;
-    V = -vec3(gl_ModelViewMatrix*gl_Vertex);
-	L = vec3(gl_ModelViewMatrix*(vec4(LightPos,1)-gl_Vertex));
     gl_Position = ftransform();
+	L = vec3(gl_ModelViewMatrix*(vec4(LightPos,1)-gl_Vertex));
+    S = gl_ProjectionMatrix*gl_Position;
 }
