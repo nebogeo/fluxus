@@ -45,7 +45,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// turtle
+// tartaruga
 // O construtor polygonal Turtle é um modo experimental de construir
 // objetos poligonais usando uma tartaruga do estilo logo no espaço
 // 3d. Em que você pode dirigir a tartaruga ao redor colocando vértices
@@ -53,6 +53,19 @@ using namespace Fluxus;
 // para deformar objetos poligonais existentes, fixando ela a objetos
 // que você já criou.
 // Exemplo:
+// (define (build n)
+//     (turtle-reset)
+//     (turtle-prim 4)
+//     (build-loop n n)
+//     (turtle-build))
+// 
+// (define (build-loop n t)
+//     (turtle-turn (vector 0 (/ 360 t) 0))
+//     (turtle-move 1)
+//     (turtle-vert)
+//     (if (< n 1)
+//         0
+//         (build-loop (- n 1) t)))
 // EndSectionDoc
 
 // StartFunctionDoc-en

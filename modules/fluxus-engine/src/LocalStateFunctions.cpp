@@ -34,7 +34,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// local-state
+// estado-local
 // As funções de estado local controlam a renderização ou do estado
 // corrente - ou do estado da primitiva correntemente
 // pega(grabbed). Em Fluxus estado significa significa a forma que as

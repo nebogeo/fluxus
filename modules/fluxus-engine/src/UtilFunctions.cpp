@@ -33,8 +33,8 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// util-functions
-// Funções práticas para fazer a sua vida mais fácil.
+// funcoes-uteis
+// Funções práticas para fazer a sua vida mais fácil.
 // Exemplo:
 // EndSectionDoc
 

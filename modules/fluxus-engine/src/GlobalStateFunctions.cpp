@@ -32,7 +32,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// global-state
+// estado-global
 // Estado global é realmente qualquer coisa que controla o
 // renderizador globalmente, então ele afeta todas as primitivas ou
 // controla o renderizador diretamente - p.e. controle de câmera ou

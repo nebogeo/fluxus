@@ -27,10 +27,9 @@ using namespace Fluxus;
 // todo: 
 // 1)better examples, at least showing the most basic functionality of every vector function in an simple script,
 // or rather have a simple example script showing this, 
-// 2)could be good if we had browseable links in the scratch pad too,
-// to travel alond the docs and find what you want, a basic menu could already solve this. Ive prototyped something down here.
 
 // nearly there... ;)
+// :), indeed, i guess that the examples can be left for second plane if we have a good amount of tutorials perhaps?
 
 // StartSectionDoc-en
 // maths
@@ -41,7 +40,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// matemática
+// matematica
 // Estas funções sao optimizadas para gráficos em 3d, e a colisão entre ciência da computação e matemática é aparente 
 // aqui, então vetores representando "vectors" são nesse contexto tidos como 3 elementos em tamanho, quaternions são vetores de 
 // tamanho 4, e matrizes são vetores de 16 elementos.

@@ -224,13 +224,21 @@
   ;; Example:
   ;; (set-help-locale! "pt") 
   ;; EndFunctionDoc 
-     
+
+  ;; StartFunctionDoc-pt
+  ;; set-help-locale! string-locale
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Ajusta a linguagem para a documentação.
+  ;; Exemplo:
+  ;; (set-help-locale! "en")
+  ;; EndFunctionDoc
+
   (define (set-help-locale! locale)
     (let ((newhelpmap (assoc locale helpmap-all-locales)))
 	(cond
 		(newhelpmap (set! helpmap (cadr newhelpmap)))
 		(else (display "locale \"")(display locale)(display " not found...")(newline)))))
-		
 
   ;; StartFunctionDoc-en
   ;; help function-string
@@ -275,6 +283,8 @@
                                (string-append dst (string (string-ref src i)) (string #\newline)) count (+ i 1) 0)
             (insert-linebreaks src 
                                (string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
+
+;; Dave could we have a different version of this function (func-help) for each locale? --greb
  
   (define (func-help funcname)  
     (define (inner-help l)
@@ -387,8 +397,8 @@
        (let ((file (open-input-file helpmapfile)))
          (set! helpmap-all-locales (read file))
          (close-input-port file)
-		 (set-help-locale! "en"))))) ; default to english...
-
+		 (set-help-locale! "en"))))) ; default to english... 
+  
   
   ;-------------------------------------------------
   ; stereo mode
@@ -468,10 +478,10 @@
   ;; EndFunctionDoc    
 
   ;; StartFunctionDoc-pt
-  ;; callback-override
+  ;; callback-override função-callback
   ;; Retorna: void
   ;; Descrição:
-  ;; Permite que você substitua a chama de volta (callback) do quadro,
+  ;; Permite que você substitua a chamada de volta (callback) do quadro,
   ;; para controlar o loop de renderização do fluxus de uma forma mais detalhada.
   ;; Exemplo:
   ;; (callback-override myfunc)

@@ -417,7 +417,7 @@
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
-;; language
+;; linguagem
 ;; Retorna:
 ;; Descrição:
 ;; Exemplo:

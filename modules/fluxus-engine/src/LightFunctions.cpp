@@ -35,7 +35,7 @@ using namespace SchemeHelper;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// lights
+// luzes
 // Sem luzes você não seria capaz de ver nada. Por sorte fluxus te dá
 // uma de graça por padrão, uma luz pontual difusa e branca fixa à
 // camêra. Para iluminações mais interessantes, você vai precisar

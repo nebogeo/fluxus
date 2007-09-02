@@ -52,7 +52,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// primitive-data
+// dados-primitivos
 // Dados primitivos (pdata para diminuir) é o nome fluxus' para dados
 // que formam primitivas. Em primitivas poligonais isto significa
 // informação dos vértices, em primitivas de partículas isto
@@ -66,6 +66,21 @@ using namespace Fluxus;
 // depende a ordem da primitiva. Todos os comandos Pdata operam na
 // primitiva atualmente pega [grabbed].
 // Exemplo:
+// ; uma função para deformar os pontos de um objeto
+// (define (deform n)
+//     (pdata-set! "p" n (vadd  (pdata-ref "p" n)                ; o ponto original, mais
+//         (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; um pequeno vetor randomico
+//     (if (zero? n)
+//         0
+//         (deform (- n 1))))
+//     
+// (hint-unlit) ; ajustar algumas opções de render
+// (hint-wire)  ; para fazer as coisas mais fáceis de ver
+// (line-width 4)
+// (define myobj (build-sphere 10 10)) ; fazer uma esfera
+// (grab myobj)
+// (deform (pdata-size)) ; deformá-la
+// (ungrab)
 // EndSectionDoc
 
 // StartFunctionDoc-en

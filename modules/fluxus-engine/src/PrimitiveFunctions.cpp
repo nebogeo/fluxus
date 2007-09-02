@@ -168,13 +168,13 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// build-torus número-de-cortes-horizontais número-de-cortes-verticais
+// build-torus número-raio-interior número-raio-exterior número-cortes número-fatias
 // Retorna: número-id-primitiva
 // Descrição:
-// Uma esfera com a resolução especificada, a textura mapeada no
-// estilo normal "world map".
+// Um torus com a resolução especificada, controle o tamanho e a
+// grossura da "rosquinha" com o raio inferior e exterior.
 // Exemplo:
-// (define mynewshape (build-sphere 10 10))
+// (define mynewshape (build-torus 0.5 1 12 12))
 // EndFunctionDoc
 
 Scheme_Object *build_torus(int argc, Scheme_Object **argv)

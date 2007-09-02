@@ -43,7 +43,7 @@ using namespace Fluxus;
 // EndSectionDoc 
 
 // StartSectionDoc-pt
-// physics
+// fisica
 // O sistema de física em fluxus é baseado na biblioteca ODE, que
 // permite a você adicionar propriedades físicas a objetos e
 // colocá-los em movimento. Já que ODE foi projetada para simulações
