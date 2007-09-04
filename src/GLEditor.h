@@ -63,12 +63,14 @@ public:
 	static float m_TextColourGreen;
 	static float m_TextColourBlue;
 	
-	static void InitFont(const string &ttf);
 	void StrokeCharacter(wchar_t c);
 	float StrokeWidth(wchar_t c);
 	
+	static void InitFont(const string &ttf);
+	static void InitAutoFocus(bool doit, float width, float height, float error, float drift, 
+					float scale_drift, float minscale, float maxscale);
+	
 protected:
-
 
 	void DrawCharBlock();
 	void DrawCursor();
@@ -119,6 +121,14 @@ protected:
 	timeval m_Time;
 	float m_Delta;
 	
+	static bool m_DoAutoFocus;
+	static float m_AutoFocusWidth;
+	static float m_AutoFocusHeight;
+	static float m_AutoFocusError;
+	static float m_AutoFocusDrift;
+	static float m_AutoFocusScaleDrift;
+	static float m_AutoFocusMinScale;
+	static float m_AutoFocusMaxScale;
 };
 
 } // namespace fluxus

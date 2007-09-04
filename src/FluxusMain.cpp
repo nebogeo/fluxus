@@ -38,16 +38,34 @@ m_ShowCursor(true),
 m_ShowFileDialog(false)
 {
 	// use the interpreter to get the font name
-	//\todo expand this for more editor prefs
+	// and editor prefs
 	Scheme_Object *txt;
+	Scheme_Object *t;
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_REG();	
 	interpreter->Interpret("fluxus-scratchpad-font", &txt);
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
+	interpreter->Interpret("fluxus-scratchpad-do-autofocus", &t);
+	bool DoAutoFocus=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
+	float Width=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
+	float Height=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-error", &t);
+	float Error=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-drift", &t);
+	float Drift=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-scale-drift", &t);
+	float ScaleDrift=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-min-scale", &t);
+	float MinScale=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-max-scale", &t);
+	float MaxScale=scheme_real_to_double(t);
   	MZ_GC_UNREG();
 	
 	GLEditor::InitFont(s);
+	GLEditor::InitAutoFocus(DoAutoFocus,Width,Height,Error,Drift,ScaleDrift,MinScale,MaxScale);
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++) 

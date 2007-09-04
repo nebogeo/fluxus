@@ -1,4 +1,4 @@
-// Copyright (C) 2005 Dave Griffiths
+// Copyright (C) 2007 Dave Griffiths
 // Licence: GPLv2 (see COPYING)
 // Fluxus Shader Library
 // ---------------------

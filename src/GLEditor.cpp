@@ -34,13 +34,16 @@ float GLEditor::m_TextWidth(1);
 float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
-PolyGlyph* GLEditor::m_PolyGlyph = NULL;
+bool GLEditor::m_DoAutoFocus(true);
+float GLEditor::m_AutoFocusWidth(70000.0f);
+float GLEditor::m_AutoFocusHeight(50000.0f);
+float GLEditor::m_AutoFocusError(5000.0f);
+float GLEditor::m_AutoFocusDrift(1.0);
+float GLEditor::m_AutoFocusScaleDrift(0.3);
+float GLEditor::m_AutoFocusMinScale(0.5);
+float GLEditor::m_AutoFocusMaxScale(5.0);
 
-static const float TEXT_BOX_WIDTH = 70000.0f;
-static const float TEXT_BOX_HEIGHT = 50000.0f;
-static const float TEXT_BOX_ERROR = 5000.0f;
-static const float TEXT_BOX_DRIFT = 1.0;
-static const float TEXT_BOX_SCALE_DRIFT = 0.3;
+PolyGlyph* GLEditor::m_PolyGlyph = NULL;
 
 GLEditor::GLEditor():
 m_PosX(0),
@@ -74,6 +77,19 @@ m_Delta(0.0)
 void GLEditor::InitFont(const string &ttf)
 {
 	m_PolyGlyph = new PolyGlyph(ttf);
+}
+
+void GLEditor::InitAutoFocus(bool doit, float width, float height, float error, float drift, 
+	float scale_drift, float minscale, float maxscale)
+{
+	m_DoAutoFocus = doit;
+	m_AutoFocusWidth = width;
+	m_AutoFocusHeight = height;
+	m_AutoFocusError = error;
+	m_AutoFocusDrift = drift;
+	m_AutoFocusScaleDrift = scale_drift;
+	m_AutoFocusMinScale = minscale;
+	m_AutoFocusMaxScale = maxscale;
 }
 
 GLEditor::~GLEditor() 
@@ -282,22 +298,23 @@ void GLEditor::Render()
 		glColor4f(0.7,0.7,0.7,1);
 	}
 
-	m_PosY=m_PosY*(1-TEXT_BOX_DRIFT*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*TEXT_BOX_DRIFT*m_Delta;
+	if (m_DoAutoFocus)
+	{
+		m_PosY=m_PosY*(1-m_AutoFocusDrift*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*m_AutoFocusDrift*m_Delta;
 	
-	float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
-	float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
+		float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
+		float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
 
-	if (boxwidth > TEXT_BOX_WIDTH+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
-	else if (boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR && 
-			 boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
-	else if (boxheight > TEXT_BOX_HEIGHT+TEXT_BOX_ERROR) m_Scale*=1-TEXT_BOX_SCALE_DRIFT*m_Delta; 
-	else if (boxheight < TEXT_BOX_HEIGHT-TEXT_BOX_ERROR && 
-		     boxwidth < TEXT_BOX_WIDTH-TEXT_BOX_ERROR) m_Scale*=1+TEXT_BOX_SCALE_DRIFT*m_Delta;
-
-	if (m_Scale>5.0f) m_Scale=5.0f; // clamp
-	if (m_Scale<0.5f) m_Scale=0.5f; // clamp
-
-	//m_TextWidth=4*(m_Scale/8.0f); // adjust the line width to suit the scale
+		if (boxwidth > m_AutoFocusWidth+m_AutoFocusError) m_Scale*=1-m_AutoFocusScaleDrift*m_Delta; 
+		else if (boxwidth < m_AutoFocusWidth-m_AutoFocusError && 
+				 boxheight < m_AutoFocusHeight-m_AutoFocusError) m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
+		else if (boxheight > m_AutoFocusHeight+m_AutoFocusError) m_Scale*=1-m_AutoFocusScaleDrift*m_Delta; 
+		else if (boxheight < m_AutoFocusHeight-m_AutoFocusError && 
+		    	 boxwidth < m_AutoFocusWidth-m_AutoFocusError) m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
+	}
+	
+	if (m_Scale>m_AutoFocusMaxScale) m_Scale=m_AutoFocusMaxScale; // clamp
+	if (m_Scale<m_AutoFocusMinScale) m_Scale=m_AutoFocusMinScale; // clamp
 	
 	glPopMatrix();
 	glPopMatrix();
@@ -436,12 +453,12 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				m_Selection=false;
 				m_Position+=m_CopyBuffer.size();
 			break;
-			case GLEDITOR_PLUS: // zoom in
+			/*case GLEDITOR_PLUS: // zoom in
 				m_Scale*=1.1f;
 			break;
 			case GLEDITOR_MINUS: // zoom out
 				m_Scale/=1.1f;
-			break;
+			break;*/
 			default: break;
 		}
 	}

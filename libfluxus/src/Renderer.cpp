@@ -14,8 +14,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-//#define TEST_64BIT_TIME
-
 #include "Renderer.h"
 #include "State.h"
 #include "Primitive.h"
@@ -127,16 +125,6 @@ void Renderer::Render()
 	gettimeofday(&ThisTime,NULL);
 	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
 			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
-
-#ifdef TEST_64BIT_TIME
-	cerr<<"raw values from gettimeofday: "<<ThisTime.tv_sec<<" "<<ThisTime.tv_usec<<endl;
-	cerr<<"sizeof tv_sec: "<<sizeof(ThisTime.tv_sec)<<endl;
-	cerr<<"usecs to seconds: "<<ThisTime.tv_usec*0.000001f<<endl;
-	cerr<<"delta calc: "<<(ThisTime.tv_sec-m_LastTime.tv_sec)+
-			              (ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f<<endl;
-	cerr<<"delta val: "<<m_Delta<<endl;
-	cerr<<"time: "<<m_Time<<endl;  
-#endif
 
 	if (m_Delta<m_Deadline)
 	{

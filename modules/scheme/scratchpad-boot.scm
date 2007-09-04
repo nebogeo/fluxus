@@ -55,7 +55,18 @@
 (define fluxus-scratchpad-font (string-append (path->string (car (current-library-collection-paths)))
 	fluxus-name "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
 
-; setup the standard searchpaths
+; the scratchpad autofocus settings
+(define fluxus-scratchpad-do-autofocus 1)
+(define fluxus-scratchpad-autofocus-width 70000)
+(define fluxus-scratchpad-autofocus-height 50000)
+(define fluxus-scratchpad-autofocus-error 5000)
+(define fluxus-scratchpad-autofocus-drift 1.0)
+(define fluxus-scratchpad-autofocus-scale-drift 1.0)
+; turn off zooming by turning min and max to 0.5
+(define fluxus-scratchpad-autofocus-min-scale 0.5)
+(define fluxus-scratchpad-autofocus-max-scale 5.0)
+
+; setup the standard searchpaths, this will have to be improved
 ; add to these, or overwrite them in your .fluxus.scm
 (searchpaths (list
 	"./"

@@ -1,3 +1,10 @@
+// Copyright (C) 2007 Dave Griffiths
+// Licence: GPLv2 (see COPYING)
+// Fluxus Shader Library
+// ---------------------
+// Lambertian Shading Model
+// Simple diffuse only shader
+
 uniform vec3 LightPos;
 varying vec3 N;
 varying vec3 L;
