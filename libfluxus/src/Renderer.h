@@ -42,8 +42,14 @@ namespace Fluxus
 class State;
 class Primitive;
 
-///@section Main
-/// blah blah
+///\mainpage The Fluxus Renderer (libfluxus)
+/// This is the low level rendering engine for fluxus, which consists
+/// of a scene graph and a selection of different geometry primitives 
+/// for rendering realtime graphics.
+///
+/// This API is written in C++ (this is what 'fluxus the livecoding 
+/// environment' binds to the Scheme language) and is designed for speed
+/// and flexibility.
 
 //////////////////////////////////////////////////////////////////////
 /// This is the main interface for the fluxus renderer, all

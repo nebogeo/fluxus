@@ -47,7 +47,7 @@ To build and install, type:
 scons 
 sudo scons install
 
-Build options:
+Build options are:
 
 X11=1          : Build with the X11 libraries - rather than Xorg which is 
                  default.

@@ -48,6 +48,8 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
   by the physics possible
 * (blobby->poly) extracts the blobbies mesh into a polygon primitive
 * (hint-box) fix
+* Portuguese translations of the documentation (thanks to Glauber Alex Dias
+  Prado)
 * huge text possible with auto livecoding zoom and tracking
 * editor and repl fixes
 * all error reporting goes to the repl
@@ -55,6 +57,10 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * minimal unicode support added
 * unified helpmap locales, added (set-help-locale!)
 * added (help "sections") & section information with function lists
+* apple fixes
+* (time) now returns time since fluxus startup - to avoid precision problems
+* added (draw-torus) and (build-torus)
+* fluxus GLSL shader library
 
 0.12
 
