@@ -57,6 +57,7 @@
 
 ; the scratchpad autofocus settings
 (define fluxus-scratchpad-do-autofocus 1)
+(define fluxus-scratchpad-debug-autofocus 0)
 (define fluxus-scratchpad-autofocus-width 70000)
 (define fluxus-scratchpad-autofocus-height 50000)
 (define fluxus-scratchpad-autofocus-error 5000)

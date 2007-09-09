@@ -48,7 +48,9 @@ m_ShowFileDialog(false)
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
 	interpreter->Interpret("fluxus-scratchpad-do-autofocus", &t);
 	bool DoAutoFocus=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
+	interpreter->Interpret("fluxus-scratchpad-debug-autofocus", &t);
+	bool DebugAutoFocus=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-autofocus-width", &t);
 	float Width=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
 	float Height=scheme_real_to_double(t);
@@ -65,7 +67,7 @@ m_ShowFileDialog(false)
   	MZ_GC_UNREG();
 	
 	GLEditor::InitFont(s);
-	GLEditor::InitAutoFocus(DoAutoFocus,Width,Height,Error,Drift,ScaleDrift,MinScale,MaxScale);
+	GLEditor::InitAutoFocus(DoAutoFocus,DebugAutoFocus,Width,Height,Error,Drift,ScaleDrift,MinScale,MaxScale);
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++) 

@@ -26,6 +26,8 @@
 #include "PolyGlyph.h"
 #include "assert.h"
 
+#define EDITOR_TEST
+
 using namespace fluxus;
 
 // static so we share between workspaces
@@ -35,6 +37,7 @@ float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
 bool GLEditor::m_DoAutoFocus(true);
+bool GLEditor::m_DebugAutoFocus(false);
 float GLEditor::m_AutoFocusWidth(70000.0f);
 float GLEditor::m_AutoFocusHeight(50000.0f);
 float GLEditor::m_AutoFocusError(5000.0f);
@@ -79,10 +82,11 @@ void GLEditor::InitFont(const string &ttf)
 	m_PolyGlyph = new PolyGlyph(ttf);
 }
 
-void GLEditor::InitAutoFocus(bool doit, float width, float height, float error, float drift, 
+void GLEditor::InitAutoFocus(bool doit, bool debug, float width, float height, float error, float drift, 
 	float scale_drift, float minscale, float maxscale)
 {
 	m_DoAutoFocus = doit;
+	m_DebugAutoFocus = debug;
 	m_AutoFocusWidth = width;
 	m_AutoFocusHeight = height;
 	m_AutoFocusError = error;
@@ -162,7 +166,7 @@ void GLEditor::Render()
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glOrtho(-100/2,100/2,-75/2,75/2,0,10);
+	glOrtho(-50,50,-37.5,37.5,0,10);
 	
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_TEXTURE_2D);
@@ -171,12 +175,36 @@ void GLEditor::Render()
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
    	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
-	glLineWidth(m_TextWidth);
 	glPolygonMode(GL_FRONT,GL_FILL);
 	
 	glLoadIdentity();
+	
+	if (m_DebugAutoFocus)
+	{
+		glColor3f(1,1,1);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(-49,-36.5,0);
+		glVertex3f(49,-36.5,0);
+		glVertex3f(49,36.5,0);
+		glVertex3f(-49,36.5,0);
+		glEnd();
+
+		glColor3f(0,1,0);
+		glPushMatrix();
+		glTranslatef(-45,0,0);
+		glScalef(0.001f,0.001f,1); 
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(0,-m_AutoFocusHeight/2.0f,0);
+		glVertex3f(m_AutoFocusWidth,-m_AutoFocusHeight/2.0f,0);
+		glVertex3f(m_AutoFocusWidth,m_AutoFocusHeight/2.0f,0);
+		glVertex3f(0,m_AutoFocusHeight/2.0f,0);
+		glEnd();
+		glPopMatrix();
+	}
+
 	glTranslatef(-45,0,0);
 	glScalef(0.001f*m_Scale,0.001f*m_Scale,1); 
+	
 	glTranslatef(m_PosX,m_PosY,0);
 	
 	glPushMatrix();
@@ -276,6 +304,7 @@ void GLEditor::Render()
 					StrokeCharacter(m_Text[n]);			
 				}
 				BBExpand(xpos,ypos);
+				BBExpand(xpos+m_CharWidth,ypos+m_CharHeight);
 				xpos+=width;
 			}
 			xcount++;
@@ -297,6 +326,7 @@ void GLEditor::Render()
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
+	
 
 	if (m_DoAutoFocus)
 	{
@@ -312,12 +342,31 @@ void GLEditor::Render()
 		else if (boxheight < m_AutoFocusHeight-m_AutoFocusError && 
 		    	 boxwidth < m_AutoFocusWidth-m_AutoFocusError) m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
 	}
+	else
+	{
+		m_Scale=m_AutoFocusMinScale;
+		m_PosY=60000;
+	}
 	
 	if (m_Scale>m_AutoFocusMaxScale) m_Scale=m_AutoFocusMaxScale; // clamp
 	if (m_Scale<m_AutoFocusMinScale) m_Scale=m_AutoFocusMinScale; // clamp
 	
 	glPopMatrix();
+	
+	if (m_DebugAutoFocus)
+	{
+		glColor3f(1,0,0);
+		glBegin(GL_LINE_LOOP);
+		glVertex3f(m_BBMinX,m_BBMinY,0);
+		glVertex3f(m_BBMaxX,m_BBMinY,0);
+		glVertex3f(m_BBMaxX,m_BBMaxY,0);
+		glVertex3f(m_BBMinX,m_BBMaxY,0);
+		glEnd();
+	}
+	
 	glPopMatrix();
+	
+	
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 

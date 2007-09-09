@@ -67,7 +67,7 @@ public:
 	float StrokeWidth(wchar_t c);
 	
 	static void InitFont(const string &ttf);
-	static void InitAutoFocus(bool doit, float width, float height, float error, float drift, 
+	static void InitAutoFocus(bool doit, bool debug, float width, float height, float error, float drift, 
 					float scale_drift, float minscale, float maxscale);
 	
 protected:
@@ -122,6 +122,7 @@ protected:
 	float m_Delta;
 	
 	static bool m_DoAutoFocus;
+	static bool m_DebugAutoFocus;
 	static float m_AutoFocusWidth;
 	static float m_AutoFocusHeight;
 	static float m_AutoFocusError;
