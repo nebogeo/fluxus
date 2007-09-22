@@ -205,6 +205,15 @@
 ;; by using workspaces. To switch workspaces, use ctrl+number 
 ;; key. Only one can be run at once though, hitting f5 will 
 ;; execute the currently active workspace script. 
+;; 
+;; Auto focus
+;; ----------
+;;
+;; The editor includes an auto scaling/centering feature which is
+;; enabled by default. To disable it - add the line:
+;; (set! fluxus-scratchpad-do-autofocus 0)
+;; to your .fluxus.scm file - or create a new file called that in 
+;; your home directory, containing that line.
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt

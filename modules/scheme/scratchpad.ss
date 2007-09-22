@@ -334,7 +334,9 @@
     (cond 
       ((null? helpmap)
        (display "No helpmap exists...")(newline)
-       (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
+       (display "Your fluxus installation is not setup properly.")(newline)
+	   (display "Try running \"makedocs.sh\" in the fluxus docs directory,")(newline)
+	   (display "and reinstalling with \"sudo scons install\"")(newline))
       (else
        (inner-help helpmap))))
 
