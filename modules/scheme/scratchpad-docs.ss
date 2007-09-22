@@ -239,6 +239,15 @@
 ;; de área, use ctrl+tecla de número. Somente um script pode rodar
 ;; de uma vez no entanto, apertando F5 vai executar o script da área
 ;; de trabalho ativa atualmente.
+;;
+;; Auto foco
+;; ---------
+;; 
+;; O editor inclui uma propriedade de auto escalagem/centralização que
+;; é ligada por padrão. Para desligar - adicione a linha:
+;; (set! fluxus-scratchpad-do-autofocus 0)
+;; para o seu arquivo .fluxus.scm - ou crie um novo arquivo chamado
+;; assim no seu diretório home, contendo essa linha.
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
