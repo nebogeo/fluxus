@@ -196,10 +196,22 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	
 	#ifdef STEREODEFAULT
- 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM|GLUT_STEREO;
- 	#else
- 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM;
- 	#endif
+
+	#ifdef ACCUM_BUFFER
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM|GLUT_STEREO;
+  	#else
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_STEREO;
+	#endif
+ 	
+	#else
+	
+	#ifdef ACCUM_BUFFER
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+  	#else
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM;
+	#endif
+	
+	#endif
 	
 	// init OpenGL
   	glutInit(&argc,argv);

@@ -1,5 +1,12 @@
 Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.14
+
+* added vertex colouring to wireframe lines
+* fixed torus texture coordinates
+* added build option for ACCUM_BUFFER, off by default - bad tempered drivers
+
+
 0.13
 
 * stereo rendering support by Alex Norman, adding:

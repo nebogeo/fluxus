@@ -24,6 +24,7 @@ LinePrimitive::LinePrimitive()
 {	
 	AddData("p",new TypedPData<dVector>);
 	AddData("w",new TypedPData<float>);
+	AddData("c",new TypedPData<dVector>);
 	PDataDirty();
 }
 
@@ -47,6 +48,7 @@ void LinePrimitive::PDataDirty()
 	// reset pointers
 	m_VertData=GetDataVec<dVector>("p");
 	m_WidthData=GetDataVec<float>("w");
+	m_ColData=GetDataVec<dVector>("c");
 }
 
 void LinePrimitive::Render()
@@ -98,18 +100,39 @@ void LinePrimitive::Render()
 	
 	if (m_State.Hints & HINT_WIRE)
 	{
-		glBegin(GL_LINE_STRIP);
-		for (unsigned int n=0; n<m_VertData->size()-1; n++)
+		if (m_State.Hints & HINT_VERTCOLS)
 		{
-			float txstart = n/(float)m_VertData->size();
-			float txend = (n+1)/(float)m_VertData->size();
-			glTexCoord2f(txstart,0);
-			glVertex3fv((*m_VertData)[n].arr());
-			glTexCoord2f(txend,0);
-			glVertex3fv((*m_VertData)[n+1].arr());
+			glBegin(GL_LINE_STRIP);
+			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			{
+				float txstart = n/(float)m_VertData->size();
+				float txend = (n+1)/(float)m_VertData->size();
+				glTexCoord2f(txstart,0);
+				glColor3fv((*m_ColData)[n].arr());
+				glVertex3fv((*m_VertData)[n].arr());
+				glTexCoord2f(txend,0);
+				glColor3fv((*m_ColData)[n+1].arr());
+				glVertex3fv((*m_VertData)[n+1].arr());
+			}
+			glEnd();
 		}
-		glEnd();
+		else
+		{
+			glBegin(GL_LINE_STRIP);
+			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			{
+				float txstart = n/(float)m_VertData->size();
+				float txend = (n+1)/(float)m_VertData->size();
+				glTexCoord2f(txstart,0);
+				glVertex3fv((*m_VertData)[n].arr());
+				glTexCoord2f(txend,0);
+				glVertex3fv((*m_VertData)[n+1].arr());
+			}
+			glEnd();
+		}
 	}
+	
+	
 	
 	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);

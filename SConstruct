@@ -55,6 +55,9 @@ if ARGUMENTS.get("GLSL","1")=="1":
 if ARGUMENTS.get("STEREODEFAULT","0")=="1":
  	env.Append(CCFLAGS=' -DSTEREODEFAULT')
 
+if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
+ 	env.Append(CCFLAGS=' -DACCUM_BUFFER')
+
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"

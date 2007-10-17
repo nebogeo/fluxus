@@ -16,7 +16,7 @@ in contact!
 It requires:
 
 ode (0.5)           http://opende.sourceforge.net/
-plt scheme (370)    http://www.plt-scheme.org/ (see below)
+plt scheme (370)    http://www.plt-scheme.org/ (from source - see below)
 fftw (3.0.1)        http://www.fftw.org/
 jack (1.0)          http://jackit.sourceforge.net/
 libsndfile (1.0.12) http://www.mega-nerd.com/libsndfile/
@@ -33,7 +33,8 @@ actually build fluxus.
 PLT install instructions
 ------------------------
 
-You probably need to install PLT from source, and do this:
+You probably need to install PLT from source, in order to get shared libraries
+like this:
 
 ./configure --enable-shared --prefix=/usr/local
 make
@@ -47,16 +48,30 @@ To build and install, type:
 scons 
 sudo scons install
 
-Build options are:
+Build options to scons are:
 
-X11=1          : Build with the X11 libraries - rather than Xorg which is 
-                 default.
-				 
-MULTITEXTURE=1 : Multitexturing is bad tempered on some drivers - set this to 
-				 enable the multitexturing code.
-				 
-GLSL=0         : Set this to disable GLSL hardware shaders.
+X11=1
+Build with the X11 libraries - rather than Xorg which is default.			 
+
+MULTITEXTURE=1
+Multitexturing is bad tempered on some drivers - set this to enable the 
+multitexturing code.		 
+
+GLSL=0
+Set this to disable GLSL hardware shaders.
+
+STEREODEFAULT=1
+Use hardware stereo rendering
+
+ACCUM_BUFFER=1
+Startup with an accumulation buffer (again, bad tempered on some drivers)
 
 There are more settings at the top of the SConstruct file which may need to be
 tweaked to correctly find things.
+
+Using fluxus
+------------
+
+See the online help and the example scripts (in the examples directory) for 
+pointers on using fluxus.
 

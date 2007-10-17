@@ -209,7 +209,7 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// apply object-id
+// apply-transform object-id
 // Returns: void
 // Description:
 // Applies the current object transform to the vertex positions of the supplied object and 
@@ -221,7 +221,7 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// apply id-do-objeto
+// apply-transform id-do-objeto
 // Retorna: void
 // Descrição:
 // Aplica a transformação corrente às posições dos vértices do objeto
@@ -235,7 +235,7 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 Scheme_Object *apply(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("apply", "i", argc, argv);
+	ArgCheck("apply-transform", "i", argc, argv);
 	Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
 	MZ_GC_UNREG(); 
 	return scheme_void;

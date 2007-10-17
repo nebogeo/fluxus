@@ -260,10 +260,10 @@ void Fluxus::MakeTorus(PolyPrimitive *p, float innerradius, float outerradius, i
 			normals[3].z = sphi;
 
 			dVector tex[4];
-			tex[0]=dVector((i+1)/(float)rsegments,j/(float)hsegments,0);
-			tex[1]=dVector(i/(float)rsegments,(j+1)/(float)hsegments,0);
-			tex[2]=dVector(i/(float)rsegments,j/(float)hsegments,0);
-			tex[3]=dVector((i+1)/(float)rsegments,(j+1)/(float)hsegments,0);
+			tex[0]=dVector(i/(float)rsegments,j/(float)hsegments,0);
+			tex[1]=dVector((i+1)/(float)rsegments,j/(float)hsegments,0);
+			tex[2]=dVector((i+1)/(float)rsegments,(j+1)/(float)hsegments,0);
+			tex[3]=dVector(i/(float)rsegments,(j+1)/(float)hsegments,0);
 
 			p->AddVertex(dVertex(verts[3],normals[3],tex[3].x,tex[3].y));
 			p->AddVertex(dVertex(verts[2],normals[2],tex[2].x,tex[2].y));
