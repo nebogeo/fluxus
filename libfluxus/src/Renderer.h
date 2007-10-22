@@ -130,6 +130,7 @@ public:
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
 	void InitTextures() 					 { TexturePainter::Get()->Initialise(); }
+	void ClearTextureCache() 				 { TexturePainter::Get()->ClearCache(); }
 	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void ShowCursor(bool s);

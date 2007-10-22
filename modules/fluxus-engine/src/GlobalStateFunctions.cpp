@@ -372,38 +372,27 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// force-load-texture pngfilename-string
-// Returns: textureid-number
+// clear-texture-cache 
+// Returns: void
 // Description:
-// Uncached loading of textures from disk, converts it to a texture, and returns the id number. 
-// Useful if you are changing the texture while running the script, otherwise use load-texture, which
-// will be much faster. The png may be RGB or RGBA to use alpha transparency.
+// Clears the texture cache, meaning changed textures on disk are reloaded.
 // Example:
-// (texture (force-load-texture "mytexture.png"))
-// (build-cube) ; the cube will be texture mapped with the image
+// (clear-texture-cache)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// force-load-texture pngnomedoarquivo-string
+// clear-texture-cache 
 // Retorna: void
 // Descrição:
-// Carregamento de texturas do disco sem cache, converte esta a uma
-// textura e retorna o número id. Útil se você está mudando a textura
-// enquanto está rodando o script, ou então usando load-texture, o que
-// vai ser muito mais rápido. A png pode ser RGB ou RGBA para usar
-// transparência alpha. 
+// Clears the texture cache, meaning changed textures on disk are reloaded.
 // Exemplo:
-// (texture (force-load-texture "mytexture.png"))
-// (build-cube) ; o cubo vai ser mapeado com a textura da imagem
+// (clear-texture-cache)
 // EndFunctionDoc
 
-Scheme_Object *force_load_texture(int argc, Scheme_Object **argv)
+Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
- 	ArgCheck("force-load-texture", "s", argc, argv);
-	int ret=Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0]),true);
- 	MZ_GC_UNREG(); 
-    return scheme_make_integer_value(ret);
+	Engine::Get()->Renderer()->ClearTextureCache();	
+    return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1264,7 +1253,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
 	scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
 	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 1), env);
-	scheme_add_global("force-load-texture", scheme_make_prim_w_arity(force_load_texture, "force-load-texture", 1, 1), env);
+	scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
 	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 0, 0), env);
 	scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
 	scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
