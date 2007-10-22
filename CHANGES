@@ -5,7 +5,8 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * added vertex colouring to wireframe lines
 * fixed torus texture coordinates
 * added build option for ACCUM_BUFFER, off by default - bad tempered drivers
-
+* bounds checked the primitive functions
+* repl crashfix
 
 0.13
 

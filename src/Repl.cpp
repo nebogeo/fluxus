@@ -198,26 +198,29 @@ bool Repl::TryEval()
 	MZ_GC_VAR_IN_REG(0, out);
     MZ_GC_REG();
 	
-	string defun = m_Text.substr(m_PromptPos);
-	
-	if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
-		return true;
+	if (m_PromptPos<m_Text.size())
+	{
+		string defun = m_Text.substr(m_PromptPos);
 
-	if (!Empty(defun)) {
-		m_InsertPos = m_Text.length();
-		Print("\n");
-	
-		m_Interpreter->Interpret(defun,&out);
+		if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
+			return true;
 
-		if (defun[defun.length()-1] == '\n')
-        		defun.resize(defun.length()-1,0); 
-		m_History.push_back(defun);
-		m_HistoryNavStarted = false;
+		if (!Empty(defun)) {
+			m_InsertPos = m_Text.length();
+			Print("\n");
 
-		if (out != NULL && out != scheme_void) 
-		{
-        	Print(out);
-        	Print("\n");
+			m_Interpreter->Interpret(defun,&out);
+
+			if (defun[defun.length()-1] == '\n')
+        			defun.resize(defun.length()-1,0); 
+			m_History.push_back(defun);
+			m_HistoryNavStarted = false;
+
+			if (out != NULL && out != scheme_void) 
+			{
+        		Print(out);
+        		Print("\n");
+			}
 		}
 	}
 	PrintPrompt();

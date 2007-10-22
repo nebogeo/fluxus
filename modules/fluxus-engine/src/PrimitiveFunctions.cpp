@@ -74,8 +74,15 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-nurbs", "i", argc, argv);
+	int size=IntFromScheme(argv[0]);
 	NURBSPrimitive *Prim = new NURBSPrimitive();
-	Prim->Resize(IntFromScheme(argv[0]));
+	if (size<1) 
+	{
+		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}
+	Prim->Resize(size);
 	MZ_GC_UNREG(); 
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -109,7 +116,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-polygons", "iS", argc, argv);
-	
+	int size=IntFromScheme(argv[0]);
 	string t = SymbolName(argv[1]);
 	PolyPrimitive::Type type=PolyPrimitive::TRISTRIP;
 	if (t=="triangle-strip") type=PolyPrimitive::TRISTRIP;
@@ -121,9 +128,14 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-polygons: unknown poly type: "<<t<<endl;
 	}
-	
+	if (size<1) 
+	{
+		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	PolyPrimitive *Prim = new PolyPrimitive(type);
-	Prim->Resize(IntFromScheme(argv[0]));
+	Prim->Resize(size);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -151,8 +163,16 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-sphere", "ii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-sphere: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}		
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeSphere(SphPrim, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+    MakeSphere(SphPrim, 1, x, y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
@@ -181,9 +201,16 @@ Scheme_Object *build_torus(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-torus", "ffii", argc, argv);
+	int x=IntFromScheme(argv[2]);
+	int y=IntFromScheme(argv[3]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-torus: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}
 	PolyPrimitive *Prim = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), 
-				    IntFromScheme(argv[2]), IntFromScheme(argv[3]));
+    MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), x, y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -235,8 +262,16 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-seg-plane", "ii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-plane: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);	
-    MakePlane(PlanePrim,IntFromScheme(argv[0]),IntFromScheme(argv[1]));
+    MakePlane(PlanePrim,x,y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(PlanePrim));
 }
@@ -264,8 +299,16 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-cylinder", "ii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-cylinder: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeCylinder(CylPrim, 1, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+    MakeCylinder(CylPrim, 1, 1, x, y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(CylPrim));
 }
@@ -304,6 +347,13 @@ Scheme_Object *build_line(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-line", "i", argc, argv);
+	int size=IntFromScheme(argv[0]);
+	if (size<1)
+	{
+		Trace::Stream<<"build-line: size is less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	LinePrimitive *Prim = new LinePrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
@@ -373,8 +423,16 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-nurbs-sphere", "ii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-nurbs-sphere: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
-    MakeNURBSSphere(SphPrim, 1, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+    MakeNURBSSphere(SphPrim, 1, x, y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
@@ -401,8 +459,16 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-nurbs-plane", "ii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-nurbs-plane: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	NURBSPrimitive *Prim = new NURBSPrimitive;
-    MakeNURBSPlane(Prim, IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+    MakeNURBSPlane(Prim, x, y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -442,9 +508,15 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-particles", "i", argc, argv);
+	int size=IntFromScheme(argv[0]);
+	if (size<1)
+	{
+		Trace::Stream<<"build-particles: size less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	ParticlePrimitive *Prim = new ParticlePrimitive;
-	int count=IntFromScheme(argv[0]);
-	for (int i=0; i<count; i++)
+	for (int i=0; i<size; i++)
 	{
 		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
@@ -509,7 +581,15 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-pixels", "ii", argc, argv);
-	PixelPrimitive *Prim = new PixelPrimitive(IntFromScheme(argv[0]), IntFromScheme(argv[1]));
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	if (x<1 || y<1)
+	{
+		Trace::Stream<<"build-pixels: resolution in x or y less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
+	PixelPrimitive *Prim = new PixelPrimitive(x,y);
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -668,13 +748,19 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-blobby", "ivv", argc, argv);
+	int count=IntFromScheme(argv[0]);
+	if (count<1)
+	{
+		Trace::Stream<<"build-blobby: size less than 1!"<<endl;
+		MZ_GC_UNREG(); 
+		return 0;
+	}	
 	
 	dVector dim;
 	FloatsFromScheme(argv[1],dim.arr(),3);
 	dVector size;
 	FloatsFromScheme(argv[2],size.arr(),3);
 	BlobbyPrimitive *Prim = new BlobbyPrimitive((int)dim.x,(int)dim.y,(int)dim.z,size);
-	int count=IntFromScheme(argv[0]);
 	for (int i=0; i<count; i++)
 	{
 		Prim->AddInfluence(dVector(0,0,0),0);

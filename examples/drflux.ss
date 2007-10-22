@@ -74,8 +74,8 @@
   (if (zero? n)
       0
       (test (- n 1))))
-
-
+(fluxus-init)
+(show-fps 1)
 (blur 0.001)
 (every-frame (test 100))
 
