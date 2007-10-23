@@ -30,6 +30,8 @@ LineWidth(1),
 PointWidth(1),
 SourceBlend(GL_SRC_ALPHA),
 DestinationBlend(GL_ONE_MINUS_SRC_ALPHA),
+WireColour(1,1,1),
+WireOpacity(1.0f),
 Shader(NULL)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
@@ -42,6 +44,7 @@ void State::Apply()
 {
 	glMultMatrixf(Transform.arr());
 	Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
+	WireColour.a=WireOpacity;
 	glColor4f(Colour.r,Colour.g,Colour.b,Colour.a);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Ambient.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emissive.arr());
@@ -53,7 +56,7 @@ void State::Apply()
 	glBlendFunc(SourceBlend,DestinationBlend);
 
 	TexturePainter::Get()->SetCurrent(Textures);
-	
+
 	if (Shader)
 	{
 		Shader->Apply();
@@ -72,10 +75,11 @@ void State::Spew()
 		<<"Emissive: "<<Emissive<<endl
 		<<"Shinyness: "<<Shinyness<<endl
 		<<"Opacity: "<<Opacity<<endl
+		<<"WireOpacity: "<<WireOpacity<<endl
 		<<"Texture: "<<Textures[0]<<endl
 		<<"Parent: "<<Parent<<endl
 		<<"Hints: "<<Hints<<endl
 		<<"LineWidth: "<<LineWidth<<endl
 		<<"Transform: "<<Transform<<endl;
 }
-	
+

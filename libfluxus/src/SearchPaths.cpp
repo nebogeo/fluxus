@@ -14,6 +14,13 @@ SearchPaths* SearchPaths::Get()
 	return m_Singleton;
 }
 
+void SearchPaths::Shutdown()
+{
+	if (m_Singleton)
+	{
+		delete m_Singleton;
+	}
+}
 	
 string SearchPaths::GetFullPath(const string &Filename)
 {

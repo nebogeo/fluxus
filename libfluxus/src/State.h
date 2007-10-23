@@ -69,10 +69,10 @@ class State
 {
 public:
 	State();
-	
+
 	void Apply();
 	void Spew();
-	
+
 	dColour Colour;
 	dColour Specular;
 	dColour Emissive;
@@ -80,18 +80,20 @@ public:
 	float Shinyness;
 	float Opacity;
 	unsigned int Textures[MAX_TEXTURES];
-	
+
 	int Parent;
 	int Hints;
 	float LineWidth;
 	float PointWidth;
-	
+
 	int SourceBlend;
 	int DestinationBlend;
-	dColour WireColour;	
-	
+
+	dColour WireColour;
+	float WireOpacity;
+
 	dMatrix Transform;
-	
+
 	GLSLShader *Shader;
 };
 

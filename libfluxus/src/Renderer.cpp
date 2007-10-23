@@ -18,6 +18,7 @@
 #include "State.h"
 #include "Primitive.h"
 #include "PNGLoader.h"
+#include "SearchPaths.h"
 #include "Trace.h"
 #include <sys/time.h>
 #include <stdio.h>
@@ -78,6 +79,7 @@ m_Delta(0)
 Renderer::~Renderer()
 {
 	TexturePainter::Shutdown();
+	SearchPaths::Shutdown();
 }
 
 /////////////////////////////////////	

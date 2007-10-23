@@ -164,7 +164,7 @@ void BlobbyPrimitive::Render()
 	if (m_State.Hints & HINT_WIRE)
 	{
 		glPolygonOffset(1,1);
-		glColor3fv(m_State.WireColour.arr());
+		glColor4fv(m_State.WireColour.arr());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glDisable(GL_LIGHTING);	
 		glBegin(GL_TRIANGLES);

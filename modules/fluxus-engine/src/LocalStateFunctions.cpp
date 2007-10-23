@@ -237,7 +237,7 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("apply-transform", "i", argc, argv);
 	Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -247,8 +247,8 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 // Description:
 // Sets the opacity of the current drawing state, or the currently grabbed primitive.
 // Example:
-// (opacity 0.5)     
-// (define mycube (build-cube)) ; makes a half transparent cube 
+// (opacity 0.5)
+// (define mycube (build-cube)) ; makes a half transparent cube
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -258,7 +258,7 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 // Ajusta a opacidade do estado de desenho atual, ou da primitiva pega
 // atualmente.
 // Exemplo:
-// (opacity 0.5)     
+// (opacity 0.5)
 // (define mycube (build-cube)) ; faz um cubo semi-transparente.
 // EndFunctionDoc
 
@@ -267,10 +267,34 @@ Scheme_Object *opacity(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("opacity", "f", argc, argv);
     Engine::Get()->State()->Opacity=FloatFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// wire-opacity value
+// Returns: void
+// Description:
+// Sets the wireframe opacity of the current drawing state, or the currently
+// grabbed primitive.
+// Example:
+// (hint-none)
+// (hint-wire)
+// (backfacecull 0)
+// (line-width 5)
+// (wire-colour (vector 1 1 1))
+// (wire-opacity 0.5)
+// (build-cube) ; makes a half transparent wireframe cube
+// EndFunctionDoc
+
+Scheme_Object *wire_opacity(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("wire-opacity", "f", argc, argv);
+    Engine::Get()->State()->WireOpacity=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+    return scheme_void;
+}
 // StartFunctionDoc-en
 // shinyness value
 // Returns: void
@@ -1838,6 +1862,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("colour",scheme_make_prim_w_arity(colour,"colour",1,1), env);
     scheme_add_global("wire-colour",scheme_make_prim_w_arity(wire_colour,"wire-colour",1,1), env);
     scheme_add_global("opacity",scheme_make_prim_w_arity(opacity,"opacity",1,1), env);
+    scheme_add_global("wire-opacity",scheme_make_prim_w_arity(wire_opacity,"wire-opacity",1,1), env);
     scheme_add_global("specular",scheme_make_prim_w_arity(specular,"specular",1,1), env);
     scheme_add_global("ambient",scheme_make_prim_w_arity(ambient,"ambient",1,1), env);
     scheme_add_global("emissive",scheme_make_prim_w_arity(emissive,"emissive",1,1), env);

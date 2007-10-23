@@ -118,6 +118,7 @@ void LinePrimitive::Render()
 		}
 		else
 		{
+		    glColor4fv(m_State.WireColour.arr());
 			glBegin(GL_LINE_STRIP);
 			for (unsigned int n=0; n<m_VertData->size()-1; n++)
 			{

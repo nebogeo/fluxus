@@ -8,6 +8,7 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * bounds checked the primitive functions
 * repl crashfix
 * removed force-load-texture and added clear-texture-cache
+* (wire-opacity) courtesy of Gabor Papp
 
 0.13
 

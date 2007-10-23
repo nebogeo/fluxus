@@ -117,7 +117,7 @@ void NURBSPrimitive::Render()
 	if (m_State.Hints & HINT_WIRE)
 	{
 		glDisable(GL_LIGHTING);
-		glColor3f(0,1,0);
+		glColor4fv(m_State.WireColour.arr());
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
 
 		gluBeginSurface(m_Surface);

@@ -158,36 +158,36 @@ void PolyPrimitive::Render()
 	{
 		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
 		else glDrawArrays(type,0,m_VertData->size());
-	}	
-	
+	}
+
 	if (m_State.Hints & HINT_WIRE)
 	{
 		glDisable(GL_TEXTURE_2D);
 		glPolygonOffset(1,1);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		glColor3fv(m_State.WireColour.arr());
-		glDisable(GL_LIGHTING);	
+		glColor4fv(m_State.WireColour.arr());
+		glDisable(GL_LIGHTING);
 		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
 		else glDrawArrays(type,0,m_VertData->size());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 	}
-	
+
 	if (m_State.Hints & HINT_POINTS)
 	{
 		glDisable(GL_TEXTURE_2D);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_POINT);
-		glColor3fv(m_State.WireColour.arr());
-		glDisable(GL_LIGHTING);	
+		glColor4fv(m_State.WireColour.arr());
+		glDisable(GL_LIGHTING);
 		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
 		else glDrawArrays(type,0,m_VertData->size());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 	}
-	
-	
+
+
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 

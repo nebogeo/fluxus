@@ -32,6 +32,7 @@ class SearchPaths
 {
 public:
 	static SearchPaths* Get();
+	static void Shutdown();
 	
 	string GetFullPath(const string &Filename);
 	void AddPath(const string &Path);

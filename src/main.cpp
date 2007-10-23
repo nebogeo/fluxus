@@ -165,6 +165,10 @@ void DisplayCallback()
 	DoRecorder();		
 }
 
+void ExitHandler()
+{
+	delete app;
+}
 
 int main(int argc, char *argv[])
 {
@@ -230,6 +234,7 @@ int main(int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
+	atexit(ExitHandler);
 	
 	recorder = new EventRecorder;
 	
@@ -276,7 +281,7 @@ int main(int argc, char *argv[])
 	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
 	#endif
-	
+			
 	return 0;
 }
 
