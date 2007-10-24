@@ -33,8 +33,8 @@
   (require fluxus-engine)
   (require fluxus-audio)
   ; todo: get rid of burnt in versions
-  (require (lib "scratchpad-input.ss" "fluxus-0.13"))
-  (require (lib "scratchpad-camera.ss" "fluxus-0.13"))
+  (require (lib "scratchpad-input.ss" "fluxus-0.14"))
+  (require (lib "scratchpad-camera.ss" "fluxus-0.14"))
   (require (only (lib "13.ss" "srfi") string-pad))
   (provide 
    fluxus-reshape-callback 
