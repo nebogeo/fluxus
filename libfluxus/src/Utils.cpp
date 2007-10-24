@@ -146,7 +146,7 @@ int WriteJPG(const char *filename, const char *description, int x, int y, int wi
 
 	while (cinfo.next_scanline < cinfo.image_height) 
 	{
-    	row_pointer[0] = & image[(cinfo.image_height-cinfo.next_scanline) * row_stride];
+    	row_pointer[0] = & image[(cinfo.image_height-1-cinfo.next_scanline) * row_stride];
     	(void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
   	}
 
