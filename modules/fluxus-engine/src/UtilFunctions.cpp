@@ -163,38 +163,40 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// searchpaths paths-list
+// set-searchpathss paths-list
 // Returns: void
 // Description:
 // Sets a list of search path strings to use for looking for fluxus related files, such as
-// textures, shaders etc. Paths will be searched in order each time.
+// textures, shaders etc. Paths will be searched in order each time, and need trailing slashes.
 // Example:
-// (searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// (set-searchpaths (list "/path/to/my/textures/" "/path/to/my/other/textures/"))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// searchpaths lista de diretórios
+// set-searchpaths lista de diretórios
 // Retorna: void
 // DescriÃ§Ã£o:
 // Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
 // como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
 // Exemplo:
-// (searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// (set-searchpaths (list "/path/to/my/textures/" "/path/to/my/other/textures/"))
 // EndFunctionDoc
 
-Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
+Scheme_Object *set_searchpaths(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *vec=NULL;
 	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, vec);
 	MZ_GC_REG();	
-	ArgCheck("searchpaths", "l", argc, argv);
+	ArgCheck("set-searchpaths", "l", argc, argv);
  	
 	// vectors seem easier to handle than lists with this api
 	vec = scheme_list_to_vector(argv[0]);
 	size_t size=0;
-		
+	
+	SearchPaths::Get()->Clear();
+	
 	for (int n=0; n<SCHEME_VEC_SIZE(vec); n++)
 	{
 		if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(vec)[n]))
@@ -204,6 +206,50 @@ Scheme_Object *searchpaths(int argc, Scheme_Object **argv)
 	}
 	MZ_GC_UNREG(); 
     return scheme_void;
+}
+
+// StartFunctionDoc-en
+// get-searchpaths paths-list
+// Returns: void
+// Description:
+// Gets the list of search path strings to use for looking for fluxus related files, such as
+// textures, shaders etc. Paths will be searched in order each time.
+// Example:
+// (display (get-searchpaths))(newline)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// get-searchpaths lista de diretórios
+// Retorna: void
+// DescriÃ§Ã£o:
+// Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
+// como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
+// Exemplo:
+// (get-searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// EndFunctionDoc
+
+Scheme_Object *get_searchpaths(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *vec=NULL;
+	Scheme_Object *tmp=NULL;
+	Scheme_Object *ret=NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, vec);
+	MZ_GC_REG();	
+ 	
+	vec = scheme_make_vector(SearchPaths::Get()->m_Paths.size(), scheme_void);
+	
+	int pos=0;	
+	for (vector<string>::iterator i=SearchPaths::Get()->m_Paths.begin();
+		i!=SearchPaths::Get()->m_Paths.end(); i++)
+	{
+		tmp=scheme_make_locale_string(i->c_str());
+		SCHEME_VEC_ELS(vec)[pos++]=tmp;
+	}
+
+    ret=scheme_vector_to_list(vec);
+	MZ_GC_UNREG(); 
+	return ret;
 }
 
 // StartFunctionDoc-en
@@ -301,7 +347,8 @@ void UtilFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("delta",scheme_make_prim_w_arity(delta,"delta",0,0), env);
 	scheme_add_global("flxrnd",scheme_make_prim_w_arity(flxrnd,"flxrnd",0,0), env);
 	scheme_add_global("flxseed",scheme_make_prim_w_arity(flxseed,"flxseed",1,1), env);	
-	scheme_add_global("searchpaths",scheme_make_prim_w_arity(searchpaths,"searchpaths",1,1), env);	
+	scheme_add_global("set-searchpaths",scheme_make_prim_w_arity(set_searchpaths,"set-searchpaths",1,1), env);	
+	scheme_add_global("get-searchpaths",scheme_make_prim_w_arity(get_searchpaths,"get-searchpaths",0,0), env);	
 	scheme_add_global("fullpath",scheme_make_prim_w_arity(fullpath,"fullpath",1,1), env);	
 	scheme_add_global("framedump",scheme_make_prim_w_arity(framedump,"framedump",1,1), env);	
  	MZ_GC_UNREG(); 

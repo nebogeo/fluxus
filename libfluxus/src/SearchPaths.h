@@ -36,12 +36,13 @@ public:
 	
 	string GetFullPath(const string &Filename);
 	void AddPath(const string &Path);
+	void Clear() { m_Paths.clear(); }
+	
+	vector<string> m_Paths;
 	
 private:
 	SearchPaths() {}
 	~SearchPaths() {}
-	
-	vector<string> m_Paths;
 	
 	static SearchPaths *m_Singleton;
 };

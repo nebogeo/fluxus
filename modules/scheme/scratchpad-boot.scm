@@ -69,7 +69,7 @@
 
 ; setup the standard searchpaths, this will have to be improved
 ; add to these, or overwrite them in your .fluxus.scm
-(searchpaths (list
+(set-searchpaths (list
 	"./"
 	(string-append (path->string (car (current-library-collection-paths)))
 		fluxus-name "/material/textures/")
@@ -88,7 +88,7 @@
 ; override the built in time function for pre 0.12 compatibility
 (define time flxtime)
 
-; for compatibility pre 0.13 
+; for compatibility pre 0.13
 (define pdata-set pdata-set!)
 (define pdata-get pdata-ref)
 

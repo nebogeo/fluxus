@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "SearchPaths.h"
 
 using namespace Fluxus;
@@ -26,13 +28,11 @@ string SearchPaths::GetFullPath(const string &Filename)
 {
 	for (vector<string>::iterator i=m_Paths.begin(); i!=m_Paths.end(); i++)
 	{
-		string file = *i+Filename;
-		// should I stat?
-		FILE *fd=fopen(file.c_str(),"r");
-		if (fd)
+		string path = *i+Filename;
+		struct stat sb;
+		if (!stat(path.c_str(), &sb))
 		{
-			fclose(fd);
-			return file;
+			return path;
 		}
 	}
 	return Filename;
