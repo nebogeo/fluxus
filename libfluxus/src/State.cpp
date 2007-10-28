@@ -55,7 +55,7 @@ void State::Apply()
 	glPointSize(PointWidth);
 	glBlendFunc(SourceBlend,DestinationBlend);
 
-	TexturePainter::Get()->SetCurrent(Textures);
+	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
 	if (Shader)
 	{

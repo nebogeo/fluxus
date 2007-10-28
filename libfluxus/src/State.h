@@ -30,6 +30,7 @@
 #include "dada.h"
 #include "iostream"  
 #include "GLSLShader.h" 
+#include "TexturePainter.h" 
  
 #ifndef N_STATE
 #define N_STATE
@@ -80,7 +81,8 @@ public:
 	float Shinyness;
 	float Opacity;
 	unsigned int Textures[MAX_TEXTURES];
-
+	TextureState TextureStates[MAX_TEXTURES];
+	
 	int Parent;
 	int Hints;
 	float LineWidth;

@@ -335,16 +335,57 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// load-texture pngfilename-string
+// load-texture pngfilename-string optional-create-params-list
 // Returns: textureid-number
 // Description:
 // Loads a texture from disk, converts it to a texture, and returns the id number. The texture loading
-// is memory cached, so repeatedly calling this will not cause it to load again. Use force-load-texture
-// if you are changing the texture while running the script. The png may be RGB or RGBA to use alpha 
-// transparency.
+// is memory cached, so repeatedly calling this will not cause it to load again. The cache can be cleared
+// with clear-texture-cache. The png may be RGB or RGBA to use alpha transparency. To get more control how your 
+// texture is created you can use a list of parameters. See the example for more explanation. Use id for
+// adding more texture data to existing textures as mipmap levels, or cube map faces.
+// Note: if turning mipmapping off and only specifing one texture it should be set to mip level 0, and you'll 
+// need to turn the min and mag filter settings to linear or nearest (see texture-params).
+// 
 // Example:
+// ; simple usage:
 // (texture (load-texture "mytexture.png"))
 // (build-cube) ; the cube will be texture mapped with the image
+// 
+// ; complex usages:
+// 
+// ; the options list can contain the following keys and values:
+// ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
+// ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y 
+//          cube-map-negative-y cube-map-positive-z cube-map-negative-z]
+// ; generate-mipmaps : exact integer, 0 or 1
+// ; mip-level : exact integer
+// ; border : exact integer
+// 
+// ; setup an environment cube map
+// (define t (load-texture "cube-left.png" (list 'type 'cube-map-positive-x)))
+// (load-texture "cube-right.png" (list 'id t 'type 'cube-map-negative-x))
+// (load-texture "cube-top.png" (list 'id t 'type 'cube-map-positive-y))
+// (load-texture "cube-bottom.png" (list 'id t 'type 'cube-map-negative-y))
+// (load-texture "cube-front.png" (list 'id t 'type 'cube-map-positive-z))
+// (load-texture "cube-back.png" (list 'id t 'type 'cube-map-negative-z))
+// (texture t)
+//
+// ; setup a mipmapped texture with our own images
+// ; you need as many levels as it takes you to get to 1X1 pixels from your
+// ; level 0 texture size
+// (define t2 (load-texture "m0.png" (list 'generate-mipmaps 0 'mip-level 0)))
+// (load-texture "m1.png" (list 'id t2 'generate-mipmaps 0 'mip-level 1))
+// (load-texture "m2.png" (list 'id t2 'generate-mipmaps 0 'mip-level 2))
+// (load-texture "m3.png" (list 'id t2 'generate-mipmaps 0 'mip-level 3))
+
+
+// (texture (load-texture "mytexture.png")
+//		(list
+//			'generate-mipmaps 0  ; turn mipmapping off
+//          'border 2))          ; add a border to the texture
+// 
+// (build-cube) ; the cube will be texture mapped with the image
+
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -364,9 +405,80 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
- 	ArgCheck("load-texture", "s", argc, argv);	
-	int ret=Engine::Get()->Renderer()->LoadTexture(StringFromScheme(argv[0]));	
+	Scheme_Object *paramvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_REG();	
+	
+	if (argc==2) ArgCheck("load-texture", "sl", argc, argv);
+	else ArgCheck("load-texture", "s", argc, argv);
+	
+	TexturePainter::CreateParams createparams;
+	
+	if (argc==2)
+	{
+		paramvec = scheme_list_to_vector(argv[1]);
+
+		for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
+		{
+			if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
+			{
+				// get the parameter name
+				string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
+				if (param=="id") 
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{	
+						createparams.ID = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="type") 
+				{
+					if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{	
+						string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+						if (type=="texture-2d") createparams.Type = GL_TEXTURE_2D;			
+						else if (type=="cube-map-positive-x") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+						else if (type=="cube-map-negative-x") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+						else if (type=="cube-map-positive-y") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+						else if (type=="cube-map-negative-y") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+						else if (type=="cube-map-positive-z") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+						else if (type=="cube-map-negative-z") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+						else Trace::Stream<<"load-texture: unknown parameter for "<<param<<": "<<type<<endl;
+					}
+				}
+				else if (param=="generate-mipmaps") 
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{	
+						createparams.GenerateMipmaps = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="mip-level") 
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{	
+						createparams.MipLevel = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="border") 
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{	
+						createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;
+			}						
+		}
+	}
+	
+	int ret=Engine::Get()->Renderer()->GetTexturePainter()->LoadTexture(StringFromScheme(argv[0]),createparams);	
  	MZ_GC_UNREG(); 
     return scheme_make_integer_value(ret);
 }
@@ -391,7 +503,7 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->ClearTextureCache();	
+	Engine::Get()->Renderer()->GetTexturePainter()->ClearCache();	
     return scheme_void;
 }
 
@@ -1252,7 +1364,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
 	scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
 	scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
-	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 1), env);
+	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
 	scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
 	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 0, 0), env);
 	scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);

@@ -29,14 +29,26 @@ namespace Fluxus
 {
 
 //////////////////////////////////////////////////////
-/// A texture descriptor
-class TextureDesc
+/// The texture state
+class TextureState
 {
-public:
-	TextureDesc() : Format(NONE) {}
-	int Width;
-	int Height;
-	PixelFormat Format;
+	public:
+	
+	TextureState(): TexEnv(GL_MODULATE), Min(GL_LINEAR_MIPMAP_LINEAR), 
+	 Mag(GL_LINEAR_MIPMAP_LINEAR), WrapS(GL_REPEAT), WrapT(GL_REPEAT), WrapR(GL_REPEAT), 
+	 Priority(1), MinLOD(-1000), MaxLOD(1000) {}
+	
+	int TexEnv; 
+    int Min;
+    int Mag;
+    int WrapS;
+    int WrapT;
+	int WrapR;
+    dColour BorderColour; 
+    float Priority; 
+    dColour EnvColour; 
+	float MinLOD;
+	float MaxLOD;
 };
 
 //////////////////////////////////////////////////////
@@ -68,13 +80,26 @@ public:
 	/// Clear the texture cache
 	void ClearCache();
 		
+	///////////////////////////////////
+	/// Options for texture creation
+	class CreateParams
+	{
+		public:
+		CreateParams(): ID(-1), Type(GL_TEXTURE_2D), GenerateMipmaps(true), MipLevel(0), Border(0) {}
+
+		int ID;
+		int Type;
+		bool GenerateMipmaps;
+		int MipLevel;
+		int Border;
+	};
+
 	////////////////////////////////////
 	///@name Texture Generation/Conversion
 	///@{
 	
-	/// Loads a texture, use ignore cache to force it to load. 
-	/// Returns the OpenGL ID number 
-	unsigned int LoadTexture(const string &Filename, bool ignorecache=false);
+	/// Loads a texture returns the OpenGL ID number 
+	unsigned int LoadTexture(const string &Filename, CreateParams &params);
 	
 	/// Loads texture information into a pdata array of colour type
 	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
@@ -90,19 +115,44 @@ public:
 	
 	/// Sets the current texture state - allow settings for each unit if multitexturing is enabled.
 	/// The size of ids is expexted to be the same as MAX_TEXTURES
-	bool SetCurrent(unsigned int *ids);
-	
+	bool SetCurrent(unsigned int *ids, TextureState *states);
+
 	/// Disables all texturing
 	void DisableAll();
 	///@}
 	
 private:
+	//////////////////////////////////////////////////////
+	/// A texture descriptor
+	class TextureDesc
+	{
+	public:
+		TextureDesc() : Format(NONE) {}
+		int Width;
+		int Height;
+		PixelFormat Format;
+	};
+	
+	//////////////////////////////////////////////////////
+	/// We need to group together the cube map ids, so we 
+	/// know which id's to use when the primary one gets set
+	class CubeMapDesc
+	{
+	public:
+		CubeMapDesc() { Positive[0]=0; Positive[1]=0; Positive[2]=0; 
+		                Negative[0]=0; Negative[1]=0; Negative[2]=0; }
+		unsigned int Positive[3];
+		unsigned int Negative[3];
+	};
+
 	TexturePainter();
 	~TexturePainter();
+	void ApplyState(int type, TextureState &state, bool cubemap);
 	static TexturePainter *m_Singleton;
 
 	map<string,int> m_LoadedMap;
-	map<unsigned int,TextureDesc*> m_TextureMap;
+	map<unsigned int,TextureDesc> m_TextureMap;
+	map<unsigned int,CubeMapDesc> m_CubeMapMap;
 };
 
 }

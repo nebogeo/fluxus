@@ -294,6 +294,24 @@ Scheme_Object *vmag(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// vreflect vector vector
+// Returns: result-vector
+// Description:
+// Returns the reflection of one vector against another.
+// Example:
+// (vreflect (vector 0 1 1) (vector 1 0 1))
+// EndFunctionDoc
+
+Scheme_Object *vreflect(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("vreflect", "vv", argc, argv);
+	dVector ret=VectorFromScheme(argv[0]).reflect(VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return FloatsToScheme(ret.arr(),3);
+}
+
+// StartFunctionDoc-en
 // vdist vector vector
 // Returns: result-number
 // Description:
@@ -829,6 +847,7 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("vtransform-rot", scheme_make_prim_w_arity(vtransform_rot, "vtransform-rot", 2, 2), env);
 	scheme_add_global("vnormalise", scheme_make_prim_w_arity(vnormalise, "vnormalise", 1, 1), env);
 	scheme_add_global("vdot", scheme_make_prim_w_arity(vdot, "vdot", 2, 2), env);
+	scheme_add_global("vreflect", scheme_make_prim_w_arity(vreflect, "vreflect", 2, 2), env);
 	scheme_add_global("vdist", scheme_make_prim_w_arity(vdist, "vdist", 2, 2), env);
 	scheme_add_global("vmag", scheme_make_prim_w_arity(vmag, "vmag", 1, 1), env);
 	scheme_add_global("vcross", scheme_make_prim_w_arity(vcross, "vcross", 2, 2), env);

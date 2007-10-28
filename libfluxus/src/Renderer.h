@@ -129,9 +129,7 @@ public:
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
 	void SetResolution(int x, int y)         { m_Width=x; m_Height=y; m_Initialised=false; }
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
-	void InitTextures() 					 { TexturePainter::Get()->Initialise(); }
-	void ClearTextureCache() 				 { TexturePainter::Get()->ClearCache(); }
-	unsigned int LoadTexture(const string &Filename, bool ignorecache=false) { return TexturePainter::Get()->LoadTexture(Filename,ignorecache); }
+	TexturePainter *GetTexturePainter()      { return TexturePainter::Get(); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
 	void ShowCursor(bool s);
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
@@ -194,7 +192,7 @@ private:
 	vector<Light*> m_LightVec;
 	Camera m_Camera;
 	ImmediateMode m_ImmediateMode;
-	
+		
 	// info for picking mode
 	struct SelectInfo
 	{

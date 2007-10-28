@@ -86,6 +86,7 @@ Renderer::~Renderer()
 
 void Renderer::Render()
 {			
+	
 	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{
@@ -350,6 +351,7 @@ void Renderer::PostRender()
 {
 	// clear the texture, if the last primitive assigned one...
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_CUBE_MAP);
 	GLSLShader::Unapply();
 
 	glDisable(GL_DEPTH_TEST);

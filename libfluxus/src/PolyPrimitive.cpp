@@ -122,7 +122,7 @@ void PolyPrimitive::Render()
 		
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
-	glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
+	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 	
 	if (m_State.Hints & HINT_MULTITEX)
 	{
@@ -136,7 +136,7 @@ void PolyPrimitive::Render()
 				#ifdef ENABLE_MULTITEXTURE
 				glClientActiveTexture(GL_TEXTURE0+n);
 				#endif
-				glTexCoordPointer(2,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
+				glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
 			}
 		}
 		#ifdef ENABLE_MULTITEXTURE

@@ -68,6 +68,7 @@ public:
 		dVector &operator*=(float rhs);
 		dVector &operator/=(float rhs);
 		dVector cross(dVector const &rhs) const;
+		dVector reflect(dVector const &rhs) const;
 		float dot(dVector const &rhs) const;
 		float dist(dVector const &rhs) const;
 		float distsq(dVector const &rhs) const;

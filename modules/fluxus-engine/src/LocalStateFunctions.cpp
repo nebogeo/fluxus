@@ -1789,7 +1789,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 
 		for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
 		{
-			if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]))
+			if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
 			{
 				// get the parameter name
 				string param = StringFromScheme(SCHEME_VEC_ELS(paramvec)[n]);
@@ -1839,6 +1839,185 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 	
 	MZ_GC_UNREG(); 
 	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// texture-params texture-unit-number parameter-list
+// Returns: void
+// Description:
+// Sets the current texture state for the specified texture unit. This state controls how the texture is applied
+// to the surface of the object, and how it's filtered in texels, or miplevels. The texture unit is used if you
+// are using multitexturing - the default texture unit is 0. You may need to read up a bit on OpenGL or experiment
+// to find out more about these options.
+// Example:
+// ; parameters are the following:
+// ; tex-env : [modulate decal blend replace]
+// ; min : [nearest linear nearest-mipmap-nearest linear-mipmap-nearest linear-mipmap-linear]
+// ; mag : [nearest linear]
+// ; wrap-s : [clamp repeat]
+// ; wrap-t : [clamp repeat]
+// ; wrap-r : [clamp repeat] (for cube maps)
+// ; border-colour : (vector of length 4)
+// ; priority : real number 0 -> 1
+// ; env-colour : (vector of length 4)
+// ; min-lod : real number (for mipmap blending - default -1000)
+// ; max-lod : real number (for mipmap blending - default 1000)
+// (clear-texture-cache)
+// EndFunctionDoc
+
+Scheme_Object *texture_params(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *paramvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_REG();	
+	
+	ArgCheck("texture-params", "il", argc, argv);
+	
+	int n = IntFromScheme(argv[0]);
+	if (n>=MAX_TEXTURES) 
+	{
+		MZ_GC_UNREG(); 
+	    return scheme_void;
+	}
+	
+	paramvec = scheme_list_to_vector(argv[1]);
+	TextureState *state = &Engine::Get()->State()->TextureStates[n];
+
+ 	for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
+	{
+		if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
+		{
+			// get the parameter name
+			string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);			
+			if (param=="tex-env") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="modulate") state->TexEnv = GL_MODULATE;			
+					else if (type=="decal") state->TexEnv = GL_DECAL;
+					else if (type=="blend") state->TexEnv = GL_BLEND;
+					else if (type=="replace") state->TexEnv = GL_REPLACE;	
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="min") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="nearest") state->Min = GL_NEAREST;			
+					else if (type=="linear") state->Min = GL_LINEAR;
+					else if (type=="nearest-mipmap-nearest") state->Min = GL_NEAREST_MIPMAP_NEAREST;
+					else if (type=="linear-mipmap-nearest") state->Min = GL_LINEAR_MIPMAP_NEAREST;					
+					else if (type=="linear-mipmap-linear") state->Min = GL_LINEAR_MIPMAP_LINEAR;					
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="mag") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="nearest") state->Mag = GL_NEAREST;			
+					else if (type=="linear") state->Mag = GL_LINEAR;										
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="wrap-s") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="clamp") state->WrapS = GL_CLAMP;			
+					else if (type=="repeat") state->WrapS = GL_REPEAT;										
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}			
+			else if (param=="wrap-t") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="clamp") state->WrapT = GL_CLAMP;			
+					else if (type=="repeat") state->WrapT = GL_REPEAT;										
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="wrap-r") 
+			{
+				if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+					if (type=="clamp") state->WrapR = GL_CLAMP;			
+					else if (type=="repeat") state->WrapR = GL_REPEAT;										
+					else Trace::Stream<<"texture-params: unknown parameter for "<<param<<": "<<type<<endl;		
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="border-colour") 
+			{
+				if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+					SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
+				{
+					dColour vec;
+					FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
+					state->BorderColour=vec;
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="priority") 
+			{
+				if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    SCHEME_REALP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					state->Priority = FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="env-colour") 
+			{
+				if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+					SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
+				{
+					dColour vec;
+					FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
+					state->EnvColour=vec;
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="min-lod") 
+			{
+				if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    SCHEME_REALP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					state->MinLOD = FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else if (param=="max-lod") 
+			{
+				if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
+				    SCHEME_REALP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{	
+					state->MaxLOD = FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+				}
+				else Trace::Stream<<"texture-params: wrong type for "<<param<<endl;		
+			}
+			else Trace::Stream<<"texture-params: unknown parameter "<<param<<endl;		
+			
+		}
+	}
+	
+ 	MZ_GC_UNREG(); 
+    return scheme_void;
 }
 
 void LocalStateFunctions::AddGlobals(Scheme_Env *env)
@@ -1893,5 +2072,6 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
 	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
+	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
  	MZ_GC_UNREG(); 
 }

@@ -105,7 +105,7 @@ void Engine::Reinitialise()
 		i!=m_RendererVec.end(); i++)
 	{
 		i->first->Reinitialise();    
-		i->first->InitTextures();
+		i->first->GetTexturePainter()->Initialise();
 		i->first->ClearLights();
 	}
 }

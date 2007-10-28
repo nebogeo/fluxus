@@ -151,6 +151,12 @@ dVector dVector::cross(dVector const &rhs) const
                       x*rhs.y - y*rhs.x);
 }
 
+dVector dVector::reflect(dVector const &rhs) const
+{
+	float vdn=dot(rhs)*2.0f;
+    return (*this)-rhs*vdn;
+}
+
 float dVector::dist(dVector const &rhs) const
 {
 	///\todo fabs?

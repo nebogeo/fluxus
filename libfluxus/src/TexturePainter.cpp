@@ -18,6 +18,7 @@
 #include "TexturePainter.h"
 #include "PNGLoader.h"
 #include "SearchPaths.h"
+#include <assert.h>
 
 using namespace Fluxus;
 
@@ -41,12 +42,7 @@ void TexturePainter::Initialise()
 		glClientActiveTexture(GL_TEXTURE0+c);
 		#endif
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		
+				
     	glMatrixMode(GL_TEXTURE);
     	glLoadIdentity();
 	}
@@ -61,7 +57,7 @@ void TexturePainter::ClearCache()
 	m_LoadedMap.clear();
 }
 
-unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecache)
+unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &params)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
 	
@@ -69,44 +65,113 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, bool ignorecach
 	map<string,int>::iterator i=m_LoadedMap.find(Fullpath);
 	if (i!=m_LoadedMap.end())
 	{
-		if (!ignorecache)
-		{
-			return i->second;
-		}
-		else
-		{
-			// remove the old texture
-			glDeleteTextures(1,(GLuint*)&i->second);
-			delete m_TextureMap[i->second];
-		}
+		return i->second;
 	}
 	
-	GLuint ID=0;
+	// are we in cubemap mode?
+	bool cubemap=false;
+	if (params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_X || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_X ||
+				params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Y || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ||
+				params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Z || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)
+	{
+		cubemap=true;
+	}
 	
 	unsigned char *ImageData;
-    TextureDesc *desc = new TextureDesc;
-    ImageData=PNGLoader::Load(Fullpath,desc->Width,desc->Height,desc->Format);
+    TextureDesc desc;
+    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
 	
 	if (ImageData!=NULL)
     {
-		// upload to card...
-		glGenTextures(1,&ID);
-    	glBindTexture(GL_TEXTURE_2D,ID);
-		if (desc->Format==RGB)
-    	{
-			gluBuild2DMipmaps(GL_TEXTURE_2D,3,desc->Width, desc->Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
-    	}
-    	else
-    	{
-    		gluBuild2DMipmaps(GL_TEXTURE_2D,4,desc->Width, desc->Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
-    	}
-		delete[] ImageData;
+		//\todo support more depths than 8bit
 		
-		m_TextureMap[ID]=desc;
-		m_LoadedMap[Fullpath]=ID;
-		return ID;
-	}
-	
+		// upload to card...
+		glEnable(params.Type);
+		
+		if (params.ID==-1) // is this a new texture?
+		{
+			unsigned int id;
+			glGenTextures(1,&id);
+			params.ID=id; // ahem
+			//\todo this means mipmap levels won't be cached
+    		m_TextureMap[params.ID]=desc;
+			m_LoadedMap[Fullpath]=params.ID;
+			
+			if (cubemap)
+			{
+				CubeMapDesc newcubemap;
+				m_CubeMapMap[params.ID] = newcubemap;
+				
+				switch (params.Type) // record the cubemap face
+				{
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[params.ID].Positive[0]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[params.ID].Negative[0]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[params.ID].Positive[1]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[params.ID].Negative[1]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[params.ID].Positive[2]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[params.ID].Negative[2]=params.ID; break;
+					default: assert(0); break;
+				}
+			}
+		}
+		else // we have an existing texture id specified
+		{
+			if (cubemap)
+			{
+				// make a new texture id for this face
+				// record the primary cubemap id
+				unsigned int primary = params.ID;
+				unsigned int id;
+				glGenTextures(1,&id);
+				params.ID=id; // ahem
+    			m_TextureMap[params.ID]=desc;
+				m_LoadedMap[Fullpath]=params.ID;
+						
+				switch (params.Type) // record the cubemap face
+				{
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[primary].Positive[0]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[primary].Negative[0]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[primary].Positive[1]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[primary].Negative[1]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[primary].Positive[2]=params.ID; break;
+					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[primary].Negative[2]=params.ID; break;
+					default: assert(0); break;
+				}
+			}
+		}
+						
+		glBindTexture(params.Type,params.ID);
+		
+		if (params.GenerateMipmaps)
+		{
+			if (desc.Format==RGB)
+    		{
+				gluBuild2DMipmaps(params.Type,3,desc.Width,desc.Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
+    		}
+    		else
+    		{
+    			gluBuild2DMipmaps(params.Type,4,desc.Width,desc.Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
+    		}
+		}
+		else
+		{		
+			//\todo check power of two
+			//\todo and scale?
+		
+			if (desc.Format==RGB)
+    		{				
+				glTexImage2D(params.Type,params.MipLevel,3,desc.Width,desc.Height,params.Border,
+					GL_RGB,GL_UNSIGNED_BYTE,ImageData);			
+			}
+    		else
+    		{
+				glTexImage2D(params.Type,params.MipLevel,4,desc.Width,desc.Height,params.Border,
+					GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
+			}
+		}		
+		delete[] ImageData;
+		return params.ID;		
+	}	
 	m_LoadedMap[Fullpath]=0;
     return 0;
 }
@@ -172,7 +237,7 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
     return 0;
 }
 
-bool TexturePainter::SetCurrent(unsigned int *ids)
+bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 {
 	bool ret=false;
 	
@@ -184,15 +249,33 @@ bool TexturePainter::SetCurrent(unsigned int *ids)
 				
 		if (ids[c]!=0)
 		{
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D,ids[c]);
-			if (c==0) glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			else glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			ret=true;
-		}
+			map<unsigned int,CubeMapDesc>::iterator i=m_CubeMapMap.find(ids[c]);
+
+			if (i!=m_CubeMapMap.end()) // cubemap texture path
+			{
+				glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_X,i->second.Positive[0]);
+				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_X,i->second.Negative[0]);
+				glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Y,i->second.Positive[1]);
+				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,i->second.Negative[1]);
+				glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Z,i->second.Positive[2]);
+				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,i->second.Negative[2]);
+				
+				glEnable(GL_TEXTURE_CUBE_MAP);
+				ApplyState(GL_TEXTURE_CUBE_MAP,states[c],true);														
+			}
+			else // normal 2D texture path
+			{
+				glEnable(GL_TEXTURE_2D);
+				glBindTexture(GL_TEXTURE_2D,ids[c]);					
+				ApplyState(GL_TEXTURE_2D,states[c],false);				
+			}
+			
+			ret=true;						
+    	}
 		else
 		{
 			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
 		}
 	}
 	
@@ -201,6 +284,21 @@ bool TexturePainter::SetCurrent(unsigned int *ids)
 	#endif
 	
 	return ret;
+}
+
+void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
+{
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, state.TexEnv);
+	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, state.EnvColour.arr());
+	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, state.Min);
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, state.Mag);	
+    glTexParameteri(type, GL_TEXTURE_WRAP_S, state.WrapS);
+	glTexParameteri(type, GL_TEXTURE_WRAP_T, state.WrapT);
+	if (cubemap) glTexParameteri(type, GL_TEXTURE_WRAP_R, state.WrapT);
+	glTexParameterfv(type, GL_TEXTURE_BORDER_COLOR, state.BorderColour.arr());
+	glTexParameterf(type, GL_TEXTURE_PRIORITY, state.Priority);
+	glTexParameterf(type, GL_TEXTURE_MIN_LOD, state.MinLOD);
+	glTexParameterf(type, GL_TEXTURE_MAX_LOD, state.MaxLOD);
 }
 
 void TexturePainter::DisableAll()
