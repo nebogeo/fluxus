@@ -54,6 +54,14 @@ PolyPrimitive *PolyPrimitive::Clone() const
 	return new PolyPrimitive(*this);
 }
 
+void PolyPrimitive::Clear()
+{
+	Resize(0);
+	m_ConnectedVerts.clear();
+	m_GeometricNormals.clear();
+	m_UniqueEdges.clear();
+}
+
 void PolyPrimitive::PDataDirty()
 {
 	// reset pointers
@@ -61,10 +69,6 @@ void PolyPrimitive::PDataDirty()
 	m_NormData=GetDataVec<dVector>("n");
 	m_ColData=GetDataVec<dColour>("c");
 	m_TexData=GetDataVec<dVector>("t");
-	
-	m_ConnectedVerts.clear();
-	m_GeometricNormals.clear();
-	m_UniqueEdges.clear();
 }
 
 void PolyPrimitive::AddVertex(const dVertex &Vert) 
@@ -73,6 +77,10 @@ void PolyPrimitive::AddVertex(const dVertex &Vert)
 	m_NormData->push_back(Vert.normal); 
 	m_ColData->push_back(Vert.col); 	
 	m_TexData->push_back(dVector(Vert.s, Vert.t, 0));
+	
+	m_ConnectedVerts.clear();
+	m_GeometricNormals.clear();
+	m_UniqueEdges.clear();
 }	
 
 void PolyPrimitive::Render()
@@ -255,7 +263,6 @@ void PolyPrimitive::ConvertToIndexed()
 {
 	if (m_ConnectedVerts.empty())
 	{
-		
 		CalculateConnected();
 	}
 		
@@ -319,7 +326,7 @@ void PolyPrimitive::GenerateTopology()
 }
 
 void PolyPrimitive::CalculateConnected()
-{
+{ 
 	// cache the connected verts 
 	if (m_IndexMode)
 	{		

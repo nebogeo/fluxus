@@ -9,6 +9,14 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * repl crashfix
 * removed force-load-texture and added clear-texture-cache
 * (wire-opacity) courtesy of Gabor Papp
+* new get-searchpaths and set-searchpaths
+* added optional load parameters to (load-texture) for mipmapping or cubemapping
+* added (texture-params) for better texture support
+* added vreflect
+* fixed a bug where poly topology was being regenerated every time (pdata-copy) 
+  was called
+* put the user callback inside a push/pop state
+* added (with-state) (with-primitive) (pdata-map) (pdata-fold)
 
 0.13
 

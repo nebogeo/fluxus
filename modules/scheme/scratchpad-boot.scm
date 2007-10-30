@@ -45,7 +45,9 @@
 (require (lib "scratchpad.ss" "fluxus-0.14"))
 (require (lib "scratchpad-input.ss" "fluxus-0.14"))
 (require (lib "scratchpad-camera.ss" "fluxus-0.14"))
+(require (lib "scratchpad-help.ss" "fluxus-0.14"))
 (require (lib "fluxus-obj-import.ss" "fluxus-0.14"))
+(require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
 
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))

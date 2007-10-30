@@ -50,7 +50,8 @@ void ShadowVolumeGen::Generate(Primitive *prim)
 
 void ShadowVolumeGen::Clear()
 { 
-	m_ShadowVolume.Resize(0);
+	m_ShadowVolume.Clear();
+	
 }
 
 PolyPrimitive *ShadowVolumeGen::GetVolume() 

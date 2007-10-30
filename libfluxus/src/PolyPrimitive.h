@@ -47,7 +47,12 @@ public:
 	///@}
 	
 	Type GetType() { return m_Type; }
-	virtual void AddVertex(const dVertex &Vert);	
+	
+	/// Add a new vertex to the primitive
+	virtual void AddVertex(const dVertex &Vert);
+		
+	/// Clears out the primitive
+	void Clear();
 
 	///////////////////////////////////////////////////
 	///@name Topology functions

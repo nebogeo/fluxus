@@ -8,9 +8,11 @@ Import("env", "CollectsInstall")
 
 Scripts    = ["scratchpad-boot.scm", 
 			  "scratchpad.ss", 
+			  "scratchpad-help.ss",
 			  "scratchpad-input.ss",
 			  "scratchpad-camera.ss",
-			  "fluxus-obj-import.ss" ]
+			  "fluxus-obj-import.ss",
+			  "fluxus-building-blocks.ss" ]
 
 Install        = CollectsInstall
 

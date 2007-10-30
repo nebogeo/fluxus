@@ -383,7 +383,7 @@ void GLEditor::Render()
 	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
 			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
 	m_Time=ThisTime;
-	if (m_Delta>1.0f) m_Delta=0.000001f;
+	if (m_Delta>100.0f) m_Delta=0.000001f;
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
