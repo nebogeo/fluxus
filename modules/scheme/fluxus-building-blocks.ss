@@ -27,7 +27,9 @@
    with-state
    with-primitive
    pdata-map!
+   pdata-index-map!
    pdata-fold
+   pdata-index-fold
    )
   
   ;; StartFunctionDoc-en
@@ -120,7 +122,37 @@
                                              (pdata-ref pdata-read-name n) ...))
                            (loop (- n 1)))))))
          (loop (pdata-size))))))
+  ;; StartFunctionDoc-en
+ 
+  ;; pdata-index-map! procedure read/write-pdata-name read-pdata-name ...
+  ;; Returns: void
+  ;; Description:
+  ;; A high level control structure for simplifying passing over pdata arrays for 
+  ;; primitive deformation. Same as pdata-map! except pdata-index-map! supplies 
+  ;; the index of the current pdata element as the first argument to 'procedure'. 
+  ;; Example:
+  ;; (clear)
+  ;; (define my-torus (build-torus 1 2 30 30))
+  ;; 
+  ;; (with-primitive my-torus
+  ;;   (pdata-map!
+  ;;      (lambda (index position)
+  ;;          (vadd position (vector (gh index) 0 0))) ;; jitter the vertex in x
+  ;;      "p")) ;; read/write the position pdata array
+  ;; EndFunctionDoc  	   
   
+  (define-syntax pdata-index-map!
+    (syntax-rules ()
+      ((_ proc pdata-write-name pdata-read-name ...)
+       (letrec 
+           ((loop (lambda (n)
+                    (cond ((not (< n 0))
+                           (pdata-set! pdata-write-name n 
+                                       (proc n (pdata-ref pdata-write-name n) 
+                                             (pdata-ref pdata-read-name n) ...))
+                           (loop (- n 1)))))))
+         (loop (pdata-size))))))
+ 
   ;; StartFunctionDoc-en
   ;; pdata-fold procedure start-value read-pdata-name ...
   ;; Returns: result of folding procedure over pdata array
@@ -143,13 +175,41 @@
   ;;   (display centre)(newline))
   ;; EndFunctionDoc  	   
   
-  
   (define (pdata-fold p s t)
     (define (loop n)  
       (cond 
         ((< n 0) s)
         (else
          (p (pdata-ref t n) (loop (- n 1))))))
+    (loop (pdata-size)))
+  
+  ;; StartFunctionDoc-en
+  ;; pdata-index-fold procedure start-value read-pdata-name ...
+  ;; Returns: result of folding procedure over pdata array
+  ;; Description:
+  ;; Same as pdata-fold except it passes the index of the current pdata 
+  ;; element as the first parameter of 'procedure'.
+  ;; Example:  
+  ;; (define my-torus (build-torus 1 2 30 30))
+  ;; 
+  ;; ;; can't think of a good example for this yet...
+  ;; (let ((something 
+  ;;        (with-primitive my-torus
+  ;;                        (vdiv (pdata-fold
+  ;;                               (lambda (index position)
+  ;;                                   (vmul position index))
+  ;;                               (vector 0 0 0)
+  ;;                               "p") (pdata-size)))))
+  ;;   
+  ;;   (display something)(newline))
+  ;; EndFunctionDoc  	   
+  
+  (define (pdata-index-fold p s t)
+    (define (loop n)  
+      (cond 
+        ((< n 0) s)
+        (else
+         (p n (pdata-ref t n) (loop (- n 1))))))
     (loop (pdata-size)))
   
   
