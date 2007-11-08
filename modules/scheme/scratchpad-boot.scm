@@ -9,7 +9,7 @@
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ; GNU General Public License for more details.
-;
+;  
 ; You should have received a copy of the GNU General Public License
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
@@ -31,15 +31,19 @@
 	(build-path (path->string (car (current-library-collection-paths))) 
 		fluxus-name "extensions"))
 			   
+(require (lib "file.ss" "dynext"))
+
+; arg! means this is all hacky - need to use dynamic require???
 ; load the binary module extensions
-(load-extension (build-path fluxus-extension-path "fluxus-engine.so"))
-(load-extension (build-path fluxus-extension-path "fluxus-audio.so"))
-(load-extension (build-path fluxus-extension-path "fluxus-osc.so"))
+(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-engine")))
+(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-audio")))
+(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-osc")))
 
 ; now require everything we want
 (require fluxus-engine)
 (require fluxus-audio)
 (require fluxus-osc)
+
 
 ; todo: find out how to get rid of the burnt in version no
 (require (lib "scratchpad.ss" "fluxus-0.14"))
@@ -69,8 +73,7 @@
 (define fluxus-scratchpad-autofocus-min-scale 0.5)
 (define fluxus-scratchpad-autofocus-max-scale 5.0)
 
-; setup the standard searchpaths, this will have to be improved
-; add to these, or overwrite them in your .fluxus.scm
+; setup the standard searchpaths
 (set-searchpaths (list
 	"./"
 	(string-append (path->string (car (current-library-collection-paths)))

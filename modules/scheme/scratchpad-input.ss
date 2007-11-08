@@ -21,19 +21,19 @@
 ;; EndSectionDoc	
 
 (module scratchpad-input mzscheme
-	(require fluxus-engine)
-	(provide 
-		key-pressed
-		keys-down
-		key-special-pressed
-		keys-special-down
-		mouse-x
-		mouse-y
-		mouse-button
-		mouse-over
-		register-down
-		register-up)
-
+  (require fluxus-engine)
+  (provide 
+   key-pressed
+   keys-down
+   key-special-pressed
+   keys-special-down
+   mouse-x
+   mouse-y
+   mouse-button
+   mouse-over
+   register-down
+   register-up)
+  
 (define keys '())
 (define special-keys '())
 (define mouse (vector 0 0 #f))

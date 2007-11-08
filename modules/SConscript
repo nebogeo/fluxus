@@ -6,6 +6,8 @@
 Import("env", "CollectsInstall", "MZDYN")
 
 BinaryModulesLocation = CollectsInstall + "/extensions"
+# todo run mzscheme to get (path->string (system-library-subpath))
+#BinaryModulesLocation = CollectsInstall + "/"#compiled/native/i386-linux/3m"
 
 SConscript(dirs = ["fluxus-engine", 
                    "fluxus-audio", 
