@@ -31,19 +31,10 @@
 	(build-path (path->string (car (current-library-collection-paths))) 
 		fluxus-name "extensions"))
 			   
-(require (lib "file.ss" "dynext"))
-
-; arg! means this is all hacky - need to use dynamic require???
-; load the binary module extensions
-(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-engine")))
-(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-audio")))
-(load-extension (build-path fluxus-extension-path (append-extension-suffix "fluxus-osc")))
-
 ; now require everything we want
-(require fluxus-engine)
-(require fluxus-audio)
-(require fluxus-osc)
-
+(require "fluxus-engine.ss")
+(require "fluxus-audio.ss")
+(require "fluxus-osc.ss")
 
 ; todo: find out how to get rid of the burnt in version no
 (require (lib "scratchpad.ss" "fluxus-0.14"))

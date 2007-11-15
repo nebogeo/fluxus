@@ -5,17 +5,17 @@
 PolyGlyph::PolyGlyph(const string &ttffilename)
 {
 	FT_Error error;
-	error = FT_Init_FreeType(&m_Library);            
+	error = FT_Init_FreeType(&m_Library);
 	error = FT_New_Face(m_Library, ttffilename.c_str(), 0, &m_Face);
-	
+
 	if (error)
 	{
 		cerr<<"PolyGlyph::PolyGlyph: could not load font: "<<ttffilename<<endl;
 		assert(0);
 	}
-	  
-	// use 5pt at 100dpi 
-	error = FT_Set_Char_Size(m_Face, 50 * 64, 0, 100, 0); 
+
+	// use 5pt at 100dpi
+	error = FT_Set_Char_Size(m_Face, 50 * 64, 0, 100, 0);
 	m_Slot = m_Face->glyph;
 }
 
@@ -25,31 +25,41 @@ PolyGlyph::~PolyGlyph()
 	FT_Done_FreeType(m_Library);
 }
 
-void PolyGlyph::Render(wchar_t ch)
-{	
+void PolyGlyph::Render(wchar_t ch, float r, float g, float b)
+{
 	map<wchar_t,int>::iterator i = m_Cache.find(ch);
 	if (i!=m_Cache.end())
 	{
-		glCallList(i->second);    
+		glColor3f(r, g, b);
+		glCallList(i->second);
+		glColor4f(1-r, 1-g, 1-b, 0.5);
+		glCallList(i->second+1);
 	}
 	else
-	{	
+	{
 		FT_Error error;
 		error = FT_Load_Char(m_Face, ch, FT_LOAD_DEFAULT);
-   		if (error) return;
-		
-		int glList = glGenLists(1);
+		if (error) return;
+
+		int glList = glGenLists(2);
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo);
-		
-        glNewList(glList, GL_COMPILE);
+
+		glNewList(glList, GL_COMPILE);
 		RenderGeometry(*geo);
-		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
-        glEndList();
+		glEndList();
 		delete geo;
-		
+
+		glNewList(glList+1, GL_COMPILE);
+		RenderOutline(m_Slot);
+		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
+		glEndList();
+
 		m_Cache[ch]=glList;
-		glCallList(glList);    
+		glColor3f(r, g, b);
+		glCallList(glList);
+		glColor4f(1-r, 1-g, 1-b, 0.5);
+		glCallList(glList+1);
 	}
 }
 
@@ -68,7 +78,7 @@ float PolyGlyph::CharacterHeight(wchar_t ch)
     if (error) return 0;
 	return m_Slot->metrics.vertAdvance;
 }
-	
+
 void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 {
 	vector<GlyphGeometry::Vec3<double> > points;
@@ -97,22 +107,22 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	unsigned int start=0;
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
- 	    unsigned int end = glyph->outline.contours[c]+1;
+		unsigned int end = glyph->outline.contours[c]+1;
 		for(unsigned int p = start; p<end; p++)
 		{
 			points.push_back(GlyphGeometry::Vec3<double>(glyph->outline.points[p].x,glyph->outline.points[p].y,0));
 		}
 		start=end;
 	}
-	
+
 	start=0;
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
- 	    unsigned int end = glyph->outline.contours[c]+1;
+		unsigned int end = glyph->outline.contours[c]+1;
 		gluTessBeginContour(t);
 		for(unsigned int p = start; p<end; p++)
 		{
-			gluTessVertex(t, &points[p].x, 
+			gluTessVertex(t, &points[p].x,
 			                 &points[p].x);
 		}
 		start=end;
@@ -140,7 +150,7 @@ void PolyGlyph::TessCombine( double coords[3], void* vertex_data[4], float weigh
 {
    outData=vertex_data;
 }
-        
+
 
 void PolyGlyph::TessBegin( GLenum type, GlyphGeometry* geo)
 {
@@ -152,6 +162,22 @@ void PolyGlyph::TessEnd(GlyphGeometry* geo)
 {
 }
 
+void PolyGlyph::RenderOutline(const FT_GlyphSlot glyph)
+{
+	unsigned int start=0;
+	for(int c=0; c<glyph->outline.n_contours; c++)
+	{
+		glBegin(GL_LINE_LOOP);
+		unsigned int end = glyph->outline.contours[c]+1;
+		for(unsigned int p = start; p<end; p++)
+		{
+			glVertex3f(glyph->outline.points[p].x, glyph->outline.points[p].y, 0);
+		}
+		glEnd();
+		start=end;
+	}
+}
+
 void PolyGlyph::RenderGeometry(const GlyphGeometry &geo)
 {
 	/*for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
@@ -159,7 +185,7 @@ void PolyGlyph::RenderGeometry(const GlyphGeometry &geo)
 		glVertexPointer(3,GL_FLOAT,sizeof(float)*3,(void*)(&i->m_Data.begin()->x));
 		glDrawArrays(i->m_Type,0,i->m_Data.size());
 	}*/
-		
+
 	// i don't like em, but display lists + glbegin are faster than vertex arrays
 	for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
 	{

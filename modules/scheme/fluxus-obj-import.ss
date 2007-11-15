@@ -15,7 +15,7 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 (module fluxus-obj-import mzscheme
-	(require fluxus-engine)
+	(require "fluxus-engine.ss")
 	(require (lib "string.ss")) ; for eval-string
 	; for list-set! 
 	(require (all-except (lib "misc.ss" "swindle") identity regexp-quote concat))

@@ -7,7 +7,6 @@ import os
 Import("env", "CollectsInstall")
 
 Scripts    = ["scratchpad-boot.scm", 
-			  "scratchpad-boot.ss", 
 			  "scratchpad.ss", 
 			  "scratchpad-help.ss",
 			  "scratchpad-input.ss",

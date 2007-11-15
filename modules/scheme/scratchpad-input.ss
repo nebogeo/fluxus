@@ -21,7 +21,7 @@
 ;; EndSectionDoc	
 
 (module scratchpad-input mzscheme
-  (require fluxus-engine)
+  (require "fluxus-engine.ss")
   (provide 
    key-pressed
    keys-down

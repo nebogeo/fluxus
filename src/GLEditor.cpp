@@ -115,10 +115,10 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 	m_Width=w;
 	m_Height=h;
 }
-	
+
 void GLEditor::StrokeCharacter(wchar_t c)
 {
-	m_PolyGlyph->Render(c);
+	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
 }
 
 float GLEditor::StrokeWidth(wchar_t c)
@@ -286,22 +286,20 @@ void GLEditor::Render()
 			ypos-=m_CharHeight;
 			glTranslatef(0,ypos,0);
 		}
-		else 
+		else
 		{
 			if (xcount>=m_LeftTextPosition)
 			{
-				glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
-			
 				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8
 				{
 					wchar_t dst[1];
 					mbstowcs(dst,&(m_Text[n]),1);
 					StrokeCharacter(dst[0]);
-					n++;		
+					n++;
 				}
 				else
 				{
-					StrokeCharacter(m_Text[n]);			
+					StrokeCharacter(m_Text[n]);
 				}
 				BBExpand(xpos,ypos);
 				BBExpand(xpos+m_CharWidth,ypos+m_CharHeight);

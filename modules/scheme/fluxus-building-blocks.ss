@@ -27,7 +27,7 @@
 ;; manipular objetos e estados e estado no fluxus de uma maneira mais limpa e segura.
 
 (module fluxus-building-blocks mzscheme
-  (require fluxus-engine)
+  (require "fluxus-engine.ss")
   (provide 
    with-state
    with-primitive

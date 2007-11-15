@@ -15,7 +15,7 @@
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 (module fluxus-collada-import mzscheme
-  (require fluxus-engine)
+  (require "fluxus-engine.ss")
   (require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
   (require (lib "xml.ss" "xml"))
   (provide

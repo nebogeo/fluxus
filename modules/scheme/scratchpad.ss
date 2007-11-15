@@ -30,14 +30,18 @@
 ;; EndSectionDoc
 
 (module scratchpad mzscheme
-  (require fluxus-engine)
-  (require fluxus-audio)
+  (require "fluxus-engine.ss")
+  (require "fluxus-audio.ss")
+  (require "fluxus-osc.ss")
   ; todo: get rid of burnt in versions
   (require (lib "scratchpad-input.ss" "fluxus-0.14"))
   (require (lib "scratchpad-help.ss" "fluxus-0.14"))
   (require (lib "scratchpad-camera.ss" "fluxus-0.14"))
   (require (only (lib "13.ss" "srfi") string-pad))
   (provide 
+   (all-from "fluxus-engine.ss")
+   (all-from "fluxus-audio.ss")
+   (all-from "fluxus-osc.ss")
    fluxus-reshape-callback 
    fluxus-input-callback 
    fluxus-input-release-callback

@@ -26,7 +26,7 @@ class GlyphGeometry
 public:
 	GlyphGeometry() {}
 	~GlyphGeometry() {}
-	
+
 	template<class T>
 	class Vec3
 	{
@@ -34,7 +34,7 @@ public:
 		Vec3(T a, T b, T c) : x(a), y(b), z(c) {}
 		T x,y,z;
 	};
-	
+
 	class Mesh
 	{
 	public:
@@ -54,23 +54,24 @@ class PolyGlyph
 public:
 	PolyGlyph(const string &ttffile);
 	~PolyGlyph();
-	
-	void Render(wchar_t ch);
+
+	void Render(wchar_t ch, float r, float g, float b);
 	float CharacterWidth(wchar_t ch);
 	float CharacterHeight(wchar_t ch);
 
 private:
-	
+
 	void Generate(wchar_t ch);
 	void BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo);
 	void RenderGeometry(const GlyphGeometry &geo);
+	void RenderOutline(const FT_GlyphSlot glyph);
 
 	FT_Library    m_Library;
 	FT_Face       m_Face;
 	FT_GlyphSlot  m_Slot;
-	
+
 	map<wchar_t,int> m_Cache;
-		
+
 	static void TessError(GLenum errCode, GlyphGeometry* geo);
 	static void TessVertex(void* data, GlyphGeometry* geo);
 	static void TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);

@@ -23,19 +23,19 @@
 
 (module drflux mzscheme
 
-(define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
-(define fluxus-version "0.14")
-; boot the fluxus scratchpad stuff
-(load (string-append fluxus-collects-location "/fluxus-" 
-                     fluxus-version "/scratchpad-boot.scm"))
-
   (require (lib "class.ss")
            (lib "mred.ss" "mred")
            (lib "scratchpad.ss" "fluxus-0.14")
            (lib "gl.ss" "sgl")
            (prefix gl- (lib "sgl.ss" "sgl"))
-           fluxus-engine
-           fluxus-audio)
+           "fluxus-engine.ss"
+           "fluxus-audio.ss")
+  
+  (provide 
+  	(all-from (lib "scratchpad.ss" "fluxus-0.14")))
+  
+  (define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
+  (define fluxus-version "0.14")
   
   (define fluxus-canvas%
     (class* canvas% ()
@@ -70,20 +70,20 @@
         (super-instantiate () (style '(gl))))
       
       (fluxus-canvas-new)))
+    
+  (define frame (instantiate frame% ("drflux")))
+  (define fluxus-canvas (instantiate fluxus-canvas% (frame) (min-width 720) (min-height 576)))
+
+  (define (loop) 
+	(send fluxus-canvas on-paint)
+	(loop))
   
-  (define (init)
+  (define (init-me)
     ; make and show the window and canvas 
-    (define frame (instantiate frame% ("drflux")))
-    (define fluxus-canvas (instantiate fluxus-canvas% (frame) (min-width 720) (min-height 576)))
     (reshape 720 576)
     (send frame show #t)
- 
-    (define (loop)
-      (send fluxus-canvas on-paint)
-      (loop))
-    
-    (define thr (thread loop)))
+    (thread loop))
   
-  (init)
+  (init-me)
   
   )

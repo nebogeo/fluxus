@@ -21,7 +21,7 @@
 ;; EndSectionDoc	
 
 (module scratchpad-camera mzscheme
-	(require fluxus-engine)
+	(require "fluxus-engine.ss")
 	(provide 
 		input-camera
 		set-camera-transform
