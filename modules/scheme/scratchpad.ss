@@ -37,11 +37,20 @@
   (require (lib "scratchpad-input.ss" "fluxus-0.14"))
   (require (lib "scratchpad-help.ss" "fluxus-0.14"))
   (require (lib "scratchpad-camera.ss" "fluxus-0.14"))
+  (require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
+  (require (lib "fluxus-collada-import.ss" "fluxus-0.14"))
+  (require (lib "fluxus-obj-import.ss" "fluxus-0.14"))
   (require (only (lib "13.ss" "srfi") string-pad))
   (provide 
    (all-from "fluxus-engine.ss")
    (all-from "fluxus-audio.ss")
    (all-from "fluxus-osc.ss")
+   (all-from (lib "scratchpad-input.ss" "fluxus-0.14"))
+   (all-from (lib "scratchpad-help.ss" "fluxus-0.14"))
+   (all-from (lib "scratchpad-camera.ss" "fluxus-0.14"))
+   (all-from (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
+   (all-from (lib "fluxus-collada-import.ss" "fluxus-0.14"))
+   (all-from (lib "fluxus-obj-import.ss" "fluxus-0.14"))
    fluxus-reshape-callback 
    fluxus-input-callback 
    fluxus-input-release-callback

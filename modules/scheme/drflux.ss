@@ -44,30 +44,47 @@
       (define/override (on-paint)
         (with-gl-context
          (lambda ()           
-           ; don't *need* to call this every frame, but 
-           ; it doesn't hurt - just need to call it inside
-           ; the gl context
-           (fluxus-init)
-           
            (fluxus-frame-callback)
            
            ; swap the buffers 
            (swap-gl-buffers)
            (super on-paint))))
       
-      ;; route the events from mred into fluxus
+      ;; route the events from mred into fluxus - this mostly consists of making
+      ;; mred behave like glut with it's input formats (for the moment)
       (define/override (on-size width height)
         (with-gl-context
-         (lambda () 0)))
+         (lambda () 
+           (fluxus-reshape-callback width height))))
+        
+      ; mouse
+      (define/override (on-event event)
+        (let* ((button (cond
+                         ((send event get-left-down) 0)
+                         ((send event get-middle-down) 1)
+                         ((send event get-right-down) 2)
+                         (else -1)))
+               (state (cond 
+                        ((send event button-down? 'any) 0)
+                        (else 1))))
+
+          (if (send event button-changed? 'any)
+              (fluxus-input-callback 0 button -1 state (send event get-x) (send event get-y) 0))          
+          (if (send event dragging?)
+              (fluxus-input-callback 0 -1 -1 -1 (send event get-x) (send event get-y) 0))))
       
+      ; keyboard
       (define/override (on-char event)
         (if (equal? 'release (send event get-key-code))
-            (fluxus-input-release-callback (send event get-key-code) 0 0 0 0 0 0))
-            (fluxus-input-callback (send event get-key-code) 0 0 0 0 0 0))
+            (fluxus-input-release-callback (send event get-key-code) 0 0 0 0 0 0)
+            (fluxus-input-callback (send event get-key-code) 0 0 0 0 0 0)))
       
-      (define (fluxus-canvas-new)
-        (clear-texture-cache)
-        (super-instantiate () (style '(gl))))
+      (define (fluxus-canvas-new)  
+        (super-instantiate () (style '(gl)))
+        (with-gl-context
+         (lambda () 
+           (clear-texture-cache)      
+           (fluxus-init))))
       
       (fluxus-canvas-new)))
     
@@ -80,7 +97,8 @@
   
   (define (init-me)
     ; make and show the window and canvas 
-    (reshape 720 576)
+    (fluxus-reshape-callback 720 576)
+    (send frame set-label (string-append "drflux " fluxus-version))
     (send frame show #t)
     (thread loop))
   
