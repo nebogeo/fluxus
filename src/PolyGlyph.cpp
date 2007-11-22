@@ -30,10 +30,10 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b)
 	map<wchar_t,int>::iterator i = m_Cache.find(ch);
 	if (i!=m_Cache.end())
 	{
-		glColor3f(r, g, b);
-		glCallList(i->second);
 		glColor4f(1-r, 1-g, 1-b, 0.5);
 		glCallList(i->second+1);
+		glColor3f(r, g, b);
+		glCallList(i->second);
 	}
 	else
 	{
@@ -45,21 +45,21 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b)
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo);
 
+		glNewList(glList+1, GL_COMPILE);
+		RenderOutline(m_Slot);
+		glEndList();
+
 		glNewList(glList, GL_COMPILE);
 		RenderGeometry(*geo);
+		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
 		glEndList();
 		delete geo;
 
-		glNewList(glList+1, GL_COMPILE);
-		RenderOutline(m_Slot);
-		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
-		glEndList();
-
 		m_Cache[ch]=glList;
-		glColor3f(r, g, b);
-		glCallList(glList);
 		glColor4f(1-r, 1-g, 1-b, 0.5);
 		glCallList(glList+1);
+		glColor3f(r, g, b);
+		glCallList(glList);
 	}
 }
 
@@ -165,6 +165,7 @@ void PolyGlyph::TessEnd(GlyphGeometry* geo)
 void PolyGlyph::RenderOutline(const FT_GlyphSlot glyph)
 {
 	unsigned int start=0;
+	glLineWidth(5);
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
 		glBegin(GL_LINE_LOOP);
