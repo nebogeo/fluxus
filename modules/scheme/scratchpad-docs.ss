@@ -3,7 +3,9 @@
 
 ;; StartSectionDoc-en
 ;; scratchpad-docs
-;; Some useful high level documentation lives here
+;; Some useful high level documentation lives here, this won't make much
+;; sense if you are reading this in a different place from the help system
+;; in the fluxus scratchpad app, but it might be useful anyway...
 ;; Example:
 ;; EndSectionDoc 
 
@@ -362,18 +364,19 @@
 ;; Description:
 ;; Example:
 ;;
-;; "Computers are useless. They can only give you answers". 
-;;     Pablo Picasso (1881 - 1973).
-;;
 ;; Authors
 ;; -------
 ;; Alex Norman 
 ;; Artem Baguinski
+;; Claude Heiland-Allen
 ;; Dan Bethell
 ;; Dave Griffiths 
 ;; Glauber Alex Dias Prado
 ;; Nik Gaffney
 ;; James Tittle
+;;
+;; "Computers are useless. They can only give you answers". 
+;;     Pablo Picasso (1881 - 1973).
 ;;
 ;; EndFunctionDoc
 
@@ -383,18 +386,19 @@
 ;; Descrição:
 ;; Exemplo:
 ;;
-;; "Computadores são inúteis. Eles só podem te dar respostas". 
-;;     Pablo Picasso (1881 - 1973).
-;;
 ;; Autores
 ;; -------
 ;; Alex Norman 
 ;; Artem Baguinski
+;; Claude Heiland-Allen
 ;; Dan Bethell
 ;; Dave Griffiths 
 ;; Glauber Alex Dias Prado
 ;; Nik Gaffney
 ;; James Tittle
+;;
+;; "Computadores são inúteis. Eles só podem te dar respostas". 
+;;     Pablo Picasso (1881 - 1973).
 ;;
 ;; EndFunctionDoc
 

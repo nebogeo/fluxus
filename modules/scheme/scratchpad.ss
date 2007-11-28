@@ -326,10 +326,9 @@
             (draw-buffer 'back)
             (set-camera (get-camera-transform))
             (framedump-update)
-			;(push)
             (if (not (null? user-callback))
-               (user-callback))
-			;(pop)
+				(with-state
+    	           (user-callback)))
             (fluxus-render)
             (tick-physics)
             (update-audio))

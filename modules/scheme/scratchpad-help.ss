@@ -102,6 +102,7 @@
           (else
            (if (not (section-help (car args))) ; first look in the section help
                (func-help (car args)))))))     ; if it fails fall through to function help
+  
   (define (insert-linebreaks src dst count i n)
     (if (>= i (string-length src))
         dst
@@ -112,13 +113,14 @@
                                (string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
   
   ;; Dave could we have a different version of this function (func-help) for each locale? --greb
+  ;; I've simplified the output, but we need to sort out how to cope this these smaller bits of 
+  ;; text - the save-as dialog is another example. --dave
   
   (define (func-help funcname)  
     (define (inner-help l)
       (let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
         (cond
           (ret
-           (display "Function")(newline)
            (display "(")(display (car ret))
            (let ((arguments (list-ref (list-ref ret 1) 0)))
              (cond 
@@ -128,10 +130,8 @@
            (display ")")(newline)(newline)
            (display "Returns ")
            (display (list-ref (list-ref ret 1) 1))(newline)(newline)
-           (display "Description")(newline)
            (display (insert-linebreaks (list-ref (list-ref ret 1) 2) "" 50 0 0))
            (newline)(newline)
-           (display "Example")(newline)
            (display (list-ref (list-ref ret 1) 3))
            (newline))
           (else
@@ -180,7 +180,8 @@
     (cond 
       ((null? helpmap)
        (display "No helpmap exists...")(newline)
-       (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
+       (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline)
+       (display "and reinstalling with \"sudo scons install\"")(newline))
       (else
        (inner-summary helpmap))))
   
@@ -216,6 +217,7 @@
       ((null? helpmap)
        (display "No helpmap exists...")(newline)
        (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline)
+       (display "and reinstalling with \"sudo scons install\"")(newline)
        #f)
       (else
        (inner-help helpmap))))

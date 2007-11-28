@@ -19,6 +19,7 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * added (with-state) (with-primitive) (pdata-map) (pdata-fold)
 * added (pdata-index-map) (pdata-index-fold)
 * collada scene import
+* drflux now fully operational
 
 0.13
 
