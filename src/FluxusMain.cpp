@@ -124,7 +124,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 					m_ShowFileDialog=!m_ShowFileDialog; 
 				}
 			break; // l
-			case 24: // x
+			case 5: // e
 			{
 				// same as F5
 				if (m_CurrentEditor<9) 
