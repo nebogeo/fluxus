@@ -55,26 +55,25 @@ void TexturePainter::ClearCache()
 {
 	m_TextureMap.clear();
 	m_LoadedMap.clear();
+	m_LoadedCubeMap.clear();
 }
 
 unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &params)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
 	
+	if (params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_X || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_X ||
+		params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Y || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ||
+		params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Z || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)
+	{
+		return LoadCubeMap(Fullpath, params);
+	}
+	
 	// see if we've loaded this one already
 	map<string,int>::iterator i=m_LoadedMap.find(Fullpath);
 	if (i!=m_LoadedMap.end())
 	{
 		return i->second;
-	}
-	
-	// are we in cubemap mode?
-	bool cubemap=false;
-	if (params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_X || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_X ||
-				params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Y || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ||
-				params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Z || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)
-	{
-		cubemap=true;
 	}
 	
 	unsigned char *ImageData;
@@ -95,85 +94,122 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 			params.ID=id; // ahem
 			//\todo this means mipmap levels won't be cached
     		m_TextureMap[params.ID]=desc;
-			m_LoadedMap[Fullpath]=params.ID;
-			
-			if (cubemap)
-			{
-				CubeMapDesc newcubemap;
-				m_CubeMapMap[params.ID] = newcubemap;
+			m_LoadedMap[Fullpath]=params.ID;					
+		}
 				
-				switch (params.Type) // record the cubemap face
-				{
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[params.ID].Positive[0]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[params.ID].Negative[0]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[params.ID].Positive[1]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[params.ID].Negative[1]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[params.ID].Positive[2]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[params.ID].Negative[2]=params.ID; break;
-					default: assert(0); break;
-				}
-			}
-		}
-		else // we have an existing texture id specified
-		{
-			if (cubemap)
-			{
-				// make a new texture id for this face
-				// record the primary cubemap id
-				unsigned int primary = params.ID;
-				unsigned int id;
-				glGenTextures(1,&id);
-				params.ID=id; // ahem
-    			m_TextureMap[params.ID]=desc;
-				m_LoadedMap[Fullpath]=params.ID;
-						
-				switch (params.Type) // record the cubemap face
-				{
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[primary].Positive[0]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[primary].Negative[0]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[primary].Positive[1]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[primary].Negative[1]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[primary].Positive[2]=params.ID; break;
-					case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[primary].Negative[2]=params.ID; break;
-					default: assert(0); break;
-				}
-			}
-		}
-						
-		glBindTexture(params.Type,params.ID);
-		
-		if (params.GenerateMipmaps)
-		{
-			if (desc.Format==RGB)
-    		{
-				gluBuild2DMipmaps(params.Type,3,desc.Width,desc.Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
-    		}
-    		else
-    		{
-    			gluBuild2DMipmaps(params.Type,4,desc.Width,desc.Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
-    		}
-		}
-		else
-		{		
-			//\todo check power of two
-			//\todo and scale?
-		
-			if (desc.Format==RGB)
-    		{				
-				glTexImage2D(params.Type,params.MipLevel,3,desc.Width,desc.Height,params.Border,
-					GL_RGB,GL_UNSIGNED_BYTE,ImageData);			
-			}
-    		else
-    		{
-				glTexImage2D(params.Type,params.MipLevel,4,desc.Width,desc.Height,params.Border,
-					GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
-			}
-		}		
+		UploadTexture(desc,params,ImageData);										
 		delete[] ImageData;
 		return params.ID;		
 	}	
 	m_LoadedMap[Fullpath]=0;
     return 0;
+}
+
+unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &params)
+{	
+	// see if we've loaded this one already
+	map<string,int>::iterator i=m_LoadedCubeMap.find(Fullpath);
+	if (i!=m_LoadedCubeMap.end())
+	{
+		return i->second;
+	}
+
+	unsigned char *ImageData;
+    TextureDesc desc;
+    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
+	
+	if (ImageData!=NULL)
+    {
+		//\todo support more depths than 8bit
+		
+		// upload to card...
+		glEnable(params.Type);
+		
+		if (params.ID==-1) // is this a new texture?
+		{
+			unsigned int id;
+			glGenTextures(1,&id);
+			params.ID=id; // ahem
+			//\todo this means cubemaps won't be cached
+    		m_TextureMap[params.ID]=desc;
+			m_LoadedCubeMap[Fullpath]=params.ID;
+						
+			CubeMapDesc newcubemap;
+			m_CubeMapMap[params.ID] = newcubemap;
+				
+			switch (params.Type) // record the cubemap face
+			{
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[params.ID].Positive[0]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[params.ID].Negative[0]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[params.ID].Positive[1]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[params.ID].Negative[1]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[params.ID].Positive[2]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[params.ID].Negative[2]=params.ID; break;
+				default: assert(0); break;
+			}
+		}
+		else // we have an existing texture id specified
+		{
+			// make a new texture id for this face
+			// record the primary cubemap id
+			unsigned int primary = params.ID;
+			unsigned int id;
+			glGenTextures(1,&id);
+			params.ID=id; // ahem
+    		m_TextureMap[params.ID]=desc;
+			m_LoadedCubeMap[Fullpath]=params.ID;
+
+			switch (params.Type) // record the cubemap face
+			{
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[primary].Positive[0]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_X: m_CubeMapMap[primary].Negative[0]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_Y: m_CubeMapMap[primary].Positive[1]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y: m_CubeMapMap[primary].Negative[1]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_POSITIVE_Z: m_CubeMapMap[primary].Positive[2]=params.ID; break;
+				case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z: m_CubeMapMap[primary].Negative[2]=params.ID; break;
+				default: assert(0); break;
+			}
+		}
+			
+		UploadTexture(desc,params,ImageData);					
+		delete[] ImageData;
+		return params.ID;		
+	}	
+	m_LoadedMap[Fullpath]=0;
+    return 0;
+}
+
+void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData)
+{
+	glBindTexture(params.Type,params.ID);
+		
+	if (params.GenerateMipmaps)
+	{
+		if (desc.Format==RGB)
+    	{
+			gluBuild2DMipmaps(params.Type,3,desc.Width,desc.Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
+    	}
+    	else
+    	{
+    		gluBuild2DMipmaps(params.Type,4,desc.Width,desc.Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
+    	}
+	}
+	else
+	{		
+		//\todo check power of two
+		//\todo and scale?
+
+		if (desc.Format==RGB)
+    	{				
+			glTexImage2D(params.Type,params.MipLevel,3,desc.Width,desc.Height,params.Border,
+				GL_RGB,GL_UNSIGNED_BYTE,ImageData);			
+		}
+    	else
+    	{
+			glTexImage2D(params.Type,params.MipLevel,4,desc.Width,desc.Height,params.Border,
+				GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
+		}
+	}		
 }
 
 bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels)

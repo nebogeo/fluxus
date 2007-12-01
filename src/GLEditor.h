@@ -58,17 +58,27 @@ public:
 	
 	float m_PosX,m_PosY;
 	float m_Scale;
-	static float m_TextWidth;
-	static float m_TextColourRed;
-	static float m_TextColourGreen;
-	static float m_TextColourBlue;
 	
 	void StrokeCharacter(wchar_t c);
 	float StrokeWidth(wchar_t c);
 	
 	static void InitFont(const string &ttf);
-	static void InitAutoFocus(bool doit, bool debug, float width, float height, float error, float drift, 
-					float scale_drift, float minscale, float maxscale);
+	
+	static float m_TextWidth;
+	static float m_TextColourRed;
+	static float m_TextColourGreen;
+	static float m_TextColourBlue;
+	static bool m_DoAutoFocus;
+	static bool m_DebugAutoFocus;
+	static float m_AutoFocusWidth;
+	static float m_AutoFocusHeight;
+	static float m_AutoFocusError;
+	static float m_AutoFocusDrift;
+	static float m_AutoFocusScaleDrift;
+	static float m_AutoFocusMinScale;
+	static float m_AutoFocusMaxScale;
+	static unsigned int m_VisibleLines;
+	static unsigned int m_VisibleColumns;
 	
 protected:
 
@@ -102,8 +112,6 @@ protected:
 	int m_ParenthesesHighlight[2];
 	string m_OpenChars;
 	string m_CloseChars;
-	unsigned int m_VisibleLines;
-	unsigned int m_VisibleColumns;
 	unsigned int m_LeftTextPosition;
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;
@@ -121,15 +129,6 @@ protected:
 	timeval m_Time;
 	float m_Delta;
 	
-	static bool m_DoAutoFocus;
-	static bool m_DebugAutoFocus;
-	static float m_AutoFocusWidth;
-	static float m_AutoFocusHeight;
-	static float m_AutoFocusError;
-	static float m_AutoFocusDrift;
-	static float m_AutoFocusScaleDrift;
-	static float m_AutoFocusMinScale;
-	static float m_AutoFocusMaxScale;
 };
 
 } // namespace fluxus

@@ -45,6 +45,8 @@ float GLEditor::m_AutoFocusDrift(1.0);
 float GLEditor::m_AutoFocusScaleDrift(0.3);
 float GLEditor::m_AutoFocusMinScale(0.5);
 float GLEditor::m_AutoFocusMaxScale(5.0);
+unsigned int GLEditor::m_VisibleLines(40);
+unsigned int GLEditor::m_VisibleColumns(60);
 
 PolyGlyph* GLEditor::m_PolyGlyph = NULL;
 
@@ -64,8 +66,6 @@ m_CharWidth(0),
 m_CharHeight(0),
 m_OpenChars("([<{"),
 m_CloseChars(")]>}"),
-m_VisibleLines(40),
-m_VisibleColumns(60),
 m_LeftTextPosition(0),
 m_TopTextPosition(0),
 m_BottomTextPosition(0),
@@ -90,20 +90,6 @@ m_Delta(0.0)
 void GLEditor::InitFont(const string &ttf)
 {
 	m_PolyGlyph = new PolyGlyph(ttf);
-}
-
-void GLEditor::InitAutoFocus(bool doit, bool debug, float width, float height, float error, float drift, 
-	float scale_drift, float minscale, float maxscale)
-{
-	m_DoAutoFocus = doit;
-	m_DebugAutoFocus = debug;
-	m_AutoFocusWidth = width;
-	m_AutoFocusHeight = height;
-	m_AutoFocusError = error;
-	m_AutoFocusDrift = drift;
-	m_AutoFocusScaleDrift = scale_drift;
-	m_AutoFocusMinScale = minscale;
-	m_AutoFocusMaxScale = maxscale;
 }
 
 GLEditor::~GLEditor() 
@@ -300,7 +286,7 @@ void GLEditor::Render()
 		{
 			if (xcount>=m_LeftTextPosition)
 			{
-				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8
+				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8 - this really needs to be done properly
 				{
 					wchar_t dst[1];
 					mbstowcs(dst,&(m_Text[n]),1);

@@ -148,9 +148,12 @@ private:
 	TexturePainter();
 	~TexturePainter();
 	void ApplyState(int type, TextureState &state, bool cubemap);
+	unsigned int LoadCubeMap(const string &Fullpath, CreateParams &params);
+	void UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData);
 	static TexturePainter *m_Singleton;
 
 	map<string,int> m_LoadedMap;
+	map<string,int> m_LoadedCubeMap;
 	map<unsigned int,TextureDesc> m_TextureMap;
 	map<unsigned int,CubeMapDesc> m_CubeMapMap;
 };

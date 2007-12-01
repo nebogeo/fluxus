@@ -47,27 +47,30 @@ m_ShowFileDialog(false)
 	interpreter->Interpret("fluxus-scratchpad-font", &txt);
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
 	interpreter->Interpret("fluxus-scratchpad-do-autofocus", &t);
-	bool DoAutoFocus=scheme_real_to_double(t);
+	GLEditor::m_DoAutoFocus=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-debug-autofocus", &t);
-	bool DebugAutoFocus=scheme_real_to_double(t);
+	GLEditor::m_DebugAutoFocus=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-width", &t);
-	float Width=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusWidth=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
-	float Height=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusHeight=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-error", &t);
-	float Error=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusError=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-drift", &t);
-	float Drift=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusDrift=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-scale-drift", &t);
-	float ScaleDrift=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusScaleDrift=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-min-scale", &t);
-	float MinScale=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusMinScale=scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-autofocus-max-scale", &t);
-	float MaxScale=scheme_real_to_double(t);
+	GLEditor::m_AutoFocusMaxScale=scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-visible-lines", &t);
+	GLEditor::m_VisibleLines=(int)scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-visible-columns", &t);
+	GLEditor::m_VisibleColumns=(int)scheme_real_to_double(t);
   	MZ_GC_UNREG();
 	
 	GLEditor::InitFont(s);
-	GLEditor::InitAutoFocus(DoAutoFocus,DebugAutoFocus,Width,Height,Error,Drift,ScaleDrift,MinScale,MaxScale);
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++) 
@@ -121,6 +124,15 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 					m_ShowFileDialog=!m_ShowFileDialog; 
 				}
 			break; // l
+			case 24: // x
+			{
+				// same as F5
+				if (m_CurrentEditor<9) 
+				{
+					m_Script=m_Editor[m_CurrentEditor]->GetText();
+				}
+			}			
+			break;
 #ifndef __APPLE__
 			case 49: SetCurrentEditor(0); break; // 1
 			case 0: SetCurrentEditor(1); break; // 2

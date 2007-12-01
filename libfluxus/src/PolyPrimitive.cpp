@@ -113,7 +113,6 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
 	else glDisable(GL_LINE_SMOOTH);		
 
-	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_NORMAL)
 	{
 		glColor3f(1,0,0);
@@ -127,6 +126,7 @@ void PolyPrimitive::Render()
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
+	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 		
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());

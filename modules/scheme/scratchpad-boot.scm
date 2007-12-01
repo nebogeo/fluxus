@@ -63,6 +63,8 @@
 ; turn off zooming by turning min and max to 0.5
 (define fluxus-scratchpad-autofocus-min-scale 0.5)
 (define fluxus-scratchpad-autofocus-max-scale 5.0)
+(define fluxus-scratchpad-visible-lines 40)
+(define fluxus-scratchpad-visible-columns 60)
 
 ; setup the standard searchpaths
 (set-searchpaths (list
