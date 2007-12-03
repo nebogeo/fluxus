@@ -130,7 +130,19 @@ void Engine::ResetRenderers()
 // todo - move the grabstack into the renderer?
 void Engine::PushGrab(int id)
 {	
+	// id of zero means this is a state push - but we 
+	// still want to record these here, as then we 
+	// can interleave the state and primitive push/pops
+	if (id==0) 
+	{
+		m_Grabbed=NULL;
+		Renderer()->UnGrab();
+		m_GrabStack.push_front(id);
+		return;
+	}
+	
 	m_Grabbed=Renderer()->GetPrimitive(id);
+	
 	if (m_Grabbed)
 	{
 		m_GrabStack.push_front(id);
@@ -144,13 +156,12 @@ void Engine::PushGrab(int id)
 
 void Engine::PopGrab()
 {
-	Renderer()->UnGrab();
 	m_Grabbed=NULL;
-	
 	if (!m_GrabStack.empty())
 	{
+		Renderer()->UnGrab();
 		m_GrabStack.pop_front();
-		if (!m_GrabStack.empty())
+		if (!m_GrabStack.empty() && m_GrabStack[0]>0)
 		{
 			m_Grabbed=Renderer()->GetPrimitive(*m_GrabStack.begin());
 			Renderer()->Grab(*m_GrabStack.begin());

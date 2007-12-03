@@ -75,9 +75,11 @@
       
       ; keyboard
       (define/override (on-char event)
-        (if (equal? 'release (send event get-key-code))
-            (fluxus-input-release-callback (send event get-key-code) 0 0 0 0 0 0)
-            (fluxus-input-callback (send event get-key-code) 0 0 0 0 0 0)))
+        (cond 
+          ((equal? 'release (send event get-key-code))
+           (fluxus-input-release-callback (send event get-key-code) 0 0 0 0 0 0))
+          (else
+           (fluxus-input-callback (send event get-key-code) 0 0 0 0 0 0))))
       
       (define (fluxus-canvas-new)  
         (super-instantiate () (style '(gl)))

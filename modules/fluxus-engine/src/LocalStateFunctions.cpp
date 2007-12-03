@@ -77,12 +77,13 @@ using namespace Fluxus;
 
 Scheme_Object *push(int argc, Scheme_Object **argv)
 {
-	if (Engine::Get()->Grabbed())
-	{
-		Trace::Stream<<"error: can't (push) while an object is (grab)bed"<<endl;
-		return scheme_void;
-	}
-	
+	//if (Engine::Get()->Grabbed())
+	//{
+	//	Trace::Stream<<"error: can't (push) while an object is (grab)bed"<<endl;
+	//	return scheme_void;
+	//}
+	// record the push on the grabstack too - this means we can combine them
+	Engine::Get()->PushGrab(0);
     Engine::Get()->Renderer()->PushState();
     return scheme_void;
 }
@@ -122,12 +123,12 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 
 Scheme_Object *pop(int argc, Scheme_Object **argv)
 {
-	if (Engine::Get()->Grabbed())
-	{
-		Trace::Stream<<"error: can't (pop) while an object is (grab)bed"<<endl;
-		return scheme_void;
-	}
-
+	//if (Engine::Get()->Grabbed())
+	//{
+	//	Trace::Stream<<"error: can't (pop) while an object is (grab)bed"<<endl;
+	//	return scheme_void;
+	//}
+	Engine::Get()->PopGrab();
     Engine::Get()->Renderer()->PopState();
     return scheme_void;
 }
@@ -235,8 +236,18 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 Scheme_Object *apply(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("apply-transform", "i", argc, argv);
-	Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
+	if (argc==1)
+	{
+		ArgCheck("apply-transform", "i", argc, argv);
+		Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
+	}
+	else
+	{
+		if (Engine::Get()->Grabbed())
+		{
+			Engine::Get()->Grabbed()->ApplyTransform();
+		}
+	}
 	MZ_GC_UNREG();
 	return scheme_void;
 }
