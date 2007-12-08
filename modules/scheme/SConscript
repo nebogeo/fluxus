@@ -12,6 +12,7 @@ Scripts    = ["scratchpad-boot.scm",
 			  "scratchpad-input.ss",
 			  "scratchpad-camera.ss",
 			  "fluxus-obj-import.ss",
+			  "fluxus-obj-export.ss",
 			  "fluxus-collada-import.ss",
 			  "fluxus-building-blocks.ss",
 			  "drflux.ss" ]

@@ -175,13 +175,13 @@
     (syntax-rules ()
       ((_ proc pdata-write-name pdata-read-name ...)
        (letrec 
-           ((loop (lambda (n)
-                    (cond ((not (< n 0))
+           ((loop (lambda (n t)
+                    (cond ((not (> n t))
                            (pdata-set! pdata-write-name n 
                                        (proc (pdata-ref pdata-write-name n) 
                                              (pdata-ref pdata-read-name n) ...))
-                           (loop (- n 1)))))))
-         (loop (pdata-size))))))
+                           (loop (+ n 1) t))))))
+         (loop 0 (- (pdata-size) 1))))))
 
   ;; StartFunctionDoc-en
   ;; pdata-index-map! procedure read/write-pdata-name read-pdata-name ...
@@ -223,13 +223,13 @@
     (syntax-rules ()
       ((_ proc pdata-write-name pdata-read-name ...)
        (letrec 
-           ((loop (lambda (n)
-                    (cond ((not (< n 0))
+           ((loop (lambda (n t)
+                    (cond ((not (> n t))
                            (pdata-set! pdata-write-name n 
                                        (proc n (pdata-ref pdata-write-name n) 
                                              (pdata-ref pdata-read-name n) ...))
-                           (loop (- n 1)))))))
-         (loop (pdata-size))))))
+                           (loop (+ n 1)))))))
+         (loop 0 (- (pdata-size) 1))))))
  
   ;; StartFunctionDoc-en
   ;; pdata-fold procedure start-value read-pdata-name ...
@@ -276,12 +276,12 @@
   ;; EndFunctionDoc
   
   (define (pdata-fold p s t)
-    (define (loop n)  
+    (define (loop n t)  
       (cond 
-        ((< n 0) s)
+        ((> n t) s)
         (else
-         (p (pdata-ref t n) (loop (- n 1))))))
-    (loop (pdata-size)))
+         (p (pdata-ref t n) (loop (+ n 1))))))
+    (loop 0 (- (pdata-size) 1)))
   
   ;; StartFunctionDoc-en
   ;; pdata-index-fold procedure start-value read-pdata-name ...
@@ -326,12 +326,12 @@
   ;; EndFunctionDoc
   
   (define (pdata-index-fold p s t)
-    (define (loop n)  
+    (define (loop n t)  
       (cond 
-        ((< n 0) s)
+        ((> n t) s)
         (else
-         (p n (pdata-ref t n) (loop (- n 1))))))
-    (loop (pdata-size)))
+         (p n (pdata-ref t n) (loop (+ n 1))))))
+    (loop 0 (- (pdata-size) 1)))
   
   
   )
