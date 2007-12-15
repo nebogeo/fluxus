@@ -16,11 +16,13 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * fixed a bug where poly topology was being regenerated every time (pdata-copy) 
   was called
 * put the user callback inside a push/pop state
-* added (with-state) (with-primitive) (pdata-map) (pdata-fold)
-* added (pdata-index-map) (pdata-index-fold)
+* added (with-state) (with-primitive) (pdata-map!) (pdata-fold)
+* added (pdata-index-map!) (pdata-index-fold)
 * collada scene import
-* drflux now fully operational
-
+* drflux now fully operational - but a little crash prone with some commands
+* text improvements courtesy of Gabor Papp
+* obj-export for saving out model data
+* obj-import fixes
 0.13
 
 * stereo rendering support by Alex Norman, adding:

@@ -65,6 +65,7 @@
    end-framedump
    get-eye-separation
    set-eye-separation
+   set-physics-debug
    )
   
   ;-------------------------------------------------
@@ -73,8 +74,7 @@
   (define user-callback '())
   
   (define (set-user-callback! s)
-    (set! user-callback s))
-  
+    (set! user-callback s))  
   
   ;; StartFunctionDoc-en
   ;; every-frame callback-function
@@ -148,7 +148,8 @@
   
   (define width 0)
   (define height 0)
-  
+  (define physics-debug #f)
+    
   (define framedump-frame -1)
   (define framedump-filename "")
   (define framedump-type "")
@@ -209,6 +210,27 @@
          (display "saving frame: ")(display filename)(newline)
          (framedump filename)
          (set! framedump-frame (+ framedump-frame 1))))))
+
+  ;; StartFunctionDoc-en
+  ;; set-physics-debug boolean
+  ;; Returns: void
+  ;; Description:
+  ;; Call with #t to turn on debug rendering for the physics.
+  ;; Example:
+  ;; (set-physics-debug #t) 
+  ;; EndFunctionDoc    
+
+  ;; StartFunctionDoc-pt
+  ;; set-physics-debug boolean
+  ;; Retorna: void
+  ;; Descrição:
+  ;; Call with #t to turn on debug rendering for the physics.
+  ;; Exemplo:
+  ;; (set-physics-debug #t)
+  ;; EndFunctionDoc
+  
+  (define (set-physics-debug s)
+  	(set! physics-debug s))
   
   ;-------------------------------------------------
   ; stereo mode
@@ -332,6 +354,7 @@
 				(with-state
     	           (user-callback)))
             (fluxus-render)
+			(if physics-debug (render-physics))
             (tick-physics)
             (update-audio))
       (else

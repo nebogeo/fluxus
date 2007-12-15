@@ -31,21 +31,17 @@
 ; takes a shader pair and a bunch of params and 
 ; renders a torus with the specified shader attached
 (define (test-shader vert frag params)
-    (push)
-    (hint-cast-shadow)
-    (shader vert frag)
-    (scale (vector 1 1 1))
-    (rotate (vector 90 0 0))
-    (let ((b (build-torus 1 2 20 20)))
-    (pop)
     (translate (vector 0 0 6))
-    (grab b)
-    (shader-set! params)
-    (shader-set! (list "LightPos" 
-        (vtransform lp (minverse (get-transform)))))
-    (ungrab)))
+    (with-state
+        (hint-cast-shadow)
+        (shader vert frag)
+        (rotate (vector 90 0 0))
+        (with-primitive (build-torus 1 2 20 20)
+            (shader-set! params)
+            (shader-set! (list "LightPos" 
+                (vtransform lp (minverse (get-transform))))))))
 
-(push)
+(with-state
 ; a big list of shaders and example settings
 
 ; Anisotropic Specular Reflection Shader
@@ -169,12 +165,11 @@
           "DiffuseIntensity" 1.0    
           "SpecularIntensity" 1.0    
           "Sharpness" 0.6))
-(pop)
+)
 
-(push)
-(colour (vector 0.4 0.4 0.9))
-(translate (vector 0 -1 0))
-(rotate (vector 90 0 0))
-(scale (vector 100 100 100))
-(build-plane)
-(pop)
+(with-state
+    (colour (vector 0.4 0.4 0.9))
+    (translate (vector 0 -1 0))
+    (rotate (vector 90 0 0))
+    (scale (vector 100 100 100))
+    (build-plane))

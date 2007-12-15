@@ -2,37 +2,37 @@
 
 (clear)
 (collisions 1)
-(define objs '())
-
-; makes a new object for connection in the chain
-(define (add t)
-    (push)
-    (translate (vector 0 t 0))
-    (scale (vector 0.7 1 0.2))
-    (set! objs (cons (build-cube) objs))
-    (active-box (car objs))
-    (pop))
 
 ; links all the objects in the list together
 (define (link l c)
-    (build-balljoint (car l) (car (cdr l)) (vector 0 (+ c 0.5) 0))
-    (if (eq? (cdr (cdr l)) '())
-        '()
-        (link (cdr l) (+ c 1))))
+    (cond ((not (null? (cdr l)))
+        (build-balljoint (car l) (cadr l) 
+            (vector 0 (* 1.1 (- c 0.5)) 0))
+        (link (cdr l) (- c 1)))))
 
 ; builds the objects          
-(define (array n)
-    (add n)
-    (if (eq? n 0)
-        0
-        (array (- n 1))))
-
+(define (array n l)
+    (cond 
+        ((zero? n) l)
+        (else
+            (array (- n 1) 
+                (cons (with-state
+                    (translate (vector 0 (* n 1.1) 0))
+                    (scale (vector 0.7 1 0.2))
+                    (let ((obj (build-cube)))
+                        (active-box obj)
+                        obj)) 
+                l)))))
+            
 ; set gravity up (I think this is default anyway, but try changing it)
 (gravity (vector 0 -1 0))
 ; setup a groundplane to collide with
 (ground-plane (vector 0 1 0) 0)
-; build the objects
-(array 40)
-; join them together
-(link objs 0)
 
+; make and join the boxes togther
+; the reverse is just to make the list the correct
+; order for linking
+(link (reverse (array 20 '())) 20)
+
+; show the joints as locators (really useful for debugging)
+(set-physics-debug #t)

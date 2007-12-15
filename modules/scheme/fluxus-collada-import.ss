@@ -14,13 +14,19 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+;; StartSectionDoc-en
+;; collada-import
+;; Collada format scene import
+;; Example:
+;; EndSectionDoc
+
 (module fluxus-collada-import mzscheme
   (require "fluxus-engine.ss")
   (require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
   (require (lib "xml.ss" "xml"))
   (require (lib "list.ss"))
   (provide
-   collada-load
+   collada-import
    )
   
   ;; this module is concerned with parsing the xml scene description,
@@ -505,9 +511,20 @@
   ;; parse the scene, instancing the geometry 
   (define (parse x)
     (parse-scenes x (parse-geometries x)))
+	
+  ;; StartFunctionDoc-en
+  ;; collada-import filename-string
+  ;; Returns: void 
+  ;; Description:
+  ;; Loads a collada scene file and returns a scene description list. Files need to 
+  ;; contain triangulated model data - this is usually an option on the export.
+  ;; Note: this is slow for heavy models
+  ;; Example:
+  ;; (collada-import "test.dae")
+  ;; EndFunctionDoc			
   
   ;; toplevel load
-  (define (collada-load filename)
+  (define (collada-import filename)
     (let* ((p (open-input-file filename))
            (doc (xml->xexpr (document-element (read-xml p)))))
       (let ((ret (parse (element-list (cdddr doc)))))
@@ -518,9 +535,9 @@
 
 ;; for testin...
 ;(require fluxus-collada-import)
-;(display (collada-load "/home/dave/Desktop/collada/COLLLADA 1.4.1 Basic Samples/Duck/duck_triangulate.dae"))(newline)
-;(display (collada-load "/home/dave/Desktop/collada/COLLLADA 1.4.1 Basic Samples/Cube/cube_triangulate.dae"))(newline)
-;(display (collada-load "/home/dave/Desktop/collada/COLLADA 1.4.1 Complex Samples/Moon Buggy/lunar_vehicle_tris.dae"))(newline)
+;(display (collada-import "/home/dave/Desktop/collada/COLLLADA 1.4.1 Basic Samples/Duck/duck_triangulate.dae"))(newline)
+;(display (collada-import "/home/dave/Desktop/collada/COLLLADA 1.4.1 Basic Samples/Cube/cube_triangulate.dae"))(newline)
+;(display (collada-import "/home/dave/Desktop/collada/COLLADA 1.4.1 Complex Samples/Moon Buggy/lunar_vehicle_tris.dae"))(newline)
 
 
 

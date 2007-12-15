@@ -202,8 +202,6 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 
 void FluxusMain::Reshape(int width, int height)
 {
-    glViewport(0,0,m_Width,m_Height);
-	
 	for(int n=0; n<NUM_EDITORS; n++)
 	{
 		m_Editor[n]->Reshape(width,height);

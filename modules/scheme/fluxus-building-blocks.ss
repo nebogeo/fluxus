@@ -175,12 +175,12 @@
     (syntax-rules ()
       ((_ proc pdata-write-name pdata-read-name ...)
        (letrec 
-           ((loop (lambda (n t)
-                    (cond ((not (> n t))
+           ((loop (lambda (n total)
+                    (cond ((not (> n total))
                            (pdata-set! pdata-write-name n 
                                        (proc (pdata-ref pdata-write-name n) 
                                              (pdata-ref pdata-read-name n) ...))
-                           (loop (+ n 1) t))))))
+                           (loop (+ n 1) total))))))
          (loop 0 (- (pdata-size) 1))))))
 
   ;; StartFunctionDoc-en
@@ -223,12 +223,12 @@
     (syntax-rules ()
       ((_ proc pdata-write-name pdata-read-name ...)
        (letrec 
-           ((loop (lambda (n t)
-                    (cond ((not (> n t))
+           ((loop (lambda (n total)
+                    (cond ((not (> n total))
                            (pdata-set! pdata-write-name n 
                                        (proc n (pdata-ref pdata-write-name n) 
                                              (pdata-ref pdata-read-name n) ...))
-                           (loop (+ n 1)))))))
+                           (loop (+ n 1) total))))))
          (loop 0 (- (pdata-size) 1))))))
  
   ;; StartFunctionDoc-en
@@ -275,13 +275,16 @@
   ;;   (display centre)(newline))  
   ;; EndFunctionDoc
   
-  (define (pdata-fold p s t)
-    (define (loop n t)  
-      (cond 
-        ((> n t) s)
-        (else
-         (p (pdata-ref t n) (loop (+ n 1))))))
-    (loop 0 (- (pdata-size) 1)))
+  (define-syntax pdata-fold
+    (syntax-rules ()
+      ((_ proc start pdata-read-name ...)
+       (letrec
+           ((loop (lambda (n total current)
+                    (cond ((> n total) current)
+                          (else
+                           (proc (pdata-ref pdata-read-name n) ...
+                              (loop (+ n 1) total current)))))))
+         (loop 0 (- (pdata-size) 1) start)))))
   
   ;; StartFunctionDoc-en
   ;; pdata-index-fold procedure start-value read-pdata-name ...
@@ -324,14 +327,16 @@
   ;;   
   ;;   (display something)(newline))  
   ;; EndFunctionDoc
-  
-  (define (pdata-index-fold p s t)
-    (define (loop n t)  
-      (cond 
-        ((> n t) s)
-        (else
-         (p n (pdata-ref t n) (loop (+ n 1))))))
-    (loop 0 (- (pdata-size) 1)))
-  
+ 
+  (define-syntax pdata-index-fold
+    (syntax-rules ()
+      ((_ proc start pdata-read-name ...)
+       (letrec
+           ((loop (lambda (n total current)
+                    (cond ((> n total) current)
+                          (else
+                           (proc n (pdata-ref pdata-read-name n) ...
+                              (loop (+ n 1) total current)))))))
+         (loop 0 (- (pdata-size) 1) start)))))
   
   )

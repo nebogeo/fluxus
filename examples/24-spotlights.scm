@@ -38,69 +38,50 @@
 (specular (vector 1 1 1))
 (shinyness 80)
 
-(push)
-(rotate (vector 90 180 0))
-(scale (vector 10 10 10))
-(translate (vector -0.5 -0.5 0))
-(build-seg-plane 100 100)
-(pop)
-
-; just a wacky deformation, takes two values for the deformation in different axes
-(define (deform x y n)
-    (let ((p (pdata-get "p" n)))
-    (pdata-set "p" n (vadd p (vmul (pdata-get "n" n) 
-        (* 0.1 (sin (* (vector-ref p 1) x)))))))
-
-    (let ((p (pdata-get "p" n)))
-    (pdata-set "p" n (vadd p (vmul (pdata-get "n" n) 
-        (* 0.1 (sin (* y 
-            (+ (sin (vector-ref p 0)) 
-               (cos (vector-ref p 2))))))))))
-
-    (if (zero? n)
-        0
-        (deform x y (- n 1))))
+(with-state
+    (rotate (vector 90 180 0))
+    (scale (vector 10 10 10))
+    (translate (vector -0.5 -0.5 0))
+    (build-seg-plane 100 100))
 
 ; build and deform a sphere
 (define (blob x y)
-    (push)
-    (translate (vector 0 1 0))
-    (let ((s (build-sphere 40 40)))
-    (pop)
-    (grab s)
-    (deform x y (pdata-size))
-    (recalc-normals 1)
-    (ungrab)
-    s))
+    (with-state
+        (translate (vector 0 1 0))
+        (let ((s (build-sphere 40 40)))
+        (with-primitive s
+            ; just a wacky deformation, takes two values
+            ; for the deformation in different axes
+            (pdata-index-map!
+                (lambda (i p n)                    
+                    (vadd p (vmul n (* 0.1 (+ (sin (* y 
+                        (+ (sin (vector-ref p 0)) 
+                           (cos (vector-ref p 2))))))
+                        (sin (* (vector-ref p 1) x))))))
+                "p" "n")                    
+            (recalc-normals 1)
+            s))))
 
-; render instances of the sphere in a circle
-(define (instance n i)
-
-    (define (_instance a n)
-        (push)
-        (rotate (vector 0 (* a n) 0))
-        (translate (vector 3 1 0))
-        (draw-instance i)
-        (pop)
-        (if (zero? n)
-            0
-            (_instance a (- n 1))))
-
-    (_instance (/ 360 n) n))
+; render instances of the blob in a circle
+(define (copy n i)
+    (define (loop a n)
+        (cond ((not (zero? n))
+            (with-state
+                (rotate (vector 0 (* a n) 0))
+                (translate (vector 3 1 0))
+                (build-copy i))
+                (loop a (- n 1)))))
+    (loop (/ 360 n) n))
 
 ; stick an undeformed sphere in the centre (helps figure out lighting)
-(push)
-(translate (vector 0 0.5 0))
-(scale (vector 0.5 0.5 0.5))
-(build-sphere 14 14)
-(pop)
+(with-state
+    (scale (vector 0.5 0.5 0.5))
+    (with-state 
+        (translate (vector 0 0.5 0))
+        (build-sphere 14 14))
 
-; build the actual blob
-(define b (blob 10 8))
-(grab b)
-; hide it (we only want the see the instances of it)
-(hide 1)
-(ungrab)
-
-(scale (vector 0.5 0.5 0.5))
-(every-frame (instance 10 b))
+    ; build the actual blob
+    (let ((b (blob 10 8)))
+        ; hide it (we only want the see the instances of it)
+        (with-primitive b (hide 1))    
+        (copy 10 b)))

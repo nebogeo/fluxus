@@ -1,3 +1,4 @@
+; just a simple test script
 ; sends a message to itself and prints it out
 
 (define (osctest)

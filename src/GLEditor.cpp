@@ -159,6 +159,7 @@ void GLEditor::BBExpand(float x, float y)
 
 void GLEditor::Render()
 {
+    glViewport(0,0,m_Width,m_Height);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();

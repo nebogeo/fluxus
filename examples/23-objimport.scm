@@ -1,5 +1,5 @@
 ; load a model from a obj file
-; models have to be triangulated at present
+; models have to be exported as triangulated
 
 (clear)
 

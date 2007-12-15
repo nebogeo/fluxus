@@ -1,11 +1,13 @@
-; how to set up:
+; click on the objects!
+
+; how to do:
 ; * a contained physics system
 ; * mouse interactivity
 ; * feedback from the physics system
 
 (clear)
 
-(define box 0) 
+(wire-colour (vector 0 0 0))
 
 (define (build-world size)
     (ground-plane (vector 0  1 0) (- size))
@@ -15,59 +17,45 @@
     (ground-plane (vector 0  0 1) (- size))
     (ground-plane (vector 0 0 -1) (- size))
 
-    (push)
-    (hint-none)
-    (hint-wire)
-    (scale (vmul (vector size size size) 2))
-    (set! box (build-cube))
-    (grab box)
-    (selectable 0)
-    (ungrab)
-    (pop))
+    (with-state
+        (hint-none)
+        (hint-wire)
+        (scale (vmul (vector size size size) 2))
+        (with-primitive (build-cube) (selectable 0))))
+    
+(define (make-sphere)
+    (with-state
+        (scale (vector 0.75 0.75 0.75))
+        (let ((obj (build-sphere 8 10)))
+            (active-sphere obj)
+            obj)))
 
-(define (add-sphere)
-    (push)
-    (scale (vector 0.75 0.75 0.75))
-    (set! obs (cons (build-sphere 8 10) obs))
-    (active-sphere (car obs))
-    (pop))
+(define (make-cube)
+    (with-state
+        (hint-wire)
+        (let ((obj (build-cube)))
+            (active-box obj)
+            obj)))
 
-(define (add-cube)
-    (push)
-    (hint-wire)
-    (set! obs (cons (build-cube) obs))
-    (active-box (car obs))
-    (pop))
-
-(define (update l)
-    (grab (car l))
-    (if (has-collided (car l))
-        (colour (vector 1 0 0))
-        (colour (vector 1 1 1)))
-    (ungrab)
-    (if (eq? (cdr l) '())
-        0
-        (update (cdr l))))
-
-(define (render)
-    (update obs)
-    (if (or (mouse-button 1) (mouse-button 3))
+(define (render obs)
+    ; change colour if they have collided
+    (for-each
+        (lambda (obj)
+            (with-primitive obj
+                (if (has-collided obj)
+                    (colour (vector 1 0 0))
+                    (colour (vector 1 1 1)))))
+        obs)
+            
+    ; look for mouse clicks
+    (if (mouse-button 1)
         (let ((selected (mouse-over)))
-            (if (not (zero? selected))
-                (begin
-                    (cond 
-                        ((mouse-button 1)
-                            (grab selected)
-                            (colour (vector 0 0.5 1))
-                            (ungrab)
-                            (kick selected (vector 0 1 0)))
-                        ((mouse-button 3)
-                            (grab selected)
-                            (colour (vector 1 1 1))
-                            (ungrab))))))))
+            (cond ((not (zero? selected))
+                (with-primitive selected 
+                    (colour (vector 0 0.5 1)))
+                    (kick selected (vector 0 1 0)))))))
 
 
-(define obs '())
 (clear-colour (vector 0 0.8 0.5))
 (backfacecull 0)
 (line-width 3)
@@ -77,15 +65,15 @@
 (gravity (vector 0 0 0))
 
 (build-world 3)
-(add-sphere)
-(add-sphere)
-(add-sphere)
-(add-cube)
-(add-cube)
-(add-cube)
+(define obs (list (make-sphere)
+                  (make-sphere)
+                  (make-sphere)
+                  (make-cube)
+                  (make-cube)
+                  (make-cube)))
 
 (desiredfps 1000)
-(every-frame (render))
+(every-frame (render obs))
 
 
 

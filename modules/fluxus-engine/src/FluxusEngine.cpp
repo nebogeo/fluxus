@@ -178,7 +178,8 @@ Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 // render-physics
 // Returns: void
 // Description:
-// Render the physics system (for helper graphics).
+// Render the physics system (for helper graphics). This is the low level
+// command - use set-physics-debug instead.
 // Example:
 // (render-physics) 
 // EndFunctionDoc

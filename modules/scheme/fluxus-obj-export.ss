@@ -14,6 +14,12 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+;; StartSectionDoc-en
+;; obj-export
+;; OBJ format model export
+;; Example:
+;; EndSectionDoc
+
 ; quick and dirty obj export
 ; really not very good - only supports triangle list polygons
 
@@ -74,6 +80,19 @@
                     (write-indices (+ index 1) (pdata-size) 0)
                     (fprintf file "\n")
                     (pdata-size)))    
+  
+  ;; StartFunctionDoc-en
+  ;; obj-export filename-string id-list type-symbol
+  ;; Returns: void 
+  ;; Description: 
+  ;; Exports all specified objects into one obj file.
+  ;; id-list is a list of primitive ids, type-symbol is one of 'triangle-list 
+  ;; or 'quad-list depending on the topology of the shapes you are exporting 
+  ;; (yup, only works with one for all). Note: this is slow for heavy models
+  ;; Example:
+  ;; (define t (build-torus 1 2 30 30))
+  ;; (obj-export "torus.obj" (list t) 'quad-list)
+  ;; EndFunctionDoc			
   
   (define (obj-export filename obj-list type)      
     (let ((stride 
