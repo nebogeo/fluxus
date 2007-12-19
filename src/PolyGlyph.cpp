@@ -85,11 +85,11 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	GLUtesselator* t = gluNewTess();
 
 #ifdef __APPLE__
-	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (*)(...))PolyGlyph::TessBegin);
-	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (*)(...))PolyGlyph::TessVertex);
-	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (*)(...))PolyGlyph::TessCombine);
-	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))PolyGlyph::TessEnd);
-	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))PolyGlyph::TessError);
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (*)())PolyGlyph::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (*)())PolyGlyph::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (*)())PolyGlyph::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)())PolyGlyph::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)())PolyGlyph::TessError);
 #else
 	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())PolyGlyph::TessBegin);
 	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())PolyGlyph::TessVertex);
