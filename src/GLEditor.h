@@ -79,7 +79,9 @@ public:
 	static float m_AutoFocusMaxScale;
 	static unsigned int m_VisibleLines;
 	static unsigned int m_VisibleColumns;
-	
+	static float m_XPos;
+	static float m_YPos;
+
 protected:
 
 	void DrawCharBlock();
@@ -91,6 +93,7 @@ protected:
 	int LineLength(int pos);
 	unsigned int LineStart(int pos);
 	unsigned int LineEnd(int pos);
+	void ParseParentheses();
 	void ParseOpenParentheses(int pos, int type);
 	void ParseCloseParentheses(int pos, int type);
 	
@@ -128,6 +131,7 @@ protected:
 	static PolyGlyph *m_PolyGlyph;
 	timeval m_Time;
 	float m_Delta;
+	float m_Flash;
 	
 };
 

@@ -68,6 +68,10 @@ m_ShowFileDialog(false)
 	GLEditor::m_VisibleLines=(int)scheme_real_to_double(t);
 	interpreter->Interpret("fluxus-scratchpad-visible-columns", &t);
 	GLEditor::m_VisibleColumns=(int)scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-x-pos", &t);
+	GLEditor::m_XPos=(int)scheme_real_to_double(t);
+	interpreter->Interpret("fluxus-scratchpad-y-pos", &t);
+	GLEditor::m_YPos=(int)scheme_real_to_double(t);
   	MZ_GC_UNREG();
 	
 	GLEditor::InitFont(s);
@@ -130,6 +134,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				if (m_CurrentEditor<9) 
 				{
 					m_Script=m_Editor[m_CurrentEditor]->GetText();
+					SaveBackupScript();
 				}
 			}			
 			break;
@@ -167,7 +172,11 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
 		}	
-		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) m_Script=m_Editor[m_CurrentEditor]->GetText();
+		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) 
+		{
+			m_Script=m_Editor[m_CurrentEditor]->GetText();
+			SaveBackupScript();
+		}
 	
 		// the editors only take keyboard events
 		if (m_ShowFileDialog) 
@@ -268,6 +277,21 @@ void FluxusMain::LoadScript(const string &Filename)
 	}
 	
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
+}
+
+void FluxusMain::SaveBackupScript() 
+{ 
+	if (m_SaveName[m_CurrentEditor]=="") 
+	{	
+		m_SaveName[m_CurrentEditor]="temp.scm";
+	}
+	
+	FILE *file=fopen((m_SaveName[m_CurrentEditor]+string("~")).c_str(),"w");
+	if (file)
+	{	
+		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
+		fclose(file);
+	}
 }
 
 void FluxusMain::SaveScript() 

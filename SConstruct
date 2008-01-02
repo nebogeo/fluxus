@@ -27,8 +27,8 @@ LibPaths     = ["/usr/lib",
 				
 IncludePaths = ["/usr/local/include", 
 				"/usr/include", 
-				"/usr/include/freetype2",        # arg - freetype needs to be
-				"/usr/local/include/freetype2",  # on the include path :(
+				"/usr/local/include/freetype2",  # arg - freetype needs to be
+				"/usr/include/freetype2",        # on the include path :(
 				PLTInclude, 
 				"../../libfluxus/src"]
 

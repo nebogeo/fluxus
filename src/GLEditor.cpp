@@ -30,6 +30,9 @@
 
 using namespace fluxus;
 
+#define FLASH_RATE 1
+#define HALF_FLASH_RATE (FLASH_RATE*0.5)
+
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 float GLEditor::m_TextWidth(1);
@@ -47,6 +50,8 @@ float GLEditor::m_AutoFocusMinScale(0.5);
 float GLEditor::m_AutoFocusMaxScale(5.0);
 unsigned int GLEditor::m_VisibleLines(40);
 unsigned int GLEditor::m_VisibleColumns(60);
+float GLEditor::m_XPos(60000);
+float GLEditor::m_YPos(0);
 
 PolyGlyph* GLEditor::m_PolyGlyph = NULL;
 
@@ -140,13 +145,20 @@ void GLEditor::DrawCharBlock()
 
 void GLEditor::DrawCursor()
 {	
-	float half = m_CursorWidth/2.0f;
-	glBegin(GL_QUADS);
-	glVertex2f(half,0);				
-	glVertex2f(half,m_CharHeight);
-	glVertex2f(-half,m_CharHeight);
-	glVertex2f(-half,0);
-	glEnd();
+	m_Flash+=m_Delta;
+	if (m_Flash>FLASH_RATE) m_Flash=0;
+	
+	if (m_Flash>HALF_FLASH_RATE)
+	{
+		float half = m_CursorWidth/2.0f;
+		glBegin(GL_QUADS);
+		glVertex2f(half,0);				
+		glVertex2f(half,m_CharHeight);
+		glVertex2f(-half,m_CharHeight);
+		glVertex2f(-half,0);
+		glEnd();
+	}
+	
 }
 
 void GLEditor::BBExpand(float x, float y)
@@ -199,7 +211,7 @@ void GLEditor::Render()
 		glPopMatrix();
 	}
 
-	glTranslatef(-45,0,0);
+	glTranslatef(-48,0,0);
 	glScalef(0.001f*m_Scale,0.001f*m_Scale,1); 
 	
 	glTranslatef(m_PosX,m_PosY,0);
@@ -209,23 +221,7 @@ void GLEditor::Render()
 	m_ParenthesesHighlight[0]=-1;
 	m_ParenthesesHighlight[1]=-1;
 	
-	int type=0;
-	for (string::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
-	{
-		if (m_Text[m_Position]==*i) ParseOpenParentheses(m_Position,type);
-		type++;
-	}
-		
-	if (m_Position > 0) 
-	{
-		type=0;	
-		for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
-		{
-			if (m_Text[m_Position-1]==*i) 
-				ParseCloseParentheses(m_Position-1,type);
-			type++;
-		}
-	}
+	ParseParentheses();
 	
 	unsigned int xcount=0;
 	float xpos=0;
@@ -258,10 +254,10 @@ void GLEditor::Render()
 			drawncursor=true;
 		}
 		
-		if (m_ParenthesesHighlight[0]==(int)n ||
-		    m_ParenthesesHighlight[1]==(int)n) // draw parentheses highlight
+		if ((int)n>=m_ParenthesesHighlight[0] &&
+		    (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
 		{ 
-			glColor4f(1,0,0,0.5);
+			glColor4f(0,0.5,1,0.5);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}
@@ -322,7 +318,6 @@ void GLEditor::Render()
 		glColor4f(0.7,0.7,0.7,1);
 	}
 	
-
 	if (m_DoAutoFocus)
 	{
 		m_PosY=m_PosY*(1-m_AutoFocusDrift*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*m_AutoFocusDrift*m_Delta;
@@ -340,7 +335,8 @@ void GLEditor::Render()
 	else
 	{
 		m_Scale=m_AutoFocusMinScale;
-		m_PosY=60000;
+		m_PosX=m_XPos;
+		m_PosY=m_YPos;
 	}
 	
 	if (m_Scale>m_AutoFocusMaxScale) m_Scale=m_AutoFocusMaxScale; // clamp
@@ -360,8 +356,7 @@ void GLEditor::Render()
 	}
 	
 	glPopMatrix();
-	
-	
+		
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 
@@ -667,6 +662,28 @@ unsigned int GLEditor::LineEnd(int pos)
 	size_t end = m_Text.find("\n",pos);
 	if (end==string::npos) end=m_Text.size()-1;
 	return end;
+}
+
+void GLEditor::ParseParentheses()
+{
+	// parse the parentheses
+	int type=0;
+	for (string::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
+	{
+		if (m_Text[m_Position]==*i) ParseOpenParentheses(m_Position,type);
+		type++;
+	}
+		
+	if (m_Position > 0) 
+	{
+		type=0;	
+		for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
+		{
+			if (m_Text[m_Position-1]==*i) 
+				ParseCloseParentheses(m_Position-1,type);
+			type++;
+		}
+	}
 }
 
 void GLEditor::ParseOpenParentheses(int pos, int type)

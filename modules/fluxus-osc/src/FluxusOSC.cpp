@@ -238,17 +238,25 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 	{
 		vector<OSCData*> args;
 		OSCServer->GetArgs(args);
-		char type = args[index]->Type();
-		
-		if (type=='f') ret=scheme_make_double(static_cast<OSCFloat*>(args[index])->Value);
-		else if (type=='i') ret=scheme_make_integer_value_from_unsigned(static_cast<OSCInt*>(args[index])->Value);
-		else if (type=='s') 
+		if (index<args.size())
 		{
-			string value=static_cast<OSCString*>(args[index])->Value;
-			ret=scheme_make_utf8_string(value.c_str());	
-		}
-		else ret=scheme_void;
+			char type = args[index]->Type();
 		
+			if (type=='f') ret=scheme_make_double(static_cast<OSCFloat*>(args[index])->Value);
+			else if (type=='i') ret=scheme_make_integer_value_from_unsigned(static_cast<OSCInt*>(args[index])->Value);
+			else if (type=='s') 
+			{
+				string value=static_cast<OSCString*>(args[index])->Value;
+				ret=scheme_make_utf8_string(value.c_str());	
+			}
+			else ret=scheme_void;
+		}
+		else 
+		{
+			cerr<<"osc argument out of range"<<endl;
+			ret=scheme_void;
+		}
+
 		MZ_GC_UNREG(); 
 		return ret;
 	}

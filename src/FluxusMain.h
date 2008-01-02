@@ -45,6 +45,7 @@ public:
     void LoadScript(const string &Filename);
     void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
     void SaveScript();
+    void SaveBackupScript();
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void HideCursor() { m_ShowCursor=!m_ShowCursor; }
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; } 

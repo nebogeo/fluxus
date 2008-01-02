@@ -23,6 +23,12 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * text improvements courtesy of Gabor Papp
 * obj-export for saving out model data
 * obj-import fixes
+* saves currentscript.scm~ as backup on F5
+* osc argument range checking crash fix
+* improved parentheses highlighting
+* flashing cursor
+* fixed the editor text for newer versions of libfreetype (now using 2.3.5)
+
 0.13
 
 * stereo rendering support by Alex Norman, adding:
