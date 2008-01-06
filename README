@@ -72,6 +72,11 @@ tweaked to correctly find things.
 Using fluxus
 ------------
 
-See the online help and the example scripts (in the examples directory) for 
-pointers on using fluxus.
+See docs/fluxus-documentation.txt, the online help and most importantly the 
+example scripts (in the examples directory) for pointers on using fluxus.
 
+Load the examples on the commandline by running "fluxus scriptname.scm" or 
+loading them from inside fluxus by pressing ctrl-l and browsing.
+
+Also, sign up to the mailing list to search the archives and ask questions: 
+http://lists.pawfal.org/listinfo.cgi/fluxus-pawfal.org

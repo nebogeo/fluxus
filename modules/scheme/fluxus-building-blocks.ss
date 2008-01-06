@@ -25,6 +25,8 @@
 ;; blocos-de-construcao-fluxus
 ;; Um novo e pouco testado ajuste de estruturas de controle de ordem maior para 
 ;; manipular objetos e estados e estado no fluxus de uma maneira mais limpa e segura.
+;; Exemplo:
+;; EndSectionDoc 
 
 (module fluxus-building-blocks mzscheme
   (require "fluxus-engine.ss")
@@ -111,7 +113,7 @@
   ;; Descrição:
   ;; Encapsula mudanças de estado das primitivas
   ;; Exemplo:
-  
+  ;; 
   ;; EndFunctionDoc
   
   (define-syntax with-primitive
