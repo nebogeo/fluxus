@@ -89,7 +89,7 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 		
 		if (params.ID==-1) // is this a new texture?
 		{
-			unsigned int id;
+			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
 			//\todo this means mipmap levels won't be cached
@@ -127,7 +127,7 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 		
 		if (params.ID==-1) // is this a new texture?
 		{
-			unsigned int id;
+			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
 			//\todo this means cubemaps won't be cached
@@ -153,7 +153,7 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 			// make a new texture id for this face
 			// record the primary cubemap id
 			unsigned int primary = params.ID;
-			unsigned int id;
+			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
     		m_TextureMap[params.ID]=desc;

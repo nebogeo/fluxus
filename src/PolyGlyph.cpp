@@ -2,6 +2,10 @@
 #include "assert.h"
 #include <iostream>
 
+#ifdef __APPLE__
+#include <AvailabilityMacros.h>
+#endif
+
 PolyGlyph::PolyGlyph(const string &ttffilename)
 {
 	FT_Error error;
@@ -84,12 +88,12 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	vector<GlyphGeometry::Vec3<double> > points;
 	GLUtesselator* t = gluNewTess();
 
-#ifdef __APPLE__
-	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (*)())PolyGlyph::TessBegin);
-	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (*)())PolyGlyph::TessVertex);
-	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (*)())PolyGlyph::TessCombine);
-	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)())PolyGlyph::TessEnd);
-	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)())PolyGlyph::TessError);
+#if (defined __APPLE__) && (MAC_OS_X_VERSION_MAX_ALLOWED <= MAC_OS_X_VERSION_10_4)
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (*)(...))PolyGlyph::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (*)(...))PolyGlyph::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (*)(...))PolyGlyph::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))PolyGlyph::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))PolyGlyph::TessError);
 #else
 	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())PolyGlyph::TessBegin);
 	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())PolyGlyph::TessVertex);
