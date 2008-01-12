@@ -35,8 +35,7 @@ Textures =   ["textures/gradient.png",
               "textures/smoke.png",  
               "textures/test.png",
               "textures/track.png",
-              "textures/transp.png",
-			  "textures/octopus.png"]
+              "textures/transp.png"]
 
 Meshes =      ["meshes/bot.obj"]
 
