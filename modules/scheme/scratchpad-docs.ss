@@ -42,7 +42,8 @@
 ;;
 ;; Fluxus is a realtime rendering engine for livecoding in Scheme.
 ;; You are encouraged to browse these texts while performing 
-;; livecoding...
+;; livecoding... For more detailed docs, see:
+;; fluxus/docs/fluxus-documentation.txt
 ;;
 ;; The fluxus scratchpad has two modes of operation, the console
 ;; (you are using this now) which allows you to enter commands and
@@ -478,7 +479,8 @@
 ;;  * Obscurantism is dangerous. Show us your screens.
 ;;  * Programs are instruments that can change themselves
 ;;  * The program is to be transcended - Artificial language is the way.
-;;  * Code should be seen as well as heard, underlying algorithms viewed as well as their visual outcome.
+;;  * Code should be seen as well as heard, underlying algorithms viewed 
+;;    as well as their visual outcome.
 ;;  * Live coding is not about tools. Algorithms are thoughts. 
 ;;    Chainsaws are tools. That's why algorithms are sometimes 
 ;;    harder to notice than chainsaws.

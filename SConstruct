@@ -8,18 +8,25 @@
 MajorVersion = "0"
 MinorVersion = "14"
 FluxusVersion = MajorVersion+"."+MinorVersion
-Target = "fluxus-0.14"
+Target = "fluxus"
 
 # changed prefix and pltprefix so they can be invoked at runtime
 # like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
+
+DESTDIR = ARGUMENTS.get('DESTDIR', '')
+# this makes DESTDIR relative to root of the source tree, no matter
+# where we are
+if len(DESTDIR)>0 and DESTDIR[0] != "/":
+		DESTDIR = "#" + DESTDIR
 
 Prefix = ARGUMENTS.get('Prefix','/usr/local')
 PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
 PLTInclude = PLTPrefix + "/include/plt"
 PLTLib = PLTPrefix + "/lib/plt"
+DataInstall = DESTDIR + Prefix + "/share/fluxus-"+FluxusVersion
 
 CollectsLocation = PLTPrefix + "/lib/plt/collects/"
-CollectsInstall = CollectsLocation + "fluxus-"+FluxusVersion
+CollectsInstall = DESTDIR + CollectsLocation + "fluxus-"+FluxusVersion
 
 LibPaths     = ["/usr/lib", 
 				PLTLib,
@@ -43,6 +50,7 @@ env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataInstall+"\"\\\"")
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
@@ -131,7 +139,7 @@ if not GetOption('clean'):
 ################################################################################
 # Build the fluxus application
 	
-Install = Prefix + "/bin"
+Install = DESTDIR + Prefix + "/bin"
 
 Source = ["src/GLEditor.cpp", 
 		"src/GLFileDialog.cpp",
@@ -148,8 +156,8 @@ env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-SConscript(dirs = Split("libfluxus modules"), exports = ["env", "CollectsInstall", "MZDYN"])
-
+SConscript(dirs = Split("libfluxus modules"), exports = ["env", "CollectsInstall", "DataInstall", "MZDYN"])
+ 
 ################################################################################
 # packaging / installing
 
@@ -171,5 +179,5 @@ if env['PLATFORM'] == 'darwin':
 				       DmgFiles))
 else:
 	env.Install(Install, Target)
-	env.Alias('install', Prefix)
+	env.Alias('install', DESTDIR + Prefix)
 

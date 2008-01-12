@@ -525,7 +525,7 @@
   
   ;; toplevel load
   (define (collada-import filename)
-    (let* ((p (open-input-file filename))
+    (let* ((p (open-input-file (fullpath filename)))
            (doc (xml->xexpr (document-element (read-xml p)))))
       (let ((ret (parse (element-list (cdddr doc)))))
         (close-input-port p)

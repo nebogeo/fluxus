@@ -3,7 +3,7 @@
 #
 # Sets up common stuff, and calls each module SConscript 
 
-Import("env", "CollectsInstall", "MZDYN")
+Import("env", "CollectsInstall", "DataInstall", "MZDYN")
 
 #BinaryModulesLocation = CollectsInstall + "/extensions"
 # todo run mzscheme to get (path->string (system-library-subpath))
@@ -15,6 +15,6 @@ SConscript(dirs = ["fluxus-engine",
 				   "scheme",
 				   "material"], 
 				   
-           exports = ["env", "CollectsInstall", "BinaryModulesLocation", "MZDYN"])
-
+		   exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN"])
+ 
 env.Install(CollectsInstall, "../docs/helpmap.scm")

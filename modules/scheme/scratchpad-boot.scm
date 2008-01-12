@@ -47,11 +47,11 @@
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))
 	fluxus-name "/helpmap.scm"))
-
+	
 ; set the font for the scratchpad
-(define fluxus-scratchpad-font (string-append (path->string (car (current-library-collection-paths)))
-	fluxus-name "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
-
+(define fluxus-scratchpad-font
+  (string-append fluxus-data-location "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
+ 
 ; the scratchpad autofocus settings
 (define fluxus-scratchpad-do-autofocus 1)
 (define fluxus-scratchpad-debug-autofocus 0)
@@ -70,12 +70,9 @@
 ; setup the standard searchpaths
 (set-searchpaths (list
 	"./"
-	(string-append (path->string (car (current-library-collection-paths)))
-		fluxus-name "/material/textures/")
-	(string-append (path->string (car (current-library-collection-paths)))
-		fluxus-name "/material/shaders/")
-	(string-append (path->string (car (current-library-collection-paths)))
-		fluxus-name "/material/meshes/")))
+	(string-append fluxus-data-location "/material/textures/")
+	(string-append fluxus-data-location "/material/shaders/")
+	(string-append fluxus-data-location "/material/meshes/")))
 	
 ;-------------------------------------------------
 ; here is the hacking section

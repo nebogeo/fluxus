@@ -28,6 +28,7 @@ Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * improved parentheses highlighting
 * flashing cursor
 * fixed the editor text for newer versions of libfreetype (now using 2.3.5)
+* added docs/fluxus-documentation.txt
 
 0.13
 
