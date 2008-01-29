@@ -214,9 +214,9 @@ int main(int argc, char *argv[])
 	#else
 	
 	#ifdef ACCUM_BUFFER
-	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
-  	#else
 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM;
+  	#else
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 	#endif
 	
 	#endif
