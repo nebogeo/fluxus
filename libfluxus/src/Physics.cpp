@@ -689,7 +689,7 @@ int Physics::CreateJointAMotor(int Ob1, int Ob2, dVector Axis)
 		return 0;
 	}
 
-	dJointID j = dJointCreateAMotor (m_World,0);
+	dJointID j = dJointCreateAMotor(m_World,0);
 	dJointAttach(j,i1->second->Body,i2->second->Body);
 
 	dJointSetAMotorMode(j,dAMotorUser);
@@ -727,9 +727,9 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 		return 0;
 	}
 
-	dJointID j = dJointCreateHinge2 (m_World,0);
-	dJointAttach (j,i1->second->Body,i2->second->Body);
-	dJointSetBallAnchor (j,Anchor.x,Anchor.y,Anchor.z);
+	dJointID j = dJointCreateBall(m_World,0);
+	dJointAttach(j,i1->second->Body,i2->second->Body);
+	dJointSetBallAnchor(j,Anchor.x,Anchor.y,Anchor.z);
 
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;

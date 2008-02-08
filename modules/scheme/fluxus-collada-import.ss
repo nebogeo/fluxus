@@ -22,7 +22,7 @@
 
 (module fluxus-collada-import mzscheme
   (require "fluxus-engine.ss")
-  (require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
+  (require (lib "fluxus-building-blocks.ss" "fluxus-0.15"))
   (require (lib "xml.ss" "xml"))
   (require (lib "list.ss"))
   (provide

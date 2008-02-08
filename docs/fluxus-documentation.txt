@@ -1,4 +1,4 @@
-Fluxus Documentation 0.14 
+Fluxus Documentation 0.15
 -------------------------
 
 This is some detailed text documentation about fluxus and the general concepts

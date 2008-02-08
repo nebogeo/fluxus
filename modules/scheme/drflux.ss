@@ -25,17 +25,17 @@
 
   (require (lib "class.ss")
            (lib "mred.ss" "mred")
-           (lib "scratchpad.ss" "fluxus-0.14")
+           (lib "scratchpad.ss" "fluxus-0.15")
            (lib "gl.ss" "sgl")
            (prefix gl- (lib "sgl.ss" "sgl"))
            "fluxus-engine.ss"
            "fluxus-audio.ss")
   
   (provide 
-  	(all-from (lib "scratchpad.ss" "fluxus-0.14")))
+  	(all-from (lib "scratchpad.ss" "fluxus-0.15")))
   
   (define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
-  (define fluxus-version "0.14")
+  (define fluxus-version "0.15")
   
   (define fluxus-canvas%
     (class* canvas% ()

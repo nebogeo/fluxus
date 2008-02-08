@@ -25,7 +25,7 @@
 
 (module fluxus-obj-export mzscheme
   (require "fluxus-engine.ss")
-  (require (lib "fluxus-building-blocks.ss" "fluxus-0.14"))
+  (require (lib "fluxus-building-blocks.ss" "fluxus-0.15"))
   (provide obj-export)
   
   (define (export-prim obj file stride index)

@@ -18,11 +18,6 @@
 #include <iostream>
 #include "OSCServer.h"
 
-#undef MZ_GC_DECL_REG
-#undef MZ_GC_UNREG
-#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
-#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
-
 using namespace std;
 using namespace fluxus;
 

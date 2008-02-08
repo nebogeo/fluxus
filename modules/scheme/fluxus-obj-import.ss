@@ -174,7 +174,7 @@
       (let ((shape (build-polygons (* (length vertices) 3) 'triangle-list))) ; make our primitive
       (grab shape)
       (make-vertices vertices 0) ; set the data
-      (recalc-normals 1)           
+      ;(recalc-normals 1)           
       (ungrab)
       shape))
   

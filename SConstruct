@@ -6,9 +6,9 @@
 # the fluxus PLT modules 
 
 MajorVersion = "0"
-MinorVersion = "14"
+MinorVersion = "15"
 FluxusVersion = MajorVersion+"."+MinorVersion
-Target = "fluxus"
+Target = "fluxus-0.15"
 
 # changed prefix and pltprefix so they can be invoked at runtime
 # like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local

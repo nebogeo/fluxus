@@ -32,7 +32,7 @@
 ; make and join the boxes togther
 ; the reverse is just to make the list the correct
 ; order for linking
-(link (reverse (array 20 '())) 20))
+(link (reverse (array 20 '())) 20)
 
 ; show the joints as locators (really useful for debugging)
 (set-physics-debug #t)
