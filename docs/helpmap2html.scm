@@ -120,8 +120,8 @@
 
 (let ((file (open-input-file "helpmap.scm")))
   (let ((htmlfile (open-output-file "index.html" 'replace)))
-    (write-header "en" "Fluxus Documentation 0.13" htmlfile "fluxusdoc.css")
-    (fprintf htmlfile "<h1>Fluxus Documentation 0.13</h1>~n")
+    (write-header "en" "Fluxus Documentation 0.15" htmlfile "fluxusdoc.css")
+    (fprintf htmlfile "<h1>Fluxus Documentation 0.15</h1>~n")
     (fprintf htmlfile "<p>Extracted and html-ised from the runtime documentation system</p>~n")
     (fprintf htmlfile "<p>Available languages: ")
     (parse-locale (read file) htmlfile)

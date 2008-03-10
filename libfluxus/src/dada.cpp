@@ -159,7 +159,6 @@ dVector dVector::reflect(dVector const &rhs) const
 
 float dVector::dist(dVector const &rhs) const
 {
-	///\todo fabs?
     return sqrt((rhs.x-x)*(rhs.x-x)+
                 (rhs.y-y)*(rhs.y-y)+
                 (rhs.z-z)*(rhs.z-z));
