@@ -19,8 +19,7 @@
 (scene 
  (list
   (object 
-   #:shape 'model
-   #:filename "rocket.obj"
+   #:shape "rocket.obj"
    #:rotate (vec3 -90 0 0)
    #:scale (vec3 0.2 0.2 0.2)
    #:translate player-pos
@@ -31,8 +30,7 @@
      (let ((pos (vmul (vadd pos (vec3 -2.5 -2.5 -1)) 2)))
        (if (not (hold (when-e (collision-with-list? pos bullets 1)) false))
            (object 
-            #:shape 'model
-            #:filename "alien.obj"
+            #:shape "alien.obj"
             #:scale (vec3 0.3 0.3 0.3)
             #:colour (vec3 1 0 0)
             #:translate pos))))

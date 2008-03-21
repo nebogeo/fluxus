@@ -207,14 +207,10 @@
       (when-e (> (modulo (floor milliseconds) tick) (/ tick 2)))))
   
   (define (truncate-list lst count)
-    (foldl
-     (lambda (i lst)
-       (set! count (- count 1))
-       (if (> count 0)
-           (append lst (list i))
-           lst))
-     '()
-     lst))
+    (cond 
+      ((zero? count) '())
+      ((null? lst) '())
+      (else (cons (car lst) (truncate-list (cdr lst) (- count 1))))))
   
   (define (collision-with-list? pos with radius)
     (foldl
@@ -266,7 +262,7 @@
     (set! scene-list s))
 
   ; the primitive object
-  (define-struct object-struct (shape colour translate scale rotate matrix hints filename camera-lock texture))
+  (define-struct object-struct (shape colour translate scale rotate matrix hints camera-lock texture))
   
   
   (define/kw (object #:key 
@@ -277,10 +273,9 @@
                      (rotate (vector 0 0 0))
                      (matrix (flx-mident))
                      (hints '())
-                     (filename "")
                      (camera-lock #f)
                      (texture ""))
-    (make-object-struct shape colour translate scale rotate matrix hints filename camera-lock texture))
+    (make-object-struct shape colour translate scale rotate matrix hints camera-lock texture))
 
   
   (define (vector-now v)
@@ -321,7 +316,7 @@
     (for-each
      (lambda (v)       
        (match (value-now v)
-         [($ object-struct shape colour translate scale rotate matrix hints filename camera-lock texture)
+         [($ object-struct shape colour translate scale rotate matrix hints camera-lock texture)
           (flx-with-state
            (set-state colour translate scale rotate matrix hints texture)
            (if camera-lock (flx-set-camera 
@@ -329,13 +324,15 @@
                                       (flx-mmul
                                        (flx-mtranslate (vec3 0 0 -10))
                                        (flx-mrotate (vec3 90 0 0))))))
-           (case shape
-             ((cube) (flx-draw-cube))
-             ((sphere) (flx-draw-sphere))
-             ((torus) (flx-draw-torus))
-             ((plane) (flx-draw-plane))
-             ((model) (flx-draw-instance (get-model filename)))
-             (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))]
+           (cond 
+		   	 ((string? shape) (flx-draw-instance (get-model shape)))
+		     (else
+			   (case shape
+                 ((cube) (flx-draw-cube))
+                 ((sphere) (flx-draw-sphere))
+                 ((torus) (flx-draw-torus))
+                 ((plane) (flx-draw-plane))
+                 (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))))]
          [(? undefined?) (void)]
          [(? list?)          
           (render-scene-list (value-now v))]
