@@ -1,4 +1,4 @@
-(require (lib "scratch-frisbee.ss" "fluxus-0.15"))
+(require (lib "frisbee.ss" "fluxus-0.15"))
 
 (scene
  (list  

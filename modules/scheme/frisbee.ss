@@ -34,11 +34,11 @@
    (lib "lang-ext.ss" "frtime")
    (all-except (lib "frp-core.ss" "frtime") undefined?)
    ; import the procedures we want lifted
-   (lifted (lib "scratchpad.ss" "fluxus-0.15") vadd vsub vmul vdiv vtransform vtransform-rot
+   (lifted (lib "fluxus.ss" "fluxus-0.15") vadd vsub vmul vdiv vtransform vtransform-rot
            vnormalise vdot vreflect vdist vmag vcross madd msub mdiv mmul mident mtranslate
            mrotate mscale mtranspose minverse maim qaxisangle qmul qnormalise qtomatrix qconjugate
            set-camera)
-   (prefix flx- (lib "scratchpad.ss" "fluxus-0.15")))
+   (prefix flx- (lib "fluxus.ss" "fluxus-0.15")))
   
   (provide 
    (all-defined)
