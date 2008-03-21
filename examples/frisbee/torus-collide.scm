@@ -6,7 +6,8 @@
         (+ (key-control-b #\w #\s 0.01) 5) 0))
 
 (define (collide-torus pos)
-  (torus
+  (object
+   #:shape 'torus
    #:translate pos
    #:scale (collide-b              
             (lambda (a b)
@@ -23,7 +24,7 @@
 
 (scene
  (list
-  (cube
+  (object
    #:translate player-pos)
   (map 
    (lambda (pos)

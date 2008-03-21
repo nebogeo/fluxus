@@ -2,5 +2,5 @@
 
 (scene
  (list
-  (object #:texture "/home/dave/flotsam/textures/ab.png"
+  (object #:texture "test.png"
           #:rotate (vmul (vec3 0 clock 0) 0.01))))

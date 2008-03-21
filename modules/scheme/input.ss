@@ -61,11 +61,11 @@
   (set! keys '()))
   
 (define (register-down key button special state x y mod)
-	(if (not (eq? key -1))
+	(if (not (or (number? key) (eq? key -1))) ; ordinary keypress
 		(set! keys (set-add key keys)))
-	(if (not (eq? special -1))
+	(if (not (or (number? key) (eq? special -1))) ; special keypress
 		(set! special-keys (set-add special special-keys)))
-	(cond 
+	(cond  ; mouse
 		((and (eq? key 0) (eq? special -1))
 			(if (zero? state)
 				(vector-set! mouse 2 (+ button 1))

@@ -7,15 +7,15 @@
 (scene
  (list
   
-  (cube  #:translate player-pos)
+  (object #:translate player-pos)
   
-  (store-on-event
-   (lambda ()
+  (factory
+   (lambda (e)
      (define-values (follow-pos follow-dir)
        (letrec ([follow-pos (vec3-integral follow-dir)]
                 [follow-dir (vmul (vsub player-pos follow-pos) (* 0.005 (flxrnd)))])
          (values follow-pos follow-dir)))
-     (cube
+     (object
       #:colour (vec3 0.5 0.5 1)
       #:translate follow-pos
       #:matrix (maim follow-dir (vec3 1 0 0))))
