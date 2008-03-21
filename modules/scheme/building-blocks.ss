@@ -28,7 +28,7 @@
 ;; Exemplo:
 ;; EndSectionDoc 
 
-(module fluxus-building-blocks mzscheme
+(module building-blocks mzscheme
   (require "fluxus-engine.ss")
   (provide 
    with-state

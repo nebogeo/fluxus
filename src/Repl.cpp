@@ -27,11 +27,10 @@ using namespace fluxus;
 string Repl::m_Banner = string("Welcome to fluxus.\nType (help) for info.\n");
 string Repl::m_Prompt = string("fluxus> ");
 
-Repl::Repl(Interpreter *i) : 
+Repl::Repl() : 
 m_InsertPos(0), 
 m_History(), 
-m_HistoryNavStarted(false),
-m_Interpreter(i)
+m_HistoryNavStarted(false)
 {
 	Print(m_Banner);
 	PrintPrompt();
@@ -209,7 +208,7 @@ bool Repl::TryEval()
 			m_InsertPos = m_Text.length();
 			Print("\n");
 
-			m_Interpreter->Interpret(defun,&out);
+			Interpreter::Interpret(defun,&out);
 
 			if (defun[defun.length()-1] == '\n')
         			defun.resize(defun.length()-1,0); 

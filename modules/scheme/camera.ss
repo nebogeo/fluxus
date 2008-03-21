@@ -20,7 +20,7 @@
 ;; Example:
 ;; EndSectionDoc	
 
-(module scratchpad-camera mzscheme
+(module camera mzscheme
   (require "fluxus-engine.ss")
   (provide 
    input-camera

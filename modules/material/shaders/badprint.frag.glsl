@@ -21,7 +21,7 @@ void main()
 { 
     vec3 l = normalize(L);
     vec3 n = normalize(N);
-    vec2 p = S.xy/S.w;
+    vec2 p = S.xy;
 
     vec2 sr = p*Size.r+Register.r;
     vec2 sg = p*Size.g+Register.g;

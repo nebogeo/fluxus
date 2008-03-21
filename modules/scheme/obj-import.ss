@@ -20,7 +20,7 @@
 ;; Example:
 ;; EndSectionDoc
 
-(module fluxus-obj-import mzscheme
+(module obj-import mzscheme
   (require "fluxus-engine.ss")
   (require (lib "string.ss")) ; for eval-string
   ; for list-set! 
@@ -174,7 +174,7 @@
       (let ((shape (build-polygons (* (length vertices) 3) 'triangle-list))) ; make our primitive
       (grab shape)
       (make-vertices vertices 0) ; set the data
-      ;(recalc-normals 1)           
+      (recalc-normals 0)           
       (ungrab)
       shape))
   

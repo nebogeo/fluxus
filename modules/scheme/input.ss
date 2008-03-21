@@ -20,7 +20,7 @@
 ;; Example:
 ;; EndSectionDoc	
 
-(module scratchpad-input mzscheme
+(module input mzscheme
   (require "fluxus-engine.ss")
   (provide 
    key-pressed
@@ -32,7 +32,8 @@
    mouse-button
    mouse-over
    register-down
-   register-up)
+   register-up
+   clear-down)
   
 (define keys '())
 (define special-keys '())
@@ -55,7 +56,10 @@
   (if (not (memq a l))
       #f
       #t))		  
-		  
+
+(define (clear-down)
+  (set! keys '()))
+  
 (define (register-down key button special state x y mod)
 	(if (not (eq? key -1))
 		(set! keys (set-add key keys)))

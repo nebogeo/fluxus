@@ -28,20 +28,23 @@ class Repl;
 
 class Interpreter 
 {
-public:
-	Interpreter(Scheme_Env *e);
-	~Interpreter();
-	
-	void SetRepl(Repl *s);
-	bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
+public:	
+	static void Register();
+	static void NewEnv();
+	static void SetRepl(Repl *s);
+	static bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
+	static void SetLanguage(const std::string &lang) { m_Language=lang; }
 	
 private:
-	Scheme_Env *m_Scheme;
-	Repl *m_Repl;
-	Scheme_Object *outrport;
-	Scheme_Object *errrport;
-	Scheme_Object *outwport;
-	Scheme_Object *errwport;
+	static std::string SetupLanguage(const std::string &str);
+
+	static Scheme_Env *m_Scheme;
+	static Repl *m_Repl;
+	static Scheme_Object *m_OutReadPort;
+	static Scheme_Object *m_ErrReadPort;
+	static Scheme_Object *m_OutWritePort;
+	static Scheme_Object *m_ErrWritePort;
+	static std::string m_Language;
 };
 
 }

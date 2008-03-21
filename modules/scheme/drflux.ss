@@ -25,14 +25,12 @@
 
   (require (lib "class.ss")
            (lib "mred.ss" "mred")
-           (lib "scratchpad.ss" "fluxus-0.15")
+           (lib "fluxus.ss" "fluxus-0.15")
            (lib "gl.ss" "sgl")
-           (prefix gl- (lib "sgl.ss" "sgl"))
-           "fluxus-engine.ss"
-           "fluxus-audio.ss")
+           (prefix gl- (lib "sgl.ss" "sgl")))
   
   (provide 
-  	(all-from (lib "scratchpad.ss" "fluxus-0.15")))
+  	(all-from (lib "fluxus.ss" "fluxus-0.15")))
   
   (define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
   (define fluxus-version "0.15")
@@ -77,7 +75,7 @@
       (define/override (on-char event)
         (cond 
           ((equal? 'release (send event get-key-code))
-           (fluxus-input-release-callback (send event get-key-code) 0 0 0 0 0 0))
+           (clear-down)) ; todo: how to get key code from release?
           (else
            (fluxus-input-callback (send event get-key-code) 0 0 0 0 0 0))))
       

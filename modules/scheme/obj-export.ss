@@ -23,9 +23,9 @@
 ; quick and dirty obj export
 ; really not very good - only supports triangle list polygons
 
-(module fluxus-obj-export mzscheme
+(module obj-export mzscheme
   (require "fluxus-engine.ss")
-  (require (lib "fluxus-building-blocks.ss" "fluxus-0.15"))
+  (require (lib "building-blocks.ss" "fluxus-0.15"))
   (provide obj-export)
   
   (define (export-prim obj file stride index)

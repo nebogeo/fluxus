@@ -37,7 +37,9 @@ Textures =   ["textures/gradient.png",
               "textures/track.png",
               "textures/transp.png"]
 
-Meshes =      ["meshes/bot.obj"]
+Meshes =      ["meshes/bot.obj", 
+			   "meshes/alien.obj",
+			   "meshes/rocket.obj"]
 
 Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
 

@@ -20,7 +20,7 @@
 ;; Example:
 ;; EndSectionDoc 
 
-(module scratchpad-help mzscheme
+(module help mzscheme
   (provide 
    init-help
    help

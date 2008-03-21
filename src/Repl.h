@@ -27,7 +27,7 @@ namespace fluxus
 class Repl : public GLEditor
 {
 public:
-	Repl(Interpreter *i);
+	Repl();
 	virtual ~Repl() {}
 	
 	virtual void Handle(int button, int key, int special, int state, 
@@ -55,8 +55,6 @@ protected:
 	deque<string>::iterator m_HistoryIter;
 	bool 					m_HistoryNavStarted;
 	string 					m_HistoryPresent;
-	
-	Interpreter*			m_Interpreter;
 };
 
 }

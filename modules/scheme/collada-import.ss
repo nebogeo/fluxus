@@ -20,9 +20,9 @@
 ;; Example:
 ;; EndSectionDoc
 
-(module fluxus-collada-import mzscheme
+(module collada-import mzscheme
   (require "fluxus-engine.ss")
-  (require (lib "fluxus-building-blocks.ss" "fluxus-0.15"))
+  (require (lib "building-blocks.ss" "fluxus-0.15"))
   (require (lib "xml.ss" "xml"))
   (require (lib "list.ss"))
   (provide

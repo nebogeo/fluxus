@@ -29,7 +29,7 @@ using namespace fluxus;
 // despite attempts at clearing all this up, this 
 // is still an area of awkward code...
 
-FluxusMain::FluxusMain(Interpreter *interpreter, int x, int y) :
+FluxusMain::FluxusMain(int x, int y) :
 m_CurrentEditor(9),
 m_Width(x),
 m_Height(y),
@@ -44,49 +44,49 @@ m_ShowFileDialog(false)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_REG();	
-	interpreter->Interpret("fluxus-scratchpad-font", &txt);
+	Interpreter::Interpret("fluxus-scratchpad-font", &txt);
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
-	interpreter->Interpret("fluxus-scratchpad-do-autofocus", &t);
+	Interpreter::Interpret("fluxus-scratchpad-do-autofocus", &t);
 	GLEditor::m_DoAutoFocus=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-debug-autofocus", &t);
+	Interpreter::Interpret("fluxus-scratchpad-debug-autofocus", &t);
 	GLEditor::m_DebugAutoFocus=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-width", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-width", &t);
 	GLEditor::m_AutoFocusWidth=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-height", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-height", &t);
 	GLEditor::m_AutoFocusHeight=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-error", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-error", &t);
 	GLEditor::m_AutoFocusError=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-drift", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-drift", &t);
 	GLEditor::m_AutoFocusDrift=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-scale-drift", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-scale-drift", &t);
 	GLEditor::m_AutoFocusScaleDrift=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-min-scale", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-min-scale", &t);
 	GLEditor::m_AutoFocusMinScale=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-autofocus-max-scale", &t);
+	Interpreter::Interpret("fluxus-scratchpad-autofocus-max-scale", &t);
 	GLEditor::m_AutoFocusMaxScale=scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-visible-lines", &t);
+	Interpreter::Interpret("fluxus-scratchpad-visible-lines", &t);
 	GLEditor::m_VisibleLines=(int)scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-visible-columns", &t);
+	Interpreter::Interpret("fluxus-scratchpad-visible-columns", &t);
 	GLEditor::m_VisibleColumns=(int)scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-x-pos", &t);
+	Interpreter::Interpret("fluxus-scratchpad-x-pos", &t);
 	GLEditor::m_XPos=(int)scheme_real_to_double(t);
-	interpreter->Interpret("fluxus-scratchpad-y-pos", &t);
+	Interpreter::Interpret("fluxus-scratchpad-y-pos", &t);
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
   	MZ_GC_UNREG();
 	
-	GLEditor::InitFont(s);
+	GLEditor::InitFont("/usr/local/share/fluxus-0.15/material/fonts/Bitstream-Vera-Sans-Mono.ttf");
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++) 
 	{
 		m_Editor[i] = new GLEditor();
 	}
-	Repl *repl = new Repl(interpreter);
+	Repl *repl = new Repl();
 	m_Editor[9] = repl;
 	
 	// register the repl with the interpreter so we can
 	// use it to output error and output messages
-	interpreter->SetRepl(repl);
+	Interpreter::SetRepl(repl);
 }
 
 FluxusMain::~FluxusMain() 

@@ -23,42 +23,45 @@ using namespace fluxus;
 
 static const int LOG_SIZE=512;
 
-Interpreter::Interpreter(Scheme_Env *e) : 
-m_Scheme(NULL),
-m_Repl(NULL),
-outrport(NULL),
-errrport(NULL),
-outwport(NULL),
-errwport(NULL)
+Scheme_Env *Interpreter::m_Scheme=NULL;
+Repl *Interpreter::m_Repl=NULL;
+Scheme_Object *Interpreter::m_OutReadPort=NULL;
+Scheme_Object *Interpreter::m_ErrReadPort=NULL;
+Scheme_Object *Interpreter::m_OutWritePort=NULL;
+Scheme_Object *Interpreter::m_ErrWritePort=NULL;
+std::string Interpreter::m_Language;
+	
+void Interpreter::Register()
 {
-	MZ_GC_DECL_REG(2);
-	MZ_GC_VAR_IN_REG(0, e);
-	MZ_GC_VAR_IN_REG(1, m_Scheme);
+	MZ_GC_DECL_REG(0);	
     MZ_GC_REG();
-	m_Scheme=e;
-	MZ_GC_UNREG();
+
+	MZ_REGISTER_STATIC(Interpreter::m_Scheme);
+	MZ_REGISTER_STATIC(Interpreter::m_OutReadPort);
+	MZ_REGISTER_STATIC(Interpreter::m_ErrReadPort);
+	MZ_REGISTER_STATIC(Interpreter::m_OutWritePort);
+	MZ_REGISTER_STATIC(Interpreter::m_ErrWritePort);
+	
+    MZ_GC_UNREG();
 }
 
-Interpreter::~Interpreter()
+void Interpreter::NewEnv()
 {
+	m_Scheme=scheme_basic_env();
 }
 
 void Interpreter::SetRepl(Repl *s) 
 { 
 	Scheme_Config *config;
-	MZ_GC_DECL_REG(5);
-    MZ_GC_VAR_IN_REG(0, outrport);
-    MZ_GC_VAR_IN_REG(1, errrport);
-    MZ_GC_VAR_IN_REG(2, outwport);
-    MZ_GC_VAR_IN_REG(3, errwport);
-    MZ_GC_VAR_IN_REG(4, config);
+	MZ_GC_DECL_REG(1);
+    MZ_GC_VAR_IN_REG(0, config);
     MZ_GC_REG();
 	m_Repl=s; 
-	scheme_pipe_with_limit(&outrport,&outwport,LOG_SIZE);
-	scheme_pipe_with_limit(&errrport,&errwport,LOG_SIZE);
+	scheme_pipe_with_limit(&m_OutReadPort,&m_OutWritePort,LOG_SIZE);
+	scheme_pipe_with_limit(&m_ErrReadPort,&m_ErrWritePort,LOG_SIZE);
 	config = scheme_current_config();
-	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, outwport);
-	scheme_set_param(config, MZCONFIG_ERROR_PORT, errwport);
+	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, m_OutWritePort);
+	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);
     MZ_GC_UNREG();
 }
 
@@ -79,50 +82,54 @@ void fill_from_port(Scheme_Object* port, char *dest, long size)
 	MZ_GC_UNREG();
 }
 
+string Interpreter::SetupLanguage(const string &str)
+{
+	if (m_Language.empty()) return str;
+	return "(module foo "+m_Language+" "+str+") (require foo)";
+}
+
 bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 {	
 	char msg[LOG_SIZE];
 	mz_jmp_buf * volatile save = NULL, fresh;
 	
-	MZ_GC_DECL_REG(6);
-    MZ_GC_VAR_IN_REG(0, outrport);
-    MZ_GC_VAR_IN_REG(1, errrport);
-    MZ_GC_VAR_IN_REG(2, outwport);
-    MZ_GC_VAR_IN_REG(3, errwport);
-	MZ_GC_VAR_IN_REG(4, m_Scheme);
-	MZ_GC_VAR_IN_REG(5, msg);
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, msg);
     MZ_GC_REG();
 		
+	string code = SetupLanguage(str);
+	
 	save = scheme_current_thread->error_buf;
     scheme_current_thread->error_buf = &fresh;
 	
     if (scheme_setjmp(scheme_error_buf)) 
 	{
 		scheme_current_thread->error_buf = save;
-		if (errrport!=NULL) 
+		if (m_ErrReadPort!=NULL) 
 		{
-			fill_from_port(errrport, msg, LOG_SIZE);
+			fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
 			if (strlen(msg)>0) m_Repl->Print(string(msg));
 		}
 		if (abort) exit(-1);
-    } 
+		MZ_GC_UNREG();
+		return false;
+    }  
 	else 
 	{
 		if (ret==NULL)
 		{
-			scheme_eval_string_all(str.c_str(), m_Scheme, 1);
+			scheme_eval_string_all(code.c_str(), m_Scheme, 1);
 		}
 		else
 		{
-			*ret = scheme_eval_string_all(str.c_str(), m_Scheme, 1);
+			*ret = scheme_eval_string_all(code.c_str(), m_Scheme, 1);
 		}
-		//scheme_check_threads();
 		scheme_current_thread->error_buf = save;
     }
 		
-	if (outrport!=NULL)
+	if (m_OutReadPort!=NULL)
 	{
-		fill_from_port(outrport, msg, LOG_SIZE);
+		fill_from_port(m_OutReadPort, msg, LOG_SIZE);
 		if (strlen(msg)>0) m_Repl->Print(string(msg));
 	}	
 	

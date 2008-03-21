@@ -42,10 +42,9 @@ static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d.%d\") \
 									(define fluxus-data-location \"%s\") \
 									(load (string-append fluxus-collects-location \"/fluxus-\"\
-										fluxus-version \"/scratchpad-boot.scm\"))";
+										fluxus-version \"/boot.scm\"))";
 
 FluxusMain *app = NULL;
-static Interpreter *interpreter = NULL; 
 EventRecorder *recorder = NULL;
 int modifiers = 0;
 
@@ -54,7 +53,7 @@ void ReshapeCallback(int width, int height)
 	app->Reshape(width,height);
 	char code[256];
 	snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 }
 
 void KeyboardCallback(unsigned char key,int x, int y)
@@ -64,7 +63,7 @@ void KeyboardCallback(unsigned char key,int x, int y)
 	app->Handle(key, -1, -1, -1, x, y, mod);
 	char code[256];
 	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("keydown",key,mod));
 }
 
@@ -72,7 +71,7 @@ void KeyboardUpCallback(unsigned char key,int x, int y)
 {
 	char code[256];
 	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("keyup",key,0));
 }
 
@@ -83,7 +82,7 @@ void SpecialKeyboardCallback(int key,int x, int y)
 	app->Handle(0, -1, key, -1, x, y, mod);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeydown",key,mod));
 }
 
@@ -92,7 +91,7 @@ void SpecialKeyboardUpCallback(int key,int x, int y)
 	//app->Handle( 0, 0, key, 1, x, y);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeyup",key,0));
 }
 
@@ -101,7 +100,7 @@ void MouseCallback(int button, int state, int x, int y)
 	app->Handle(0, button, -1, state, x, y, 0);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("mouse",x,y,button,state));
 }
 
@@ -110,7 +109,7 @@ void MotionCallback(int x, int y)
 	app->Handle(0, -1, -1, -1, x, y, 0);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
-	interpreter->Interpret(code);
+	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("motion",x,y));
 }
 
@@ -147,14 +146,14 @@ void DoRecorder()
 }
 
 void DisplayCallback()
-{    
+{    	
 	string fragment = app->GetScriptFragment();
     if (fragment!="")
     {
-		interpreter->Interpret(fragment);
+		Interpreter::Interpret(fragment);
     }
 	
-	if (!interpreter->Interpret(ENGINE_CALLBACK))
+	if (!Interpreter::Interpret(ENGINE_CALLBACK))
 	{		
 		// the callback has failed, so clear the screen so we can fix the error...
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
@@ -173,14 +172,17 @@ void ExitHandler()
 
 int main(int argc, char *argv[])
 {
-	// setup mzscheme 
+	// setup mzscheme
+	// be careful with this part - reordering could 
+	// introduce garbage collection problems... 
 	void *stack_start;
 	stack_start = (void *)&stack_start;
-	Scheme_Env *e = NULL;
+		
+	MZ_GC_DECL_REG(0);	
+    MZ_GC_REG();
 	
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, e);
-	
+	Interpreter::Register();
+		
 	#ifdef MZ_PRECISE_GC
 	scheme_set_stack_base( &__gc_var_stack__, 1);
 	#else
@@ -188,9 +190,8 @@ int main(int argc, char *argv[])
 	#endif
 	
  	MZ_GC_REG();
-	e = scheme_basic_env();
-	
-	interpreter = new Interpreter(e);
+
+	Interpreter::NewEnv();
 	
 	// load the startup script
 	char startup[1024];
@@ -200,31 +201,21 @@ int main(int argc, char *argv[])
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
 		DATA_LOCATION);
-	interpreter->Interpret(startup,NULL,true);
+	Interpreter::Interpret(startup,NULL,true);
 	srand(time(NULL));
 	
-	#ifdef STEREODEFAULT
-
-	#ifdef ACCUM_BUFFER
-	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM|GLUT_STEREO;
-  	#else
-	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_STEREO;
-	#endif
- 	
-	#else
-	
-	#ifdef ACCUM_BUFFER
-	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL|GLUT_ACCUM;
-  	#else
 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+	#ifdef ACCUM_BUFFER
+	flags|=GLUT_ACCUM;
 	#endif
-	
+	#ifdef STEREODEFAULT
+	flags|=GLUT_STEREO;
 	#endif
 	
 	// init OpenGL
   	glutInit(&argc,argv);
 	glutInitWindowSize(720,576);
-	app = new FluxusMain(interpreter,720,576);
+	app = new FluxusMain(720,576);
 	glutInitDisplayMode(flags);
 	char windowtitle[256];
 	snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
@@ -272,19 +263,25 @@ int main(int argc, char *argv[])
 				arg++;
 			}
 		}
+		else if (!strcmp(argv[arg],"-lang"))
+		{				
+			if (arg+1 < argc) 
+			{
+				Interpreter::SetLanguage(argv[arg+1]);
+				arg++;
+			}
+		}
 		else
 		{
 			app->SetCurrentEditor(0); // flip it out of the repl
 			app->LoadScript(argv[arg]);
 		}
 		arg++;
-	}
-	
+	} 
+
 	glutMainLoop();
 	
-	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
-	#endif
 			
 	return 0;
 }

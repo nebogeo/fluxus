@@ -1,4 +1,12 @@
-Fluxus : (C) 2007 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
+Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
+
+0.15
+
+* key release fixed in drflux
+* better random functions with randomness.ss
+* frisbee: a functional reactive game engine using frtime
+* added -lang (not how useful this is now)
+* fixed crashes to do with garbage collection using threads
 
 0.14
 

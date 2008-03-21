@@ -32,7 +32,7 @@ static const int NUM_EDITORS=10;
 class FluxusMain 
 {
 public:
-	FluxusMain(Interpreter *i, int x, int y);
+	FluxusMain(int x, int y);
 	virtual ~FluxusMain();
 	
 	void Handle(unsigned char key, int button, int special, int state, int x, int y, int mod);
