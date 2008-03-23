@@ -69,7 +69,7 @@ public:
 	
 	/// From the supplied name, fills in information about this pdata,
 	/// returns false if it doesn't actually exist
-	bool GetDataInfo(const string &name, char &type, unsigned int &size);
+	bool GetDataInfo(const string &name, char &type, unsigned int &size) const;
 	
 	/// Sets an element of the array. Not checked, for 
 	/// speed - use GetDataInfo() to check
@@ -77,13 +77,16 @@ public:
 	
 	/// Gets an element of the array. Not checked, for 
 	/// speed - use GetDataInfo() to check
-	template<class T> T    GetData(const string &name, unsigned int index);
+	template<class T> T GetData(const string &name, unsigned int index);
 	
 	/// Runs a pdata operation on the given pdata array
 	template<class T> PData *DataOp(const string &op, const string &name, T operand);
 	
 	/// Gets the whole pdata array, returns NULL if it doesn't exist
 	PData* GetDataRaw(const string &name);
+
+	/// Gets the whole const pdata array, returns NULL if it doesn't exist
+	const PData* GetDataRawConst(const string &name) const;
 	
 	/// Sets the whole pdata array
 	void SetDataRaw(const string &name, PData* pd);
@@ -96,7 +99,7 @@ public:
 	void Resize(unsigned int size);
 	
 	/// Returns the size of pdata for this object
-	unsigned int Size();
+	unsigned int Size() const;
 
 protected:
 
@@ -114,6 +117,7 @@ void PDataContainer::SetData(const string &name, unsigned int index, T s)
 	dynamic_cast<TypedPData<T>*>(m_PData[name])->m_Data[index]=s;
 }
 
+// Todo: can this be const?
 template<class T> 
 T PDataContainer::GetData(const string &name, unsigned int index)
 {

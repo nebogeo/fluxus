@@ -47,6 +47,7 @@ public:
 	TypedPData() {}	
 	TypedPData(T first) { m_Data.push_back(first); }	
 	TypedPData(unsigned int size) { Resize(size); }	
+	TypedPData(vector<T> s) : m_Data(s) {}
 	virtual ~TypedPData() {}
 	
 	virtual PData *Copy() const

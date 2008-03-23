@@ -54,7 +54,7 @@ void PDataContainer::Resize(unsigned int size)
 }
 
 	
-unsigned int PDataContainer::Size()
+unsigned int PDataContainer::Size() const
 {
 	if (!m_PData.empty())
 	{
@@ -64,9 +64,9 @@ unsigned int PDataContainer::Size()
 	return 0;
 }
 
-bool PDataContainer::GetDataInfo(const string &name, char &type, unsigned int &size)
+bool PDataContainer::GetDataInfo(const string &name, char &type, unsigned int &size) const
 {
-	map<string,PData*>::iterator i=m_PData.find(name);
+	map<string,PData*>::const_iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
 		return false;
@@ -144,6 +144,17 @@ void PDataContainer::RemoveDataVec(const string &name)
 PData* PDataContainer::GetDataRaw(const string &name)
 {
 	map<string,PData*>::iterator i=m_PData.find(name);
+	if (i==m_PData.end())
+	{
+		return NULL;
+	}
+	
+	return i->second;
+}
+
+const PData* PDataContainer::GetDataRawConst(const string &name) const
+{
+	map<string,PData*>::const_iterator i=m_PData.find(name);
 	if (i==m_PData.end())
 	{
 		return NULL;

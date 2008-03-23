@@ -29,6 +29,7 @@ namespace Fluxus
 class PolyPrimitive : public Primitive
 {
 public:
+	// Todo: sort out these silly names
 	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN,POLYGON};
 	
 	PolyPrimitive(Type t=TRISTRIP);
@@ -46,7 +47,7 @@ public:
 	virtual string GetTypeName() { return "PolyPrimitive"; }
 	///@}
 	
-	Type GetType() { return m_Type; }
+	Type GetType() const { return m_Type; }
 	
 	/// Add a new vertex to the primitive
 	virtual void AddVertex(const dVertex &Vert);
@@ -84,8 +85,9 @@ public:
 	///@name Indexed mode access
 	///@{
 	void SetIndexMode(bool s) { m_IndexMode=s; }
-	bool IsIndexed() { return m_IndexMode; }
+	bool IsIndexed() const { return m_IndexMode; }
 	vector<unsigned int> &GetIndex() { return m_IndexData; }
+	const vector<unsigned int> &GetIndexConst() const { return m_IndexData; }
 	/// Look at coincident verts and compress the poly
 	/// primitive into an indexed form
 	void ConvertToIndexed();
