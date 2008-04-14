@@ -150,6 +150,7 @@ public:
 	double GetDelta()                        { return m_Delta; }
  	bool SetStereoMode(stereo_mode_t mode);
  	stereo_mode_t GetStereoMode(){ return m_StereoMode;}
+	void PrintInfo();
 	///@}
 	
 	////////////////////////////////////////////////////////////////////////

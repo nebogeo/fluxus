@@ -18,7 +18,7 @@
   (object
    #:colour (vec3 0.5 0.5 1)
    #:translate follow-pos
-   #:matrix (maim follow-dir (vec3 1 0 0)))
+   #:matrix (maim (vnormalise follow-dir) (vec3 1 0 0)))
   (object 
    #:scale (vec3 0.1 0.1 0.1)
    #:translate (vadd follow-pos (vnormalise follow-dir)))))

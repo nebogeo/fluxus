@@ -1,8 +1,5 @@
 ; a stupid shoot-em-up example for frisbee
-(require (lib "drflux.ss" "fluxus-0.15"))
 (require (lib "frisbee.ss" "fluxus-0.15"))
-
-(set-searchpaths (list "/usr/local/share/fluxus-0.15/materials/meshes"))
 
 (clear-colour (vector 0 0.4 1))
 

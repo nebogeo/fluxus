@@ -139,14 +139,18 @@ Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 			}
 			else
 			{
-				Trace::Stream<<"unknown pdata type ["<<type<<"]"<<endl;
+				// this output causes fluxus to lock up with primitives 
+				// with tens of thousands of pdata elements
+				//Trace::Stream<<"unknown pdata type ["<<type<<"]"<<endl;
 			}
 		
 		}
 		
 		if (ret==NULL)
 		{
-			Trace::Stream<<"could not find pdata called ["<<name<<"]"<<endl;
+			// this output causes fluxus to lock up with primitives 
+			// with tens of thousands of pdata elements
+			//Trace::Stream<<"could not find pdata called ["<<name<<"]"<<endl;
   			MZ_GC_UNREG();
 			return scheme_make_double(0);
 		}

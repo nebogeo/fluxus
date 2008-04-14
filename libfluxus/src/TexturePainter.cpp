@@ -351,7 +351,16 @@ void TexturePainter::DisableAll()
 	#endif
 }
 
-
+void TexturePainter::Dump()
+{
+	for (map<string,int>::iterator i=m_LoadedMap.begin(); i!=m_LoadedMap.end(); ++i)
+	{
+		TextureDesc info = m_TextureMap[i->second];
+		Trace::Stream<<i->first<<" "<<info.Width<<"X"<<info.Height<<" ";
+		if (info.Format==RGB) Trace::Stream<<"RGB"<<endl;
+		else if (info.Format==RGBA) Trace::Stream<<"RGBA"<<endl;
+	}
+}
 
 
 

@@ -119,6 +119,9 @@ public:
 
 	/// Disables all texturing
 	void DisableAll();
+	
+	/// Print out information
+	void Dump();
 	///@}
 	
 private:

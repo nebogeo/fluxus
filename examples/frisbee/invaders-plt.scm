@@ -19,16 +19,12 @@
       (lambda (k)
         (eq? k #\ ))
       key-strokes)))
-
+ 
 (define (truncate-list lst count)
-  (foldl
-   (lambda (i lst)
-     (set! count (- count 1))
-     (if (> count 0)
-       (append lst (list i))
-       lst))
-   '()
-   lst))
+  (cond 
+    ((zero? count) '())
+    ((null? lst) '())
+    (else (cons (car lst) (truncate-list (cdr lst) (- count 1))))))
 
 (define (factory proc event max-size)
     (collect-b
@@ -66,7 +62,7 @@
                   ((zero? x) l)
                   (else
                    (xloop (- x 1) 
-                          (cons (posn+ offset (posn* (make-posn x y) mul)) 
+                          (cons (posn+ offset (posn* (make-posn x y) mul))
                                 l))))))))))
 
 (display-shapes
@@ -74,11 +70,9 @@
   bullets
   (map
    (lambda (pos)
-     (let ((pos (posn+ (make-posn (* 25 (sin (* 0.000005 milliseconds (posn-y pos)))) 0) pos)))
-       ;(if (not (hold (when-e (collide? pos bullets 10)) #f))
-       (if (not (collide? pos bullets 10))
-           (make-circle pos 15 "green"))))
-   (make-grid 5 5 (make-posn 50 20) 50))
+     (if (not (collide? pos bullets 10))
+         (make-circle pos 15 "green")))
+   (make-grid 3 3 (make-posn 50 20) 50))
 
   (make-circle player-pos 10 "blue")
   (make-graph-string (make-posn 10 20) "FrTime Invaders!" "red")

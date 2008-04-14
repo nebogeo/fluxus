@@ -34,6 +34,7 @@ Source = Split("src/PData.cpp \
 		src/dada.cpp \
 		src/SearchPaths.cpp \
 		src/GLSLShader.cpp \
+		src/ShaderCache.cpp \
 		src/ShadowVolumeGen.cpp \
 		src/Physics.cpp \
 		src/DepthSorter.cpp \
@@ -43,7 +44,10 @@ Source = Split("src/PData.cpp \
 		src/SkinWeightsToVertColsPrimFunc.cpp \
 		src/SkinningPrimFunc.cpp \
 		src/Utils.cpp \
-		src/Trace.cpp")
+		src/Trace.cpp \
+		src/PrimitiveIO.cpp \
+		src/PixelPrimitiveIO.cpp \
+		src/OBJPrimitiveIO.cpp")
 		
 env.StaticLibrary(source = Source, target = Target)
 

@@ -26,6 +26,8 @@
 #include "LocatorPrimitive.h"
 #include "PixelPrimitive.h"
 #include "BlobbyPrimitive.h"
+#include "PrimitiveIO.h"
+#include "SearchPaths.h"
 
 using namespace PrimitiveFunctions;
 using namespace Fluxus;
@@ -554,6 +556,93 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// load-primitive 
+// Returns: primitiveid-number
+// Description:
+// Loads a primitive from disk
+// Example:
+// (define mynewshape (load-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// load-primitive
+// Retorna: número-id-primitiva
+// Descrição:
+// Exemplo:
+// (define mynewshape (load-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("load-primitive", "s", argc, argv);
+	string filename=StringFromScheme(argv[0]);
+	Primitive *Prim = PrimitiveIO::Read(SearchPaths::Get()->GetFullPath(filename));
+	if (Prim!=NULL)
+	{
+    	MZ_GC_UNREG();
+    	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+	}	
+	return scheme_make_integer_value(0);
+}
+
+// StartFunctionDoc-en
+// clear-geometry-cache 
+// Returns: void
+// Description:
+// Loads a primitive from disk
+// Example:
+// (define mynewshape (load-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// clear-geometry-cache 
+// Retorna: número-id-primitiva
+// Descrição:
+// Exemplo:
+// (clear-geometry-cache)
+// EndFunctionDoc
+
+Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
+{
+	PrimitiveIO::ClearGeometryCache();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// save-primitive 
+// Returns: void
+// Description:
+// Saves the current primitive to disk
+// Example:
+// (with-primitive (build-sphere 10 10) 
+//     (save-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// save-primitive
+// Retorna: número-id-primitiva
+// Descrição:
+// Exemplo:
+// (with-primitive (build-sphere 10 10) 
+//     (save-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("save-primitive", "s", argc, argv);
+	string filename=StringFromScheme(argv[0]);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		PrimitiveIO::Write(SearchPaths::Get()->GetFullPath(filename),Grabbed);
+	}	    	
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // build-pixels width-number height-number 
 // Returns: primitiveid-number
 // Description:
@@ -641,6 +730,8 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 	DECL_ARGV();
  	ArgCheck("pixels-load", "s", argc, argv);	
 	
+	Trace::Stream<<"pixels-load is deprecated! use load-primitive"<<endl;
+
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed) 
 	{
@@ -1486,6 +1577,9 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
+	scheme_add_global("load-primitive", scheme_make_prim_w_arity(load_primitive, "load-primitive", 1, 1), env);
+	scheme_add_global("save-primitive", scheme_make_prim_w_arity(save_primitive, "save-primitive", 1, 1), env);
+	scheme_add_global("clear-geometry-cache", scheme_make_prim_w_arity(clear_geometry_cache, "clear-geometry-cache", 0, 0), env);
 	scheme_add_global("pixels-upload", scheme_make_prim_w_arity(pixels_upload, "pixels-upload", 0, 0), env);
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);

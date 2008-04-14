@@ -1351,6 +1351,30 @@ Scheme_Object *accum(int argc, Scheme_Object **argv)
   return scheme_void;
 }
 
+
+// StartFunctionDoc-en
+// print-info 
+// Returns: void
+// Description:
+// Prints out a load of renderer information
+// Example:
+// (print-info) 
+// EndFunctionDoc 
+
+// StartFunctionDoc-pt
+// print-info
+// Retorna: void
+// Descrição:
+// Exemplo:
+// (print-info) 
+// EndFunctionDoc
+
+Scheme_Object *print_info(int argc, Scheme_Object **argv)
+{
+	Engine::Get()->Renderer()->PrintInfo();
+	return scheme_void;
+}
+
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -1393,6 +1417,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
 	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
 	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
+	scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
 
  	MZ_GC_UNREG(); 
 }

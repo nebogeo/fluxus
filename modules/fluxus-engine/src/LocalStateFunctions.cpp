@@ -19,6 +19,7 @@
 #include "Engine.h"
 #include "LocalStateFunctions.h"
 #include "Renderer.h"
+#include "ShaderCache.h"
 
 using namespace LocalStateFunctions;
 using namespace SchemeHelper;
@@ -1697,17 +1698,33 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 	string vert=StringFromScheme(argv[0]);
 	string frag=StringFromScheme(argv[1]);
 	
- 	GLSLShader *shader = new GLSLShader(vert,frag);
-	
-    // remove the old one
-	if (Engine::Get()->State()->Shader)
-	{
-		delete Engine::Get()->State()->Shader;
-	}
-		
+ 	GLSLShader *shader = ShaderCache::Get(vert,frag);
 	Engine::Get()->State()->Shader=shader;
 	
 	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// clear-shader-cache 
+// Returns: void
+// Description:
+// Clears the shader cache
+// Example:
+// (clear-shader-cache)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// clear-shader-cache 
+// Retorna: número-id-primitiva
+// Descrição:
+// Exemplo:
+// (clear-shader-cache)
+// EndFunctionDoc
+
+Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
+{
+	ShaderCache::Clear();
 	return scheme_void;
 }
 
@@ -2073,6 +2090,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
 	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
+	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
 	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
  	MZ_GC_UNREG(); 

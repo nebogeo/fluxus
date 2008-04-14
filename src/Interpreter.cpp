@@ -21,7 +21,7 @@
 using namespace std;
 using namespace fluxus;
 
-static const int LOG_SIZE=512;
+static const int LOG_SIZE=256;
 
 Scheme_Env *Interpreter::m_Scheme=NULL;
 Repl *Interpreter::m_Repl=NULL;
@@ -57,8 +57,8 @@ void Interpreter::SetRepl(Repl *s)
     MZ_GC_VAR_IN_REG(0, config);
     MZ_GC_REG();
 	m_Repl=s; 
-	scheme_pipe_with_limit(&m_OutReadPort,&m_OutWritePort,LOG_SIZE);
-	scheme_pipe_with_limit(&m_ErrReadPort,&m_ErrWritePort,LOG_SIZE);
+	scheme_pipe(&m_OutReadPort,&m_OutWritePort);
+	scheme_pipe(&m_ErrReadPort,&m_ErrWritePort);
 	config = scheme_current_config();
 	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, m_OutWritePort);
 	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);

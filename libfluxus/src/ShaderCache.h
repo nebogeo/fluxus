@@ -1,4 +1,4 @@
-// Copyright (C) 2008 Dave Griffiths
+// Copyright (C) 2005 Dave Griffiths
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -13,33 +13,32 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
-#ifndef FLUX_GEOMETRY_IO
-#define FLUX_GEOMETRY_IO
 
+#include <string>
 #include <map>
-#include "Primitive.h"
+#include "dada.h"
+#include "GLSLShader.h"
+
+#ifndef FLUXUS_SHADER_CACHE
+#define FLUXUS_SHADER_CACHE
 
 namespace Fluxus
 {
 
-class PrimitiveIO
+//////////////////////////////////////////////////////
+/// A hardware shader
+class ShaderCache
 {
 public:
-	PrimitiveIO();
-	virtual ~PrimitiveIO();
+	ShaderCache();
+	~ShaderCache();
 	
-	virtual Primitive *FormatRead(const std::string &filename)=0;
-	virtual bool FormatWrite(const std::string &filename, const Primitive *ob)=0;
-	
-	static Primitive *Read(const std::string &filename, bool cache=true);
-	static bool Write(const std::string &filename, const Primitive *ob);
-	static void ClearGeometryCache();
+	static GLSLShader *Get(const std::string &vert, const std::string &frag);
+	static void Clear();
 	static void Dump();
 	
 private:
-	static PrimitiveIO *GetFromExtension(const std::string &extension);
-	static std::map<std::string, Primitive*> m_GeometryCache;
+	static std::map<std::string,GLSLShader *> m_Cache;
 };
 
 }

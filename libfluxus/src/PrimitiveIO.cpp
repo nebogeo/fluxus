@@ -82,3 +82,12 @@ void PrimitiveIO::ClearGeometryCache()
 	}
 	m_GeometryCache.clear();
 }
+
+void PrimitiveIO::Dump()
+{
+	for (map<string, Primitive*>::iterator i=m_GeometryCache.begin();
+		i!=m_GeometryCache.end(); ++i)
+	{
+		Trace::Stream<<i->first<<endl;
+	}
+}

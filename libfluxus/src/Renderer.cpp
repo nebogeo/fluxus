@@ -19,6 +19,8 @@
 #include "Primitive.h"
 #include "PNGLoader.h"
 #include "SearchPaths.h"
+#include "PrimitiveIO.h"
+#include "ShaderCache.h"
 #include "Trace.h"
 #include <sys/time.h>
 #include <stdio.h>
@@ -677,4 +679,17 @@ void Renderer::SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha
 void Renderer::Accum(int mode, float factor)
 {
 	glAccum(mode,factor);
+}
+
+void Renderer::PrintInfo()
+{
+	Trace::Stream<<"Fluxus Version "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
+	Trace::Stream<<"Textures Cached:"<<endl;
+	TexturePainter::Get()->Dump();
+	Trace::Stream<<"Primitives Cached:"<<endl;
+	PrimitiveIO::Dump();
+	Trace::Stream<<"Shaders cached:"<<endl;
+	ShaderCache::Dump();	
+	Trace::Stream<<"Scenegraph:"<<endl;
+	m_World.Dump();	
 }
