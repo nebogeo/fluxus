@@ -37,7 +37,7 @@
    (lifted (lib "fluxus.ss" "fluxus-0.15") vadd vsub vmul vdiv vtransform vtransform-rot
            vnormalise vdot vreflect vdist vmag vcross madd msub mdiv mmul mident mtranslate
            mrotate mscale mtranspose minverse maim qaxisangle qmul qnormalise qtomatrix qconjugate
-           set-camera)
+           set-camera rndvec crndvec srndvec rndf crndf hsrndvec grndf grndvec)
    (prefix flx- (lib "fluxus.ss" "fluxus-0.15")))
   
   (provide 
@@ -107,27 +107,7 @@
     (vec3 (integral (vec3-x v))
           (integral (vec3-y v))
           (integral (vec3-z v))))
-  
-  ; some utils
-  (define (flxrnd)
-    (/ (random 10000) 10000))
-  
-  (define (rndvec)
-    (vec3 (flxrnd) (flxrnd) (flxrnd)))
-    
-  ; deal with loading model data
-  (define model-map '())
-  
-  (define (get-model filename)
-    (let ((ret (assq filename model-map)))
-      (cond ((list? ret) (cadr ret)) ; we have it already
-            (else ; load and add it to the list
-             (let ((prim (flx-obj-import filename)))
-               (flx-with-primitive prim (flx-hide 1))
-               (set! model-map (cons (list filename prim) model-map))
-               ;(printf "~a~n" model-map)
-               prim)))))  
-  
+      
   (define mouse (vector 0 0))
   (define mouse-left (event-receiver))
   (define mouse-middle (event-receiver))
@@ -241,8 +221,9 @@
                                     (let xloop ((x w) (l l))
                                       (cond ((zero? x) l)
                                             (else
-                                             (xloop (- x 1) (cons (vec3 x y z) l)))))))))))))) 
+                                             (xloop (- x 1) (cons (vec3 x y z) l))))))))))))))  
   
+   
   ;---------------------------------------------------------------
   ; scene rendering
   
@@ -261,9 +242,9 @@
   (define (scene s) 
     (set! scene-list s))
 
-  ; the primitive object
+  ;---------------------------------------------------------------
+  ; the model object
   (define-struct object-struct (shape colour translate scale rotate matrix hints camera-lock texture))
-  
   
   (define/kw (object #:key 
                      (shape 'cube)
@@ -277,6 +258,89 @@
                      (texture ""))
     (make-object-struct shape colour translate scale rotate matrix hints camera-lock texture))
 
+  ; deal with loading model data
+  (define model-map '())
+  
+  (define (get-model filename)
+    (let ((ret (assq filename model-map)))
+      (cond ((list? ret) (cadr ret)) ; we have it already
+            (else ; load and add it to the list
+             (let ((prim (flx-obj-import filename)))
+               (flx-with-primitive prim (flx-hide 1))
+               (set! model-map (cons (list filename prim) model-map))
+               ;(printf "~a~n" model-map)
+               prim)))))  
+
+  ;---------------------------------------------------------------
+  ; particle system
+    
+  (define-struct particles-struct (colour translate scale rotate matrix texture rate speed spread reverse))
+
+  (define/kw (particles #:key 
+                     (colour (vector 1 1 1))
+                     (translate (vector 0 0 0))
+                     (scale (vector 0.1 0.1 0.1))
+                     (rotate (vector 0 0 0))
+                     (matrix (flx-mident))
+                     (texture "")
+                     (rate 1)
+                     (speed 0.1)
+                     (spread 360)
+                     (reverse #f))    
+    (make-particles-struct colour translate scale rotate matrix texture rate speed spread reverse))
+
+  (define max-particle-systems 10)
+  (define num-particles 500)
+  (define cur-particle 0)
+  
+  (define particle-systems '())
+  
+  (define (new-particle-system)
+    (let ((pp (flx-build-particles num-particles)))
+      (flx-with-primitive pp
+                          (flx-pdata-add "vel" "v")
+                          (flx-pdata-map!
+                           (lambda (c)
+                             (vector 1 1 1))
+                           "c")
+                          (flx-pdata-map!
+                           (lambda (vel)
+                             (vector 0 0 0))
+                           "vel"))
+    (set! particle-systems 
+          (cons pp particle-systems))))
+  
+  (new-particle-system)
+    
+  (define (animate-particles)
+    (for-each
+     (lambda (particles)
+       (flx-with-primitive particles
+                           (flx-pdata-op "+" "p" "vel")))
+     particle-systems))
+    
+  (define (launch-particles num pos spread speed colour scale)
+    (cond ((not (zero? num))
+           (let ((spread (if (< spread 10) 10 spread)) ; stop rndcone going into infinite loop
+                 (vel (flx-vtransform-rot (flx-vmul (rndcone (- 1 (* 2 (/ spread 360)))) speed) 
+                                          (flx-get-transform))))
+             (flx-with-primitive (car particle-systems)
+                                 (flx-pdata-set! "p" cur-particle pos)
+                                 (flx-pdata-set! "c" cur-particle colour)
+                                 (flx-pdata-set! "s" cur-particle scale)
+                                 (flx-pdata-set! "vel" cur-particle vel) 
+                                 (set! cur-particle (modulo (+ cur-particle 1) (flx-pdata-size)))))
+           (launch-particles (- num 1) pos spread speed colour scale))))
+  
+  ;; for calculating the spread
+  (define (rndcone spread)
+    (let ((v (flx-srndvec)))
+      (if (> (flx-vdot v (vector 1 0 0)) spread)
+          v
+          (rndcone spread))))
+
+  
+  ;--------------------------------------------------------------------
   
   (define (vector-now v)
     (let ((v (value-now v)))
@@ -312,7 +376,7 @@
            ((unlit) (flx-hint-unlit))
            (else (printf "error, unknown hint :~a ~n" hint))))
        (value-now hints)))
-    
+        
     (for-each
      (lambda (v)       
        (match (value-now v)
@@ -333,6 +397,19 @@
                  ((torus) (flx-draw-torus))
                  ((plane) (flx-draw-plane))
                  (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))))]
+
+         [($ particles-struct colour translate scale rotate matrix texture rate speed spread reverse)
+          (flx-with-state
+           (flx-translate (vector-now translate))
+           (flx-rotate (vector-now rotate))                             
+           (flx-concat (matrix-now matrix)) 
+           (launch-particles rate 
+                             (flx-vtransform (vec3 0 0 0) (flx-get-transform))
+                             (value-now spread)
+                             (value-now speed)
+                             (vector-now colour)
+                             (vector-now scale)))]
+         
          [(? undefined?) (void)]
          [(? list?)          
           (render-scene-list (value-now v))]
@@ -354,11 +431,12 @@
   ; syncronising rendering with frtime
   (define (loop)
     ;; emit the next pulse
-	(read-inputs)
+    (read-inputs)
     (send-event fluxus-pulse #t)
     ;; wait for frtime to update
     (do-in-manager-after (void))
-	(render-scene-list scene-list))
+    (render-scene-list scene-list)
+    (animate-particles))
   
   (define (init-me)
     (flx-every-frame (loop)))

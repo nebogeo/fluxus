@@ -1,5 +1,7 @@
 ; frisbee version of the ball-on-string example
 
+(require (lib "drflux.ss" "fluxus-0.15"))
+
 (require (lib "frisbee.ss" "fluxus-0.15"))
 
 (define player-pos
