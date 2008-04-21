@@ -34,7 +34,7 @@ void ImmediateMode::Add(Primitive *p, State *s)
 	m_IMRecord.push_back(newitem);
 }
 
-void ImmediateMode::Render()
+void ImmediateMode::Render(ShadowVolumeGen *shadowgen)
 {
 	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
 	{
@@ -45,6 +45,11 @@ void ImmediateMode::Render()
 	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
 		(*i)->m_Primitive->Prerender();
 		(*i)->m_Primitive->Render();
+		
+		if (shadowgen && (*i)->m_Primitive->GetState()->Hints & HINT_CAST_SHADOW)
+		{
+			shadowgen->Generate((*i)->m_Primitive);
+		}
 		glPopMatrix();
 	}
 }

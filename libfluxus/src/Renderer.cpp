@@ -155,7 +155,7 @@ void Renderer::RenderStencilShadows()
 	PreRender();
 	glDisable(GL_LIGHT0+m_ShadowLight); 
 	m_World.Render();
-	m_ImmediateMode.Render();
+	m_ImmediateMode.Render(m_World.GetShadowVolumeGen());
 
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
@@ -185,8 +185,11 @@ void Renderer::RenderStencilShadows()
 
 	glEnable(GL_LIGHT0+m_ShadowLight);
 
+	// todo - needlessly generating shadow geom again - move 
+	// generator into renderer and pass in like immediate mode
 	m_World.Render();
 	m_ImmediateMode.Render();
+	m_ImmediateMode.Clear();
 
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);

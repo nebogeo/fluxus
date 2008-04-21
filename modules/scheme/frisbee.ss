@@ -265,8 +265,8 @@
     (let ((ret (assq filename model-map)))
       (cond ((list? ret) (cadr ret)) ; we have it already
             (else ; load and add it to the list
-             (let ((prim (flx-obj-import filename)))
-               (flx-with-primitive prim (flx-hide 1))
+             (let ((prim (flx-load-primitive filename)))
+               (flx-with-primitive prim (flx-hide 1) (flx-recalc-normals 1))
                (set! model-map (cons (list filename prim) model-map))
                ;(printf "~a~n" model-map)
                prim)))))  
@@ -438,9 +438,10 @@
     (render-scene-list scene-list)
     (animate-particles))
   
-  (define (init-me)
+  (define (clear)
+	(flx-clear)
     (flx-every-frame (loop)))
   
-  (init-me)
+  (clear)
   
   )

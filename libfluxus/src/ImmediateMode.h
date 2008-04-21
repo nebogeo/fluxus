@@ -18,6 +18,7 @@
 #define FLUX_IMMEDIATE_MODE
 
 #include "Primitive.h"
+#include "ShadowVolumeGen.h"
 #include "State.h"
 
 namespace Fluxus
@@ -36,7 +37,7 @@ public:
 	~ImmediateMode();
 	
 	void Add(Primitive *p, State *s);
-    void Render();
+    void Render(ShadowVolumeGen *shadowgen = NULL);
     void Clear();
 	
 private:
