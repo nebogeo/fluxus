@@ -39,6 +39,7 @@ float GLEditor::m_TextWidth(1);
 float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
+float GLEditor::m_TextColourAlpha(1);
 bool GLEditor::m_DoAutoFocus(true);
 bool GLEditor::m_DebugAutoFocus(false);
 float GLEditor::m_AutoFocusWidth(70000.0f);
@@ -119,7 +120,8 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 
 void GLEditor::StrokeCharacter(wchar_t c)
 {
-	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
+	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
+	                      m_TextColourBlue,m_TextColourAlpha);
 }
 
 float GLEditor::StrokeWidth(wchar_t c)

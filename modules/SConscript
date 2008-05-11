@@ -9,6 +9,7 @@ Import("env", "CollectsInstall", "DataInstall", "MZDYN")
 # run mzscheme to get (path->string (system-library-subpath))
 file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
 archpath = file.read()
+file.close()
 
 BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 

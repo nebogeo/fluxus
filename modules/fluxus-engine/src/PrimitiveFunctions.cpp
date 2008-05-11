@@ -20,7 +20,7 @@
 #include "PrimitiveFunctions.h"
 #include "dada.h"
 #include "GraphicsUtils.h"
-#include "LinePrimitive.h"
+#include "RibbonPrimitive.h"
 #include "TextPrimitive.h"
 #include "ParticlePrimitive.h"
 #include "LocatorPrimitive.h"
@@ -316,21 +316,21 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-line numpoints-number
+// build-ribbon numpoints-number
 // Returns: primitiveid-number
 // Description:
-// Builds a line consisting of numpoints points. The geometry is constantly camera facing and 
-// is texture mapped so the texture is stretched along the line from start to finish. You use 
-// the pdata functions to edit the postions and widths of the lines. If used lit, the normals 
+// Builds a ribbon consisting of numpoints points. The geometry is constantly camera facing and 
+// is texture mapped so the texture is stretched along the ribbon from start to finish. You use 
+// the pdata functions to edit the postions and widths of the segments. If used lit, the normals 
 // are faked to approximate a circular cross section. Additionally, if solid rendering is 
 // cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be 
 // drawn - width specified by the (line-width) command.
 // Example:
-// (define mynewshape (build-line 10))
+// (define mynewshape (build-ribbon 10))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// build-line numpoints-número
+// build-ribbon numpoints-número
 // Retorna: número-id-primitiva
 // Descrição:
 // Cónstroi uma linha consistindo de numpoints pontos. A geometria
@@ -342,21 +342,21 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // (hint-none) e (hint-wire) ativado, uma rápida linha constante vai
 // ser desenhada - largura específicada pelo comando (line-width).
 // Exemplo:
-// (define mynewshape (build-line 10))
+// (define mynewshape (build-ribbon 10))
 // EndFunctionDoc
 
-Scheme_Object *build_line(int argc, Scheme_Object **argv)
+Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("build-line", "i", argc, argv);
+	ArgCheck("build-ribbon", "i", argc, argv);
 	int size=IntFromScheme(argv[0]);
 	if (size<1)
 	{
-		Trace::Stream<<"build-line: size is less than 1!"<<endl;
+		Trace::Stream<<"build-ribbon: size is less than 1!"<<endl;
 		MZ_GC_UNREG(); 
 		return 0;
 	}	
-	LinePrimitive *Prim = new LinePrimitive();
+	RibbonPrimitive *Prim = new RibbonPrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
@@ -1570,7 +1570,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-plane", scheme_make_prim_w_arity(build_plane, "build-plane", 0, 0), env);
 	scheme_add_global("build-seg-plane", scheme_make_prim_w_arity(build_seg_plane, "build-seg-plane", 2, 2), env);
 	scheme_add_global("build-cylinder", scheme_make_prim_w_arity(build_cylinder, "build-cylinder", 2, 2), env);
-	scheme_add_global("build-line", scheme_make_prim_w_arity(build_line, "build-line", 1, 1), env);
+	scheme_add_global("build-ribbon", scheme_make_prim_w_arity(build_ribbon, "build-ribbon", 1, 1), env);
 	scheme_add_global("build-text", scheme_make_prim_w_arity(build_text, "build-text", 1, 1), env);
 	scheme_add_global("build-nurbs-sphere", scheme_make_prim_w_arity(build_nurbs_sphere, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-nurbs-plane", scheme_make_prim_w_arity(build_nurbs_plane, "build-nurbs-sphere", 2, 2), env);

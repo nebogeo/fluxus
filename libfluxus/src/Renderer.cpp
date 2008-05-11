@@ -107,7 +107,7 @@ void Renderer::Render()
 	}
 	
 	// need to clear this even if we aren't using shadows
-	m_World.GetShadowVolumeGen()->Clear();
+	m_ShadowVolumeGen.Clear();
 	
 	if (m_ShadowLight!=0)
 	{		
@@ -116,7 +116,7 @@ void Renderer::Render()
 	else
 	{
 		PreRender();
-		m_World.Render();
+		m_World.Render(&m_ShadowVolumeGen);
 		m_ImmediateMode.Render();
 		m_ImmediateMode.Clear();
 		PostRender();
@@ -149,13 +149,13 @@ void Renderer::RenderStencilShadows()
 {
 	if (m_LightVec.size()>m_ShadowLight)
 	{
-		m_World.GetShadowVolumeGen()->SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());
+		m_ShadowVolumeGen.SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());
 	}
 	
 	PreRender();
 	glDisable(GL_LIGHT0+m_ShadowLight); 
-	m_World.Render();
-	m_ImmediateMode.Render(m_World.GetShadowVolumeGen());
+	m_World.Render(&m_ShadowVolumeGen);
+	m_ImmediateMode.Render(&m_ShadowVolumeGen);
 
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
@@ -168,11 +168,11 @@ void Renderer::RenderStencilShadows()
 
 	glCullFace(GL_BACK);
     glStencilOp(GL_KEEP, GL_KEEP, GL_INCR);
-	m_World.GetShadowVolumeGen()->GetVolume()->Render();
+	m_ShadowVolumeGen.GetVolume()->Render();
 
     glCullFace(GL_FRONT);
     glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-	m_World.GetShadowVolumeGen()->GetVolume()->Render();
+	m_ShadowVolumeGen.GetVolume()->Render();
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glDepthFunc(GL_EQUAL);
@@ -187,7 +187,7 @@ void Renderer::RenderStencilShadows()
 
 	// todo - needlessly generating shadow geom again - move 
 	// generator into renderer and pass in like immediate mode
-	m_World.Render();
+	m_World.Render(&m_ShadowVolumeGen);
 	m_ImmediateMode.Render();
 	m_ImmediateMode.Clear();
 
@@ -195,11 +195,11 @@ void Renderer::RenderStencilShadows()
 	glDepthFunc(GL_LEQUAL);
 	glStencilFunc(GL_ALWAYS, 0, ~0);
 
-	if (m_World.GetShadowVolumeGen()->GetDebug())
+	if (m_ShadowVolumeGen.GetDebug())
 	{
-		m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_WIRE;
-		m_World.GetShadowVolumeGen()->GetVolume()->Render();
-		m_World.GetShadowVolumeGen()->GetVolume()->GetState()->Hints=HINT_SOLID;
+		m_ShadowVolumeGen.GetVolume()->GetState()->Hints=HINT_WIRE;
+		m_ShadowVolumeGen.GetVolume()->Render();
+		m_ShadowVolumeGen.GetVolume()->GetState()->Hints=HINT_SOLID;
 	}
 
 	PostRender();
@@ -447,7 +447,7 @@ int Renderer::Select(int x, int y, int size)
 	PreRender(true);
 	
 	// render the scene for picking
-	m_World.Render(SceneGraph::SELECT);
+	m_World.Render(&m_ShadowVolumeGen,SceneGraph::SELECT);
 	
 	int hits=glRenderMode(GL_RENDER);
 	unsigned int *ptr=IDs, numnames;

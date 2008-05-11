@@ -7,7 +7,6 @@
 (scene
  (list
   (object
-   #:shape 'sphere  
    #:translate player-pos
    #:scale (vec3 0.1 0.1 0.1))
   

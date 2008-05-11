@@ -361,6 +361,12 @@ Scheme_Object *osc_send(int argc, Scheme_Object **argv)
 	MZ_GC_VAR_IN_REG(1, argvec); 
 	MZ_GC_REG();	
 	
+	if (!OSCClient) 
+	{
+		MZ_GC_UNREG(); 
+		return scheme_void;
+	}
+	
 	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-send", "string", 0, argc, argv);
 	if (!SCHEME_CHAR_STRINGP(argv[1])) scheme_wrong_type("osc-send", "string", 1, argc, argv);
 	if (!SCHEME_LISTP(argv[2])) scheme_wrong_type("osc-send", "list", 2, argc, argv);

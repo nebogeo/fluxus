@@ -33,6 +33,8 @@ void Client::SetDestination(const string &Port)
 
 void Client::Send(const string &msg, const vector<OSCData*> &args)
 {
+	if (!m_Initialised) return;
+	
 	lo_message oscmsg=lo_message_new();
 		
 	for (vector<OSCData*>::const_iterator i=args.begin(); i!=args.end(); i++)

@@ -56,7 +56,7 @@ public:
 
 	/// Traverses the graph depth first, rendering
 	/// all nodes
-	void Render(Mode rendermode=RENDER);
+	void Render(ShadowVolumeGen *shadowgen, Mode rendermode=RENDER);
 	
 	/// Clears the graph of all primtives
 	virtual void Clear();
@@ -73,9 +73,6 @@ public:
 	/// Gets the bounding box of the node, and all 
 	/// its children too
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
-
-	/// Accessor for the shadow volume generator
-	ShadowVolumeGen *GetShadowVolumeGen() { return &m_ShadowVolumeGen; }
 	
 	/// A utility for getting all the node in a subtree, as a flat list
 	void GetNodes(const Node *node, vector<const SceneNode*> &nodes) const;
@@ -85,12 +82,11 @@ public:
 		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
 private:
-	void RenderWalk(SceneNode *node, int depth, Mode rendermode);
+	void RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowgen, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	bool FrustumClip(SceneNode *node);
 	void CohenSutherland(const dVector &p, char &cs);
 	
-	ShadowVolumeGen m_ShadowVolumeGen;
 	DepthSorter m_DepthSorter;
 	dMatrix m_TopTransform;
 };

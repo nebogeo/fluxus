@@ -1,0 +1,35 @@
+###############################################################
+# SConscript for fluxa
+#
+# Fluxus's synth and sampler server
+
+Import("env", "BinInstall")
+
+Target       = "fluxa"
+Install      = BinInstall
+Libs = Split("m sndfile jack lo")
+
+Source = Split("src/Sample.cpp \
+				src/SearchPaths.cpp \
+				src/AsyncSampleLoader.cpp \
+				src/Allocator.cpp \
+				src/CommandRingBuffer.cpp \
+				src/Event.cpp \
+				src/EventQueue.cpp \
+				src/JackClient.cpp \
+				src/OSCServer.cpp \
+				src/RingBuffer.cpp \
+				src/Time.cpp \
+				src/Modules.cpp \
+				src/Fluxa.cpp \
+				src/Sampler.cpp	\
+				src/SampleStore.cpp \
+				src/GraphNode.cpp \
+				src/ModuleNodes.cpp \
+				src/Graph.cpp \
+				src/main.cpp")					
+
+env.Program(source = Source, target = Target, LIBS=Libs)
+env.Install(Install, Target)
+env.Alias('install', Install)
+	  

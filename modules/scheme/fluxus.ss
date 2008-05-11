@@ -27,6 +27,7 @@
   (require (lib "obj-import.ss" "fluxus-0.15"))
   (require (lib "obj-export.ss" "fluxus-0.15"))
   (require (lib "randomness.ss" "fluxus-0.15"))
+  ;(require (lib "fluxa.ss" "fluxus-0.15")) ; removed until big pause in liblo startup is fixed
   (require (lib "scratchpad.ss" "fluxus-0.15"))
  (require (only (lib "13.ss" "srfi") string-pad))
   (provide 
@@ -41,4 +42,5 @@
    (all-from (lib "obj-import.ss" "fluxus-0.15"))
    (all-from (lib "obj-export.ss" "fluxus-0.15"))
    (all-from (lib "randomness.ss" "fluxus-0.15"))  
+   ;(all-from (lib "fluxa.ss" "fluxus-0.15"))
    (all-from (lib "scratchpad.ss" "fluxus-0.15"))))

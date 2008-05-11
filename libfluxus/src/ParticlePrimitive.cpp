@@ -25,6 +25,7 @@ ParticlePrimitive::ParticlePrimitive()
 	AddData("p",new TypedPData<dVector>);
 	AddData("c",new TypedPData<dColour>);
 	AddData("s",new TypedPData<dVector>);
+	AddData("r",new TypedPData<float>);
 	
 	// direct access for speed
 	PDataDirty();
@@ -50,6 +51,7 @@ void ParticlePrimitive::PDataDirty()
 	m_VertData=GetDataVec<dVector>("p");
 	m_ColData=GetDataVec<dColour>("c");
 	m_SizeData=GetDataVec<dVector>("s");
+	m_RotateData=GetDataVec<float>("r");
 }
 
 void ParticlePrimitive::Render()
@@ -98,7 +100,7 @@ void ParticlePrimitive::Render()
 		
 		glBegin(GL_QUADS);
 		for (unsigned int n=0; n<m_VertData->size(); n++)
-		{
+		{							
 			dVector scaledacross(across*(*m_SizeData)[n].x*0.5);
 			dVector scaledown(down*(*m_SizeData)[n].y*0.5);
 			glColor3fv((*m_ColData)[n].arr());

@@ -30,7 +30,7 @@
 (translate (vector 1.5 0 0))
 (with-state
     (hint-unlit)
-    (with-primitive (build-line 4)
+    (with-primitive (build-ribbon 4)
         (pdata-set "p" 0 (vector 0 0 0))
         (pdata-set "p" 1 (vector 1 0 0))
         (pdata-set "p" 2 (vector 0.5 1.3 0))

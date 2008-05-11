@@ -29,7 +29,7 @@ SceneGraph::~SceneGraph()
 {
 }
 
-void SceneGraph::Render(Mode rendermode)
+void SceneGraph::Render(ShadowVolumeGen *shadowgen, Mode rendermode)
 {
 	//RenderWalk((SceneNode*)m_Root,0);
 
@@ -38,7 +38,7 @@ void SceneGraph::Render(Mode rendermode)
 	// render all the children of the root
 	for (vector<Node*>::iterator i=m_Root->Children.begin(); i!=m_Root->Children.end(); ++i)
 	{
-		RenderWalk((SceneNode*)*i,0,rendermode);
+		RenderWalk((SceneNode*)*i,0,shadowgen,rendermode);
 	}
 	
 	// now render the depth sorted primitives:
@@ -46,7 +46,7 @@ void SceneGraph::Render(Mode rendermode)
 	m_DepthSorter.Clear();
 }
 
-void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
+void SceneGraph::RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowgen, Mode rendermode)
 {
 	// max gl matrix stack is 32 
 	/*if (depth>=30)
@@ -98,14 +98,14 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, Mode rendermode)
 
 		for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
 		{
-			RenderWalk((SceneNode*)*i,depth,rendermode);
+			RenderWalk((SceneNode*)*i,depth,shadowgen,rendermode);
 		}
 	}
 	glPopMatrix();
 	
 	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
 	{
-		m_ShadowVolumeGen.Generate(node->Prim);
+		shadowgen->Generate(node->Prim);
 	}
 }
 

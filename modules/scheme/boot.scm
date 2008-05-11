@@ -4,7 +4,7 @@
 ; it under the terms of the GNU General Public License as published by
 ; the Free Software Foundation; either version 2 of the License, or
 ; (at your option) any later version.
-;
+; 
 ; This program is distributed in the hope that it will be useful,
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -77,6 +77,9 @@
 ; for compatibility pre 0.13
 (define pdata-set pdata-set!)
 (define pdata-get pdata-ref)
+
+; for compatibility pre 0.15
+(define pdata-line pdata-ribbon)
 
 ;-------------------------------------------------
 ; execute the user config script, if it exists

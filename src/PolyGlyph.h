@@ -55,7 +55,7 @@ public:
 	PolyGlyph(const string &ttffile);
 	~PolyGlyph();
 
-	void Render(wchar_t ch, float r, float g, float b);
+	void Render(wchar_t ch, float r, float g, float b, float a);
 	float CharacterWidth(wchar_t ch);
 	float CharacterHeight(wchar_t ch);
 

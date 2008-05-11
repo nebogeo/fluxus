@@ -1,0 +1,154 @@
+fluxa documentation
+-------------------
+dave@pawfal.org
+
+an experimental non-deterministic synth where each 'note' is it's own synth graph
+
+fluxa is a framework for constructing and sequencing sound. it uses a minimal and
+purely functional style which is designed for livecoding. it can be broken down into
+two parts, the descriptions of synthesis graphs and a set of language forms for
+describing procedural sequences.
+
+example:
+
+(seq
+  (lambda (time clock)
+    (play time (mul (sine 440) (adsr 0 0.1 0 0)))
+    0.2))
+
+plays a sine tone with a decay of 0.1 seconds every 0.2 seconds
+
+non-determinism
+---------------
+
+fluxa has decidedly non-deterministic properties - synth lifetime is bound to
+some global constraints:
+
+* a fixed number of operators, which are recycled (allocation/space constraint)
+* a maximum number of synths playing simultaneously (cpu time constraint)
+
+what this means is that synths are stopped after a variable length of time,
+depending on the amount of synths playing. nodes making up the synth graph may also
+be recycled while they are in use - resulting in interesting artifacts (which is
+considered a feature)
+
+synthesis commands
+------------------
+
+(play time node-id)
+schedules the node id to play at the supplied time. this is for general musical use.
+
+(play-now node-id)
+plays the node id as soon as possible - mainly for testing
+
+operator nodes
+--------------
+
+all these commands create and return a nodes which can be played. parameters in the
+synthesis graph can be other nodes or normal number values.
+
+generators
+----------
+
+(sine frequency)
+a sinewave at the specified frequency
+
+(saw frequency)
+a saw wave at the specified frequency (not bandlimited, it's against my aesthetic)
+
+(squ frequency)
+a square wave at the specified frequency (not bandlimited, it's against my aesthetic)
+
+(white)
+white noise
+
+(pink)
+pink noise
+
+(sample sample-filename frequency)
+loads and plays a sample - files can be relative to specified searchpaths
+
+(adsr attack decay sustain release)
+generates an envelope signal
+
+maths
+-----
+
+(add a b)
+(sub a b)
+(mul a b)
+(div a b)
+
+remember that parameters can be nodes or number values, so you can do things like:
+
+(play time (mul (sine 440) 0.5)) 
+
+or
+
+(play time (mul (sine 440) (adsr 0 0.1 0 0))) 
+
+filters
+-------
+
+(mooghp input-node cutoff resonance)
+(moogbp input-node cutoff resonance)
+(mooglp input-node cutoff resonance)
+(formant input-node cutoff resonance)
+
+sequencing commands
+-------------------
+
+fluxa provides a set of forms for sequencing.
+
+
+
+
+
+server
+------
+
+the fluxa server is called by the scheme layer, and represents a low level
+interface which is not really designed to be called by hand.
+
+osc interface
+-------------
+
+/create ii...iif...
+[id type ... id TERMINAL_TYPE value ...]
+creates new synth nodes, type can be one of:
+
+0 TERMINAL
+1 SINOSC
+2 SAWOSC
+3 TRIOSC
+4 SQUOSC
+5 WHITEOSC
+6 PINKOSC
+7 ADSR
+8 ADD
+9 SUB
+10 MUL
+11 DIV
+12 MOOGLP
+13 MOOGBP
+14 MOOGHP
+15 FORMANT
+16 SAMPLER
+17 CRUSH
+18 DISTORT
+19 CLIP
+20 DELAY 
+
+if type is 0 (a terminal node) the message also needs a value float to initialise
+the terminal to.
+
+/connect iii...
+[from arg to ...]
+connects multiple nodes together - each connection is defined by from and to node
+ids and an argument index to connect the to node to.
+
+/play iii
+[seconds fraction id]
+plays the node id and outputs the sound. triggers, and starts playing the node at
+the time specified. if both time values are set to 0 then it will play it as soon as
+possible.

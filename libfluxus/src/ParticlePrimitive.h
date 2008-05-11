@@ -42,7 +42,12 @@ public:
 	///@}
 	
 	void AddParticle(const dVector &v, const dColour &c, const dVector &s) 
-		{ m_VertData->push_back(v); m_ColData->push_back(c); m_SizeData->push_back(s); }
+	{ 
+		m_VertData->push_back(v); 
+		m_ColData->push_back(c); 
+		m_SizeData->push_back(s); 
+		m_RotateData->push_back(0); 
+	}
 
 protected:
 
@@ -53,6 +58,7 @@ private:
 	vector<dVector> *m_VertData;
 	vector<dColour> *m_ColData;
 	vector<dVector> *m_SizeData;
+	vector<float> *m_RotateData;
 };
 
 }

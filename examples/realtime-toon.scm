@@ -61,4 +61,7 @@
 ; 17.3 fps
 ; now it goes at (0.13):
 ; 95-100 fps ish
+; 0.15 (with inline optimisation)
+; 110 fps
+
 

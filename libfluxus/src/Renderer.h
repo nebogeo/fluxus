@@ -144,8 +144,8 @@ public:
 	void SetFog(const dColour &c, float d, float s, float e)    
 		{ m_FogColour=c; m_FogDensity=d; m_FogStart=s; m_FogEnd=e; m_Initialised=false; }
 	void ShadowLight(unsigned int s)		 { m_ShadowLight=s; }
-	void DebugShadows(bool s)				 { m_World.GetShadowVolumeGen()->SetDebug(s); }
-	void ShadowLength(float s)				 { m_World.GetShadowVolumeGen()->SetLength(s); }
+	void DebugShadows(bool s)				 { m_ShadowVolumeGen.SetDebug(s); }
+	void ShadowLength(float s)				 { m_ShadowVolumeGen.SetLength(s); }
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
  	bool SetStereoMode(stereo_mode_t mode);
@@ -193,6 +193,7 @@ private:
 	vector<Light*> m_LightVec;
 	Camera m_Camera;
 	ImmediateMode m_ImmediateMode;
+	ShadowVolumeGen m_ShadowVolumeGen;
 		
 	// info for picking mode
 	struct SelectInfo

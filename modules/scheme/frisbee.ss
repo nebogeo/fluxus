@@ -258,18 +258,18 @@
                      (texture ""))
     (make-object-struct shape colour translate scale rotate matrix hints camera-lock texture))
 
-  ; deal with loading model data
-  (define model-map '())
-  
-  (define (get-model filename)
-    (let ((ret (assq filename model-map)))
-      (cond ((list? ret) (cadr ret)) ; we have it already
-            (else ; load and add it to the list
-             (let ((prim (flx-load-primitive filename)))
-               (flx-with-primitive prim (flx-hide 1) (flx-recalc-normals 1))
-               (set! model-map (cons (list filename prim) model-map))
-               ;(printf "~a~n" model-map)
-               prim)))))  
+   ; deal with loading model data
+   (define model-map '())
+   
+   (define (get-model filename)
+     (let ((ret (assq filename model-map)))
+       (cond ((list? ret) (cadr ret)) ; we have it already
+             (else ; load and add it to the list
+              (let ((prim (flx-load-primitive filename)))
+                (flx-with-primitive prim (flx-hide 1) (flx-recalc-normals 1))
+                (set! model-map (cons (list filename prim) model-map))
+                ;(printf "~a~n" model-map)
+                prim)))))
 
   ;---------------------------------------------------------------
   ; particle system
@@ -309,9 +309,7 @@
                            "vel"))
     (set! particle-systems 
           (cons pp particle-systems))))
-  
-  (new-particle-system)
-    
+      
   (define (animate-particles)
     (for-each
      (lambda (particles)
@@ -389,14 +387,14 @@
                                        (flx-mtranslate (vec3 0 0 -10))
                                        (flx-mrotate (vec3 90 0 0))))))
            (cond 
-		   	 ((string? shape) (flx-draw-instance (get-model shape)))
-		     (else
-			   (case shape
-                 ((cube) (flx-draw-cube))
-                 ((sphere) (flx-draw-sphere))
-                 ((torus) (flx-draw-torus))
-                 ((plane) (flx-draw-plane))
-                 (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))))]
+             ((string? shape) (flx-draw-instance (get-model shape)))
+             (else
+              (case shape
+                ((cube) (flx-draw-cube))
+                ((sphere) (flx-draw-sphere))
+                ((torus) (flx-draw-torus))
+                ((plane) (flx-draw-plane))
+                (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))))]
 
          [($ particles-struct colour translate scale rotate matrix texture rate speed spread reverse)
           (flx-with-state
@@ -440,6 +438,7 @@
   
   (define (clear)
 	(flx-clear)
+	(new-particle-system)
     (flx-every-frame (loop)))
   
   (clear)

@@ -172,6 +172,22 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
 		}	
+		else if (special==GLUT_KEY_F10) 
+		{
+			m_Editor[m_CurrentEditor]->m_TextColourAlpha-=0.05;
+			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha<0)
+			{
+				m_Editor[m_CurrentEditor]->m_TextColourAlpha=0;
+			}
+		}	
+		else if (special==GLUT_KEY_F11) 
+		{
+			m_Editor[m_CurrentEditor]->m_TextColourAlpha+=0.05;
+			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha>1)
+			{
+				m_Editor[m_CurrentEditor]->m_TextColourAlpha=1;
+			}
+		}	
 		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) 
 		{
 			m_Script=m_Editor[m_CurrentEditor]->GetText();

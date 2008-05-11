@@ -2,6 +2,11 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.15
 
+* added fluxa - an audio synth
+* added text opacity on F10 and F11
+* fixed saveas dialog, cursor and shift works
+* inlined most of dada.h (~5% speedup)
+* renamed build-line to build-ribbon
 * more meshes to play with (used in frisbee examples)
 * shadows now work on immediate mode objects
 * key release fixed in drflux

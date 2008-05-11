@@ -24,6 +24,7 @@ PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
 PLTInclude = PLTPrefix + "/include/plt"
 PLTLib = PLTPrefix + "/lib/plt"
 DataInstall = DESTDIR + Prefix + "/share/fluxus-"+FluxusVersion
+BinInstall = DESTDIR + Prefix + "/bin"
 
 CollectsLocation = PLTPrefix + "/lib/plt/collects/"
 CollectsInstall = DESTDIR + CollectsLocation + "fluxus-"+FluxusVersion
@@ -138,9 +139,8 @@ if not GetOption('clean'):
 	
 ################################################################################
 # Build the fluxus application
+Install = BinInstall
 	
-Install = DESTDIR + Prefix + "/bin"
-
 Source = ["src/GLEditor.cpp", 
 		"src/GLFileDialog.cpp",
 		"src/Interpreter.cpp",
@@ -156,7 +156,8 @@ env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-SConscript(dirs = Split("libfluxus modules"), exports = ["env", "CollectsInstall", "DataInstall", "MZDYN"])
+SConscript(dirs = Split("libfluxus modules fluxa"), 
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall"])
  
 ################################################################################
 # packaging / installing

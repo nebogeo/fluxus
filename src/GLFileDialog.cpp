@@ -22,6 +22,7 @@
 #include <iostream>
 #include <glob.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include "GLFileDialog.h"
 
 using namespace fluxus;
@@ -118,6 +119,17 @@ void GLFileDialog::Render()
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
+	
+	timeval ThisTime;
+	// stop valgrind complaining
+	ThisTime.tv_sec=0;
+	ThisTime.tv_usec=0;
+	
+	gettimeofday(&ThisTime,NULL);
+	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
+			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
+	m_Time=ThisTime;
+	if (m_Delta>100.0f) m_Delta=0.000001f;
 
 }
 
@@ -287,7 +299,7 @@ void GLFileDialog::HandleSaveAs(int button, int key, int special, int state, int
 			break;
 			default:
 			{
-				if (key!=-1 && mod==0)
+				if (key!=-1 && !(mod&GLUT_ACTIVE_CTRL))
 				{
 					char temp[2];
 					temp[0]=(char)key;

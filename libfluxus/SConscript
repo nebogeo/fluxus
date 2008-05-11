@@ -16,7 +16,7 @@ Source = Split("src/PData.cpp \
 		src/PNGLoader.cpp \
 		src/PolyPrimitive.cpp \
 		src/TextPrimitive.cpp \
-		src/LinePrimitive.cpp \
+		src/RibbonPrimitive.cpp \
 		src/ParticlePrimitive.cpp \
 		src/PixelPrimitive.cpp \
 		src/BlobbyPrimitive.cpp \
