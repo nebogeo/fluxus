@@ -14,33 +14,31 @@
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-(module fluxus mzscheme
-  (require "fluxus-engine.ss")
-  (require "fluxus-audio.ss")
-  (require "fluxus-osc.ss")
-  ; todo: get rid of burnt in versions
-  (require (lib "input.ss" "fluxus-0.15"))
-  (require (lib "help.ss" "fluxus-0.15"))
-  (require (lib "camera.ss" "fluxus-0.15"))
-  (require (lib "building-blocks.ss" "fluxus-0.15"))
-  (require (lib "collada-import.ss" "fluxus-0.15"))
-  (require (lib "obj-import.ss" "fluxus-0.15"))
-  (require (lib "obj-export.ss" "fluxus-0.15"))
-  (require (lib "randomness.ss" "fluxus-0.15"))
-  ;(require (lib "fluxa.ss" "fluxus-0.15")) ; removed until big pause in liblo startup is fixed
-  (require (lib "scratchpad.ss" "fluxus-0.15"))
- (require (only (lib "13.ss" "srfi") string-pad))
-  (provide 
-   (all-from "fluxus-engine.ss")
-   (all-from "fluxus-audio.ss")
-   (all-from "fluxus-osc.ss")
-   (all-from (lib "input.ss" "fluxus-0.15"))
-   (all-from (lib "help.ss" "fluxus-0.15"))
-   (all-from (lib "camera.ss" "fluxus-0.15"))
-   (all-from (lib "building-blocks.ss" "fluxus-0.15"))
-   (all-from (lib "collada-import.ss" "fluxus-0.15"))
-   (all-from (lib "obj-import.ss" "fluxus-0.15"))
-   (all-from (lib "obj-export.ss" "fluxus-0.15"))
-   (all-from (lib "randomness.ss" "fluxus-0.15"))  
-   ;(all-from (lib "fluxa.ss" "fluxus-0.15"))
-   (all-from (lib "scratchpad.ss" "fluxus-0.15"))))
+#lang scheme/base
+
+(require "fluxus-engine.ss"
+         "fluxus-audio.ss"
+         "fluxus-osc.ss"
+			; todo: get rid of burnt in versions
+		 fluxus-015/input
+		 fluxus-015/help
+		 fluxus-015/camera
+		 fluxus-015/building-blocks
+		 fluxus-015/collada-import
+		 fluxus-015/randomness
+;		 fluxus-015/fluxa ; removed until big pause in liblo startup is fixed
+		 fluxus-015/scratchpad
+		 (only-in srfi/13 string-pad))
+		 
+(provide 
+ (all-from-out "fluxus-engine.ss")
+ (all-from-out "fluxus-audio.ss")
+ (all-from-out "fluxus-osc.ss")
+ (all-from-out fluxus-015/input)
+ (all-from-out fluxus-015/help)
+ (all-from-out fluxus-015/camera)
+ (all-from-out fluxus-015/building-blocks)
+ (all-from-out fluxus-015/collada-import)
+ (all-from-out fluxus-015/randomness)  
+ ;(all-from-out fluxus-015/fluxa)
+ (all-from-out fluxus-015/scratchpad))

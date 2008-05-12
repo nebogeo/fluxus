@@ -13,7 +13,7 @@
 ; h : hyperspace
 
 ; ctrl-h to hide the code!
-
+  
 (desiredfps 1000)
 (clear)
 (blur 0)
@@ -29,6 +29,14 @@
                             (mrotate (vector 0 90 0))))
 
 (define WORLD_SIZE 2000)
+
+; using mutable pairs (old code, I was young then)
+; this is a bad thing, don't do it kids...
+(require r5rs)
+(define (list-set! lst index new)
+    (define (nthcdr l n)
+        (if (zero? n) l (nthcdr (cdr l) (- n 1))))
+    (set-car! (nthcdr lst index) new))
 
 (define (rndvec)
     (vadd (vector (flxrnd) (flxrnd) (flxrnd)) (vector -0.5 -0.5 -0.5)))
@@ -247,22 +255,20 @@
 (define (player-update player)
     (let ((rot (vector 0 0 0)))
     
-    (if (key-pressed "q") (set! rot (vector (* (delta) -10) 0 0)))
-    (if (key-pressed "a") (set! rot (vector (* (delta) 10) 0 0)))
-    (if (key-pressed "o") (set! rot (vector 0 (* (delta) 10) 0)))
-    (if (key-pressed "p") (set! rot (vector 0 (* (delta) -10) 0)))
-    (if (key-pressed "h") 
-        (begin
+    (when (key-pressed "q") (set! rot (vector (* (delta) -10) 0 0)))
+    (when (key-pressed "a") (set! rot (vector (* (delta) 10) 0 0)))
+    (when (key-pressed "o") (set! rot (vector 0 (* (delta) 10) 0)))
+    (when (key-pressed "p") (set! rot (vector 0 (* (delta) -10) 0)))
+    (when (key-pressed "h") 
             (set-pos player (vmul (rndvec) WORLD_SIZE))
-            (set-dir player (rndvec))))
-    (if (key-pressed "z")
-        (set-speed player (- (get-speed player) 1))) 
-    (if (key-pressed "x")
-        (set-speed player (+ (get-speed player) 1))) 
-    (if (key-pressed " ")
-        (begin
+            (set-dir player (rndvec)))
+    (when (key-pressed "z")
+          (set-speed player (- (get-speed player) 1)))
+    (when (key-pressed "x")
+          (set-speed player (+ (get-speed player) 1))) 
+    (when (key-pressed " ")
             (bullet-fire (player-get-bullets player) (get-pos player) 
-                (vmul (get-dir player) (+ (- (get-speed player)) 500 )))))
+                (vmul (get-dir player) (+ (- (get-speed player)) 500 ))))
             
     (set-rotvel player (vmul (vadd (get-rotvel player) (vmul rot 0.05)) 0.99))
     (update-ob player)

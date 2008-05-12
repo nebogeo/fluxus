@@ -18,6 +18,8 @@
 #include "Interpreter.h"
 #include "Repl.h"
 
+#include "base.c"
+
 using namespace std;
 using namespace fluxus;
 
@@ -47,7 +49,17 @@ void Interpreter::Register()
 
 void Interpreter::NewEnv()
 {
+	Scheme_Object *v = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, v);
+	MZ_GC_REG();
+	
 	m_Scheme=scheme_basic_env();
+	declare_modules(m_Scheme);
+    v = scheme_intern_symbol("scheme/base");
+    scheme_namespace_require(v);
+	
+    MZ_GC_UNREG();
 }
 
 void Interpreter::SetRepl(Repl *s) 

@@ -20,25 +20,25 @@
 ;; Example:
 ;; EndSectionDoc	
 
-(module input mzscheme
-  (require "fluxus-engine.ss")
-  (provide 
-   key-pressed
-   keys-down
-   key-special-pressed
-   keys-special-down
-   mouse-x
-   mouse-y
-   mouse-button
-   mouse-over
-   register-down
-   register-up
-   clear-down)
-  
+#lang scheme/base
+(require "fluxus-engine.ss")
+(provide 
+ key-pressed
+ keys-down
+ key-special-pressed
+ keys-special-down
+ mouse-x
+ mouse-y
+ mouse-button
+ mouse-over
+ register-down
+ register-up
+ clear-down)
+
 (define keys '())
 (define special-keys '())
 (define mouse (vector 0 0 #f))
- 
+
 ; utils funcs for using lists as sets
 (define (set-remove a l)
   (if (null? l)
@@ -46,7 +46,7 @@
       (if (eq? (car l) a)
           (set-remove a (cdr l))
           (cons (car l) (set-remove a (cdr l))))))		  
-		  
+
 (define (set-add a l)
   (if (not (memq a l))
       (cons a l)
@@ -59,25 +59,25 @@
 
 (define (clear-down)
   (set! keys '()))
-  
+
 (define (register-down key button special state x y mod)
-	(if (not (or (number? key) (eq? key -1))) ; ordinary keypress
-		(set! keys (set-add key keys)))
-	(if (not (or (number? key) (eq? special -1))) ; special keypress
-		(set! special-keys (set-add special special-keys)))
-	(cond  ; mouse
-		((and (eq? key 0) (eq? special -1))
-			(if (zero? state)
-				(vector-set! mouse 2 (+ button 1))
-				(vector-set! mouse 2 0))
-			(vector-set! mouse 0 x)
-			(vector-set! mouse 1 y))))
+  (when (not (or (number? key) (eq? key -1))) ; ordinary keypress
+    (set! keys (set-add key keys)))
+  (when (not (or (number? key) (eq? special -1))) ; special keypress
+    (set! special-keys (set-add special special-keys)))
+  (cond  ; mouse
+    ((and (eq? key 0) (eq? special -1))
+     (if (zero? state)
+         (vector-set! mouse 2 (+ button 1))
+         (vector-set! mouse 2 0))
+     (vector-set! mouse 0 x)
+     (vector-set! mouse 1 y))))
 
 (define (register-up key button special state x y mod)
-	(if (not (eq? key -1))
-		(set! keys (set-remove key keys)))
-	(if (not (eq? special -1))
-		(set! special-keys (set-remove special special-keys))))
+  (when (not (eq? key -1))
+    (set! keys (set-remove key keys)))
+  (when (not (eq? special -1))
+    (set! special-keys (set-remove special special-keys))))
 
 ;; StartFunctionDoc-en
 ;; key-pressed key-string
@@ -89,7 +89,7 @@
 ;; EndFunctionDoc	
 
 (define (key-pressed s)
-	(set-contains (car (string->list s)) keys))
+  (set-contains (car (string->list s)) keys))
 
 ;; StartFunctionDoc-en
 ;; keys-down
@@ -99,10 +99,10 @@
 ;; Example:
 ;; (display (keys-down))
 ;; EndFunctionDoc
-	
+
 (define (keys-down)
-	keys)
-	
+  keys)
+
 ;; StartFunctionDoc-en
 ;; key-special-pressed key-number
 ;; Returns: boolean 
@@ -119,7 +119,7 @@
 ;; EndFunctionDoc	
 
 (define (key-special-pressed k)
-	(set-contains k special-keys))
+  (set-contains k special-keys))
 
 ;; StartFunctionDoc-en
 ;; keys-special-down
@@ -131,7 +131,7 @@
 ;; EndFunctionDoc	
 
 (define (keys-special-down)
-	special-keys)
+  special-keys)
 
 ;; StartFunctionDoc-en
 ;; mouse-x
@@ -143,7 +143,7 @@
 ;; EndFunctionDoc	
 
 (define (mouse-x)
-	(vector-ref mouse 0))
+  (vector-ref mouse 0))
 
 ;; StartFunctionDoc-en
 ;; mouse-y
@@ -153,10 +153,10 @@
 ;; Example:
 ;; (display (mouse-y))
 ;; EndFunctionDoc	
-	
+
 (define (mouse-y)
-	(vector-ref mouse 1))
-	
+  (vector-ref mouse 1))
+
 ;; StartFunctionDoc-en
 ;; mouse-button
 ;; Returns: boolean
@@ -167,8 +167,8 @@
 ;; EndFunctionDoc	
 
 (define (mouse-button n)
-	(eq? n (vector-ref mouse 2)))
-	
+  (eq? n (vector-ref mouse 2)))
+
 ;; StartFunctionDoc-en
 ;; mouse-over
 ;; Returns: primitiveid-number
@@ -181,6 +181,6 @@
 ;; EndFunctionDoc	
 
 (define (mouse-over)
-	(select (vector-ref mouse 0) (vector-ref mouse 1) 3))
-		
-)
+  (select (vector-ref mouse 0) (vector-ref mouse 1) 3))
+
+

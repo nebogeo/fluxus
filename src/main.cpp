@@ -39,7 +39,7 @@ static const string RESHAPE_CALLBACK="fluxus-reshape-callback";
 static const string INPUT_CALLBACK="fluxus-input-callback";
 static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
 static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
-									(define fluxus-version \"%d.%d\") \
+									(define fluxus-version \"%d%d\") \
 									(define fluxus-data-location \"%s\") \
 									(load (string-append fluxus-collects-location \"/fluxus-\"\
 										fluxus-version \"/boot.scm\"))";

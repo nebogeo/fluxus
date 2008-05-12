@@ -1,3 +1,5 @@
+; press space
+
 (clear)
 
 (light-diffuse 0 (vector 0.4 0.4 0.4))

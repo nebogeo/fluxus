@@ -5,9 +5,11 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules 
 
+import os
+
 MajorVersion = "0"
 MinorVersion = "15"
-FluxusVersion = MajorVersion+"."+MinorVersion
+FluxusVersion = MajorVersion+MinorVersion
 Target = "fluxus-0.15"
 
 # changed prefix and pltprefix so they can be invoked at runtime
@@ -140,7 +142,12 @@ if not GetOption('clean'):
 ################################################################################
 # Build the fluxus application
 Install = BinInstall
-	
+
+# need to build the bytecode for the base scheme library
+# this is the wrong place to do this
+if not GetOption('clean'):
+	os.system("mzc --c-mods src/base.c ++lib scheme/base")
+
 Source = ["src/GLEditor.cpp", 
 		"src/GLFileDialog.cpp",
 		"src/Interpreter.cpp",

@@ -10,6 +10,14 @@
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+; using mutable pairs (old code, I was young then)
+; this is a bad thing, don't do it kids...
+(require r5rs)
+(define (list-set! lst index new)
+    (define (nthcdr l n)
+        (if (zero? n) l (nthcdr (cdr l) (- n 1))))
+    (set-car! (nthcdr lst index) new))
+
 (define (rndvec)
     (vsub (vector (flxrnd) (flxrnd) (flxrnd)) (vector 0.5 0.5 0.5)))
 
@@ -156,7 +164,7 @@
 (define (entity-rot-cw! entity world)
     (let ((dir (entity-get-dir entity)))
     (set! dir (+ dir 1))
-    (if (> dir 3)
+    (when (> dir 3)
         (set! dir 0))
     (entity-set-dir! entity dir)
     (entity-update-obj entity world)))
@@ -164,7 +172,7 @@
 (define (entity-rot-ccw! entity world)
     (let ((dir (entity-get-dir entity)))
     (set! dir (- dir 1))
-    (if (< dir 0)
+    (when (< dir 0)
         (set! dir 3))
     (entity-set-dir! entity dir)
     (entity-update-obj entity world)))
@@ -180,10 +188,10 @@
     ((eq? dir 3) (set! px (- px 1))))
     
     ; wrap to the to the world limits
-    (if (< px 0) (set! px 0))
-    (if (< py 0) (set! py 0))
-    (if (>= px (world-get-width world))  (set! px (- (world-get-width world) 1)))
-    (if (>= py (world-get-height world)) (set! py (- (world-get-height world) 1)))
+    (when (< px 0) (set! px 0))
+    (when (< py 0) (set! py 0))
+    (when (>= px (world-get-width world))  (set! px (- (world-get-width world) 1)))
+    (when (>= py (world-get-height world)) (set! py (- (world-get-height world) 1)))
     
     (let ((block (world-get-block world (vector px py))))
     (cond (; if the gradient isn't too high            
@@ -191,7 +199,7 @@
                  (block-get-height (world-get-block world pos)))) 2)
         (entity-set-pos! entity (vector px py))
         (entity-update-obj entity world)
-        (if (string=? (entity-get-type entity) "p")
+        (when (string=? (entity-get-type entity) "p")
             (block-set-col! (world-get-block world (vector px py)) (vector 0 1 0)))))))))
 
 (define (entity-update-obj entity world)
@@ -291,17 +299,17 @@
         (game-set-next-level! game 1)))
     (cond
         ((key-pressed "w")
-            (if (eq? key-release 0)
+            (when (eq? key-release 0)
                 (entity-rot-cw! player world))
             (set! key-release 1))
                 
         ((key-pressed "q")
-            (if (eq? key-release 0)
+            (when (eq? key-release 0)
                 (entity-rot-ccw! player world))
             (set! key-release 1))
                 
         ((key-pressed " ")
-            (if (eq? key-release 0)
+            (when (eq? key-release 0)
                 (cond ((eq? #t (entity-move! player world))
                     (player-dec-squarecount! player))))
             (set! key-release 1))
@@ -406,7 +414,7 @@
      ;(lock-camera (entity-get-obj (level-get-player level)))
      (set-camera-transform (minverse (level-get-camera level)))
      
-    (if (not (eq? '() (level-get-enemies level)))
+    (when (not (eq? '() (level-get-enemies level)))
           (update-enemies (level-get-enemies level)))))
 
 (define (level-destroy level)
@@ -415,7 +423,7 @@
         (if (null? (cdr e))
             0
             (destroy-enemies (cdr e))))
-    (if (not (eq? '() (level-get-enemies level)))
+    (when (not (eq? '() (level-get-enemies level)))
           (destroy-enemies (level-get-enemies level)))
     (world-destroy (level-get-world level))
     (entity-destroy (level-get-player level)))
@@ -427,7 +435,7 @@
             0
             (update-enemies (cdr e))))
         
-    (if (not (eq? '() (level-get-enemies level)))
+    (when (not (eq? '() (level-get-enemies level)))
           (update-enemies (level-get-enemies level)))
     (player-update (level-get-player level) (level-get-world level) game))
 

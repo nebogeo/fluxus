@@ -5,7 +5,7 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target = "fluxus-osc.so"
+Target = "fluxus-osc_ss.so"
 Install = BinaryModulesLocation
 Libs = Split("lo")
 

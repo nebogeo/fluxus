@@ -2,6 +2,8 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.15
 
+* ported to PLT 3.99
+* removed scheme versions of obj import/export
 * added fluxa - an audio synth
 * added text opacity on F10 and F11
 * fixed saveas dialog, cursor and shift works

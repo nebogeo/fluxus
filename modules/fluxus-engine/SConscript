@@ -6,7 +6,7 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target = "fluxus-engine.so"
+Target = "fluxus-engine_ss.so"
 Install = BinaryModulesLocation
 Libs = Split("GL GLU glut GLEW fluxus png ode tiff jpeg")
 

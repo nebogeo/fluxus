@@ -38,9 +38,9 @@
     
             ; clamp the velocity - this stops the 
             ; simulation going too fast and blowing up
-            (if (< (vector-ref (pdata-get "vel" n) 1) (- clamp))
+            (when (< (vector-ref (pdata-get "vel" n) 1) (- clamp))
                 (pdata-set "vel" n (vector 0 (- clamp) 0))) 
-            (if (> (vector-ref (pdata-get "vel" n) 1) clamp)
+            (when (> (vector-ref (pdata-get "vel" n) 1) clamp)
                 (pdata-set "vel" n (vector 0 clamp 0))) 
             (simulate (- n 1)))))
 

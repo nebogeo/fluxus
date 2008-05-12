@@ -48,7 +48,7 @@
         obs)
             
     ; look for mouse clicks
-    (if (mouse-button 1)
+    (when (mouse-button 1)
         (let ((selected (mouse-over)))
             (cond ((not (zero? selected))
                 (with-primitive selected 

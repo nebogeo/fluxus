@@ -21,27 +21,22 @@
 ; setup where to find the library module collections
 (current-library-collection-paths 
 	(path-list-string->path-list 
-		(or (getenv "PLTCOLLECTS") fluxus-collects-location)
-		(current-library-collection-paths)))
+         (or (getenv "PLTCOLLECTS") fluxus-collects-location)
+         (current-library-collection-paths)))
 
 (define fluxus-name (string-append "fluxus-" fluxus-version))
 
-; the path to load extensions from
-(define fluxus-extension-path 
-	(build-path (path->string (car (current-library-collection-paths))) 
-		fluxus-name "extensions"))
-			   
-; now require everything we want
-(require "fluxus.ss")
+; now require everything
+(require fluxus-015/fluxus)
 
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))
-	fluxus-name "/helpmap.scm"))
-	
+                          fluxus-name "/helpmap.scm"))
+
 ; set the font for the scratchpad
 (define fluxus-scratchpad-font
   (string-append fluxus-data-location "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
- 
+
 ; the scratchpad autofocus settings
 (define fluxus-scratchpad-do-autofocus 1)
 (define fluxus-scratchpad-debug-autofocus 0)
@@ -59,17 +54,14 @@
 
 ; setup the standard searchpaths
 (set-searchpaths (list
-	"./"
-	(string-append fluxus-data-location "/material/textures/")
-	(string-append fluxus-data-location "/material/shaders/")
-	(string-append fluxus-data-location "/material/meshes/")))
-	
+                  "./"
+                  (string-append fluxus-data-location "/material/textures/")
+                  (string-append fluxus-data-location "/material/shaders/")
+                  (string-append fluxus-data-location "/material/meshes/")))
+
 ;-------------------------------------------------
 ; here is the hacking section
 ; todo: remove all below at some point
-
-; need some things to get us a guile like environment for script compatibility...
-(require (all-except (lib "misc.ss" "swindle") identity regexp-quote concat))
 
 ; override the built in time function for pre 0.12 compatibility
 (define time flxtime)
@@ -79,11 +71,11 @@
 (define pdata-get pdata-ref)
 
 ; for compatibility pre 0.15
-(define pdata-line pdata-ribbon)
+(define build-line build-ribbon)
 
 ;-------------------------------------------------
 ; execute the user config script, if it exists
 
 (define user-script (string-append (getenv "HOME") "/.fluxus.scm"))
-(if (file-exists? user-script)
-	(load user-script))
+(when (file-exists? user-script)
+  (load user-script))

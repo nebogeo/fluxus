@@ -12,7 +12,7 @@
 ; -1 means it's facing away
 (define (toon-light n)
     (let ((lighting (vdot (pdata-get "n" n) dirlight1)))
-        (if (< lighting 0) (set! lighting 0.1))     ; reverse facing polys are nearly black
+        (when (< lighting 0) (set! lighting 0.1))     ; reverse facing polys are nearly black
         (pdata-set "t" n (vector lighting 0 0)))
     (if (< n 1)
         0

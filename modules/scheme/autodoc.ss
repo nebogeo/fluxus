@@ -76,7 +76,7 @@
           (else
            (inner-gather (string-append str " " w))))))
     (inner-gather ""))
-
+  
   ; gather all words up to end word including newlines
   (define (gather-formatted file end)
     (define (inner-gather str)
@@ -98,14 +98,14 @@
                 (inner-remove-comments (cddr in) out)
                 (inner-remove-comments (cdr in) (append out (list (car in)))))))
       (list->string (inner-remove-comments (string->list str) '())))
-        
+    
     (remove-comments (inner-gather "")))
-
+  
   ; extracts the data we need from the C++ file and 
   ; adds it to the input list of strings per function
   ; in the form:
   ; ((funcname (arguments description example)))
- 
+  
   (define (parse file l)
     (let ((c (peek-char file)))
       (if (eof-object? c)
@@ -116,19 +116,19 @@
             (else
              (read-word file) ; comment //
              (parse file (append l (list (list
-                  (read-word file) ; funcname
-                  (list
-                   (gather file "Description:")
-                   (gather file "Example:")
-                   (gather-formatted file "EndFunctionDoc")))))))))))
-
+                                          (read-word file) ; funcname
+                                          (list
+                                           (gather file "Description:")
+                                           (gather file "Example:")
+                                           (gather-formatted file "EndFunctionDoc")))))))))))
+  
   
   (define (parse-file inputfilename helpmap)
     (let ((file (open-input-file inputfilename)))
       (let ((t (parse file helpmap)))
         (close-input-port file)
         t)))
-    
+  
   (define (parse-files inputfilenames helpmap)
     (if (null? inputfilenames)
         helpmap
@@ -138,7 +138,7 @@
     (let ((helpmapfile (open-output-file helpmapfilename)))
       (write (parse-files files '()) helpmapfile)
       (close-output-port helpmapfile)))
-    
- ) ; module autodoc
-
   
+  ) ; module autodoc
+
+

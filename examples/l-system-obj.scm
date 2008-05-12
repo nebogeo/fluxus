@@ -68,7 +68,7 @@
 
 ; load an obj model to duplicate (needs to be triangulated, 
 ; and keep the poly count down as much as possible)
-(define model (obj-make (obj-load "widget.obj")))
+(define model (load-primitive "widget.obj"))
 
 ; hide it, as we just want to use it for instancing copies according to the l-system rules
 (with-primitive model

@@ -5,7 +5,7 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target       = "fluxus-audio.so"
+Target       = "fluxus-audio_ss.so"
 
 Install      = BinaryModulesLocation
 Libs =  Split("jack fftw3 sndfile")

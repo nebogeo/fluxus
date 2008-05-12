@@ -2,7 +2,7 @@
 ; same as mouse-interactive, but with sound!
 ; make sure you're also running jackd and fluxa
 
-(require (lib "fluxa.ss" "fluxus-0.15"))
+(require fluxus-015/fluxa)
 
 (clear)
 
@@ -49,7 +49,7 @@
         obs)
             
     ; look for mouse clicks
-    (if (mouse-button 1)
+    (when (mouse-button 1)
         (let ((selected (mouse-over)))
             (cond ((not (zero? selected))
                 (with-primitive selected 
