@@ -1,4 +1,5 @@
-(require (lib "animation.ss" "frtime"))
+(require frtime/animation
+         frtime/list)
 
 (define player-pos
   (make-posn
@@ -70,9 +71,9 @@
   bullets
   (map
    (lambda (pos)
-     (if (not (collide? pos bullets 10))
+     (if (not (hold (when-e (collide? pos bullets 10)) #f))
          (make-circle pos 15 "green")))
-   (make-grid 3 3 (make-posn 50 20) 50))
+   (make-grid 5 5  (make-posn 50 20) 50))
 
   (make-circle player-pos 10 "blue")
   (make-graph-string (make-posn 10 20) "FrTime Invaders!" "red")

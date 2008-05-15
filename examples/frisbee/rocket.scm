@@ -1,5 +1,5 @@
 ; a stupid shoot-em-up example for frisbee
-(require (lib "frisbee.ss" "fluxus-0.15"))
+(require fluxus-015/frisbee)
 
 (clear-colour (vector 0 0.4 1))
 
@@ -26,38 +26,17 @@
   (factory
    (lambda (t)
      (let loop ((c 10) (l '()))
-       (cond ((zero? c) l)
-             (else (loop (- c 1) 
+        (let ((pos (vec3 (* (- c 5) 10) 0 (- (integral 0.1) 500))))
+       (if (zero? c) l
+            (loop (- c 1) 
                          (cons 
+                       (if (not (hold (when-e (collision-with-list? pos bullets 1)) false))
                           (object
                            #:shape "alien.obj"
-                           #:translate (vec3 (* (- c 5) 10) 0 (- (integral 0.1) 500))
-                           #:colour (vec3 0.8 1 0.8)) l))))))
+                           #:translate pos
+                           #:colour (vec3 0.8 1 0.8))) 
+                        l))))))
    (metro 2) 5))
-
-(define (object-filter proc list-a list-b) 
-  (filter-e
-   (lambda (a)
-     (if (object-struct? (value-now a))
-         (foldl
-          (lambda (b f)
-            (if (and f (object-struct? (value-now b)))
-                (proc (value-now a) (value-now b)))
-            #t)
-          #t
-          list-b))
-     #t)
-  list-a))
-
-(define (sphere-collision-object-filter proc radius list-a list-b)
-  (object-filter 
-   (lambda (a b)
-     (cond ((< (vdist (value-now (object-struct-translate a))
-                      (value-now (object-struct-translate b))) radius)
-            (proc a b)
-            #f)
-           (else #t)))
-   list-a list-b))
 
 
 (scene

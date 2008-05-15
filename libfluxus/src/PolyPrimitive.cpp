@@ -206,10 +206,12 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 
 	if (!m_GeometricNormals.empty()) 
 	{
-		if (m_IndexMode) // smooth mode only for indexed polys
+		// wasn't working as advertised, and the normal path seems to work
+		// with indexed mode to boot...
+		/*if (m_IndexMode) // smooth mode only for indexed polys
 		{
 			vector<int> count(m_VertData->size());
-			
+						
 			// clear the normals
 			for (unsigned int i=0; i<m_NormData->size(); i++)
 			{
@@ -228,9 +230,11 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 			for (unsigned int i=0; i<m_NormData->size(); i++)
 			{
 				(*m_NormData)[i]/=(float)count[i];
+				cerr<<count[i]<<" ";
 			}
+			cerr<<endl;
 		}
-		else
+		else*/
 		{
 			for (unsigned int i=0; i<m_VertData->size(); i++)
 			{
@@ -336,7 +340,9 @@ void PolyPrimitive::CalculateConnected()
 			for (unsigned int b=0; b<m_IndexData.size(); b++)
 			{
 				// compare index value
-				if (i!=b && m_IndexData[i]==m_IndexData[b])
+				if (i!=b && (m_IndexData[i]==m_IndexData[b] || 
+				   // compare positions
+				   ((*m_VertData)[m_IndexData[i]].feq((*m_VertData)[m_IndexData[b]]))))
 				{
 					connected.push_back(b);
 				}

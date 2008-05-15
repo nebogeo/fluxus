@@ -183,14 +183,17 @@ Scheme_Object *osc_msg(int argc, Scheme_Object **argv)
 	MZ_GC_DECL_REG(2); 
 	MZ_GC_VAR_IN_REG(0, argv); 
 	MZ_GC_VAR_IN_REG(1, name); 
-	MZ_GC_REG();	
-	
-	if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-msg", "string", 0, argc, argv);
-	name=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
-	if (OSCServer->SetMsg(name))
+	MZ_GC_REG();
+		
+	if (OSCServer!=NULL)
 	{
-		MZ_GC_UNREG(); 
-		return scheme_make_true();
+		if (!SCHEME_CHAR_STRINGP(argv[0])) scheme_wrong_type("osc-msg", "string", 0, argc, argv);
+		name=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
+		if (OSCServer->SetMsg(name))
+		{
+			MZ_GC_UNREG(); 
+			return scheme_make_true();
+		}
 	}
 	MZ_GC_UNREG(); 
 	return scheme_make_false();
@@ -322,7 +325,11 @@ Scheme_Object *osc_destination(int argc, Scheme_Object **argv)
 
 Scheme_Object *osc_peek(int argc, Scheme_Object **argv)
 {
-	return scheme_make_utf8_string(OSCServer->GetLastMsg().c_str());	
+	if (OSCServer!=NULL)
+	{
+		return scheme_make_utf8_string(OSCServer->GetLastMsg().c_str());	
+	}
+	else return scheme_make_utf8_string("");
 }
 
 // StartFunctionDoc-en
