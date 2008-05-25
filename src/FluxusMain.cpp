@@ -74,7 +74,7 @@ m_ShowFileDialog(false)
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
   	MZ_GC_UNREG();
 	
-	GLEditor::InitFont("/usr/local/share/fluxus-0.15/material/fonts/Bitstream-Vera-Sans-Mono.ttf");
+	GLEditor::InitFont(s);
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++) 

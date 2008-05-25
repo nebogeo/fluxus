@@ -30,13 +30,9 @@
   
   (map
    (lambda (pos)
-     (let ((pos (vmul (vadd pos (vec3 -2.5 -2.5 -1)) 2)))
-       (if (not (hold (when-e (collision-with-list? pos bullets 0.2)) #f))
-           (object 
-            #:shape "alien.obj"
-            #:scale (vec3 0.2 0.2 0.2)
-            #:colour (vec3 1 0 0)
-            #:translate (vadd pos (vec3-integral
+     (let ((pos (vadd 
+            (vmul (vadd pos (vec3 -2.5 -2.5 -1)) 2)
+            (vadd pos (vec3-integral
                  (hold 
                     (map-e
                         (lambda (e)
@@ -47,7 +43,13 @@
                                 ((between tick 6 9) 
                                     (vec3 -0.001 0 0))
                                 ((vec3 0 0 0)))))
-                        fluxus-pulse) (vec3 0 0 0))))))))
+                        fluxus-pulse) (vec3 0 0 0)))))))
+       (if (not (hold (when-e (collision-with-list? pos bullets 0.2)) #f))
+           (object 
+            #:shape "alien.obj"
+            #:scale (vec3 0.2 0.2 0.2)
+            #:colour (vec3 1 0 0)
+            #:translate pos))))
    (make-vector-grid 4 4 1))
   
   bullets))
