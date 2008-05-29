@@ -23,12 +23,14 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
 
 Prefix = ARGUMENTS.get('Prefix','/usr/local')
 PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
-PLTInclude = PLTPrefix + "/include/plt"
-PLTLib = PLTPrefix + "/lib/plt"
-DataInstall = DESTDIR + Prefix + "/share/fluxus-"+FluxusVersion
+PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
+PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
 BinInstall = DESTDIR + Prefix + "/bin"
 
-CollectsLocation = PLTPrefix + "/lib/plt/collects/"
+DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
+DataInstall = DESTDIR + DataLocation
+
+CollectsLocation = PLTPrefix + "/collects/"
 CollectsInstall = DESTDIR + CollectsLocation + "fluxus-"+FluxusVersion
 
 LibPaths     = ["/usr/lib", 
@@ -46,14 +48,19 @@ IncludePaths = ["/usr/local/include",
 # Make the "one" environment for building and installing
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
-		  LIBPATH = LibPaths,
-		  CPPPATH = IncludePaths,
 		  VERSION_NUM = FluxusVersion)
 		  
+if env['PLATFORM'] == 'darwin':
+	IncludePaths += ['/opt/local/include',
+					'/opt/local/include/freetype2']
+	LibPaths += ['/opt/local/lib']
+
+env.Append(CPPPATH = IncludePaths)
+env.Append(LIBPATH = LibPaths)
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
-env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataInstall+"\"\\\"")
+env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
@@ -71,11 +78,11 @@ if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = PLTPrefix+"/lib/plt/mzdyn.o"
+MZDYN = PLTLib + "/mzdyn.o"
 	
 if ARGUMENTS.get("3M","1")=="1":
 	env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-	MZDYN = PLTPrefix+"/lib/plt/mzdyn3m.o"
+	MZDYN = PLTLib + "/mzdyn3m.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -97,11 +104,9 @@ LibList = [["m", "math.h"],
 		["sndfile", "sndfile.h"],
 		["fftw3", "fftw3.h"],
 		["lo", "lo/lo.h"]]
-				
-if env['PLATFORM'] == 'darwin':
-	env.Replace(LINK = "macos/libtool --mode=link g++")
-	env.Prepend(LINKFLAGS = ["-static"])
-else:
+
+
+if env['PLATFORM'] == 'posix':
 	env.Prepend(LINKFLAGS = ["-rdynamic"])  
 	LibList += [["X11", "X11/Xlib.h"],
            	    ["GL", "GL/gl.h"],
@@ -118,6 +123,9 @@ else:
 				 ["Xt", "X11/Xlib.h"], 
 				 ["SM", "X11/Xlib.h"], 
 				 ["ICE", "X11/Xlib.h"]] + LibList;
+elif env['PLATFORM'] == 'darwin':
+	env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MzScheme'],
+		FRAMEWORKPATH = [PLTLib])
 
 ################################################################################
 # Make sure we have these libraries availible
@@ -128,10 +136,17 @@ if not GetOption('clean'):
 	print '--------------------------------------------------------'		
 	conf = Configure(env)
 	
+	# FIXME: check mzscheme3m framework properly on osx
+	if env['PLATFORM'] == 'darwin':
+		if not conf.CheckHeader('scheme.h'):
+			print "ERROR: 'mzscheme3m' must be installed!"
+			Exit(1)
+		LibList = filter(lambda x: x[0] != 'mzscheme3m', LibList)
+
 	# all libraries are required, but they can be checked for independently
 	# (hence autoadd=0), which allows us to speed up the tests ...
 	for (lib,headers) in LibList:
-		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 1):
+		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
 			
@@ -168,7 +183,7 @@ SConscript(dirs = Split("libfluxus modules fluxa"),
  
 ################################################################################
 # packaging / installing
-
+'''
 if env['PLATFORM'] == 'darwin':
 	from macos.osxbundle import *
 	TOOL_BUNDLE(env)
@@ -186,6 +201,7 @@ if env['PLATFORM'] == 'darwin':
 	env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
 				       DmgFiles))
 else:
-	env.Install(Install, Target)
-	env.Alias('install', DESTDIR + Prefix)
+'''
+env.Install(Install, Target)
+env.Alias('install', [DESTDIR + Prefix, CollectsInstall])
 

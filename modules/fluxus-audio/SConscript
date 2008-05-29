@@ -5,15 +5,18 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target       = "fluxus-audio_ss.so"
+if env['PLATFORM'] == 'darwin':
+	Target = "fluxus-audio_ss.dylib"
+else:
+	Target = "fluxus-audio_ss.so"
 
-Install      = BinaryModulesLocation
+Install = BinaryModulesLocation
 Libs =  Split("jack fftw3 sndfile")
 
 Source = Split("src/FluxusAudio.cpp \
 		src/AudioCollector.cpp \
-		src/JackClient.cpp "+ 
-		MZDYN)
+		src/JackClient.cpp") + \
+		[MZDYN]
 		
 env.SharedLibrary(source = Source, 
 				  target = Target,

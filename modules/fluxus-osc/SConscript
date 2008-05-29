@@ -5,14 +5,18 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target = "fluxus-osc_ss.so"
+if env['PLATFORM'] == 'darwin':
+	Target = "fluxus-osc_ss.dylib"
+else:
+	Target = "fluxus-osc_ss.so"
+
 Install = BinaryModulesLocation
 Libs = Split("lo")
 
 Source = Split("src/FluxusOSC.cpp \
 		src/OSCServer.cpp \
-		src/OSCCore.cpp "+ 
-		MZDYN)
+		src/OSCCore.cpp") + \
+		[MZDYN]
 
 env.SharedLibrary(source = Source, 
 				  target = Target,

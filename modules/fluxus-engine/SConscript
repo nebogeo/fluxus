@@ -6,9 +6,15 @@
 
 Import("env", "BinaryModulesLocation", "MZDYN")
 
-Target = "fluxus-engine_ss.so"
+if env['PLATFORM'] == 'darwin':
+	    Target = "fluxus-engine_ss.dylib"
+else:
+		Target = "fluxus-engine_ss.so"
+
 Install = BinaryModulesLocation
-Libs = Split("GL GLU glut GLEW fluxus png ode tiff jpeg")
+Libs = Split("GLEW fluxus png ode tiff jpeg")
+if env['PLATFORM'] != 'darwin':
+	    Libs += Split("GL GLU glut")
 
 Source = Split("src/Engine.cpp \
 		src/FluxusEngine.cpp \
@@ -23,8 +29,8 @@ Source = Split("src/Engine.cpp \
 		src/LightFunctions.cpp \
 		src/PhysicsFunctions.cpp \
 		src/TurtleBuilder.cpp \
-		src/PFuncContainer.cpp " + 
-		MZDYN)
+		src/PFuncContainer.cpp") + \
+		[MZDYN]
 		
 env.SharedLibrary(source = Source, 
 				  target = Target, 
