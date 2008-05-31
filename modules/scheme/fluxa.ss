@@ -42,7 +42,7 @@
 (define DISTORT 18) (define CLIP 19) (define ECHO 20)
 
 (define (fluxa-init)
-  (osc-destination "osc.udp://127.0.0.1:4001")
+  (osc-destination "osc.udp://127.0.0.1:4004")
   (osc-source "4444")
   (osc-send "/setclock" "" '())
   (searchpath nm-searchpath)

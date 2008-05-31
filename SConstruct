@@ -143,10 +143,10 @@ if not GetOption('clean'):
 			Exit(1)
 		LibList = filter(lambda x: x[0] != 'mzscheme3m', LibList)
 
-	# all libraries are required, but they can be checked for independently
-	# (hence autoadd=0), which allows us to speed up the tests ...
+	# all libraries are required, and some of them require each other,
+	# hence the order is important, and autoadd=1
 	for (lib,headers) in LibList:
-		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 0):
+		if not conf.CheckLibWithHeader(lib, headers, 'C', autoadd = 1):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Exit(1)
 			

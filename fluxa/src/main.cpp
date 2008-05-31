@@ -24,7 +24,7 @@ int main(int argc, char **argv)
 		cerr<<"usage: fluxa oscportnumber"<<endl;
 		return -1;
 	}
-	string port("4001");
+	string port("4004");
 	if (argc==2) port=argv[1];
 	OSCServer server(port);
 	Fluxa engine(&server,44100);
