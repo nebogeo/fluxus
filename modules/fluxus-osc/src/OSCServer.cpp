@@ -88,9 +88,7 @@ void Server::SetPort(const string &Port)
 			m_ServerStarted=false;
 		}
 
-		//printf("one\n");
 		m_Server = lo_server_thread_new(Port.c_str(), ErrorHandler);
- 		//printf("two\n");
    		if (!m_Error) 
 		{
 			m_Port=Port;

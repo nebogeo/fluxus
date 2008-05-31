@@ -178,7 +178,7 @@ void OBJPrimitiveIO::ReadIndices(vector<Face> &output)
 	{
 		vector<string> tokens;
 		pos = TokeniseLine(pos, tokens);
-		if (tokens[0]=="f")
+		if (!tokens.empty() && tokens[0]=="f")
 		{
 			Face f;
 			for(unsigned int i=1; i<tokens.size(); i++)
