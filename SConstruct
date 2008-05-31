@@ -30,7 +30,7 @@ BinInstall = DESTDIR + Prefix + "/bin"
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
 DataInstall = DESTDIR + DataLocation
 
-CollectsLocation = PLTPrefix + "/collects/"
+CollectsLocation = PLTLib + "/collects/"
 CollectsInstall = DESTDIR + CollectsLocation + "fluxus-"+FluxusVersion
 
 LibPaths     = ["/usr/lib", 
