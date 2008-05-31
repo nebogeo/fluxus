@@ -88,7 +88,7 @@
 ;; EndFunctionDoc
 
 (define (help . args)
-  (when (null? args) ; help without an argument prints out some 
+  (if (null? args) ; help without an argument prints out some 
     (func-help-example "tophelp")   ; top level help information (defined above)
     (cond
       ((string=? (car args) "keys") (func-help-example (car args)))
