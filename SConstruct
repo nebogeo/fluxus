@@ -5,7 +5,7 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules 
 
-import os
+import os, sys
 
 MajorVersion = "0"
 MinorVersion = "15"
@@ -30,8 +30,11 @@ BinInstall = DESTDIR + Prefix + "/bin"
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
 DataInstall = DESTDIR + DataLocation
 
-CollectsLocation = PLTLib + "/collects/"
-CollectsInstall = DESTDIR + CollectsLocation + "fluxus-"+FluxusVersion
+if sys.platform == 'darwin':
+	CollectsLocation = PLTPrefix + "/collects/"
+else:
+	CollectsLocation = PLTLib + "/collects/"
+CollectsInstall = DESTDIR + CollectsLocation + "fluxus-" + FluxusVersion
 
 LibPaths     = ["/usr/lib", 
 				PLTLib,
