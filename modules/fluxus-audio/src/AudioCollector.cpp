@@ -150,6 +150,7 @@ float *AudioCollector::GetFFT()
 		}
 		else
 		{
+			cerr<<"Finished processing audio file..."<<endl;
 			// finished, so clean up...
 			delete[] m_ProcessBuffer;
 			m_ProcessPos=0;
