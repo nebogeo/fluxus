@@ -27,6 +27,7 @@
 (define fluxus-name (string-append "fluxus-" fluxus-version))
 
 ; now require everything
+(require scheme/pretty)
 (require fluxus-015/fluxus)
 
 ; load the helpmap

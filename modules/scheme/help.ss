@@ -217,7 +217,7 @@
   (cond 
     ((null? helpmap)
      (display "No helpmap exists...")(newline)
-     (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline)
+     (display "Try running \"makehelpmap.scm\" in the fluxus docs directory")(newline)
      (display "and reinstalling with \"sudo scons install\"")(newline)
      #f)
     (else

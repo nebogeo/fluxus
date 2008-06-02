@@ -55,6 +55,8 @@ public:
 	
 private:
 	
+	void Pretty();
+	
 	GLEditor *m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
 	string m_SaveName[NUM_EDITORS];
