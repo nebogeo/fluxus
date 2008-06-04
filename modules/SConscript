@@ -14,11 +14,12 @@ file.close()
 BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
 SConscript(dirs = ["fluxus-engine", 
-                   "fluxus-audio", 
-				   "fluxus-osc", 
-				   "scheme",
-				   "material"], 
-				   
-		   exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN"])
- 
+				"fluxus-audio", 
+				"fluxus-osc", 
+				"fluxus-midi", 
+				"scheme",
+				"material"], 
+
+				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN"])
+
 env.Install(CollectsInstall, "../docs/helpmap.scm")
