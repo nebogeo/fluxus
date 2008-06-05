@@ -19,11 +19,6 @@
 #include <iostream>
 #include "MIDIListener.h"
 
-#undef MZ_GC_DECL_REG
-#undef MZ_GC_UNREG
-#define MZ_GC_DECL_REG(size) void *__gc_var_stack__[size+2] = { (void*)0, (void*)size };
-#define MZ_GC_UNREG() (GC_variable_stack = (void**)__gc_var_stack__[0])
-
 using namespace std;
 
 MIDIListener *midilistener = NULL;
@@ -63,7 +58,6 @@ MIDIListener *midilistener = NULL;
 Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
-	// FIXME: MZ_GC
 	if (midilistener == NULL)
 	{
 		midilistener = new MIDIListener();
@@ -71,14 +65,25 @@ Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 
 	vector<string> port_names = midilistener->info();
 	int port_count = port_names.size();
-	Scheme_Object **a = (Scheme_Object **)
-		scheme_malloc(port_count*sizeof(Scheme_Object *));
+	Scheme_Object **a = (Scheme_Object **)scheme_malloc(port_count *
+							sizeof(Scheme_Object *));
 
 	for (int i = 0; i < port_count; i++)
 	{
-		Scheme_Object *port_num = scheme_make_integer(i);
-		Scheme_Object *port_name = scheme_make_symbol(port_names[i].c_str());
+		Scheme_Object *port_num = NULL;
+		Scheme_Object *port_name = NULL;
+
+		MZ_GC_DECL_REG(2);
+		MZ_GC_VAR_IN_REG(0, port_num);
+		MZ_GC_VAR_IN_REG(1, port_name);
+		MZ_GC_REG();
+
+		port_num = scheme_make_integer(i);
+		port_name = scheme_make_symbol(port_names[i].c_str());
+
 		a[i] = scheme_make_pair(port_num, port_name);
+
+		MZ_GC_UNREG();
 	}
 
 	ret = scheme_build_list(port_count, a);
