@@ -17,7 +17,11 @@ Scripts    = ["boot.scm",
 			  "drflux.ss",
 			  "randomness.ss",
 			  "frisbee.ss",
-			  "fluxa.ss" ]
+			  "fluxa.ss",
+			  "time.ss",
+			  "gui.ss",
+			  "joylisten.ss",
+			  "tricks.ss" ]
 
 Install        = CollectsInstall
 
