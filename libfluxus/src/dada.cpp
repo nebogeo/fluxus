@@ -95,6 +95,87 @@ istream &Fluxus::operator>>(istream &is, dVector &om)
 
 ////
 
+dColour dColour::RGBtoHSV()
+{
+	float h, s, v;
+
+	float rgbmax = (r > g) ?
+					((b > r) ? b : r) :
+					((b > g) ? b : g);
+	float rgbmin = (r < g) ?
+					((b < r) ? b : r) :
+					((b < g) ? b : g);
+	float delta = rgbmax - rgbmin;
+
+	v = rgbmax;
+
+	if (rgbmax == 0)
+	{
+		dColour hsv(0, 0, v, a);
+		return hsv;
+	}
+
+	s = delta / rgbmax;
+
+	if (r == rgbmax)
+		h = (g - b) / delta;
+	else
+	if (g == rgbmax)
+		h = 2 + (b - r) / delta;
+	else
+		h = 4 + (r - g) / delta;
+
+	if (h < 0)
+		h += 6;
+
+	h /= 6;
+
+	dColour hsv(h, s, v, a);
+	return hsv;
+}
+
+dColour dColour::HSVtoRGB()
+{
+	float h = r;
+	float s = g;
+	float v = b;
+
+	dColour rgb;
+	float h6 = h * 6;
+	int i = floor(h6);
+	float f = h6 - i;
+
+	float p = v * (1 - s);
+	float q = v * (1 - f * s);
+	float t = v * (1 - (1 - f) * s);
+
+	rgb.a = a;
+
+	switch (i)
+	{
+		case 0:
+			rgb.r = v; rgb.g = t; rgb.b = p;
+			break;
+		case 1:
+			rgb.r = q; rgb.g = v; rgb.b = p;
+			break;
+		case 2:
+			rgb.r = p; rgb.g = v; rgb.b = t;
+			break;
+		case 3:
+			rgb.r = p; rgb.g = q; rgb.b = v;
+			break;
+		case 4:
+			rgb.r = t; rgb.g = p; rgb.b = v;
+			break;
+		case 5:
+			rgb.r = v; rgb.g = p; rgb.b = q;
+			break;
+	}
+
+	return rgb;
+}
+
 ostream &Fluxus::operator<<(ostream &os, dColour const &om)
 {
     os<<"r="<<om.r<<" g="<<om.g<<" b="<<om.b<<" a="<<om.a<<" ";

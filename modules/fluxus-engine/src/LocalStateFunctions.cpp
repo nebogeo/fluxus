@@ -339,10 +339,10 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 // colour colour-vector
 // Returns: void
 // Description:
-// Sets the colour of the current drawing state, or the current primitive. 
+// Sets the colour of the current drawing state, or the current primitive.
 // Example:
-// (colour (vector 1 0.5 0.1)) ; mmm orange...   
-// (define mycube (build-cube)) ; makes an orange cube 
+// (colour (vector 1 0.5 0.1)) ; mmm orange...
+// (define mycube (build-cube)) ; makes an orange cube
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -351,29 +351,110 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a cor do estado de desenho atual, ou a primitiva atualmente pega.
 // Exemplo:
-// (colour (vector 1 0.5 0.1)) ; mmm laranja...   
-// (define mycube (build-cube)) ; faz um cubo laranja 
+// (colour (vector 1 0.5 0.1)) ; mmm laranja...
+// (define mycube (build-cube)) ; faz um cubo laranja
 // EndFunctionDoc
 
 Scheme_Object *colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("colour", "v", argc, argv);
-    Engine::Get()->State()->Colour=ColourFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
-    return scheme_void;
+	dColour c=ColourFromScheme(argv[0]);
+	if (Engine::Get()->State()->ColourMode==MODE_RGB)
+		Engine::Get()->State()->Colour=c;
+	else
+	{
+		Engine::Get()->State()->Colour=c.HSVtoRGB();
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// colour-mode mode
+// Returns: void
+// Description:
+// Changes the way Fluxus interprets colour data for the current drawing
+// state, or the current primitive.
+// Colourmode symbols can consist of: rgb hsv
+// Example:
+// (clear)
+// (colour-mode 'hsv)
+//
+// (for ((x (in-range 0 10)))
+//   (translate (vector 1 0 0))
+//   (colour (vector (/ x 10) 1 1))
+//   (build-cube))
+// EndFunctionDoc
+
+Scheme_Object *colour_mode(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("colour-mode", "S", argc, argv);
+	string mode=SymbolName(argv[0]);
+
+	if (mode=="rgb") Engine::Get()->State()->ColourMode=MODE_RGB;
+	else if (mode=="hsv") Engine::Get()->State()->ColourMode=MODE_HSV;
+	else Trace::Stream<<"colour mode not recognised: "<<mode<<endl;
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// rgb->hsv colour-vector
+// Returns: vector
+// Description:
+// Converts the RGB colour to HSV.
+// Example:
+// (rgb->hsv (vector 1 0.5 0.1))
+// EndFunctionDoc
+
+Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("rgb->hsv", "v", argc, argv);
+	dColour rgb=ColourFromScheme(argv[0]);
+	dColour hsv=rgb.RGBtoHSV();
+	MZ_GC_UNREG();
+	return FloatsToScheme(hsv.arr(),SCHEME_VEC_SIZE(argv[0]));
+}
+
+// StartFunctionDoc-en
+// hsv->rgb colour-vector
+// Returns: vector
+// Description:
+// Converts the HSV colour to RGB.
+// Example:
+// (clear)
+// (for* ((x (in-range 0 10))  ; builds a 10x10 HSV colour pattern
+//        (y (in-range 0 10)))
+//     (identity)
+//     (translate (vector x y 0))
+//     (colour (hsv->rgb (vector (/ x 10) (/ y 10) 1)))
+//     (build-cube))
+// EndFunctionDoc
+
+Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("hsv->rgb", "v", argc, argv);
+	dColour hsv=ColourFromScheme(argv[0]);
+	dColour rgb=hsv.HSVtoRGB();
+	MZ_GC_UNREG();
+	return FloatsToScheme(rgb.arr(),SCHEME_VEC_SIZE(argv[0]));
 }
 
 // StartFunctionDoc-en
 // wire-colour colour-vector
 // Returns: void
 // Description:
-// Sets the wire frame colour of the current drawing state, or the current 
+// Sets the wire frame colour of the current drawing state, or the current
 // primitive. Visible with (hint-wire) on most primitives.
 // Example:
 // (wire-colour (vector 1 1 0)) ; set yellow as current wire colour
-// (hint-wire)   
-// (define mycube (build-cube)) ; makes a cube with yellow wireframe 
+// (hint-wire)
+// (define mycube (build-cube)) ; makes a cube with yellow wireframe
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -382,10 +463,10 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a cor do "wire frame" do estado de desenho atual, ou a
 // primitiva atualmente pega. Visível com (hint-wire) na maioria das
-// primitivas. 
+// primitivas.
 // Exemplo:
 // (wire-colour (vector 1 1 0)) ; ajusta a cor do fio como amarelo
-// (hint-wire)   
+// (hint-wire)
 // (define mycube (build-cube)) ; faz um cubo com wireframe amarelo
 // EndFunctionDoc
 
@@ -393,9 +474,15 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("wire-colour", "v", argc, argv);
-   	Engine::Get()->State()->WireColour=ColourFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
-    return scheme_void;
+	dColour c=ColourFromScheme(argv[0]);
+	if (Engine::Get()->State()->ColourMode==MODE_RGB)
+		Engine::Get()->State()->WireColour=c;
+	else
+	{
+		Engine::Get()->State()->WireColour=c.HSVtoRGB();
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2040,7 +2127,7 @@ Scheme_Object *texture_params(int argc, Scheme_Object **argv)
 }
 
 void LocalStateFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -2058,6 +2145,9 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("scale",scheme_make_prim_w_arity(scale,"scale",1,1), env);
 	scheme_add_global("get-transform", scheme_make_prim_w_arity(get_transform, "get-transform", 0, 0), env);
     scheme_add_global("colour",scheme_make_prim_w_arity(colour,"colour",1,1), env);
+    scheme_add_global("rgb->hsv",scheme_make_prim_w_arity(rgbtohsv,"rgb->hsv",1,1), env);
+    scheme_add_global("hsv->rgb",scheme_make_prim_w_arity(hsvtorgb,"hsv->rgb",1,1), env);
+    scheme_add_global("colour-mode",scheme_make_prim_w_arity(colour_mode,"colour-mode",1,1), env);
     scheme_add_global("wire-colour",scheme_make_prim_w_arity(wire_colour,"wire-colour",1,1), env);
     scheme_add_global("opacity",scheme_make_prim_w_arity(opacity,"opacity",1,1), env);
     scheme_add_global("wire-opacity",scheme_make_prim_w_arity(wire_opacity,"wire-opacity",1,1), env);
@@ -2093,5 +2183,5 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
 	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }

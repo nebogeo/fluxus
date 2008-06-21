@@ -32,6 +32,7 @@ SourceBlend(GL_SRC_ALPHA),
 DestinationBlend(GL_ONE_MINUS_SRC_ALPHA),
 WireColour(1,1,1),
 WireOpacity(1.0f),
+ColourMode(MODE_RGB),
 Shader(NULL)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)

@@ -61,6 +61,13 @@ namespace Fluxus
 #define MAX_TEXTURES  1
 #endif
 
+// colour modes
+enum
+{
+	MODE_RGB = 0,
+	MODE_HSV
+};
+
 ///////////////////////////////////////
 /// The fluxus graphics state
 /// This is used to form the state stack 
@@ -82,7 +89,7 @@ public:
 	float Opacity;
 	unsigned int Textures[MAX_TEXTURES];
 	TextureState TextureStates[MAX_TEXTURES];
-	
+
 	int Parent;
 	int Hints;
 	float LineWidth;
@@ -93,6 +100,8 @@ public:
 
 	dColour WireColour;
 	float WireOpacity;
+
+	int ColourMode;
 
 	dMatrix Transform;
 

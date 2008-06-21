@@ -186,9 +186,9 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_REG();	
-	ArgCheck("pdata-set!", "si?", argc, argv);		
-    Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
+	MZ_GC_REG();
+	ArgCheck("pdata-set!", "si?", argc, argv);
+    Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed) 
 	{
 		size_t ssize=0;
@@ -196,17 +196,17 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 		unsigned int index=IntFromScheme(argv[1]);
 		unsigned int size;
 		char type;
-		
+
 		if (Grabbed->GetDataInfo(name,type,size))
 		{
-			if (type=='f')	
+			if (type=='f')
 			{
 				if (SCHEME_NUMBERP(argv[2])) Grabbed->SetData<float>(name,index%size,FloatFromScheme(argv[2]));
 				else Trace::Stream<<"expected number value in pdata-set"<<endl;
 			}
-			else if (type=='v')	
+			else if (type=='v')
 			{
-				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==3) 
+				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==3)
 				{
 					dVector v;
 					FloatsFromScheme(argv[2],v.arr(),3);
@@ -214,18 +214,23 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 				}
 				else Trace::Stream<<"expected vector (size 3) value in pdata-set"<<endl;
 			}
-			else if (type=='c')	
+			else if (type=='c')
 			{
 				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])>=3 && SCHEME_VEC_SIZE(argv[2])<=4)
 				{
 					dColour c;
 					if (SCHEME_VEC_SIZE(argv[2])==3) FloatsFromScheme(argv[2],c.arr(),3);
 					else FloatsFromScheme(argv[2],c.arr(),4);
+					if (Grabbed->GetState()->ColourMode==MODE_HSV)
+					{
+						c = c.HSVtoRGB();
+					}
+
 					Grabbed->SetData<dColour>(name,index%size,c);
 				}
 				else Trace::Stream<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
 			}
-			else if (type=='m')	
+			else if (type=='m')
 			{
 				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])==16)
 				{
@@ -237,7 +242,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 			}
 		}
 	}
-  	MZ_GC_UNREG();
+	MZ_GC_UNREG();
     return scheme_void;
 }
 

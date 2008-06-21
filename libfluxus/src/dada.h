@@ -206,104 +206,106 @@ istream &operator>>(istream &is, dVector &om);
 class dColour
 {
 public:
-       float r,g,b,a;
-       dColour() {r=g=b=0; a=1;}
-       dColour(float R, float G, float B, float A=1) {r=R; g=G; b=B; a=A;}
-       dColour(dColour const &c) {*this=c;}
-	   float *arr() { return &r; }
+		float r,g,b,a;
+		dColour() {r=g=b=0; a=1;}
+		dColour(float R, float G, float B, float A=1) {r=R; g=G; b=B; a=A;}
+		dColour(dColour const &c) {*this=c;}
+		float *arr() { return &r; }
 
 		inline dColour &operator=(dColour const &rhs)
 		{
-    		r=rhs.r; g=rhs.g; b=rhs.b; a=rhs.a;
-    		return *this;
+			r=rhs.r; g=rhs.g; b=rhs.b; a=rhs.a;
+			return *this;
 		}
 
 		inline dColour operator+(dColour const &rhs) const
 		{
-    		dColour t;
-    		t.r=r+rhs.r; t.g=g+rhs.g; t.b=b+rhs.b; t.a=a+rhs.a;
-    		return t;
+			dColour t;
+			t.r=r+rhs.r; t.g=g+rhs.g; t.b=b+rhs.b; t.a=a+rhs.a;
+			return t;
 		}
 
 		inline dColour operator-(dColour const &rhs) const
 		{
-    		dColour t;
-    		t.r=r-rhs.r; t.g=g-rhs.g; t.b=b-rhs.b; t.a=a-rhs.a;
-    		return t;
+			dColour t;
+			t.r=r-rhs.r; t.g=g-rhs.g; t.b=b-rhs.b; t.a=a-rhs.a;
+			return t;
 		}
 
 		inline dColour operator*(dColour const &rhs) const
 		{
-    		dColour t;
-    		t.r=r*rhs.r; t.g=g*rhs.g; t.b=b*rhs.b; t.a=a*rhs.a;
-    		return t;
+			dColour t;
+			t.r=r*rhs.r; t.g=g*rhs.g; t.b=b*rhs.b; t.a=a*rhs.a;
+			return t;
 		}
 
 		inline dColour operator/(dColour const &rhs) const
 		{
-    		dColour t;
-    		t.r=r/rhs.r; t.g=g/rhs.g; t.b=b/rhs.b; t.a=a/rhs.a;
-    		return t;
+			dColour t;
+			t.r=r/rhs.r; t.g=g/rhs.g; t.b=b/rhs.b; t.a=a/rhs.a;
+			return t;
 		}
 
 		inline dColour operator+(float rhs) const
 		{
-    		dColour t;
-    		t.r=r+rhs; t.g=g+rhs; t.b=b+rhs; t.a=a+rhs;
-    		return t;
+			dColour t;
+			t.r=r+rhs; t.g=g+rhs; t.b=b+rhs; t.a=a+rhs;
+			return t;
 		}
 
 		inline dColour operator-(float rhs) const
 		{
-    		dColour t;
-    		t.r=r-rhs; t.g=g-rhs; t.b=b-rhs; t.a=a-rhs;
-    		return t;
+			dColour t;
+			t.r=r-rhs; t.g=g-rhs; t.b=b-rhs; t.a=a-rhs;
+			return t;
 		}
 
 		inline dColour operator*(float rhs) const
 		{
-    		dColour t;
-    		t.r=r*rhs; t.g=g*rhs; t.b=b*rhs; t.a=a*rhs;
-    		return t;
+			dColour t;
+			t.r=r*rhs; t.g=g*rhs; t.b=b*rhs; t.a=a*rhs;
+			return t;
 		}
 
 		inline dColour operator/(float rhs) const
 		{
-    		dColour t;
-    		t.r=r/rhs; t.g=g/rhs; t.b=b/rhs; t.a=a/rhs;
-    		return t;
+			dColour t;
+			t.r=r/rhs; t.g=g/rhs; t.b=b/rhs; t.a=a/rhs;
+			return t;
 		}
 
 		inline dColour &operator+=(dColour const &rhs)
 		{
-    		r+=rhs.r; g+=rhs.g; b+=rhs.b; a+=rhs.a;
-    		return *this;
+			r+=rhs.r; g+=rhs.g; b+=rhs.b; a+=rhs.a;
+			return *this;
 		}
 
 		inline dColour &operator-=(dColour const &rhs)
 		{
-    		r-=rhs.r; g-=rhs.g; b-=rhs.b; a-=rhs.a;
-    		return *this;
+			r-=rhs.r; g-=rhs.g; b-=rhs.b; a-=rhs.a;
+			return *this;
 		}
 
 		inline dColour &operator*=(float rhs)
 		{
-    		r*=rhs; g*=rhs; b*=rhs; a*=rhs;
-    		return *this;
+			r*=rhs; g*=rhs; b*=rhs; a*=rhs;
+			return *this;
 		}
 
 		inline dColour &operator/=(float rhs)
 		{
-    		if (rhs) {r/=rhs; g/=rhs; b/=rhs; a/=rhs;}
-    		return *this;
+			if (rhs) {r/=rhs; g/=rhs; b/=rhs; a/=rhs;}
+			return *this;
 		}
 
+		inline void clamp()
+		{
+			if (r<0) r=0; if (g<0) g=0; if (b<0) b=0; if (a<0) a=0;
+			if (r>1) r=1; if (g>1) g=1; if (b>1) b=1; if (a>1) a=1;
+		}
 
-       inline void clamp()
-       {
-           if (r<0) r=0; if (g<0) g=0; if (b<0) b=0; if (a<0) a=0;
-           if (r>1) r=1; if (g>1) g=1; if (b>1) b=1; if (a>1) a=1;
-       }
+		dColour RGBtoHSV();
+		dColour HSVtoRGB();
 
 private:
 };
