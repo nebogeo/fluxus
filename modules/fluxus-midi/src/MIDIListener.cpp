@@ -192,17 +192,17 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 			break;
 	}
 
+	/*
 	for (unsigned int i = 0; i < count; i++)
 	{
 		int data = (int)message->at(i);
-		/*
 		if (i == 0)
 		{
 			printf("cat:%x ch:%x ", cat, ch);
 		}
 		else
 			printf("%d: %02x, ", i, data);
-		*/
 	}
+	*/
 }
 

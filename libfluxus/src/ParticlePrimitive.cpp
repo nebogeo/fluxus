@@ -47,7 +47,7 @@ ParticlePrimitive* ParticlePrimitive::Clone() const
 }
 
 void ParticlePrimitive::PDataDirty()
-{	
+{
 	m_VertData=GetDataVec<dVector>("p");
 	m_ColData=GetDataVec<dColour>("c");
 	m_SizeData=GetDataVec<dVector>("s");
@@ -57,22 +57,22 @@ void ParticlePrimitive::PDataDirty()
 void ParticlePrimitive::Render()
 {
 	glDisable(GL_LIGHTING);
-	
+
 	if (m_State.Hints & HINT_POINTS)
 	{
 		glDisableClientState(GL_NORMAL_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glEnableClientState(GL_COLOR_ARRAY);
-	
+
 		glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 		glColorPointer(4,GL_FLOAT,sizeof(dColour),(void*)m_ColData->begin()->arr());
-	
+
 		//glEnable(GL_BLEND);
 	    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);	
-	
-		if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);	
-		else glDisable(GL_POINT_SMOOTH);	
+		//glHint(GL_POINT_SMOOTH_HINT,GL_NICEST);
+
+		if (m_State.Hints & HINT_AALIAS) glEnable(GL_POINT_SMOOTH);
+		else glDisable(GL_POINT_SMOOTH);
 
 		glDrawArrays(GL_POINTS,0,m_VertData->size());
 
@@ -80,30 +80,30 @@ void ParticlePrimitive::Render()
 		glEnableClientState(GL_NORMAL_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	}
-	
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		dMatrix ModelView;
 		glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
 		ModelView = ModelView.inverse();
-		
+
 		dVector CameraDir(0,0,1);
 		CameraDir=ModelView.transform_no_trans(CameraDir);
 		CameraDir.normalise();
-		
+
 		dVector up(0,1,0);
 		up = ModelView.transform(up);
 		dVector across=up.cross(CameraDir);
 		across.normalise();
 		dVector down=across.cross(CameraDir);
 		down.normalise();
-		
+
 		glBegin(GL_QUADS);
 		for (unsigned int n=0; n<m_VertData->size(); n++)
-		{							
+		{
 			dVector scaledacross(across*(*m_SizeData)[n].x*0.5);
 			dVector scaledown(down*(*m_SizeData)[n].y*0.5);
-			glColor3fv((*m_ColData)[n].arr());
+			glColor4fv((*m_ColData)[n].arr());
 			glTexCoord2f(0,0);
 			glVertex3fv(((*m_VertData)[n]-scaledacross-scaledown).arr());
 			glTexCoord2f(0,1);
