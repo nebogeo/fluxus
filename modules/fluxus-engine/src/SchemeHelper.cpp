@@ -27,9 +27,9 @@ float SchemeHelper::FloatFromScheme(Scheme_Object *ob)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, ob);
-	MZ_GC_REG();		
-	float ret=(float)scheme_real_to_double(ob);	
-  	MZ_GC_UNREG();
+	MZ_GC_REG();
+	float ret=(float)scheme_real_to_double(ob);
+	MZ_GC_UNREG();
 	return ret;
 }
 
@@ -59,12 +59,12 @@ void SchemeHelper::FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, src);
-	MZ_GC_REG();	
+	MZ_GC_REG();
 	assert(size==(unsigned int)SCHEME_VEC_SIZE(src));
 	for (unsigned int n=0; n<size; n++)
 	{
 		dst[n]=scheme_real_to_double(SCHEME_VEC_ELS(src)[n]);
-	}  
+	}
 	MZ_GC_UNREG();
 }
 
@@ -109,7 +109,7 @@ string SchemeHelper::SymbolName(Scheme_Object *src)
 dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	dVector ret;
 	FloatsFromScheme(src,ret.arr(),3);
@@ -117,14 +117,33 @@ dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 	return ret;
 }
 
-dColour SchemeHelper::ColourFromScheme(Scheme_Object *src)
+dColour SchemeHelper::ColourFromScheme(Scheme_Object *src, Fluxus::COLOUR_MODE mode/*=Fluxus::MODE_RGB*/)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	dColour ret;
-	if (SCHEME_VEC_SIZE(src)==3) FloatsFromScheme(src,ret.arr(),3);
-	else FloatsFromScheme(src,ret.arr(),4);
+	float tmp[4] = {0, 0, 0, 1};
+
+	if (SCHEME_NUMBERP(src))
+	{
+		ret=dColour(FloatFromScheme(src));
+	}
+	else if (SCHEME_VEC_SIZE(src)==2)
+	{
+		FloatsFromScheme(src,tmp,2);
+		ret=dColour(tmp[0],tmp[1]);
+	}
+	else if (SCHEME_VEC_SIZE(src)==3)
+	{
+		FloatsFromScheme(src,tmp,3);
+		ret=dColour(tmp,mode);
+	}
+	else
+	{
+		FloatsFromScheme(src,tmp,4);
+		ret=dColour(tmp,mode);
+	}
 	MZ_GC_UNREG();
 	return ret;
 }
@@ -191,9 +210,9 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_REG();	
-	
-	// wrong number of arguments, could mean optional arguments for this function, 
+	MZ_GC_REG();
+
+	// wrong number of arguments, could mean optional arguments for this function,
 	// just give up in this case for now...
 
 	//if(argc==(int)format.size())
@@ -203,7 +222,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 			switch(format[n])
 			{
 				case 'f':
-					if (!SCHEME_NUMBERP(argv[n])) 
+					if (!SCHEME_NUMBERP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "number", n, argc, argv);
@@ -211,25 +230,36 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'v':
-					if (!SCHEME_VECTORP(argv[n])) 
+					if (!SCHEME_VECTORP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
 					}
-					if (SCHEME_VEC_SIZE(argv[n])!=3) 
+					if (SCHEME_VEC_SIZE(argv[n])!=3)
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "vector size 3", n, argc, argv);
 					}
 				break;
 
+				case 'c':
+					if ((!SCHEME_VECTORP(argv[n]) || ((SCHEME_VEC_SIZE(argv[n])!=2) &&
+						 (SCHEME_VEC_SIZE(argv[n])!=3) && (SCHEME_VEC_SIZE(argv[n])!=4))) &&
+						(!SCHEME_NUMBERP(argv[n])))
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "vector size 2, 3, 4, or number",
+								n, argc, argv);
+					}
+				break;
+
 				case 'q':
-					if (!SCHEME_VECTORP(argv[n])) 
+					if (!SCHEME_VECTORP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
 					}
-					if (SCHEME_VEC_SIZE(argv[n])!=4) 
+					if (SCHEME_VEC_SIZE(argv[n])!=4)
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "quat (vector size 4)", n, argc, argv);
@@ -237,12 +267,12 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'm':
-					if (!SCHEME_VECTORP(argv[n])) 
+					if (!SCHEME_VECTORP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
 					}
-					if (SCHEME_VEC_SIZE(argv[n])!=16) 
+					if (SCHEME_VEC_SIZE(argv[n])!=16)
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "matrix (vector size 16)", n, argc, argv);
@@ -250,7 +280,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'i':
-					if (!SCHEME_NUMBERP(argv[n])) 
+					if (!SCHEME_NUMBERP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "number", n, argc, argv);
@@ -258,7 +288,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 's':
-					if (!SCHEME_CHAR_STRINGP(argv[n])) 
+					if (!SCHEME_CHAR_STRINGP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "string", n, argc, argv);
@@ -274,14 +304,14 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'S':
- 					if (!SCHEME_SYMBOLP(argv[n]))
- 					{
- 						MZ_GC_UNREG();
- 						scheme_wrong_type(funcname.c_str(), "symbol", n, argc, argv);
- 					}
- 				break;
- 				case 'b':
-					if (!SCHEME_BOOLP(argv[n])) 
+					if (!SCHEME_SYMBOLP(argv[n]))
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "symbol", n, argc, argv);
+					}
+				break;
+				case 'b':
+					if (!SCHEME_BOOLP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "boolean", n, argc, argv);

@@ -14,6 +14,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef __SCHEMEHELPER_H__
+#define __SCHEMEHELPER_H__
+
 #include <string>
 #include <escheme.h>
 #include "dada.h"
@@ -27,10 +30,10 @@
 
 namespace SchemeHelper
 {
-	// utility functions to make life easier for binding, and also to allow us to 
-	// replace the plt functions used for optimisation later, without having 
+	// utility functions to make life easier for binding, and also to allow us to
+	// replace the plt functions used for optimisation later, without having
 	// to rewrite everything...
-	
+
 	float FloatFromScheme(Scheme_Object *ob);
 	int IntFromScheme(Scheme_Object *ob);
 	void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size);
@@ -39,16 +42,18 @@ namespace SchemeHelper
 	string SymbolName(Scheme_Object *src);
 	Scheme_Object *FloatsToScheme(float *src, unsigned int size);
 	Fluxus::dVector VectorFromScheme(Scheme_Object *src);
-	Fluxus::dColour ColourFromScheme(Scheme_Object *src);
+	Fluxus::dColour ColourFromScheme(Scheme_Object *src, Fluxus::COLOUR_MODE mode=Fluxus::MODE_RGB);
 	Fluxus::dQuat QuatFromScheme(Scheme_Object *src);
 	Fluxus::dMatrix MatrixFromScheme(Scheme_Object *src);
 	vector<int> IntVectorFromScheme(Scheme_Object *src);
 	vector<float> FloatVectorFromScheme(Scheme_Object *src);
-		
+
 	void ArgCheck(const std::string &funcname, const std::string &format, int argc, Scheme_Object **argv);
-	
+
 	#define DECL_ARGV() MZ_GC_DECL_REG(1); \
 					    MZ_GC_VAR_IN_REG(0, argv); \
-				        MZ_GC_REG(); 
+				        MZ_GC_REG();
 }
+
+#endif
 

@@ -95,7 +95,33 @@ istream &Fluxus::operator>>(istream &is, dVector &om)
 
 ////
 
-dColour dColour::RGBtoHSV()
+dColour::dColour(float x, float y, float z, float w/*=1*/, COLOUR_MODE mode/*=MODE_RGB*/)
+{
+	if (mode == MODE_RGB)
+	{
+		r = x; g = y; b = z; a = w;
+	}
+	else
+	{
+		HSVtoRGB(x, y, z, arr());
+		a = w;
+	}
+}
+
+dColour::dColour(float *xyzw, COLOUR_MODE mode/*=MODE_RGB*/)
+{
+	if (mode == MODE_RGB)
+	{
+		r = xyzw[0]; g = xyzw[1]; b = xyzw[2]; a = xyzw[3];
+	}
+	else
+	{
+		HSVtoRGB(xyzw[0], xyzw[1], xyzw[2], arr());
+		a = xyzw[3];
+	}
+}
+
+void dColour::RGBtoHSV(float r, float g, float b, float *hsv)
 {
 	float h, s, v;
 
@@ -111,8 +137,9 @@ dColour dColour::RGBtoHSV()
 
 	if (rgbmax == 0)
 	{
-		dColour hsv(0, 0, v, a);
-		return hsv;
+		hsv[0] = hsv[1] = 0;
+		hsv[2] = v;
+		return;
 	}
 
 	s = delta / rgbmax;
@@ -130,17 +157,13 @@ dColour dColour::RGBtoHSV()
 
 	h /= 6;
 
-	dColour hsv(h, s, v, a);
-	return hsv;
+	hsv[0] = h;
+	hsv[1] = s;
+	hsv[2] = v;
 }
 
-dColour dColour::HSVtoRGB()
+void dColour::HSVtoRGB(float h, float s, float v, float *rgb)
 {
-	float h = r;
-	float s = g;
-	float v = b;
-
-	dColour rgb;
 	float h6 = h * 6;
 	int i = floor(h6);
 	float f = h6 - i;
@@ -149,31 +172,27 @@ dColour dColour::HSVtoRGB()
 	float q = v * (1 - f * s);
 	float t = v * (1 - (1 - f) * s);
 
-	rgb.a = a;
-
 	switch (i)
 	{
 		case 0:
-			rgb.r = v; rgb.g = t; rgb.b = p;
+			rgb[0] = v; rgb[1] = t; rgb[2] = p;
 			break;
 		case 1:
-			rgb.r = q; rgb.g = v; rgb.b = p;
+			rgb[0] = q; rgb[1] = v; rgb[2] = p;
 			break;
 		case 2:
-			rgb.r = p; rgb.g = v; rgb.b = t;
+			rgb[0] = p; rgb[1] = v; rgb[2] = t;
 			break;
 		case 3:
-			rgb.r = p; rgb.g = q; rgb.b = v;
+			rgb[0] = p; rgb[1] = q; rgb[2] = v;
 			break;
 		case 4:
-			rgb.r = t; rgb.g = p; rgb.b = v;
+			rgb[0] = t; rgb[1] = p; rgb[2] = v;
 			break;
 		case 5:
-			rgb.r = v; rgb.g = p; rgb.b = q;
+			rgb[0] = v; rgb[1] = p; rgb[2] = q;
 			break;
 	}
-
-	return rgb;
 }
 
 ostream &Fluxus::operator<<(ostream &os, dColour const &om)

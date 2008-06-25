@@ -203,13 +203,23 @@ istream &operator>>(istream &is, dVector &om);
 
 ////
 
+// colour modes
+enum COLOUR_MODE
+{
+	MODE_RGB = 0,
+	MODE_HSV
+};
+
 class dColour
 {
 public:
 		float r,g,b,a;
 		dColour() {r=g=b=0; a=1;}
-		dColour(float R, float G, float B, float A=1) {r=R; g=G; b=B; a=A;}
+		dColour(float x, float y, float z, float w=1, COLOUR_MODE mode=MODE_RGB);
+		dColour(float *xyzw, COLOUR_MODE mode=MODE_RGB);
+		dColour(float G, float A=1) {r=g=b=G; a=A;}
 		dColour(dColour const &c) {*this=c;}
+
 		float *arr() { return &r; }
 
 		inline dColour &operator=(dColour const &rhs)
@@ -304,8 +314,8 @@ public:
 			if (r>1) r=1; if (g>1) g=1; if (b>1) b=1; if (a>1) a=1;
 		}
 
-		dColour RGBtoHSV();
-		dColour HSVtoRGB();
+		static void RGBtoHSV(float r, float g, float b, float *hsv);
+		static void HSVtoRGB(float h, float s, float v, float *rgb);
 
 private:
 };

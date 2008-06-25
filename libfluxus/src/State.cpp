@@ -44,8 +44,10 @@ Shader(NULL)
 void State::Apply()
 {
 	glMultMatrixf(Transform.arr());
-	Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
-	WireColour.a=WireOpacity;
+	if (Opacity != 1.0f)
+		Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
+	if (WireOpacity != 1.0f)
+		WireColour.a=WireOpacity;
 	glColor4f(Colour.r,Colour.g,Colour.b,Colour.a);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Ambient.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emissive.arr());

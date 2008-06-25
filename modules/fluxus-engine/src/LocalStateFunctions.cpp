@@ -358,14 +358,9 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 Scheme_Object *colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("colour", "v", argc, argv);
-	dColour c=ColourFromScheme(argv[0]);
-	if (Engine::Get()->State()->ColourMode==MODE_RGB)
-		Engine::Get()->State()->Colour=c;
-	else
-	{
-		Engine::Get()->State()->Colour=c.HSVtoRGB();
-	}
+	ArgCheck("colour", "c", argc, argv);
+	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+	Engine::Get()->State()->Colour=c;
 	MZ_GC_UNREG();
 	return scheme_void;
 }
@@ -414,10 +409,11 @@ Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("rgb->hsv", "v", argc, argv);
-	dColour rgb=ColourFromScheme(argv[0]);
-	dColour hsv=rgb.RGBtoHSV();
+	float rgb[3], hsv[3];
+	FloatsFromScheme(argv[0], rgb, 3);
+	dColour::RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
 	MZ_GC_UNREG();
-	return FloatsToScheme(hsv.arr(),SCHEME_VEC_SIZE(argv[0]));
+	return FloatsToScheme(hsv, 3);
 }
 
 // StartFunctionDoc-en
@@ -439,10 +435,11 @@ Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("hsv->rgb", "v", argc, argv);
-	dColour hsv=ColourFromScheme(argv[0]);
-	dColour rgb=hsv.HSVtoRGB();
+	float hsv[3], rgb[3];
+	FloatsFromScheme(argv[0], hsv, 3);
+	dColour::HSVtoRGB(hsv[0], hsv[1], hsv[2], rgb);
 	MZ_GC_UNREG();
-	return FloatsToScheme(rgb.arr(),SCHEME_VEC_SIZE(argv[0]));
+	return FloatsToScheme(rgb, 3);
 }
 
 // StartFunctionDoc-en
@@ -473,14 +470,9 @@ Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("wire-colour", "v", argc, argv);
-	dColour c=ColourFromScheme(argv[0]);
-	if (Engine::Get()->State()->ColourMode==MODE_RGB)
-		Engine::Get()->State()->WireColour=c;
-	else
-	{
-		Engine::Get()->State()->WireColour=c.HSVtoRGB();
-	}
+	ArgCheck("wire-colour", "c", argc, argv);
+	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+	Engine::Get()->State()->WireColour=c;
 	MZ_GC_UNREG();
 	return scheme_void;
 }
@@ -489,8 +481,8 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 // specular colour-vector
 // Returns: void
 // Description:
-// Sets the specular colour of the current drawing state, or the current 
-// primitive. 
+// Sets the specular colour of the current drawing state, or the current
+// primitive.
 // Example:
 // (specular (vector 0 0 1)) ; set blue as specular colour
 // (define mysphere (build-sphere 10 10)) ; makes a shiny blue sphere
@@ -510,9 +502,9 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 Scheme_Object *specular(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("specular", "v", argc, argv);
+	ArgCheck("specular", "c", argc, argv);
     Engine::Get()->State()->Specular=ColourFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -520,11 +512,11 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
 // ambient colour-vector
 // Returns: void
 // Description:
-// Sets the ambient colour of the current drawing state, or the current 
-// primitive. 
+// Sets the ambient colour of the current drawing state, or the current
+// primitive.
 // Example:
 // (ambient (vector 0 0 1)) ; set blue as ambient colour
-// (define mysphere (build-sphere 10 10)) ; makes a boringly blue sphere 
+// (define mysphere (build-sphere 10 10)) ; makes a boringly blue sphere
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -535,15 +527,15 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
 // atualmente pega.
 // Exemplo:
 // (ambient (vector 0 0 1)) ; ajusta a cor ambiente como azul
-// (define mysphere (build-sphere 10 10)) ; faz uma chata esfera azul 
+// (define mysphere (build-sphere 10 10)) ; faz uma chata esfera azul
 // EndFunctionDoc
 
 Scheme_Object *ambient(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
- 	ArgCheck("ambient", "v", argc, argv);
+	ArgCheck("ambient", "c", argc, argv);
     Engine::Get()->State()->Ambient=ColourFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -551,11 +543,11 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
 // opacity value
 // Returns: void
 // Description:
-// Sets the emissive colour of the current drawing state, or the current 
-// primitive. 
+// Sets the emissive colour of the current drawing state, or the current
+// primitive.
 // Example:
 // (emissive (vector 0 0 1)) ; set blue as emissive colour
-// (define mysphere (build-sphere 10 10)) ; makes an bright blue sphere 
+// (define mysphere (build-sphere 10 10)) ; makes an bright blue sphere
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -566,15 +558,15 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
 // atualmente pega.
 // Exemplo:
 // (emissive (vector 0 0 1)) ; ajusta a cor emissiva para azul
-// (define mysphere (build-sphere 10 10)) ; faz uma esfera azul brilhante 
+// (define mysphere (build-sphere 10 10)) ; faz uma esfera azul brilhante
 // EndFunctionDoc
 
 Scheme_Object *emissive(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("emissive", "v", argc, argv);
+	ArgCheck("emissive", "c", argc, argv);
     Engine::Get()->State()->Emissive=ColourFromScheme(argv[0]);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 

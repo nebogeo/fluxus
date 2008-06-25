@@ -19,7 +19,7 @@
 #include "Engine.h"
 #include "GlobalStateFunctions.h"
 #include "Renderer.h"
- 
+
 using namespace GlobalStateFunctions;
 using namespace SchemeHelper;
 using namespace Fluxus;
@@ -130,12 +130,12 @@ Scheme_Object *blur(int argc, Scheme_Object **argv)
 Scheme_Object *fog(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("fog", "vfff", argc, argv);
+	ArgCheck("fog", "cfff", argc, argv);
 	Engine::Get()->Renderer()->SetFog(ColourFromScheme(argv[0]),
 		FloatFromScheme(argv[1]),
 		FloatFromScheme(argv[2]),
 		FloatFromScheme(argv[3]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -698,10 +698,10 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 {
- 	DECL_ARGV();
-	ArgCheck("clear-colour", "v", argc, argv);
+	DECL_ARGV();
+	ArgCheck("clear-colour", "c", argc, argv);
     Engine::Get()->Renderer()->SetBGColour(ColourFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 

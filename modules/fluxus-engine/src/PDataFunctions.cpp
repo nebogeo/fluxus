@@ -189,7 +189,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 	MZ_GC_REG();
 	ArgCheck("pdata-set!", "si?", argc, argv);
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		size_t ssize=0;
 		string name=StringFromScheme(argv[0]);
@@ -216,6 +216,10 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 			}
 			else if (type=='c')
 			{
+				ArgCheck("colour", "c", 1, &argv[2]);
+				dColour c=ColourFromScheme(argv[2],Grabbed->GetState()->ColourMode);
+				Grabbed->SetData<dColour>(name,index%size,c);
+				/*
 				if (SCHEME_VECTORP(argv[2]) && SCHEME_VEC_SIZE(argv[2])>=3 && SCHEME_VEC_SIZE(argv[2])<=4)
 				{
 					dColour c;
@@ -229,6 +233,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 					Grabbed->SetData<dColour>(name,index%size,c);
 				}
 				else Trace::Stream<<"expected colour vector (size 3 or 4) value in pdata-set"<<endl;
+				*/
 			}
 			else if (type=='m')
 			{
