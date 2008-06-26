@@ -33,7 +33,8 @@ class PNGLoader
 {
 public:
 	/// A utility for loading png files and returns the raw pixel data
-	static unsigned char *Load(const string &Filename, int &w, int &h, PixelFormat &p);
+	static unsigned char *Load(const string &Filename, unsigned int &w, unsigned int &h, PixelFormat &p);
+	static void Save(const string &Filename, unsigned int w, unsigned int h, PixelFormat p, unsigned char *);
 private:
 
 };

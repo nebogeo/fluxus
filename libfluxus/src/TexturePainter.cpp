@@ -212,6 +212,7 @@ void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const 
 	}		
 }
 
+///todo: all pdata texture load/save is to 8 bit RGB or RGBA - need to deal with arbitrary channels and bit depths
 bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
@@ -228,7 +229,7 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 
 		if (desc.Format==RGB)
 		{
-			for (int n=0; n<desc.Width*desc.Height; n++)
+			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
 				pixels.m_Data[n]=dColour(ImageData[n*3]/255.0f, 
 				                         ImageData[n*3+1]/255.0f,
@@ -238,7 +239,7 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 		}	
 		else if (desc.Format==RGBA)
 		{
-			for (int n=0; n<desc.Width*desc.Height; n++)
+			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
 				pixels.m_Data[n]=dColour(ImageData[n*4]/255.0f, 
 				                         ImageData[n*4+1]/255.0f,
@@ -249,13 +250,33 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 		}
 		else
 		{
+			delete[] ImageData;
 			return false;
 		}
 			
+		delete[] ImageData;
 		return true;
 	}
 	
 	return false;
+}
+
+bool TexturePainter::SavePData(const string &Filename, unsigned int w, unsigned int h, const TypedPData<dColour> &pixels)
+{
+	// save as 8bit rgba 
+	unsigned char *ImageData=new unsigned char[w*h*4];
+	for (unsigned int n=0; n<w*h; n++)
+	{
+		ImageData[n*4]=(unsigned char)(pixels.m_Data[n].r*255.0f);
+		ImageData[n*4+1]=(unsigned char)(pixels.m_Data[n].g*255.0f);
+		ImageData[n*4+2]=(unsigned char)(pixels.m_Data[n].b*255.0f);
+		ImageData[n*4+3]=(unsigned char)(pixels.m_Data[n].a*255.0f);
+	}
+	
+	PNGLoader::Save(Filename, w, h, RGBA, ImageData);
+	
+	delete[] ImageData;
+	return true;
 }
 
 unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *data)

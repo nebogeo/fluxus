@@ -33,16 +33,14 @@ Primitive *PixelPrimitiveIO::FormatRead(const string &filename)
 {
 	PixelPrimitive *pp = new PixelPrimitive(1,1);
 	pp->Load(filename);
-	// Todo: uploading here is no good, as when we call AddPrimitive with this 
-	// primitive, the current state's texture is overidden with the current
-	// state's one. need to think about this, as there is a duality between the
-	// colour pdata and the GPU stored data...
-	//pp->Upload();
+	pp->Upload();
 	return pp;
 }
 
-bool PixelPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob)
+bool PixelPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob) 
 {
-	return false;
+	const PixelPrimitive *pp = dynamic_cast<const PixelPrimitive *>(ob);
+	pp->Save(filename);
+	return true;
 }
 	

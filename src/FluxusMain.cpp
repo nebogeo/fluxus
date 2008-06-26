@@ -195,6 +195,12 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			m_Script=m_Editor[m_CurrentEditor]->GetText();
 			SaveBackupScript();
 		}
+		else if (special==GLUT_KEY_F6 && m_CurrentEditor<9) 
+		{
+			Interpreter::Initialise();
+			m_Script=m_Editor[m_CurrentEditor]->GetText();
+			SaveBackupScript();
+		}
 	
 		// the editors only take keyboard events
 		if (m_ShowFileDialog) 

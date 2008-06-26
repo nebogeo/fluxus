@@ -122,7 +122,11 @@
 ;; ctrl-0 : Switch to the REPL. 
 ;; F3 : Resets the camera if you get lost.
 ;; F5 : Execute the selected text, or all if none is selected.
+;; F6 : Completely resets the interpreter, then executes the selected text, 
+;;      or all if none is selected.
 ;; F9 : Randomise the text colour (aka the panic button)
+;; F10 : Decreases the text opacity (make the code less obtrusive)
+;; F11 : Increases the text opacity
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt

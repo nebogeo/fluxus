@@ -26,7 +26,8 @@ using namespace Fluxus;
 PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h) : 
 m_Texture(0),
 m_Width(w),
-m_Height(h)
+m_Height(h),
+m_ReadyForUpload(false)
 {
 	AddData("c",new TypedPData<dColour>);
 	
@@ -53,7 +54,8 @@ PixelPrimitive::PixelPrimitive(const PixelPrimitive &other) :
 Primitive(other),
 m_Points(other.m_Points),
 m_Width(other.m_Width),
-m_Height(other.m_Height)
+m_Height(other.m_Height),
+m_ReadyForUpload(other.m_ReadyForUpload)
 {
 	PDataDirty();
 	glGenTextures(1,(GLuint*)&m_Texture);
@@ -80,15 +82,7 @@ void PixelPrimitive::PDataDirty()
 
 void PixelPrimitive::Upload()
 {
-	if (m_Texture!=0)
-	{
-		glDeleteTextures(1,(GLuint*)&m_Texture);
-	}
-	
-	glBindTexture(GL_TEXTURE_2D,m_Texture);
-	gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
-
-	GetState()->Textures[0]=m_Texture;
+	m_ReadyForUpload=true;
 }
 
 void PixelPrimitive::Load(const string &filename)
@@ -100,8 +94,32 @@ void PixelPrimitive::Load(const string &filename)
 	}
 }
 
+void PixelPrimitive::Save(const string &filename) const
+{
+	const TypedPData<dColour> *data = dynamic_cast<const TypedPData<dColour>*>(GetDataRawConst("c"));
+	if (data)
+	{
+		TexturePainter::Get()->SavePData(filename,m_Width,m_Height,*data);
+	}
+}
+
 void PixelPrimitive::Render()
-{		
+{	
+	if (m_ReadyForUpload)
+	{
+		if (m_Texture!=0)
+		{
+			glDeleteTextures(1,(GLuint*)&m_Texture);
+		}
+	
+		glBindTexture(GL_TEXTURE_2D,m_Texture);
+		gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
+		m_ReadyForUpload=false;
+	}
+	
+	// override the state texture!
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D,m_Texture);
 	glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0,0);
@@ -114,6 +132,7 @@ void PixelPrimitive::Render()
 	glVertex3fv(m_Points[3].arr());
 	glEnd();	
 	glEnable(GL_LIGHTING);
+	glDisable(GL_TEXTURE_2D);
 }
 
 

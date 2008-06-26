@@ -30,6 +30,8 @@
 (require scheme/pretty)
 (require fluxus-015/fluxus)
 
+(clear)
+
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))
                           fluxus-name "/helpmap.scm"))
@@ -59,6 +61,12 @@
                   (string-append fluxus-data-location "/material/textures/")
                   (string-append fluxus-data-location "/material/shaders/")
                   (string-append fluxus-data-location "/material/meshes/")))
+
+; this part is needed when resetting the interpreter - we need to feed back
+; the current screen size from the application into the scheme code
+(let ((screen-size (get-screen-size)))
+  (fluxus-reshape-callback (inexact->exact (round (vector-ref screen-size 0)))
+                           (inexact->exact (round (vector-ref screen-size 1)))))
 
 ;-------------------------------------------------
 ; here is the hacking section

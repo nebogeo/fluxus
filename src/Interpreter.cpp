@@ -25,6 +25,12 @@ using namespace fluxus;
 
 static const int LOG_SIZE=256;
 
+static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
+									(define fluxus-version \"%d%d\") \
+									(define fluxus-data-location \"%s\") \
+									(load (string-append fluxus-collects-location \"/fluxus-\"\
+										fluxus-version \"/boot.scm\"))";
+
 Scheme_Env *Interpreter::m_Scheme=NULL;
 Repl *Interpreter::m_Repl=NULL;
 Scheme_Object *Interpreter::m_OutReadPort=NULL;
@@ -47,7 +53,7 @@ void Interpreter::Register()
     MZ_GC_UNREG();
 }
 
-void Interpreter::NewEnv()
+void Interpreter::Initialise()
 {
 	Scheme_Object *v = NULL;
 	MZ_GC_DECL_REG(1);
@@ -58,6 +64,17 @@ void Interpreter::NewEnv()
 	declare_modules(m_Scheme);
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
+	
+	// load the startup script
+	char startup[1024];
+	// insert the version number
+	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
+		COLLECTS_LOCATION,
+		FLUXUS_MAJOR_VERSION,
+		FLUXUS_MINOR_VERSION,
+		DATA_LOCATION);
+		
+	Interpret(startup,NULL,true);
 	
     MZ_GC_UNREG();
 }

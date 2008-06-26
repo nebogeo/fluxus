@@ -104,6 +104,9 @@ public:
 	/// Loads texture information into a pdata array of colour type
 	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
 	
+	/// Saves texture information from a pdata array
+	bool SavePData(const string &Filename, unsigned int w, unsigned int h, const TypedPData<dColour> &pixels);
+	
 	/// Uploads texture data from pdata - returns OpenGL ID number
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
 	///@}
@@ -131,8 +134,8 @@ private:
 	{
 	public:
 		TextureDesc() : Format(NONE) {}
-		int Width;
-		int Height;
+		unsigned int Width;
+		unsigned int Height;
 		PixelFormat Format;
 	};
 	

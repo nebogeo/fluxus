@@ -50,8 +50,10 @@ public:
 	void Upload();
 	
 	/// Load a png file into this primitive
-	///\todo add a save too
 	void Load(const string &filename);
+
+	/// Save to a png file 
+	void Save(const string &filename) const;
 	
 	/// Get the uploaded texture ID - call Upload() first.
 	unsigned int GetTexture() { return m_Texture; }
@@ -67,6 +69,8 @@ protected:
 	
 	unsigned int m_Width;
 	unsigned int m_Height; 
+	
+	bool m_ReadyForUpload;
 };
 
 };

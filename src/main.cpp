@@ -38,11 +38,6 @@ static const string ENGINE_CALLBACK="(fluxus-frame-callback)";
 static const string RESHAPE_CALLBACK="fluxus-reshape-callback";
 static const string INPUT_CALLBACK="fluxus-input-callback";
 static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
-static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
-									(define fluxus-version \"%d%d\") \
-									(define fluxus-data-location \"%s\") \
-									(load (string-append fluxus-collects-location \"/fluxus-\"\
-										fluxus-version \"/boot.scm\"))";
 
 FluxusMain *app = NULL;
 EventRecorder *recorder = NULL;
@@ -191,17 +186,8 @@ int main(int argc, char *argv[])
 	
  	MZ_GC_REG();
 
-	Interpreter::NewEnv();
+	Interpreter::Initialise();
 	
-	// load the startup script
-	char startup[1024];
-	// insert the version number
-	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		COLLECTS_LOCATION,
-		FLUXUS_MAJOR_VERSION,
-		FLUXUS_MINOR_VERSION,
-		DATA_LOCATION);
-	Interpreter::Interpret(startup,NULL,true);
 	srand(time(NULL));
 	
 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;

@@ -112,7 +112,8 @@ dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	dVector ret;
-	FloatsFromScheme(src,ret.arr(),3);
+	if (SCHEME_VEC_SIZE(src)==3) FloatsFromScheme(src,ret.arr(),3);
+	else if (SCHEME_VEC_SIZE(src)==4) FloatsFromScheme(src,ret.arr(),4);	
 	MZ_GC_UNREG();
 	return ret;
 }
@@ -235,10 +236,10 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "vector", n, argc, argv);
 					}
-					if (SCHEME_VEC_SIZE(argv[n])!=3)
+					if (SCHEME_VEC_SIZE(argv[n])!=3 && SCHEME_VEC_SIZE(argv[n])!=4)
 					{
 						MZ_GC_UNREG();
-						scheme_wrong_type(funcname.c_str(), "vector size 3", n, argc, argv);
+						scheme_wrong_type(funcname.c_str(), "vector size 3 or 4", n, argc, argv);
 					}
 				break;
 
