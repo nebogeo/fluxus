@@ -744,11 +744,22 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 Scheme_Object *scale(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("scale", "v", argc, argv);
-	dVector t;
-	FloatsFromScheme(argv[0],t.arr(),3);
-    Engine::Get()->State()->Transform.scale(t.x,t.y,t.z);
-	MZ_GC_UNREG(); 
+	if ((!SCHEME_VECTORP(argv[0]) || (SCHEME_VEC_SIZE(argv[0])!=3))
+			&& (!SCHEME_NUMBERP(argv[0])))
+		scheme_wrong_type("scale", "vector size 3 or number", 0, argc, argv);
+
+	if (SCHEME_VECTORP(argv[0]))
+	{
+		dVector t;
+		FloatsFromScheme(argv[0],t.arr(),3);
+		Engine::Get()->State()->Transform.scale(t.x,t.y,t.z);
+	}
+	else
+	{
+		float t=FloatFromScheme(argv[0]);
+		Engine::Get()->State()->Transform.scale(t,t,t);
+	}
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
