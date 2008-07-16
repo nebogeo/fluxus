@@ -16,6 +16,9 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * frisbee: a functional reactive game engine using frtime
 * added -lang (not how useful this is now)
 * fixed crashes to do with garbage collection using threads
+* sped up pdata-get/ref
+* made (backfacecull) local state rather than global
+* added (hint-cull-ccw)
 
 0.14
 

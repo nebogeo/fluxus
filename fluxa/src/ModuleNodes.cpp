@@ -124,6 +124,7 @@ void MathNode::Process(unsigned int bufsize)
 				case SUB: value=v0-v1; break;
 				case MUL: value=v0*v1; break;
 				case DIV: if (v1!=0) value=v0/v1; break;
+				case POW: value=powf(v0,v1); break;
 			};
 			
 			for (unsigned int n=0; n<bufsize; n++) m_Output[n]=value;
@@ -148,6 +149,7 @@ void MathNode::Process(unsigned int bufsize)
 					}
 				}
 				break;
+				case POW: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=powf(v0,GetChild(1)->GetOutput()[n]); break;
 			};
 		}
 		else if (!GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
@@ -170,6 +172,7 @@ void MathNode::Process(unsigned int bufsize)
 					}
 				}
 				break;
+				case POW: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=powf(GetChild(0)->GetOutput()[n],v1); break;
 			};
 		}
 		else 
@@ -209,6 +212,13 @@ void MathNode::Process(unsigned int bufsize)
 					}
 				}
 				break;
+				case POW: 
+				{
+					for (unsigned int n=0; n<bufsize; n++) 
+					{
+						m_Output[n]=powf(GetChild(0)->GetOutput()[n],GetChild(1)->GetOutput()[n]); 
+					}
+				} break;
 			};
 		}
 	}	

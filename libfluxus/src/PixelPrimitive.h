@@ -44,6 +44,7 @@ public:
 	virtual void RecalculateNormals(bool smooth) {}
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PixelPrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 	
 	/// Upload the texture to the graphics card

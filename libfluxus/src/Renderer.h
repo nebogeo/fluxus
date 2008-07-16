@@ -136,9 +136,6 @@ public:
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
 	void SetClearZBuffer(bool s)             { m_ClearZBuffer=s; }
 	void SetClearAccum(bool s)               { m_ClearAccum=s; }
-	void SetBackFaceCull(bool s)             { m_BackFaceCull=s; m_Initialised=false; }
-	/// Default to ccw
-	void SetFaceOrderClockwise(bool s)       {  m_FaceOrderClockwise=s; m_Initialised=false; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
 	void SetFog(const dColour &c, float d, float s, float e)    
@@ -180,8 +177,6 @@ private:
 	bool m_ClearFrame;
 	bool m_ClearZBuffer;
 	bool m_ClearAccum;
-	bool m_BackFaceCull;
-	bool m_FaceOrderClockwise;
 	dColour m_FogColour; 
 	float m_FogDensity; 
 	float m_FogStart; 

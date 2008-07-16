@@ -54,8 +54,6 @@ m_Grabbed(NULL),
 m_ClearFrame(true),
 m_ClearZBuffer(true),
 m_ClearAccum(false),
-m_BackFaceCull(true),
-m_FaceOrderClockwise(false),
 m_FogDensity(0), 
 m_FogStart(0),
 m_FogEnd(100),	
@@ -227,19 +225,10 @@ void Renderer::PreRender(bool PickMode)
     	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 		glEnable(GL_LIGHTING);
 		
-		if (m_BackFaceCull)
-		{
-			glEnable(GL_CULL_FACE);
-  			glCullFace(GL_BACK);
-    	}
-		else
-		{
-			glDisable(GL_CULL_FACE);
-		}
+		glEnable(GL_CULL_FACE);
+  		glCullFace(GL_BACK);
+    	glFrontFace(GL_CCW);		 
 		
-		if (m_FaceOrderClockwise) glFrontFace(GL_CW);
-		else glFrontFace(GL_CCW);
-				 
     	glEnable(GL_RESCALE_NORMAL);
 		glDisable(GL_COLOR_MATERIAL);
 
@@ -358,6 +347,7 @@ void Renderer::PostRender()
 	glDisable(GL_TEXTURE_2D);
 	glDisable(GL_TEXTURE_CUBE_MAP);
 	GLSLShader::Unapply();
+	glFrontFace(GL_CCW);
 
 	glDisable(GL_DEPTH_TEST);
 	if (m_ShowAxis) Primitive::RenderAxes();

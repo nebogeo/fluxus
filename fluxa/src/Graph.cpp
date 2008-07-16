@@ -61,6 +61,7 @@ void Graph::Init()
 				case SUB : nodedesc->m_Node = new MathNode(MathNode::SUB); break;
 				case MUL : nodedesc->m_Node = new MathNode(MathNode::MUL); break;
 				case DIV : nodedesc->m_Node = new MathNode(MathNode::DIV); break;
+				case POW : nodedesc->m_Node = new MathNode(MathNode::POW); break;
 				case MOOGLP : nodedesc->m_Node = new FilterNode(FilterNode::MOOGLP,m_SampleRate); break;
 				case MOOGBP : nodedesc->m_Node = new FilterNode(FilterNode::MOOGBP,m_SampleRate); break;
 				case MOOGHP : nodedesc->m_Node = new FilterNode(FilterNode::MOOGHP,m_SampleRate); break;

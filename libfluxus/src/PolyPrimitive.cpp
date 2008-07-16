@@ -206,9 +206,7 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 
 	if (!m_GeometricNormals.empty()) 
 	{
-		// wasn't working as advertised, and the normal path seems to work
-		// with indexed mode to boot...
-		/*if (m_IndexMode) // smooth mode only for indexed polys
+		if (m_IndexMode) // accumulate
 		{
 			vector<int> count(m_VertData->size());
 						
@@ -230,41 +228,41 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 			for (unsigned int i=0; i<m_NormData->size(); i++)
 			{
 				(*m_NormData)[i]/=(float)count[i];
-				cerr<<count[i]<<" ";
 			}
-			cerr<<endl;
 		}
-		else*/
+		else
 		{
 			for (unsigned int i=0; i<m_VertData->size(); i++)
 			{
 				(*m_NormData)[i]=m_GeometricNormals[i];
 			}
-
-			if (smooth)
+		}
+		
+		if (smooth)
+		{
+			// smooth the normals
+			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
+			for (unsigned int i=0; i<m_VertData->size(); i++)
 			{
-				// smooth the normals
-				TypedPData<dVector> *newnorms = new TypedPData<dVector>;
-				for (unsigned int i=0; i<m_VertData->size(); i++)
+				float count=1;
+				dVector n = (*m_NormData)[i];
+				for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
+						b!=m_ConnectedVerts[i].end(); b++)
 				{
-					float count=1;
-					dVector n = (*m_NormData)[i];
-					for (vector<int>::iterator b=m_ConnectedVerts[i].begin(); 
-							b!=m_ConnectedVerts[i].end(); b++)
-					{
-						n+=(*m_NormData)[*b];
-						count+=1;
-					}
-					newnorms->m_Data.push_back((n/count).normalise());
+					n+=(*m_NormData)[*b];
+					count+=1;
 				}
-				SetDataRaw("n", newnorms);
+				newnorms->m_Data.push_back((n/count).normalise());
 			}
+			SetDataRaw("n", newnorms);
 		}
 	}
 }
 
 void PolyPrimitive::ConvertToIndexed()
 {
+	if (m_IndexMode) return;
+
 	if (m_ConnectedVerts.empty())
 	{
 		CalculateConnected();
@@ -331,7 +329,7 @@ void PolyPrimitive::GenerateTopology()
 
 void PolyPrimitive::CalculateConnected()
 { 
-	// cache the connected verts 
+	
 	if (m_IndexMode)
 	{		
 		for (unsigned int i=0; i<m_IndexData.size(); i++)
@@ -347,11 +345,13 @@ void PolyPrimitive::CalculateConnected()
 					connected.push_back(b);
 				}
 			}
+			
 			m_ConnectedVerts.push_back(connected);
 		}
 	}
 	else
 	{
+		// cache the connected verts 
 		for (unsigned int i=0; i<m_VertData->size(); i++)
 		{
 			vector<int> connected;
@@ -362,7 +362,8 @@ void PolyPrimitive::CalculateConnected()
 				{
 					connected.push_back(b);
 				}
-			}
+			}	
+
 			m_ConnectedVerts.push_back(connected);
 		}
 	}

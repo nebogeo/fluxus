@@ -646,38 +646,6 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// backfacecull setting-number
-// Returns: void
-// Description:
-// Turns backface culling on or off. Backface culling speeds up rendering by removing faces not 
-// orientated towards the camera. Defaults to on, but this is not always desired, eg for double 
-// sided polygons.
-// Example:
-// (backfacecull 0) 
-// EndFunctionDoc
-
-// StartFunctionDoc-pt
-// backfacecull número-ajuste
-// Retorna: void
-// Descrição:
-// Liga ou desliga o corte de face-traseira. Backface culling acelera
-// a renderização removendo faces não orientadas em direção da
-// câmera. É ligado por padrão, mas isto não é desejado sempre, eg
-// para poligonos com dupla face.
-// Exemplo:
-// (backfacecull 0)
-// EndFunctionDoc
-
-Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
-	ArgCheck("backfacecull", "i", argc, argv);
-	Engine::Get()->Renderer()->SetBackFaceCull(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
-	return scheme_void;
-}
-
-// StartFunctionDoc-en
 // clear-colour colour-vector
 // Returns: void
 // Description:
@@ -1395,7 +1363,6 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
 	scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);
 	scheme_add_global("set-ortho-zoom", scheme_make_prim_w_arity(set_ortho_zoom, "set-ortho-zoom", 1, 1), env);
-	scheme_add_global("backfacecull", scheme_make_prim_w_arity(backfacecull, "backfacecull", 1, 1), env);
 	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
 	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);

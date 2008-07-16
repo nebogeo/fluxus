@@ -19,6 +19,7 @@
 #include <assert.h>
 #include "State.h"
 #include "PDataContainer.h"
+#include "Evaluator.h"
 
 #ifndef N_PRIM
 #define N_PRIM
@@ -42,6 +43,7 @@ public:
 	virtual void Render()=0;
 	virtual dBoundingBox GetBoundingBox()=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
+	virtual Evaluator *MakeEvaluator()=0;
 	///@}
     
 	/// This needs to be set appropriately for all derived types

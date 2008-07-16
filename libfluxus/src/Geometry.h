@@ -14,42 +14,27 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Primitive.h"
+#include "dada.h"
+#include <vector>
 
-#ifndef N_LOCATORPRIM
-#define N_LOCATORPRIM
+#ifndef N_GEOMETRY
+#define N_GEOMETRY
 
 namespace Fluxus
 {
 
 //////////////////////////////////////////////////////
-/// The Locator is an invisible primitive of use for
-/// parenting and other indirect things
-class LocatorPrimitive : public Primitive
-{
-public:
-	LocatorPrimitive();
-	LocatorPrimitive(const LocatorPrimitive &other);
-	virtual ~LocatorPrimitive();
-	
-	///////////////////////////////////////////////////
-	///@name Primitive Interface
-	///@{
-	virtual LocatorPrimitive* Clone() const;
-	virtual void Render();
-	virtual dBoundingBox GetBoundingBox();
-	virtual void ApplyTransform(bool ScaleRotOnly=false);
-	virtual string GetTypeName() { return "LocatorPrimitive"; }
-	virtual Evaluator *MakeEvaluator() { return NULL; }
-	///@}
-	
-protected:
+// Low level operations of a geometric nature
 
-	virtual void PDataDirty();
+float PointLineDist(const dVector &p, const dVector &start, const dVector &end);
 
-private:
+bool IntersectLineTriangle(const dVector &start, const dVector &end, 
+	const dVector &a, const dVector &b, const dVector &c, 
+	dVector &bary);
 
-};
+/*bool IntersectLineQuad(const dVector &start, const dVector &end, 
+	const dVector &a, const dVector &b, const dVector &c, const dVector &d, 
+	std::vector<dVector> &intersections);*/
 
 }
 

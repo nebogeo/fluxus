@@ -64,7 +64,7 @@ private:
 class MathNode : public GraphNode
 {
 public:
-	enum Type{ADD,SUB,MUL,DIV};
+	enum Type{ADD,SUB,MUL,DIV,POW};
 
 	MathNode(Type t);
 	virtual void Trigger(float time);

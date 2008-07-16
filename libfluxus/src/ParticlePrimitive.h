@@ -39,6 +39,7 @@ public:
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "ParticlePrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 	
 	void AddParticle(const dVector &v, const dColour &c, const dVector &s) 

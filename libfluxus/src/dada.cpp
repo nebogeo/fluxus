@@ -351,30 +351,4 @@ void dQuat::setaxisangle(dVector axis, float angle)
 	z=axis.z;
 }
 
-float dGeometry::pointlinedist(const dVector &p, const dVector &start, const dVector &end)
-{
-    float linemag;
-    dVector intersection;
- 
-    float len = end.dist(start);
- 
-    float t = ((p.x-start.x)*(end.x-start.x) +
-               (p.y-start.y)*(end.y-start.y) +
-               (p.z-start.z)*(end.z-start.z)) / (len*len);
- 
-    if (t<0.0f) // off the end
-	{
-		return p.dist(start);
-	}
-    if (t>1.0f) // off the end
-	{
-		return p.dist(end);
-	}
-	
-    intersection.x = start.x+t*(end.x-start.x);
-    intersection.y = start.y+t*(end.y-start.y);
-    intersection.z = start.z+t*(end.z-start.z);
- 
-    return p.dist(intersection);
-}
 

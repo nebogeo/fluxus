@@ -198,7 +198,7 @@ void ShadowVolumeGen::AddEdge(dVector start, dVector end)
 ///\todo shadow volumes for nurbs
 void ShadowVolumeGen::NURBSGen(NURBSPrimitive *src)
 {	
-	TypedPData<dVector> *points = dynamic_cast<TypedPData<dVector>* >(src->GetDataRaw("p"));
+	TypedPData<dVector> *points = static_cast<TypedPData<dVector>* >(src->GetDataRaw("p"));
 	TypedPData<dVector> *normals = dynamic_cast<TypedPData<dVector>* >(src->GetDataRaw("n"));
 	
 	dMatrix &transform = src->GetState()->Transform;

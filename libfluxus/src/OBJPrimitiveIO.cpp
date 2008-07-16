@@ -114,7 +114,7 @@ Primitive *OBJPrimitiveIO::MakePrimitive()
 	}
 
 	prim->GetIndex()=m_Indices;
-	prim->SetIndexMode(true);
+	prim->SetIndexMode(true); 
 	return prim;
 }
 

@@ -23,7 +23,6 @@
  (list
   (object 
    #:shape "rocket.obj"
-   #:rotate (vec3 -90 0 0)
    #:scale (vec3 0.2 0.2 0.2)
    #:translate player-pos
    #:colour (vec3 0 0 1))

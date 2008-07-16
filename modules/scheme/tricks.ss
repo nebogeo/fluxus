@@ -6,7 +6,6 @@
 
 (provide 
  expand
- reverse-winding-order
  cheap-toon)
 
 ; expand object along the normals
@@ -15,17 +14,6 @@
    (lambda (p n)
      (vadd p (vmul n distance)))
    "p" "n"))
-
-; flip the winding order of triangle poly primitives
-(define (reverse-winding-order)
-  (define (inner n)
-    (let ((temp (pdata-ref "p" n)))
-      (pdata-set! "p" n (pdata-ref "p" (+ n 2)))
-      (pdata-set! "p" (+ n 2) temp))
-    (if (<= n 0)
-        0
-        (inner (- n 3))))
-  (inner (pdata-size)))
 
 ; apply a bargain basement toon outline effect
 ; attaches a copy of the object which is expanded and flipped inside out
@@ -36,9 +24,11 @@
 	  (parent obj)
           (with-primitive (with-primitive obj (build-copy obj))
                           ; setup toon appearance
+		  				  ;(poly-convert-to-indexed)
                           (hint-unlit)
                           (colour pen-colour)
                           ; grow and flip object inside out
                           (expand pen-width)
-                          (reverse-winding-order)))
-  (with-primitive obj (recalc-normals 0)))
+                          (hint-cull-ccw)))
+  ;(with-primitive obj (recalc-normals 0))
+  )

@@ -63,5 +63,6 @@
 ; 95-100 fps ish
 ; 0.15 (with inline optimisation)
 ; 110 fps
-
+; 0.15 (with silly dynamic_cast removed)
+; 115 fps
 

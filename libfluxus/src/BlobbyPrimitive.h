@@ -47,6 +47,7 @@ public:
 	virtual void RecalculateNormals(bool smooth);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "BlobbyPrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 	
 	/// Add a new influence at this position, and uses the vertex

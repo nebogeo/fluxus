@@ -41,6 +41,7 @@ public:
 	virtual TextPrimitive* Clone() const;
 	virtual void Render();
 	virtual string GetTypeName() { return "TextPrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 	
 	void SetText(const string &s, float Width=10, float Height=10, float Zoom=0);

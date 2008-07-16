@@ -14,7 +14,7 @@
 	      scheme/list)
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
- sine saw tri squ white pink adsr add sub mul div mooglp moogbp mooghp formant sample
+ sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
  crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug)
 
 (define time-offset 0.0) 
@@ -23,9 +23,9 @@
 
 (define TERMINAL 0) (define SINE 1) (define SAW 2) (define TRI 3) (define SQU 4) 
 (define WHITE 5) (define PINK 6) (define ADSR 7) (define ADD 8) (define SUB 9) 
-(define MUL 10) (define DIV 11) (define MOOGLP 12) (define MOOGBP 13) 
-(define MOOGHP 14) (define FORMANT 15) (define SAMPLE 16) (define CRUSH 17) 
-(define DISTORT 18) (define CLIP 19) (define ECHO 20)
+(define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14) 
+(define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18) 
+(define DISTORT 19) (define CLIP 20) (define ECHO 21)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -211,6 +211,18 @@
 
 (define (div a b)
   (operator DIV (list a b)))
+
+;; StartFunctionDoc-en
+;; pow number-or-node number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Maths node - produces a signal raised to the power of another
+;; Example:
+;; (play-now (mul (pow (adsr 0 0.1 0 0) 10) (sine 440)))
+;; EndFunctionDoc    
+
+(define (pow a b)
+  (operator POW (list a b)))
 
 ;; StartFunctionDoc-en
 ;; adsr attack-number-or-node decay-number-or-node sustain-number-or-node release-number-or-node

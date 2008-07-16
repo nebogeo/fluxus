@@ -77,8 +77,8 @@ public:
 	
 	/// Gets an element of the array. Not checked, for 
 	/// speed - use GetDataInfo() to check
-	template<class T> T GetData(const string &name, unsigned int index);
-	
+	template<class T> T GetData(const string &name, unsigned int index) const;
+		
 	/// Runs a pdata operation on the given pdata array
 	template<class T> PData *DataOp(const string &op, const string &name, T operand);
 	
@@ -101,27 +101,31 @@ public:
 	/// Returns the size of pdata for this object
 	unsigned int Size() const;
 
+	/// Returns a vector of names of PData that this container contains
+	void GetDataNames(vector<string> &names) const;
+
 protected:
 
 	/// Called when a named pdata mapping changes 
 	virtual void PDataDirty()=0;
 	
+	///Todo: no const [] for m_PData[name] so m_PData has to be mutable??? (see below)
 	///\todo replace with a hashmap?
-	map<string,PData*> m_PData;
+	mutable map<string,PData*> m_PData;
 
 };
 
 template<class T> 
 void PDataContainer::SetData(const string &name, unsigned int index, T s)	
 {
-	dynamic_cast<TypedPData<T>*>(m_PData[name])->m_Data[index]=s;
+	static_cast<TypedPData<T>*>(m_PData[name])->m_Data[index]=s;
 }
 
-// Todo: can this be const?
+///Todo: no const [] for m_PData[name] so m_PData has to be mutable???
 template<class T> 
-T PDataContainer::GetData(const string &name, unsigned int index)
+T PDataContainer::GetData(const string &name, unsigned int index) const
 {
-	return dynamic_cast<TypedPData<T>*>(m_PData[name])->m_Data[index];
+	return static_cast<TypedPData<T>*>(m_PData[name])->m_Data[index];
 }
 
 template<class T>

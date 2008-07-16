@@ -41,6 +41,7 @@ public:
 	virtual dBoundingBox GetBoundingBox();
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "RibbonPrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 
 protected:

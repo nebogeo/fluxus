@@ -30,8 +30,6 @@
 (require scheme/pretty)
 (require fluxus-015/fluxus)
 
-(clear)
-
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))
                           fluxus-name "/helpmap.scm"))

@@ -18,6 +18,7 @@
 #include "GenSkinWeightsPrimFunc.h"
 #include "Primitive.h"
 #include "SceneGraph.h"
+#include "Geometry.h"
 
 using namespace Fluxus;
 
@@ -62,7 +63,7 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 
 		for (unsigned int n=0; n<prim.Size(); n++)
 		{
-			float d=dGeometry::pointlinedist((*p)[n],startbone,endbone);
+			float d=PointLineDist((*p)[n],startbone,endbone);
 			if (d==0) weights[bone]->m_Data[n]=2;
 			else weights[bone]->m_Data[n]=(1/d);
 		}

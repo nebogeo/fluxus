@@ -17,6 +17,7 @@
 #include <set>
 
 #include "Primitive.h"
+#include "PolyEvaluator.h"
 
 #ifndef N_POLYPRIM
 #define N_POLYPRIM
@@ -45,6 +46,7 @@ public:
 	virtual void RecalculateNormals(bool smooth);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }
+	virtual Evaluator *MakeEvaluator() { return new PolyEvaluator(this); }
 	///@}
 	
 	Type GetType() const { return m_Type; }

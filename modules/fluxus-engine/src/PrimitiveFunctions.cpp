@@ -28,6 +28,7 @@
 #include "BlobbyPrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
+#include "Evaluator.h"
 
 using namespace PrimitiveFunctions;
 using namespace Fluxus;
@@ -1556,6 +1557,44 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// line-intersect start-vec end-vec
+// Returns: void
+// Description:
+// Returns a list of pdata values at each intersection point of 
+// the specified line.
+// Example:
+// (define mypfunc (make-pfunc "arithmetic"))
+// EndFunctionDoc
+
+
+// StartFunctionDoc-pt
+// line-intersect número-id
+// Retorna: void
+// Descrição:
+// Roda uma função primitiva na primitiva atualmente pega.
+// Exemplo:
+// (define mypfunc (make-pfunc "arithmetic"))
+// EndFunctionDoc
+
+Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();  
+	ArgCheck("line-intersect", "vv", argc, argv);
+	if (Engine::Get()->Grabbed()) 
+	{
+		Evaluator *eval = Engine::Get()->Grabbed()->MakeEvaluator();
+		if (eval)
+		{
+			vector<Evaluator::Point> points;
+			eval->IntersectLine(VectorFromScheme(argv[0]), VectorFromScheme(argv[1]), points);
+			delete eval;
+		}
+	}
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -1598,5 +1637,6 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("make-pfunc", scheme_make_prim_w_arity(make_pfunc, "make-pfunc", 1, 1), env);
 	scheme_add_global("pfunc-set!", scheme_make_prim_w_arity(pfunc_set, "pfunc-set!", 2, 2), env);
 	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
+	scheme_add_global("line-intersect", scheme_make_prim_w_arity(line_intersect, "line-intersect", 2, 2), env);
  	MZ_GC_UNREG(); 
 }

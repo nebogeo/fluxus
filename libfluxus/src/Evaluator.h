@@ -14,40 +14,53 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Primitive.h"
+#include <string>
+#include <map>
+#include <assert.h>
+#include "State.h"
+#include "PDataContainer.h"
 
-#ifndef N_LOCATORPRIM
-#define N_LOCATORPRIM
+#ifndef N_EVALUATOR
+#define N_EVALUATOR
 
 namespace Fluxus
 {
 
-//////////////////////////////////////////////////////
-/// The Locator is an invisible primitive of use for
-/// parenting and other indirect things
-class LocatorPrimitive : public Primitive
+//////////////////////////////////////////////////
+/// The base Evaluator class. 
+/// Abstract interface for primitive evaluators
+class Evaluator
 {
 public:
-	LocatorPrimitive();
-	LocatorPrimitive(const LocatorPrimitive &other);
-	virtual ~LocatorPrimitive();
+	Evaluator();
+	virtual ~Evaluator();
 	
-	///////////////////////////////////////////////////
-	///@name Primitive Interface
-	///@{
-	virtual LocatorPrimitive* Clone() const;
-	virtual void Render();
-	virtual dBoundingBox GetBoundingBox();
-	virtual void ApplyTransform(bool ScaleRotOnly=false);
-	virtual string GetTypeName() { return "LocatorPrimitive"; }
-	virtual Evaluator *MakeEvaluator() { return NULL; }
-	///@}
+	class Blend 
+	{
+	public:
+		string m_Name;
+	};
+
+	template<class T>
+	class TypedBlend : public Blend
+	{	
+	public:		
+		TypedBlend(T b) : m_Blend(b) {}
+	private:
+		T m_Blend;
+	};
 	
-protected:
-
-	virtual void PDataDirty();
-
+	class Point
+	{
+	public:
+		vector<Blend*> m_Blends;
+	};
+	
+	virtual bool IntersectLine(const dVector &start, const dVector &end,  vector<Point> &points)=0;
+	virtual Point ClosestPoint(const dVector &position)=0;
+	
 private:
+
 
 };
 

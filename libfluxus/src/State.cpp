@@ -33,7 +33,8 @@ DestinationBlend(GL_ONE_MINUS_SRC_ALPHA),
 WireColour(1,1,1),
 WireOpacity(1.0f),
 ColourMode(MODE_RGB),
-Shader(NULL)
+Shader(NULL),
+Cull(true)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
@@ -44,10 +45,8 @@ Shader(NULL)
 void State::Apply()
 {
 	glMultMatrixf(Transform.arr());
-	if (Opacity != 1.0f)
-		Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
-	if (WireOpacity != 1.0f)
-		WireColour.a=WireOpacity;
+	if (Opacity != 1.0f) Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
+	if (WireOpacity != 1.0f) WireColour.a=WireOpacity;
 	glColor4f(Colour.r,Colour.g,Colour.b,Colour.a);
 	glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT,Ambient.arr());
 	glMaterialfv(GL_FRONT_AND_BACK,GL_EMISSION,Emissive.arr());
@@ -57,17 +56,17 @@ void State::Apply()
 	glLineWidth(LineWidth);
 	glPointSize(PointWidth);
 	glBlendFunc(SourceBlend,DestinationBlend);
-
+	
+	if (Cull) glEnable(GL_CULL_FACE);
+	else glDisable(GL_CULL_FACE);
+		
+	if (Hints&HINT_CULL_CCW) glFrontFace(GL_CW);
+	else glFrontFace(GL_CCW);
+	
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
-	if (Shader)
-	{
-		Shader->Apply();
-	}
-	else
-	{
-		GLSLShader::Unapply();
-	}
+	if (Shader) Shader->Apply();
+	else GLSLShader::Unapply();
 }
 
 void State::Spew()

@@ -175,3 +175,11 @@ void PDataContainer::SetDataRaw(const string &name, PData* pd)
 	i->second = pd;
 	PDataDirty();
 }
+
+void PDataContainer::GetDataNames(vector<string> &names) const
+{
+	for (map<string,PData*>::const_iterator i=m_PData.begin(); i!=m_PData.end(); ++i)
+	{
+		names.push_back(i->first);
+	}
+}

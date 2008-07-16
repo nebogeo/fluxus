@@ -1529,6 +1529,34 @@ Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-cull-ccw
+// Returns: void
+// Description: 
+// Flips the faces which get backface culled
+// Example:
+// (hint-cull-ccw)
+// (build-sphere 10 10) ; make an inside out
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// hint-cull-ccw
+// Retorna: void
+// Descrição:
+// Ajusta as dicas de render para prevenir esta primitiva de passar
+// suas transformações a um filho. Dicas de render
+// mudam a forma como as primitivas são renderizadas, mas podem ter
+// efeitos diferentes - ou nenhum efeito em certas primitivas
+// portanto o nome dicas.
+// Exemplo:
+// EndFunctionDoc
+
+Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_CULL_CCW;	
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // texture textureid-number
 // Returns: void
 // Description: 
@@ -1714,6 +1742,38 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 		Engine::Get()->Grabbed()->Selectable(FloatFromScheme(argv[0]));
 	}
 	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// backfacecull setting-number
+// Returns: void
+// Description:
+// Turns backface culling on or off. Backface culling speeds up rendering by removing faces not 
+// orientated towards the camera. Defaults to on, but this is not always desired, eg for double 
+// sided polygons.
+// Example:
+// (backfacecull 0) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// backfacecull número-ajuste
+// Retorna: void
+// Descrição:
+// Liga ou desliga o corte de face-traseira. Backface culling acelera
+// a renderização removendo faces não orientadas em direção da
+// câmera. É ligado por padrão, mas isto não é desejado sempre, eg
+// para poligonos com dupla face.
+// Exemplo:
+// (backfacecull 0)
+// EndFunctionDoc
+
+Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("backfacecull", "i", argc, argv);
+	Engine::Get()->State()->Cull=IntFromScheme(argv[0]);
+ 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
 
@@ -2175,6 +2235,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
     scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
     scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
+    scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
 	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
@@ -2186,5 +2247,6 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
 	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
+	scheme_add_global("backfacecull",scheme_make_prim_w_arity(backfacecull,"backfacecull",1,1), env);
 	MZ_GC_UNREG();
 }

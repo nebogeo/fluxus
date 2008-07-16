@@ -932,14 +932,6 @@ public:
 	float x,y,z,w;
 };
 
-/// A place for useful geometry operations
-namespace dGeometry
-{
-
-float pointlinedist(const dVector &p, const dVector &start, const dVector &end);
-
-};
-
 ////
 
 }

@@ -335,8 +335,10 @@ void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth
 		return;
 	}
 
+	Smooth=false;
+
 	// a bit of a crap filter to smooth clicks
-	static float SMOOTH = 0.999;
+	static float SMOOTH = 0.95;
 	static float ONEMINUS_SMOOTH = 1-SMOOTH;
 	
 	float temp=0;
