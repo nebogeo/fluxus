@@ -26,6 +26,7 @@
      (shown #f)
      (root 0)
      (size 1)
+     (item-size 1)
      (deadzone 0.1)
      (menu-colour (vector 0.5 0.5 0.5))
      (menu-hi-colour (vector 1 1 1)))
@@ -67,16 +68,21 @@
          (scale (vector size size size))
          (ungrab))))
     
+	(define/public (set-item-size s)
+		(set! item-size s))
+	
     (define/public (build)
-      (define (loop n size tc)
+      (define (loop n len tc)
         (push)
-        (let ((angle (+ 180 (* 360 (/ n size)))))
+        (let ((angle (+ 180 (* 360 (/ n len)))))
           (rotate (vector 0 0 angle))
           (translate (vector 1.5 0 0))
           (rotate (vector 0 0 (- angle))))
-        (if (zero? n) 
-            (translate (vector 0 0 0.1)) ; compensate for the selection
-            (scale (vector 0.5 0.5 1))) ; don't scale the selected one
+        (cond ((zero? n) 
+              (translate (vector 0 0 0.1)) ; compensate for the selection
+              (scale (vector item-size item-size 1)))
+			(else
+			  (scale (vector (* item-size 0.5) (* item-size 0.5) 1)))) ; don't scale the selected one
         (set! objs (cons (build-plane) objs))
         (pop)
         
@@ -90,9 +96,9 @@
         
         (if (zero? n)
             0
-            (loop (- n 1) size (cdr tc))))
+            (loop (- n 1) len (cdr tc))))
       
-      (let ((size (length items)))
+      (let ((len (length items)))
         (push)
         (scale (vector 0.3 0.3 0.3))
         (hint-unlit) 
@@ -105,7 +111,7 @@
         (set! root (build-locator))
         (parent root)
         (texture tx)
-        (loop (- size 1) size (reverse items)))
+        (loop (- len 1) len (reverse items)))
       (pop)
       (hide-menu))
     
