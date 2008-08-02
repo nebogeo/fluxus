@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-  
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -54,7 +54,7 @@ void ReshapeCallback(int width, int height)
 void KeyboardCallback(unsigned char key,int x, int y)
 {
 	int mod=modifiers;
-	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();	
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	app->Handle(key, -1, -1, -1, x, y, mod);
 	char code[256];
 	snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
@@ -73,7 +73,7 @@ void KeyboardUpCallback(unsigned char key,int x, int y)
 void SpecialKeyboardCallback(int key,int x, int y)
 {
 	int mod=modifiers;
-	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();	
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	app->Handle(0, -1, key, -1, x, y, mod);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
@@ -120,13 +120,13 @@ void DoRecorder()
 	{
 		for (vector<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
 		{
-			if (i->Name=="keydown") 
+			if (i->Name=="keydown")
 			{
 				modifiers=i->Mod;
 				KeyboardCallback(i->Data,0,0);
 			}
 			else if (i->Name=="keyup") KeyboardUpCallback(i->Data,0,0);
-			else if (i->Name=="specialkeydown") 
+			else if (i->Name=="specialkeydown")
 			{
 				modifiers=i->Mod;
 				SpecialKeyboardCallback(i->Data,0,0);
@@ -141,23 +141,23 @@ void DoRecorder()
 }
 
 void DisplayCallback()
-{    	
+{
 	string fragment = app->GetScriptFragment();
     if (fragment!="")
     {
 		Interpreter::Interpret(fragment);
     }
-	
+
 	if (!Interpreter::Interpret(ENGINE_CALLBACK))
-	{		
+	{
 		// the callback has failed, so clear the screen so we can fix the error...
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);	
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 	}
 
-	app->Render();	
+	app->Render();
 	glutSwapBuffers();
 
-	DoRecorder();		
+	DoRecorder();
 }
 
 void ExitHandler()
@@ -168,28 +168,28 @@ void ExitHandler()
 int main(int argc, char *argv[])
 {
 	// setup mzscheme
-	// be careful with this part - reordering could 
-	// introduce garbage collection problems... 
+	// be careful with this part - reordering could
+	// introduce garbage collection problems...
 	void *stack_start;
 	stack_start = (void *)&stack_start;
-		
-	MZ_GC_DECL_REG(0);	
+
+	MZ_GC_DECL_REG(0);
     MZ_GC_REG();
-	
+
 	Interpreter::Register();
-		
+
 	#ifdef MZ_PRECISE_GC
 	scheme_set_stack_base( &__gc_var_stack__, 1);
 	#else
 	scheme_set_stack_base( NULL, 1);
 	#endif
-	
- 	MZ_GC_REG();
+
+	MZ_GC_REG();
 
 	Interpreter::Initialise();
-	
+
 	srand(time(NULL));
-	
+
 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 	#ifdef ACCUM_BUFFER
 	flags|=GLUT_ACCUM;
@@ -197,34 +197,35 @@ int main(int argc, char *argv[])
 	#ifdef STEREODEFAULT
 	flags|=GLUT_STEREO;
 	#endif
-	
+
 	// init OpenGL
-  	glutInit(&argc,argv);
+	glutInit(&argc,argv);
 	glutInitWindowSize(720,576);
 	app = new FluxusMain(720,576);
 	glutInitDisplayMode(flags);
 	char windowtitle[256];
 	snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
-  	glutCreateWindow(windowtitle);
+	glutCreateWindow(windowtitle);
 	glutDisplayFunc(DisplayCallback);
 	glutReshapeFunc(ReshapeCallback);
 	glutKeyboardFunc(KeyboardCallback);
-	glutSpecialFunc(SpecialKeyboardCallback); 
+	glutSpecialFunc(SpecialKeyboardCallback);
 	glutMouseFunc(MouseCallback);
 	glutMotionFunc(MotionCallback);
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
 	atexit(ExitHandler);
-	
+
 	recorder = new EventRecorder;
-	
+
 	int arg=1;
+	int currentEditor=0;
 	while(arg<argc)
 	{
 		if (!strcmp(argv[arg],"-r"))
 		{
-			if (arg+1 < argc) 
+			if (arg+1 < argc)
 			{
 				recorder->SetFilename(argv[arg+1]);
 				recorder->SetMode(EventRecorder::RECORD);
@@ -232,8 +233,8 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if (!strcmp(argv[arg],"-p"))
-		{				
-			if (arg+1 < argc) 
+		{
+			if (arg+1 < argc)
 			{
 				recorder->SetFilename(argv[arg+1]);
 				recorder->Load();
@@ -242,16 +243,16 @@ int main(int argc, char *argv[])
 			}
 		}
 		else if (!strcmp(argv[arg],"-d"))
-		{				
-			if (arg+1 < argc) 
+		{
+			if (arg+1 < argc)
 			{
 				recorder->SetDelta(atof(argv[arg+1]));
 				arg++;
 			}
 		}
 		else if (!strcmp(argv[arg],"-lang"))
-		{				
-			if (arg+1 < argc) 
+		{
+			if (arg+1 < argc)
 			{
 				Interpreter::SetLanguage(argv[arg+1]);
 				arg++;
@@ -259,16 +260,20 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			app->SetCurrentEditor(0); // flip it out of the repl
-			app->LoadScript(argv[arg]);
+			if (currentEditor<fluxus::NUM_EDITORS)
+			{
+				app->SetCurrentEditor(currentEditor); // flip it out of the repl
+				app->LoadScript(argv[arg]);
+				currentEditor++;
+			}
 		}
 		arg++;
-	} 
+	}
 
 	glutMainLoop();
-	
+
 	MZ_GC_UNREG();
-			
+
 	return 0;
 }
 
