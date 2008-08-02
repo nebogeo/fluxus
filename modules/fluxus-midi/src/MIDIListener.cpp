@@ -15,7 +15,9 @@
  along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include "stdio.h"
+#include <stdio.h>
+#include <iostream>
+
 #include "MIDIListener.h"
 
 using namespace std;
@@ -27,7 +29,8 @@ void midi_callback(double deltatime, vector<unsigned char> *message,
 }
 
 MIDIListener::MIDIListener(int port /*= -1*/) :
-	midiin(NULL)
+	midiin(NULL),
+	last_event("")
 {
 	init_midi();
 
@@ -173,13 +176,24 @@ float MIDIListener::get_ccn(int channel, int cntrl_number)
 	return (float)cntrl_values[(channel << 7) + cntrl_number] / 127.0;
 }
 
+/**
+ * Returns last MIDI event as string.
+ * \retval string MIDI event in string format
+ **/
+string MIDIListener::get_last_event(void)
+{
+	return last_event;
+}
+
 void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 {
+	char buf[256];
+
 	unsigned int count = message->size();
-	int cat = (*message)[0] >> 4;
+	int status = (*message)[0] >> 4;
 	int ch = (*message)[0] & 0xf;
 
-	switch (cat)
+	switch (status)
 	{
 		case 0xb:	/* controller */
 			if (count == 3)
@@ -187,22 +201,19 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 				int cntrl_number = (*message)[1]; /* controller number */
 				/* array index from channel and controller number */
 				int i = (ch << 7) + cntrl_number;
-				cntrl_values[i] = (*message)[2]; /* store controller value */
+				int value = (*message)[2]; /* controller value */
+				cntrl_values[i] = value;
+
+				snprintf(buf, 256, "11 (cc) %d %d %d", ch,
+						cntrl_number, value);
+				last_event = string(buf);
 			}
 			break;
-	}
 
-	/*
-	for (unsigned int i = 0; i < count; i++)
-	{
-		int data = (int)message->at(i);
-		if (i == 0)
-		{
-			printf("cat:%x ch:%x ", cat, ch);
-		}
-		else
-			printf("%d: %02x, ", i, data);
+		default:
+			snprintf(buf, 256, "%d (unknown) %d %d %d", status, ch,
+						(*message)[1], (*message)[2]);
+			last_event = string(buf);
 	}
-	*/
 }
 

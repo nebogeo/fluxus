@@ -202,6 +202,28 @@ Scheme_Object *midi_ccn(int argc, Scheme_Object **argv)
 	return ret;
 }
 
+// StartFunctionDoc-en
+// midi-peek
+// Returns: msg-string
+// Description:
+// Returns the name, and event type, and parameter bytes of the last MIDI
+// event as a string for debugging purposes.
+// Example:
+// (display (midi-peek))(newline)
+// EndFunctionDoc
+
+Scheme_Object *midi_peek(int argc, Scheme_Object **argv)
+{
+	if (midilistener != NULL)
+	{
+		return scheme_make_utf8_string(midilistener->get_last_event().c_str());
+	}
+	else
+	{
+		return scheme_make_utf8_string("");
+	}
+}
+
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
 	Scheme_Env *menv = NULL;
@@ -221,6 +243,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(midi_cc, "midi-cc", 2, 2), menv);
 	scheme_add_global("midi-ccn",
 			scheme_make_prim_w_arity(midi_ccn, "midi-ccn", 2, 2), menv);
+	scheme_add_global("midi-peek",
+			scheme_make_prim_w_arity(midi_peek, "midi-peek", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();
