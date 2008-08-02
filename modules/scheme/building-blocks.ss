@@ -1,8 +1,8 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
 ;; StartSectionDoc-en
-;; fluxus-building-blocks
-;; A new and fairly untested set of higher level control structures for manipulating
+;; scheme-utils
+;; A set of higher level control structures for manipulating
 ;; objects and state in fluxus in a cleaner and safer manner.
 ;; Example:
 ;; EndSectionDoc 
@@ -23,6 +23,9 @@
  pdata-index-map!
  pdata-fold
  pdata-index-fold
+ pdata-slice
+ vx vy vz vr vg vb va
+ vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
  )
 
 ;; StartFunctionDoc-en
@@ -327,4 +330,47 @@
                                (loop (+ n 1) total current)))))))
        (loop 0 (- (pdata-size) 1) start)))))
 
+;; shorthand helpers
+(define (vx v) (vector-ref v 0))
+(define (vy v) (vector-ref v 1))
+(define (vz v) (vector-ref v 2))
+(define (vw v) (vector-ref v 3))
 
+(define (vr v) (vector-ref v 0))
+(define (vg v) (vector-ref v 1))
+(define (vb v) (vector-ref v 2))
+(define (va v) (vector-ref v 3))
+
+(define (vx-set! v s) (vector-set! v 0 s))
+(define (vy-set! v s) (vector-set! v 1 s))
+(define (vz-set! v s) (vector-set! v 2 s))
+(define (vw-set! v s) (vector-set! v 3 s))
+
+(define (vr-set! v s) (vector-set! v 0 s))
+(define (vg-set! v s) (vector-set! v 1 s))
+(define (vb-set! v s) (vector-set! v 2 s))
+(define (va-set! v s) (vector-set! v 3 s))
+
+;; StartFunctionDoc-en
+;; pdata-slice index list-of-names
+;; Returns: list of pdata values
+;; Description:
+;; Returns the pdata values for the listed arrays at this index point
+;; Example:  
+;; (define my-torus (build-torus 1 2 30 30))
+;; (display (pdata-slice 0 (list "p" "n"))(newline))
+;; EndFunctionDoc 
+ 	
+(define (pdata-slice i names)
+    (define (inner i names l)        
+        (cond 
+            ((null? names) '())
+            (else
+                (cons (pdata-ref (car names) i) 
+                    (inner i (cdr names) l)))))
+    (inner i names '()))
+
+
+				
+				
+				

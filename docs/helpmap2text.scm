@@ -1,3 +1,5 @@
+#!/usr/bin/env mzscheme 
+
 ; Copyright (C) 2007 Dave Griffiths
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -16,6 +18,11 @@
 
 ; a script to convert the fluxus helpmap into a human readable text file
 
+#lang scheme/base
+
+(require scheme/file)
+(require scheme/path)
+
 (define (insert-linebreaks src dst count i n)
   (if (>= i (string-length src))
       dst
@@ -31,7 +38,7 @@
   (if (string=? args "")
       (fprintf txtfile "(~a)~n" name)
       (fprintf txtfile "(~a ~a)~n" name args))
-  (if (not (string=? returns ""))
+  (when (not (string=? returns ""))
       (fprintf txtfile "Returns ~a~n~n" returns))
   (fprintf txtfile "~a~n~n" (insert-linebreaks desc "" 60 0 0))
   (fprintf txtfile "~a~n" example))
@@ -73,8 +80,8 @@
   (cond
     ((not (null? helpmap))
      (let ((locale (car (car helpmap))))
-       (let ((txtfile (open-output-file (string-append "fluxus-" locale ".txt") 'replace)))
-         (fprintf txtfile "Fluxus Documentation 0.13~n")
+       (let ((txtfile (open-output-file (string-append "fluxus-" locale ".txt") #:exists 'replace)))
+         (fprintf txtfile "Fluxus Documentation 0.15~n")
          (parse-section (cadr (car helpmap)) txtfile locale)
          (close-output-port txtfile))
        (parse-locale (cdr helpmap))))))

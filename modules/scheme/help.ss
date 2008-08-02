@@ -1,7 +1,7 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
 ;; StartSectionDoc-en
-;; scratchpad-help
+;; scratchpad
 ;; The help system is fluxus' (slightly experimental) online documentation.
 ;; Example:
 ;; EndSectionDoc 

@@ -21,6 +21,7 @@
 #include "OSCServer.h"
 #include "Sampler.h"
 #include "Graph.h"
+#include "JackClient.h"
 
 #ifndef FLEEP
 #define FLEEP
@@ -30,7 +31,7 @@ static const int EVENT_BUFFER_SIZE=256;
 class Fluxa
 {
 public:
-	Fluxa(OSCServer *server, unsigned int samplerate);
+	Fluxa(OSCServer *server, JackClient* jack, const string &leftport, const string &rightport);
 	~Fluxa() {}
 	
 private:

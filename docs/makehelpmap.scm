@@ -175,7 +175,6 @@
 ; in the form:
 ; ((funcname (arguments description example)))
 
-
 (define (parse-functions file l)
   (let ((c (peek-char file)))
     (if (eof-object? c)
@@ -195,6 +194,17 @@
                                                      (gather file locale-example)
                                                      (gather-formatted file "EndFunctionDoc"))))))))))))
 
+(define (section-insert l name section functions o app)
+  (cond
+    ((null? l) (if app (append o (list (list name (append section (list functions))))) o))
+    ((string=? (car (car l)) name)
+     (printf "~a~n" (list-ref (car (cdr (car l))) 2))
+     (section-insert (cdr l) name section functions
+                     (cons (list name (append section (list (append (list-ref (car (cdr (car l))) 2) functions)))) o) #f))
+    (else 
+     (section-insert (cdr l) name section functions
+                     (cons (car l) o) app))))
+
 (define (parse-section file l)
   (let ((c (peek-char file)))
     (if (eof-object? c)
@@ -203,13 +213,12 @@
           ((not (sectiondoc? file))
            (parse-section file l))
           (else
-           (read-word file) ; comment // 
-           (append l (list (list
-                            (read-word file) ; section name
-                            (list
-                             (gather file locale-example)
-                             (gather-formatted file "EndSectionDoc")
-                             (parse-functions file '()))))))))))
+           (read-word file) ; comment //
+           (let ((name (read-word file))
+                 (section (list (gather file locale-example)
+                                (gather-formatted file "EndSectionDoc"))))
+             
+             (section-insert l name section (parse-functions file '()) '() #t)))))))
 
 (define (parse-file inputfilename helpmap)
   (let ((file (open-input-file inputfilename)))

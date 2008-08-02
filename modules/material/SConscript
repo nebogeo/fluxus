@@ -41,7 +41,8 @@ Meshes =      ["meshes/bot.obj",
 			   "meshes/alien.obj",
 			   "meshes/rocket.obj",
 			   "meshes/mushroom.obj",
-			   "meshes/widget.obj"]
+			   "meshes/widget.obj",
+			   "meshes/octopus.obj"]
 
 Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
 

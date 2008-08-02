@@ -74,6 +74,7 @@ bool PDataContainer::GetDataInfo(const string &name, char &type, unsigned int &s
 	
 	size=i->second->Size();
 	
+	//\todo: remove all this dynamic casting and store the char type inside pdata...
 	TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(i->second);	
 	if (data) type='v';
 	else

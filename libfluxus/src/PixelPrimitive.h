@@ -59,6 +59,12 @@ public:
 	/// Get the uploaded texture ID - call Upload() first.
 	unsigned int GetTexture() { return m_Texture; }
 	
+	/// Get the width
+	unsigned int GetWidth() { return m_Width; }
+	
+	/// Get the height
+	unsigned int GetHeight() { return m_Height; }
+	
 protected:
 
 	virtual void PDataDirty();

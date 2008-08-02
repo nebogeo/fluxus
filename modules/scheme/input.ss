@@ -1,7 +1,7 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
 ;; StartSectionDoc-en
-;; scratchpad-input
+;; scratchpad
 ;; Input functions availible in the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	

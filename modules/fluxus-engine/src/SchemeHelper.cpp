@@ -60,7 +60,7 @@ void SchemeHelper::FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
-	assert(size==(unsigned int)SCHEME_VEC_SIZE(src));
+	assert(size<=(unsigned int)SCHEME_VEC_SIZE(src));
 	for (unsigned int n=0; n<size; n++)
 	{
 		dst[n]=scheme_real_to_double(SCHEME_VEC_ELS(src)[n]);

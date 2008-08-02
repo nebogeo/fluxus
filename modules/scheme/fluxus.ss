@@ -12,6 +12,8 @@
 		 fluxus-015/building-blocks
 		 fluxus-015/collada-import
 		 fluxus-015/randomness
+		 fluxus-015/poly-tools
+		 fluxus-015/pixels-tools
 ;		 fluxus-015/fluxa ; removed until big pause in liblo startup is fixed
 		 fluxus-015/scratchpad
 		 (only-in srfi/13 string-pad))
@@ -26,5 +28,7 @@
  (all-from-out fluxus-015/building-blocks)
  (all-from-out fluxus-015/collada-import)
  (all-from-out fluxus-015/randomness)  
+ (all-from-out fluxus-015/poly-tools)  
+ (all-from-out fluxus-015/pixels-tools)  
  ;(all-from-out fluxus-015/fluxa)
  (all-from-out fluxus-015/scratchpad))

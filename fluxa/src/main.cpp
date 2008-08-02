@@ -16,18 +16,44 @@
 
 #include <iostream>
 #include "Fluxa.h"
+#include "JackClient.h"
+
+void printusage()
+{
+	cerr<<"usage: fluxa [-osc oscportnumber] [-jackports leftport rightport]"<<endl;
+	exit(-1);
+}
 
 int main(int argc, char **argv)
 {
-	if (argc!=1 && argc!=2)
-	{
-		cerr<<"usage: fluxa oscportnumber"<<endl;
-		return -1;
-	}
+	string leftport("alsa_pcm:playback_1");
+	string rightport("alsa_pcm:playback_2");
 	string port("4004");
-	if (argc==2) port=argv[1];
+	
+	int arg=1;
+	while(arg<argc)
+	{		
+		if (!strcmp(argv[arg],"-osc"))
+		{
+			if (arg+1 < argc) port=argv[arg+1];
+			else printusage();
+		}
+		if (!strcmp(argv[arg],"-jackports"))
+		{
+			if (arg+2 < argc) 
+			{
+				leftport=argv[arg+1];
+				rightport=argv[arg+2];
+			}
+			else printusage();
+		}
+		arg++;	
+	}
+				
 	OSCServer server(port);
-	Fluxa engine(&server,44100);
+	JackClient* jack=JackClient::Get();
+ 	jack->Attach("fluxa");	
+	Fluxa engine(&server,jack,leftport,rightport);
 	server.Run();
 	return 0;
 }

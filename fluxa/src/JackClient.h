@@ -51,9 +51,10 @@ public:
 	string GetOutputName(int ID)          { return m_OutputPortMap[ID]->Name; }
 	void   SetInputBuf(int ID, float* s);
 	void   SetOutputBuf(int ID, float* s);
-         int 	 AddInputPort();
-         int 	 AddOutputPort();
-
+    int    AddInputPort();
+    int    AddOutputPort();
+	unsigned int GetSamplerate() { return m_SampleRate; }
+	
 protected:
 	JackClient();
 	~JackClient();

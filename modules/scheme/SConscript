@@ -21,7 +21,9 @@ Scripts    = ["boot.scm",
 			  "time.ss",
 			  "gui.ss",
 			  "joylisten.ss",
-			  "tricks.ss" ]
+			  "tricks.ss",
+			  "poly-tools.ss",
+			  "pixels-tools.ss" ]
 
 Install        = CollectsInstall
 

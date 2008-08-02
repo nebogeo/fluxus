@@ -46,38 +46,43 @@ float Fluxus::PointLineDist(const dVector &p, const dVector &start, const dVecto
     return p.dist(intersection);
 }
 
-/*bool IntersectLineQuad(const dVector &start, const dVector &end, 
-		const dVector &a, const dVector &b, const dVector &c, const dVector &d,
-		dVector &bary)
-{
-	return IntersectLineTriangle(start,end,a,b,c,intersections) || 
-	       IntersectLineTriangle(start,end,b,c,d,intersections);
-}*/
-
 bool Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end, 
-	const dVector &a, const dVector &b, const dVector &c, 
+	const dVector &ta, const dVector &tb, const dVector &tc, 
 	dVector &bary)
 {
-	dVector edge1 = b-a;
-	dVector edge2 = c-a;
-	dVector ray = end-start;
-	dVector s1 = ray.cross(edge2);
+    dVector u = ta-tc;
+    dVector v = tb-tc;
+    dVector n = v.cross(u);
 
-	// degenerate triangle!
-	float divisor = s1.dot(edge1);
-	if (divisor==0.0) return false;
-	float invdiv = 1/divisor;
+    if (n.mag()==0) return false;
+    
+    dVector ray = end-start;
+    dVector w0 = start-tc;
+    float a = -n.dot(w0);
+    float b = n.dot(ray);
 
-	dVector distance = start-a;
-	bary.x = distance.dot(s1)*invdiv;
-	if (bary.x<0.0 || bary.x>1.0) return false;
+    // if b is small, ray is parallel
+    if (b==0) return false;
+    //     if a==0 then the ray is in the plane
 
+    float r = a/b;
+    if (r<0) return false;
+    if (r>1) return false;
+    dVector I = start+(ray*r);
+    float uu = u.dot(u);
+    float uv = u.dot(v);
+    float vv = v.dot(v);
+    dVector w = I-tc;
+    float wu = w.dot(u);
+    float wv = w.dot(v);
+    float D = uv*uv - uu*vv;
 
-	dVector s2 = distance.cross(edge1);
-	bary.y = ray.dot(s2)*invdiv;
-	if (bary.y<0.0 || (bary.x+bary.y)>1.0) return false;
-	
-	bary.z=1-(bary.x+bary.y);
-	return true;
+    bary.x=(uv*wv - vv*wu)/D;
+    if (bary.x<0 || bary.x>1.0) return false;
+    bary.y=(uv*wu - uu*wv)/D;
+    if (bary.y<0 || bary.y>1.0) return false;
+    bary.z=1-(bary.x+bary.y);
+	if (bary.z<0 || bary.z>1.0) return false;
+    return true;
 }
 

@@ -3,7 +3,7 @@
 ; some random helpers
 
 ;; StartSectionDoc-en
-;; randomness
+;; scheme-utils
 ;; Some helpful random functions for general use
 ;; Example:
 ;; EndSectionDoc 

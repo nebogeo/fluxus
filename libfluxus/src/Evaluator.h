@@ -38,15 +38,16 @@ public:
 	class Blend 
 	{
 	public:
+		Blend(char t): m_Type(t) {}
 		string m_Name;
+		char m_Type;
 	};
 
 	template<class T>
 	class TypedBlend : public Blend
 	{	
 	public:		
-		TypedBlend(T b) : m_Blend(b) {}
-	private:
+		TypedBlend(char t, T b) : Blend(t), m_Blend(b) {}
 		T m_Blend;
 	};
 	

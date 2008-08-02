@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <limits.h>
-#include "JackClient.h"
 #include "SearchPaths.h"
 #include "Fluxa.h"
 #include "SampleStore.h"
@@ -23,23 +22,20 @@
 
 using namespace spiralcore;
 
-Fluxa::Fluxa(OSCServer *server, unsigned int samplerate) :
-m_SampleRate(samplerate),
-m_Graph(50,samplerate),
-m_Sampler(samplerate),
+Fluxa::Fluxa(OSCServer *server, JackClient* jack, const string &leftport, const string &rightport) :
+m_SampleRate(jack->GetSamplerate()),
+m_Graph(50,jack->GetSamplerate()),
+m_Sampler(jack->GetSamplerate()),
 m_Running(false),
 m_Server(server),
 m_GlobalVolume(1.0f),
 m_Pan(0.0f),
 m_Debug(false),
-m_Eq(samplerate),
-m_Comp(samplerate)
+m_Eq(jack->GetSamplerate()),
+m_Comp(jack->GetSamplerate())
 {		
 	WaveTable::WriteWaves();
-
-	JackClient* Audio=JackClient::Get();
- 	Audio->SetCallback(Run,(void*)this);
- 	Audio->Attach("fluxa");	
+ 	jack->SetCallback(Run,(void*)this);
 
 	//PortAudioClient* Audio=PortAudioClient::Get();
 	//Audio->SetCallback(Run,(void*)this);
@@ -54,21 +50,21 @@ m_Comp(samplerate)
 	m_LeftBuffer.Zero();
 	m_RightBuffer.Zero();
 	
-	if (Audio->IsAttached())
+	if (jack->IsAttached())
 	{	
 		//Audio->SetOutputs(m_LeftBuffer.GetNonConstBuffer(),m_RightBuffer.GetNonConstBuffer());
 		
-		m_LeftJack = Audio->AddOutputPort();
- 		Audio->SetOutputBuf(m_LeftJack, m_LeftBuffer.GetNonConstBuffer());
- 	    Audio->ConnectOutput(m_LeftJack,"alsa_pcm:playback_1");
-  	    m_RightJack = Audio->AddOutputPort();
- 		Audio->SetOutputBuf(m_RightJack, m_RightBuffer.GetNonConstBuffer());
-  	    Audio->ConnectOutput(m_RightJack,"alsa_pcm:playback_2"); 	
+		m_LeftJack = jack->AddOutputPort();
+ 		jack->SetOutputBuf(m_LeftJack, m_LeftBuffer.GetNonConstBuffer());
+ 	    jack->ConnectOutput(m_LeftJack,leftport);
+  	    m_RightJack = jack->AddOutputPort();
+ 		jack->SetOutputBuf(m_RightJack, m_RightBuffer.GetNonConstBuffer());
+  	    jack->ConnectOutput(m_RightJack,rightport); 	
  		m_Running=true;
 	}
 	//Sample::SetAllocator(new RealtimeAllocator(1024*1024*40));
 	
-	cerr<<"fluxa server ready..."<<endl;
+	cerr<<"fluxa server ready... "<<endl;
 }
 
 void Fluxa::Run(void *RunContext, unsigned int BufSize)

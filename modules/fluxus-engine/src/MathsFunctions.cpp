@@ -834,6 +834,24 @@ Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 	return FloatsToScheme(ret.arr(),4);
 }
 
+// StartFunctionDoc-en
+// fmod numerator-number denominator-number
+// Returns: real-number
+// Description:
+// Returns the floating-point remainder of numerator/denominator.
+// Example:
+// (fmod 14.4 10)
+// EndFunctionDoc
+
+Scheme_Object *fmod(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("fmod", "ff", argc, argv);
+	float ret=fmod(scheme_real_to_double(argv[0]),scheme_real_to_double(argv[1]));
+	MZ_GC_UNREG(); 
+	return scheme_make_double(ret);
+}
+
 void MathsFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -867,5 +885,6 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("qnormalise", scheme_make_prim_w_arity(qnormalise, "qnormalise", 1, 1), env);
 	scheme_add_global("qtomatrix", scheme_make_prim_w_arity(qtomatrix, "qtomatrix", 1, 1), env);	
 	scheme_add_global("qconjugate", scheme_make_prim_w_arity(qconjugate, "qconjugate", 1, 1), env);	
+	scheme_add_global("fmod", scheme_make_prim_w_arity(fmod, "fmod", 2, 2), env);	
  	MZ_GC_UNREG(); 
 }

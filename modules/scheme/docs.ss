@@ -2,7 +2,7 @@
 ;; Fluxus scratchpad docs
 
 ;; StartSectionDoc-en
-;; scratchpad-docs
+;; high-level-scratchpad-docs
 ;; Some useful high level documentation lives here, this won't make much
 ;; sense if you are reading this in a different place from the help system
 ;; in the fluxus scratchpad app, but it might be useful anyway...

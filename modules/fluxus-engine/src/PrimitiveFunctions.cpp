@@ -796,6 +796,68 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// pixels-width 
+// Returns: width-number
+// Description:
+// Returns the width of the current pixel primitive.
+// Example:
+// (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (display (vector (pixels-width) (pixels-height)))(newline))
+// EndFunctionDoc
+
+Scheme_Object *pixels_width(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			MZ_GC_UNREG(); 
+		    return scheme_make_integer_value(pp->GetWidth());
+		}
+	}
+	
+	Trace::Stream<<"pixels-width can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// pixels-height 
+// Returns: width-number
+// Description:
+// Returns the height of the current pixel primitive.
+// Example:
+// (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (display (vector (pixels-width) (pixels-height)))(newline))
+// EndFunctionDoc
+
+Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			MZ_GC_UNREG(); 
+		    return scheme_make_integer_value(pp->GetHeight());
+		}
+	}
+	
+	Trace::Stream<<"pixels-height can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // build-blobby numinfluences subdivisionsvec boundingvec
 // Returns: primitiveid-number
 // Description:
@@ -1120,6 +1182,127 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
     	Engine::Get()->Renderer()->RemovePrimitive(name);
     }
 
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// poly-indices 
+// Returns: void
+// Description:
+// Gets the vertex indices from this primitive
+// primitive.
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *l = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(1, l);
+	MZ_GC_REG();
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
+		if (pp)
+		{
+			l = scheme_null;
+			for (unsigned int n=0; n<pp->GetIndex().size(); n++)
+			{
+				l=scheme_make_pair(scheme_make_double(pp->GetIndex()[n]),l);
+			}
+			MZ_GC_UNREG(); 
+		    return l;
+		}
+	}
+	
+	Trace::Stream<<"poly-indices can only be called while a polyprimitive is grabbed"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// poly-type
+// Returns: void
+// Description:
+// Returns a symbol representing the type of the current polygon primitive.
+// primitive.
+// Example:
+// (define p (build-polygons 3 'triangle-strip))
+// (with-primitive p
+//     (display (poly-type))(newline))
+// EndFunctionDoc
+
+Scheme_Object *poly_type(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
+		if (pp)
+		{
+			switch (pp->GetType())
+			{
+				case PolyPrimitive::TRISTRIP: ret=scheme_make_symbol("triangle-strip"); break;
+				case PolyPrimitive::QUADS: ret=scheme_make_symbol("quad-list"); break;
+				case PolyPrimitive::TRILIST: ret=scheme_make_symbol("triangle-list"); break;
+				case PolyPrimitive::TRIFAN: ret=scheme_make_symbol("triangle-fan"); break;
+				case PolyPrimitive::POLYGON: ret=scheme_make_symbol("polygon"); break;
+			}
+			MZ_GC_UNREG(); 
+		    return ret;
+		}
+	}
+	
+	Trace::Stream<<"poly-type can only be called while a polyprimitive is grabbed"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// poly-indexed?
+// Returns: void
+// Description:
+// Returns true if the current polygon primitive is in indexed mode.
+// primitive.
+// Example:
+// (define p (build-polygons 3 'triangle-strip))
+// (with-primitive p
+//     (poly-convert-to-indexed)
+//     (display (poly-indexed?))(newline))
+// EndFunctionDoc
+
+Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
+		if (pp)
+		{
+			ret=scheme_false;
+			if (pp->IsIndexed()) ret=scheme_true;
+			MZ_GC_UNREG(); 
+		    return ret;
+		}
+	}
+	
+	Trace::Stream<<"poly-type can only be called while a polyprimitive is grabbed"<<endl;
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -1579,7 +1762,20 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 
 Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();  
+	Scheme_Object *name = NULL;
+	Scheme_Object *value = NULL;
+	Scheme_Object *p = NULL;
+	Scheme_Object *l = NULL;
+	Scheme_Object *pl = NULL;
+
+	MZ_GC_DECL_REG(5);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, name);
+	MZ_GC_VAR_IN_REG(2, value);
+	MZ_GC_VAR_IN_REG(3, p);
+	MZ_GC_VAR_IN_REG(4, l);
+	MZ_GC_VAR_IN_REG(5, pl);
+	MZ_GC_REG();
 	ArgCheck("line-intersect", "vv", argc, argv);
 	if (Engine::Get()->Grabbed()) 
 	{
@@ -1588,11 +1784,37 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 		{
 			vector<Evaluator::Point> points;
 			eval->IntersectLine(VectorFromScheme(argv[0]), VectorFromScheme(argv[1]), points);
+
+			l = scheme_null;
+
+			for (vector<Evaluator::Point>::iterator i=points.begin(); i!=points.end(); ++i)
+			{
+				pl = scheme_null;
+				
+				for (vector<Evaluator::Blend*>::iterator b=i->m_Blends.begin(); b!=i->m_Blends.end(); ++b)
+				{
+					name = scheme_make_utf8_string((*b)->m_Name.c_str());
+					
+					switch((*b)->m_Type)
+					{
+						case 'f': value = scheme_make_double(static_cast<Evaluator::TypedBlend<float>*>(*b)->m_Blend); break;
+						case 'v': value = FloatsToScheme(static_cast<Evaluator::TypedBlend<dVector>*>(*b)->m_Blend.arr(),4); break;
+						case 'c': value = FloatsToScheme(static_cast<Evaluator::TypedBlend<dColour>*>(*b)->m_Blend.arr(),4); break;
+						case 'm': value = FloatsToScheme(static_cast<Evaluator::TypedBlend<dMatrix>*>(*b)->m_Blend.arr(),16); break;
+						default: assert(0); break;
+					}
+
+					p = scheme_make_pair(name,value);					
+					pl = scheme_make_pair(p,pl);
+				}
+				l = scheme_make_pair(pl,l);
+			}
+
 			delete eval;
 		}
 	}
 	MZ_GC_UNREG(); 
-    return scheme_void;
+    return l;
 }
 
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
@@ -1621,6 +1843,8 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-geometry-cache", scheme_make_prim_w_arity(clear_geometry_cache, "clear-geometry-cache", 0, 0), env);
 	scheme_add_global("pixels-upload", scheme_make_prim_w_arity(pixels_upload, "pixels-upload", 0, 0), env);
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
+	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
+	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
@@ -1632,6 +1856,9 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
+	scheme_add_global("poly-indices", scheme_make_prim_w_arity(poly_indices, "poly-indices", 0, 0), env);
+	scheme_add_global("poly-type", scheme_make_prim_w_arity(poly_type, "poly-type", 0, 0), env);
+	scheme_add_global("poly-indexed?", scheme_make_prim_w_arity(poly_indexed, "poly-indexed?", 0, 0), env);
 	scheme_add_global("poly-convert-to-indexed", scheme_make_prim_w_arity(poly_convert_to_indexed, "poly-convert-to-indexed", 0, 0), env);
 	scheme_add_global("build-copy", scheme_make_prim_w_arity(build_copy, "build-copy", 1, 1), env);
 	scheme_add_global("make-pfunc", scheme_make_prim_w_arity(make_pfunc, "make-pfunc", 1, 1), env);

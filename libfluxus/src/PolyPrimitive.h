@@ -30,7 +30,7 @@ namespace Fluxus
 class PolyPrimitive : public Primitive
 {
 public:
-	// Todo: sort out these silly names
+	// Todo: sort out these silly names, add quadstrip
 	enum Type{TRISTRIP,QUADS,TRILIST,TRIFAN,POLYGON};
 	
 	PolyPrimitive(Type t=TRISTRIP);

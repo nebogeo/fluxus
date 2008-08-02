@@ -1,3 +1,5 @@
+#!/usr/bin/env mzscheme 
+
 ; Copyright (C) 2007 Dave Griffiths
 ;
 ; This program is free software; you can redistribute it and/or modify
@@ -16,6 +18,11 @@
 
 ; a script to convert the fluxus helpmap into a human readable text file
 ; fixed by Claude Heiland-Allen 
+
+#lang scheme/base
+
+(require scheme/file)
+(require scheme/path)
 
 (define (clean-id name) (regexp-replace "[!?<>]" name "_"))
 (define (clean-text text) (regexp-replace ">" (regexp-replace "<" (regexp-replace "&" text "\\&amp;") "\\&lt;") "\\&gt;"))
@@ -93,7 +100,7 @@
      (let ((section (cadr (car sectionlist)))
            (sectionname (car (car sectionlist))))
        (write-section-index sectionname indexhtmlfile)
-       (let ((htmlfile (open-output-file (string-append locale "/" sectionname ".html") 'replace)))
+       (let ((htmlfile (open-output-file (string-append locale "/" sectionname ".html") #:exists 'replace)))
          (write-header locale sectionname htmlfile "fluxusdoc.css")
          (write-section sectionname (car section) (cadr section) htmlfile)
          (write-functionlist-start indexhtmlfile)
@@ -107,10 +114,10 @@
   (cond
     ((not (null? helpmap))
      (let ((locale (car (car helpmap))))
-       (if (not (directory-exists? locale))
+       (when (not (directory-exists? locale))
            (make-directory locale))
        (write-locale locale htmlfile)
-       (let ((htmlfile (open-output-file (string-append locale "/index.html") 'replace)))
+       (let ((htmlfile (open-output-file (string-append locale "/index.html") #:exists 'replace)))
          (write-header locale "Section Index" htmlfile "fluxusdoc.css")
          (parse-section (cadr (car helpmap)) htmlfile locale)
          (write-footer htmlfile)
@@ -119,7 +126,7 @@
 
 
 (let ((file (open-input-file "helpmap.scm")))
-  (let ((htmlfile (open-output-file "index.html" 'replace)))
+  (let ((htmlfile (open-output-file "index.html" #:exists 'replace)))
     (write-header "en" "Fluxus Documentation 0.15" htmlfile "fluxusdoc.css")
     (fprintf htmlfile "<h1>Fluxus Documentation 0.15</h1>~n")
     (fprintf htmlfile "<p>Extracted and html-ised from the runtime documentation system</p>~n")

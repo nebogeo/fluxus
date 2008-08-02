@@ -19,6 +19,29 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * sped up pdata-get/ref
 * made (backfacecull) local state rather than global
 * added (hint-cull-ccw)
+* documentation changed so we can have functions in different files sharing the same section
+* ported html and text doc conversion to plt 4
+* (line-intersect) for raytracing poly primitives
+* pixel primitive changes
+   - (pixels-width) and (pixels-height) for querying dimensions
+   - added a load of commands for drawing into pixels primitives:
+     (pixels-circle), (pixels-blend-circle), (pixels-dodge), (pixels-burn) and (pixels-clear) 
+	 see docs for more info...
+* added (fmod)
+* more polygon querying
+  - (poly-indices) gets the index list
+  - (poly-type) returns the type of the polygon 'triangle-strip, 'triangle-list etc
+  - (poly-indexed?) returns #t if the polygon is index mode
+* added a load of shortcuts for accessing vectors:
+  - (vx (vector 1 2 3)) returns 1
+  - (vy (vector 1 2 3)) returns 2
+  - (vz (vector 1 2 3)) returns 3
+  - (vr (vector 1 2 3)) returns 1
+  - (vg (vector 1 2 3)) returns 2
+  - (vb (vector 1 2 3)) returns 3
+  - (vx-set! (vector 0 0 0) 1) returns (vector 0 0 1)
+  - etc ...
+* added (occlusion-texture-bake)
 
 0.14
 

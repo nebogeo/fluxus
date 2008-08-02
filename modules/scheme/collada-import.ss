@@ -1,7 +1,7 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
 ;; StartSectionDoc-en
-;; collada-import
+;; scheme-utils
 ;; Collada format scene import
 ;; Example:
 ;; EndSectionDoc
