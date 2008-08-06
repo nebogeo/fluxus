@@ -28,7 +28,7 @@ MIDIListener *midilistener = NULL;
 // MIDI stands for Musical Instrument Digital Interface, and it enables
 // electronic musical instruments, computers, and other equipment to
 // communicate, control, and synchronize with each other.
-// Fluxus can receive MIDI control change messages (CCs).
+// Fluxus can receive MIDI control change and note messages.
 // Example:
 // (require fluxus-015/fluxus-midi)
 //
@@ -195,7 +195,45 @@ Scheme_Object *midi_ccn(int argc, Scheme_Object **argv)
 	}
 	else
 	{
-		ret = scheme_void;
+		ret = scheme_make_float(0);
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
+// midi-note
+// Returns: #(on-off-symbol channel note velocity) or #f
+// Description:
+// Returns the next event from the MIDI note event queue or #f if the queue is empty.
+// Example:
+// (midi-note)
+// EndFunctionDoc
+
+Scheme_Object *midi_note(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(2, ret);
+	MZ_GC_REG();
+
+	ret = scheme_false;
+	if (midilistener != NULL)
+	{
+		MIDINote *note = midilistener->get_note();
+		if (note)
+		{
+			ret = scheme_make_vector(4, scheme_void);
+			if (note->on_off == MIDIListener::MIDI_NOTE_OFF)
+				SCHEME_VEC_ELS(ret)[0] = scheme_make_symbol("note-off");
+			else
+				SCHEME_VEC_ELS(ret)[0] = scheme_make_symbol("note-on");
+
+			SCHEME_VEC_ELS(ret)[1] = scheme_make_integer(note->channel);
+			SCHEME_VEC_ELS(ret)[2] = scheme_make_integer(note->note);
+			SCHEME_VEC_ELS(ret)[3] = scheme_make_integer(note->velocity);
+		}
 	}
 
 	MZ_GC_UNREG();
@@ -243,6 +281,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(midi_cc, "midi-cc", 2, 2), menv);
 	scheme_add_global("midi-ccn",
 			scheme_make_prim_w_arity(midi_ccn, "midi-ccn", 2, 2), menv);
+	scheme_add_global("midi-note",
+			scheme_make_prim_w_arity(midi_note, "midi-note", 0, 0), menv);
 	scheme_add_global("midi-peek",
 			scheme_make_prim_w_arity(midi_peek, "midi-peek", 0, 0), menv);
 

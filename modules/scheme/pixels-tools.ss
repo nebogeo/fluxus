@@ -112,7 +112,7 @@
         "c"))
 
 ;; StartFunctionDoc-en
-;; pixels-dodge pos radius strength
+;; pixels-burn pos radius strength
 ;; Returns: void
 ;; Description:
 ;; Darkens a circular area of a pixels primitive

@@ -22,6 +22,17 @@
 
 using namespace std;
 
+/** maximum number of midi notes stored */
+static const unsigned MAX_MIDI_NOTE_COUNT = 256;
+
+MIDINote::MIDINote(int _on_off, int _channel, int _note, int _velocity) :
+	on_off(_on_off),
+	channel(_channel),
+	note(_note),
+	velocity(_velocity)
+{
+}
+
 void midi_callback(double deltatime, vector<unsigned char> *message,
 		void *user_data)
 {
@@ -40,6 +51,8 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	/* allocate array for controller values and clear it */
 	cntrl_values = new unsigned char[MAX_CNTRL];
 	fill(cntrl_values, cntrl_values + MAX_CNTRL, 0);
+
+	pthread_mutex_init(&mutex, NULL);
 }
 
 MIDIListener::~MIDIListener()
@@ -48,6 +61,15 @@ MIDIListener::~MIDIListener()
 		delete midiin;
 
 	delete [] cntrl_values;
+
+	deque<MIDINote *>::iterator i = midi_notes.begin();
+	for (; i < midi_notes.end(); i++)
+	{
+		delete *i;
+	}
+	midi_notes.clear();
+
+	pthread_mutex_destroy(&mutex);
 }
 
 void MIDIListener::init_midi(void)
@@ -66,6 +88,13 @@ void MIDIListener::init_midi(void)
 		/* ignore MIDI sysex, timing and active sensing messages */
 		midiin->ignoreTypes(true, true, true);
 	}
+
+	deque<MIDINote *>::iterator i = midi_notes.begin();
+	for (; i < midi_notes.end(); i++)
+	{
+		delete *i;
+	}
+	midi_notes.clear();
 }
 
 /**
@@ -156,7 +185,11 @@ int MIDIListener::get_cc(int channel, int cntrl_number)
 		if (midiin == NULL)
 			return 0;
 	}
-	return cntrl_values[(channel << 7) + cntrl_number];
+
+	pthread_mutex_lock(&mutex);
+	int v = cntrl_values[(channel << 7) + cntrl_number];
+	pthread_mutex_unlock(&mutex);
+	return v;
 }
 
 /**
@@ -173,7 +206,11 @@ float MIDIListener::get_ccn(int channel, int cntrl_number)
 		if (midiin == NULL)
 			return 0;
 	}
-	return (float)cntrl_values[(channel << 7) + cntrl_number] / 127.0;
+
+	pthread_mutex_lock(&mutex);
+	float v = (float)cntrl_values[(channel << 7) + cntrl_number] / 127.0;
+	pthread_mutex_unlock(&mutex);
+	return v;
 }
 
 /**
@@ -182,7 +219,56 @@ float MIDIListener::get_ccn(int channel, int cntrl_number)
  **/
 string MIDIListener::get_last_event(void)
 {
-	return last_event;
+	static string last_event_static = "";
+
+	pthread_mutex_lock(&mutex);
+	last_event_static = last_event;
+	pthread_mutex_unlock(&mutex);
+
+	return last_event_static;
+}
+
+/**
+ * Returns next MIDI note event from event queue.
+ * \retval MIDINote* pointer to MIDI note or NULL if the event queue is empty
+ **/
+MIDINote *MIDIListener::get_note(void)
+{
+	static MIDINote note;
+
+	pthread_mutex_lock(&mutex);
+	if (midi_notes.empty())
+	{
+		pthread_mutex_unlock(&mutex);
+		return NULL;
+	}
+
+	MIDINote *n = midi_notes.front();
+	midi_notes.pop_front();
+	pthread_mutex_unlock(&mutex);
+
+	note.on_off = n->on_off;
+	note.channel = n->channel;
+	note.note = n->note;
+	note.velocity = n->velocity;
+	delete n;
+
+	return &note;
+}
+
+/**
+ * Adds a new note to the event queue.
+ **/
+void MIDIListener::add_note(int on_off, int ch, int note, int velocity)
+{
+	MIDINote *n = new MIDINote(on_off, ch, note, velocity);
+
+	midi_notes.push_back(n);
+	while (midi_notes.size() > MAX_MIDI_NOTE_COUNT)
+	{
+		delete midi_notes.front();
+		midi_notes.pop_front();
+	}
 }
 
 void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
@@ -195,25 +281,66 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 
 	switch (status)
 	{
-		case 0xb:	/* controller */
+		case MIDIListener::MIDI_CONTROLLER:
 			if (count == 3)
 			{
 				int cntrl_number = (*message)[1]; /* controller number */
 				/* array index from channel and controller number */
 				int i = (ch << 7) + cntrl_number;
 				int value = (*message)[2]; /* controller value */
+				pthread_mutex_lock(&mutex);
 				cntrl_values[i] = value;
+				pthread_mutex_unlock(&mutex);
+			}
+			break;
 
-				snprintf(buf, 256, "11 (cc) %d %d %d", ch,
-						cntrl_number, value);
-				last_event = string(buf);
+		case MIDIListener::MIDI_NOTE_OFF:
+		case MIDIListener::MIDI_NOTE_ON:
+			if (count == 3)
+			{
+				pthread_mutex_lock(&mutex);
+				add_note(status, ch, (*message)[1], (*message)[2]);
+				pthread_mutex_unlock(&mutex);
 			}
 			break;
 
 		default:
-			snprintf(buf, 256, "%d (unknown) %d %d %d", status, ch,
-						(*message)[1], (*message)[2]);
-			last_event = string(buf);
+			break;
+	}
+
+	/* debug string for last_event */
+	for (unsigned i = 0; i < count; i++)
+	{
+		if (i == 0)
+		{
+			switch (status)
+			{
+				case MIDIListener::MIDI_NOTE_OFF:
+					snprintf(buf, 256, "%d (note off) %d ", status, ch);
+					last_event = string(buf);
+					break;
+
+				case MIDIListener::MIDI_NOTE_ON:
+					snprintf(buf, 256, "%d (note on) %d ", status, ch);
+					last_event = string(buf);
+					break;
+
+				case MIDIListener::MIDI_CONTROLLER:
+					snprintf(buf, 256, "%d (cc) %d ", status, ch);
+					last_event = string(buf);
+					break;
+
+				default:
+					snprintf(buf, 256, "%d %d ", status, ch);
+					last_event = string(buf);
+					break;
+			}
+		}
+		else
+		{
+			snprintf(buf, 256, "%d ", (*message)[i]);
+			last_event += string(buf);
+		}
 	}
 }
 
