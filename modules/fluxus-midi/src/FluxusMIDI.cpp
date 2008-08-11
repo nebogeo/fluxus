@@ -226,9 +226,9 @@ Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 		{
 			ret = scheme_make_vector(4, scheme_void);
 			if (note->on_off == MIDIListener::MIDI_NOTE_OFF)
-				SCHEME_VEC_ELS(ret)[0] = scheme_make_symbol("note-off");
+				SCHEME_VEC_ELS(ret)[0] = scheme_intern_symbol("note-off");
 			else
-				SCHEME_VEC_ELS(ret)[0] = scheme_make_symbol("note-on");
+				SCHEME_VEC_ELS(ret)[0] = scheme_intern_symbol("note-on");
 
 			SCHEME_VEC_ELS(ret)[1] = scheme_make_integer(note->channel);
 			SCHEME_VEC_ELS(ret)[2] = scheme_make_integer(note->note);
