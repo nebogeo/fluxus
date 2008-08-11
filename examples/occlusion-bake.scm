@@ -27,7 +27,7 @@
 (define (run)
   (with-primitive tex
                   (pixels-clear (vector 1 1 1 1))
-                  (occlusion-texture-bake tex s 30 10)
+                  (occlusion-texture-bake tex s 30 10 2 #f)
 
                   ; uncomment to save the texture out - give
                   ; it some gaussian blur and contrast in the gimp,

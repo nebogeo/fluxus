@@ -60,7 +60,7 @@
   
 
 ;; StartFunctionDoc-en
-;; occlusion-texture-bake tex prim samples-per-face rays-per-sample
+;; occlusion-texture-bake tex prim samples-per-face rays-per-sample ray-length debug
 ;; Returns: void
 ;; Description:
 ;; Bakes ambient occlusion textures. See ambient-occlusion.scm for more info.
@@ -68,13 +68,14 @@
 ;; EndFunctionDoc 
 
 ; proper ambient occlusion texture bake (very slow)
-(define (occlusion-texture-bake tex prim samples-per-face rays-per-sample)
+(define (occlusion-texture-bake tex prim samples-per-face rays-per-sample ray-length debug)
 
 (define (make-sample-hemi n count l)
   (cond 
     ((zero? count) l)
     (else
-     (make-sample-hemi n (- count 1) (cons (vmul (hrndhemi n) 2) l)))))
+     (make-sample-hemi n (- count 1) 
+	 	(cons (vmul (hrndhemi n) ray-length) l)))))
     
   (define (sample-rnd-face-point indices b)
     (let 
@@ -93,16 +94,20 @@
                (b (vadd pos point)))
            
            ; visualise the rays
-           #;(let ((l (with-state
+           (when debug
+		   	(let ((l (with-state
                        (concat (with-primitive prim (get-transform)))
                        (hint-none)
                        (hint-unlit)
                        (hint-wire)
-                       (wire-opacity 0.1)
+                       (hint-vertcols)
+                       (wire-opacity 0.5)
                        (build-ribbon 2))))
                (with-primitive l
                                (pdata-set! "p" 0 a)
-                               (pdata-set! "p" 1 b)))
+                               (pdata-set! "p" 1 b)
+							   (pdata-set! "c" 0 (vector 0 0 0))
+                               (pdata-set! "c" 1 (vector 1 1 1)))))
            
            (if (not (null? (line-intersect a b)))
                (* r 0.95)
