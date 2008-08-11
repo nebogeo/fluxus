@@ -14,8 +14,8 @@
 		 fluxus-015/randomness
 		 fluxus-015/poly-tools
 		 fluxus-015/pixels-tools
-;		 fluxus-015/fluxa ; removed until big pause in liblo startup is fixed
 		 fluxus-015/scratchpad
+		 fluxus-015/maths
 		 (only-in srfi/13 string-pad))
 		 
 (provide 
@@ -30,5 +30,5 @@
  (all-from-out fluxus-015/randomness)  
  (all-from-out fluxus-015/poly-tools)  
  (all-from-out fluxus-015/pixels-tools)  
- ;(all-from-out fluxus-015/fluxa)
- (all-from-out fluxus-015/scratchpad))
+ (all-from-out fluxus-015/scratchpad)
+ (all-from-out fluxus-015/maths))

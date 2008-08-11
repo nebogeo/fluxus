@@ -42,6 +42,11 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
   - (vx-set! (vector 0 0 0) 1) returns (vector 0 0 1)
   - etc ...
 * added (occlusion-texture-bake)
+* added tools for evaluating polygons - these should eventually work on any type of polygon primitive, they do on most of them now:
+  - poly-for-each-face
+  - poly-for-each-triangle
+  - poly-for-each-tri-sample (random sampling)
+* added (rndhemi) and (hrndhemi) for generating points on hemispheres (solid or hollow)
 
 0.14
 

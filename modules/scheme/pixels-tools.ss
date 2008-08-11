@@ -9,45 +9,14 @@
 #lang scheme/base
 (require "fluxus-engine.ss")
 (require "building-blocks.ss")
+(require "maths.ss")
 (provide 
-	vmix
-	vclamp
 	pixels-circle
 	pixels-blend-circle
 	pixels-dodge
 	pixels-burn
 	pixels-clear)
-	
-;; StartFunctionDoc-en
-;; vmix a b t
-;; Returns: void
-;; Description:
-;; Linearly interpolates the two vectors together by t
-;; Example:  
-;; ; mix red and blue together
-;; (colour (vmix (vector 1 0 0) (vector 0 0 1) 0.5))
-;; EndFunctionDoc
-
-(define (vmix a b t)
-    (vadd (vmul a t) (vmul b (- 1 t))))
-	
-;; StartFunctionDoc-en
-;; vclamp a
-;; Returns: void
-;; Description:
-;; Clamp the vector so the elements are all between 0 and 1
-;; Example:  
-;; ; make a valid colour from any old vector
-;; (colour (vclamp (vector 2 400 -123)))
-;; EndFunctionDoc 
-
-(define (vclamp a)
-	(define (clamp v)
-		(if (< v 0) 0
-			(if (> v 1) 1
-				v)))
-    (vector (clamp (vx a)) (clamp (vy a)) (clamp (vz a))))
-	
+		
 ;; StartFunctionDoc-en
 ;; pixels-circle pos radius colour
 ;; Returns: void

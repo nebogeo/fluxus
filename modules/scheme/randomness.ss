@@ -212,5 +212,86 @@
 (define (grndvec)
   (vector (grndf) (grndf) (grndf)))
 
+;; StartFunctionDoc-en
+;; rndbary
+;; Returns: vector
+;; Description:
+;; Returns a vector representing a uniformly distributed triangular 
+;; barycentric coordinate (wip - doesn't seem to be very uniform to me...)
+;; Example:
+;; (bary)
+;; EndFunctionDoc 	
 
+(define (rndbary)
+	(let* 
+		((a (- 1.0 (sqrt (rndf))))
+		 (b (* (rndf) (- 1.0 a)))
+		 (c (- 1.0 (+ a b))))
+		(vector a b c)))
 
+;; StartFunctionDoc-en
+;; rndbary normal
+;; Returns: vector
+;; Description:
+;; Returns a vector representing a random point on a hemisphere, defined by normal.
+;; Example:
+;; (clear)
+;; (hint-none)
+;; (hint-points)
+;; (point-width 4)
+;; (define p (build-particles 1000))
+;; 
+;; (show-axis 1)
+;; 
+;; (with-primitive p
+;;     (pdata-map! 
+;;         (lambda (p)
+;;             (vector 1 1 1))
+;;         "c")
+;;     (pdata-map! 
+;;         (lambda (p)
+;;             (rndhemi (vector 0 1 0)))
+;;         "p"))
+;; EndFunctionDoc 	
+
+; return a line on the hemisphere 
+(define (rndhemi n)
+  (let loop ((v (srndvec)))
+    (if (> (vdot n v) 0)
+        v
+        (loop (srndvec)))))
+		
+		
+;; StartFunctionDoc-en
+;; hrndbary normal
+;; Returns: vector
+;; Description:
+;; Returns a vector representing a random point on a hollow hemisphere, defined by normal.
+;; Example:
+;; (clear)
+;; (hint-none)
+;; (hint-points)
+;; (point-width 4)
+;; (define p (build-particles 1000))
+;; 
+;; (show-axis 1)
+;; 
+;; (with-primitive p
+;;     (pdata-map! 
+;;         (lambda (p)
+;;             (vector 1 1 1))
+;;         "c")
+;;     (pdata-map! 
+;;         (lambda (p)
+;;             (hrndhemi (vector 0 1 0)))
+;;         "p"))
+;; EndFunctionDoc 	
+
+; return a line on the hemisphere 
+(define (hrndhemi n)
+  (let loop ((v (hsrndvec)))
+    (if (> (vdot n v) 0)
+        v
+        (loop (hsrndvec)))))
+		
+		

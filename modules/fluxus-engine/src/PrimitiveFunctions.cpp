@@ -1225,18 +1225,17 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// poly-type
+// poly-type-enum
 // Returns: void
 // Description:
-// Returns a symbol representing the type of the current polygon primitive.
+// Returns the enum value representing the type of the current polygon primitive.
+// This is needed as I can't get my scheme scripts to recognise symbols returned from here.
+// Use (poly-type) instead of this directly.
 // primitive.
 // Example:
-// (define p (build-polygons 3 'triangle-strip))
-// (with-primitive p
-//     (display (poly-type))(newline))
 // EndFunctionDoc
 
-Scheme_Object *poly_type(int argc, Scheme_Object **argv)
+Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *ret = NULL;
 	MZ_GC_DECL_REG(1);
@@ -1250,14 +1249,7 @@ Scheme_Object *poly_type(int argc, Scheme_Object **argv)
 		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
 		if (pp)
 		{
-			switch (pp->GetType())
-			{
-				case PolyPrimitive::TRISTRIP: ret=scheme_make_symbol("triangle-strip"); break;
-				case PolyPrimitive::QUADS: ret=scheme_make_symbol("quad-list"); break;
-				case PolyPrimitive::TRILIST: ret=scheme_make_symbol("triangle-list"); break;
-				case PolyPrimitive::TRIFAN: ret=scheme_make_symbol("triangle-fan"); break;
-				case PolyPrimitive::POLYGON: ret=scheme_make_symbol("polygon"); break;
-			}
+			ret = scheme_make_integer_value((int)pp->GetType());
 			MZ_GC_UNREG(); 
 		    return ret;
 		}
@@ -1857,7 +1849,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-indices", scheme_make_prim_w_arity(poly_indices, "poly-indices", 0, 0), env);
-	scheme_add_global("poly-type", scheme_make_prim_w_arity(poly_type, "poly-type", 0, 0), env);
+	scheme_add_global("poly-type-enum", scheme_make_prim_w_arity(poly_type_enum, "poly-type-enum", 0, 0), env);
 	scheme_add_global("poly-indexed?", scheme_make_prim_w_arity(poly_indexed, "poly-indexed?", 0, 0), env);
 	scheme_add_global("poly-convert-to-indexed", scheme_make_prim_w_arity(poly_convert_to_indexed, "poly-convert-to-indexed", 0, 0), env);
 	scheme_add_global("build-copy", scheme_make_prim_w_arity(build_copy, "build-copy", 1, 1), env);

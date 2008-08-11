@@ -23,7 +23,8 @@ Scripts    = ["boot.scm",
 			  "joylisten.ss",
 			  "tricks.ss",
 			  "poly-tools.ss",
-			  "pixels-tools.ss" ]
+			  "pixels-tools.ss",
+			  "maths.ss" ]
 
 Install        = CollectsInstall
 

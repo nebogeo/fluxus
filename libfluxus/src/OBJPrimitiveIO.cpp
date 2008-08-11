@@ -310,7 +310,7 @@ void OBJPrimitiveIO::WriteIndices(const Primitive *ob, FILE *file)
 	{
 		vector<unsigned int> indices = pp->GetIndexConst();
 		unsigned int i=0;
-		while (i<pp->Size())
+		while (i<indices.size())
 		{
 			snprintf(line,2048,"f ");
 			fwrite(line,1,strlen(line),file);
