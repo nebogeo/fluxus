@@ -24,6 +24,8 @@
 		 (only-in srfi/13 string-pad))
 		 
 (provide 
+ fluxus-auto-indent
+ set-auto-indent-tab
  fluxus-reshape-callback 
  fluxus-input-callback 
  fluxus-input-release-callback
@@ -293,9 +295,51 @@
 (define (override-frame-callback fn)
   (set! fluxus-frame-callback fn))
 
+;; StartFunctionDoc-en
+;; set-auto-indent-tab size-number
+;; Returns: void
+;; Description:
+;; Sets the tabs size for the prettification auto indent on ctrl-p. Defaults to 2.
+;; Example:
+;; (set-auto-indent-tab 2)
+;; EndFunctionDoc 
+
+(define fluxus-auto-tab-size 4)
+
+(define (set-auto-indent-tab s)
+	(set! fluxus-auto-tab-size s))
+	
 ;-------------------------------------------------
 ; callbacks - these are called directly from the
 ; fluxus application
+
+; used for pretty formatting
+
+(define (fluxus-auto-indent text)
+  (let ((out "")
+        (d 0)
+        (newline #f)
+        (prewhite #f))
+    (for ((i (in-range 0 (string-length text))))
+         (let ((c (string-ref text i)))
+           (cond 
+             ((char=? c #\newline) 
+              (set! newline #t)
+              (set! out (string-append out (string #\newline) 
+			  	(make-string (* d fluxus-auto-tab-size)#\ ))))
+             (else
+              (cond
+                ((char=? c #\() (set! d (+ d 1)))
+                ((char=? c #\)) (set! d (- d 1)))
+                ((char=? c #\[) (set! d (+ d 1)))
+                ((char=? c #\]) (set! d (- d 1)))
+                ((char=? c #\{) (set! d (+ d 1)))
+                ((char=? c #\}) (set! d (- d 1))))
+              (when (and newline (not (char-whitespace? c)))
+                  (set! newline #f))
+              (when (not newline) 
+                (set! out (string-append out (string c))))))))
+    out))
 
 ; reshape function
 

@@ -112,7 +112,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				glutPositionWindow(100,100);
 			} 
 			break;
-			case 16: /*Pretty();*/ break; // p
+			case 16: Pretty(); break; // p
 			case 19: if (m_CurrentEditor!=9) SaveScript(); break; // s			
 			case 8: HideScript(); break; // h
 			case 13: HideCursor(); break; // m
@@ -336,16 +336,31 @@ void FluxusMain::SaveScript()
 	
 }
 
+string Escape(const string &str)
+{
+	string out;
+	for(unsigned int i=0; i<str.size(); i++)
+	{
+		if (str[i]=='\"') out+="\\\"";
+		else if (str[i]=='\\') out+="\\\\";
+		else out+=str[i];
+	}
+	return out;
+}
+
 void FluxusMain::Pretty()
 {
 	Scheme_Object *txt;
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_REG();	
-	string command(string("(pretty-format '(")+m_Editor[m_CurrentEditor]->GetAllText()+string(") 'infinity)"));
+	string command(string("(fluxus-auto-indent \"")+Escape(m_Editor[m_CurrentEditor]->GetAllText())+string("\")"));
 	Interpreter::Interpret(command, &txt);
-	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
-	m_Editor[m_CurrentEditor]->SetText(s);	
+	if (txt!=NULL)
+	{
+		char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
+		m_Editor[m_CurrentEditor]->SetText(s);	
+	}
   	MZ_GC_UNREG();
 }
 

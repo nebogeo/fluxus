@@ -53,7 +53,7 @@ public:
 
 	string GetText();
 	string GetAllText() { return m_Text; }
-	void SetText(const string& s) { m_Text=s; m_Position=0; ProcessTabs(); }
+	void SetText(const string& s);
 	void Reset();
 	
 	float m_PosX,m_PosY;
@@ -97,6 +97,9 @@ protected:
 	void ParseParentheses();
 	void ParseOpenParentheses(int pos, int type);
 	void ParseCloseParentheses(int pos, int type);
+	
+	int GetCurrentLine();
+	void SetCurrentLine(int line);
 	
 	void BBExpand(float x, float y);
 	void BBClear() { m_BBMinX=m_BBMinY=m_BBMaxX=m_BBMaxY=0; }

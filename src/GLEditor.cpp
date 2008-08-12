@@ -118,6 +118,46 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 	m_Height=h;
 }
 
+int GLEditor::GetCurrentLine()
+{
+	int ret=0;
+	for (unsigned int i=0; i<m_Position; i++)
+	{
+		if (m_Text[i]=='\n') ret++;
+	}
+	return ret;
+}
+
+void GLEditor::SetCurrentLine(int line)
+{
+	m_Position=0;
+	int count=0;
+	for (unsigned int i=0; i<m_Text.size(); i++)
+	{
+		if (m_Text[i]=='\n') count++;
+		if (count<=line) m_Position++;
+	}
+	if (m_Position<m_TopTextPosition) m_TopTextPosition=LineStart(m_Position);
+	if (m_Position>=m_BottomTextPosition) m_TopTextPosition=LineEnd(m_TopTextPosition)+1;
+	m_Position=LineStart(m_Position);
+}
+
+void GLEditor::SetText(const string& s) 
+{ 
+	if (m_Text!="")
+	{
+		m_Position=LineStart(m_Position);
+		int line = GetCurrentLine();
+		m_Text=s; 
+		SetCurrentLine(line);
+		ProcessTabs(); 
+	}
+	else
+	{
+		m_Text=s; 
+	}
+}
+
 void GLEditor::StrokeCharacter(wchar_t c)
 {
 	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
