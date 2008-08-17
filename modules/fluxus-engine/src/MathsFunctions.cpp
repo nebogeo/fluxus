@@ -373,7 +373,7 @@ Scheme_Object *vcross(int argc, Scheme_Object **argv)
 // Description:
 // Multiplies two matrices together
 // Example:
-// (vmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (mmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
  
 // StartFunctionDoc-pt
@@ -382,7 +382,7 @@ Scheme_Object *vcross(int argc, Scheme_Object **argv)
 // Descrição:
 // Multiplica duas matrizes.
 // Exemplo:
-// (vmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (mmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
  
 Scheme_Object *mmul(int argc, Scheme_Object **argv)
@@ -400,7 +400,7 @@ Scheme_Object *mmul(int argc, Scheme_Object **argv)
 // Description:
 // Adds two matrices together
 // Example:
-// (vadd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (madd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -409,7 +409,7 @@ Scheme_Object *mmul(int argc, Scheme_Object **argv)
 // Descrição:
 // Adiciona duas matrizes.
 // Exemplo:
-// (vadd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (madd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 Scheme_Object *madd(int argc, Scheme_Object **argv)
@@ -427,7 +427,7 @@ Scheme_Object *madd(int argc, Scheme_Object **argv)
 // Description:
 // Subtracts a matrix from another.
 // Example:
-// (vsub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (msub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -436,7 +436,7 @@ Scheme_Object *madd(int argc, Scheme_Object **argv)
 // Descrição:
 // Subtrai uma matriz de outra.
 // Exemplo:
-// (vsub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (msub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 Scheme_Object *msub(int argc, Scheme_Object **argv)
@@ -454,7 +454,7 @@ Scheme_Object *msub(int argc, Scheme_Object **argv)
 // Description:
 // Divides a matrix by another
 // Example:
-// (vdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (mdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -463,7 +463,7 @@ Scheme_Object *msub(int argc, Scheme_Object **argv)
 // Descrição:
 // Divide uma matriz por outra.
 // Exemplo:
-// (vdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// (mdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
 Scheme_Object *mdiv(int argc, Scheme_Object **argv)
@@ -505,7 +505,7 @@ Scheme_Object *mident(int argc, Scheme_Object **argv)
 // Description:
 // Returns a matrix representing the specified transform
 // Example:
-// (mtransform (vector 100 0 0))
+// (mtranslate (vector 100 0 0))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -514,7 +514,7 @@ Scheme_Object *mident(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna uma matriz representando a tranformação(translação) especificada.
 // Exemplo:
-// (mtransform (vector 100 0 0))
+// (mtranslate (vector 100 0 0))
 // EndFunctionDoc
 
 Scheme_Object *mtranslate(int argc, Scheme_Object **argv)

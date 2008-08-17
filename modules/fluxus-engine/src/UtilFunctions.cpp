@@ -76,7 +76,7 @@ Scheme_Object *time(int argc, Scheme_Object **argv)
 // Time in seconds since the last frame. Used to make animation frame rate independant.
 // Example:
 // (define (animate)
-//     (rotate ((vector * (delta) 10) 0 0) 
+//     (rotate (vector (* (delta) 10) 0 0))
 //     (draw-cube))
 // (every-frame (animate))    
 // EndFunctionDoc
@@ -88,7 +88,7 @@ Scheme_Object *time(int argc, Scheme_Object **argv)
 // Tempo em segundos desde o ultimo frame. Usado pra fazer animacoes com taxa de frames independendente(constante).
 // Exemplo:
 // (define (animate)
-//     (rotate (* (delta) 10) 0 0) 
+//     (rotate (vector (* (delta) 10) 0 0))
 //     (draw-cube))
 // (every-frame (animate))    
 // EndFunctionDoc
@@ -105,7 +105,7 @@ Scheme_Object *delta(int argc, Scheme_Object **argv)
 // Returns a random number between 0 and 1.
 // Example:
 // (define (animate)
-//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
 //     (draw-cube))
 // (every-frame (animate))
 // EndFunctionDoc
@@ -117,7 +117,7 @@ Scheme_Object *delta(int argc, Scheme_Object **argv)
 // Retorna um nÅ˙mero randÅÙmico entre 0 e 1.
 // Exemplo:
 // (define (animate)
-//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
 //     (draw-cube))
 // (every-frame (animate))
 // EndFunctionDoc
@@ -134,7 +134,7 @@ Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 // Seeds the random number generator so we can get the same sequence.
 // Example:
 // (define (animate)
-//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
 //     (draw-cube))
 // (flxseed 10) 
 // (every-frame (animate)) ; the same sequence of colours will be generated
@@ -147,7 +147,7 @@ Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 // Alimenta o gerador de nÅ˙mero randÅÙmico de forma que nÅÛs consigamos a mesma sequÅÍncia.
 // Exemplo:
 // (define (animate)
-//     (colour (flxrnd) (flxrnd) (flxrnd)) 
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
 //     (draw-cube))
 // (flxseed 10) 
 // (every-frame (animate)) ; a mesma sequÅÍncia de cores serÅ· gerada
@@ -169,7 +169,7 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 // Sets a list of search path strings to use for looking for fluxus related files, such as
 // textures, shaders etc. Paths will be searched in order each time, and need trailing slashes.
 // Example:
-// (set-searchpaths (list "/path/to/my/textures/" "/path/to/my/other/textures/"))
+// (set-searchpaths (append (get-searchpaths) (list "/path/to/my/textures/" "/path/to/my/other/textures/")))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt

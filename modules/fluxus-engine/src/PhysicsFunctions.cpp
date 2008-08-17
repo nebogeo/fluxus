@@ -390,7 +390,24 @@ Scheme_Object *surface_params(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
-// (build-balljoint shape1 shape2 (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-balljoint shape1 shape2 (vector 0 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -405,7 +422,24 @@ Scheme_Object *surface_params(int argc, Scheme_Object **argv)
 // criar uma junção. Junções podem ser criadas, modificadas e
 // indexadas de uma maneira similar a outras primitivas.
 // Exemplo:
-// (build-balljoint shape1 shape2 (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-balljoint shape1 shape2 (vector 0 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
@@ -427,7 +461,13 @@ Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 // Creates a joint to connect an object to the global environment. This locks the 
 // object in place.
 // Example:
-// (build-fixedjoint shape) 
+// (clear)
+// (define shape1 (with-state 
+//         (translate (vector 0 1 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (build-fixedjoint shape1) ; not very exciting... 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -437,7 +477,13 @@ Scheme_Object *build_balljoint(int argc, Scheme_Object **argv)
 // Cria uma junção para conectar um objeto ao ambiente global. Isto
 // trava o objeto no lugar.
 // Exemplo:
-// (build-fixedjoint shape)
+// (clear)
+// (define shape1 (with-state 
+//         (translate (vector 0 1 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (build-fixedjoint shape1) ; not very exciting... 
 // EndFunctionDoc
 
 Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
@@ -459,7 +505,24 @@ Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
-// (build-hingejoint shape1 shape2 (vector 0 1 0) (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-hingejoint shape1 shape2 (vector 0 0 0) (vector 0 0 1)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -474,7 +537,24 @@ Scheme_Object *build_fixedjoint(int argc, Scheme_Object **argv)
 // criar uma junção. Junções podem ser criadas, modificadas e
 // indexadas de uma maneira similar a outras primitivas.
 // Exemplo:
-// (build-hingejoint shape1 shape2 (vector 0 1 0) (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-hingejoint shape1 shape2 (vector 0 0 0) (vector 0 0 1)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
@@ -509,7 +589,24 @@ Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
-// (build-sliderjoint shape1 shape2 (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-sliderjoint shape1 shape2 (vector 1 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -524,7 +621,24 @@ Scheme_Object *build_hingejoint(int argc, Scheme_Object **argv)
 // criar uma junção. Junções podem ser criadas, modificadas e
 // indexadas de uma maneira similar a outras primitivas.
 // Exemplo:
-// (build-sliderjoint shape1 shape2 (vector 0 1 0)) 
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-sliderjoint shape1 shape2 (vector 1 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
@@ -556,7 +670,24 @@ Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
-// (build-hinge2joint shape1 shape2 (vector 0 100 0) (vector 0 1 0) (vector 0 1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 0 1 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -571,7 +702,24 @@ Scheme_Object *build_sliderjoint(int argc, Scheme_Object **argv)
 // criar uma junção. Junções podem ser criadas, modificadas e
 // indexadas de uma maneira similar a outras primitivas.
 // Exemplo:
-// (build-hinge2joint shape1 shape2 (vector 0 100 0) (vector 0 1 0) (vector 0 1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 0 1 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
@@ -611,7 +759,24 @@ Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
 // to have the two primitives being joined in the desired positions before creating the 
 // joint. Joints can be created, modified and indexed in a similar way to other primitives. 
 // Example:
-// (build-amotorjoint shape1 shape2 (vector 0 1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-amotorjoint shape1 shape2 (vector 1 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -626,7 +791,24 @@ Scheme_Object *build_hinge2joint(int argc, Scheme_Object **argv)
 // criar uma junção. Junções podem ser criadas, modificadas e
 // indexadas de uma maneira similar a outras primitivas.
 // Exemplo:
-// (build-amotorjoint shape1 shape2 (vector 0 1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (build-amotorjoint shape1 shape2 (vector 1 0 0)) 
+// (kick shape1 (vector 0 2 0))
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
@@ -650,7 +832,27 @@ Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 // "SuspensionCFM", "Vel2", "FMax2". see section 7.5.1 of the ODE docs for an explanation 
 // of each of these parameters, and which joint types they apply to.
 // Example:
-// (joint-param joint "Vel" 0.1)
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 1 0 0)))
+// (joint-param j "Vel2" 0.1)
+// (joint-param j "FMax2" 0.2)
+// (joint-param j "LoStop" -0.75)
+// (joint-param j "HiStop" 0.75)
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -664,7 +866,27 @@ Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 // explicação de cada um desses parâmetros, e a qual tipos de junções
 // eles aplicam.
 // Exemplo:
-// (joint-param joint "Vel" 0.1)
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 1 0 0)))
+// (joint-param j "Vel2" 0.1)
+// (joint-param j "FMax2" 0.2)
+// (joint-param j "LoStop" -0.75)
+// (joint-param j "HiStop" 0.75)
+// 
+// (set-physics-debug #t)
 // EndFunctionDoc
 
 Scheme_Object *joint_param(int argc, Scheme_Object **argv)
@@ -685,7 +907,29 @@ Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 // Description:
 // Set a new angle for this joint, with a given velocity taken to get there
 // Example:
-// (joint-angle joint 90 0.1)
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-hingejoint shape1 shape2 (vector 0 0 0) (vector 0 1 0)))
+// (joint-param j "FMax" 20)
+// (joint-param j "LoStop" -1)
+// (joint-param j "HiStop" 1)
+// 
+// (set-physics-debug #t)
+// 
+// (define (animate)
+//     (joint-angle j 0.1 (* 5 (sin (time)))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -695,7 +939,29 @@ Scheme_Object *joint_param(int argc, Scheme_Object **argv)
 // Ajusta um novo ângulo para este joint, com uma velocidade dada para
 // chegar lá.
 // Exemplo:
-// (joint-angle joint 90 0.1)
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-hingejoint shape1 shape2 (vector 0 0 0) (vector 0 1 0)))
+// (joint-param j "FMax" 20)
+// (joint-param j "LoStop" -1)
+// (joint-param j "HiStop" 1)
+// 
+// (set-physics-debug #t)
+// 
+// (define (animate)
+//     (joint-angle j 0.1 (* 5 (sin (time)))))
 // EndFunctionDoc
 
 Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
@@ -714,7 +980,18 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 // Sets the maximum number of objects the physics system can deal with. When the max 
 // level has been reached the oldest objects are automatically destroyed.
 // Example:
-// (set-max-physical 100)
+// (clear)
+// (set-max-physical 200)
+// 
+// (every-frame
+//     (with-state
+//     (translate (vector 0 5 0))
+//         (scale (srndvec))
+//         (colour (rndvec))
+//         (let ((ob (build-cube)))    
+//             (active-box ob)
+//             (kick ob (vmul (srndvec) 3))
+//             (twist ob (vmul (srndvec) 2)))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -725,7 +1002,18 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 // lidar. Quando o máximo nível foi alcançado os objetos mais antigos
 // são automaticamente destroidos.
 // Exemplo:
-// (set-max-physical 100)
+// (clear)
+// (set-max-physical 200)
+// 
+// (every-frame
+//     (with-state
+//     (translate (vector 0 5 0))
+//         (scale (srndvec))
+//         (colour (rndvec))
+//         (let ((ob (build-cube)))    
+//             (active-box ob)
+//             (kick ob (vmul (srndvec) 3))
+//             (twist ob (vmul (srndvec) 2)))))
 // EndFunctionDoc
 
 Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
@@ -743,7 +1031,25 @@ Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
 // Description:
 // Sets the mass of an active object
 // Example:
-// (set-mass myshape 100)
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// ; not a great example, but these boxes will have 
+// ; different mass, so behave a bit differently.
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (translate (vector 0 5 0))
+//             (scale (vmul (rndvec) 5))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (set-mass ob (* (rndf) 10))
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))    
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -752,7 +1058,25 @@ Scheme_Object *set_max_physical(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a massa de um objeto ativo no sistema de física
 // Exemplo:
-// (set-mass myshape 100)
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// ; not a great example, but these boxes will have 
+// ; different mass, so behave a bit differently.
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (translate (vector 0 5 0))
+//             (scale (vmul (rndvec) 5))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (set-mass ob (* (rndf) 10))
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))    
 // EndFunctionDoc
 
 Scheme_Object *set_mass(int argc, Scheme_Object **argv)
@@ -772,7 +1096,23 @@ Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 // Description:
 // Sets the strength and direction of gravity.
 // Example:
-// (gravity (vector 0 -1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// (every-frame
+//     (begin
+//         (gravity (vector 0 (sin (time)) 0)) ; change gravity! :)
+//         (when (> (rndf) 0.92)
+//             (with-state
+//                 (translate (vector 0 5 0))
+//                 (scale (rndvec))
+//                 (colour (rndvec))
+//                 (let ((ob (build-cube)))    
+//                     (active-box ob)
+//                     (kick ob (vmul (srndvec) 3))
+//                     (twist ob (vmul (srndvec) 2)))))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -781,7 +1121,23 @@ Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a força e direção da gravidade.
 // Exemplo:
-// (gravity (vector 0 -1 0))
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// (every-frame
+//     (begin
+//         (gravity (vector 0 (sin (time)) 0)) ; change gravity! :)
+//         (when (> (rndf) 0.92)
+//             (with-state
+//                 (translate (vector 0 5 0))
+//                 (scale (rndvec))
+//                 (colour (rndvec))
+//                 (let ((ob (build-cube)))    
+//                     (active-box ob)
+//                     (kick ob (vmul (srndvec) 3))
+//                     (twist ob (vmul (srndvec) 2)))))))
 // EndFunctionDoc
 
 Scheme_Object *gravity(int argc, Scheme_Object **argv)
@@ -801,7 +1157,20 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 // Description:
 // Applies translation force to the object
 // Example:
-// (kick myshape (vector 0 1 0))
+// (clear)
+// (collisions 1)
+// (set-max-physical 20)
+// (gravity (vector 0 0 0)) 
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (scale (rndvec))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -810,7 +1179,20 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 // Descrição:
 // Aplica força de translação ao objeto.
 // Exemplo:
-// (kick myshape (vector 0 1 0))
+// (clear)
+// (collisions 1)
+// (set-max-physical 20)
+// (gravity (vector 0 0 0)) 
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (scale (rndvec))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))
 // EndFunctionDoc
 
 Scheme_Object *kick(int argc, Scheme_Object **argv)
@@ -831,7 +1213,20 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 // Description:
 // Applies rotational force to the object
 // Example:
-// (twist myshape (vector 2 0 0))
+// (clear)
+// (collisions 1)
+// (set-max-physical 20)
+// (gravity (vector 0 0 0)) 
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (scale (rndvec))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -840,7 +1235,20 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 // Descrição:
 // Aplica força rotacional ao objeto
 // Exemplo:
-// (twist myshape (vector 2 0 0))
+// (clear)
+// (collisions 1)
+// (set-max-physical 20)
+// (gravity (vector 0 0 0)) 
+// 
+// (every-frame
+//     (when (> (rndf) 0.92)
+//         (with-state
+//             (scale (rndvec))
+//             (colour (rndvec))
+//             (let ((ob (build-cube)))    
+//                 (active-box ob)
+//                 (kick ob (vmul (srndvec) 3))
+//                 (twist ob (vmul (srndvec) 2))))))
 // EndFunctionDoc
 
 Scheme_Object *twist(int argc, Scheme_Object **argv)
@@ -861,7 +1269,21 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 // Description:
 // Returns true if the grabbed object collided in the last frame
 // Example:
-// (if (has-collided myshape) (display "bang!"))
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// (define ob (with-state
+//     (translate (vector 0 5 0))
+//     (build-cube)))
+// 
+// (active-box ob)
+// 
+// (every-frame
+//     (when (has-collided ob)
+//         (with-primitive ob
+//             (colour (rndvec)))))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -870,7 +1292,21 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna verdadeiro se a primitiva pega colidiu no ultimo frame.
 // Exemplo:
-// (if (has-collided myshape) (display "bang!"))
+// (clear)
+// (ground-plane (vector 0 1 0) 0)
+// (collisions 1)
+// (set-max-physical 20)
+// 
+// (define ob (with-state
+//     (translate (vector 0 5 0))
+//     (build-cube)))
+// 
+// (active-box ob)
+// 
+// (every-frame
+//     (when (has-collided ob)
+//         (with-primitive ob
+//             (colour (rndvec)))))
 // EndFunctionDoc
 
 Scheme_Object *has_collided(int argc, Scheme_Object **argv)

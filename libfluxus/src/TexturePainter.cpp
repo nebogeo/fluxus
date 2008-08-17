@@ -61,7 +61,6 @@ void TexturePainter::ClearCache()
 unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &params)
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
-	
 	if (params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_X || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_X ||
 		params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Y || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Y ||
 		params.Type==GL_TEXTURE_CUBE_MAP_POSITIVE_Z || params.Type==GL_TEXTURE_CUBE_MAP_NEGATIVE_Z)

@@ -71,7 +71,7 @@
 ;; Description:
 ;; Returns true if the specified key is currently pressed down.
 ;; Example:
-;; (if (key-pressed "q") (display "q pressed!))
+;; (when (key-pressed "q") (display "q pressed!"))
 ;; EndFunctionDoc	
 
 (define (key-pressed s)
@@ -83,7 +83,7 @@
 ;; Description:
 ;; Returns a list of keys pressed down
 ;; Example:
-;; (display (keys-down))
+;; (display (keys-down))(newline)
 ;; EndFunctionDoc
 
 (define (keys-down)
@@ -98,10 +98,10 @@
 ;; what they are is to print out the result of key-special-pressed while holding
 ;; down the key you are after.
 ;; Example: 
-;; (if (key-special-pressed 100) (display "left cursor pressed"))
-;; (if (key-special-pressed 102) (display "right cursor pressed"))
-;; (if (key-special-pressed 101) (display "up cursor pressed"))
-;; (if (key-special-pressed 103) (display "down cursor pressed"))
+;; (when (key-special-pressed 100) (display "left cursor pressed"))
+;; (when (key-special-pressed 102) (display "right cursor pressed"))
+;; (when (key-special-pressed 101) (display "up cursor pressed"))
+;; (when (key-special-pressed 103) (display "down cursor pressed"))
 ;; EndFunctionDoc	
 
 (define (key-special-pressed k)

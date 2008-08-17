@@ -198,6 +198,7 @@ void AudioCollector::Process(const string &filename)
 	if (!file)
 	{
 		cerr<<"Error opening ["<<filename<<"] : "<<sf_strerror(file)<<endl;
+		return;
 	}
 	
 	m_ProcessBuffer = new float[info.frames];

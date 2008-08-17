@@ -30,7 +30,7 @@ Physics::Object::~Object()
 {
 	if (Type==ACTIVE) dBodyDestroy(Body);
 	dGeomDestroy(Bound);
-	Prim->SetPhysicalHint(false);
+	if (Prim!=NULL) Prim->SetPhysicalHint(false);
 }
 
 Physics::JointObject::JointObject()

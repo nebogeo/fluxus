@@ -32,6 +32,23 @@ using namespace SchemeHelper;
 // material (set with local state commands like ambient and diffuse) and the texture colour value to give the final 
 // colour.
 // Example:
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndSectionDoc 
 
 // StartSectionDoc-pt
@@ -54,7 +71,23 @@ using namespace SchemeHelper;
 // Makes a new light. The type can be one of: point, directional or spot. If the cameralocked string is not
 // free then it will be attached to the camera, and move around when you move the camera.
 // Example:
-// (make-light 'spot 'locked)
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -65,7 +98,23 @@ using namespace SchemeHelper;
 // spot. Se a string de cameralocked não estiver livre então esta vai
 // ser fixa à câmera, e mexer ao redor quando você mover a câmera.
 // Exemplo:
-// (make-light 'spot 'locked)
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *make_light(int argc, Scheme_Object **argv)
@@ -110,7 +159,23 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // Description:
 // Sets the ambient contribution for the specified light.
 // Example:
-// (light-ambient mylight (vector 1 1 1)) ; a boring light
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -119,7 +184,23 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a contribuição do ambiente para a luz especificada.
 // Exemplo:
-// (light-ambient mylight (vector 1 1 1)) ; a boring light
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
@@ -140,7 +221,23 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // Description:
 // Sets the diffuse contribution for the specified light.
 // Example:
-// (light-diffuse mylight (vector 1 1 1)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -149,7 +246,23 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a contribuição difusa para a luz especificada.
 // Exemplo:
-// (light-diffuse mylight (vector 1 1 1)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
@@ -170,7 +283,23 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // Description:
 // Sets the specular contribution for the specified light.
 // Example:
-// (light-specular mylight (vector 1 1 1)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -179,7 +308,23 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a contribuição especular para a luz específicada.
 // Exemplo:
-// (light-specular mylight (vector 1 1 1)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
@@ -200,7 +345,23 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 // Description:
 // Sets the position of the specified light. In worldspace if free, in camera space is attached.
 // Example:
-// (light-position mylight (vector 0 100 0)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -210,7 +371,23 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 // Ajusta a posição da luz especificada. Em espaço global se livre, em
 // espaço da câmera se fixa.
 // Exemplo:
-// (light-position mylight (vector 0 100 0)) 
+// ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_position(int argc, Scheme_Object **argv)
@@ -231,7 +408,30 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 // Description:
 // Sets the spotlight cone angle of the specified light. If it's not a spot light, this command has no effect. 
 // Example:
-// (light-position mylight (vector 0 100 0)) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -241,7 +441,30 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 // Ajusta o ângulo do cone da luz spot especificada. Se não é uma luz
 // spot este comando não tem nenhum efeito.
 // Exemplo:
-// (light-position mylight (vector 0 100 0)) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 	
 Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
@@ -260,7 +483,30 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 // Description:
 // Sets the spotlight exponent (fuzzyness of the cone) of the specified light. If it's not a spot light, this command has no effect. 
 // Example:
-// (light-spot-exponent mylight 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -270,7 +516,30 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 // Ajusta a exponencial da luz spot (dispersão do cone)
 // específicada. Não funciona com outra lâmpada senão a spot.
 // Exemplo:
-// (light-spot-exponent mylight 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
@@ -290,7 +559,30 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 // Sets the light attenuation (fade off with distance) of the specified light. 
 // The type symbol can be one of: constant, linear or quadratic.
 // Example:
-// (light-attenuation 'constant 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -300,7 +592,30 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 // Ajusta a atenuação da luz (decaimento com distância) da luz
 // especificada. O símbolo-tipo, pode ser um dos: constant, linear ou quadratic.
 // Exemplo:
-// (light-attenuation 'constant 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
@@ -335,7 +650,30 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // Description:
 // Sets the direction of a directional light. If it's not a directional light, this command has no effect. 
 // Example:
-// (light-spot-exponent mylight 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -345,7 +683,30 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // Ajusta a direção da luz direcional. Se não é uma luz direcional,
 // este comando não tem efeito.
 // Exemplo:
-// (light-spot-exponent mylight 0.1) 
+// ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
 Scheme_Object *light_direction(int argc, Scheme_Object **argv)

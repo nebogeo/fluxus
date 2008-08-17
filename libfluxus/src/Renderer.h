@@ -96,7 +96,7 @@ public:
 	/// will actually be rendered
 	void         RenderPrimitive(Primitive *Prim);
 	/// Get primitive ID from screen space
-	int          Select(int x, int y, int size);
+	int          Select(Camera &Cam, int x, int y, int size);
 	///@}
 	
 	///////////////////////////////////////////////////////////////////////
@@ -110,7 +110,8 @@ public:
 	////////////////////////////////////////////////////////////////////////
 	///@name Camera
 	///@{ 
-	Camera *GetCamera() { return &m_Camera; }
+	vector<Camera> &GetCameraVec() { return m_CameraVec; }
+	unsigned int AddCamera(const Camera &cam) { m_CameraVec.push_back(cam); return m_CameraVec.size()-1; }
 	///@}
 
 	////////////////////////////////////////////////////////////////////////
@@ -161,10 +162,10 @@ public:
 	
 	
 private:
-	void PreRender(bool PickMode=false);
+	void PreRender(Camera &Cam, bool PickMode=false);
 	void PostRender();
 	void RenderLights(bool camera);
-	void RenderStencilShadows();
+	void RenderStencilShadows(Camera &Cam);
 	
 	bool  m_Initialised;
 	bool  m_InitLights;
@@ -186,7 +187,7 @@ private:
     deque<State> m_StateStack;
     SceneGraph m_World;
 	vector<Light*> m_LightVec;
-	Camera m_Camera;
+	vector<Camera> m_CameraVec;
 	ImmediateMode m_ImmediateMode;
 	ShadowVolumeGen m_ShadowVolumeGen;
 		

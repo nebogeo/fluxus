@@ -94,7 +94,7 @@
                (b (vadd pos point)))
            
            ; visualise the rays
-           (when debug
+           #;(when debug
 		   	(let ((l (with-state
                        (concat (with-primitive prim (get-transform)))
                        (hint-none)
@@ -113,7 +113,7 @@
                (* r 0.95)
                r)))
        1
-       (make-sample-hemi norm rays-per-sample '()))))
+       (make-sample-hemi (vector 0 1 0) rays-per-sample '()))))
   
   (let ((w (with-primitive tex (pixels-width)))
         (h (with-primitive tex (pixels-height))))

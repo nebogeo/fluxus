@@ -206,20 +206,21 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
 // 
-// (push) ; make a background cube so we can tell what's happening
-// (hint-wire)  
-// (hint-unlit) 
-// (colour (vector 0 0.4 0))
-// (scale (vector -50 -50 -50))
-// (build-cube)
-// (pop)
+// (with-state ; make a background cube so we can tell what's happening
+//     (hint-wire)
+//     (hint-unlit)
+//     (texture (load-texture "test.png"))
+//     (colour (vector 0.5 0.5 0.5))
+//     (scale (vector -20 -10 -10))
+//     (build-cube))
 // 
 // (lock-camera obj) ; lock the camera to our first cube
+// (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
 // 
 // (define (animate)
-//     (grab obj)
-//     (rotate (vector 1 0 0)) ; rotate the cube
-//     (ungrab))
+//     (with-primitive obj
+//         (identity)
+//         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -236,20 +237,21 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
 // 
-// (push) ; make a background cube so we can tell what's happening
-// (hint-wire)  
-// (hint-unlit) 
-// (colour (vector 0 0.4 0))
-// (scale (vector -50 -50 -50))
-// (build-cube)
-// (pop)
+// (with-state ; make a background cube so we can tell what's happening
+//     (hint-wire)
+//     (hint-unlit)
+//     (texture (load-texture "test.png"))
+//     (colour (vector 0.5 0.5 0.5))
+//     (scale (vector -20 -10 -10))
+//     (build-cube))
 // 
 // (lock-camera obj) ; lock the camera to our first cube
+// (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
 // 
 // (define (animate)
-//     (grab obj)
-//     (rotate (vector 1 0 0)) ; rotate the cube
-//     (ungrab))
+//     (with-primitive obj
+//         (identity)
+//         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -258,7 +260,7 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("lock-camera", "i", argc, argv);
-    Engine::Get()->Renderer()->GetCamera()->LockCamera(
+    Engine::Get()->GetCamera()->LockCamera(
 		Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
 	MZ_GC_UNREG(); 
     return scheme_void;
@@ -274,22 +276,21 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
 // 
-// (push) ; make a background cube so we can tell what's happening
-// (hint-wire)
-// (hint-unlit)
-// (colour (vector 0 0.4 0))
-// (scale (vector -50 -50 -50))
-// (build-cube)
-// (pop)
+// (with-state ; make a background cube so we can tell what's happening
+//     (hint-wire)
+//     (hint-unlit)
+//     (texture (load-texture "test.png"))
+//     (colour (vector 0.5 0.5 0.5))
+//     (scale (vector -20 -10 -10))
+//     (build-cube))
 // 
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
 // 
 // (define (animate)
-//     (grab obj)
-//     (identity)
-//     (translate (vector (modulo (round (inexact->exact (time))) 6) 0 0)) ; make a jittery movement
-//     (ungrab))
+//     (with-primitive obj
+//         (identity)
+//         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -305,22 +306,21 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
 // 
-// (push) ; make a background cube so we can tell what's happening
-// (hint-wire)
-// (hint-unlit)
-// (colour (vector 0 0.4 0))
-// (scale (vector -50 -50 -50))
-// (build-cube)
-// (pop)
+// (with-state ; make a background cube so we can tell what's happening
+//     (hint-wire)
+//     (hint-unlit)
+//     (texture (load-texture "test.png"))
+//     (colour (vector 0.5 0.5 0.5))
+//     (scale (vector -20 -10 -10))
+//     (build-cube))
 // 
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
 // 
 // (define (animate)
-//     (grab obj)
-//     (identity)
-//     (translate (vector (modulo (round (inexact->exact (time))) 6) 0 0)) ; make a jittery movement
-//     (ungrab))
+//     (with-primitive obj
+//         (identity)
+//         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -329,7 +329,7 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("camera-lag", "f", argc, argv);
-    Engine::Get()->Renderer()->GetCamera()->SetCameraLag(FloatFromScheme(argv[0]));
+    Engine::Get()->GetCamera()->SetCameraLag(FloatFromScheme(argv[0]));
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -530,7 +530,7 @@ Scheme_Object *frustum(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("frustum", "ffff", argc, argv);
-	Engine::Get()->Renderer()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
+	Engine::Get()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
 												FloatFromScheme(argv[1]),
 									 		 	FloatFromScheme(argv[2]),
 												FloatFromScheme(argv[3]));
@@ -563,8 +563,8 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("clip", "ff", argc, argv);
-	Engine::Get()->Renderer()->GetCamera()->SetClip(FloatFromScheme(argv[0]),
-											        FloatFromScheme(argv[1]));
+	Engine::Get()->GetCamera()->SetClip(FloatFromScheme(argv[0]),
+										FloatFromScheme(argv[1]));
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -589,7 +589,7 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 
 Scheme_Object *ortho(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->GetCamera()->SetOrtho(true);
+	Engine::Get()->GetCamera()->SetOrtho(true);
     return scheme_void;
 }
 
@@ -614,7 +614,7 @@ Scheme_Object *ortho(int argc, Scheme_Object **argv)
 
 Scheme_Object *persp(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->GetCamera()->SetOrtho(false);
+	Engine::Get()->GetCamera()->SetOrtho(false);
     return scheme_void;
 }
 
@@ -640,7 +640,7 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("set-ortho-zoom", "f", argc, argv);
-	Engine::Get()->Renderer()->GetCamera()->SetOrthoZoom(FloatFromScheme(argv[0]));
+	Engine::Get()->GetCamera()->SetOrthoZoom(FloatFromScheme(argv[0]));
  	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -755,6 +755,61 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// build-camera
+// Returns: cameraid-number
+// Description:
+// Adds a new camera and returns it's id
+// Example:
+// (build-camera) 
+// EndFunctionDoc
+
+Scheme_Object *build_camera(int argc, Scheme_Object **argv)
+{
+	Camera cam;
+	return scheme_make_double(Engine::Get()->Renderer()->AddCamera(cam));
+}
+
+// StartFunctionDoc-en
+// current-camera cameraid-number
+// Returns: void
+// Description:
+// Sets the current camera to use
+// Example:
+// (current-camera) 
+// EndFunctionDoc
+
+Scheme_Object *current_camera(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("current-camera", "i", argc, argv);	
+	Engine::Get()->GrabCamera(IntFromScheme(argv[0]));
+ 	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// viewport x-number y-number width-number height-number 
+// Returns: void
+// Description:
+// Sets the viewport on the current camera.
+// Example:
+// (viewport 0 0 1 1) 
+// EndFunctionDoc
+
+Scheme_Object *viewport(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("viewport", "iiii", argc, argv);	
+	Engine::Get()->GetCamera()->SetViewport(
+		FloatFromScheme(argv[0]),
+		FloatFromScheme(argv[1]),
+		FloatFromScheme(argv[2]),
+		FloatFromScheme(argv[3]));
+ 	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // get-camera
 // Returns: matrix-vector
 // Description:
@@ -776,7 +831,7 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetMatrix()->inverse().arr(),16);
+	return FloatsToScheme(Engine::Get()->GetCamera()->GetMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -800,7 +855,7 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetLockedMatrix()->inverse().arr(),16);
+	return FloatsToScheme(Engine::Get()->GetCamera()->GetLockedMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -830,7 +885,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 	ArgCheck("set-camera", "m", argc, argv);
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
-	Engine::Get()->Renderer()->GetCamera()->SetMatrix(m);
+	Engine::Get()->GetCamera()->SetMatrix(m);
  	MZ_GC_UNREG(); 
 	return scheme_void;
 }
@@ -855,7 +910,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->Renderer()->GetCamera()->GetProjection().arr(),16);
+	return FloatsToScheme(Engine::Get()->GetCamera()->GetProjection().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -944,7 +999,8 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 	int y=IntFromScheme(argv[1]);
 	int s=IntFromScheme(argv[2]);
  	MZ_GC_UNREG(); 
-	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(x,y,s));
+	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(
+		*Engine::Get()->GetCamera(),x,y,s));
 }
 
 // StartFunctionDoc-en
@@ -1367,6 +1423,9 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
 	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
 	scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
+	scheme_add_global("build-camera", scheme_make_prim_w_arity(build_camera, "build-camera", 0, 0), env);
+	scheme_add_global("current-camera", scheme_make_prim_w_arity(current_camera, "current-camera", 1, 1), env);
+	scheme_add_global("viewport", scheme_make_prim_w_arity(viewport, "viewport", 4, 4), env);
 	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
 	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);

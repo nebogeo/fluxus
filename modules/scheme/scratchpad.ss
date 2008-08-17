@@ -39,6 +39,7 @@
  get-eye-separation
  set-eye-separation
  set-physics-debug
+ default-fluxus-frame-callback
  )
 
 ;-------------------------------------------------
@@ -55,12 +56,9 @@
 ;; Description:
 ;; Sets a function to be called every time the render is about to draw a new frame.
 ;; Example:
-;; (define count 0)
-;;
 ;; (define (myfunc)
-;;     (display count)(display " frames have been rendered!")
-;;     (newline)
-;;     (set! count (+ count 1)))
+;;     (colour (rndvec))
+;;     (draw-torus))
 ;;
 ;; (every-frame (myfunc)) 
 ;; EndFunctionDoc    
@@ -72,12 +70,9 @@
 ;; Ajusta uma função pra ser chamada todo o tempo em que o render
 ;; está para desenhar um novo quadro.
 ;; Exemplo:
-;; (define count 0)
-;;
 ;; (define (myfunc)
-;;     (display count)(display " frames have been rendered!")
-;;     (newline)
-;;     (set! count (+ count 1)))
+;;     (colour (rndvec))
+;;     (draw-torus))
 ;;
 ;; (every-frame (myfunc)) 
 ;; EndFunctionDoc
@@ -273,23 +268,25 @@
 ; callback-override
 
 ;; StartFunctionDoc-en
-;; callback-override callback-function
+;; override-frame-callback callback-function
 ;; Returns: void
 ;; Description:
 ;; Allows you to override the frame callback, to control
 ;; the rendering loop of fluxus in a more detailed way.
 ;; Example:
-;; (callback-override myfunc) 
+;; (override-frame-callback myfunc) 
+;; (override-frame-callback default-fluxus-frame-callback) ; set it back again...
 ;; EndFunctionDoc    
 
 ;; StartFunctionDoc-pt
-;; callback-override função-callback
+;; override-frame-callback função-callback
 ;; Retorna: void
 ;; Descrição:
 ;; Permite que você substitua a chamada de volta (callback) do quadro,
 ;; para controlar o loop de renderização do fluxus de uma forma mais detalhada.
 ;; Exemplo:
-;; (callback-override myfunc)
+;; (override-frame-callback myfunc)
+;; (override-frame-callback default-fluxus-frame-callback) ; set it back again...
 ;; EndFunctionDoc
 
 (define (override-frame-callback fn)
@@ -330,11 +327,11 @@
              (else
               (cond
                 ((char=? c #\() (set! d (+ d 1)))
-                ((char=? c #\)) (set! d (- d 1)))
+                ((char=? c #\)) (when (> d 0) (set! d (- d 1))))
                 ((char=? c #\[) (set! d (+ d 1)))
-                ((char=? c #\]) (set! d (- d 1)))
+                ((char=? c #\]) (when (> d 0) (set! d (- d 1))))
                 ((char=? c #\{) (set! d (+ d 1)))
-                ((char=? c #\}) (set! d (- d 1))))
+                ((char=? c #\}) (when (> d 0) (set! d (- d 1)))))
               (when (and newline (not (char-whitespace? c)))
                   (set! newline #f))
               (when (not newline) 
@@ -359,7 +356,7 @@
 
 ; the main callback every frame
 
-(define (fluxus-frame-callback) 
+(define (default-fluxus-frame-callback) 
   (cond 
     ((eq? (get-stereo-mode) 'no-stereo)
      (draw-buffer 'back)
@@ -376,3 +373,4 @@
      (stereo-render)))
   (display (fluxus-error-log)))
 
+(define fluxus-frame-callback default-fluxus-frame-callback)

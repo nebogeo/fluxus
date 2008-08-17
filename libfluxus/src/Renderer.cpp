@@ -68,8 +68,7 @@ m_FPSDisplay(false),
 m_Time(0),
 m_Delta(0)
 {
-	State InitialState;
-	m_StateStack.push_back(InitialState);
+	Clear();
 	
 	// stop valgrind complaining
 	m_LastTime.tv_sec=0;
@@ -83,6 +82,21 @@ Renderer::~Renderer()
 }
 
 /////////////////////////////////////	
+
+void Renderer::Clear()
+{
+	m_World.Clear();
+	m_StateStack.clear();
+	m_CameraVec.clear();
+	UnGrab();
+	State InitialState;
+	m_StateStack.push_back(InitialState);
+	
+	// add the default camera
+	Camera cam;
+	cam.SetViewport(0,0,m_Width/2,m_Height/2);
+	m_CameraVec.push_back(cam);
+}	
 
 void Renderer::Render()
 {			
@@ -104,22 +118,25 @@ void Renderer::Render()
 		glClear(GL_ACCUM_BUFFER_BIT);
 	}
 	
-	// need to clear this even if we aren't using shadows
-	m_ShadowVolumeGen.Clear();
-	
-	if (m_ShadowLight!=0)
-	{		
-		RenderStencilShadows();
-	}
-	else
+	for (vector<Camera>::iterator cam=m_CameraVec.begin(); cam!=m_CameraVec.end(); cam++)
 	{
-		PreRender();
-		m_World.Render(&m_ShadowVolumeGen);
-		m_ImmediateMode.Render();
-		m_ImmediateMode.Clear();
-		PostRender();
-	}		
-			
+		// need to clear this even if we aren't using shadows
+		m_ShadowVolumeGen.Clear();
+		
+		if (m_ShadowLight!=0)
+		{		
+			RenderStencilShadows(*cam);
+		}
+		else
+		{
+			PreRender(*cam);
+			m_World.Render(&m_ShadowVolumeGen);
+			m_ImmediateMode.Render();
+			m_ImmediateMode.Clear();
+			PostRender();
+		}		
+	}
+		
 	timeval ThisTime;
 	// stop valgrind complaining
 	ThisTime.tv_sec=0;
@@ -143,14 +160,14 @@ void Renderer::Render()
 	if (m_Delta>0.0f && m_Delta<100.0f) m_Time+=m_Delta;
 }
 
-void Renderer::RenderStencilShadows()
+void Renderer::RenderStencilShadows(Camera &Cam)
 {
 	if (m_LightVec.size()>m_ShadowLight)
 	{
 		m_ShadowVolumeGen.SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());
 	}
 	
-	PreRender();
+	PreRender(Cam);
 	glDisable(GL_LIGHT0+m_ShadowLight); 
 	m_World.Render(&m_ShadowVolumeGen);
 	m_ImmediateMode.Render(&m_ShadowVolumeGen);
@@ -203,11 +220,12 @@ void Renderer::RenderStencilShadows()
 	PostRender();
 }
 
-void Renderer::PreRender(bool PickMode)
+void Renderer::PreRender(Camera &Cam, bool PickMode)
 {
-    if (!m_Initialised || PickMode || m_Camera.NeedsInit())
+    if (!m_Initialised || PickMode || Cam.NeedsInit())
     {
-    	glViewport(0,0,m_Width,m_Height);
+    	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
+ 			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
 
     	glMatrixMode (GL_PROJECTION);
   		glLoadIdentity();
@@ -219,7 +237,7 @@ void Renderer::PreRender(bool PickMode)
 						m_SelectInfo.size,m_SelectInfo.size,viewport);
 		}
 		
-  		m_Camera.DoProjection();
+  		Cam.DoProjection();
   		
     	glEnable(GL_BLEND);
     	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
@@ -295,7 +313,7 @@ void Renderer::PreRender(bool PickMode)
 	if (m_FPSDisplay && !PickMode)
 	{
 		PushState();
-		GetState()->Transform.translate(m_Camera.GetUp(),m_Camera.GetLeft(),0);
+		GetState()->Transform.translate(Cam.GetUp(),Cam.GetLeft(),0);
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
@@ -304,40 +322,10 @@ void Renderer::PreRender(bool PickMode)
 	}
 
 	RenderLights(true); // camera locked
-	m_Camera.DoCamera();
+	Cam.DoCamera();
 	RenderLights(false); // world space
 	
 	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);
-		
-	///\todo : check camera locked lights
-	/* ???
-	RenderLights(true); // camera locked
-	
-	glMultMatrixf(m_Camera.arr());
-	
-	RenderLights(false); // world space
-	
-	if (m_LockedCamera)
-	{
-		Primitive *p = GetPrimitive(m_CameraAttached);
-		if (p)
-		{
-			if (m_CameraLag!=0)
-			{
-				m_LockedMatrix.blend(p->GetState()->Transform.inverse(),m_CameraLag);
-			}
-			else
-			{
-				m_LockedMatrix=p->GetState()->Transform.inverse();
-			}
-			
-			glMultMatrixf(m_LockedMatrix.arr());		
-		}
-		else m_LockedCamera=false;
-	}*/
-
-	//m_World.GetShadowVolumeGen()->SetLightPosition(m_Camera.inverse().transform((*m_LightVec.begin())->GetPosition()));
-
 }
 
 
@@ -418,7 +406,7 @@ void Renderer::ClearLights()
 	AddLight(light);
 }
 
-int Renderer::Select(int x, int y, int size)
+int Renderer::Select(Camera &Cam, int x, int y, int size)
 {
 	static const int SELECT_SIZE=512;
 	unsigned int IDs[SELECT_SIZE];
@@ -434,7 +422,7 @@ int Renderer::Select(int x, int y, int size)
 	
 	// the problem here is that select is called mid-scene, so we have to set up for 
 	// picking mode here...
-	PreRender(true);
+	PreRender(Cam,true);
 	
 	// render the scene for picking
 	m_World.Render(&m_ShadowVolumeGen,SceneGraph::SELECT);
@@ -463,19 +451,10 @@ int Renderer::Select(int x, int y, int size)
 	// ... and reset the scene back here so we can carry on afterwards as if nothing
 	// has happened...
 	m_Initialised=false;
-	PreRender();
+	PreRender(Cam);
 	
 	return ID;
 }
-
-void Renderer::Clear()
-{
-	m_World.Clear();
-	m_StateStack.clear();
-	UnGrab();
-	State InitialState;
-	m_StateStack.push_back(InitialState);
-}	
 
 int Renderer::AddPrimitive(Primitive *Prim)
 {

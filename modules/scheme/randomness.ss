@@ -219,7 +219,7 @@
 ;; Returns a vector representing a uniformly distributed triangular 
 ;; barycentric coordinate (wip - doesn't seem to be very uniform to me...)
 ;; Example:
-;; (bary)
+;; (rndbary)
 ;; EndFunctionDoc 	
 
 (define (rndbary)

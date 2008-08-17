@@ -30,8 +30,6 @@ MIDIListener *midilistener = NULL;
 // communicate, control, and synchronize with each other.
 // Fluxus can receive MIDI control change and note messages.
 // Example:
-// (require fluxus-015/fluxus-midi)
-//
 // (display (midi-info))(newline)
 //
 // (midi-init 1)

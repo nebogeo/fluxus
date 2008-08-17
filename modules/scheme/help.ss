@@ -11,11 +11,15 @@
 (provide 
  init-help
  help
- set-help-locale!)
+ set-help-locale!
+ get-helpmap)
 
 (define helpmap-all-locales '())
 (define helpmap '())
 (define fluxus-scratchpad-locale "en")
+
+(define (get-helpmap)
+	helpmap)
 
 ; The helpmap is of the form:
 ;
@@ -23,7 +27,7 @@
 ;            (("Function name" ("Arg list" "Description" "Example")) 
 ;              ...)))
 ;     (...))
-;
+; 
 ; While the helpmap-all-locales is of the form:
 ;
 ; (("locale" helpmap)

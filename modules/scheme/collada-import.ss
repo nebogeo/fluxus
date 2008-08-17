@@ -505,7 +505,7 @@
 ;; contain triangulated model data - this is usually an option on the export.
 ;; Note: this is slow for heavy models
 ;; Example:
-;; (collada-import "test.dae")
+;; ;(collada-import "test.dae")
 ;; EndFunctionDoc			
 
 ;; toplevel load

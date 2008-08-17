@@ -29,7 +29,11 @@ m_Left(-0.75),
 m_Right(0.75),
 m_Front(1),
 m_Back(10000),
-m_OrthZoom(1.0f)
+m_OrthZoom(1.0f),
+m_ViewX(0),
+m_ViewY(0),
+m_ViewWidth(100),
+m_ViewHeight(100)
 {
 	// default camera position
 	m_Transform.translate(0,0,-10);

@@ -4,6 +4,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 * ported to PLT 3.99
 * removed scheme versions of obj import/export
+* midi support - gabor papp
 * added fluxa - an audio synth
 * added text opacity on F10 and F11
 * fixed saveas dialog, cursor and shift works
@@ -12,6 +13,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * more meshes to play with (used in frisbee examples)
 * shadows now work on immediate mode objects
 * key release fixed in drflux
+* multi views/cameras
 * better random functions with randomness.ss
 * frisbee: a functional reactive game engine using frtime
 * added -lang (not how useful this is now)

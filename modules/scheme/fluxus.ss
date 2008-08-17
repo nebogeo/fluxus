@@ -5,6 +5,7 @@
 (require "fluxus-engine.ss"
          "fluxus-audio.ss"
          "fluxus-osc.ss"
+         "fluxus-midi.ss"
 			; todo: get rid of burnt in versions
 		 fluxus-015/input
 		 fluxus-015/help
@@ -22,6 +23,7 @@
  (all-from-out "fluxus-engine.ss")
  (all-from-out "fluxus-audio.ss")
  (all-from-out "fluxus-osc.ss")
+ (all-from-out "fluxus-midi.ss")
  (all-from-out fluxus-015/input)
  (all-from-out fluxus-015/help)
  (all-from-out fluxus-015/camera)

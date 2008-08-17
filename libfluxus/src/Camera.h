@@ -62,6 +62,12 @@ public:
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
 	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
+	void SetViewport(float x, float y, float w, float h)
+		{ m_ViewX=x; m_ViewY=y; m_ViewWidth=w; m_ViewHeight=h; }
+	float GetViewportX() 			 { return m_ViewX; }
+	float GetViewportY() 			 { return m_ViewY; }
+	float GetViewportWidth() 		 { return m_ViewWidth; }
+	float GetViewportHeight() 		 { return m_ViewHeight; }
 	///@}
 
 private:
@@ -74,6 +80,7 @@ private:
 	dMatrix  m_LockedMatrix;
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
 	float m_OrthZoom;
+	float m_ViewX,m_ViewY,m_ViewWidth,m_ViewHeight;
 };
 
 }

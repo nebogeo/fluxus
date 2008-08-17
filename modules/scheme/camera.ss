@@ -55,7 +55,7 @@
 ;; Overrides and locks the camera transform with your own. 
 ;; To unlock again call reset-camera
 ;; Example:
-;; (set-camera-transform (mtranslate 0 0 -10)) 
+;; (set-camera-transform (mtranslate (vector 0 0 -10)))
 ;; EndFunctionDoc
 
 (define (set-camera-transform m)

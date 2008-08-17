@@ -24,7 +24,8 @@
 ;; Draws a circle into a pixels primitive
 ;; Example:  
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-circle (vector 50 50 0) 30 (vector 1 0 0 1)))
+;;     (pixels-circle (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-upload))
 ;; EndFunctionDoc 
 
 (define (pixels-circle pos radius colour)
@@ -44,7 +45,8 @@
 ;; Draws a blended circle into a pixels primitive
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-blend-circle (vector 50 50 0) 30 (vector 1 0 0 1)))
+;;     (pixels-blend-circle (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-upload))
 ;; EndFunctionDoc  
 
 (define (pixels-blend-circle pos radius colour)
@@ -65,7 +67,8 @@
 ;; Lightens a circular area of a pixels primitive
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-dodge (vector 50 50 0) 30 (vector 1 0 0 1)))
+;;     (pixels-dodge (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-upload))
 ;; EndFunctionDoc  
 
 (define (pixels-dodge pos radius strength)
@@ -87,7 +90,8 @@
 ;; Darkens a circular area of a pixels primitive
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-burn (vector 50 50 0) 30 (vector 1 0 0 1)))
+;;     (pixels-burn (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-upload))
 ;; EndFunctionDoc  
 
 (define (pixels-burn pos radius strength)
@@ -109,7 +113,8 @@
 ;; Sets all of the pixels to the supplied colour
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-clear col))
+;;     (pixels-clear (vector 1 0 0))
+;;     (pixels-upload))
 ;; EndFunctionDoc  
 
 (define (pixels-clear col)

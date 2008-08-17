@@ -372,7 +372,7 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 // - there is an example font shipped with fluxus
 // Ok, so this isn't a very good font texture :)
 // Example:
-// (texture (texture-load "font.png"))
+// (texture (load-texture "font.png"))
 // (define mynewshape (build-text "hello"))
 // EndFunctionDoc
 
@@ -562,7 +562,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 // Description:
 // Loads a primitive from disk
 // Example:
-// (define mynewshape (load-primitive "mymesh.obj"))
+// (define mynewshape (load-primitive "octopus.obj"))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -570,7 +570,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Exemplo:
-// (define mynewshape (load-primitive "mymesh.obj"))
+// (define mynewshape (load-primitive "octopus.obj"))
 // EndFunctionDoc
 
 Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
@@ -591,9 +591,9 @@ Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 // clear-geometry-cache 
 // Returns: void
 // Description:
-// Loads a primitive from disk
+// Clears cached geometry, so subsequent loads with come from the disk.
 // Example:
-// (define mynewshape (load-primitive "mymesh.obj"))
+// (clear-geometry-cache)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -652,6 +652,12 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 // rendered much, but you can render them to preview the texture on a flat plane.
 // Example:
 // (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) ; call pixels upload to see the results
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -665,6 +671,12 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 // texturas em um plano.
 // Exemplo:
 // (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) ; call pixels upload to see the results
 // EndFunctionDoc
 
 Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
@@ -692,7 +704,12 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 // pixelprim, and while it's grabbed.
 // Example:
 // (define mynewshape (build-pixels 100 100))
-// (pixels-upload mynewshape)
+// (with-primitive mynewshape
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) ; call pixels upload to see the results
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -703,7 +720,12 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 // finalizou escrever ao pixelprim, e enquanto ele está "grabbed".
 // Exemplo:
 // (define mynewshape (build-pixels 100 100))
-// (pixels-upload mynewshape)
+// (with-primitive mynewshape
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) ; call pixels upload to see the results
 // EndFunctionDoc
 
 Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
@@ -757,9 +779,17 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 // Description:
 // Returns a texture you can use exactly like a normal loaded one.
 // Example:
-// (define mynewshape (build-pixels 100 100))
-// (upload-pixels mynewshape)
-// (texture (pixels->texture mynewshape))
+// (define mypixels (build-pixels 100 100))
+// (with-primitive mypixels
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) 
+//
+// (with-state
+//     (texture (pixels->texture mypixels))
+//     (build-torus 1 2 10 10))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -769,9 +799,17 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 // Retorna uma textura que você pode usar exatamente igual uma que foi
 // carregada normalmente.
 // Exemplo:
-// (define mynewshape (build-pixels 100 100))
-// (upload-pixels mynewshape)
-// (texture (pixels->texture mynewshape))
+// (define mypixels (build-pixels 100 100))
+// (with-primitive mypixels
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) 
+//
+// (with-state
+//     (texture (pixels->texture mypixels))
+//     (build-torus 1 2 10 10))
 // EndFunctionDoc
 
 Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)

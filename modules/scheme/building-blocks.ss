@@ -23,7 +23,6 @@
  pdata-index-map!
  pdata-fold
  pdata-index-fold
- pdata-slice
  vx vy vz vr vg vb va
  vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
  )
@@ -39,7 +38,7 @@
 ;;    (hint-vertcols)
 ;;    (colour (vector 0 0 1))
 ;;    (with-state
-;;        (transform (vector 1 0 0))
+;;        (translate (vector 1 0 0))
 ;;        (build-sphere 10 10))
 ;;     (build-torus 1 2 30 30))
 ;;
@@ -61,7 +60,7 @@
 ;;    (hint-vertcols)
 ;;    (colour (vector 0 0 1))
 ;;    (with-state
-;;        (transform (vector 1 0 0))
+;;        (translate (vector 1 0 0))
 ;;        (build-sphere 10 10))
 ;;     (build-torus 1 2 30 30))
 ;;
@@ -128,14 +127,14 @@
 ;; (with-primitive my-torus
 ;;   (pdata-map!
 ;;      (lambda (position)
-;;          (vadd position (vector (flxrnd) 0 0))) ;; jitter the vertex in x
-;;      "p")) ;; read/write the position pdata array
+;;          (vadd position (vector (flxrnd) 0 0))) ; jitter the vertex in x
+;;      "p")) ; read/write the position pdata array
 ;; 
 ;; (with-primitive my-torus
 ;;   (pdata-map!
 ;;      (lambda (position normal)
-;;          (vadd position normal)) ;; add the normal to the position (expand the object)
-;;      "p" "n")) ;; read/write the position pdata array, read the normals array
+;;          (vadd position normal)) ; add the normal to the position (expand the object)
+;;      "p" "n")) ; read/write the position pdata array, read the normals array
 ;; EndFunctionDoc  	   
 
 ;; StartFunctionDoc-pt
@@ -152,14 +151,14 @@
 ;; (with-primitive my-torus
 ;;   (pdata-map!
 ;;      (lambda (position)
-;;          (vadd position (vector (flxrnd) 0 0))) ;; jitter the vertex in x
-;;      "p")) ;; read/write the position pdata array
+;;          (vadd position (vector (flxrnd) 0 0))) ; jitter the vertex in x
+;;      "p")) ; read/write the position pdata array
 ;; 
 ;; (with-primitive my-torus
 ;;   (pdata-map!
 ;;      (lambda (position normal)
-;;          (vadd position normal)) ;; add the normal to the position (expand the object)
-;;      "p" "n")) ;; read/write the position pdata array, read the normals array
+;;          (vadd position normal)) ; add the normal to the position (expand the object)
+;;      "p" "n")) ; read/write the position pdata array, read the normals array
 ;; EndFunctionDoc
 
 (define-syntax pdata-map!
@@ -186,10 +185,10 @@
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
 ;; (with-primitive my-torus
-;;   (pdata-map!
+;;   (pdata-index-map!
 ;;      (lambda (index position)
-;;          (vadd position (vector (gh index) 0 0))) ;; jitter the vertex in x
-;;      "p")) ;; read/write the position pdata array
+;;          (vadd position (vector (gh index) 0 0))) ; jitter the vertex in x
+;;      "p")) ; read/write the position pdata array
 ;; EndFunctionDoc  	   
 
 ;; StartFunctionDoc-pt
@@ -204,10 +203,10 @@
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
 ;; (with-primitive my-torus
-;;   (pdata-map!
+;;   (pdata-index-map!
 ;;      (lambda (index position)
-;;          (vadd position (vector (gh index) 0 0))) ;; jitter the vertex in x
-;;      "p")) ;; read/write the position pdata array
+;;          (vadd position (vector (gh index) 0 0))) ; jitter the vertex in x
+;;      "p")) ; read/write the position pdata array
 ;; EndFunctionDoc
 
 (define-syntax pdata-index-map!
@@ -232,8 +231,8 @@
 ;; Example:  
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
-;; ;; find the centre of the primitive by averaging 
-;; ;; the points position's together
+;; ; find the centre of the primitive by averaging 
+;; ; the points position's together
 ;; (let ((centre 
 ;;        (with-primitive my-torus
 ;;                        (vdiv (pdata-fold
@@ -254,8 +253,8 @@
 ;; Exemplo:
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
-;; ;; find the centre of the primitive by averaging 
-;; ;; the points position's together
+;; ; find the centre of the primitive by averaging 
+;; ; the points position's together
 ;; (let ((centre 
 ;;        (with-primitive my-torus
 ;;                        (vdiv (pdata-fold
@@ -286,12 +285,12 @@
 ;; Example:  
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
-;; ;; can't think of a good example for this yet...
+;; ; can't think of a good example for this yet...
 ;; (let ((something 
 ;;        (with-primitive my-torus
-;;                        (vdiv (pdata-fold
-;;                               (lambda (index position)
-;;                                   (vmul position index))
+;;                        (vdiv (pdata-index-fold
+;;                               (lambda (index position ret)
+;;                                   (vadd ret (vmul position index)))
 ;;                               (vector 0 0 0)
 ;;                               "p") (pdata-size)))))
 ;;   
@@ -307,12 +306,12 @@
 ;; Exemplo:
 ;; (define my-torus (build-torus 1 2 30 30))
 ;; 
-;; ;; can't think of a good example for this yet...
+;; ; can't think of a good example for this yet...
 ;; (let ((something 
 ;;        (with-primitive my-torus
-;;                        (vdiv (pdata-fold
-;;                               (lambda (index position)
-;;                                   (vmul position index))
+;;                        (vdiv (pdata-index-fold
+;;                               (lambda (index position ret)
+;;                                   (vadd ret (vmul position index)))
 ;;                               (vector 0 0 0)
 ;;                               "p") (pdata-size)))))
 ;;   
@@ -350,25 +349,6 @@
 (define (vg-set! v s) (vector-set! v 1 s))
 (define (vb-set! v s) (vector-set! v 2 s))
 (define (va-set! v s) (vector-set! v 3 s))
-
-;; StartFunctionDoc-en
-;; pdata-slice index list-of-names
-;; Returns: list of pdata values
-;; Description:
-;; Returns the pdata values for the listed arrays at this index point
-;; Example:  
-;; (define my-torus (build-torus 1 2 30 30))
-;; (display (pdata-slice 0 (list "p" "n"))(newline))
-;; EndFunctionDoc 
- 	
-(define (pdata-slice i names)
-    (define (inner i names l)        
-        (cond 
-            ((null? names) '())
-            (else
-                (cons (pdata-ref (car names) i) 
-                    (inner i (cdr names) l)))))
-    (inner i names '()))
 
 
 				

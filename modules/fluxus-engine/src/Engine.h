@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Renderer.h"
+#include "Camera.h"
 #include "Physics.h"
 #include "PolyPrimitive.h"
 #include "TurtleBuilder.h"
@@ -43,6 +44,9 @@ public:
 	void ClearGrabStack();
 	Fluxus::Primitive *Grabbed() { return m_Grabbed; }
 	
+	bool GrabCamera(unsigned int cam);
+	Fluxus::Camera *GetCamera();
+	
 	static Fluxus::PolyPrimitive* StaticCube;
 	static Fluxus::PolyPrimitive* StaticPlane;
 	static Fluxus::PolyPrimitive* StaticSphere;
@@ -67,4 +71,5 @@ private:
 	Fluxus::Primitive *m_Grabbed;
 	Fluxus::TurtleBuilder m_Turtle;
 	Fluxus::PFuncContainer m_PFuncContainer;
+	unsigned int m_CurrentCamera;
 };

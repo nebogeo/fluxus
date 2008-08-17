@@ -28,7 +28,8 @@ PolyPrimitive*  Engine::StaticSphere=NULL;
 PolyPrimitive*  Engine::StaticCylinder=NULL;
 PolyPrimitive*  Engine::StaticTorus=NULL;
 
-Engine::Engine()
+Engine::Engine() :
+m_CurrentCamera(0)
 {
 	StaticCube = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(StaticCube);
@@ -169,10 +170,27 @@ void Engine::PopGrab()
 	}
 }
 
+bool Engine::GrabCamera(unsigned int cam)
+{
+	if (cam<Renderer()->GetCameraVec().size())
+	{
+		m_CurrentCamera=cam;
+		return true;
+	}
+	return false;
+}
+
+Camera *Engine::GetCamera()
+{
+	assert(m_CurrentCamera<Renderer()->GetCameraVec().size());
+	return &Renderer()->GetCameraVec()[m_CurrentCamera];
+}
+
 void Engine::ClearGrabStack()
 {
 	m_GrabStack.clear();
 	m_Grabbed=NULL;
+	m_CurrentCamera=0;
 }
 
 Fluxus::State *Engine::State()
