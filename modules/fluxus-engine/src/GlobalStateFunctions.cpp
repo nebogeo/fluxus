@@ -947,6 +947,7 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Sets the window width and height.
 // Example:
 // (set-screen-size (vector 10 10)) ; small window time :) 
+// (set-screen-size (vector 640 480)) ; and back again!
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -955,7 +956,8 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a altura e largura da janela.
 // Exemplo:
-// (set-screen-size (vector 10 10)) ; small window time :)
+// (set-screen-size (vector 10 10)) ; small window time :) 
+// (set-screen-size (vector 640 480)) ; and back again!
 // EndFunctionDoc
 
 Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)

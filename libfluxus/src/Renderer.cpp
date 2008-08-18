@@ -94,7 +94,6 @@ void Renderer::Clear()
 	
 	// add the default camera
 	Camera cam;
-	cam.SetViewport(0,0,m_Width/2,m_Height/2);
 	m_CameraVec.push_back(cam);
 }	
 
@@ -226,7 +225,7 @@ void Renderer::PreRender(Camera &Cam, bool PickMode)
     {
     	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
  			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
-
+		
     	glMatrixMode (GL_PROJECTION);
   		glLoadIdentity();
 		

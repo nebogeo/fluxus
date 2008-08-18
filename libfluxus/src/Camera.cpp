@@ -32,8 +32,8 @@ m_Back(10000),
 m_OrthZoom(1.0f),
 m_ViewX(0),
 m_ViewY(0),
-m_ViewWidth(100),
-m_ViewHeight(100)
+m_ViewWidth(1),
+m_ViewHeight(1)
 {
 	// default camera position
 	m_Transform.translate(0,0,-10);
