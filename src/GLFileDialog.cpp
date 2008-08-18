@@ -84,6 +84,7 @@ glob("..", GLOB_PERIOD, 0, &g);
 
 void GLFileDialog::Render()
 {
+    glViewport(0,0,m_Width,m_Height);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();

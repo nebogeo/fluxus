@@ -240,7 +240,7 @@ void FluxusMain::Reshape(int width, int height)
 		m_Editor[n]->Reshape(width,height);
 	}
 	
-	//m_Renderer.SetResolution(width,height);
+	m_FileDialog->Reshape(width,height);
 	m_Width=width;
 	m_Height=height;
 }
