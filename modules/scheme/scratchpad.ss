@@ -26,6 +26,7 @@
 (provide 
  fluxus-auto-indent
  set-auto-indent-tab
+ set-camera-update
  fluxus-reshape-callback 
  fluxus-input-callback 
  fluxus-input-release-callback
@@ -306,6 +307,23 @@
 (define (set-auto-indent-tab s)
 	(set! fluxus-auto-tab-size s))
 	
+(define camera-update #t)
+
+;; StartFunctionDoc-en
+;; set-camera-update #t/#f
+;; Returns: void
+;; Description:
+;; Turns off camera update - allowing you to use (set-camera) - otherwise it gets
+;; written over by the mouse camera update. The reason for needing this is that 
+;; (set-camera-transform) doesn't work with multiple cameras - need to fix.
+;; Example:
+;; (set-camera-update #f)
+;; (set-camera-update #t)
+;; EndFunctionDoc 
+
+(define (set-camera-update s)
+    (set! camera-update s))
+		
 ;-------------------------------------------------
 ; callbacks - these are called directly from the
 ; fluxus application
@@ -360,7 +378,7 @@
   (cond 
     ((eq? (get-stereo-mode) 'no-stereo)
      (draw-buffer 'back)
-     (set-camera (get-camera-transform))
+     (when camera-update (set-camera (get-camera-transform)))
      (framedump-update)
      (when (not (null? user-callback))
        (with-state

@@ -34,8 +34,10 @@ void ImmediateMode::Add(Primitive *p, State *s)
 	m_IMRecord.push_back(newitem);
 }
 
-void ImmediateMode::Render(ShadowVolumeGen *shadowgen)
+void ImmediateMode::Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen)
 {
+	///\todo: not using camera visibility in immediate mode...
+	
 	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
 	{
 		glPushMatrix();

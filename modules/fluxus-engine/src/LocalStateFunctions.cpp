@@ -576,9 +576,9 @@ Scheme_Object *emissive(int argc, Scheme_Object **argv)
 // Description:
 // Sets the drawing state transform to identity, on the state stack, or the current primitive. 
 // Example:
-// (define mycube (with-state)
+// (define mycube (with-state
 //     (scale (vector 2 2 2)) ; set the current scale to double in each dimension
-//     (build-cube)) ; make a scaled cube 
+//     (build-cube))) ; make a scaled cube 
 //
 // (with-primitive mycube
 //     (identity)) ; erases the transform and puts the cube back to its original state
@@ -646,7 +646,7 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
 // Description:
 // Applies a translation to the current drawing state transform or current primitive.
 // Example:
-// (transform (vector 0 1.4 0)) ; translates the current transform up a bit
+// (translate (vector 0 1.4 0)) ; translates the current transform up a bit
 // (build-cube) ; build a cube with this transform
 // EndFunctionDoc
 
@@ -656,7 +656,7 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
 // Descrição:
 // Aplica uma translação ao estado de desenho atual ou primitiva pega
 // Exemplo:
-// (transform (vector 0 1.4 0)) ; translada a transformação atual pra
+// (translate (vector 0 1.4 0)) ; translada a transformação atual pra
 //                              ; cima um pouco
 // (build-cube) ; constrói um cubo com esta transformação
 // EndFunctionDoc
@@ -1231,12 +1231,15 @@ Scheme_Object *hint_unlit(int argc, Scheme_Object **argv)
 // but may have different effects - or no effect on certain primitive types, hence the 
 // name hint. Vertex colours override the current (colour) state.
 // Example: 
-// TODO:example doesnt seem to work
+// (clear)
 // (hint-vertcols)
 // (define mycube (build-cube)) ; make a cube with vertcols enabled
-// (grab mycube)
-// (pdata-set "c" 0 (vector 0 1 0)) ; set the colour of the first vertex to green
-// (ungrab)
+// 
+// (with-primitive mycube
+//     (pdata-map! 
+//         (lambda (c)
+//             (rndvec)) ; randomise the vertcols
+//         "c")) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1249,12 +1252,15 @@ Scheme_Object *hint_unlit(int argc, Scheme_Object **argv)
 // ou nenhum efeito em certas primitivas portanto o nome dicas. Cores
 // de vértices modificam o estado atual de (colour).
 // Exemplo:
+// (clear)
 // (hint-vertcols)
-// (define mycube (build-cube)) ; faz um cubo com vertcols ativado
-// (grab mycube)
-// (pdata-set "c" 0 (vector 0 1 0)) ; ajusta a cor do primeiro vert
-//                                  ; pra verde
-// (ungrab)
+// (define mycube (build-cube)) ; make a cube with vertcols enabled
+// 
+// (with-primitive mycube
+//     (pdata-map! 
+//         (lambda (c)
+//             (rndvec)) ; randomise the vertcols
+//         "c")) 
 // EndFunctionDoc
 
 Scheme_Object *hint_vertcols(int argc, Scheme_Object **argv)
@@ -1702,8 +1708,54 @@ Scheme_Object *hide(int argc, Scheme_Object **argv)
 	DECL_ARGV();
   	ArgCheck("hide", "i", argc, argv);
 	if (Engine::Get()->Grabbed()) 
+	{		
+		if (IntFromScheme(argv[0]))
+		{
+			// hiding...
+			Engine::Get()->Grabbed()->SetVisibility(0x00000000);
+		}
+		else
+		{
+			// unhiding...
+			Engine::Get()->Grabbed()->SetVisibility(0xffffffff);
+		}
+	}
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// camera-hide hidden-number
+// Returns: void
+// Description: 
+// Sets the hidden state for the current primitive, with the current camera (also affects all child primitives). 
+// Allows you to turn off rendering for primitives under different cameras
+// Example:
+// (define obj (build-cube))
+// (with-primitive obj
+//     (camera-hide 1)) ; hide this cube
+// EndFunctionDoc
+
+Scheme_Object *camera_hide(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+  	ArgCheck("camera-hide", "i", argc, argv);
+	if (Engine::Get()->Grabbed()) 
 	{
-		Engine::Get()->Grabbed()->Hide(FloatFromScheme(argv[0]));
+		unsigned int currentvis = Engine::Get()->Grabbed()->GetVisibility();
+		
+		if (IntFromScheme(argv[0]))
+		{
+			// hiding...
+			unsigned int cameracode = 0xfffffffe<<Engine::Get()->GrabbedCamera();
+			Engine::Get()->Grabbed()->SetVisibility(cameracode);// & currentvis);
+		}
+		else
+		{
+			// unhiding...
+			unsigned int cameracode = 0x00000001<<Engine::Get()->GrabbedCamera();
+			Engine::Get()->Grabbed()->SetVisibility(cameracode | currentvis);
+		}
 	}
 	MZ_GC_UNREG(); 
 	return scheme_void;
@@ -2242,6 +2294,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
     scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
 	scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
+	scheme_add_global("camera-hide",scheme_make_prim_w_arity(camera_hide,"camera-hide",1,1), env);
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
 	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
 	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);

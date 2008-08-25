@@ -20,7 +20,7 @@ using namespace Fluxus;
 
 Primitive::Primitive() : 
 m_IsPhysical(false),
-m_Hidden(false),
+m_Visibility(0xffffffff),
 m_Selectable(true)
 {
 }
@@ -29,8 +29,8 @@ Primitive::Primitive(const Primitive &other) :
 PDataContainer(other),
 m_State(other.m_State),
 m_IsPhysical(other.m_IsPhysical),
-m_Hidden(other.m_IsPhysical),
-m_Selectable(other.m_IsPhysical) 
+m_Visibility(other.m_Visibility),
+m_Selectable(other.m_Selectable) 
 {
 }
            

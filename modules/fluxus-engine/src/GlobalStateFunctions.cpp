@@ -865,7 +865,7 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 // Sets the camera transform matrix. This is the low level interface used by set-camera-transform, 
 // which you should generally use instead.
 // Example:
-// (set-camera) 
+// (set-camera (mtranslate (vector 0 0 -10))) 
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -876,7 +876,7 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 // baixo nível usada por set-camera-transform, a qual você devia usar
 // geralmente ao invés.
 // Exemplo:
-// (set-camera)
+// (set-camera (mtranslate (vector 0 0 -10))) 
 // EndFunctionDoc
 
 Scheme_Object *set_camera(int argc, Scheme_Object **argv)
@@ -1002,7 +1002,7 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 	int s=IntFromScheme(argv[2]);
  	MZ_GC_UNREG(); 
 	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(
-		*Engine::Get()->GetCamera(),x,y,s));
+		Engine::Get()->GrabbedCamera(),x,y,s));
 }
 
 // StartFunctionDoc-en

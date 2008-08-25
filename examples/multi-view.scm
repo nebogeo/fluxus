@@ -11,6 +11,17 @@
         (mrotate (vector 0 45 0))))
 (viewport 0 0 0.5 0.5)
 
+; render a primitive in one view only
+(define t (with-state
+    (translate (vector 3 0 0))
+    (scale 0.3)
+    (colour (vector 1 0 0))
+    (build-torus 1 2 10 10)))
+
+(with-primitive t
+    (hide 1)
+    (camera-hide 0))
+
 
 (current-camera 0)
 

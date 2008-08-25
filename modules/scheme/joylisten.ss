@@ -15,7 +15,11 @@
     (field
      (buttons (make-buttons 16 '()))
      (axes (make-axes 16 '()))
-     (button-state (make-buttons 16 '())))
+     (button-state (make-buttons 16 '()))
+	 (device "0"))
+	 
+	 (define/public (set-device-num! s)
+	 	(set! device s))
     
     (define (list-set l n v)
       (cond
@@ -52,7 +56,7 @@
             value))
       
       (define (do-axes n)
-        (let ((value (drain (string-append "/oscjoy.0.axis." (number->string n)) #f)))
+        (let ((value (drain (string-append "/oscjoy." device ".axis." (number->string n)) #f)))
           (cond
             ((number? value)
              ; do some mangling of values here,
@@ -65,7 +69,7 @@
             (do-axes (- n 1))))
       
       (define (do-buttons n)
-        (let ((value (drain (string-append "/oscjoy.0.button." (number->string n)) #f)))
+        (let ((value (drain (string-append "/oscjoy." device ".button." (number->string n)) #f)))
           (cond 
             ((number? value)
              ; have we changed?

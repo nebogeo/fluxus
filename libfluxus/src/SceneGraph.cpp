@@ -29,16 +29,18 @@ SceneGraph::~SceneGraph()
 {
 }
 
-void SceneGraph::Render(ShadowVolumeGen *shadowgen, Mode rendermode)
+void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode)
 {
 	//RenderWalk((SceneNode*)m_Root,0);
 
 	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());	
 
+	unsigned int cameracode = 1<<camera;
+
 	// render all the children of the root
 	for (vector<Node*>::iterator i=m_Root->Children.begin(); i!=m_Root->Children.end(); ++i)
 	{
-		RenderWalk((SceneNode*)*i,0,shadowgen,rendermode);
+		RenderWalk((SceneNode*)*i,0,cameracode,shadowgen,rendermode);
 	}
 	
 	// now render the depth sorted primitives:
@@ -46,7 +48,7 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, Mode rendermode)
 	m_DepthSorter.Clear();
 }
 
-void SceneGraph::RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowgen, Mode rendermode)
+void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode)
 {
 	// max gl matrix stack is 32 
 	/*if (depth>=30)
@@ -55,10 +57,9 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowg
 		return;
 	}*/
 	
-	if (node->Prim->Hidden()) return;
+	if ((node->Prim->GetVisibility()&cameracode)==0) return;
 	if (rendermode==SELECT && !node->Prim->IsSelectable()) return;
-	
-	
+
 	dMatrix parent;
 	// see if we need the parent (result of all the parents) transform
 	if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
@@ -98,7 +99,7 @@ void SceneGraph::RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowg
 
 		for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)
 		{
-			RenderWalk((SceneNode*)*i,depth,shadowgen,rendermode);
+			RenderWalk((SceneNode*)*i,depth,cameracode,shadowgen,rendermode);
 		}
 	}
 	glPopMatrix();

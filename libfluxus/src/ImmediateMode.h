@@ -37,7 +37,7 @@ public:
 	~ImmediateMode();
 	
 	void Add(Primitive *p, State *s);
-    void Render(ShadowVolumeGen *shadowgen = NULL);
+    void Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen = NULL);
     void Clear();
 	
 private:

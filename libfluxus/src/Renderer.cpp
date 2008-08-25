@@ -117,20 +117,20 @@ void Renderer::Render()
 		glClear(GL_ACCUM_BUFFER_BIT);
 	}
 	
-	for (vector<Camera>::iterator cam=m_CameraVec.begin(); cam!=m_CameraVec.end(); cam++)
+	for (unsigned int cam=0; cam<m_CameraVec.size(); cam++)
 	{
 		// need to clear this even if we aren't using shadows
 		m_ShadowVolumeGen.Clear();
 		
 		if (m_ShadowLight!=0)
 		{		
-			RenderStencilShadows(*cam);
+			RenderStencilShadows(cam);
 		}
 		else
 		{
-			PreRender(*cam);
-			m_World.Render(&m_ShadowVolumeGen);
-			m_ImmediateMode.Render();
+			PreRender(cam);
+			m_World.Render(&m_ShadowVolumeGen,cam);
+			m_ImmediateMode.Render(cam);
 			m_ImmediateMode.Clear();
 			PostRender();
 		}		
@@ -159,17 +159,17 @@ void Renderer::Render()
 	if (m_Delta>0.0f && m_Delta<100.0f) m_Time+=m_Delta;
 }
 
-void Renderer::RenderStencilShadows(Camera &Cam)
+void Renderer::RenderStencilShadows(unsigned int CamIndex)
 {
 	if (m_LightVec.size()>m_ShadowLight)
 	{
 		m_ShadowVolumeGen.SetLightPosition(m_LightVec[m_ShadowLight]->GetPosition());
 	}
 	
-	PreRender(Cam);
+	PreRender(CamIndex);
 	glDisable(GL_LIGHT0+m_ShadowLight); 
-	m_World.Render(&m_ShadowVolumeGen);
-	m_ImmediateMode.Render(&m_ShadowVolumeGen);
+	m_World.Render(&m_ShadowVolumeGen,CamIndex);
+	m_ImmediateMode.Render(CamIndex,&m_ShadowVolumeGen);
 
 	glClear(GL_STENCIL_BUFFER_BIT);
 	glEnable(GL_STENCIL_TEST);
@@ -201,8 +201,8 @@ void Renderer::RenderStencilShadows(Camera &Cam)
 
 	// todo - needlessly generating shadow geom again - move 
 	// generator into renderer and pass in like immediate mode
-	m_World.Render(&m_ShadowVolumeGen);
-	m_ImmediateMode.Render();
+	m_World.Render(&m_ShadowVolumeGen,CamIndex);
+	m_ImmediateMode.Render(CamIndex);
 	m_ImmediateMode.Clear();
 
 	glDepthMask(GL_TRUE);
@@ -219,8 +219,9 @@ void Renderer::RenderStencilShadows(Camera &Cam)
 	PostRender();
 }
 
-void Renderer::PreRender(Camera &Cam, bool PickMode)
+void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 {
+	Camera &Cam = m_CameraVec[CamIndex];
     if (!m_Initialised || PickMode || Cam.NeedsInit())
     {
     	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
@@ -405,7 +406,7 @@ void Renderer::ClearLights()
 	AddLight(light);
 }
 
-int Renderer::Select(Camera &Cam, int x, int y, int size)
+int Renderer::Select(unsigned int CamIndex, int x, int y, int size)
 {
 	static const int SELECT_SIZE=512;
 	unsigned int IDs[SELECT_SIZE];
@@ -421,7 +422,7 @@ int Renderer::Select(Camera &Cam, int x, int y, int size)
 	
 	// the problem here is that select is called mid-scene, so we have to set up for 
 	// picking mode here...
-	PreRender(Cam,true);
+	PreRender(CamIndex,true);
 	
 	// render the scene for picking
 	m_World.Render(&m_ShadowVolumeGen,SceneGraph::SELECT);
@@ -450,7 +451,7 @@ int Renderer::Select(Camera &Cam, int x, int y, int size)
 	// ... and reset the scene back here so we can carry on afterwards as if nothing
 	// has happened...
 	m_Initialised=false;
-	PreRender(Cam);
+	PreRender(CamIndex);
 	
 	return ID;
 }

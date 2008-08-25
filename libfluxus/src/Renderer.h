@@ -96,7 +96,7 @@ public:
 	/// will actually be rendered
 	void         RenderPrimitive(Primitive *Prim);
 	/// Get primitive ID from screen space
-	int          Select(Camera &Cam, int x, int y, int size);
+	int          Select(unsigned int CamIndex, int x, int y, int size);
 	///@}
 	
 	///////////////////////////////////////////////////////////////////////
@@ -162,10 +162,10 @@ public:
 	
 	
 private:
-	void PreRender(Camera &Cam, bool PickMode=false);
+	void PreRender(unsigned int CamIndex, bool PickMode=false);
 	void PostRender();
 	void RenderLights(bool camera);
-	void RenderStencilShadows(Camera &Cam);
+	void RenderStencilShadows(unsigned int CamIndex);
 	
 	bool  m_Initialised;
 	bool  m_InitLights;

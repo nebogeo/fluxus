@@ -911,7 +911,28 @@ Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
 // be calculated outside of this area. Influence positions and colours need to be set using 
 // pdata-set.
 // Example:
-// (define mynewshape (build-blobby 7 (vector 30 30 30) (vector 3 3 3)))
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -933,7 +954,28 @@ Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
 // malha não vai ser calculada fora desta área limite. Influências de
 // cores e posições precisam ser ajustadas usando pdata-set.
 // Exemplo:
-// (define mynewshape (build-blobby 7 (vector 30 30 30) (vector 3 3 3)))
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
 // EndFunctionDoc
 
 Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
@@ -966,9 +1008,36 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 // blobby->poly blobbyprimitiveid-number
 // Returns: polyprimid-number
 // Description:
-// Converts the mesh of a blobby primitive into a triangle list polygon primitive.
+// Converts the mesh of a blobby primitive into a triangle list polygon primitive. This is useful as
+// the polygon primitive will be much much faster to render, but can't deform in the blobby way.
+// Doesn't convert vertex colours over yet unfortunately.
 // Example:
-// (define mynewshape (blobby->poly myblobby))
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
+// 
+// (define p (with-state
+//     (translate (vector 1 0 0))
+//     (blobby->poly b)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -978,7 +1047,32 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 // Converte a malha de uma primitiva blobby em uma primitiva poligonal
 // de lista de triângulos.
 // Exemplo:
-// (define mynewshape (blobby->poly myblobby))
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
+// 
+// (define p (with-state
+//     (translate (vector 1 0 0))
+//     (blobby->poly b)))
 // EndFunctionDoc
 
 Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
@@ -1346,28 +1440,36 @@ Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
 // primitive.
 // Example:
 // (clear)
-// (define p (build-polygons 8 1))
+// ; lets build our own cube primitive...
+// (define p (build-polygons 8 'quad-list))
 // 
-// (grab p)
-// ; setup the vertex data
-// (pdata-set "p" 0 (vector -1 -1 -1))
-// (pdata-set "p" 1 (vector  1 -1 -1))
-// (pdata-set "p" 2 (vector  1 -1  1))
-// (pdata-set "p" 3 (vector -1 -1  1))
-// (pdata-set "p" 4 (vector -1  1 -1))
-// (pdata-set "p" 5 (vector  1  1 -1))
-// (pdata-set "p" 6 (vector  1  1  1))
-// (pdata-set "p" 7 (vector -1  1  1))
-// 
-// (hint-wire)
-// (hint-unlit)
-// 
-// ; connect the verts together into faces
-// (poly-set-index (list 7 6 5 4  5 6 2 1 
-//                        4 5 1 0  1 2 3 0
-//                        3 7 4 0  6 7 3 2))
-// 
-// (ungrab)
+// (with-primitive p
+//     ; setup the vertex data
+//     (pdata-set "p" 0 (vector -1 -1 -1))
+//     (pdata-set "p" 1 (vector  1 -1 -1))
+//     (pdata-set "p" 2 (vector  1 -1  1))
+//     (pdata-set "p" 3 (vector -1 -1  1))
+//     (pdata-set "p" 4 (vector -1  1 -1))
+//     (pdata-set "p" 5 (vector  1  1 -1))
+//     (pdata-set "p" 6 (vector  1  1  1))
+//     (pdata-set "p" 7 (vector -1  1  1))
+//     (pdata-set "c" 0 (vector  0  0  0))
+//     (pdata-set "c" 1 (vector  0  0  1))
+//     (pdata-set "c" 2 (vector  0  1  0))
+//     (pdata-set "c" 3 (vector  0  1  1))
+//     (pdata-set "c" 4 (vector  1  0  0))
+//     (pdata-set "c" 5 (vector  1  0  1))
+//     (pdata-set "c" 6 (vector  1  1  0))
+//     (pdata-set "c" 7 (vector  1  1  1))
+//     
+//     (hint-wire)
+//     (hint-unlit)
+//     (hint-vertcols)
+//     
+//     ; connect the verts together into faces
+//     (poly-set-index (list 7 6 5 4  5 6 2 1 
+//             4 5 1 0  1 2 3 0
+//             3 7 4 0  6 7 3 2)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1378,28 +1480,36 @@ Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
 // index para essa primitiva.
 // Exemplo:
 // (clear)
-// (define p (build-polygons 8 1))
+// ; lets build our own cube primitive...
+// (define p (build-polygons 8 'quad-list))
 // 
-// (grab p)
-// ; setup the vertex data
-// (pdata-set "p" 0 (vector -1 -1 -1))
-// (pdata-set "p" 1 (vector  1 -1 -1))
-// (pdata-set "p" 2 (vector  1 -1  1))
-// (pdata-set "p" 3 (vector -1 -1  1))
-// (pdata-set "p" 4 (vector -1  1 -1))
-// (pdata-set "p" 5 (vector  1  1 -1))
-// (pdata-set "p" 6 (vector  1  1  1))
-// (pdata-set "p" 7 (vector -1  1  1))
-// 
-// (hint-wire)
-// (hint-unlit)
-// 
-// ; connect the verts together into faces
-// (poly-set-index (list 7 6 5 4  5 6 2 1 
-//                        4 5 1 0  1 2 3 0
-//                        3 7 4 0  6 7 3 2))
-// 
-// (ungrab)
+// (with-primitive p
+//     ; setup the vertex data
+//     (pdata-set "p" 0 (vector -1 -1 -1))
+//     (pdata-set "p" 1 (vector  1 -1 -1))
+//     (pdata-set "p" 2 (vector  1 -1  1))
+//     (pdata-set "p" 3 (vector -1 -1  1))
+//     (pdata-set "p" 4 (vector -1  1 -1))
+//     (pdata-set "p" 5 (vector  1  1 -1))
+//     (pdata-set "p" 6 (vector  1  1  1))
+//     (pdata-set "p" 7 (vector -1  1  1))
+//     (pdata-set "c" 0 (vector  0  0  0))
+//     (pdata-set "c" 1 (vector  0  0  1))
+//     (pdata-set "c" 2 (vector  0  1  0))
+//     (pdata-set "c" 3 (vector  0  1  1))
+//     (pdata-set "c" 4 (vector  1  0  0))
+//     (pdata-set "c" 5 (vector  1  0  1))
+//     (pdata-set "c" 6 (vector  1  1  0))
+//     (pdata-set "c" 7 (vector  1  1  1))
+//     
+//     (hint-wire)
+//     (hint-unlit)
+//     (hint-vertcols)
+//     
+//     ; connect the verts together into faces
+//     (poly-set-index (list 7 6 5 4  5 6 2 1 
+//             4 5 1 0  1 2 3 0
+//             3 7 4 0  6 7 3 2)))
 // EndFunctionDoc
 
 Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
@@ -1743,7 +1853,7 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 // Description:
 // Runs a primitive function on the currently grabbed primitive.
 // Example:
-// (define mypfunc (make-pfunc "arithmetic"))
+// (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
 
 
@@ -1753,7 +1863,7 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 // Descrição:
 // Roda uma função primitiva na primitiva atualmente pega.
 // Exemplo:
-// (define mypfunc (make-pfunc "arithmetic"))
+// (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
 	
 Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
@@ -1777,7 +1887,32 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 // Returns a list of pdata values at each intersection point of 
 // the specified line.
 // Example:
-// (define mypfunc (make-pfunc "arithmetic"))
+// (clear)
+// (define s (with-state
+//         (build-torus 1 2 10 10)))
+// 
+// (define l (with-state
+//         (hint-none)
+//         (hint-unlit)
+//         (hint-wire)
+//         (build-line 2)))
+// 
+// (define (check a b)
+//     (with-primitive s
+//         (for-each
+//             (lambda (intersection)                    
+//                 (with-state ; draw a sphere at the intersection point
+//                     (translate (cdr (assoc "p" intersection)))
+//                     (colour (vector 0 1 0))
+//                     (scale (vector 0.3 0.3 0.3))
+//                     (draw-sphere)))
+//         (line-intersect a b))))
+// 
+// (every-frame
+//     (with-primitive l
+//         (pdata-set "p" 0 (vector 0 -5 0))
+//         (pdata-set "p" 1 (vector (* 5 (sin (time))) 5 0))
+//         (check (pdata-ref "p" 0) (pdata-ref "p" 1))))
 // EndFunctionDoc
 
 
@@ -1787,7 +1922,32 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 // Descrição:
 // Roda uma função primitiva na primitiva atualmente pega.
 // Exemplo:
-// (define mypfunc (make-pfunc "arithmetic"))
+// (clear)
+// (define s (with-state
+//         (build-torus 1 2 10 10)))
+// 
+// (define l (with-state
+//         (hint-none)
+//         (hint-unlit)
+//         (hint-wire)
+//         (build-line 2)))
+// 
+// (define (check a b)
+//     (with-primitive s
+//         (for-each
+//             (lambda (intersection)                    
+//                 (with-state ; draw a sphere at the intersection point
+//                     (translate (cdr (assoc "p" intersection)))
+//                     (colour (vector 0 1 0))
+//                     (scale (vector 0.3 0.3 0.3))
+//                     (draw-sphere)))
+//         (line-intersect a b))))
+// 
+// (every-frame
+//     (with-primitive l
+//         (pdata-set "p" 0 (vector 0 -5 0))
+//         (pdata-set "p" 1 (vector (* 5 (sin (time))) 5 0))
+//         (check (pdata-ref "p" 0) (pdata-ref "p" 1))))
 // EndFunctionDoc
 
 Scheme_Object *line_intersect(int argc, Scheme_Object **argv)

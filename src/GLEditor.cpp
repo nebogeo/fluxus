@@ -150,12 +150,12 @@ void GLEditor::SetText(const string& s)
 		int line = GetCurrentLine();
 		m_Text=s; 
 		SetCurrentLine(line);
-		ProcessTabs(); 
 	}
 	else
 	{
 		m_Text=s; 
 	}
+	ProcessTabs();  
 }
 
 void GLEditor::StrokeCharacter(wchar_t c)

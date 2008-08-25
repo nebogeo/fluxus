@@ -69,10 +69,9 @@ public:
 	void SetPhysicalHint(bool s)    { m_IsPhysical=s; }
 	bool IsPhysicalHint()           { return m_IsPhysical; }
 	
-	///\todo would this be better in the scenegraph node?	
-	/// Hidden status - prevents rendering
-	bool Hidden()      		        { return m_Hidden; }
-	void Hide(bool s)      		    { m_Hidden=s; }
+	/// Visibility status bitfield - prevents rendering for different cameras
+	unsigned int GetVisibility()    { return m_Visibility; }
+	void SetVisibility(unsigned int s) { m_Visibility=s; } 
 	
 	/// Whether we should be included in the selection pass
 	bool IsSelectable()      		{ return m_Selectable; }
@@ -86,7 +85,7 @@ private:
 	
 	///\todo: make these into an enum/bitfield?
 	bool  m_IsPhysical;
-	bool  m_Hidden;
+	unsigned int m_Visibility;
 	bool  m_Selectable;
 };
 

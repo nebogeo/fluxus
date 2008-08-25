@@ -56,9 +56,9 @@ public:
 
 	/// Traverses the graph depth first, rendering
 	/// all nodes
-	void Render(ShadowVolumeGen *shadowgen, Mode rendermode=RENDER);
+	void Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode=RENDER);
 	
-	/// Clears the graph of all primtives
+	/// Clears the graph of all primitives
 	virtual void Clear();
 	
 	/// Parents the node to the root, and sets its 
@@ -82,7 +82,7 @@ public:
 		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
 private:
-	void RenderWalk(SceneNode *node, int depth, ShadowVolumeGen *shadowgen, Mode rendermode);
+	void RenderWalk(SceneNode *node, int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	bool FrustumClip(SceneNode *node);
 	void CohenSutherland(const dVector &p, char &cs);

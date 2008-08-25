@@ -45,6 +45,7 @@ public:
 	Fluxus::Primitive *Grabbed() { return m_Grabbed; }
 	
 	bool GrabCamera(unsigned int cam);
+	unsigned int GrabbedCamera() { return m_CurrentCamera; }
 	Fluxus::Camera *GetCamera();
 	
 	static Fluxus::PolyPrimitive* StaticCube;

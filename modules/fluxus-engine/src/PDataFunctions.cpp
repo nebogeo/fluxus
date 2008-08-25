@@ -316,15 +316,44 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 // interpreter is doing all the work. It's much faster if you can use a pdata-op as
 // the same operation will only be one Scheme call.
 // Example:
-// (pdata-op "+" "mydata" (vector 1 2 3)) // add a vector to all the pdata vectors
-// (pdata-op "+" "mydata" "myotherdata") // add two pdata vectors element for element
-// (pdata-op "*" "mydata" (vector 1 2 3)) // multiply a vector to all the pdata vectors
-// (pdata-op "*" "mydata" "myotherdata") // multiply two pdata vectors element for element
-// (pdata-op "closest" "p" (vector 100 0 0)) // returns position of the closest vertex to this point
-// (pdata-op "sin" "mydata" "myotherdata") // sine of one float pdata to another
-// (pdata-op "cos" "mydata" "myotherdata") // cosine of one float pdata to another
+// (clear)
+// (define t (build-torus 1 4 10 10))
+// 
+// (with-primitive t
+//     (pdata-op "+" "p" (vector 1 0 0))  ; add a vector to all the pdata vectors
+//     (pdata-op "+" "p" "n")  ; add two pdata vectors element for element
+//     (pdata-op "*" "n" (vector -1 -1 -1)) ;  multiply a vector to all the pdata vectors
+//     (pdata-op "*" "n" "p")  ; multiply two pdata vectors element for element
+//     (let ((pos (pdata-op "closest" "p" (vector 100 0 0)))) ;  returns position of the closest vertex to this point
+//         (with-state ; draw a sphere there
+//             (translate pos)
+//             (scale (vector 0.1 0.1 0.1))
+//             (build-sphere 5 5)))
+//     ; can't think of a good example for these...
+//     ;(pdata-op "sin" "mydata" "myotherdata")  ; sine of one float pdata to another
+//     ;(pdata-op "cos" "mydata" "myotherdata")  ; cosine of one float pdata to another
+//     )
+// 
+// ; most common example of pdata op is for particles
+// (define p (with-state
+//     (hint-points)
+//     (point-width 10)
+//     (build-particles 100)))
+// 
+// (with-primitive p
+//     (pdata-add "vel" "v") ; add a velocity vector
+//     (pdata-map!
+//         (lambda (vel)
+//             (srndvec)) ; set random velocities
+//         "vel")
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec)) ; set random colours
+//         "c"))
+// 
+// (every-frame (with-primitive p
+//     (pdata-op "+" "p" "vel"))) 
 // EndFunctionDoc
-
 // StartFunctionDoc-pt
 // pdata-op string-nomefunc string-nomepdata operador
 // Retorna: void
@@ -337,13 +366,43 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 // rápido se você puder usar um pdata-op já que a mesma operação vai
 // ser apenas uma chamada à scheme.
 // Exemplo:
-// (pdata-op "+" "mydata" (vector 1 2 3)) // adiciona um vetor a todos os vetores pdata
-// (pdata-op "+" "mydata" "myotherdata") // adiciona dois vetores pdata elemento por elemento
-// (pdata-op "*" "mydata" (vector 1 2 3)) // multiplica um vetor a todos os vetores pdata
-// (pdata-op "*" "mydata" "myotherdata") // multiplica dois vetores pdata elemento por elemento
-// (pdata-op "closest" "p" (vector 100 0 0)) // retorna posição do vertice mais perto a este ponto
-// (pdata-op "sin" "mydata" "myotherdata") // seno de um pdata float a outro
-// (pdata-op "cos" "mydata" "myotherdata") // cosine of one float pdata to another
+// (clear)
+// (define t (build-torus 1 4 10 10))
+// 
+// (with-primitive t
+//     (pdata-op "+" "p" (vector 1 0 0))  ; add a vector to all the pdata vectors
+//     (pdata-op "+" "p" "n")  ; add two pdata vectors element for element
+//     (pdata-op "*" "n" (vector -1 -1 -1)) ;  multiply a vector to all the pdata vectors
+//     (pdata-op "*" "n" "p")  ; multiply two pdata vectors element for element
+//     (let ((pos (pdata-op "closest" "p" (vector 100 0 0)))) ;  returns position of the closest vertex to this point
+//         (with-state ; draw a sphere there
+//             (translate pos)
+//             (scale (vector 0.1 0.1 0.1))
+//             (build-sphere 5 5)))
+//     ; can't think of a good example for these...
+//     ;(pdata-op "sin" "mydata" "myotherdata")  ; sine of one float pdata to another
+//     ;(pdata-op "cos" "mydata" "myotherdata")  ; cosine of one float pdata to another
+//     )
+// 
+// ; most common example of pdata op is for particles
+// (define p (with-state
+//     (hint-points)
+//     (point-width 10)
+//     (build-particles 100)))
+// 
+// (with-primitive p
+//     (pdata-add "vel" "v") ; add a velocity vector
+//     (pdata-map!
+//         (lambda (vel)
+//             (srndvec)) ; set random velocities
+//         "vel")
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec)) ; set random colours
+//         "c"))
+// 
+// (every-frame (with-primitive p
+//     (pdata-op "+" "p" "vel")))
 // EndFunctionDoc
 
 Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
