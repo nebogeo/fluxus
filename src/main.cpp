@@ -221,6 +221,8 @@ int main(int argc, char *argv[])
 
 	int arg=1;
 	int currentEditor=0;
+	bool exe=false;
+
 	while(arg<argc)
 	{
 		if (!strcmp(argv[arg],"-r"))
@@ -258,12 +260,25 @@ int main(int argc, char *argv[])
 				arg++;
 			}
 		}
+		else if (!strcmp(argv[arg],"-fs"))
+		{
+			glutFullScreen();
+		}
+		else if (!strcmp(argv[arg],"-x"))
+		{
+			exe=true;
+		}
 		else
 		{
 			if (currentEditor<fluxus::NUM_EDITORS)
 			{
 				app->SetCurrentEditor(currentEditor); // flip it out of the repl
 				app->LoadScript(argv[arg]);
+				if (exe && currentEditor==0)
+				{
+					app->Execute();
+					app->HideScript();
+				}
 				currentEditor++;
 			}
 		}

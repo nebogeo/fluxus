@@ -49,7 +49,8 @@ public:
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void HideCursor() { m_ShowCursor=!m_ShowCursor; }
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; } 
-  	
+  	void Execute();
+	
 	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
     void SwitchToRepl() { m_CurrentEditor = 9; }
 	

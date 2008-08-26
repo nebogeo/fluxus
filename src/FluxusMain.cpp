@@ -132,12 +132,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			break; // l
 			case 5: // e
 			{
-				// same as F5
-				if (m_CurrentEditor<9) 
-				{
-					m_Script=m_Editor[m_CurrentEditor]->GetText();
-					SaveBackupScript();
-				}
+				Execute();
 			}			
 			break;
 #ifndef __APPLE__
@@ -192,8 +187,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		}	
 		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) 
 		{
-			m_Script=m_Editor[m_CurrentEditor]->GetText();
-			SaveBackupScript();
+			Execute();
 		}
 		else if (special==GLUT_KEY_F6 && m_CurrentEditor<9) 
 		{
@@ -301,6 +295,12 @@ void FluxusMain::LoadScript(const string &Filename)
 	}
 	
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
+}
+ 
+void FluxusMain::Execute()
+{
+	m_Script=m_Editor[m_CurrentEditor]->GetText();
+	SaveBackupScript();
 }
 
 void FluxusMain::SaveBackupScript() 

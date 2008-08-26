@@ -17,6 +17,7 @@
 		 fluxus-015/pixels-tools
 		 fluxus-015/scratchpad
 		 fluxus-015/maths
+		 fluxus-015/testing
 		 (only-in srfi/13 string-pad))
 		 
 (provide 
@@ -33,4 +34,5 @@
  (all-from-out fluxus-015/poly-tools)  
  (all-from-out fluxus-015/pixels-tools)  
  (all-from-out fluxus-015/scratchpad)
- (all-from-out fluxus-015/maths))
+ (all-from-out fluxus-015/maths)
+ (all-from-out fluxus-015/testing))
