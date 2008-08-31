@@ -40,7 +40,8 @@
 ;; Description:
 ;; Sets the language for the documentation
 ;; Example:
-;; (set-help-locale! "pt") 
+;; (set-help-locale! "pt") ; switch to portuguese
+;; (set-help-locale! "en") ; and back to english
 ;; EndFunctionDoc 
 
 ;; StartFunctionDoc-pt
@@ -49,7 +50,8 @@
 ;; Descrição:
 ;; Ajusta a linguagem para a documentação.
 ;; Exemplo:
-;; (set-help-locale! "en")
+;; (set-help-locale! "pt") ; switch to portuguese
+;; (set-help-locale! "en") ; and back to english
 ;; EndFunctionDoc
 
 (define (set-help-locale! locale)
