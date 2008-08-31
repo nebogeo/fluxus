@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; Random stuff
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc 
 

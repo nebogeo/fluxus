@@ -4,7 +4,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; Some helpful random functions for general use
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc 
 

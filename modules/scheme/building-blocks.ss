@@ -2,8 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; A set of higher level control structures for manipulating
-;; objects and state in fluxus in a cleaner and safer manner.
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc 
 

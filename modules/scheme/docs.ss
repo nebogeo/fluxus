@@ -40,10 +40,8 @@
 ;; "act of a flowing; a continuous moving on or passing by, as of a 
 ;; flowing stream; a continuous succession of changes"
 ;;
-;; Fluxus is a realtime rendering engine for livecoding in Scheme.
-;; You are encouraged to browse these texts while performing 
-;; livecoding... For more detailed docs, see:
-;; fluxus/docs/fluxus-documentation.txt
+;; Fluxus is a realtime rendering engine for livecoding in Scheme. 
+;; For more detailed docs, see: fluxus/docs/fluxus-documentation.txt
 ;;
 ;; The fluxus scratchpad has two modes of operation, the console
 ;; (you are using this now) which allows you to enter commands and
@@ -53,8 +51,10 @@
 ;; them using ctrl-1 to ctrl-9 and switch back to the console with 
 ;; ctrl-0.
 ;;
-;; My apologies for the lack of copy/paste for the examples here,
-;; it's being worked on...
+;; To copy/paste examples, hit the right cursor until you move behind
+;; the prompt, navigate to the example, use shift to select it,
+;; press ctrl-c to copy, then ctrl-0 and ctrl-v to paste into a 
+;; text buffer.
 ;;
 ;; More help topics:
 ;; (help "keys") for keyboard commands for controlling fluxus 
@@ -118,14 +118,15 @@
 ;; ctrl-l : Load a new script (navigate with cursors and return).
 ;; ctrl-s : Save current script.
 ;; ctrl-d : Save as - current script (opens a filename dialog).
+;; ctrl-p : Auto format the whitespace in your scheme script to be more pretty
 ;; ctrl-1 to 9 : Switch to selected workspace.
 ;; ctrl-0 : Switch to the REPL. 
 ;; F3 : Resets the camera if you get lost.
-;; F5 : Execute the selected text, or all if none is selected.
+;; F5 : (or ctrl-e) Execute the selected text, or all if none is selected.
 ;; F6 : Completely resets the interpreter, then executes the selected text, 
 ;;      or all if none is selected.
 ;; F9 : Randomise the text colour (aka the panic button)
-;; F10 : Decreases the text opacity (make the code less obtrusive)
+;; F10 : Decreases the text opacity
 ;; F11 : Increases the text opacity
 ;; EndFunctionDoc
 
@@ -317,6 +318,7 @@
 ;; Will launch fluxus and load the script into the editor.
 ;; $ fluxus -x myscript.scm
 ;; Will launch fluxus, load, hide and execute the script.
+;; Use -h to print all commandline options.
 ;;
 ;; Fluxus also contains a keypress and mouse event recorder for 
 ;; recording livecoding sessions:
@@ -376,6 +378,7 @@
 ;; Claude Heiland-Allen
 ;; Dan Bethell
 ;; Dave Griffiths 
+;; Gabor Papp
 ;; Glauber Alex Dias Prado
 ;; Nik Gaffney
 ;; James Tittle
@@ -398,6 +401,7 @@
 ;; Claude Heiland-Allen
 ;; Dan Bethell
 ;; Dave Griffiths 
+;; Gabor Papp
 ;; Glauber Alex Dias Prado
 ;; Nik Gaffney
 ;; James Tittle

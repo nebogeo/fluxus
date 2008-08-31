@@ -77,4 +77,5 @@
 
 (clear)
 ; run the actual lsystem code
-(ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7))
+(scale 3)
+(ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7)

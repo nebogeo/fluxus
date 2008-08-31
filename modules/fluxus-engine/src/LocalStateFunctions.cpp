@@ -1310,7 +1310,7 @@ Scheme_Object *hint_box(int argc, Scheme_Object **argv)
 // but may have different effects - or no effect on certain primitive types, hence the 
 // name hint. 
 // Example:
-// (hint-multitexture)
+// (hint-multitex)
 // (multitexture 0 (load-texture "tex1.png"))
 // (multitexture 1 (load-texture "tex2.png"))
 // (build-sphere 10 10) ; make a sphere with overlayed textures
@@ -1325,7 +1325,7 @@ Scheme_Object *hint_box(int argc, Scheme_Object **argv)
 // as primitivas são renderizadas, mas podem ter efeitos diferentes -
 // ou nenhum efeito em certas primitivas portanto o nome dicas.
 // Exemplo:
-// (hint-multitexture)
+// (hint-multitex)
 // (multitexture 0 (load-texture "tex1.png"))
 // (multitexture 1 (load-texture "tex2.png"))
 // (build-sphere 10 10) ; faz uma esfera com texturas sobrepostas
@@ -1480,7 +1480,17 @@ Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
 // name hint. This feature is useful for rendering transparent objects, as it means objects 
 // will be shown behind previously rendered ones.
 // Example:
-// TODO:) examples
+// (clear)
+// (with-state
+//     (hint-ignore-depth)
+//     (opacity 0.6)
+//     (with-state
+//         (colour (vector 1 0 0))
+//         (build-cube))
+//     (with-state
+//         (colour (vector 0 1 0))
+//         (translate (vector 1 0 0))
+//         (build-cube)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1495,6 +1505,17 @@ Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
 // objetos transparentes, já que ela significa que objetos vão
 // aparecer atrás de outros já renderizados. 
 // Exemplo:
+// (clear)
+// (with-state
+//     (hint-ignore-depth)
+//     (opacity 0.6)
+//     (with-state
+//         (colour (vector 1 0 0))
+//         (build-cube))
+//     (with-state
+//         (colour (vector 0 1 0))
+//         (translate (vector 1 0 0))
+//         (build-cube)))
 // EndFunctionDoc
 
 Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
@@ -1743,17 +1764,16 @@ Scheme_Object *camera_hide(int argc, Scheme_Object **argv)
 	if (Engine::Get()->Grabbed()) 
 	{
 		unsigned int currentvis = Engine::Get()->Grabbed()->GetVisibility();
+		unsigned int cameracode = 0x00000001<<Engine::Get()->GrabbedCamera();
 		
 		if (IntFromScheme(argv[0]))
 		{
 			// hiding...
-			unsigned int cameracode = 0xfffffffe<<Engine::Get()->GrabbedCamera();
-			Engine::Get()->Grabbed()->SetVisibility(cameracode);// & currentvis);
+			Engine::Get()->Grabbed()->SetVisibility((~cameracode) & currentvis);
 		}
 		else
 		{
 			// unhiding...
-			unsigned int cameracode = 0x00000001<<Engine::Get()->GrabbedCamera();
 			Engine::Get()->Grabbed()->SetVisibility(cameracode | currentvis);
 		}
 	}
@@ -1838,24 +1858,31 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // The shader's uniform data can be controlled via shader-set! and all the pdata is sent through as 
 // per-vertex attribute data to the shader.
 // Example:
-// (push)
-// ; assign the shaders to the surface
-// (shader "simplevert.glsl" "simplefrag.glsl")
-// (define s (build-sphere 20 20))
-// (pop)
+// ; you need to have built fluxus with GLSL=1
+// (clear)
+// (fluxus-init) ; this is important to add when using shaders 
+//               ; at the moment, it will be moved somewhere
+//               ; to run automatically...
 // 
-// (grab s)
-// ; add and set the pdata - this is then picked up in the vertex shader 
-// ; as an input attribute called "testcol"
-// (pdata-add "testcol" "v")
-// (set-cols (pdata-size))
-// (ungrab)
-// 
+// (define s (with-state
+//     ; assign the shaders to the surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//     
+// (with-primitive s
+//     ; add and set the pdata - this is then picked up in the vertex shader 
+//     ; as an input attribute called "testcol"
+//     (pdata-add "testcol" "v")
+//     ; set the testcol pdata with a random colour for every vertex
+//     (pdata-map! 
+//         (lambda (c) 
+//             (rndvec)) 
+//         "testcol"))
+//     
 // (define (animate)
-//     (grab s)
-// 	; animate the deformamount uniform input parameter 
-//     (shader-set! (list "deformamount" (cos (time))))
-//     (ungrab))
+//     (with-primitive s
+//         ; animate the deformamount uniform input parameter 
+//         (shader-set! (list "deformamount" (cos (time))))))
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -1870,24 +1897,31 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // e todas as pdatas são enviadas como um atributo por vértice ao
 // shader. 
 // Exemplo:
-// (push)
-// ; assign the shaders to the surface
-// (shader "simplevert.glsl" "simplefrag.glsl")
-// (define s (build-sphere 20 20))
-// (pop)
+// ; you need to have built fluxus with GLSL=1
+// (clear)
+// (fluxus-init) ; this is important to add when using shaders 
+//               ; at the moment, it will be moved somewhere
+//               ; to run automatically...
 // 
-// (grab s)
-// ; add and set the pdata - this is then picked up in the vertex shader 
-// ; as an input attribute called "testcol"
-// (pdata-add "testcol" "v")
-// (set-cols (pdata-size))
-// (ungrab)
-// 
+// (define s (with-state
+//     ; assign the shaders to the surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//     
+// (with-primitive s
+//     ; add and set the pdata - this is then picked up in the vertex shader 
+//     ; as an input attribute called "testcol"
+//     (pdata-add "testcol" "v")
+//     ; set the testcol pdata with a random colour for every vertex
+//     (pdata-map! 
+//         (lambda (c) 
+//             (rndvec)) 
+//         "testcol"))
+//     
 // (define (animate)
-//     (grab s)
-// 	; animate the deformamount uniform input parameter 
-//     (shader-set! (list "deformamount" (cos (time))))
-//     (ungrab))
+//     (with-primitive s
+//         ; animate the deformamount uniform input parameter 
+//         (shader-set! (list "deformamount" (cos (time))))))
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -1937,24 +1971,31 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 // Sets the uniform shader parameters for the GLSL shader. The list consists of token-string value 
 // pairs, which relate to the corresponding shader parameters names and values. 
 // Example:
-// (push)
-// ; assign the shaders to the surface
-// (shader "simplevert.glsl" "simplefrag.glsl")
-// (define s (build-sphere 20 20))
-// (pop)
+// ; you need to have built fluxus with GLSL=1
+// (clear)
+// (fluxus-init) ; this is important to add when using shaders 
+//               ; at the moment, it will be moved somewhere
+//               ; to run automatically...
 // 
-// (grab s)
-// ; add and set the pdata - this is then picked up in the vertex shader 
-// ; as an input attribute called "testcol"
-// (pdata-add "testcol" "v")
-// (set-cols (pdata-size))
-// (ungrab)
-// 
+// (define s (with-state
+//     ; assign the shaders to the surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//     
+// (with-primitive s
+//     ; add and set the pdata - this is then picked up in the vertex shader 
+//     ; as an input attribute called "testcol"
+//     (pdata-add "testcol" "v")
+//     ; set the testcol pdata with a random colour for every vertex
+//     (pdata-map! 
+//         (lambda (c) 
+//             (rndvec)) 
+//         "testcol"))
+//     
 // (define (animate)
-//     (grab s)
-// 	; animate the deformamount uniform input parameter 
-//     (shader-set! (list "deformamount" (cos (time))))
-//     (ungrab))
+//     (with-primitive s
+//         ; animate the deformamount uniform input parameter 
+//         (shader-set! (list "deformamount" (cos (time))))))
 // 
 // (every-frame (animate))
 // EndFunctionDoc
@@ -1967,24 +2008,31 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 // contém valores pares simbolos-strings, que relacionam os parâmetros
 // de shader correspondentes nomes e valores
 // Exemplo:
-// (push)
-// ; assign the shaders to the surface
-// (shader "simplevert.glsl" "simplefrag.glsl")
-// (define s (build-sphere 20 20))
-// (pop)
+// ; you need to have built fluxus with GLSL=1
+// (clear)
+// (fluxus-init) ; this is important to add when using shaders 
+//               ; at the moment, it will be moved somewhere
+//               ; to run automatically...
 // 
-// (grab s)
-// ; add and set the pdata - this is then picked up in the vertex shader 
-// ; as an input attribute called "testcol"
-// (pdata-add "testcol" "v")
-// (set-cols (pdata-size))
-// (ungrab)
-// 
+// (define s (with-state
+//     ; assign the shaders to the surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//     
+// (with-primitive s
+//     ; add and set the pdata - this is then picked up in the vertex shader 
+//     ; as an input attribute called "testcol"
+//     (pdata-add "testcol" "v")
+//     ; set the testcol pdata with a random colour for every vertex
+//     (pdata-map! 
+//         (lambda (c) 
+//             (rndvec)) 
+//         "testcol"))
+//     
 // (define (animate)
-//     (grab s)
-// 	; animate the deformamount uniform input parameter 
-//     (shader-set! (list "deformamount" (cos (time))))
-//     (ungrab))
+//     (with-primitive s
+//         ; animate the deformamount uniform input parameter 
+//         (shader-set! (list "deformamount" (cos (time))))))
 // 
 // (every-frame (animate))
 // EndFunctionDoc

@@ -4,7 +4,7 @@
 
 ;; StartSectionDoc-en
 ;; fluxa
-;; fleep is the fluxus audio synth
+;; Fluxa is the fluxus audio synth
 ;; Example:
 ;; EndSectionDoc 
 #lang scheme/base

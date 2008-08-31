@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scratchpad
-;; The scratchpad is the fluxus editor and gl window. 
+;; Functions availible as part of the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc 
 
@@ -176,7 +176,7 @@
      (let ((filename (string-append framedump-filename 
                                     (string-pad (number->string framedump-frame) 5 #\0) 
                                     "." framedump-type)))
-       (display "saving frame: ")(display filename)(newline)
+       ;(display "saving frame: ")(display filename)(newline)
        (framedump filename)
        (set! framedump-frame (+ framedump-frame 1))))))
 

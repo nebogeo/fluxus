@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; Collada format scene import
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc
 #lang scheme/base

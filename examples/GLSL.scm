@@ -4,6 +4,7 @@
 ; and gfx card - but don't worry, there is lots you can do without
 ; shaders!
 
+; you need to have built fluxus with GLSL=1
 (clear)
 (fluxus-init) ; this is important to add when using shaders 
               ; at the moment, it will be moved somewhere
@@ -20,7 +21,9 @@
     (pdata-add "testcol" "v")
     ; set the testcol pdata with a random colour for every vertex
     (pdata-map! 
-        (lambda (c) (vector (flxrnd) (flxrnd) (flxrnd))) "testcol"))
+        (lambda (c) 
+            (rndvec)) 
+        "testcol"))
     
 (define (animate)
     (with-primitive s

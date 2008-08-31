@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scratchpad
-;; The help system is fluxus' (slightly experimental) online documentation.
+;; Functions availible as part of the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc 
 

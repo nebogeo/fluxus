@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scratchpad
-;; Camera functions availible in the fluxus scratchpad.
+;; Functions availible as part of the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	
 #lang scheme/base

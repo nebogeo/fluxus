@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; Stuff for poly primitives
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc 
 

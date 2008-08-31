@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scheme-utils
-;; Stuff for pixels primitives
+;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc 
 

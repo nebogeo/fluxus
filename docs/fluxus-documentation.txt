@@ -5,11 +5,6 @@ This is some detailed text documentation about fluxus and the general concepts
 it uses. It's quite dense, so I recommend trying the examples and using this
 as reference as you learn scheme and work your way through.
 
-The text is taken from the pawfal wiki[1] look there for the current version
-(which may not match this version of fluxus).
-
-[1] http://www.pawfal.org/index.php?page=FluxusDocumentation
-
 Contents 
 --------
 
@@ -28,6 +23,8 @@ Turtle Builder                : Turtle builder Making
 Movies                        : Making Movies 
 Fluxus In DrScheme            : Writing fluxus scripts in DrScheme  
 Fluxus Scratchpad And Modules : More detailed information
+Fluxa                         : Fluxus for audio synthesis
+Frisbee                       : Towards a new way of using fluxus
 
 Introduction 
 ------------
@@ -141,14 +138,16 @@ Keyboard commands
     * ctrl-d : Save as - current script (opens a filename dialog).
     * ctrl-1 to 9 : Switch to selected workspace.
     * ctrl-0 : Switch to the REPL.
+    * ctrl-p : Auto format the whitespace in your scheme script to be more pretty
     * F3 : Resets the camera.
     * F5/ctrl-e : Execute the selected text, or all if none is selected. 
 	              ctrl-e might be easier for mac users,
                   as volume is usually bound to the f5 key.
     * F9 : Randomise the text colour (aka the panic button)
+    * F10 : Make the text more transparent
+    * F11 : Make the text less transparent
     * Escape : Editor panic button, resets the cursor if it gets stuck 
 	           (let me know if you need to use this) 
-
 
 Scheme 
 ------
@@ -1570,3 +1569,472 @@ form the scratchpad interface and give you mouse/key input and camera setup,
 others are layers on top of the fluxus-engine to make it more convenient. This
 is where things like the with-* and pdata-map! macros are specified and the
 import/export for example.
+
+Fluxa
+-----
+
+Fluxa is an optional addition to fluxus which add audio synthesis and sample 
+playback. It's also an experimental non-deterministic synth where each 'note' is 
+it's own synth graph. 
+
+Fluxa is a framework for constructing and sequencing sound. it uses a minimal and
+purely functional style which is designed for livecoding. It can be broken down into
+two parts, the descriptions of synthesis graphs and a set of language forms for
+describing procedural sequences.
+
+(Fluxa is also a kind of primitive homage to supercollider - see also rsc,
+which is a scheme binding to sc)
+
+Example:
+
+(require fluxus-015/fluxa)
+
+(seq
+  (lambda (time clock)
+    (play time (mul (sine 440) (adsr 0 0.1 0 0)))
+    0.2))
+
+Plays a sine tone with a decay of 0.1 seconds every 0.2 seconds
+
+Non-determinism
+---------------
+
+Fluxa has decidedly non-deterministic properties - synth lifetime is bound to
+some global constraints:
+
+* A fixed number of operators, which are recycled (allocation time/space constraint)
+* A maximum number of synths playing simultaneously (cpu time constraint)
+
+What this means is that synths are stopped after a variable length of time,
+depending on the need for new operators. nodes making up the synth graph may also
+be recycled while they are in use - resulting in interesting artifacts (which is
+considered a feature!)
+
+Synthesis commands
+------------------
+
+(play time node-id)
+Schedules the node id to play at the supplied time. this is for general musical use.
+
+(play-now node-id)
+Plays the node id as soon as possible - mainly for testing
+
+Operator nodes
+--------------
+
+All these commands create and return a nodes which can be played. Parameters in the
+synthesis graph can be other nodes or normal number values.
+
+Generators
+----------
+
+(sine frequency)
+A sinewave at the specified frequency
+
+(saw frequency)
+A saw wave at the specified frequency
+
+(squ frequency)
+A square wave at the specified frequency
+
+(white frequency)
+White noise
+
+(pink frequency)
+Pink noise
+
+(sample sample-filename frequency)
+Loads and plays a sample - files can be relative to specified searchpaths. Samples
+will be loaded asyncronously, and won't interfere with realtime audio.
+
+(adsr attack decay sustain release)
+Generates an envelope signal
+
+Maths
+-----
+
+(add a b)
+(sub a b)
+(mul a b)
+(div a b)
+
+Remember that parameters can be nodes or number values, so you can do things like:
+
+(play time (mul (sine 440) 0.5))
+
+or
+
+(play time (mul (sine 440) (adsr 0 0.1 0 0)))
+
+Filters
+-------
+
+(mooghp input-node cutoff resonance)
+(moogbp input-node cutoff resonance)
+(mooglp input-node cutoff resonance)
+(formant input-node cutoff resonance)
+
+Global audio
+------------
+
+(volume 1)
+Does what is says on the tin
+
+(eq 1 1 1)
+Tweak bass, mid, treble
+
+(max-synths 20)
+Change the maximum concurrent synths playing - default is a measly 10
+
+(searchpath path)
+Add a path for sample loading
+
+(reset)
+The panic command - deletes all synth graphs and reinitialises all the
+operators - not rt safe
+
+Sequencing commands
+-------------------
+
+Fluxa provides a set of forms for sequencing.
+
+(seq (lambda (time clock) 0.1))
+
+The top level sequence - there can only be one of these, and all code within
+the supplied procedure will be called when required. The time between calls is
+set by the returned value of the procedure - so you can change the global timing
+dynamically.
+
+The parameters time and clock are passed to the procedure - time is the float real
+time value in seconds, to be passed to play commands. It's actually a little bit
+ahead of real time, in order to give the network messages time to get to the server.
+you can also mess with the time like so:
+
+(play (+ time 0.5) ...)
+
+Which will offset the time half a second into the future. you can also make them 
+happen earlier - but only a little bit.
+
+Clock is an ever increasing value, which increments by one each time the procedure
+given to seq is called. The value of this is not important, but you can use zmod,
+which is simply this predefined procedure:
+
+(define (zmod clock v) (zero? (modulo clock v)))
+
+Which is common enough to make this shortening helpful, so:
+
+(if (zmod clock 4) (play (mul (sine 440) (adsr 0 0.1 0 0))))
+
+Will play a note every 4 beats.
+
+(note 10)
+
+A utility for mapping note numbers to frequencies (I think the current scale is
+equal temperment) [todo: sort scala loading out]
+
+(seq
+    (lambda (time clock)
+        (clock-map
+            (lambda (n)
+                (play time (mul (sine (note n)) (adsr 0 0.1 0 0))))
+            clock
+            (list 10 12 14 15))
+        0.1))
+
+clock-map maps the list to the play command each tick of the clock - the list
+can be used as a primitive sequence, and can obviously be used to drive much
+more than just the pitch.
+
+(seq
+    (lambda (time clock)
+        (clock-switch clock 128
+            (lambda ()
+                (play time (mul (sine (note n)) (adsr 0 0.1 0 0))))
+            (lambda ()
+                (play time (mul (saw (note n)) (adsr 0 0.1 0 0)))))
+        0.1))
+
+This clock-switch switches between the procedures every 128 ticks of the clock -
+for higher level structure.
+
+Syncing
+-------
+
+A osc message can be sent to the client for syncing for collaborative performances
+the format of the sync message is as follows:
+
+/sync [iiii] timestamp-seconds timestamp-fraction beats-per-bar tempo
+
+When syncing, fluxa provides you with two extra global definitions:
+
+sync-clock : a clock which is reset when a /sync is received
+sync-tempo : the current requested tempo (you are free to modify or ignore it)
+
+[note: there is a program which adds timestamps to /sync messages coming from a
+network, which makes collaborative sync work properly (as it doesn't require clocks
+to be in sync too) email me if you want more info]
+
+Known problems/todos
+--------------------
+
+* Record execution - cyclic graphs wont work
+* Permenant execution of some nodes - will fix delay/reverb
+* Not positive sample loading is rt safe, might be a disk issue on my laptop
+
+Server documentation
+--------------------
+
+The fluxa server is called by the scheme layer, and represents a low level
+interface which is not really designed to be called by hand. You don't really
+need to know this for livecoding fluxa.
+
+OSC interface
+-------------
+
+/create ii...iif...
+[id type ... id TERMINAL_TYPE value ...]
+creates new synth nodes, type can be one of:
+
+0 TERMINAL
+1 SINOSC
+2 SAWOSC
+3 TRIOSC
+4 SQUOSC
+5 WHITEOSC
+6 PINKOSC
+7 ADSR
+8 ADD
+9 SUB
+10 MUL
+11 DIV
+12 MOOGLP
+13 MOOGBP
+14 MOOGHP
+15 FORMANT
+16 SAMPLER
+17 CRUSH
+18 DISTORT
+19 CLIP
+20 DELAY
+
+If type is 0 (a terminal node) the message also needs a value float to initialise
+the terminal to.
+
+/connect iii...
+[from arg to ...]
+Connects multiple nodes together - each connection is defined by from and to node
+ids and an argument index to connect the to node to.
+
+/play iii
+[seconds fraction id]
+Plays the node id and outputs the sound. triggers, and starts playing the node at
+the time specified. if both time values are set to 0 then it will play it as soon as
+possible.
+
+[todo: complete this]
+
+Frisbee
+-------
+
+Frisbee is a simplified games engine. It is written in a different language to the 
+rest of fluxus, and requires no knowledge or use of any of the other fluxus commands.
+
+The language it uses is called 'Father Time' (FrTime), which is a functional reactive 
+programming language availible as part of PLT Scheme. Functional reactive programming 
+(frp) is a way of programming which emphasises behaviours and events, and makes them 
+a central part of the language.
+
+Programming a graphics environment like a game is all about describing a scene and 
+behaviours which modify it over time. Using normal programming languages (like the 
+base fluxus one) you generally need to do these things separately, build the scene, 
+then animate it. Using FRP, we can describe the scene with the behavours built in. 
+The idea is that this makes programs smaller and simpler to modify, thus making the 
+process of programming more creative.
+
+A simple frisbee scene
+----------------------
+
+This is the simplest frisbee scene:
+
+(require fluxus-015/frisbee)
+
+(scene
+  (object))
+
+(scene) is the main frisbee command - it is used to define a list of objects and their 
+behaviours.
+
+(object) creates a solid object, by default a cube (of course! :)
+
+We can modify our object by using optional 'keyword parameters', they work like this:
+
+(scene
+  (object #:shape 'sphere))
+
+This sets the shape of the object - there are some built in shapes:
+
+(object #:shape 'cube)
+(object #:shape 'sphere)
+(object #:shape 'torus)
+(object #:shape 'cylinder)
+
+Or, you can also load in .obj files to make your own shapes:
+
+(object #:shape "mushroom.obj")
+
+These object files are relative to where you launch fluxus, or they can also live 
+somewhere in the searchpaths for fluxus (which you can set up in your .fluxus.scm script 
+using (searchpath)).
+
+If we want to change the colour of our cube we can add a new parameter:
+
+(object
+    #:colour (vec3 1 0 0))
+
+The vec3 specifies the rgb colour, so this makes a red cube. Note that frisbee uses 
+(vec3) to make it's vectors, rather than (vector).
+
+Here are the other parameters you can set on an object:
+
+(object
+    #:translate (vec3 0 1 0)
+    #:scale (vec3 0.1 1 0.1)
+    #:rotate (vec3 0 45 0)
+    #:texture "test.png"
+    #:hints '(unlit wire))
+
+It doesn't matter what order you specify parameters in, the results will be the same. 
+The transform order is always translate first, then rotate, then scale.
+
+Animation
+---------
+
+FrTime makes specifying movement very simple:
+
+(object
+    #:rotate (vec3 0 (integral 10) 0))
+
+Makes a cube which rotates 10 degrees every second. Rather than setting the angles 
+explicitly, integral specifies the amount the rotation changes every second. We can also 
+do this:
+
+(object
+    #:rotate (vec3-integral 0 10 0))
+
+Which is easier in some situations.
+
+Making things reactive
+----------------------
+
+What we have made with the integral command is what is called a behaviour - it's value 
+depends on time. This is a core feature of FrTime, and there are many ways to create and 
+manipulate behaviours. Frisbee also gives you some default behavoiurs which represent 
+changing information coming from the outside world:
+
+(object
+    #:rotate (vec3 mouse-x mouse-y 0))
+
+This rotates the cube according to the mouse position.
+
+(object
+    #:colour (key-press-b #\c (vec3 1 0 0) (vec3 0 1 0)))
+
+This changes the colour of the cube when you press the 'c' key.
+
+(object
+    #:translate (vec3 0 (key-control-b #\q #\a 0.01) 0))
+
+This moves the cube up and down as you press the 'q' and 'a' keys, by 0.01 units.
+
+Spawning objects
+----------------
+
+So far all the objects we have created have stayed active for the duration of the program
+running. Sometimes we want to control the lifetime of an object, or create new ones. This 
+is obviously important for many games! To do this, we need to introduce events. Events are 
+another basic part of FrTime and therefore Frisbee, and behaviours can be turned into 
+events and vice versa. Events are things which happen at a specific time, rather than 
+behaviours which can always be asked for their current value. For this reason events 
+can't be directly used for driving objects in Frisbee in the same way as behaviours can - 
+but they are used for triggering new objects into, or out of existance.
+
+Here is a script which creates a continuous stream of cubes:
+
+(scene
+    (factory
+        (lambda (e)
+            (object #:translate (vec3-integral 0.1 0 0)))
+        (metro 1) 5))
+
+There are several new things happening here. Firstly the metro command is short for 
+metronome, which creates a stream of events happening at the rate specified (1 per second 
+in this case). (factory) is a command that listens to a stream of events - taken as it's 
+second argument, and runs a procedure passed as it's first argument on each one (passing 
+the event in as an argument to the supplied function).
+
+So in this case, each time an event occurs, the anonymous function is run, which creates 
+an object moving away from the origin. Left like this frisbee would eventually slow down 
+to a crawl, as more and more cubes are created. So the factory also takes a third 
+parameter, which is the maximum number of things it can have alive at any time. Once 5 
+objects have been created it will recycle them, and remove the oldest objects.
+
+Frisbee come with some built in events which we can visualise with this script:
+
+(scene
+    (factory
+        (lambda (e)
+            (object #:translate (vec3-integral 0.1 0 0)))
+        keyboard 5))
+
+Which spawns a cube each time a key is pressed on the keyboard.
+So far we have been ignoring the event which gets passed into our little cube making 
+function, but as the events the keyboard spits out are the keys which have been pressed, 
+we can make use of them thusly:
+
+(scene
+    (factory
+        (lambda (e)
+            (if (char=? e #\a) ; make a bigger cube if 'a' is pressed
+                (object
+                    #:translate (vec3-integral 0.1 0 0)
+                    #:scale (vec3 2 2 2))
+                (object #:translate (vec3-integral 0.1 0 0))))
+        keyboard 5))
+
+Converting behaviours to events
+-------------------------------
+
+You can create events when a behaviour changes:
+
+(scene
+    (factory
+        (lambda (e)
+            (object #:translate (vec3-integral 0.1 0 0)))
+        (when-e (> mouse-x 200)) 5))
+
+
+Particles
+---------
+
+Frisbee comes with it's own particle system primitive - which makes it easy to make 
+different particle effects.
+
+It is created in a similar way to the solid objects:
+
+(scene
+    (particles))
+
+And comes with a set of parameters you can control explicitly or via behaviours:
+
+(scene
+    (particles
+        #:colour (vec3 1 1 1)
+        #:translate (vector 0 0 0)
+        #:scale (vector 0.1 0.1 0.1)
+        #:rotate (vector 0 0 0)
+        #:texture "test.png"
+        #:rate 1
+        #:speed 0.1
+        #:spread 360
+        #:reverse #f))
+

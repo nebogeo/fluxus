@@ -225,7 +225,26 @@ int main(int argc, char *argv[])
 
 	while(arg<argc)
 	{
-		if (!strcmp(argv[arg],"-r"))
+		if (!strcmp(argv[arg],"-v"))
+		{
+			cerr<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
+			exit(1);
+		}
+		else if (!strcmp(argv[arg],"-h"))
+		{
+			cerr<<"fluxus [options] [filename1] [filename2] ..."<<endl;
+			cerr<<"options:"<<endl;
+			cerr<<"-h : help"<<endl;
+			cerr<<"-v : version info"<<endl;
+			cerr<<"-r filename : record keypresses"<<endl;
+			cerr<<"-p filename : playback keypresses"<<endl;
+			cerr<<"-d time : set delta time between frames for keypress playback"<<endl;
+			cerr<<"-lang language : sets the PLT language to use (may not work)"<<endl;
+			cerr<<"-fs : startup in fullscreen mode"<<endl;
+			cerr<<"-x : execute and hide script at startup"<<endl;
+			exit(1);
+		}
+		else if (!strcmp(argv[arg],"-r"))
 		{
 			if (arg+1 < argc)
 			{

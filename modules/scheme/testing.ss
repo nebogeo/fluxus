@@ -10,11 +10,12 @@
 #lang scheme/base
 (require "scratchpad.ss")
 (require "help.ss")
+(require "camera.ss")
 (require mzlib/string)
 
 (provide 
 	self-test
-	test-examples)
+	run-scripts)
 	
 ;; functions to extract the examples from the helpmap
 ;; between you and me the helpmap format is awful...
@@ -100,12 +101,13 @@
 ;; EndFunctionDoc  
 
 (define example "")
+(define run-time 5)
 (define examples-path "")
 
 (define (run-example)
     (load (string-append examples-path example)))
 
-(define (run-examples)
+(define (run-all)
     (for-each 
         (lambda (filename)
             (let* ((filename (path->string filename))
@@ -114,15 +116,18 @@
                 (when (and (> len 4) (string=? ".scm" (substring filename (- len 4) len)))
                     (printf "~a~n" filename)
                     (set! example filename)
+					(clear)
+					(reset-camera)
                     (let ((thr (thread run-example)))
-                        (sleep 1)                        
+                        (sleep run-time)                        
                         (kill-thread thr)
                         (clear))
                     )))
         (directory-list examples-path)))
 
-(define (test-examples path)
-    (set! examples-path path)
-    (thread run-examples))
+(define (run-scripts path time)
+   (set! examples-path path)
+   (set! run-time time)
+   (thread run-all))
 
 

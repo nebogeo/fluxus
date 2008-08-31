@@ -17,6 +17,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * better random functions with randomness.ss
 * frisbee: a functional reactive game engine using frtime
 * added -lang (not how useful this is now)
+* added -fs and -x for fullscreen and run script at startup
 * fixed crashes to do with garbage collection using threads
 * sped up pdata-get/ref
 * made (backfacecull) local state rather than global

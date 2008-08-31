@@ -356,7 +356,7 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // ; the options list can contain the following keys and values:
 // ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
 // ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y 
-//          cube-map-negative-y cube-map-positive-z cube-map-negative-z]
+// ;         cube-map-negative-y cube-map-positive-z cube-map-negative-z]
 // ; generate-mipmaps : exact integer, 0 or 1
 // ; mip-level : exact integer
 // ; border : exact integer
@@ -379,10 +379,10 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // (load-texture "m3.png" (list 'id t2 'generate-mipmaps 0 'mip-level 3))
 
 
-// (texture (load-texture "mytexture.png")
-//		(list
-//			'generate-mipmaps 0  ; turn mipmapping off
-//          'border 2))          ; add a border to the texture
+// (texture (load-texture "mytexture.png"
+//				(list
+//					'generate-mipmaps 0  ; turn mipmapping off
+//      		    'border 2)))          ; add a border to the texture
 // 
 // (build-cube) ; the cube will be texture mapped with the image
 
@@ -680,6 +680,7 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // Sets the frame clearing on or off. 
 // Example:
 // (clear-frame 0) 
+// (clear-frame 1)  
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -689,6 +690,7 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // ajusta a limpeza do frame, desligado ou ligado.
 // Exemplo:
 // (clear-frame 0)
+// (clear-frame 1)  
 // EndFunctionDoc
 
 Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
@@ -707,6 +709,7 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 // Sets the zbuffer clearing on or off. 
 // Example:
 // (clear-zbuffer 0) 
+// (clear-zbuffer 1)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -716,6 +719,7 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 // Ajusta a limpeza do zbuffer, desligado ou ligado.
 // Exemplo:
 // (clear-zbuffer 0)
+// (clear-zbuffer 1)
 // EndFunctionDoc
 
 Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
@@ -758,9 +762,52 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 // build-camera
 // Returns: cameraid-number
 // Description:
-// Adds a new camera and returns it's id
+// Adds a new camera/view and returns it's id
 // Example:
-// (build-camera) 
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+// 
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+// 
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+// 
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+// 
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+// 
+// 
+// (current-camera 0)
+// 
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)    
+//         (build-cube)))
+// 
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+// 
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
 // EndFunctionDoc
 
 Scheme_Object *build_camera(int argc, Scheme_Object **argv)
@@ -775,7 +822,50 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 // Description:
 // Sets the current camera to use
 // Example:
-// (current-camera) 
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+// 
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+// 
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+// 
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+// 
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+// 
+// 
+// (current-camera 0)
+// 
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)    
+//         (build-cube)))
+// 
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+// 
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
 // EndFunctionDoc
 
 Scheme_Object *current_camera(int argc, Scheme_Object **argv)
@@ -791,9 +881,53 @@ Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 // viewport x-number y-number width-number height-number 
 // Returns: void
 // Description:
-// Sets the viewport on the current camera.
+// Sets the viewport on the current camera. This is the area of the window the camera renders to,
+// where 0,0 is the bottom left and 1,1 is the top right. 
 // Example:
-// (viewport 0 0 1 1) 
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+// 
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+// 
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+// 
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+// 
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+// 
+// 
+// (current-camera 0)
+// 
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)    
+//         (build-cube)))
+// 
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+// 
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
 // EndFunctionDoc
 
 Scheme_Object *viewport(int argc, Scheme_Object **argv)
@@ -947,7 +1081,7 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Sets the window width and height.
 // Example:
 // (set-screen-size (vector 10 10)) ; small window time :) 
-// (set-screen-size (vector 640 480)) ; and back again!
+// (set-screen-size (vector 720 576)) ; and back again!
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -957,7 +1091,7 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Ajusta a altura e largura da janela.
 // Exemplo:
 // (set-screen-size (vector 10 10)) ; small window time :) 
-// (set-screen-size (vector 640 480)) ; and back again!
+// (set-screen-size (vector 720 576)) ; and back again!
 // EndFunctionDoc
 
 Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
@@ -1416,7 +1550,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
 	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
 	scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
-	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 0, 0), env);
+	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 4, 4), env);
 	scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
 	scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
 	scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);

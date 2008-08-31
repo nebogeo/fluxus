@@ -1967,6 +1967,9 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 	MZ_GC_VAR_IN_REG(5, pl);
 	MZ_GC_REG();
 	ArgCheck("line-intersect", "vv", argc, argv);
+	
+	l = scheme_null;
+	
 	if (Engine::Get()->Grabbed()) 
 	{
 		Evaluator *eval = Engine::Get()->Grabbed()->MakeEvaluator();
@@ -1974,8 +1977,6 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 		{
 			vector<Evaluator::Point> points;
 			eval->IntersectLine(VectorFromScheme(argv[0]), VectorFromScheme(argv[1]), points);
-
-			l = scheme_null;
 
 			for (vector<Evaluator::Point>::iterator i=points.begin(); i!=points.end(); ++i)
 			{

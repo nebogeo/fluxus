@@ -19,8 +19,8 @@
     (build-torus 1 2 10 10)))
 
 (with-primitive t
-    (hide 1)
-    (camera-hide 0))
+    (hide 1) ; hide in all
+    (camera-hide 0)) ; unhide in current camera
 
 
 (current-camera 0)
