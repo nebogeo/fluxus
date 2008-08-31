@@ -20,16 +20,16 @@
 
 using namespace Fluxus;
 
-RibbonPrimitive::RibbonPrimitive() 
-{	
+RibbonPrimitive::RibbonPrimitive()
+{
 	AddData("p",new TypedPData<dVector>);
 	AddData("w",new TypedPData<float>);
-	AddData("c",new TypedPData<dVector>);
+	AddData("c",new TypedPData<dColour>);
 	PDataDirty();
 }
 
 RibbonPrimitive::RibbonPrimitive(const RibbonPrimitive &other) :
-Primitive(other) 
+Primitive(other)
 {
 	PDataDirty();
 }
@@ -38,9 +38,9 @@ RibbonPrimitive::~RibbonPrimitive()
 {
 }
 
-RibbonPrimitive* RibbonPrimitive::Clone() const 
+RibbonPrimitive* RibbonPrimitive::Clone() const
 {
-	return new RibbonPrimitive(*this); 
+	return new RibbonPrimitive(*this);
 }
 
 void RibbonPrimitive::PDataDirty()
@@ -48,19 +48,19 @@ void RibbonPrimitive::PDataDirty()
 	// reset pointers
 	m_VertData=GetDataVec<dVector>("p");
 	m_WidthData=GetDataVec<float>("w");
-	m_ColData=GetDataVec<dVector>("c");
+	m_ColData=GetDataVec<dColour>("c");
 }
 
 void RibbonPrimitive::Render()
 {
 	if (m_VertData->size()<2) return;
-	
+
 	dMatrix ModelView;
 	glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
 
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
-	
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		dVector CameraDir(0,0,1);
@@ -73,7 +73,7 @@ void RibbonPrimitive::Render()
 		{
 			float txstart = n/(float)m_VertData->size();
 			float txend = (n+1)/(float)m_VertData->size();
-		
+
 			dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
 			dVector up=line.cross(CameraDir);
 			up.normalise();
@@ -81,15 +81,19 @@ void RibbonPrimitive::Render()
 			dVector topnorm=up;
 			dVector botnorm=-up;
 
+			glColor4fv((*m_ColData)[n].arr());
 			glTexCoord2f(txstart,0);
 			glNormal3fv(botnorm.arr());
 			glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
+			glColor4fv((*m_ColData)[n].arr());
 			glTexCoord2f(txstart,1);
 			glNormal3fv(topnorm.arr());
 			glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
+			glColor4fv((*m_ColData)[n+1].arr());
 			glTexCoord2f(txend,0);
 			glNormal3fv(botnorm.arr());
 			glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
+			glColor4fv((*m_ColData)[n+1].arr());
 			glTexCoord2f(txend,1);
 			glNormal3fv(topnorm.arr());
 			glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
@@ -97,7 +101,7 @@ void RibbonPrimitive::Render()
 		glEnd();
 
 	}
-	
+
 	if (m_State.Hints & HINT_WIRE)
 	{
 		if (m_State.Hints & HINT_VERTCOLS)
@@ -108,10 +112,10 @@ void RibbonPrimitive::Render()
 				float txstart = n/(float)m_VertData->size();
 				float txend = (n+1)/(float)m_VertData->size();
 				glTexCoord2f(txstart,0);
-				glColor3fv((*m_ColData)[n].arr());
+				glColor4fv((*m_ColData)[n].arr());
 				glVertex3fv((*m_VertData)[n].arr());
 				glTexCoord2f(txend,0);
-				glColor3fv((*m_ColData)[n+1].arr());
+				glColor4fv((*m_ColData)[n+1].arr());
 				glVertex3fv((*m_VertData)[n+1].arr());
 			}
 			glEnd();
@@ -132,10 +136,8 @@ void RibbonPrimitive::Render()
 			glEnd();
 		}
 	}
-	
-	
-	
-	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
+
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 

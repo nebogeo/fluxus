@@ -51,7 +51,7 @@ protected:
 private:
 
 	vector<dVector> *m_VertData;
-	vector<dVector> *m_ColData;
+	vector<dColour> *m_ColData;
 	vector<float> *m_WidthData;
 };
 

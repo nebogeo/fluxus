@@ -50,6 +50,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
   - poly-for-each-triangle
   - poly-for-each-tri-sample (random sampling)
 * added (rndhemi) and (hrndhemi) for generating points on hemispheres (solid or hollow)
+* added HSV colour support, (rgb->hsv), (hsv->rgb), (colour-mode)
 
 0.14
 
