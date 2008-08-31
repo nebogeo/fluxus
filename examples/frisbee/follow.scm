@@ -1,5 +1,5 @@
 ; frisbee version of the ball-on-string example
-(require (lib "frisbee.ss" "fluxus-0.15"))
+(require fluxus-015/frisbee)
 
 (define player-pos
   (vec3 (key-control-b #\d #\a 0.01)

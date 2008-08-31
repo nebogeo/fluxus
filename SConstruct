@@ -10,7 +10,7 @@ import os, sys
 MajorVersion = "0"
 MinorVersion = "15"
 FluxusVersion = MajorVersion+MinorVersion
-Target = "fluxus-0.15"
+Target = "fluxus"
 
 # changed prefix and pltprefix so they can be invoked at runtime
 # like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local

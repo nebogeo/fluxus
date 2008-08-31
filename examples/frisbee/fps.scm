@@ -1,4 +1,4 @@
-(require (lib "frisbee.ss" "fluxus-0.15"))
+(require fluxus-015/frisbee)
 
 (set-camera (mmul (mtranslate (vec3 0 0 -20)) (mrotate (vec3 45 0 0))))
 

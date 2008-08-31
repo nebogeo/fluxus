@@ -1,4 +1,4 @@
-(require (lib "frisbee.ss" "fluxus-015"))
+(require fluxus-015/frisbee)
 
 (define player-pos
   (vec3 (key-control-b #\d #\a 0.01)

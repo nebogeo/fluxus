@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 (require fluxus-015/frisbee)
 (clear)
 

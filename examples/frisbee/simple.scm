@@ -1,3 +1,3 @@
-(require (lib "frisbee.ss" "fluxus-0.15"))
+(require fluxus-015/frisbee)
 
 (scene (list (object)))

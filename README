@@ -16,13 +16,14 @@ in contact!
 It requires:
 
 ode (0.5)           http://opende.sourceforge.net/
-plt scheme (370)    http://www.plt-scheme.org/ (from source - see below)
+plt scheme (4.x)    http://www.plt-scheme.org/ (from source - see below)
 fftw (3.0.1)        http://www.fftw.org/
 jack (1.0)          http://jackit.sourceforge.net/
 libsndfile (1.0.12) http://www.mega-nerd.com/libsndfile/
 liblo (0.5.0)       http://plugin.org.uk/liblo/
 glew (1.3.4)        http://glew.sourceforge.net/
 libfreetype (2.2.1) http://www.freetype.org/
+libalsa             http://www.alsa.org/
 
 The version numbers in brackets are the version I've built it with, later versions
 should also be ok, let me know (via the mailing list) if you run into problems.
