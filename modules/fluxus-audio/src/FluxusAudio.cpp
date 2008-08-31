@@ -84,7 +84,7 @@ AudioCollector *Audio = NULL;
 // conexão manualmente. Fluxus lè uma única fonte mono.
 // Exemplo:
 // (start-audio "alsa_pcm:capture_1" 1024 44100)
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 {
@@ -135,7 +135,7 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 //		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
 //		(draw-cube)) ; draw a cube with this colour
 // (every-frame (animate))
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 {
@@ -168,7 +168,7 @@ Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 // Ajusta o nível de amplificação para o som fft, é 1 por padrão.
 // Exemplo:
 // (gain 100) ; muito quieto?!
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *gain(int argc, Scheme_Object **argv)
 {
@@ -208,7 +208,7 @@ Scheme_Object *gain(int argc, Scheme_Object **argv)
 // com que a sincrônia entre quadros e audio seja possível.
 // Exemplo:
 // (process "somemusic.wav") ; read a precorded audio file
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *process(int argc, Scheme_Object **argv)
 {
@@ -248,7 +248,7 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // script bars.scm
 // Exemplo:
 // (smoothing-bias 0) ; no smoothing
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 {
@@ -270,7 +270,6 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // Description:
 // Updates the audio subsytem. This function is called for you (per frame) in fluxus-canvas.ss.
 // Example:
-// (smoothing-bias 0) ; no smoothing
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -280,8 +279,7 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // Atualiza o subsistema de áudio. Esta função é chamada para você
 // (por frame) no fluxus-canvas.ss
 // Exemplo:
-
-// EndSectionDoc
+// EndFunctionDoc
 
 Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 {

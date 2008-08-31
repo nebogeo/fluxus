@@ -10,7 +10,7 @@
 ;; EndSectionDoc 
 
 ;; StartSectionDoc-pt
-;; scratchpad-docs
+;; high-level-scratchpad-docs
 ;; O scratchpad é o editor fluxus e a janela gl.
 ;; Exemplo:
 ;; EndSectionDoc

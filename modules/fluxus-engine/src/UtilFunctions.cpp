@@ -179,7 +179,7 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 // Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
 // como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
 // Exemplo:
-// (set-searchpaths (list "/path/to/my/textures/" "/path/to/my/other/textures/"))
+// (set-searchpaths (append (get-searchpaths) (list "/path/to/my/textures/" "/path/to/my/other/textures/")))
 // EndFunctionDoc
 
 Scheme_Object *set_searchpaths(int argc, Scheme_Object **argv)
@@ -225,7 +225,7 @@ Scheme_Object *set_searchpaths(int argc, Scheme_Object **argv)
 // Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
 // como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
 // Exemplo:
-// (get-searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+// (display (get-searchpaths))(newline)
 // EndFunctionDoc
 
 Scheme_Object *get_searchpaths(int argc, Scheme_Object **argv)

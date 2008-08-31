@@ -50,8 +50,8 @@
 ;; Descrição:
 ;; Ajusta a linguagem para a documentação.
 ;; Exemplo:
-;; (set-help-locale! "pt") ; switch to portuguese
-;; (set-help-locale! "en") ; and back to english
+;; (set-help-locale! "en") ; switch to english
+;; (set-help-locale! "pt") ; and back to portuguese
 ;; EndFunctionDoc
 
 (define (set-help-locale! locale)

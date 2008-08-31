@@ -1684,7 +1684,6 @@ Returns void
 Updates the audio subsytem. This function is called for you (per 
 frame) in fluxus-canvas.ss.
 
- (smoothing-bias 0) ; no smoothing
 
 ============================================================
 
@@ -4641,7 +4640,8 @@ Returns void
 
 Sets the language for the documentation
 
- (set-help-locale! "pt") 
+ (set-help-locale! "pt") ; switch to portuguese
+ (set-help-locale! "en") ; and back to english
 
 ------------------------------------------------------------
 

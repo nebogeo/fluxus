@@ -226,7 +226,7 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 // Exemplo:
 // (rotate (vector 45 0 0))     
 // (define mycube (build-cube)) ; faz um cubo com uma rotação
-// (apply mycube)  	      ; aplica a rotação aos pontos do cubo
+// (with-primitive mycube (apply-transform)) ; aplica a rotação aos pontos do cubo
 // EndFunctionDoc
 
 Scheme_Object *apply(int argc, Scheme_Object **argv)

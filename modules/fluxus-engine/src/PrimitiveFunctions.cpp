@@ -386,7 +386,7 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 // tem um exemplo de fonte acompanhando o fluxus.
 // Ok, so this isn't a very good font texture :) 
 // Exemplo:
-// (texture (texture-load "font.png"))
+// (texture (load-texture "font.png"))
 // (define mynewshape (build-text "hello"))
 // EndFunctionDoc
 

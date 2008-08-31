@@ -1,7 +1,7 @@
 Fluxus Documentation 0.15
 ============================================================
 
-Section: "scratchpad-docs"
+Section: "high-level-scratchpad-docs"
 
 O scratchpad é o editor fluxus e a janela gl.
 
@@ -438,7 +438,7 @@ Arranja um lista de diret��rios de busca para procurar por arquivos
 relacionado ao fluxus, como texturas, shaders etc. Os diret��rios 
 ser��o procurados em ordem a cada vez.
 
- (set-searchpaths (list "/path/to/my/textures/" "/path/to/my/other/textures/"))
+ (set-searchpaths (append (get-searchpaths) (list "/path/to/my/textures/" "/path/to/my/other/textures/")))
 
 ------------------------------------------------------------
 
@@ -449,7 +449,7 @@ Arranja um lista de diret��rios de busca para procurar por arquivos
 relacionado ao fluxus, como texturas, shaders etc. Os diret��rios 
 ser��o procurados em ordem a cada vez.
 
- (get-searchpaths (list "/path/to/my/textures" "/path/to/my/other/textures"))
+ (display (get-searchpaths))(newline)
 
 ------------------------------------------------------------
 
@@ -578,7 +578,7 @@ para coisas mais abstratas. A fonte é assumida como não proporcional
 - tem um exemplo de fonte acompanhando o fluxus. Ok, so this isn't 
 a very good font texture :)
 
- (texture (texture-load "font.png"))
+ (texture (load-texture "font.png"))
  (define mynewshape (build-text "hello"))
 
 ------------------------------------------------------------
@@ -1267,7 +1267,7 @@ dado e ajusta sua tranformação para identidade.
 
  (rotate (vector 45 0 0))     
  (define mycube (build-cube)) ; faz um cubo com uma rotação
- (apply mycube)  	      ; aplica a rotação aos pontos do cubo
+ (with-primitive mycube (apply-transform)) ; aplica a rotação aos pontos do cubo
 
 ------------------------------------------------------------
 
@@ -2351,38 +2351,6 @@ para você. Que pode então usar qjackctrl ou equivalente para fazer
 a conexão manualmente. Fluxus lè uma única fonte mono.
 
  (start-audio "alsa_pcm:capture_1" 1024 44100)
- EndSectionDoc
-Scheme_Object *start_audio(int argc, Scheme_Object **argv)
-{
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0,argv); 
-	MZ_GC_REG();
-	
-	if (!SCHEME_CHAR_STRINGP(argv[0]))scheme_wrong_type("start-audio", "string", 0, argc, argv);
-	if (!SCHEME_NUMBERP(argv[1]))scheme_wrong_type("start-audio", "number", 1, argc, argv);
-	if (!SCHEME_NUMBERP(argv[2]))scheme_wrong_type("start-audio", "number", 2, argc, argv);
-	
-	if (Audio==NULL)
-	{
-		char *name = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);		Audio = new AudioCollector(name,(unsigned int)scheme_real_to_double(argv[1]),(int)scheme_real_to_double(argv[2]));
-	}
-	
-	MZ_GC_UNREG();
-	return scheme_void;
-}
-
- StartFunctionDoc-en
- gh harmonic-number
- Returns: harmonic-real
- Description:
- Fluxus converts incoming audio into harmonic frequencies, which can then be plugged into your 
- animations using this command. There are 16 harmonic bands availible, the harmonic-value argument 
- will be wrapped around if greater or less than 16, so you can use this command without worrying 
- about out of range errors.
- Example: (define (animate)
-		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
-		(draw-cube)) ; draw a cube with this colour
- (every-frame (animate))
 
 ------------------------------------------------------------
 
@@ -2399,28 +2367,6 @@ usar esse comando sem se preocupar sobre erros fora do alcance.
 		(colour (vector (gh 1) (gh 2) (gh 3))) ; make a colour from the harmonics, and set it to be the current colour 
 		(draw-cube)) ; draw a cube with this colour
  (every-frame (animate))
- EndSectionDoc
-Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
-{
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0,argv); 
-	MZ_GC_REG();
-	if (!SCHEME_NUMBERP(argv[0]))scheme_wrong_type("gh", "number", 0, argc, argv);
-	if (Audio!=NULL)
-	{	
-		MZ_GC_UNREG();
-    	return scheme_make_double(Audio->GetHarmonic((int)scheme_real_to_double(argv[0])));
-	}
-	MZ_GC_UNREG();
-	return scheme_make_double(0);
-}
-
- StartFunctionDoc-en
- gain gain-number
- Returns: void
- Description:
- Sets the gain level for the fft sound, it's 1 by default.
- Example: (gain 100) ; too quiet?!
 
 ------------------------------------------------------------
 
@@ -2430,30 +2376,6 @@ Returns void
 Ajusta o nível de amplificação para o som fft, é 1 por padrão.
 
  (gain 100) ; muito quieto?!
- EndSectionDoc
-Scheme_Object *gain(int argc, Scheme_Object **argv)
-{
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0,argv); 
-	MZ_GC_REG();
-	if (!SCHEME_NUMBERP(argv[0]))scheme_wrong_type("gain", "number", 0, argc, argv);
-	if (Audio!=NULL)
-	{	
-		Audio->SetGain(scheme_real_to_double(argv[0]));
-	}
-	MZ_GC_UNREG();
-    return scheme_void;
-}
-
- StartFunctionDoc-en
- process wavfile-string
- Returns: void
- Description:
- This command temporarally disables the realtime reading of the input audio stream and reads a 
- wav file instead. For use with the framedump command to process audio offline to make music 
- videos. The advantage of this is that it locks the framerate so the right amount of audio gets
- read for each frame - making syncing of the frames and audio files possible.
- Example: (process "somemusic.wav") ; read a precorded audio file
 
 ------------------------------------------------------------
 
@@ -2469,30 +2391,6 @@ quadro - fazendo com que a sincrônia entre quadros e audio seja
 possível.
 
  (process "somemusic.wav") ; read a precorded audio file
- EndSectionDoc
-Scheme_Object *process(int argc, Scheme_Object **argv)
-{
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0,argv); 
-	MZ_GC_REG();
-	if (!SCHEME_CHAR_STRINGP(argv[0]))scheme_wrong_type("process", "string", 0, argc, argv);
-	char *wavname=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);	if (Audio!=NULL)
-	{	
-		Audio->Process(wavname);
-	}
-	MZ_GC_UNREG();
-    return scheme_void;
-}
-
- StartFunctionDoc-en
- smoothing-bias value-number
- Returns: void
- Description:
- A kind of weighted average for the harmonic bands which smooth them out over time. 
- This setting defaults to 1.5. The best value really depends on the quality of the music, 
- and the buffer sizes, and ranges from 0 -> 2. It's more obvious if you give it a try 
- with the bars.scm script
- Example: (smoothing-bias 0) ; no smoothing
 
 ------------------------------------------------------------
 
@@ -2506,27 +2404,6 @@ e do tamanho do buffer, e varia de 0 -> 2. Fica mais óbvio se
 você tentar com o script bars.scm
 
  (smoothing-bias 0) ; no smoothing
- EndSectionDoc
-Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
-{
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0,argv); 
-	MZ_GC_REG();
-	if (!SCHEME_NUMBERP(argv[0]))scheme_wrong_type("smoothing-bias", "number", 0, argc, argv);
-	if (Audio!=NULL)
-	{	
-		Audio->SetSmoothingBias(scheme_real_to_double(argv[0]));
-	}
-	MZ_GC_UNREG();
-    return scheme_void;
-}
-
- StartFunctionDoc-en
- update-audio
- Returns: void
- Description:
- Updates the audio subsytem. This function is called for you (per frame) in fluxus-canvas.ss.
- Example: (smoothing-bias 0) ; no smoothing
 
 ------------------------------------------------------------
 
@@ -2536,48 +2413,6 @@ Returns void
 Atualiza o subsistema de áudio. Esta função é chamada para você 
 (por frame) no fluxus-canvas.ss
 
-
- EndSectionDoc
-Scheme_Object *update_audio(int argc, Scheme_Object **argv)
-{
-	if (Audio!=NULL)
-	{	
-		Audio->GetFFT();
-	}
-    return scheme_void;
-}
-
-/
-
-Scheme_Object *scheme_reload(Scheme_Env*env)
-{
-	Scheme_Env*menv=NULL;
-	MZ_GC_DECL_REG(2);	MZ_GC_VAR_IN_REG(0,env);
-	MZ_GC_VAR_IN_REG(1,menv);
-	MZ_GC_REG();	 add all the modules from this extension
-	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-audio"), env);
-
-	scheme_add_global("start-audio", scheme_make_prim_w_arity(start_audio, "start-audio", 3, 3), menv);
-	scheme_add_global("gh", scheme_make_prim_w_arity(get_harmonic, "gh", 1, 1), menv);
-	scheme_add_global("gain", scheme_make_prim_w_arity(gain, "gain", 1, 1), menv);
-	scheme_add_global("process", scheme_make_prim_w_arity(process, "process", 1, 1), menv);
-	scheme_add_global("smoothing-bias", scheme_make_prim_w_arity(smoothing_bias, "smoothing-bias", 1, 1), menv);
-	scheme_add_global("update-audio", scheme_make_prim_w_arity(update_audio, "update-audio", 0, 0), menv);
-
-	scheme_finish_primitive_module(menv);	
- 	MZ_GC_UNREG();
-	
-	return scheme_void;
-}
-
-Scheme_Object *scheme_initialize(Scheme_Env*env)
-{
-	return scheme_reload(env);
-}
-
-Scheme_Object *scheme_module_name()
-{
-	return scheme_intern_symbol("fluxus-audio");
 
 ============================================================
 
