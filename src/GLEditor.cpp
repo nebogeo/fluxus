@@ -290,7 +290,7 @@ void GLEditor::Render()
 			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 			else m_LeftTextPosition=0;
 			
-			glColor4f(1,1,0,0.5);
+			glColor4f(1,1,0,0.5*m_TextColourAlpha);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
@@ -299,14 +299,14 @@ void GLEditor::Render()
 		if ((int)n>=m_ParenthesesHighlight[0] &&
 		    (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
 		{ 
-			glColor4f(0,0.5,1,0.5);
+			glColor4f(0,0.5,1,0.5*m_TextColourAlpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}
 		
 		if (m_Selection && n>=m_HighlightStart && n<m_HighlightEnd)
 		{ 
-			glColor4f(0,1,0,0.5);
+			glColor4f(0,1,0,0.5*m_TextColourAlpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}	
@@ -355,7 +355,7 @@ void GLEditor::Render()
 		if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 		else m_LeftTextPosition=0;
 		
-		glColor4f(1,1,0,0.5);
+		glColor4f(1,1,0,0.5*m_TextColourAlpha);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
