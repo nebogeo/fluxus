@@ -409,11 +409,13 @@ Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("rgb->hsv", "v", argc, argv);
-	float rgb[3], hsv[3];
-	FloatsFromScheme(argv[0], rgb, 3);
+	float rgb[4], hsv[4];
+	int vec_size = SCHEME_VEC_SIZE(argv[0]);
+	FloatsFromScheme(argv[0], rgb, vec_size);
 	dColour::RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
+	hsv[3] = rgb[3];
 	MZ_GC_UNREG();
-	return FloatsToScheme(hsv, 3);
+	return FloatsToScheme(hsv, vec_size);
 }
 
 // StartFunctionDoc-en
@@ -435,11 +437,13 @@ Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("hsv->rgb", "v", argc, argv);
-	float hsv[3], rgb[3];
-	FloatsFromScheme(argv[0], hsv, 3);
+	float hsv[4], rgb[4];
+	int vec_size = SCHEME_VEC_SIZE(argv[0]);
+	FloatsFromScheme(argv[0], hsv, vec_size);
 	dColour::HSVtoRGB(hsv[0], hsv[1], hsv[2], rgb);
+	rgb[3] = hsv[3];
 	MZ_GC_UNREG();
-	return FloatsToScheme(rgb, 3);
+	return FloatsToScheme(rgb, vec_size);
 }
 
 // StartFunctionDoc-en
