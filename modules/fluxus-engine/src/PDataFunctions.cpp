@@ -212,11 +212,21 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 					FloatsFromScheme(argv[2],v.arr(),3);
 					Grabbed->SetData<dVector>(name,index%size,v);
 				}
+				else if (name.compare("s")==0) // one value scale
+				{
+					if (SCHEME_NUMBERP(argv[2]))
+					{
+						float t=FloatFromScheme(argv[2]);
+						dVector v(t,t,t);
+						Grabbed->SetData<dVector>(name,index%size,v);
+					}
+					else Trace::Stream<<"expected number or vector (size 3) value in pdata-set"<<endl;
+				}
 				else Trace::Stream<<"expected vector (size 3) value in pdata-set"<<endl;
 			}
 			else if (type=='c')
 			{
-				ArgCheck("colour", "c", 1, &argv[2]);
+				ArgCheck("pdata-set!", "c", 1, &argv[2]);
 				dColour c=ColourFromScheme(argv[2],Grabbed->GetState()->ColourMode);
 				Grabbed->SetData<dColour>(name,index%size,c);
 				/*
