@@ -70,10 +70,9 @@ void RibbonPrimitive::Render()
 		glBegin(GL_TRIANGLE_STRIP);
 		if (m_State.Hints & HINT_VERTCOLS)
 		{
-			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
 				float txstart = n/(float)m_VertData->size();
-				float txend = (n+1)/(float)m_VertData->size();
 
 				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
 				dVector up=line.cross(CameraDir);
@@ -90,23 +89,14 @@ void RibbonPrimitive::Render()
 				glTexCoord2f(txstart,1);
 				glNormal3fv(topnorm.arr());
 				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
-				glColor4fv((*m_ColData)[n+1].arr());
-				glTexCoord2f(txend,0);
-				glNormal3fv(botnorm.arr());
-				glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
-				glColor4fv((*m_ColData)[n+1].arr());
-				glTexCoord2f(txend,1);
-				glNormal3fv(topnorm.arr());
-				glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
 			}
 		}
 		else
 		{
 		    glColor4fv(m_State.Colour.arr());
-			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
 				float txstart = n/(float)m_VertData->size();
-				float txend = (n+1)/(float)m_VertData->size();
 
 				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
 				dVector up=line.cross(CameraDir);
@@ -121,12 +111,6 @@ void RibbonPrimitive::Render()
 				glTexCoord2f(txstart,1);
 				glNormal3fv(topnorm.arr());
 				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
-				glTexCoord2f(txend,0);
-				glNormal3fv(botnorm.arr());
-				glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
-				glTexCoord2f(txend,1);
-				glNormal3fv(topnorm.arr());
-				glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
 			}
 		}
 		glEnd();
