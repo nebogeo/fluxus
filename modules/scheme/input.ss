@@ -2,7 +2,7 @@
 
 ;; StartSectionDoc-en
 ;; scratchpad
-;; Functions availible as part of the fluxus scratchpad.
+;; Functions available as part of the fluxus scratchpad.
 ;; Example:
 ;; EndSectionDoc	
 

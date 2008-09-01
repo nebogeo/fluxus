@@ -3,7 +3,7 @@
 ;; StartSectionDoc-en
 ;; frisbee
 ;; Frisbee is an experimental high level game engine written for FrTime, a functional reactive
-;; programming language availible as part of PLT Scheme. It's completely separate to the main fluxus
+;; programming language available as part of PLT Scheme. It's completely separate to the main fluxus
 ;; commands, and represents a different way of creating games or other behavoural systems.
 ;; Example:
 ;; EndSectionDoc 

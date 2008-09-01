@@ -68,35 +68,66 @@ void RibbonPrimitive::Render()
 		CameraDir.normalise();
 
 		glBegin(GL_TRIANGLE_STRIP);
-
-		for (unsigned int n=0; n<m_VertData->size()-1; n++)
+		if (m_State.Hints & HINT_VERTCOLS)
 		{
-			float txstart = n/(float)m_VertData->size();
-			float txend = (n+1)/(float)m_VertData->size();
+			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			{
+				float txstart = n/(float)m_VertData->size();
+				float txend = (n+1)/(float)m_VertData->size();
 
-			dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
-			dVector up=line.cross(CameraDir);
-			up.normalise();
+				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
+				dVector up=line.cross(CameraDir);
+				up.normalise();
 
-			dVector topnorm=up;
-			dVector botnorm=-up;
+				dVector topnorm=up;
+				dVector botnorm=-up;
 
-			glColor4fv((*m_ColData)[n].arr());
-			glTexCoord2f(txstart,0);
-			glNormal3fv(botnorm.arr());
-			glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
-			glColor4fv((*m_ColData)[n].arr());
-			glTexCoord2f(txstart,1);
-			glNormal3fv(topnorm.arr());
-			glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
-			glColor4fv((*m_ColData)[n+1].arr());
-			glTexCoord2f(txend,0);
-			glNormal3fv(botnorm.arr());
-			glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
-			glColor4fv((*m_ColData)[n+1].arr());
-			glTexCoord2f(txend,1);
-			glNormal3fv(topnorm.arr());
-			glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
+				glColor4fv((*m_ColData)[n].arr());
+				glTexCoord2f(txstart,0);
+				glNormal3fv(botnorm.arr());
+				glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
+				glColor4fv((*m_ColData)[n].arr());
+				glTexCoord2f(txstart,1);
+				glNormal3fv(topnorm.arr());
+				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
+				glColor4fv((*m_ColData)[n+1].arr());
+				glTexCoord2f(txend,0);
+				glNormal3fv(botnorm.arr());
+				glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
+				glColor4fv((*m_ColData)[n+1].arr());
+				glTexCoord2f(txend,1);
+				glNormal3fv(topnorm.arr());
+				glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
+			}
+		}
+		else
+		{
+		    glColor4fv(m_State.Colour.arr());
+			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			{
+				float txstart = n/(float)m_VertData->size();
+				float txend = (n+1)/(float)m_VertData->size();
+
+				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
+				dVector up=line.cross(CameraDir);
+				up.normalise();
+
+				dVector topnorm=up;
+				dVector botnorm=-up;
+
+				glTexCoord2f(txstart,0);
+				glNormal3fv(botnorm.arr());
+				glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
+				glTexCoord2f(txstart,1);
+				glNormal3fv(topnorm.arr());
+				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
+				glTexCoord2f(txend,0);
+				glNormal3fv(botnorm.arr());
+				glVertex3fv(((*m_VertData)[n+1]-(up*(*m_WidthData)[n+1])).arr());
+				glTexCoord2f(txend,1);
+				glNormal3fv(topnorm.arr());
+				glVertex3fv(((*m_VertData)[n+1]+(up*(*m_WidthData)[n+1])).arr());
+			}
 		}
 		glEnd();
 
