@@ -86,8 +86,8 @@
                     (set! face (append face (list i))))
                    (else
                     (proc (cons i face))
-                    (set! face (cdr face))))
-                 (poly-indices))))
+                    (set! face (cdr face)))))
+                 (poly-indices)))
              
              ((eq? (poly-type) 'triangle-fan)
               (for-each
@@ -97,8 +97,8 @@
                     (set! face (append face (list i))))
                    (else
                     (proc (cons 0 face))
-                    (set! face '())))
-                 (poly-indices))))
+                    (set! face '()))))
+                 (poly-indices)))
              
              ((eq? (poly-type) 'polygon) (proc (poly-indices)))))
 			 

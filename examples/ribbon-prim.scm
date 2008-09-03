@@ -2,7 +2,7 @@
 (clear)
 (desiredfps 100)
 (texture (load-texture "test.png"))
-(hint-vertcols)
+(hint-unlit)
 (define my-line (build-ribbon 130))
 
 ; set the width of every vert to 0.5
