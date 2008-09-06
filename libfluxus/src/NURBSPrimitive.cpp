@@ -19,7 +19,7 @@
 #include "State.h"
 
 using namespace Fluxus;
-	
+
 NURBSPrimitive::NURBSPrimitive() :
 m_UOrder(0),
 m_VOrder(0),
@@ -30,10 +30,10 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	AddData("p",new TypedPData<dVector>);
 	AddData("t",new TypedPData<dVector>);
 	AddData("n",new TypedPData<dVector>);
-	
+
 	// direct access for speed
 	PDataDirty();
-	
+
 	SetupSurface();
 }
 
@@ -56,9 +56,9 @@ NURBSPrimitive::~NURBSPrimitive()
 	gluDeleteNurbsRenderer(m_Surface);
 }
 
-NURBSPrimitive* NURBSPrimitive::Clone() const 
+NURBSPrimitive* NURBSPrimitive::Clone() const
 {
-	return new NURBSPrimitive(*this); 
+	return new NURBSPrimitive(*this);
 }
 
 void NURBSPrimitive::PDataDirty()
@@ -81,34 +81,34 @@ void NURBSPrimitive::SetupSurface()
 }
 
 void NURBSPrimitive::Render()
-{	
+{
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	
-	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
-	else glDisable(GL_LINE_SMOOTH);		
-		
+
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
+	else glDisable(GL_LINE_SMOOTH);
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_FILL);
-	
+
 		gluBeginSurface(m_Surface);
 
 		if (!m_STVec->empty())
 		{
 			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-			 						 m_VCVCount*m_Stride,m_Stride,
+									 m_VCVCount*m_Stride,m_Stride,
 									 m_STVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_TEXTURE_COORD_2);
 		}
-		
+
 		if (!m_NVec->empty())
 		{
 			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-			 						 m_VCVCount*m_Stride,m_Stride,
+									 m_VCVCount*m_Stride,m_Stride,
 									 m_NVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_NORMAL);
 		}
-		
+
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-		 						 m_VCVCount*m_Stride,m_Stride,
+								 m_VCVCount*m_Stride,m_Stride,
 								 m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
@@ -122,7 +122,7 @@ void NURBSPrimitive::Render()
 
 		gluBeginSurface(m_Surface);
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
-		 				m_VCVCount*m_Stride,m_Stride,
+						m_VCVCount*m_Stride,m_Stride,
 						m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
 
 		gluEndSurface(m_Surface);
@@ -141,7 +141,7 @@ void NURBSPrimitive::Render()
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
-	
+
 	if (m_State.Hints & HINT_NORMAL)
 	{
 		glColor3f(1,0,0);
@@ -155,7 +155,7 @@ void NURBSPrimitive::Render()
 		glEnd();
 		glEnable(GL_LIGHTING);
 	}
-	
+
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 
 }
@@ -166,28 +166,28 @@ void NURBSPrimitive::RecalculateNormals(bool smooth)
 	{
 		int u=n-1;
 		bool flip=false;
-		if (n%m_VCVCount==0) 
+		if (n%m_VCVCount==0)
 		{
 			u=n+1;
 			flip=true;
 		}
-		
+
 		int v=n-m_VCVCount;
-		
-		if (n<m_VCVCount) 
+
+		if (n<m_VCVCount)
 		{
 			v=n+m_VCVCount;
 			flip=true;
 		}
-		
+
 		dVector a=(*m_CVVec)[n]-(*m_CVVec)[u];
 		dVector b=(*m_CVVec)[v]-(*m_CVVec)[n];
-		
+
 		a.normalise();
 		b.normalise();
 		(*m_NVec)[n]=a.cross(b);
 		(*m_NVec)[n].normalise();
-		
+
 		if (flip)
 		{
 			(*m_NVec)[n]=-(*m_NVec)[n];
@@ -197,7 +197,7 @@ void NURBSPrimitive::RecalculateNormals(bool smooth)
 }
 
 dBoundingBox NURBSPrimitive::GetBoundingBox()
-{	
+{
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
 	{
@@ -222,6 +222,7 @@ void NURBSPrimitive::ApplyTransform(bool ScaleRotOnly)
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}
 	}
-	
+
 	GetState()->Transform.init();
 }
+

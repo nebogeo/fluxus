@@ -108,7 +108,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			case 6: glutFullScreen(); break; // f	
 			case 23: // w
 			{
-				glutReshapeWindow(640,480);
+				glutReshapeWindow(720,576);
 				glutPositionWindow(100,100);
 			} 
 			break;
