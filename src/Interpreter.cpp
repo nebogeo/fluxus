@@ -55,12 +55,21 @@ void Interpreter::Register()
 
 void Interpreter::Initialise()
 {
+	Scheme_Config *config;
 	Scheme_Object *v = NULL;
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, v);
+    MZ_GC_VAR_IN_REG(1, config);
 	MZ_GC_REG();
 	
 	m_Scheme=scheme_basic_env();
+	
+	scheme_pipe(&m_OutReadPort,&m_OutWritePort);
+	scheme_pipe(&m_ErrReadPort,&m_ErrWritePort);
+	config = scheme_current_config();
+	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, m_OutWritePort);
+	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);
+	
 	declare_modules(m_Scheme);
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
@@ -81,17 +90,7 @@ void Interpreter::Initialise()
 
 void Interpreter::SetRepl(Repl *s) 
 { 
-	Scheme_Config *config;
-	MZ_GC_DECL_REG(1);
-    MZ_GC_VAR_IN_REG(0, config);
-    MZ_GC_REG();
 	m_Repl=s; 
-	scheme_pipe(&m_OutReadPort,&m_OutWritePort);
-	scheme_pipe(&m_ErrReadPort,&m_ErrWritePort);
-	config = scheme_current_config();
-	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, m_OutWritePort);
-	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);
-    MZ_GC_UNREG();
 }
 
 void fill_from_port(Scheme_Object* port, char *dest, long size)

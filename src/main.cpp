@@ -115,10 +115,10 @@ void IdleCallback()
 
 void DoRecorder()
 {
-	vector<RecorderMessage> events;
+	list<RecorderMessage> events;
 	if (recorder->Get(events))
 	{
-		for (vector<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
+		for (list<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
 		{
 			if (i->Name=="keydown")
 			{
@@ -137,7 +137,6 @@ void DoRecorder()
 		}
 	}
 	recorder->UpdateClock();
-	recorder->Save();
 }
 
 void DisplayCallback()

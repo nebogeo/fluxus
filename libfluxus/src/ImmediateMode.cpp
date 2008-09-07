@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <assert.h>
 #include "ImmediateMode.h"
 
 using namespace Fluxus;
@@ -28,6 +29,8 @@ ImmediateMode::~ImmediateMode()
 
 void ImmediateMode::Add(Primitive *p, State *s)
 {	
+	assert(p!=NULL);
+	assert(s!=NULL);
 	IMItem *newitem = new IMItem;
 	newitem->m_State = *s;
 	newitem->m_Primitive = p;
@@ -36,14 +39,14 @@ void ImmediateMode::Add(Primitive *p, State *s)
 
 void ImmediateMode::Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen)
 {
-	///\todo: not using camera visibility in immediate mode...
-	
+	///\todo: not using camera visibility in immediate mode...	
 	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
 	{
 		glPushMatrix();
 		(*i)->m_State.Apply();
 		// need to set the state to the primitive to update the parts of the state the 
 		// render call acts on. need to look at this.
+		assert((*i)->m_Primitive!=NULL);
 	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
 		(*i)->m_Primitive->Prerender();
 		(*i)->m_Primitive->Render();

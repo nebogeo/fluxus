@@ -18,7 +18,7 @@
 #define FLUXUS_RECORDER
 
 #include <sys/time.h>
-#include <vector>
+#include <list>
 
 using namespace std;
 
@@ -50,7 +50,7 @@ public:
 	void SetMode(Mode mode) { m_Mode=mode; }
 	Mode GetMode() { return m_Mode; }
 	
-	bool Get(vector<RecorderMessage> &events);
+	bool Get(list<RecorderMessage> &events);
 	void Record(RecorderMessage event);
 
 	void Reset();
@@ -69,10 +69,11 @@ private:
 	timeval m_LastTime;
 	double m_LastTimeSeconds;
 	double m_TimeSeconds;
+	double m_NextSave;
 	string m_Filename;
 	float m_Delta;
 	
-	vector<RecorderMessage> m_EventVec;
+	list<RecorderMessage> m_EventList;
 };
 
 #endif

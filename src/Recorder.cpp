@@ -33,12 +33,12 @@ EventRecorder::~EventRecorder()
 {
 }
 
-bool EventRecorder::Get(vector<RecorderMessage> &events)
+bool EventRecorder::Get(list<RecorderMessage> &events)
 {
 	bool found=false;
 	if (m_Mode==PLAYBACK)
 	{
-		for (vector<RecorderMessage>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+		for (list<RecorderMessage>::iterator i=m_EventList.begin(); i!=m_EventList.end(); i++)
 		{
 			if (i->Time>m_LastTimeSeconds && i->Time<=m_TimeSeconds)
 			{
@@ -55,13 +55,13 @@ void EventRecorder::Record(RecorderMessage event)
 	if (m_Mode==RECORD)
 	{
 		event.Time=m_TimeSeconds;
-		m_EventVec.push_back(event);
+		m_EventList.push_back(event);
 	}
 }
 
 void EventRecorder::Reset()
 {
-	m_EventVec.clear();
+	m_EventList.clear();
 }
 
 void EventRecorder::ResetClock()
@@ -86,6 +86,12 @@ void EventRecorder::UpdateClock()
 
 	m_LastTimeSeconds=m_TimeSeconds;
 	if (Delta>0 && Delta<1000) m_TimeSeconds+=Delta;
+	
+	if (m_Mode==RECORD && m_TimeSeconds>m_NextSave)
+	{
+		Save();
+		m_NextSave=m_TimeSeconds+10;
+	}	
 }
 
 void EventRecorder::Save()
@@ -95,8 +101,8 @@ void EventRecorder::Save()
 		ofstream os(m_Filename.c_str());
 		int version = 1;
 		os<<version<<endl;
-		os<<m_EventVec.size()<<endl;
-		for (vector<RecorderMessage>::iterator i=m_EventVec.begin(); i!=m_EventVec.end(); i++)
+		os<<m_EventList.size()<<endl;
+		for (list<RecorderMessage>::iterator i=m_EventList.begin(); i!=m_EventList.end(); i++)
 		{
 			os<<i->Name<<" "<<i->Time<<" "<<i->Data<<" "<<i->Mod<<" "<<i->Button<<" "<<i->State<<endl;
 		}
@@ -125,7 +131,7 @@ void EventRecorder::Load()
 		is>>event.Mod;
 		is>>event.Button;
 		is>>event.State;
-		m_EventVec.push_back(event);
+		m_EventList.push_back(event);
 		count++;
 	}
 	
