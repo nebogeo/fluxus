@@ -137,13 +137,15 @@ void dColour::RGBtoHSV(float r, float g, float b, float *hsv)
 
 	if (rgbmax == 0)
 	{
-		hsv[0] = hsv[1] = 0;
-		hsv[2] = v;
+		hsv[0] = hsv[1] = hsv[2] = 0;
 		return;
 	}
 
 	s = delta / rgbmax;
 
+	if (s == 0)
+		h = 0;
+	else
 	if (r == rgbmax)
 		h = (g - b) / delta;
 	else
@@ -164,6 +166,13 @@ void dColour::RGBtoHSV(float r, float g, float b, float *hsv)
 
 void dColour::HSVtoRGB(float h, float s, float v, float *rgb)
 {
+	if (h >= 1) h = 0; // 360 degrees same as 0 degrees
+	if (s > 1) s = 1;
+	if (v > 1) v = 1;
+	if (h < 0) h = 0;
+	if (s < 0) s = 0;
+	if (v < 0) v = 0;
+
 	float h6 = h * 6;
 	int i = floor(h6);
 	float f = h6 - i;
