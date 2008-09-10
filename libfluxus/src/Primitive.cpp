@@ -49,7 +49,7 @@ void Primitive::Prerender()
 	if (m_State.Hints & HINT_IGNORE_DEPTH) glDisable(GL_DEPTH_TEST);
 	else glEnable(GL_DEPTH_TEST);
 	
-	if (m_State.Shader)
+	if (m_State.Shader!=NULL)
 	{
 		for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
 		{

@@ -24,10 +24,116 @@ using namespace Fluxus;
 
 bool GLSLShader::m_Enabled(false);
 
-GLSLShader::GLSLShader(const string &vertexfilename, const string &fragmentfilename) :
-m_Program(0)
+
+GLSLShaderPair::GLSLShaderPair(const string &vertexfilename, const string &fragmentfilename)
 {
-	Load(vertexfilename, fragmentfilename);
+	if (!Load(vertexfilename, fragmentfilename))
+	{
+		Trace::Stream<<"Problem loading shaderpair ["<<vertexfilename<<", "<<fragmentfilename<<"]"<<endl;
+	}
+}
+
+GLSLShaderPair::~GLSLShaderPair()
+{
+}
+
+bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfilename)
+{
+	#ifdef GLSL
+	if (!GLSLShader::m_Enabled) return true;
+
+	m_VertexShader = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
+	if (m_VertexShader==0) return false; 
+	m_FragmentShader = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
+	if (m_FragmentShader==0) return false; 
+
+	#endif
+	return true;
+}
+	
+	
+unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
+{
+	#ifdef GLSL
+	if (!GLSLShader::m_Enabled) return 0;
+	FILE* file = fopen(filename.c_str(), "r");
+	if (!file) 
+	{
+		Trace::Stream<<"Couldn't open shader ["<<filename<<"]"<<endl;
+		return 0;
+	}
+
+	fseek(file, 0, SEEK_END);
+	unsigned int size = ftell(file);
+	fseek(file, 0, SEEK_SET);
+
+	char* code = new char[size+1];
+	code[size]='\0';
+
+	if (fread(code,1,size,file)!=size)
+	{
+		Trace::Stream<<"Error reading shader ["<<filename<<"]"<<endl;
+		delete[] code;
+		fclose(file);
+		return 0;
+	}
+	else
+	{
+		unsigned int shader = glCreateShader(type);
+		glShaderSource(shader, 1, (const char**)&code, NULL);
+		glCompileShader(shader);
+
+		GLint status = GL_FALSE;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+		if(status != GL_TRUE)
+		{	
+			GLsizei size = 0;
+			char log[1024];
+
+			glGetShaderInfoLog(shader, 1024, &size, log);
+			Trace::Stream<<"compile errors for ["<<filename<<"]"<<endl;
+			Trace::Stream<<log<<endl;
+
+			glDeleteShader(shader);
+			delete[] code;
+			fclose(file);
+			return 0;
+		}
+		
+		delete[] code;
+		fclose(file);
+		return shader;
+	}
+	#endif
+	return 0;
+}
+
+/////////////////////////////////////////
+
+GLSLShader::GLSLShader(const GLSLShaderPair &pair) :
+m_Program(0),
+m_RefCount(1)
+{	
+	#ifdef GLSL
+	m_Program = glCreateProgram();
+	glAttachShader(m_Program, pair.GetVertexShader());
+	glAttachShader(m_Program, pair.GetFragmentShader());
+	glLinkProgram(m_Program);
+
+	GLint status = GL_FALSE;
+	glGetProgramiv(m_Program, GL_LINK_STATUS, &status);
+	if(status != GL_TRUE)
+	{
+		GLsizei size = 0;
+		char log[1024];
+		glGetProgramInfoLog(m_Program, 1024, &size, log);
+		Trace::Stream<<log<<endl;
+	}	
+	else
+	{
+		m_IsValid = true;
+	}
+	#endif
 }
 
 GLSLShader::~GLSLShader()
@@ -127,102 +233,4 @@ void GLSLShader::SetColourArray(const string &name, const vector<dColour> &s)
 	#endif
 }
 
-bool GLSLShader::Load(const string &vertexfilename, const string &fragmentfilename)
-{
-	#ifdef GLSL
-	if (!m_Enabled) return true;
-	if (m_Program!=0) glDeleteProgram(m_Program);
 
-	m_Program = glCreateProgram();
-
-	bool bOk = true;
-	unsigned int vertex = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
-
-	if (vertex==0) 
-	{ 
-		glDeleteProgram(m_Program);
-		m_Program = 0;
-		return false; 
-	}
-	glAttachShader(m_Program, vertex);
-
-	unsigned int fragment = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
-	if (fragment==0) 
-	{ 
-		glDeleteProgram(m_Program);
-		m_Program = 0;
-		return false; 
-	}
-	glAttachShader(m_Program, fragment);
-
-	glLinkProgram(m_Program);
-
-	GLint status = GL_FALSE;
-	glGetProgramiv(m_Program, GL_LINK_STATUS, &status);
-	if(status != GL_TRUE)
-	{
-		GLsizei size = 0;
-		char log[1024];
-		glGetProgramInfoLog(m_Program, 1024, &size, log);
-		Trace::Stream<<log<<endl;
-	}
-	#endif
-	return true;
-}
-	
-	
-unsigned int GLSLShader::LoadShader(string filename, unsigned int type)
-{
-	#ifdef GLSL
-	if (!m_Enabled) return 0;
-	FILE* file = fopen(filename.c_str(), "r");
-	if (!file) 
-	{
-		Trace::Stream<<"Couldn't open shader ["<<filename<<"]"<<endl;
-		return 0;
-	}
-
-	fseek(file, 0, SEEK_END);
-	unsigned int size = ftell(file);
-	fseek(file, 0, SEEK_SET);
-
-	char* code = new char[size+1];
-	code[size]='\0';
-
-	if (fread(code,1,size,file)!=size)
-	{
-		Trace::Stream<<"Error reading shader ["<<filename<<"]"<<endl;
-		delete[] code;
-		fclose(file);
-		return 0;
-	}
-	else
-	{
-		unsigned int shader = glCreateShader(type);
-		glShaderSource(shader, 1, (const char**)&code, NULL);
-		glCompileShader(shader);
-
-		GLint status = GL_FALSE;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-		if(status != GL_TRUE)
-		{	
-			GLsizei size = 0;
-			char log[1024];
-
-			glGetShaderInfoLog(shader, 1024, &size, log);
-			Trace::Stream<<"compile errors for ["<<filename<<"]"<<endl;
-			Trace::Stream<<log<<endl;
-
-			glDeleteShader(shader);
-			delete[] code;
-			fclose(file);
-			return 0;
-		}
-		
-		delete[] code;
-		fclose(file);
-		return shader;
-	}
-	#endif
-	return 0;
-}

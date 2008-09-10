@@ -42,6 +42,50 @@ Cull(true)
 	}
 }
 
+State::State(const State &other) 
+{
+	*this=other;
+}
+
+const State &State::operator=(const State &other)
+{
+	Colour=other.Colour;
+	Specular=other.Specular;
+	Emissive=other.Emissive;
+	Ambient=other.Ambient;
+	Shinyness=other.Shinyness;
+	Opacity=other.Opacity;
+	Parent=other.Parent;
+	Hints=other.Hints;
+	LineWidth=other.LineWidth;
+	PointWidth=other.PointWidth;
+	SourceBlend=other.SourceBlend;
+	DestinationBlend=other.DestinationBlend;
+	WireColour=other.WireColour;
+	WireOpacity=other.WireOpacity;
+	ColourMode=other.ColourMode;
+	Transform=other.Transform;
+	Shader=other.Shader;
+	Cull=other.Cull;
+	
+	if (Shader!=NULL) 
+	{
+		Shader->IncRef();
+	}
+	for (int n=0; n<=MAX_TEXTURES; n++)
+	{
+		Textures[n]=other.Textures[n];
+		TextureStates[n]=other.TextureStates[n];
+	}
+	
+	return *this;
+}
+
+State::~State()
+{
+	if (Shader!=NULL && Shader->DecRef()) delete Shader;
+}
+
 void State::Apply()
 {
 	glMultMatrixf(Transform.arr());
@@ -65,7 +109,10 @@ void State::Apply()
 	
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
-	if (Shader) Shader->Apply();
+	if (Shader!=NULL) 
+	{
+		Shader->Apply();
+	}
 	else GLSLShader::Unapply();
 }
 

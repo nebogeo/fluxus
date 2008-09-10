@@ -71,6 +71,10 @@ class State
 {
 public:
 	State();
+	State(const State &other);
+	~State();
+
+	const State &operator=(const State &other);
 
 	void Apply();
 	void Spew();
@@ -93,7 +97,7 @@ public:
 	float WireOpacity;
 	COLOUR_MODE ColourMode;
 	dMatrix Transform;
-	GLSLShader *Shader;
+	GLSLShader *Shader; 
 	bool Cull;
 };
 

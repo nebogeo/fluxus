@@ -240,6 +240,7 @@ int main(int argc, char *argv[])
 			cerr<<"-d time : set delta time between frames for keypress playback"<<endl;
 			cerr<<"-lang language : sets the PLT language to use (may not work)"<<endl;
 			cerr<<"-fs : startup in fullscreen mode"<<endl;
+			cerr<<"-hm : hide the mouse pointer on startup"<<endl;
 			cerr<<"-x : execute and hide script at startup"<<endl;
 			exit(1);
 		}
@@ -281,6 +282,10 @@ int main(int argc, char *argv[])
 		else if (!strcmp(argv[arg],"-fs"))
 		{
 			glutFullScreen();
+		}
+		else if (!strcmp(argv[arg],"-hm"))
+		{
+			app->HideCursor();
 		}
 		else if (!strcmp(argv[arg],"-x"))
 		{

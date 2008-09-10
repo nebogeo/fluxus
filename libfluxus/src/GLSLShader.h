@@ -39,13 +39,40 @@ namespace Fluxus
 {
 
 //////////////////////////////////////////////////////
-/// A hardware shader
+/// A pair of shaders, loaded and compiled - 
+/// needs to be made into a GLSLShader for use
+class GLSLShaderPair
+{
+public:
+	/// The constructor attempts to load the shader pair immediately
+	GLSLShaderPair(const string &vertexfilename, const string &fragmentfilename);
+	~GLSLShaderPair();
+	
+	unsigned int GetVertexShader() const { return m_VertexShader; }
+	unsigned int GetFragmentShader() const { return m_FragmentShader; }
+	
+private:
+	/// Returns a handle to a compiled and linked GLSL program
+	bool Load(const string &vertexfilename, const string &fragmentfilename);
+	unsigned int LoadShader(string filename, unsigned int type);
+
+	unsigned int m_VertexShader;
+	unsigned int m_FragmentShader;
+};
+
+//////////////////////////////////////////////////////
+/// A hardware shader for use on an object
 class GLSLShader
 {
 public:
 	/// The constructor attempts to load the shader pair immediately
-	GLSLShader(const string &vertexfilename, const string &fragmentfilename);
+	GLSLShader() : m_RefCount(1), m_IsValid(false) {}
+	GLSLShader(const GLSLShaderPair &pair);
 	~GLSLShader();
+
+	// Temp fix, maybe
+	void IncRef() { m_RefCount++; }
+	bool DecRef() { m_RefCount--; return (m_RefCount==0); }
 
 	/////////////////////////////////////////////
 	///@name Renderer interface
@@ -53,6 +80,7 @@ public:
 	static void Init();
 	void Apply();
 	static void Unapply();
+	bool IsValid() { return m_IsValid; }
 	///@}
 	
 	/////////////////////////////////////////////
@@ -72,13 +100,12 @@ public:
 	void SetColourArray(const string &name, const vector<dColour> &s);
 	///@}
 	
-private:
-	/// Returns a handle to a compiled and linked GLSL program
-	bool Load(const string &vertexfilename, const string &fragmentfilename);
-
-	unsigned int LoadShader(string filename, unsigned int type);
-	unsigned int m_Program;
 	static bool m_Enabled;
+	
+private:
+	unsigned int m_Program;
+	unsigned int m_RefCount;
+	bool m_IsValid;
 };
 
 }

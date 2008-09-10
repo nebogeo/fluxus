@@ -18,7 +18,7 @@
 
 using namespace Fluxus;
 	
-std::map<std::string,GLSLShader *> ShaderCache::m_Cache;
+std::map<std::string,GLSLShaderPair *> ShaderCache::m_Cache;
 	
 ShaderCache::ShaderCache()
 {
@@ -33,17 +33,17 @@ GLSLShader *ShaderCache::Get(const string &vert, const string &frag)
 {
 	// look in the cache, and copy it if it is there
 	string key = vert+" "+frag;
-	map<string, GLSLShader *>::iterator i = m_Cache.find(key);
-	if (i!=m_Cache.end()) return i->second;
+	map<string, GLSLShaderPair *>::iterator i = m_Cache.find(key);
+	if (i!=m_Cache.end()) return new GLSLShader(*i->second);
 	
-	GLSLShader *ret = new GLSLShader(vert,frag);
-	m_Cache[key] = ret;
-	return ret;
+	GLSLShaderPair *pair = new GLSLShaderPair(vert,frag);
+	m_Cache[key] = pair;
+	return new GLSLShader(*pair);
 }
 
 void ShaderCache::Clear()
 {
-	for (map<string, GLSLShader *>::iterator i=m_Cache.begin();
+	for (map<string, GLSLShaderPair *>::iterator i=m_Cache.begin();
 		i!=m_Cache.end(); ++i)
 	{
 		delete i->second;
@@ -53,7 +53,7 @@ void ShaderCache::Clear()
 
 void ShaderCache::Dump()
 {
-	for (map<string, GLSLShader *>::iterator i=m_Cache.begin();
+	for (map<string, GLSLShaderPair *>::iterator i=m_Cache.begin();
 		i!=m_Cache.end(); ++i)
 	{
 		Trace::Stream<<i->first<<endl;

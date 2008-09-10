@@ -364,3 +364,9 @@ void FluxusMain::Pretty()
   	MZ_GC_UNREG();
 }
 
+void FluxusMain::HideCursor() 
+{
+	m_ShowCursor=!m_ShowCursor; 
+	if (m_ShowCursor) glutSetCursor(GLUT_CURSOR_INHERIT); 
+	else glutSetCursor(GLUT_CURSOR_NONE); 
+}

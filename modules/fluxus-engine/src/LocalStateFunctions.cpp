@@ -1841,7 +1841,7 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 // câmera. É ligado por padrão, mas isto não é desejado sempre, eg
 // para poligonos com dupla face.
 // Exemplo:
-// (backfacecull 0)
+// (backfacecull shader0)
 // EndFunctionDoc
 
 Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
@@ -1938,8 +1938,13 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 	string vert=StringFromScheme(argv[0]);
 	string frag=StringFromScheme(argv[1]);
 	
- 	GLSLShader *shader = ShaderCache::Get(vert,frag);
-	Engine::Get()->State()->Shader=shader;
+	if (Engine::Get()->State()->Shader && 
+	    Engine::Get()->State()->Shader->DecRef()) 
+	{	
+		delete Engine::Get()->State()->Shader;
+	}
+	
+ 	Engine::Get()->State()->Shader = ShaderCache::Get(vert,frag);
 	
 	MZ_GC_UNREG(); 
 	return scheme_void;
@@ -2050,10 +2055,11 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 	MZ_GC_REG();
 			
    	ArgCheck("shader-set!", "l", argc, argv);
-	GLSLShader *shader=Engine::Get()->State()->Shader;
 
-	if (shader)
+	if (Engine::Get()->State()->Shader!=NULL)
 	{
+		GLSLShader *shader=Engine::Get()->State()->Shader;
+		
 		// vectors seem easier to handle than lists with this api
 		paramvec = scheme_list_to_vector(argv[0]);
 

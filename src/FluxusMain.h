@@ -47,7 +47,7 @@ public:
     void SaveScript();
     void SaveBackupScript();
 	void HideScript() { m_HideScript=!m_HideScript; }
-	void HideCursor() { m_ShowCursor=!m_ShowCursor; }
+	void HideCursor();
 	void SetCurrentEditor(int s) { m_CurrentEditor=s; } 
   	void Execute();
 	

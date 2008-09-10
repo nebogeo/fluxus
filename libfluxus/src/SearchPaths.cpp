@@ -43,13 +43,16 @@ void SearchPaths::Shutdown()
 	
 string SearchPaths::GetFullPath(const string &Filename)
 {
-	for (vector<string>::iterator i=m_Paths.begin(); i!=m_Paths.end(); i++)
+	if (Filename!="")
 	{
-		string path = *i+Filename;
-		struct stat sb;
-		if (!stat(path.c_str(), &sb))
+		for (vector<string>::iterator i=m_Paths.begin(); i!=m_Paths.end(); i++)
 		{
-			return path;
+			string path = *i+Filename;
+			struct stat sb;
+			if (!stat(path.c_str(), &sb))
+			{
+				return path;
+			}
 		}
 	}
 	return Filename;

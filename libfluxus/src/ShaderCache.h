@@ -38,7 +38,7 @@ public:
 	static void Dump();
 	
 private:
-	static std::map<std::string,GLSLShader *> m_Cache;
+	static std::map<std::string,GLSLShaderPair *> m_Cache;
 };
 
 }
