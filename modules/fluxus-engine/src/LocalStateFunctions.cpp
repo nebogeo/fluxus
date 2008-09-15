@@ -1841,7 +1841,7 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 // câmera. É ligado por padrão, mas isto não é desejado sempre, eg
 // para poligonos com dupla face.
 // Exemplo:
-// (backfacecull shader0)
+// (backfacecull 0)
 // EndFunctionDoc
 
 Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
@@ -2141,7 +2141,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 // ; env-colour : (vector of length 4)
 // ; min-lod : real number (for mipmap blending - default -1000)
 // ; max-lod : real number (for mipmap blending - default 1000)
-// (clear-texture-cache)
+// (texture-params 0 '(min nearest mag nearest))
 // EndFunctionDoc
 
 Scheme_Object *texture_params(int argc, Scheme_Object **argv)
