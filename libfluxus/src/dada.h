@@ -18,6 +18,7 @@
 // Dada.h 
 // A collection of classes for 3D graphics.
 
+#include <cstring>
 #include <math.h>
 #include <iostream>
 #include <list>
