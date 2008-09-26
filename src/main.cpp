@@ -178,9 +178,9 @@ int main(int argc, char *argv[])
         Interpreter::Register();
 
         #ifdef MZ_PRECISE_GC
-        scheme_set_primordial_stack_base( &__gc_var_stack__, 1);
+        scheme_set_stack_base( &__gc_var_stack__, 1);
         #else
-        scheme_set_primordial_stack_base( NULL, 1);
+        scheme_set_stack_base( NULL, 1);
         #endif
 
         MZ_GC_REG();

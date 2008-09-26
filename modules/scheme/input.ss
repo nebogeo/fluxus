@@ -49,7 +49,7 @@
 (define (register-down key button special state x y mod)
   (when (not (or (number? key) (eq? key -1))) ; ordinary keypress
     (set! keys (set-add key keys)))
-  (when (not (or (number? key) (eq? special -1))) ; special keypress
+  (when (not (= special -1)) ; special keypress
     (set! special-keys (set-add special special-keys)))
   (cond  ; mouse
     ((and (eq? key 0) (eq? special -1))
