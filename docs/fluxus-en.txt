@@ -4598,7 +4598,7 @@ coord.
 
 Section: "scratchpad"
 
-Functions availible as part of the fluxus scratchpad.
+Functions available as part of the fluxus scratchpad.
 
 ------------------------------------------------------------
 
@@ -5103,7 +5103,7 @@ anyway...
 Section: "frisbee"
 
 Frisbee is an experimental high level game engine written for 
-FrTime, a functional reactive programming language availible as 
+FrTime, a functional reactive programming language available as 
 part of PLT Scheme. It's completely separate to the main fluxus 
 commands, and represents a different way of creating games or 
 other behavoural systems.

@@ -339,6 +339,33 @@ Scheme_Object *vdist(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// vdist-sq vector vector
+// Returns: result-number
+// Description:
+// Treating the vectors as points, returns the squared distance between them. Faster than vdist.
+// Example:
+// (vdist-sq (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// vdist-sq vetor vetor
+// Retorna: número resultante
+// Descrição:
+// Tratando os vetores como pontos, retorna a distancia entre eles.
+// Exemplo:
+// (vdist-sq (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
+Scheme_Object *vdistsq(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("vdist-sq", "vv", argc, argv);
+	float ret=VectorFromScheme(argv[0]).distsq(VectorFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return scheme_make_float(ret);
+}
+
+// StartFunctionDoc-en
 // vcross vector vector
 // Returns: result-vector
 // Description:
@@ -867,6 +894,7 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("vdot", scheme_make_prim_w_arity(vdot, "vdot", 2, 2), env);
 	scheme_add_global("vreflect", scheme_make_prim_w_arity(vreflect, "vreflect", 2, 2), env);
 	scheme_add_global("vdist", scheme_make_prim_w_arity(vdist, "vdist", 2, 2), env);
+	scheme_add_global("vdist-sq", scheme_make_prim_w_arity(vdistsq, "vdist-sq", 2, 2), env);
 	scheme_add_global("vmag", scheme_make_prim_w_arity(vmag, "vmag", 1, 1), env);
 	scheme_add_global("vcross", scheme_make_prim_w_arity(vcross, "vcross", 2, 2), env);
 	scheme_add_global("mmul", scheme_make_prim_w_arity(mmul, "mmul", 2, 2), env);

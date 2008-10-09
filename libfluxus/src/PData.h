@@ -36,6 +36,14 @@ public:
 	virtual PData *Copy() const=0;
 	virtual unsigned int Size() const=0;
 	virtual void Resize(unsigned int size)=0;
+	
+	char GetType() const { return m_Type; }
+	
+protected:
+	void SetType(const char s) { m_Type=s; }
+	
+private:
+	char m_Type;
 };
 
 /////////////////////////////////////////////////

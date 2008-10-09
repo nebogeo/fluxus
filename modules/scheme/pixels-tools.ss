@@ -29,14 +29,15 @@
 ;; EndFunctionDoc 
 
 (define (pixels-circle pos radius colour)
+	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
             (let ((p (vector (modulo i (pixels-width)) 
                              (quotient i (pixels-height)) 0)))
-                (if (< (vdist p pos) radius)
+                (if (< (vdist-sq p pos) radius)
                     colour
                     c)))
-        "c"))
+        "c")))
 
 ;; StartFunctionDoc-en
 ;; pixels-blend-circle pos radius colour
@@ -50,15 +51,16 @@
 ;; EndFunctionDoc  
 
 (define (pixels-blend-circle pos radius colour)
+	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
             (let* ((p (vector (modulo i (pixels-width)) 
                               (quotient i (pixels-height)) 0))
-                  (d (vdist p pos)))
+                  (d (vdist-sq p pos)))
                 (if (< d radius)
                     (vmix c colour (/ d radius))
                     c)))
-        "c"))
+        "c")))
 
 ;; StartFunctionDoc-en
 ;; pixels-dodge pos radius strength
@@ -72,16 +74,17 @@
 ;; EndFunctionDoc  
 
 (define (pixels-dodge pos radius strength)
+	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
             (let* ((p (vector (modulo i (pixels-width)) 
                               (quotient i (pixels-height)) 0))
-                  (d (vdist p pos)))
+                  (d (vdist-sq p pos)))
                 (if (< d radius)
                     (vclamp (vmix c (vadd c (vector strength strength strength)) 
 						(/ d radius)))
                     c)))
-        "c"))
+        "c")))
 
 ;; StartFunctionDoc-en
 ;; pixels-burn pos radius strength
@@ -95,16 +98,17 @@
 ;; EndFunctionDoc  
 
 (define (pixels-burn pos radius strength)
+	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
             (let* ((p (vector (modulo i (pixels-width)) 
                               (quotient i (pixels-height)) 0))
-                  (d (vdist p pos)))
+                  (d (vdist-sq p pos)))
                 (if (< d radius)
                     (vclamp (vmix c (vsub c (vector strength strength strength)) 
 						(/ d radius)))
                     c)))
-        "c"))
+        "c")))
 		
 ;; StartFunctionDoc-en
 ;; pixels-clear col

@@ -1827,7 +1827,7 @@ a renderização removendo faces não orientadas em direção da câmera.
 É ligado por padrão, mas isto não é desejado sempre, eg para poligonos 
 com dupla face.
 
- (backfacecull 0)
+ (backfacecull shader0)
 
 ------------------------------------------------------------
 
