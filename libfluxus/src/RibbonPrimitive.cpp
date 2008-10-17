@@ -72,9 +72,14 @@ void RibbonPrimitive::Render()
 		{
 			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
-				float txstart = n/(float)m_VertData->size();
-
-				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
+				float tx = n/(float)m_VertData->size();
+				dVector line;
+				if (n==m_VertData->size()-1) 
+				{
+					line=(*m_VertData)[n]-(*m_VertData)[n-1];
+					tx=1.0f;
+				}
+				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
 				dVector up=line.cross(CameraDir);
 				up.normalise();
 
@@ -82,11 +87,11 @@ void RibbonPrimitive::Render()
 				dVector botnorm=-up;
 
 				glColor4fv((*m_ColData)[n].arr());
-				glTexCoord2f(txstart,0);
+				glTexCoord2f(tx,0);
 				glNormal3fv(botnorm.arr());
 				glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
 				glColor4fv((*m_ColData)[n].arr());
-				glTexCoord2f(txstart,1);
+				glTexCoord2f(tx,1);
 				glNormal3fv(topnorm.arr());
 				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
 			}
@@ -96,19 +101,24 @@ void RibbonPrimitive::Render()
 		    glColor4fv(m_State.Colour.arr());
 			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
-				float txstart = n/(float)m_VertData->size();
-
-				dVector line=(*m_VertData)[n+1]-(*m_VertData)[n];
+				float tx = n/(float)m_VertData->size();		
+				dVector line;
+				if (n==m_VertData->size()-1) 
+				{
+					line=(*m_VertData)[n]-(*m_VertData)[n-1];
+					tx=1.0f;
+				}
+				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
 				dVector up=line.cross(CameraDir);
 				up.normalise();
 
 				dVector topnorm=up;
 				dVector botnorm=-up;
 
-				glTexCoord2f(txstart,0);
+				glTexCoord2f(tx,0);
 				glNormal3fv(botnorm.arr());
 				glVertex3fv(((*m_VertData)[n]-(up*(*m_WidthData)[n])).arr());
-				glTexCoord2f(txstart,1);
+				glTexCoord2f(tx,1);
 				glNormal3fv(topnorm.arr());
 				glVertex3fv(((*m_VertData)[n]+(up*(*m_WidthData)[n])).arr());
 			}
