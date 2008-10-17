@@ -1,7 +1,8 @@
+# -*- mode: python; -*-
 ################################################################################
 # Top level SConscript for fluxus
 #
-# Checks all dependancies needed, builds the fluxus canvas 
+# Checks all dependencies needed, builds the fluxus canvas 
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules 
 
@@ -22,9 +23,9 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
 		DESTDIR = "#" + DESTDIR
 
 Prefix = ARGUMENTS.get('Prefix','/usr/local')
-PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
-PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
-PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
+PLTPrefix="/Applications/PLT"
+PLTLib="/Applications/PLT/lib"
+PLTInclude="/Applications/PLT/include"
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
@@ -44,7 +45,7 @@ IncludePaths = ["/usr/local/include",
 				"/usr/include", 
 				"/usr/local/include/freetype2",  # arg - freetype needs to be
 				"/usr/include/freetype2",        # on the include path :(
-				PLTInclude, 
+				"/Applications/PLT/include", 
 				"../../libfluxus/src"]
 
 ################################################################################

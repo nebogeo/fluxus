@@ -136,7 +136,11 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 		if (m_ErrReadPort!=NULL) 
 		{
 			fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
-			if (strlen(msg)>0) m_Repl->Print(string(msg));
+			if (strlen(msg)>0) 
+			  {
+			    if (m_Repl==NULL) cerr<<msg<<endl;
+			    else m_Repl->Print(string(msg));
+			  }
 		}
 		if (abort) exit(-1);
 		MZ_GC_UNREG();
@@ -158,7 +162,11 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 	if (m_OutReadPort!=NULL)
 	{
 		fill_from_port(m_OutReadPort, msg, LOG_SIZE);
-		if (strlen(msg)>0) m_Repl->Print(string(msg));
+		if (strlen(msg)>0)
+		  {
+		    if (m_Repl==NULL) cerr<<msg<<endl;
+		    else m_Repl->Print(string(msg));
+		  }
 	}	
 	
 	MZ_GC_UNREG();
