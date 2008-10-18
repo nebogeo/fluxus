@@ -23,9 +23,9 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
 		DESTDIR = "#" + DESTDIR
 
 Prefix = ARGUMENTS.get('Prefix','/usr/local')
-PLTPrefix="/Applications/PLT"
-PLTLib="/Applications/PLT/lib"
-PLTInclude="/Applications/PLT/include"
+PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local') 	
+PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt") 	 
+PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
@@ -45,7 +45,7 @@ IncludePaths = ["/usr/local/include",
 				"/usr/include", 
 				"/usr/local/include/freetype2",  # arg - freetype needs to be
 				"/usr/include/freetype2",        # on the include path :(
-				"/Applications/PLT/include", 
+				PLTInclude, 
 				"../../libfluxus/src"]
 
 ################################################################################
