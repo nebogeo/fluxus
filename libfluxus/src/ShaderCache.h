@@ -34,6 +34,7 @@ public:
 	~ShaderCache();
 	
 	static GLSLShader *Get(const std::string &vert, const std::string &frag);
+	static GLSLShader *Make(const std::string &vertsource, const std::string &fragsource);
 	static void Clear();
 	static void Dump();
 	

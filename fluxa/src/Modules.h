@@ -87,7 +87,7 @@ private:
 	float m_TablePerSample;
 		
 	static Sample m_Table[NUM_TABLES];
-	static int    m_TableLength;
+	static unsigned int m_TableLength;
 };
 
 class SimpleWave : public Module
@@ -113,9 +113,10 @@ private:
 	int   m_Note;
 	float m_CyclePos;
 	float m_FineFreq;
-		
+	
+	//\todo make these static??!!
 	Sample m_Table;
-	int    m_TableLength;
+	unsigned int m_TableLength;
 };
 
 class Envelope : public Module
@@ -124,7 +125,7 @@ public:
 	Envelope(int SampleRate);
 	virtual ~Envelope() {}
 	
-	virtual void Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth=true);
+	virtual void Process(unsigned int BufSize, Sample &CV, bool Smooth=true);
 	virtual void Trigger(float time, float pitch, float vol);
 	virtual void Reset();
 
@@ -175,7 +176,7 @@ public:
 	MoogFilter(int SampleRate);
 	virtual ~MoogFilter() {}
 	
-	virtual void Process(unsigned int BufSize, Sample &In, Sample &CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut);
+	virtual void Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut);
 	virtual void Reset();
 
 	void SetCutoff(float s) { Cutoff=s; }
@@ -197,7 +198,7 @@ class FormantFilter : public Module
 public:
  	FormantFilter(int SampleRate);
 	virtual ~FormantFilter() {}
-	virtual void Process(unsigned int BufSize, Sample &in, Sample &CutoffCV, Sample &out);
+	virtual void Process(unsigned int BufSize, Sample &in, Sample *CutoffCV, Sample &out);
 	virtual void Reset();
 
 	void SetCutoff(float s) { m_Vowel=s; }
@@ -223,6 +224,7 @@ public:
 	void SetResonance(float s) { m_MoogFilter.SetResonance(s); m_FormantFilter.SetResonance(s); }
 
 	virtual void Process(unsigned int BufSize, Sample &in, Sample &CutoffCV, Sample &out);
+	virtual void Process(unsigned int BufSize, Sample &in, Sample &out);
 	virtual void Reset();
 
 private:

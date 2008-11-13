@@ -28,6 +28,8 @@ GraphNode::GraphNode(unsigned int numinputs)
 	{
 		m_ChildNodes.push_back(NULL);
 	}
+	
+	m_Output.Allocate(1);
 }
 
 GraphNode::~GraphNode() 
@@ -69,8 +71,10 @@ void GraphNode::Clear()
 
 void GraphNode::SetChild(unsigned int num, GraphNode *s)
 {
-	assert(num<m_ChildNodes.size()); 
-	m_ChildNodes[num]=s;
+	if(num<m_ChildNodes.size())
+	{ 
+		m_ChildNodes[num]=s;
+	}
 }
 
 bool GraphNode::ChildExists(unsigned int num)
@@ -80,17 +84,21 @@ bool GraphNode::ChildExists(unsigned int num)
 
 GraphNode* GraphNode::GetChild(unsigned int num) 
 {
-	assert(num<m_ChildNodes.size()); 
-	return m_ChildNodes[num]; 
+	if(num<m_ChildNodes.size())
+	{ 
+		return m_ChildNodes[num]; 
+	}
+	return NULL;
 }
 
 Sample &GraphNode::GetInput(unsigned int num) 
 { 
+	assert(GetChild(num)!=NULL);
 	return GetChild(num)->GetOutput(); 
 }
 
 float GraphNode::GetCVValue()
 {
 	if (IsTerminal()) return GetValue();
-	else return GetOutput()[0];
+	else return GetOutput()[(unsigned int)0];
 }

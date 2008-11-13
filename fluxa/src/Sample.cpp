@@ -23,7 +23,7 @@ using namespace spiralcore;
 
 Allocator *Sample::m_Allocator = new MallocAllocator();
 
-Sample::Sample(int Len) :
+Sample::Sample(unsigned int Len) :
 m_Data(NULL),
 m_Length(0)
 {	
@@ -42,7 +42,7 @@ m_Length(0)
 }
 
 
-Sample::Sample(const AudioType *S, int Len):
+Sample::Sample(const AudioType *S, unsigned int Len):
 m_Data(NULL),
 m_Length(0)
 {
@@ -59,7 +59,7 @@ Sample::~Sample()
 
 
 	
-bool Sample::Allocate(int Size)
+bool Sample::Allocate(unsigned int Size)
 {
 	Clear();
 	
@@ -88,20 +88,20 @@ void Sample::Zero()
 
 void Sample::Set(AudioType Val)
 {
-	for (int n=0; n<m_Length; n++)
+	for (unsigned int n=0; n<m_Length; n++)
 	{
 		m_Data[n]=Val;
 	}
 }
 
-void Sample::Insert(const Sample &S, int Pos)
+void Sample::Insert(const Sample &S, unsigned int Pos)
 {
 	// do some checking	
 	assert(Pos<=GetLength());
 
-	int NewLen = GetLength()+S.GetLength();
+	unsigned int NewLen = GetLength()+S.GetLength();
 	AudioType *NewBuf = (AudioType*) m_Allocator->New(NewLen*sizeof(AudioType));
-	int FromPos=0, ToPos=0, TempBufPos=0;
+	unsigned int FromPos=0, ToPos=0, TempBufPos=0;
 	
 	while (FromPos<=GetLength())
 	{
@@ -137,14 +137,14 @@ void Sample::Add(const Sample &S)
 	Insert(S,GetLength());
 }
 
-void Sample::Mix(const Sample &S, int Pos)
+void Sample::Mix(const Sample &S, unsigned int Pos)
 {
 	// do some checking	
 	assert(Pos<GetLength());
 	
-	int ToPos=Pos;
+	unsigned int ToPos=Pos;
 	
-	for (int FromPos=0; FromPos<S.GetLength(); FromPos++)
+	for (unsigned int FromPos=0; FromPos<S.GetLength(); FromPos++)
 	{
 		m_Data[ToPos]=m_Data[ToPos]+S[FromPos];
 		
@@ -155,9 +155,9 @@ void Sample::Mix(const Sample &S, int Pos)
 
 void Sample::MulClipMix(const Sample &S, float m)
 {
-	int ToPos=0;
+	unsigned int ToPos=0;
 	
-	for (int FromPos=0; FromPos<S.GetLength(); FromPos++)
+	for (unsigned int FromPos=0; FromPos<S.GetLength(); FromPos++)
 	{
 		float t=S[FromPos]*m;
 		if (t>m) t=m;
@@ -169,7 +169,7 @@ void Sample::MulClipMix(const Sample &S, float m)
 		ToPos++;
 	}
 }
-void Sample::Remove(int Start, int End)
+void Sample::Remove(unsigned int Start, unsigned int End)
 {
 	// do some checking
 	assert(End<GetLength() && Start<GetLength());
@@ -180,16 +180,16 @@ void Sample::Remove(int Start, int End)
 	if (Start<0) Start=0;
 	
 	// calc lengths and allocate memory
-	int CutLen = End - Start;
+	unsigned int CutLen = End - Start;
 	// has to be granulated by the buffer size
 	
-	int NewLen = GetLength()-CutLen;
+	unsigned int NewLen = GetLength()-CutLen;
 
 	AudioType *TempBuf = (AudioType*) m_Allocator->New(NewLen*sizeof(AudioType));
 		
-	int ToPos=0;
+	unsigned int ToPos=0;
 	
-	for (int FromPos=0; FromPos<GetLength(); FromPos++)
+	for (unsigned int FromPos=0; FromPos<GetLength(); FromPos++)
 	{
 		// copy the areas outside of the cut range
 		if (FromPos<Start || FromPos>End)
@@ -206,7 +206,7 @@ void Sample::Remove(int Start, int End)
 	m_Length=NewLen;
 }
 
-void Sample::Reverse(int Start, int End)
+void Sample::Reverse(unsigned int Start, unsigned int End)
 {
 	// do some checking
 	assert(End<GetLength() && Start<GetLength());
@@ -215,10 +215,10 @@ void Sample::Reverse(int Start, int End)
 	// check the range
 	if (End>GetLength()) End=GetLength();
 	
-	int NewLen = End-Start;
+	unsigned int NewLen = End-Start;
 	AudioType *TempBuf = (AudioType*) m_Allocator->New(NewLen*sizeof(AudioType));
-	int ToPos=0;
-	int FromPos=0;
+	unsigned int ToPos=0;
+	unsigned int FromPos=0;
 	
 	// get the reversed sample
 	for (FromPos=End; FromPos>Start; FromPos--)
@@ -239,12 +239,12 @@ void Sample::Reverse(int Start, int End)
 	
 }
 
-void Sample::Move(int Dist)
+void Sample::Move(unsigned int Dist)
 {
-	int Length=GetLength();
+	unsigned int Length=GetLength();
 	AudioType *TempBuf = (AudioType*) m_Allocator->New(Length*sizeof(AudioType));
-	int ToPos=0;
-	int FromPos=Dist;
+	unsigned int ToPos=0;
+	unsigned int FromPos=Dist;
 	
 	if (FromPos<0) FromPos+=Length;
 	if (FromPos>Length) FromPos-=Length;	
@@ -262,31 +262,31 @@ void Sample::Move(int Dist)
 	m_Length=Length;	
 }
 
-void Sample::GetRegion(Sample &S, int Start, int End) const
+void Sample::GetRegion(Sample &S, unsigned int Start, unsigned int End) const
 {
 	// do some checking
 	assert(End<GetLength() && Start<GetLength());
 	assert(Start<=End);
 	
-	int Length=End-Start;
+	unsigned int Length=End-Start;
 	S.Allocate(Length);
 	
-	int FromPos=Start;
+	unsigned int FromPos=Start;
 	
-	for (int ToPos=0; ToPos<Length; ToPos++)
+	for (unsigned int ToPos=0; ToPos<Length; ToPos++)
 	{
 		S.Set(ToPos,m_Data[FromPos]);
 		FromPos++;
 	}
 }
 
-void Sample::CropTo(int NewLength)
+void Sample::CropTo(unsigned int NewLength)
 {
 	assert (NewLength<GetLength());
 	
 	AudioType *temp = (AudioType*) m_Allocator->New(NewLength*sizeof(AudioType));
 		
-	for(int n=0; n<NewLength; n++)
+	for(unsigned int n=0; n<NewLength; n++)
 	{
 		temp[n]=m_Data[n];
 	}
@@ -297,7 +297,7 @@ void Sample::CropTo(int NewLength)
 }
 
 // adds length amount of blank space
-void Sample::Expand(int Length)
+void Sample::Expand(unsigned int Length)
 {
 	Sample Temp(Length);
 	Temp.Zero();
@@ -306,14 +306,14 @@ void Sample::Expand(int Length)
 }
 
 // shrink the samle by length amount
-void Sample::Shrink(int Length)
+void Sample::Shrink(unsigned int Length)
 {
-	int NewLength=GetLength()-Length;
+	unsigned int NewLength=GetLength()-Length;
 	assert(NewLength>0 && NewLength<=GetLength());
 	
 	AudioType *temp = (AudioType*) m_Allocator->New(NewLength*sizeof(AudioType));
 	
-	for(int n=0; n<NewLength; n++)
+	for(unsigned int n=0; n<NewLength; n++)
 	{
 		temp[n]=m_Data[n];
 	}

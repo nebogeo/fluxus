@@ -175,6 +175,15 @@ string GLEditor::GetText()
 	return m_Text;
 }
 
+string GLEditor::GetSExpr() 
+{
+	if (m_ParenthesesHighlight[0]<m_ParenthesesHighlight[1])
+	{
+		return m_Text.substr(m_ParenthesesHighlight[0],m_ParenthesesHighlight[1]+1-m_ParenthesesHighlight[0]);
+	}
+	return "";
+}
+
 void GLEditor::DrawCharBlock()
 {		
 	glBegin(GL_QUADS);

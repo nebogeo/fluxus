@@ -44,8 +44,9 @@ namespace Fluxus
 class GLSLShaderPair
 {
 public:
-	/// The constructor attempts to load the shader pair immediately
-	GLSLShaderPair(const string &vertexfilename, const string &fragmentfilename);
+	/// If load is true, the constructor attempts to load the shader pair immediately
+	/// if it's false, the strings are treated as the shader source.
+	GLSLShaderPair(bool load, const string &vertex, const string &fragment);
 	~GLSLShaderPair();
 	
 	unsigned int GetVertexShader() const { return m_VertexShader; }
@@ -54,7 +55,9 @@ public:
 private:
 	/// Returns a handle to a compiled and linked GLSL program
 	bool Load(const string &vertexfilename, const string &fragmentfilename);
+	bool Make(const string &vertexsource, const string &fragmentsource);
 	unsigned int LoadShader(string filename, unsigned int type);
+	unsigned int MakeShader(const string &filename, const string &source, unsigned int type);
 
 	unsigned int m_VertexShader;
 	unsigned int m_FragmentShader;

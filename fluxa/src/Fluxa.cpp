@@ -64,6 +64,11 @@ m_Comp(jack->GetSamplerate())
 	}
 	//Sample::SetAllocator(new RealtimeAllocator(1024*1024*40));
 	
+	Time Now;
+	Now.SetToNow();
+	m_CurrentTime.Seconds=Now.Seconds;
+	m_CurrentTime.Fraction=Now.Fraction;
+	
 	cerr<<"fluxa server ready... "<<endl;
 }
 

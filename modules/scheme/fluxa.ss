@@ -11,11 +11,12 @@
 
 (require fluxus-015/scratchpad 
 	     "fluxus-osc.ss" 
+	     "fluxus-engine.ss" 
 	      scheme/list)
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug)
+ crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug at)
 
 (define time-offset 0.0) 
 (define sync-offset 0.01)
@@ -32,7 +33,7 @@
   (osc-source "4444")
   (osc-send "/setclock" "" '())
   (searchpath nm-searchpath)
-  (every-frame (go-flux)))
+  (add-frame-hook go-flux))
 
 ;------------------------------
 ; infrastructure
@@ -403,6 +404,25 @@
   (/ (current-inexact-milliseconds) 1000))
 
 ;---------------------------------------
+; timed callbacks
+
+(define callbacks '())
+(define-struct callback (time proc data))
+
+(define (at time proc data)
+	(set! callbacks (cons (make-callback time proc data) callbacks)))
+	
+(define (update-callbacks)
+	(set! callbacks
+		(filter
+			(lambda (callback)
+				(cond ((> (time-now) (callback-time callback))
+					((callback-proc callback) (callback-data callback))
+					#f)
+					(else #t)))
+			callbacks)))						
+
+;---------------------------------------
 ; fluxus implementation 
 
 (define logical-time (time-now))
@@ -442,7 +462,9 @@
          (set! logical-time (+ logical-time tempo))
          (set! clock (+ clock 1))
          (set! sync-clock (+ sync-clock 1))))
-  
+
+  (update-callbacks)
+    
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)	   
          (osc-send "/loadqueue" "" '())

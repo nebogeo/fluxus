@@ -118,7 +118,7 @@ cerr<<"async loading: "<<filename<<endl;
 			float *Buffer = new float[info.frames*info.channels];
 			sf_readf_float(file,Buffer,info.frames*info.channels);
 			int from=0;
-			for (int n=0; n<info.frames; n++)
+			for (unsigned int n=0; n<info.frames; n++)
 			{
 				for (int c=0; c<info.channels; c++)
 				{

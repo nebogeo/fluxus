@@ -184,7 +184,11 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			{
 				m_Editor[m_CurrentEditor]->m_TextColourAlpha=1;
 			}
-		}	
+		}
+		else if (special==GLUT_KEY_F4 && m_CurrentEditor<9) 
+		{
+			m_Script=m_Editor[m_CurrentEditor]->GetSExpr();				
+		}
 		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) 
 		{
 			Execute();

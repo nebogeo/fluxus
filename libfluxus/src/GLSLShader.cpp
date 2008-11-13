@@ -25,16 +25,40 @@ using namespace Fluxus;
 bool GLSLShader::m_Enabled(false);
 
 
-GLSLShaderPair::GLSLShaderPair(const string &vertexfilename, const string &fragmentfilename)
+GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fragment)
 {
-	if (!Load(vertexfilename, fragmentfilename))
+	if (load)
 	{
-		Trace::Stream<<"Problem loading shaderpair ["<<vertexfilename<<", "<<fragmentfilename<<"]"<<endl;
+		if (!Load(vertex, fragment))
+		{
+			Trace::Stream<<"Problem loading shaderpair ["<<vertex<<", "<<fragment<<"]"<<endl;
+		}
+	}
+	else
+	{
+		if (!Make(vertex, fragment))
+		{
+			Trace::Stream<<"Problem making shaderpair"<<endl;
+		}
 	}
 }
 
 GLSLShaderPair::~GLSLShaderPair()
 {
+}
+
+bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsource)
+{
+	#ifdef GLSL
+	if (!GLSLShader::m_Enabled) return true;
+
+	m_VertexShader = MakeShader("Inline vertex shader source",vertexsource,GL_VERTEX_SHADER);
+	if (m_VertexShader==0) return false; 
+	m_FragmentShader = MakeShader("Inline fragment shader source",fragmentsource,GL_FRAGMENT_SHADER);
+	if (m_FragmentShader==0) return false; 
+
+	#endif
+	return true;
 }
 
 bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfilename)
@@ -79,27 +103,7 @@ unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
 	}
 	else
 	{
-		unsigned int shader = glCreateShader(type);
-		glShaderSource(shader, 1, (const char**)&code, NULL);
-		glCompileShader(shader);
-
-		GLint status = GL_FALSE;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-		if(status != GL_TRUE)
-		{	
-			GLsizei size = 0;
-			char log[1024];
-
-			glGetShaderInfoLog(shader, 1024, &size, log);
-			Trace::Stream<<"compile errors for ["<<filename<<"]"<<endl;
-			Trace::Stream<<log<<endl;
-
-			glDeleteShader(shader);
-			delete[] code;
-			fclose(file);
-			return 0;
-		}
-		
+		unsigned int shader = MakeShader(filename,code,type);		
 		delete[] code;
 		fclose(file);
 		return shader;
@@ -107,6 +111,38 @@ unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
 	#endif
 	return 0;
 }
+
+
+unsigned int GLSLShaderPair::MakeShader(const string &filename, const string &source, unsigned int type)
+{
+	#ifdef GLSL
+	unsigned int shader = glCreateShader(type);
+	const char *t = source.c_str();
+	glShaderSource(shader, 1, &t, NULL);
+
+	glCompileShader(shader);
+
+	GLint status = GL_FALSE;
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+	if(status != GL_TRUE)
+	{	
+		GLsizei size = 0;
+		char log[1024];
+
+		glGetShaderInfoLog(shader, 1024, &size, log);
+		Trace::Stream<<"compile errors for ["<<filename<<"]"<<endl;
+		Trace::Stream<<log<<endl;
+
+		glDeleteShader(shader);
+		return 0;
+	}
+	return shader;
+	#else
+	return 0;
+	#endif
+}
+
+
 
 /////////////////////////////////////////
 

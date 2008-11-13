@@ -33,7 +33,7 @@ void Crush(Sample &buf, float freq, float bits)
     float phasor = 1;
     float last = 0;
 
-    for(int i=0; i<buf.GetLength(); i++)
+    for(unsigned int i=0; i<buf.GetLength(); i++)
 	{
        phasor = phasor + freq;
        if (phasor >= 1.0)
@@ -51,7 +51,7 @@ void Distort(Sample &buf, float amount)
 	
 	float k=2*amount/(1-amount);
 	
-	for(int i=0; i<buf.GetLength(); i++)
+	for(unsigned int i=0; i<buf.GetLength(); i++)
 	{
 		buf[i]=((1+k)*buf[i]/(1+k*fabs(buf[i])))*(1-amount);
 	}
@@ -61,7 +61,7 @@ void HardClip(Sample &buf, float level)
 {
 	if (!level) level==0.0001;
 	
-	for(int i=0; i<buf.GetLength(); i++)
+	for(unsigned int i=0; i<buf.GetLength(); i++)
 	{
 		if (buf[i]>level) buf[i]=level;
 		if (buf[i]<-level) buf[i]=-level;
@@ -71,7 +71,7 @@ void HardClip(Sample &buf, float level)
 
 ///////////////////////////////////////////////////////////////////////////
 
-int WaveTable::m_TableLength=DEFAULT_TABLE_LEN;
+unsigned int WaveTable::m_TableLength=DEFAULT_TABLE_LEN;
 Sample WaveTable::m_Table[NUM_TABLES];
 
 WaveTable::WaveTable(int SampleRate) :
@@ -104,9 +104,9 @@ void WaveTable::WriteWaves()
 	}
 	
 	float RadCycle = (M_PI/180)*360;
-	float Pos=0;
+	float Pos=0; 
 
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n==0) Pos=0;
 		else Pos=(n/(float)m_TableLength)*RadCycle;
@@ -116,7 +116,7 @@ void WaveTable::WriteWaves()
 	// todo - might be better to run this a few cycles before storing
 	float White=0;
 	float b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0;
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		White=(1.0f-((rand()%INT_MAX)/(float)INT_MAX)*2.0)*0.2f;
 		b0 = 0.99886f * b0 + White * 0.0555179f;
@@ -129,32 +129,32 @@ void WaveTable::WriteWaves()
   		b6 = White * 0.115926f;
 	}
 	
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n==0) Pos=0;
 		else Pos=(n/(float)m_TableLength)*RadCycle;
 		m_Table[SINE].Set(n,sin(Pos));		
 	}
 
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n<m_TableLength/2) m_Table[SQUARE].Set(n,1.0f);
 		else m_Table[SQUARE].Set(n,-1);				
 	}
 	
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		m_Table[REVSAW].Set(n,((n/(float)m_TableLength)*2.0f)-1.0f);
 	}
 	
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		m_Table[SAW].Set(n,1-(n/(float)m_TableLength)*2.0f);
 	}
 
 	float HalfTab=m_TableLength/2;
 	float v=0;
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n<HalfTab) v=1-(n/HalfTab)*2.0f;
 		else v=(((n-HalfTab)/HalfTab)*2.0f)-1.0f;
@@ -162,13 +162,13 @@ void WaveTable::WriteWaves()
 		m_Table[TRIANGLE].Set(n,v);		
 	}
 
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n<m_TableLength/1.2) m_Table[PULSE1].Set(n,1);
 		else m_Table[PULSE1].Set(n,-1);				
 	}
 	
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n<m_TableLength/1.5) m_Table[PULSE2].Set(n,1);
 		else m_Table[PULSE2].Set(n,-1);				
@@ -233,9 +233,13 @@ void WaveTable::ProcessFM(unsigned int BufSize, Sample &In, const Sample &Pitch)
 {
 	for (unsigned int n=0; n<BufSize; n++)
 	{	
-		m_CyclePos+=Pitch[n]*m_TablePerSample;
-		m_CyclePos=fmod(m_CyclePos,m_TableLength);	
-		In[n]=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
+		if (isfinite(Pitch[n]))
+		{
+			m_CyclePos+=Pitch[n]*m_TablePerSample;
+			if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
+			m_CyclePos=fmod(m_CyclePos,m_TableLength);
+			In[n]=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
+		}
 	}
 }
 
@@ -278,7 +282,7 @@ void SimpleWave::WriteWaves()
 	float RadCycle = (M_PI/180)*360;
 	float Pos=0;
 
-	for (int n=0; n<m_TableLength; n++)
+	for (unsigned int n=0; n<m_TableLength; n++)
 	{
 		if (n==0) Pos=0;
 		else Pos=(n/(float)m_TableLength)*RadCycle;
@@ -328,7 +332,7 @@ void Envelope::Reset()
 	m_Current=0;
 }
 	
-void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth) 
+void Envelope::Process(unsigned int BufSize, Sample &CV, bool Smooth) 
 {	
 	if (m_Attack==0 && m_Decay==0 && m_Release==0)
 	{
@@ -347,7 +351,6 @@ void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth
 	
 	if (m_t==-1000)
 	{
-		In.Zero();
 		CV.Zero();
 		m_Current=0;
 		return;
@@ -364,7 +367,6 @@ void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth
 				// only filter if necc
 				temp=(temp*ONEMINUS_SMOOTH+m_Current*SMOOTH);
 			}
-			In[n]*=temp; 
 			CV[n]=temp;
 			m_Current=temp;
 			m_t+=m_SampleTime;
@@ -415,7 +417,6 @@ void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth
 					// only filter if necc
 					temp=(temp*ONEMINUS_SMOOTH+m_Current*SMOOTH);
 				}
-				In[n]*=temp; 
 				CV[n]=temp;
 				m_Current=temp;
 
@@ -428,7 +429,6 @@ void Envelope::Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth
 					temp=m_Current*SMOOTH;
 				}
 
-				In[n]*=temp; 
 				CV[n]=temp;
 				m_Current=temp;
 
@@ -562,7 +562,7 @@ void MoogFilter::Reset()
 	Resonance=0.0f;
 }
 
-void MoogFilter::Process(unsigned int BufSize, Sample &In, Sample &CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut)
+void MoogFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut)
 {
 	float in=0,Q=0;
 	
@@ -570,7 +570,9 @@ void MoogFilter::Process(unsigned int BufSize, Sample &In, Sample &CutoffCV, Sam
 	{
 		if (n%FILTER_GRANULARITY==0)
 		{
-			fc = (Cutoff+CutoffCV[n])*0.25;
+			fc = Cutoff;
+			if (CutoffCV!=NULL) Cutoff+=(*CutoffCV)[n];
+			fc*=0.25;
 			if (fc<0) fc=0;
 			else if (fc>1) fc=1;
 			
@@ -646,7 +648,7 @@ void FormantFilter::Reset()
 	m_Vowel=0;
 }
 
-void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample &CutoffCV, Sample &Out)
+void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample &Out)
 {
 	float res,o[5],out=0, in=0;
 	
@@ -689,7 +691,8 @@ void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample &CutoffCV, 
 			o[v]=res;
 		}
 
-		float vowel=m_Vowel+CutoffCV[n];
+		float vowel=m_Vowel;
+		if (CutoffCV!=NULL) vowel+=(*CutoffCV)[n];
 
 		// mix between vowel sounds
 		if (vowel<1) 
@@ -740,10 +743,21 @@ void FilterWrapper::Process(unsigned int BufSize, Sample &in, Sample &CutoffCV, 
 {
 	switch (m_Type)
 	{
-		case MOOG_LO : m_MoogFilter.Process(BufSize, in, CutoffCV, &out, NULL, NULL); break;
-		case MOOG_BAND : m_MoogFilter.Process(BufSize, in, CutoffCV, NULL, &out, NULL); break;
-		case MOOG_HI : m_MoogFilter.Process(BufSize, in, CutoffCV, NULL, NULL, &out); break;
-		case FORMANT : m_FormantFilter.Process(BufSize, in, CutoffCV, out); break;
+		case MOOG_LO : m_MoogFilter.Process(BufSize, in, &CutoffCV, &out, NULL, NULL); break;
+		case MOOG_BAND : m_MoogFilter.Process(BufSize, in, &CutoffCV, NULL, &out, NULL); break;
+		case MOOG_HI : m_MoogFilter.Process(BufSize, in, &CutoffCV, NULL, NULL, &out); break;
+		case FORMANT : m_FormantFilter.Process(BufSize, in, &CutoffCV, out); break;
+	}		
+}
+
+void FilterWrapper::Process(unsigned int BufSize, Sample &in, Sample &out)
+{
+	switch (m_Type)
+	{
+		case MOOG_LO : m_MoogFilter.Process(BufSize, in, NULL, &out, NULL, NULL); break;
+		case MOOG_BAND : m_MoogFilter.Process(BufSize, in, NULL, NULL, &out, NULL); break;
+		case MOOG_HI : m_MoogFilter.Process(BufSize, in, NULL, NULL, NULL, &out); break;
+		case FORMANT : m_FormantFilter.Process(BufSize, in, NULL, out); break;
 	}		
 }
 

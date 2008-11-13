@@ -36,9 +36,17 @@ GLSLShader *ShaderCache::Get(const string &vert, const string &frag)
 	map<string, GLSLShaderPair *>::iterator i = m_Cache.find(key);
 	if (i!=m_Cache.end()) return new GLSLShader(*i->second);
 	
-	GLSLShaderPair *pair = new GLSLShaderPair(vert,frag);
+	GLSLShaderPair *pair = new GLSLShaderPair(true,vert,frag);
 	m_Cache[key] = pair;
 	return new GLSLShader(*pair);
+}
+
+GLSLShader *ShaderCache::Make(const string &vertsource, const string &fragsource)
+{	
+	GLSLShaderPair *pair = new GLSLShaderPair(false,vertsource,fragsource);
+	GLSLShader *shader = new GLSLShader(*pair);
+	delete pair;
+	return shader;
 }
 
 void ShaderCache::Clear()

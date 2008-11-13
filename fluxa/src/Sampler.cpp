@@ -131,8 +131,8 @@ void Sampler::Process(uint32 BufSize, Sample &left, Sample &right)
 			{	
 				if (ch->Position<sample->GetLength() && ch->Position>=0)
 				{
-					left.Set(n,left[(int)n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Left);
-					right.Set(n,right[(int)n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Right);
+					left.Set(n,left[n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Left);
+					right.Set(n,right[n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Right);
 				}
 				
 				ch->Position+=Speed;

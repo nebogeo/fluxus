@@ -34,6 +34,8 @@
  override-frame-callback
  set-user-callback!
  every-frame
+ clear-frame-hooks
+ add-frame-hook
  clear
  start-framedump
  end-framedump
@@ -84,6 +86,24 @@
     ((every-frame expr)
      (set-user-callback! (lambda () expr)))))
 
+;---------------------------------------------------------------
+
+(define frame-hooks '())
+
+(define (clear-frame-hooks)
+	(set! frame-hooks '()))
+
+(define (add-frame-hook hook)
+	(set! frame-hooks (cons hook frame-hooks)))
+
+(define (run-frame-hooks)
+	(for-each
+		(lambda (hook)
+			(hook))
+		frame-hooks))
+
+;---------------------------------------------------------------
+
 ;; StartFunctionDoc-en
 ;; clear
 ;; Returns: void
@@ -113,6 +133,7 @@
 (define (clear)
   (set! user-callback '())
   (clear-engine)
+  (light-diffuse 0 (vector 1 1 1))
   (unlock-camera))
 
 (define width 0)
@@ -221,9 +242,7 @@
         (mmul 
          (mtranslate (vector (- half_sep) 0 0))
          (get-camera-transform)))
-       (when (not (null? user-callback))
-         (user-callback))
-       (fluxus-render)
+       (do-render)
        
        ; draw for right eye
        (draw-buffer 'back-right)
@@ -231,9 +250,7 @@
         (mmul 
          (mtranslate (vector half_sep 0 0))
          (get-camera-transform)))
-       (when (not (null? user-callback))
-         (user-callback))
-       (fluxus-render)
+       (do-render)
        
        ; reset for other drawing
        (draw-buffer 'back))
@@ -247,9 +264,7 @@
          (mtranslate (vector (- half_sep) 0 0))
          (get-camera-transform)
          ))
-       (when (not (null? user-callback))
-         (user-callback))
-       (fluxus-render)
+       (do-render)
        
        ;right
        (set-colour-mask right-eye-colour-mask)
@@ -259,9 +274,7 @@
          (mtranslate (vector half_sep 0 0))
          (get-camera-transform)
          ))
-       (when (not (null? user-callback))
-         (user-callback))
-       (fluxus-render)
+       (do-render)
        ;reset
        (set-colour-mask #(#t #t #t #t))))))
 
@@ -324,6 +337,13 @@
 (define (set-camera-update s)
     (set! camera-update s))
 		
+(define (do-render)
+     (when (not (null? user-callback))
+       (with-state
+        (user-callback)))
+	 (run-frame-hooks)
+     (fluxus-render))
+	 
 ;-------------------------------------------------
 ; callbacks - these are called directly from the
 ; fluxus application
@@ -380,10 +400,7 @@
      (draw-buffer 'back)
      (when camera-update (set-camera (get-camera-transform)))
      (framedump-update)
-     (when (not (null? user-callback))
-       (with-state
-        (user-callback)))
-     (fluxus-render)
+     (do-render)
      (when physics-debug (render-physics))
      (tick-physics)
      (update-audio))

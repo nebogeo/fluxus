@@ -26,7 +26,7 @@
 
 namespace spiralcore
 {
-//#define DEBUG
+#define DEBUG
 
 inline float Linear(float bot,float top,float pos,float val1,float val2) 
 { 
@@ -44,52 +44,46 @@ class Sample
 public:
 	enum SampleType {AUDIO=0, IMAGE, MIDI};
 	
-	Sample(int Len=0);
+	Sample(unsigned int Len=0);
 	Sample(const Sample &rhs);
-	Sample(const AudioType *S, int Len);
+	Sample(const AudioType *S, unsigned int Len);
 	~Sample();
 
 	static void SetAllocator(Allocator *s) { m_Allocator=s; }
 	static Allocator *GetAllocator() { return m_Allocator; }
 
-	bool Allocate(int Size);
+	bool Allocate(unsigned int Size);
 	void Clear();
 	void Zero();
 	void Set(AudioType Val);
-	void Insert(const Sample &S, int Pos);
+	void Insert(const Sample &S, unsigned int Pos);
 	void Add(const Sample &S);
-	void Mix(const Sample &S, int Pos=0);
+	void Mix(const Sample &S, unsigned int Pos=0);
 	void MulClipMix(const Sample &S, float m);
-	void Remove(int Start, int End);
-	void Reverse(int Start, int End);
-	void Move(int Dist);
-	void GetRegion(Sample &S, int Start, int End) const;
+	void Remove(unsigned int Start, unsigned int End);
+	void Reverse(unsigned int Start, unsigned int End);
+	void Move(unsigned int Dist);
+	void GetRegion(Sample &S, unsigned int Start, unsigned int End) const;
 	const AudioType *GetBuffer() const {return m_Data;}
 	AudioType *GetNonConstBuffer() {return m_Data;}
-	int  GetLength() const {return m_Length;}
-	int  GetLengthInBytes() const {return m_Length*sizeof(AudioType);}
-	void Expand(int Length);
-	void Shrink(int Length);
-	void CropTo(int NewLength);
+	unsigned int GetLength() const {return m_Length;}
+	unsigned int GetLengthInBytes() const {return m_Length*sizeof(AudioType);}
+	void Expand(unsigned int Length);
+	void Shrink(unsigned int Length);
+	void CropTo(unsigned int NewLength);
 
 	AudioType &operator[](unsigned int i) const
 	{		
 		#ifdef DEBUG
-			assert(i>=0 && i<m_Length);
+			assert(i<m_Length);
 		#endif
-		return m_Data[i];
-	}
-	
-	AudioType &operator[](int i) const
-	{
-		//return (*this)[(int)i];
 		return m_Data[i];
 	}
 	
 	// Linear interpolated
 	inline AudioType operator[](float i) const
 	{		
-		int ii=(int)i;
+		unsigned int ii=(unsigned int)i;
 		
 		#ifdef DEBUG
 			assert(ii>=0 && ii<m_Length);
@@ -101,10 +95,10 @@ public:
 	}
 
 
-	void Set(int i, AudioType v)
+	void Set(unsigned int i, AudioType v)
 	{	
 		#ifdef DEBUG
-			assert(i>=0 && i<m_Length);
+			assert(i<m_Length);
 		#endif							
 		m_Data[i]=v;
 	}	
@@ -118,7 +112,7 @@ public:
 		
 private:
 	AudioType *m_Data;
-	long  int  m_Length;
+	unsigned int m_Length;
 	
     SampleType m_SampleType;
 	static Allocator *m_Allocator;

@@ -1951,6 +1951,45 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// shader-source vertexprogram-source-string fragmentprogram-source-string
+// Returns: void
+// Description:
+// Same as shader, but uses the supplied strings as shader sourcecode. 
+// This allows you to embed GLSL shader source inside your scheme scripts.
+// Example:
+// ; you need to have built fluxus with GLSL=1
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// shader vertexprograma-string fragmentprogram-string
+// Retorna: void
+// Descrição:
+// Exemplo:
+// ; you need to have built fluxus with GLSL=1
+// (clear)
+// EndFunctionDoc
+
+Scheme_Object *shader_source(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+  	ArgCheck("shader-source", "ss", argc, argv);
+	
+	string vert=StringFromScheme(argv[0]);
+	string frag=StringFromScheme(argv[1]);
+	
+	if (Engine::Get()->State()->Shader && 
+	    Engine::Get()->State()->Shader->DecRef()) 
+	{	
+		delete Engine::Get()->State()->Shader;
+	}
+	
+ 	Engine::Get()->State()->Shader = ShaderCache::Make(vert,frag);
+	
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // clear-shader-cache 
 // Returns: void
 // Description:
@@ -2355,6 +2394,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("camera-hide",scheme_make_prim_w_arity(camera_hide,"camera-hide",1,1), env);
 	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
 	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
+	scheme_add_global("shader-source",scheme_make_prim_w_arity(shader_source,"shader-source",2,2), env);
 	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
 	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
 	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);

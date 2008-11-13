@@ -53,6 +53,8 @@ public:
 
 	string GetText();
 	string GetAllText() { return m_Text; }
+	string GetSExpr();
+	
 	void SetText(const string& s);
 	void Reset();
 	
