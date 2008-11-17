@@ -59,6 +59,8 @@ public:
 	static void RenderAxes();
 	void Prerender();
 	void ApplyState()               { m_State.Apply(); }
+	//\todo fix const correctness from here...
+	bool Intersect(Primitive &other, float threshold);
 	
 	/// The primitives state stores everything 
 	/// general to all primitives

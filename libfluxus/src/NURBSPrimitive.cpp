@@ -201,7 +201,7 @@ dBoundingBox NURBSPrimitive::GetBoundingBox()
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
 	{
-		box.expand(*i);
+		box.expand(GetState()->Transform.transform(*i));
 	}
 	return box;
 }

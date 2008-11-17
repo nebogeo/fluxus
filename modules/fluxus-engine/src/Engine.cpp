@@ -169,6 +169,15 @@ void Engine::PopGrab()
 		}
 	}
 }
+	
+unsigned int Engine::GrabbedID()
+{
+	if (!m_GrabStack.empty())
+	{
+		return *m_GrabStack.begin();
+	}
+	return 0;
+}
 
 bool Engine::GrabCamera(unsigned int cam)
 {

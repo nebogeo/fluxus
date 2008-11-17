@@ -176,7 +176,7 @@ void dColour::HSVtoRGB(float h, float s, float v, float *rgb)
 	if (v < 0) v = 0;
 
 	float h6 = h * 6;
-	int i = floor(h6);
+	int i = (int)floor(h6);
 	float f = h6 - i;
 
 	float p = v * (1 - s);
@@ -294,13 +294,20 @@ void dBoundingBox::expandby(float a)
 	min.x-=a; min.y-=a; min.z-=a; 
 }
 
-bool dBoundingBox::inside(dVector p) const
+bool dBoundingBox::inside(dVector p, float threshold)
 { 
-	return (p.x>min.x && p.x<max.x &&
-			p.y>min.y && p.y<max.y &&
-			p.z>min.z && p.z<max.z);
+	return (p.x>min.x-threshold && p.x<max.x+threshold &&
+			p.y>min.y-threshold && p.y<max.y+threshold &&
+			p.z>min.z-threshold && p.z<max.z+threshold);
 }
-	
+
+bool dBoundingBox::inside(dBoundingBox &v, float threshold)
+{
+	return (v.max.x>min.x-threshold && v.min.x<max.x+threshold &&
+	        v.max.y>min.y-threshold && v.min.y<max.y+threshold &&
+	        v.max.z>min.z-threshold && v.min.z<max.z+threshold);	
+}	
+
 // conversions
 dMatrix dQuat::toMatrix() const
 {

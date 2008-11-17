@@ -52,10 +52,9 @@
   (when (not (= special -1)) ; special keypress
     (set! special-keys (set-add special special-keys)))
   (cond  ; mouse
-    ((and (eq? key 0) (eq? special -1))
-     (if (zero? state)
-         (vector-set! mouse 2 (+ button 1))
-         (vector-set! mouse 2 0))
+    ((and (eq? key 0) (eq? special -1)) 
+     (when (eq? state 0) (vector-set! mouse 2 (+ button 1)))
+     (when (eq? state 1) (vector-set! mouse 2 0))
      (vector-set! mouse 0 x)
      (vector-set! mouse 1 y))))
 

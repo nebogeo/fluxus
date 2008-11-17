@@ -77,6 +77,13 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 		glLoadMatrixf(m_TopTransform.arr());
 	}
 	
+	// render the bbox before applying the transform state
+	// (as it's baked into the bbox already)
+	if (node->Prim->GetState()->Hints & HINT_BOUND) 
+	{
+		node->Prim->RenderBoundingBox();
+	}
+
 	node->Prim->ApplyState();
 	
 	///\todo fix frustum culling

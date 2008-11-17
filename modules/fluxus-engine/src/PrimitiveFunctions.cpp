@@ -2008,6 +2008,38 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
     return l;
 }
 
+// StartFunctionDoc-en
+// bb-intersect prim thresh
+// Returns: void
+// Description:
+// Returns #t if the current primitive bounding box intersects with the supplied one, 
+// with an additional expanding threshold.
+// Example:
+// 
+// EndFunctionDoc
+
+Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("bb-intersect", "if", argc, argv);
+	if (Engine::Get()->Grabbed()) 
+	{
+		Primitive *p=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+		if (p)
+		{
+			if (p->Intersect(*Engine::Get()->Grabbed(), FloatFromScheme(argv[1])))
+			{
+				MZ_GC_UNREG(); 
+				return scheme_true;
+			}
+		}
+	}
+ 	MZ_GC_UNREG(); 
+	return scheme_false;
+}
+
+
+
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -2056,5 +2088,6 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pfunc-set!", scheme_make_prim_w_arity(pfunc_set, "pfunc-set!", 2, 2), env);
 	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
 	scheme_add_global("line-intersect", scheme_make_prim_w_arity(line_intersect, "line-intersect", 2, 2), env);
+	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
  	MZ_GC_UNREG(); 
 }

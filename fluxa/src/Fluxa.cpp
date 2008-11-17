@@ -24,7 +24,7 @@ using namespace spiralcore;
 
 Fluxa::Fluxa(OSCServer *server, JackClient* jack, const string &leftport, const string &rightport) :
 m_SampleRate(jack->GetSamplerate()),
-m_Graph(50,jack->GetSamplerate()),
+m_Graph(70,jack->GetSamplerate()),
 m_Sampler(jack->GetSamplerate()),
 m_Running(false),
 m_Server(server),

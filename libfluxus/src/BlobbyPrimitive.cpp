@@ -186,7 +186,7 @@ dBoundingBox BlobbyPrimitive::GetBoundingBox()
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
 	{
-		box.expand(*i);
+		box.expand(GetState()->Transform.transform(*i));
 	}
 	return box;
 }

@@ -121,6 +121,28 @@ void Tree::RemoveNodeWalk(Node *node)
 	
 	delete node;
 }
+	
+/// Moves a node (and all it's children) around the graph
+void Tree::ReparentNode(int NodeID, int NewParentID)
+{
+	Node *node = FindNode(NodeID);
+	Node *newparent = FindNode(NewParentID);
+	
+	if (node==NULL)
+	{
+		Trace::Stream<<"Tree::ReparentNode: cant find node to reparent: "<<NodeID<<endl;
+		return;
+	}
+	
+	if (newparent==NULL)
+	{
+		Trace::Stream<<"Tree::ReparentNode: cant find node to reparent on to: "<<NewParentID<<endl;
+		return;
+	}
+	node->Parent->RemoveChild(NodeID);
+	newparent->Children.push_back(node);
+	node->Parent=newparent;
+}
 
 bool Tree::IsDecendedFrom(Node *Parent, Node *Child) const
 {

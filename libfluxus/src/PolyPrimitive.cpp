@@ -529,7 +529,7 @@ dBoundingBox PolyPrimitive::GetBoundingBox()
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
-		box.expand(*i);
+		box.expand(GetState()->Transform.transform(*i));
 	}
 	return box;
 }

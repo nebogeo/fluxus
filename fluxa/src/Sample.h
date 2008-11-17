@@ -86,7 +86,7 @@ public:
 		unsigned int ii=(unsigned int)i;
 		
 		#ifdef DEBUG
-			assert(ii>=0 && ii<m_Length);
+			assert(ii<m_Length);
 		#endif
 		
 		if (ii==m_Length-1) return m_Data[ii];	

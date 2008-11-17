@@ -43,6 +43,7 @@ public:
 	void PopGrab();
 	void ClearGrabStack();
 	Fluxus::Primitive *Grabbed() { return m_Grabbed; }
+	unsigned int GrabbedID();
 	
 	bool GrabCamera(unsigned int cam);
 	unsigned int GrabbedCamera() { return m_CurrentCamera; }

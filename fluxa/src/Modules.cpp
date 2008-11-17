@@ -206,7 +206,8 @@ void WaveTable::Process(unsigned int BufSize, Sample &In)
 			else Freq=(1-t)*StartFreq+t*SlideFreq;
 			Incr = Freq*m_TablePerSample;
 			m_CyclePos+=Incr;
-			m_CyclePos=fmod(m_CyclePos,m_TableLength);	
+			if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
+			m_CyclePos=fmod(m_CyclePos,m_TableLength-1);	
 			In[n]=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
 			m_SlideTime+=m_TimePerSample;
 		}
@@ -223,7 +224,8 @@ void WaveTable::Process(unsigned int BufSize, Sample &In)
 		for (unsigned int n=0; n<BufSize; n++)
 		{	
 			m_CyclePos+=Incr;
-			m_CyclePos=fmod(m_CyclePos,m_TableLength);	
+			if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
+			m_CyclePos=fmod(m_CyclePos,m_TableLength-1);
 			In[n]=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
 		}
 	}
@@ -237,7 +239,7 @@ void WaveTable::ProcessFM(unsigned int BufSize, Sample &In, const Sample &Pitch)
 		{
 			m_CyclePos+=Pitch[n]*m_TablePerSample;
 			if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
-			m_CyclePos=fmod(m_CyclePos,m_TableLength);
+			m_CyclePos=fmod(m_CyclePos,m_TableLength-1);
 			In[n]=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
 		}
 	}
@@ -249,7 +251,8 @@ void WaveTable::SimpleProcess(unsigned int BufSize, Sample &In)
 	for (unsigned int n=0; n<BufSize; n++)
 	{	
 		m_CyclePos+=Incr;
-		m_CyclePos=fmod(m_CyclePos,m_TableLength);	
+		if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
+		m_CyclePos=fmod(m_CyclePos,m_TableLength-1);	
 		In[n]+=m_Table[(int)m_Type][m_CyclePos]*m_Volume;	
 	}
 }
@@ -303,7 +306,8 @@ void SimpleWave::Process(unsigned int BufSize, Sample &In)
 	for (unsigned int n=0; n<BufSize; n++)
 	{	
 		m_CyclePos+=Incr;
-		m_CyclePos=fmod(m_CyclePos,m_TableLength);	
+		if (m_CyclePos<0) m_CyclePos=m_TableLength-m_CyclePos;
+		m_CyclePos=fmod(m_CyclePos,m_TableLength-1);	
 		In[n]+=m_Table[m_CyclePos]*m_Volume;	
 	}
 }

@@ -842,7 +842,18 @@ Scheme_Object *parent(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("parent", "i", argc, argv);
-    Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+ 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) // reparent...
+	{
+		Engine::Get()->Renderer()->GetSceneGraph().
+			ReparentNode(Engine::Get()->GrabbedID(),IntFromScheme(argv[0]));
+		// also set the state, although it probably isn't needed
+    	Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+	}
+	else
+	{
+    	Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+	}
 	MZ_GC_UNREG(); 
     return scheme_void;
 }

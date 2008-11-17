@@ -151,7 +151,7 @@ void MathNode::Process(unsigned int bufsize)
 				case POW: 
 					for (unsigned int n=0; n<bufsize; n++) 
 					{
-						if (v0!=0 || GetChild(1)->GetOutput()[n]>0)
+						if (v0!=0 && GetChild(1)->GetOutput()[n]>0)
 						{	
 							m_Output[n]=powf(v0,GetChild(1)->GetOutput()[n]); 
 						}
@@ -182,7 +182,7 @@ void MathNode::Process(unsigned int bufsize)
 				case POW: 						
 					for (unsigned int n=0; n<bufsize; n++) 
 					{
-						if (GetChild(0)->GetOutput()[n]!=0 || v1>0)
+						if (GetChild(0)->GetOutput()[n]!=0 && v1>0)
 						{
 							m_Output[n]=powf(GetChild(0)->GetOutput()[n],v1); 
 						}
@@ -231,7 +231,7 @@ void MathNode::Process(unsigned int bufsize)
 				{
 					for (unsigned int n=0; n<bufsize; n++) 
 					{
-						if (GetChild(0)->GetOutput()[n]!=0 || GetChild(1)->GetOutput()[n]>0)
+						if (GetChild(0)->GetOutput()[n]!=0 && GetChild(1)->GetOutput()[n]>0)
 						{
 							m_Output[n]=powf(GetChild(0)->GetOutput()[n],GetChild(1)->GetOutput()[n]); 
 						}

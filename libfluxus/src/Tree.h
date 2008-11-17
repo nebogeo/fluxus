@@ -59,6 +59,9 @@ public:
 	
 	/// Frees a node - and all it's children too
     virtual void RemoveNode(Node *node);
+
+	/// Moves a node (and all it's children) around the graph
+    virtual void ReparentNode(int NodeID, int NewParentID);
 	
 	/// Clear the tree
     virtual void Clear() { if (m_Root) RemoveNode(m_Root); m_Root=NULL; m_CurrentID=1; }

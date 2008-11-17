@@ -142,7 +142,7 @@ dBoundingBox PixelPrimitive::GetBoundingBox()
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
 	{
-		box.expand(*i);
+		box.expand(GetState()->Transform.transform(*i));
 	}
 	return box;
 }

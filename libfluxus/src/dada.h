@@ -900,7 +900,8 @@ public:
 	void expand(dVector v);
 	void expand(dBoundingBox v);
 	void expandby(float a);
-	bool inside(dVector point) const;
+	bool inside(dVector point, float threshold=0);
+	bool inside(dBoundingBox &other, float threshold=0);
 	
 	dVector min;
 	dVector max;

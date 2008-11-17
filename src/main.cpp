@@ -101,7 +101,7 @@ void MouseCallback(int button, int state, int x, int y)
 
 void MotionCallback(int x, int y)
 {
-        app->Handle(0, -1, -1, -1, x, y, 0);
+      	app->Handle(0, -1, -1, -1, x, y, 0);
         char code[256];
         snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
         Interpreter::Interpret(code);

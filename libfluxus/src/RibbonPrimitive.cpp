@@ -171,7 +171,7 @@ dBoundingBox RibbonPrimitive::GetBoundingBox()
 	dBoundingBox box;
 	for (unsigned int n=0; n<m_VertData->size()-1; n++)
 	{
-		box.expand((*m_VertData)[n]);
+		box.expand(GetState()->Transform.transform((*m_VertData)[n]));
 	}
 	return box;
 }

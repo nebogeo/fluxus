@@ -117,7 +117,7 @@ public:
 	////////////////////////////////////////////////////////////////////////
 	///@name Scenegraph access
 	///@{ 
-	const SceneGraph &GetSceneGraph()        { return m_World; }
+	SceneGraph &GetSceneGraph()        { return m_World; }
 	///@}
 		
 	enum stereo_mode_t {noStereo, crystalEyes, colourStereo};
