@@ -166,12 +166,12 @@ void RibbonPrimitive::Render()
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 }
 
-dBoundingBox RibbonPrimitive::GetBoundingBox()
+dBoundingBox RibbonPrimitive::GetBoundingBox(const dMatrix &space)
 {
 	dBoundingBox box;
 	for (unsigned int n=0; n<m_VertData->size()-1; n++)
 	{
-		box.expand(GetState()->Transform.transform((*m_VertData)[n]));
+		box.expand(space.transform((*m_VertData)[n]));
 	}
 	return box;
 }

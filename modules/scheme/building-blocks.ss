@@ -22,9 +22,25 @@
  pdata-index-map!
  pdata-fold
  pdata-index-fold
+ detach-parent
  vx vy vz vr vg vb va
  vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
  )
+ 
+;; StartFunctionDoc-en
+;; detach-parent
+;; Returns: void
+;; Description:
+;; Removes the parent for the current primitive, and fixes up the 
+;; transform so the primitive doesn't move. Use (parent 1) to avoid this fix up.
+;; Example:
+;; EndFunctionDoc  
+
+(define (detach-parent)
+	(let ((m (get-global-transform)))
+		(parent 1)
+		(identity)
+		(concat m)))
 
 ;; StartFunctionDoc-en
 ;; with-state expression ...

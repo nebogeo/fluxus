@@ -47,10 +47,10 @@ void LocatorPrimitive::Render()
 }
 
 ///\todo need some way of setting a locator's bounding volume
-dBoundingBox LocatorPrimitive::GetBoundingBox()
+dBoundingBox LocatorPrimitive::GetBoundingBox(const dMatrix &space)
 {	
-	return dBoundingBox(GetState()->Transform.transform(dVector(-0.5,-0.5,-0.5)),
-						GetState()->Transform.transform(dVector(0.5,0.5,0.5)));
+	return dBoundingBox(space.transform(dVector(-0.5,-0.5,-0.5)),
+						space.transform(dVector(0.5,0.5,0.5)));
 }
 
 void LocatorPrimitive::ApplyTransform(bool ScaleRotOnly)

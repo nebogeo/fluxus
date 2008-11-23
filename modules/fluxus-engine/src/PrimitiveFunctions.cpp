@@ -2024,10 +2024,11 @@ Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
 	ArgCheck("bb-intersect", "if", argc, argv);
 	if (Engine::Get()->Grabbed()) 
 	{
-		Primitive *p=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
-		if (p)
-		{
-			if (p->Intersect(*Engine::Get()->Grabbed(), FloatFromScheme(argv[1])))
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		SceneNode *b=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(IntFromScheme(argv[0])));
+		if (a && b)
+		{			
+			if (Engine::Get()->Renderer()->GetSceneGraph().Intersect(a,b,FloatFromScheme(argv[1])))
 			{
 				MZ_GC_UNREG(); 
 				return scheme_true;

@@ -196,12 +196,12 @@ void NURBSPrimitive::RecalculateNormals(bool smooth)
 	}
 }
 
-dBoundingBox NURBSPrimitive::GetBoundingBox()
+dBoundingBox NURBSPrimitive::GetBoundingBox(const dMatrix &space)
 {
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
 	{
-		box.expand(GetState()->Transform.transform(*i));
+		box.expand(space.transform(*i));
 	}
 	return box;
 }

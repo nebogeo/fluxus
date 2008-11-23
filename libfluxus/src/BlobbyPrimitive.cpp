@@ -181,12 +181,12 @@ void BlobbyPrimitive::RecalculateNormals(bool smooth)
 
 }
 
-dBoundingBox BlobbyPrimitive::GetBoundingBox()
+dBoundingBox BlobbyPrimitive::GetBoundingBox(const dMatrix &space)
 {	
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
 	{
-		box.expand(GetState()->Transform.transform(*i));
+		box.expand(space.transform(*i));
 	}
 	return box;
 }

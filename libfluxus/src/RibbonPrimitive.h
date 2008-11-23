@@ -38,7 +38,7 @@ public:
 	///@{
 	virtual RibbonPrimitive* Clone() const;
 	virtual void Render();
-	virtual dBoundingBox GetBoundingBox();
+	virtual dBoundingBox GetBoundingBox(const dMatrix &space);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "RibbonPrimitive"; }
 	virtual Evaluator *MakeEvaluator() { return NULL; }

@@ -118,12 +118,12 @@ void ParticlePrimitive::Render()
 	glEnable(GL_LIGHTING);
 }
 
-dBoundingBox ParticlePrimitive::GetBoundingBox()
+dBoundingBox ParticlePrimitive::GetBoundingBox(const dMatrix &space)
 {	
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
-		box.expand(GetState()->Transform.transform(*i));
+		box.expand(space.transform(*i));
 	}
 	return box;
 }

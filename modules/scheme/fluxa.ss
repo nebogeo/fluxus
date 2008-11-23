@@ -453,7 +453,6 @@
            (set! sync-clock 0))))
   
   (cond ((> (- (time-now) logical-time) 3)
-         (printf "catchup!~n")
          (set! logical-time (time-now))))
   
   ; time for an update?

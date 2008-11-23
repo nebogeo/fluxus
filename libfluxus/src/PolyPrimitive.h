@@ -42,7 +42,7 @@ public:
 	///@{
 	virtual PolyPrimitive *Clone() const;
 	virtual void Render();
-	virtual dBoundingBox GetBoundingBox();
+	virtual dBoundingBox GetBoundingBox(const dMatrix &space);
 	virtual void RecalculateNormals(bool smooth);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "PolyPrimitive"; }

@@ -360,8 +360,10 @@ void Envelope::Process(unsigned int BufSize, Sample &CV, bool Smooth)
 		return;
 	}
 	
+	
 	for (unsigned int n=0; n<BufSize; n++)
 	{
+	
 		// if we are in the delay (before really being triggered)		
 		if (m_t<0) 
 		{
@@ -569,13 +571,12 @@ void MoogFilter::Reset()
 void MoogFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut)
 {
 	float in=0,Q=0;
-	
 	for (unsigned int n=0; n<BufSize; n++)
 	{
 		if (n%FILTER_GRANULARITY==0)
 		{
 			fc = Cutoff;
-			if (CutoffCV!=NULL) Cutoff+=(*CutoffCV)[n];
+			if (CutoffCV!=NULL) fc+=(*CutoffCV)[n]; 
 			fc*=0.25;
 			if (fc<0) fc=0;
 			else if (fc>1) fc=1;
@@ -641,21 +642,20 @@ FormantFilter::FormantFilter(int SampleRate) :
 Module(SampleRate)
 {
 	Reset();
-	
-	for (int x=0; x<5; x++)
-		for (int y=0; y<10; y++) 
-			memory[x][y]=0;
 }
 
 void FormantFilter::Reset()
 {
+	for (int x=0; x<5; x++)
+		for (int y=0; y<10; y++) 
+			memory[x][y]=0;
 	m_Vowel=0;
 }
 
 void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample &Out)
-{
+{		
 	float res,o[5],out=0, in=0;
-	
+		
 	for (unsigned int n=0; n<BufSize; n++)
 	{		
 		in = In[n];
@@ -680,6 +680,7 @@ void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, 
 					  coeff[v][8]*memory[v][7] +
 					  coeff[v][9]*memory[v][8] +
 					  coeff[v][10]*memory[v][9] );
+
 
 			memory[v][9]=memory[v][8];
 			memory[v][8]=memory[v][7];
@@ -723,9 +724,9 @@ void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, 
 		{
 			out=o[4];
 		}	
-		
-		Out[n]=out*8;
-	}		
+	
+		Out[n]=out;
+	}	
 }
 
 ///////////////////////////////////////////////////////////////////////////

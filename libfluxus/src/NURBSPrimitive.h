@@ -37,7 +37,7 @@ public:
 	virtual NURBSPrimitive* Clone() const;
 	virtual void Render();
 	virtual void RecalculateNormals(bool smooth);
-	virtual dBoundingBox GetBoundingBox();
+	virtual dBoundingBox GetBoundingBox(const dMatrix &space);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "NURBSPrimitive"; }
 	virtual Evaluator *MakeEvaluator() { return NULL; }

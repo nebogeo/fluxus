@@ -206,11 +206,12 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	Ob->Prim->ApplyTransform(true);  	
 	
 	// get the bounding box from the fluxus object
+	dMatrix temp;
   	switch (Bound)
   	{
   		case BOX:
   		{
-			dBoundingBox Box=Ob->Prim->GetBoundingBox();
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			dVector BoxSize=Box.max-Box.min;
 			dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
 			dMassAdjust(&m,Mass);
@@ -219,7 +220,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	    } break;
  	    case SPHERE:
  	    {
-			dBoundingBox Box=Ob->Prim->GetBoundingBox();
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
 			float Radius=(Box.max.x-Box.min.x)/2;
@@ -230,7 +231,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	    } break;
  	    case CYLINDER:
  	    {
-            dBoundingBox Box=Ob->Prim->GetBoundingBox();
+            dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
 			dMassSetCappedCylinder(&m,1,2,Radius,Height);
@@ -324,18 +325,18 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	// this tells ode to attach joints to the static environment if they are attached
 	// to this joint
 	Ob->Body = 0;
-	
+	dMatrix temp;
   	switch (Bound)
   	{
   		case BOX:
   		{
-			dBoundingBox Box=Ob->Prim->GetBoundingBox();
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			dVector BoxSize=Box.max-Box.min;
  			Ob->Bound = dCreateBox(m_Space,BoxSize.x,BoxSize.y,BoxSize.z);
  	    } break;
  	    case SPHERE:
  	    {
-			dBoundingBox Box=Ob->Prim->GetBoundingBox();
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
 			float Radius=(Box.max.x-Box.min.x)/2;
@@ -343,7 +344,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
  	    } break;
  	    case CYLINDER:
  	    {
-            dBoundingBox Box=Ob->Prim->GetBoundingBox();
+            dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
  			Ob->Bound = dCreateCCylinder(m_Space,Radius,Height);	

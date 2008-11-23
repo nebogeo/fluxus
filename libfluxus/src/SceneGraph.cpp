@@ -77,13 +77,6 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 		glLoadMatrixf(m_TopTransform.arr());
 	}
 	
-	// render the bbox before applying the transform state
-	// (as it's baked into the bbox already)
-	if (node->Prim->GetState()->Hints & HINT_BOUND) 
-	{
-		node->Prim->RenderBoundingBox();
-	}
-
 	node->Prim->ApplyState();
 	
 	///\todo fix frustum culling
@@ -230,9 +223,7 @@ void SceneGraph::GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &resu
 	if (node->Prim)
 	{
 		dVector point(0,0,0);
-		dBoundingBox bbox=node->Prim->GetBoundingBox();
-		bbox.min=mat.transform(bbox.min);
-		bbox.max=mat.transform(bbox.max);
+		dBoundingBox bbox=node->Prim->GetBoundingBox(mat);
 		result.expand(bbox);
 		mat*=node->Prim->GetState()->Transform;
     }
@@ -265,9 +256,17 @@ void SceneGraph::GetConnections(const Node *node, vector<pair<const SceneNode*,c
 		GetConnections(*i,connections);
 	}
 }
+
 void SceneGraph::Clear()
 {
 	Tree::Clear();
 	SceneNode *root = new SceneNode(NULL);
 	AddNode(0,root);
 }
+
+bool SceneGraph::Intersect(const SceneNode *a, const SceneNode *b, float threshold)
+{
+	dBoundingBox otherbb = a->Prim->GetBoundingBox(GetGlobalTransform(a));
+	return b->Prim->GetBoundingBox(GetGlobalTransform(b)).inside(otherbb, threshold);
+}
+	

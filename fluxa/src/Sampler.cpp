@@ -129,7 +129,8 @@ void Sampler::Process(uint32 BufSize, Sample &left, Sample &right)
 					
 			for (uint32 n=0; n<BufSize; n++)
 			{	
-				if (ch->Position<sample->GetLength() && ch->Position>=0)
+				if (ch->Position<sample->GetLength()-1 && ch->Position>=0)
+				//                                  ^^ have to account for some floating point error...
 				{
 					left.Set(n,left[n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Left);
 					right.Set(n,right[n]+(*sample)[(float)fabs(ch->Position-rev)]*Volume*Right);

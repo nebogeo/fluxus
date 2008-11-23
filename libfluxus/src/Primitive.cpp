@@ -47,6 +47,7 @@ void Primitive::Prerender()
 	else glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_IGNORE_DEPTH) glDisable(GL_DEPTH_TEST);
 	else glEnable(GL_DEPTH_TEST);
+	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
 	
 	if (m_State.Shader!=NULL)
 	{
@@ -98,16 +99,11 @@ void Primitive::RenderAxes()
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');*/
     glEnable(GL_LIGHTING);
 }
-		
-bool Primitive::Intersect(Primitive &other, float threshold)
-{
-	dBoundingBox otherbb = other.GetBoundingBox();
-	return GetBoundingBox().inside(otherbb, threshold);
-}
-	   	
+		   	
 void Primitive::RenderBoundingBox()
 {
-	dBoundingBox b = GetBoundingBox();
+	dMatrix m;
+	dBoundingBox b = GetBoundingBox(m);
 	glDisable(GL_LIGHTING);
 	glLineWidth(1);
 	glBegin(GL_LINES);

@@ -37,7 +37,7 @@ public:
 	///@{
 	virtual LocatorPrimitive* Clone() const;
 	virtual void Render();
-	virtual dBoundingBox GetBoundingBox();
+	virtual dBoundingBox GetBoundingBox(const dMatrix &space);
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
 	virtual string GetTypeName() { return "LocatorPrimitive"; }
 	virtual Evaluator *MakeEvaluator() { return NULL; }

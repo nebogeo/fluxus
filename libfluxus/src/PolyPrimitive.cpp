@@ -524,12 +524,12 @@ void PolyPrimitive::UniqueEdgesFindShared(pair<int,int> edge, set<pair<int,int> 
 	}
 }
 
-dBoundingBox PolyPrimitive::GetBoundingBox()
+dBoundingBox PolyPrimitive::GetBoundingBox(const dMatrix &space)
 {	
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
-		box.expand(GetState()->Transform.transform(*i));
+		box.expand(space.transform(*i));
 	}
 	return box;
 }

@@ -26,6 +26,8 @@ deque<AsyncSampleLoader::LoadItem> AsyncSampleLoader::m_LoadQueue;
 pthread_mutex_t* AsyncSampleLoader::m_Mutex;
 map<string,Sample*> AsyncSampleLoader::m_Cache;
 
+short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels);
+
 AsyncSampleLoader* AsyncSampleLoader::Get()
 {
 	if (!m_Singleton) m_Singleton = new AsyncSampleLoader();
@@ -85,9 +87,17 @@ Sample *AsyncSampleLoader::AddToQueue(const string &Filename)
 
 void AsyncSampleLoader::LoadQueue()
 {
-	if (m_LoadQueue.size()>0)
+	if (pthread_mutex_trylock(m_Mutex))
 	{
-		pthread_create(&m_LoaderThread,NULL,(void*(*)(void*))LoadLoop,NULL);
+		if (m_LoadQueue.size()>0)
+		{
+			pthread_create(&m_LoaderThread,NULL,(void*(*)(void*))LoadLoop,NULL);
+		}
+		pthread_mutex_unlock(m_Mutex);
+	}
+	else
+	{
+		//cerr<<"Could not get a lock on the loaderqueue from LoadQueue()"<<endl;
 	}
 }
 
@@ -103,19 +113,81 @@ void AsyncSampleLoader::LoadLoop()
 		SF_INFO info;
 		info.format=0;
 		string filename=SearchPaths::Get()->GetFullPath(Item.Name);
-cerr<<"async loading: "<<filename<<endl;
+
+		cerr<<"async loading: "<<filename<<endl;
+		
+		FILE* file = fopen (filename.c_str(), "rb") ;
+		if (!file)
+		{
+			cerr<<"Error opening ["<<Item.Name<<"]"<<endl;
+		}
+		
+		unsigned short channels=0;
+		unsigned int size=0;
+		short *data = LoadWav(file,size,channels);
+		size/=2; // bytes -> samples
+		
+		if (data)
+		{
+			unsigned int samples=size/channels;
+			Item.SamplePtr->Allocate(samples);
+			
+			// mix down to mono if need be
+			if (channels>1)
+			{
+				int from=0;
+				for (unsigned int n=0; n<samples; n++)
+				{
+					for (int c=0; c<channels; c++)
+					{
+						//cerr<<n<<endl; // 60414
+						Item.SamplePtr->Set(n,((*Item.SamplePtr)[n]+(data[from++]/32767.0f))/(float)channels);
+					}
+				}
+			}
+			else
+			{
+				for (unsigned int n=0; n<size; n++)
+				{
+					Item.SamplePtr->Set(n,data[n]/32767.0f);
+				}
+			}
+			delete[] data;
+		}
+		fclose(file);
+		
+		sleep(1);
+	}		
+	pthread_mutex_unlock(m_Mutex);
+}
+
+/*
+void AsyncSampleLoader::LoadLoop()
+{		
+	pthread_mutex_lock(m_Mutex);
+	while (m_LoadQueue.size())
+	{
+		LoadItem Item = *m_LoadQueue.begin();
+		m_LoadQueue.pop_front();
+			
+		SF_INFO info;
+		info.format=0;
+		string filename=SearchPaths::Get()->GetFullPath(Item.Name);
+
+		cerr<<"async loading: "<<filename<<endl;
+		
 		SNDFILE* file = sf_open (filename.c_str(), SFM_READ, &info) ;
 		if (!file)
 		{
 			cerr<<"Error opening ["<<Item.Name<<"] : "<<sf_strerror (file)<<endl;
 		}
-		
 		Item.SamplePtr->Allocate(info.frames);
 			
 		// mix down to mono if need be
 		if (info.channels>1)
 		{
 			float *Buffer = new float[info.frames*info.channels];
+		
 			sf_readf_float(file,Buffer,info.frames*info.channels);
 			int from=0;
 			for (unsigned int n=0; n<info.frames; n++)
@@ -133,11 +205,59 @@ cerr<<"async loading: "<<filename<<endl;
 		sf_close(file);
 		
 		sleep(1);
-	}
-	pthread_mutex_unlock(m_Mutex);	
-
+	}		
+	pthread_mutex_unlock(m_Mutex);
 }
-
-
-
-
+*/
+// having problems with libsndfile crashing in this thread. (nm/eb.wav)
+// need to look into it more, but need this working for a gig
+// so writing a quick dirty wav loader here 
+short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels)
+{
+	char id[4];
+	fread(id,1,4,file);
+	if (!strcmp(id,"RIFF")) 
+	{
+		cerr<<"WAV format error (RIFF): "<<id<<endl;
+		return NULL;
+	}
+	fread(&size,1,4,file);
+	fread(id,1,4,file);
+	if (!strcmp(id,"WAVE"))
+	{
+		cerr<<"WAV format error (WAVE): "<<id<<endl;
+		return NULL;
+	}
+	fread(id,1,4,file);
+	if (!strcmp(id,"fmt "))
+	{
+		cerr<<"WAV format error (fmt ): "<<id<<endl;
+		return NULL;
+	}
+	fread(&size,1,4,file);
+	unsigned int datastart=size+ftell(file);
+	short compression;
+	fread(&compression,1,2,file);
+	if (compression!=1)
+	{
+		cerr<<"WAV data is compressed"<<endl;
+		return NULL;
+	}
+	fread(&channels,1,2,file);
+	if (!(channels==1 || channels==2))
+	{
+		cerr<<"WAV data is not mono or stereo"<<endl;
+		return NULL;
+	}
+	fseek(file,datastart,SEEK_SET);		
+	fread(id,1,4,file);
+	if (!strcmp(id,"data"))
+	{
+		cerr<<"WAV format error (data): "<<id<<endl;
+		return NULL;
+	}
+	fread(&size,1,4,file);
+	char *data=new char[size];
+	fread(data,1,size,file);
+	return (short*)data;
+};

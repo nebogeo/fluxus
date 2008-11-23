@@ -86,6 +86,7 @@ public:
 		unsigned int ii=(unsigned int)i;
 		
 		#ifdef DEBUG
+			if (ii>=m_Length) cerr<<m_Length<<" "<<ii<<endl;
 			assert(ii<m_Length);
 		#endif
 		
@@ -98,6 +99,7 @@ public:
 	void Set(unsigned int i, AudioType v)
 	{	
 		#ifdef DEBUG
+			if (i>=m_Length) cerr<<m_Length<<" "<<i<<endl;
 			assert(i<m_Length);
 		#endif							
 		m_Data[i]=v;

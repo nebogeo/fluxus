@@ -137,12 +137,12 @@ void PixelPrimitive::Render()
 
 
 
-dBoundingBox PixelPrimitive::GetBoundingBox()
+dBoundingBox PixelPrimitive::GetBoundingBox(const dMatrix &space)
 {	
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
 	{
-		box.expand(GetState()->Transform.transform(*i));
+		box.expand(space.transform(*i));
 	}
 	return box;
 }

@@ -41,7 +41,7 @@ public:
 	///@{
 	virtual Primitive *Clone() const=0;
 	virtual void Render()=0;
-	virtual dBoundingBox GetBoundingBox()=0;
+	virtual dBoundingBox GetBoundingBox(const dMatrix &space)=0;
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
 	virtual Evaluator *MakeEvaluator()=0;
 	///@}
@@ -59,8 +59,6 @@ public:
 	static void RenderAxes();
 	void Prerender();
 	void ApplyState()               { m_State.Apply(); }
-	//\todo fix const correctness from here...
-	bool Intersect(Primitive &other, float threshold);
 	
 	/// The primitives state stores everything 
 	/// general to all primitives

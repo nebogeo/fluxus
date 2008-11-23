@@ -805,6 +805,28 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// get-global-transform
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing the current global transform for the 
+// current primitive.
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
+{
+	if (Engine::Get()->Grabbed()) 
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		if (a)
+		{	
+			return FloatsToScheme(Engine::Get()->Renderer()->GetSceneGraph().GetGlobalTransform(a).arr(),16);			
+		}
+	}
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // parent primitive-id
 // Returns: void
 // Description:
@@ -2367,6 +2389,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("rotate",scheme_make_prim_w_arity(rotate,"rotate",1,1), env);
     scheme_add_global("scale",scheme_make_prim_w_arity(scale,"scale",1,1), env);
 	scheme_add_global("get-transform", scheme_make_prim_w_arity(get_transform, "get-transform", 0, 0), env);
+	scheme_add_global("get-global-transform", scheme_make_prim_w_arity(get_global_transform, "get-global-transform", 0, 0), env);
     scheme_add_global("colour",scheme_make_prim_w_arity(colour,"colour",1,1), env);
     scheme_add_global("rgb->hsv",scheme_make_prim_w_arity(rgbtohsv,"rgb->hsv",1,1), env);
     scheme_add_global("hsv->rgb",scheme_make_prim_w_arity(hsvtorgb,"hsv->rgb",1,1), env);
