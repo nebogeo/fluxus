@@ -57,16 +57,20 @@ void KeyboardCallback(unsigned char key,int x, int y)
         if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
         app->Handle(key, -1, -1, -1, x, y, mod);
         char code[256];
-        snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
-        Interpreter::Interpret(code);
+        if (key > 0) { // key is 0 on ctrl+2
+                snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+                Interpreter::Interpret(code);
+        }
         recorder->Record(RecorderMessage("keydown",key,mod));
 }
 
 void KeyboardUpCallback(unsigned char key,int x, int y)
 {
         char code[256];
-        snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
-        Interpreter::Interpret(code);
+        if (key > 0) { // key is 0 on ctrl+2
+                snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+                Interpreter::Interpret(code);
+        }
         recorder->Record(RecorderMessage("keyup",key,0));
 }
 
