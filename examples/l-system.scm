@@ -49,7 +49,7 @@
        ((char=? #\F char)
         (with-state
          (translate (vector 0.5 0 0))
-         (scale (vector 1 0.1 0.1))
+         (scale (vector 1 0.1 0.1)) 
          (build-cube))
         (translate (vector 1 0 0)))
        ((char=? #\f char)
@@ -78,4 +78,14 @@
 (clear)
 ; run the actual lsystem code
 (scale 3)
-(ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7)
+
+;; tree-like
+;;(ls-build (ls-generate 3 "F" '(("F" "F - [ - F + F + F ] + [ + F - F - F ] F"))) 20 0.6)
+
+;; spacefilling
+;; (ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7)
+
+;; recursive pentagonal
+(ls-build (ls-generate 3 "F + F + F + F + F" '(("F" "F F + F + F + F + F + F F"))) 72 0.7)
+
+
