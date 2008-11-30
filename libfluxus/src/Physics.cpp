@@ -41,7 +41,7 @@ Physics::JointObject::~JointObject()
 {
 	dJointDestroy(Joint);
 }
-		
+
 //////////////////////////////////////////////////////////////////////
 
 Physics::Physics(Renderer *r) :
@@ -55,23 +55,25 @@ m_Slip2(0.9),
 m_SoftErp(0.25),
 m_SoftCfm(0.15)
 {
+	dInitODE2(0);
 	m_World = dWorldCreate();
-  	m_Space = dHashSpaceCreate(0);
-  	m_ContactGroup = dJointGroupCreate(0);
-  	dWorldSetGravity(m_World,0,-5,0);
+	m_Space = dHashSpaceCreate(0);
+	m_ContactGroup = dJointGroupCreate(0);
+	dWorldSetGravity(m_World,0,-5,0);
 }
 
 Physics::~Physics()
 {
+	dCloseODE();
 }
-	
+
 void Physics::Tick()
 {
 	m_CollisionRecord.clear();
 
 	dSpaceCollide(m_Space,this,&NearCallback);
     dWorldQuickStep(m_World,0.05);
-	
+
     // remove all contact joints
     dJointGroupEmpty(m_ContactGroup);
 
@@ -81,7 +83,7 @@ void Physics::Tick()
 void Physics::DrawLocator(dVector3 pos)
 {
 	float scale=0.5;
-	glBegin(GL_LINES);			
+	glBegin(GL_LINES);
 	glVertex3f(pos[0]-scale,pos[1],pos[2]);
 	glVertex3f(pos[0]+scale,pos[1],pos[2]);
 	glVertex3f(pos[0],pos[1]-scale,pos[2]);
@@ -93,7 +95,7 @@ void Physics::DrawLocator(dVector3 pos)
 
 void Physics::DrawAxis(dVector3 pos, dVector3 dir)
 {
-	glBegin(GL_LINES);			
+	glBegin(GL_LINES);
 	glVertex3f(pos[0],pos[1],pos[2]);
 	glVertex3f(pos[0]+dir[0],pos[1]+dir[1],pos[2]+dir[2]);
 	glEnd();
@@ -103,7 +105,7 @@ void Physics::Render()
 {
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	
+
 	for (map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); i++)
 	{
 		switch (i->second->Type)
