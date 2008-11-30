@@ -234,10 +234,10 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
             dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
-			dMassSetCappedCylinder(&m,1,2,Radius,Height);
+			dMassSetCylinder(&m,1,2,Radius,Height);
 			dMassAdjust(&m,Mass);
  			dBodySetMass(Ob->Body,&m);
- 			Ob->Bound = dCreateCCylinder(m_Space,Radius,Height);	
+ 			Ob->Bound = dCreateCylinder(m_Space,Radius,Height);	
         }
  	}
 	
@@ -347,7 +347,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
             dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
- 			Ob->Bound = dCreateCCylinder(m_Space,Radius,Height);	
+ 			Ob->Bound = dCreateCylinder(m_Space,Radius,Height);	
         }
  	}
 	

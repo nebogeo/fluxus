@@ -37,16 +37,19 @@ else:
         CollectsLocation = PLTLib + "/collects/"
 CollectsInstall = DESTDIR + CollectsLocation + "fluxus-" + FluxusVersion
 
-LibPaths     = ["/usr/lib",
-                                PLTLib,
-                                "../../libfluxus"]
+LibPaths     = [
+        PLTLib,
+        PLTLib+"/..",
+        "/usr/lib",
+        "../../libfluxus"]
 
-IncludePaths = ["/usr/local/include",
-                                "/usr/include",
-                                "/usr/local/include/freetype2",  # arg - freetype needs to be
-                                "/usr/include/freetype2",        # on the include path :(
-                                PLTInclude,
-                                "../../libfluxus/src"]
+IncludePaths = [
+        "/usr/local/include",
+        "/usr/include",
+        "/usr/local/include/freetype2",  # arg - freetype needs to be
+        "/usr/include/freetype2",        # on the include path :(
+        PLTInclude,
+        "../../libfluxus/src"]
 
 ################################################################################
 # Make the "one" environment for building and installing
