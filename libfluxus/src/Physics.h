@@ -77,6 +77,7 @@ public:
 	int CreateJointAMotor(int Ob1, int Ob2, dVector Axis);
 	void SetJointAngle(int ID, float force, float angle); 
     void SetJointParam(int ID, const string &Param, float Value);
+	void JointSlide(int ID, float force); 
 	///@}
 	
     int GetMaxObjectCount() { return m_MaxObjectCount; }

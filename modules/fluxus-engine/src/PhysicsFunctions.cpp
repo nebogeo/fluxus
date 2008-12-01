@@ -974,6 +974,47 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// joint-slide jointid-number force 
+// Returns: void
+// Description:
+// Applies the given force in the slider's direction. That is, it applies a force with magnitude force, 
+// in the direction slider's axis, to body1, and with the same magnitude but opposite direction to body2. 
+//
+// Example:
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-sliderjoint shape1 shape2 (vector 1 0 0)))
+// (joint-param j "FMax" 20)
+// (joint-param j "LoStop" -1)
+// (joint-param j "HiStop" 1)
+// 
+// (set-physics-debug #t)
+// 
+// (define (animate)
+//     (joint-slide j (* 5 (sin (time)))))
+// EndFunctionDoc
+Scheme_Object *joint_slide(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+   	ArgCheck("joint-slide", "if", argc, argv);
+	Engine::Get()->Physics()->JointSlide(IntFromScheme(argv[0]),FloatFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // set-max-physical max-number 
 // Returns: void
 // Description:
@@ -1347,6 +1388,7 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-amotorjoint", scheme_make_prim_w_arity(build_amotorjoint, "build-amotorjoint", 3, 3), env);
 	scheme_add_global("joint-param", scheme_make_prim_w_arity(joint_param, "joint-param", 3, 3), env);
 	scheme_add_global("joint-angle", scheme_make_prim_w_arity(joint_angle, "joint-angle", 3, 3), env);
+	scheme_add_global("joint-slide", scheme_make_prim_w_arity(joint_slide, "joint-slide", 2, 2), env);
 	scheme_add_global("set-max-physical", scheme_make_prim_w_arity(set_max_physical, "set-max-physical", 1, 1), env);
 	scheme_add_global("set-mass", scheme_make_prim_w_arity(set_mass, "set-mass", 2, 2), env);
 	scheme_add_global("gravity", scheme_make_prim_w_arity(gravity, "gravity", 1, 1), env);

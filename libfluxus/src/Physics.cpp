@@ -776,6 +776,21 @@ void Physics::SetJointAngle(int ID, float vel, float angle)
 	}
 }
 
+void Physics::JointSlide(int ID, float force)
+{
+	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
+	if (i==m_JointMap.end())
+	{
+		Trace::Stream<<"Physics::JointSlide : Joint ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+	
+	if (i->second->Type==SliderJoint)
+	{
+                dJointAddSliderForce(i->second->Joint, force);
+	}
+}
+
 void Physics::SetJointParam(int ID, const string &Param, float Value)
 { 
 	map<int,JointObject*>::iterator i = m_JointMap.find(ID);
