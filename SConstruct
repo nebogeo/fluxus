@@ -157,6 +157,9 @@ if not GetOption('clean'):
                         print "ERROR: '%s' must be installed!" % (lib)
                         Exit(1)
 
+        if not conf.CheckFunc("dInitOde2", "ode/odeinit.h"):
+            env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
+
         env = conf.Finish()
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])

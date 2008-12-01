@@ -580,7 +580,7 @@ public:
 
 	}
 
-	inline void settranslate(dVector &tr)
+	inline void settranslate(const dVector &tr)
 	{
     	m[3][0]=tr.x;
     	m[3][1]=tr.y;

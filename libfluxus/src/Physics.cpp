@@ -55,7 +55,11 @@ m_Slip2(0.9),
 m_SoftErp(0.25),
 m_SoftCfm(0.15)
 {
-	dInitODE();
+#ifdef GOODE_OLDE_ODE
+        dInitODE();
+#else
+	dInitODE2(0);
+#endif
 	m_World = dWorldCreate();
 	m_Space = dHashSpaceCreate(0);
 	m_ContactGroup = dJointGroupCreate(0);
@@ -189,15 +193,20 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	Ob->Body = dBodyCreate(m_World);
 	
 	State *ObState=Ob->Prim->GetState();
-  	
-	// get position
- 	dVector Pos=ObState->Transform.gettranslate();
+
+    // find the bounding box centre
+	dMatrix temp;
+    dBoundingBox old_box = Ob->Prim->GetBoundingBox(temp);
+
+    // ODE position is that of the centre of mass
+    dVector Pos = ObState->Transform.transform( (old_box.min + (old_box.max - old_box.min)/2) );
+    // center the object on it's bounding box centre
+    ObState->Transform.settranslate(ObState->Transform.gettranslate() - Pos);
 	
 	// extract the rotation from the state
 	dMatrix rotation = ObState->Transform;
 	rotation.remove_scale();
-	dVector zero(0,0,0);
-	rotation.settranslate(zero);
+	rotation.settranslate(dVector(0,0,0));
 	
 	// remove the rotation 
 	ObState->Transform*=rotation.inverse();
@@ -205,10 +214,13 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	// need to apply transform to object here, so we are left with an identity in the
 	// state transform for the object, and the bounding volume will be correct.
 	// can't undo this.	
-	Ob->Prim->ApplyTransform(true);  	
+	Ob->Prim->ApplyTransform(false);
 	
+    // make sure object's transform is in sync with physics right away, so we can use it in scripts directly
+    ObState->Transform=rotation;
+    ObState->Transform.settranslate(Pos);
+	  	
 	// get the bounding box from the fluxus object
-	dMatrix temp;
   	switch (Bound)
   	{
   		case BOX:
@@ -272,8 +284,8 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 
  	dGeomSetBody (Ob->Bound,Ob->Body);
 	
-	dBodySetAutoDisableFlag(Ob->Body, 1);	
-	  	
+	dBodySetAutoDisableFlag(Ob->Body, 1);
+
   	m_ObjectMap[ID]=Ob;
   	m_History.push_back(ID);
   	
@@ -303,23 +315,27 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	
 	State *ObState=Ob->Prim->GetState();
 	
- 	// get position
- 	dVector Pos=ObState->Transform.gettranslate();
+    // find the bounding box centre
+	dMatrix temp;
+    dBoundingBox old_box = Ob->Prim->GetBoundingBox(temp);
+
+    // ODE position is that of the centre of mass
+    dVector Pos = ObState->Transform.transform( (old_box.min + (old_box.max - old_box.min)/2) );
+    // center the object on it's bounding box centre
+    ObState->Transform.settranslate(ObState->Transform.gettranslate() - Pos);
 	
 	// extract the rotation from the state
 	dMatrix rotation = ObState->Transform;
 	rotation.remove_scale();
-	dVector zero(0,0,0);
-	rotation.settranslate(zero);
+	rotation.settranslate(dVector(0,0,0));
 	
 	// remove the rotation 
 	ObState->Transform*=rotation.inverse();
-	ObState->Transform.settranslate(zero);
-	
-  	// need to apply transform to object here, so we are left with an identity in the
-	// state transform for the object, and the bounding volume will be correct etc.
+		
+	// need to apply transform to object here, so we are left with an identity in the
+	// state transform for the object, and the bounding volume will be correct.
 	// can't undo this.	
-	Ob->Prim->ApplyTransform(false);  
+	Ob->Prim->ApplyTransform(false);
 	
  	ObState->Transform=rotation;
  	ObState->Transform.settranslate(Pos);
@@ -327,7 +343,6 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	// this tells ode to attach joints to the static environment if they are attached
 	// to this joint
 	Ob->Body = 0;
-	dMatrix temp;
   	switch (Bound)
   	{
   		case BOX:
