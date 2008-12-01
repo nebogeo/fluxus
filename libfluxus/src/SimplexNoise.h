@@ -47,21 +47,20 @@ class SimplexNoise {
 
 /** 1D, 2D, 3D and 4D float Perlin noise
  */
-    static float SimplexNoise::noise( float x );
-    static float SimplexNoise::noise( float x, float y );
-    static float SimplexNoise::noise( float x, float y, float z );
-    static float SimplexNoise::noise( float x, float y, float z, float w );
+    static float noise( float x );
+    static float noise( float x, float y );
+    static float noise( float x, float y, float z );
+    static float noise( float x, float y, float z, float w );
 
   private:
-    static unsigned char SimplexNoise::perm[];
-    static float  SimplexNoise::grad( int hash, float x );
-    static float  SimplexNoise::grad( int hash, float x, float y );
-    static float  SimplexNoise::grad( int hash, float x, float y , float z );
-    static float  SimplexNoise::grad( int hash, float x, float y, float z, float t );
+    static unsigned char perm[];
+    static float grad( int hash, float x );
+    static float grad( int hash, float x, float y );
+    static float grad( int hash, float x, float y , float z );
+    static float grad( int hash, float x, float y, float z, float t );
 };
 
 }
 
-#endif // SIMPLEXNOISE
-
+#endif // M_SIMPLEXNOISE
 
