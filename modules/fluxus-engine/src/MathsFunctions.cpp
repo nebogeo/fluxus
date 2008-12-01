@@ -932,7 +932,7 @@ Scheme_Object *snoise(int argc, Scheme_Object **argv)
 // noise real-number ...
 // Returns: real-number
 // Description:
-// Returns the Perlin Noise valua at specified coordinates.
+// Returns the Perlin Noise value at specified coordinates.
 // Example:
 // (noise 1.0 2.0) ; 2D noise
 // (noise 6.1 2.4 .5) ; 3D noise
@@ -970,6 +970,7 @@ Scheme_Object *noise(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // noise-seed unsigned-number
+// Returns: void
 // Description:
 // Sets the seed value for noise.
 // Example:
@@ -987,6 +988,7 @@ Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // noise-detail octaves-number falloff-number
+// Returns: void
 // Description:
 // Adjusts the character and level of detail produced by the Perlin noise function.
 // Example:
