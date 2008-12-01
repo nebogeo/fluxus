@@ -1,5 +1,9 @@
 Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
+0.16
+
+* added Perlin noise and Simplex noise functions (noise), (snoise)
+
 0.15
 
 * ported to PLT 3.99

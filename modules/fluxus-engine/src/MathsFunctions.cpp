@@ -18,6 +18,8 @@
 #include "SchemeHelper.h"
 #include "MathsFunctions.h"
 #include "dada.h"
+#include "Noise.h"
+#include "SimplexNoise.h"
 #include "FluxusEngine.h"
 
 using namespace MathsFunctions;
@@ -879,8 +881,145 @@ Scheme_Object *fmod(int argc, Scheme_Object **argv)
 	return scheme_make_double(ret);
 }
 
+// StartFunctionDoc-en
+// snoise real-number ...
+// Returns: real-number
+// Description:
+// Returns 1D/2D/3D/4D Simplex Noise in the range -1->1 depending on the number of parameters.
+// Example:
+// (snoise 1.0 2.0) ; 2D noise
+// (snoise 6.1 2.4 .5 1.3) ; 4D noise
+// EndFunctionDoc
+
+Scheme_Object *snoise(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	float ret=0;
+
+	switch (argc)
+	{
+		case 1:
+			ArgCheck("snoise", "f", argc, argv);
+			ret=SimplexNoise::noise(scheme_real_to_double(argv[0]));
+			break;
+		case 2:
+			ArgCheck("snoise", "ff", argc, argv);
+			ret=SimplexNoise::noise(scheme_real_to_double(argv[0]),
+									scheme_real_to_double(argv[1]));
+			break;
+		case 3:
+			ArgCheck("snoise", "fff", argc, argv);
+			ret=SimplexNoise::noise(scheme_real_to_double(argv[0]),
+									scheme_real_to_double(argv[1]),
+									scheme_real_to_double(argv[2]));
+			break;
+		case 4:
+			ArgCheck("snoise", "ffff", argc, argv);
+			ret=SimplexNoise::noise(scheme_real_to_double(argv[0]),
+									scheme_real_to_double(argv[1]),
+									scheme_real_to_double(argv[2]),
+									scheme_real_to_double(argv[3]));
+			break;
+		default:
+			assert(0);
+			break;
+	}
+	MZ_GC_UNREG();
+	return scheme_make_double(ret);
+}
+
+// StartFunctionDoc-en
+// noise real-number ...
+// Returns: real-number
+// Description:
+// Returns the Perlin Noise valua at specified coordinates.
+// Example:
+// (noise 1.0 2.0) ; 2D noise
+// (noise 6.1 2.4 .5) ; 3D noise
+// EndFunctionDoc
+
+Scheme_Object *noise(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	float ret=0;
+
+	switch (argc)
+	{
+		case 1:
+			ArgCheck("noise", "f", argc, argv);
+			ret=Noise::noise(scheme_real_to_double(argv[0]));
+			break;
+		case 2:
+			ArgCheck("noise", "ff", argc, argv);
+			ret=Noise::noise(scheme_real_to_double(argv[0]),
+							 scheme_real_to_double(argv[1]));
+			break;
+		case 3:
+			ArgCheck("noise", "fff", argc, argv);
+			ret=Noise::noise(scheme_real_to_double(argv[0]),
+							 scheme_real_to_double(argv[1]),
+							 scheme_real_to_double(argv[2]));
+			break;
+		default:
+			assert(0);
+			break;
+	}
+	MZ_GC_UNREG();
+	return scheme_make_double(ret);
+}
+
+// StartFunctionDoc-en
+// noise-seed unsigned-number
+// Description:
+// Sets the seed value for noise.
+// Example:
+// (noise-seed 1)
+// EndFunctionDoc
+
+Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("noise-seed", "i", argc, argv);
+	Noise::noise_seed((int)scheme_real_to_double(argv[0]));
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// noise-detail octaves-number falloff-number
+// Description:
+// Adjusts the character and level of detail produced by the Perlin noise function.
+// Example:
+// (noise-detail 4) ; noise with 4 octaves
+// (noise-detail 4 .5) ; noise with 4 octaves and .5 falloff
+// EndFunctionDoc
+
+Scheme_Object *noise_detail(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	switch (argc)
+	{
+		case 1:
+			ArgCheck("noise-detail", "i", argc, argv);
+			Noise::noise_detail((int)scheme_real_to_double(argv[0]));
+			break;
+
+		case 2:
+			ArgCheck("noise-detail", "if", argc, argv);
+			Noise::noise_detail((int)scheme_real_to_double(argv[0]),
+					scheme_real_to_double(argv[1]));
+			break;
+
+		default:
+			assert(0);
+			break;
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
 void MathsFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -911,8 +1050,12 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("qaxisangle", scheme_make_prim_w_arity(qaxisangle, "qaxisangle", 2, 2), env);
 	scheme_add_global("qmul", scheme_make_prim_w_arity(qmul, "qmul", 2, 2), env);
 	scheme_add_global("qnormalise", scheme_make_prim_w_arity(qnormalise, "qnormalise", 1, 1), env);
-	scheme_add_global("qtomatrix", scheme_make_prim_w_arity(qtomatrix, "qtomatrix", 1, 1), env);	
-	scheme_add_global("qconjugate", scheme_make_prim_w_arity(qconjugate, "qconjugate", 1, 1), env);	
-	scheme_add_global("fmod", scheme_make_prim_w_arity(fmod, "fmod", 2, 2), env);	
- 	MZ_GC_UNREG(); 
+	scheme_add_global("qtomatrix", scheme_make_prim_w_arity(qtomatrix, "qtomatrix", 1, 1), env);
+	scheme_add_global("qconjugate", scheme_make_prim_w_arity(qconjugate, "qconjugate", 1, 1), env);
+	scheme_add_global("fmod", scheme_make_prim_w_arity(fmod, "fmod", 2, 2), env);
+	scheme_add_global("snoise", scheme_make_prim_w_arity(noise, "snoise", 1, 4), env);
+	scheme_add_global("noise", scheme_make_prim_w_arity(noise, "noise", 1, 3), env);
+	scheme_add_global("noise-seed", scheme_make_prim_w_arity(noise_seed, "noise-seed", 1, 1), env);
+	scheme_add_global("noise-detail", scheme_make_prim_w_arity(noise_detail, "noise-detail", 1, 2), env);
+	MZ_GC_UNREG();
 }

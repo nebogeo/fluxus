@@ -50,7 +50,10 @@ Source = Split("src/PData.cpp \
 		src/OBJPrimitiveIO.cpp \
 		src/Evaluator.cpp \
 		src/Geometry.cpp \
-		src/PolyEvaluator.cpp")
+		src/PolyEvaluator.cpp \
+		src/Noise.cpp \
+		src/SimplexNoise.cpp"
+		)
 				
 env.StaticLibrary(source = Source, target = Target)
 
