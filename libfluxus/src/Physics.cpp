@@ -55,7 +55,7 @@ m_Slip2(0.9),
 m_SoftErp(0.25),
 m_SoftCfm(0.15)
 {
-	dInitODE2(0);
+	dInitODE();
 	m_World = dWorldCreate();
 	m_Space = dHashSpaceCreate(0);
 	m_ContactGroup = dJointGroupCreate(0);
