@@ -19,20 +19,20 @@
 #include "State.h"
 
 using namespace Fluxus;
-	
-ParticlePrimitive::ParticlePrimitive() 
+
+ParticlePrimitive::ParticlePrimitive()
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("c",new TypedPData<dColour>);
 	AddData("s",new TypedPData<dVector>);
 	AddData("r",new TypedPData<float>);
-	
+
 	// direct access for speed
 	PDataDirty();
 }
 
 ParticlePrimitive::ParticlePrimitive(const ParticlePrimitive &other) :
-Primitive(other) 
+Primitive(other)
 {
 	PDataDirty();
 }
@@ -41,9 +41,9 @@ ParticlePrimitive::~ParticlePrimitive()
 {
 }
 
-ParticlePrimitive* ParticlePrimitive::Clone() const 
+ParticlePrimitive* ParticlePrimitive::Clone() const
 {
-	return new ParticlePrimitive(*this); 
+	return new ParticlePrimitive(*this);
 }
 
 void ParticlePrimitive::PDataDirty()
@@ -92,7 +92,7 @@ void ParticlePrimitive::Render()
 		CameraDir.normalise();
 
 		dVector up(0,1,0);
-		up = ModelView.transform(up);
+		up = ModelView.transform_no_trans(up);
 		dVector across=up.cross(CameraDir);
 		across.normalise();
 		dVector down=across.cross(CameraDir);
@@ -119,7 +119,7 @@ void ParticlePrimitive::Render()
 }
 
 dBoundingBox ParticlePrimitive::GetBoundingBox(const dMatrix &space)
-{	
+{
 	dBoundingBox box;
 	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
@@ -144,6 +144,6 @@ void ParticlePrimitive::ApplyTransform(bool ScaleRotOnly)
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}
 	}
-	
+
 	GetState()->Transform.init();
 }
