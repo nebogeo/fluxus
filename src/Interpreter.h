@@ -29,7 +29,7 @@ class Repl;
 class Interpreter 
 {
 public:	
-	static void Register();
+	static void Register(Scheme_Env* se);
 	static void Initialise();
 	static void SetRepl(Repl *s);
 	static bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
