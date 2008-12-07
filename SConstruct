@@ -160,6 +160,11 @@ if not GetOption('clean'):
         if not conf.CheckFunc("dInitOde2", "ode/odeinit.h"):
             env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
 
+        # the ole version 0.25 does not include the declaration of lo_arg_size anymore
+        # This will be re-included in future version
+        if not conf.CheckFunc("lo_arg_size", "lo/lo_lowlevel.h"):
+            env.Append(CCFLAGS=' -DNO_LO_ARG_SIZE_DECL')
+
         env = conf.Finish()
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])

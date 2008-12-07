@@ -24,6 +24,12 @@
 
 using namespace std;
 
+#ifdef NO_LO_ARG_SIZE_DECL
+extern "C" {
+  size_t lo_arg_size (lo_type type, void * data);
+};
+#endif
+
 OSCServer::OSCServer(const string &Port) :
 m_Port(Port),
 m_Exit(false),
