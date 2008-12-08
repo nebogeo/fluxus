@@ -26,7 +26,7 @@
 
 namespace spiralcore
 {
-#define DEBUG
+//#define DEBUG
 
 inline float Linear(float bot,float top,float pos,float val1,float val2) 
 { 

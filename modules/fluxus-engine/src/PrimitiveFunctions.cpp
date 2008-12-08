@@ -404,6 +404,37 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// text-params width-number height-number stride-number wrap-number
+// Returns: primitiveid-number
+// Description:
+// Sets parameters for making fonts from texture maps. Defaults: 16/256 16/256 16 0
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *text_params(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("text=params", "sffffffffff", argc, argv);
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		TextPrimitive *tp = dynamic_cast<TextPrimitive *>(Grabbed);
+		if (tp)
+		{
+			tp->SetTextParams(FloatFromScheme(argv[1]),FloatFromScheme(argv[2]),
+							  IntFromScheme(argv[3]),IntFromScheme(argv[4]),
+							  FloatFromScheme(argv[5]),FloatFromScheme(argv[6]),
+							  FloatFromScheme(argv[10]));
+			tp->SetText(StringFromScheme(argv[0]),FloatFromScheme(argv[7]),
+						FloatFromScheme(argv[8]),FloatFromScheme(argv[9]));
+		}
+	}
+	return scheme_void;
+}	
+
+// StartFunctionDoc-en
 // build-nurbs-sphere hsegments rsegments
 // Returns: primitiveid-number
 // Description:
@@ -2070,6 +2101,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
+	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);

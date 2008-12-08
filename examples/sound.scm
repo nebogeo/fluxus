@@ -22,12 +22,7 @@
                   (play time (crush (mul (sine (mul 600 (adsr 0 0.1 0.1 2)))
                       (adsr 0 0.1 0.4 8)) (random 5) 0.5)))
   
-            (when (zmod clock 3)
-                (let ((n (+ (random 100) 110)))
-                  (play time (mul (adsr 0 0.4 0 0)
-                        (sine (add (note n) (mul 500 (sine (/ (note n) 5)))))))))
-
-            #;(clock-map
+            (clock-map
                 (lambda (n)
                         (play time 
                             (mul

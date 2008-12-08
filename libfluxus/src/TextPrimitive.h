@@ -48,6 +48,8 @@ public:
 	float GetTextWidth() { return m_TextWidth; }
 	float GetTextHeight() { return m_TextHeight; }
 	
+	void SetTextParams(float w, float h, int stride, int wrap, float xoff, float yoff, float crowd);
+	
 protected:
 	
 	float m_CharWidth;
@@ -56,6 +58,9 @@ protected:
 	float m_TextWidth;
 	float m_TextHeight;
 	int m_WrapChars;
+	float m_XOff;
+	float m_YOff;
+	float m_Crowd;
 	
 	friend istream &operator>>(istream &s, TextPrimitive &o);
 	friend ostream &operator<<(ostream &s, TextPrimitive &o);

@@ -373,14 +373,16 @@
 ;;
 ;; Authors
 ;; -------
-;; Alex Norman 
-;; Artem Baguinski
-;; Claude Heiland-Allen
-;; Dan Bethell
-;; Dave Griffiths 
-;; Gabor Papp
 ;; Glauber Alex Dias Prado
+;; Artem Baguinski
+;; Dan Bethell
 ;; Nik Gaffney
+;; Dave Griffiths 
+;; Claude Heiland-Allen
+;; Alex Norman 
+;; Gabor Papp
+;; Fabien Pelisson
+;; Jeff Rose
 ;; James Tittle
 ;;
 ;; "Computers are useless. They can only give you answers". 
@@ -396,14 +398,16 @@
 ;;
 ;; Autores
 ;; -------
-;; Alex Norman 
-;; Artem Baguinski
-;; Claude Heiland-Allen
-;; Dan Bethell
-;; Dave Griffiths 
-;; Gabor Papp
 ;; Glauber Alex Dias Prado
+;; Artem Baguinski
+;; Dan Bethell
 ;; Nik Gaffney
+;; Dave Griffiths 
+;; Claude Heiland-Allen
+;; Alex Norman 
+;; Gabor Papp
+;; Fabien Pelisson
+;; Jeff Rose
 ;; James Tittle
 ;;
 ;; "Computadores são inúteis. Eles só podem te dar respostas". 

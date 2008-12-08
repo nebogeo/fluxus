@@ -25,7 +25,10 @@ PolyPrimitive(PolyPrimitive::QUADS),
 m_CharWidth(charw),
 m_CharHeight(charh),
 m_CharStride(charstride),
-m_WrapChars(wrapchars)
+m_WrapChars(wrapchars),
+m_XOff(0),
+m_YOff(0),
+m_Crowd(0)
 {
 }
 
@@ -36,7 +39,10 @@ m_CharHeight(other.m_CharHeight),
 m_CharStride(other.m_CharStride),
 m_TextWidth(other.m_TextWidth),
 m_TextHeight(other.m_TextHeight),
-m_WrapChars(other.m_WrapChars)
+m_WrapChars(other.m_WrapChars),
+m_XOff(other.m_XOff),
+m_YOff(other.m_YOff),
+m_Crowd(other.m_Crowd)
 {
 }
 
@@ -59,13 +65,15 @@ void TextPrimitive::SetText(const string &s, float Width, float Height, float Zo
 		
 	w-=Zoom*50; //??? some constant scaling to covert from texture 
                 // coordinates to world space
-		
+
+	Clear();	
+
 	for (unsigned int n=0; n<s.size(); n++)
 	{
 		int pos=(int)s[n];
 
-		float S=(pos%m_CharStride)*m_CharWidth;
-		float T=(pos/m_CharStride)*m_CharHeight;
+		float S=(pos%m_CharStride)*m_CharWidth+m_XOff;
+		float T=(pos/m_CharStride)*m_CharHeight+m_YOff;
 		
 		dVector min(S,T,0);
 		dVector max(S+m_CharWidth,T+m_CharHeight,0);
@@ -88,9 +96,20 @@ void TextPrimitive::SetText(const string &s, float Width, float Height, float Zo
 		}
 		else
 		{
-			x+=w;
+			x+=(w - m_Crowd);
 		}
 	}
+}
+
+void TextPrimitive::SetTextParams(float w, float h, int stride, int wrap, float xoff, float yoff, float crowd)
+{
+	m_CharWidth=w;
+	m_CharHeight=h;
+	m_CharStride=stride;
+	m_WrapChars=wrap;
+	m_XOff=xoff;
+	m_YOff=yoff;
+	m_Crowd=crowd;
 }
 
 void TextPrimitive::Render()

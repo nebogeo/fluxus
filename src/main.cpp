@@ -148,7 +148,7 @@ void DisplayCallback()
   string fragment = app->GetScriptFragment();
   if (fragment!="")
     {
-      Interpreter::Interpret(fragment);
+        Interpreter::Interpret(fragment);
     }
 
   if (!Interpreter::Interpret(ENGINE_CALLBACK))
@@ -170,7 +170,9 @@ void ExitHandler()
 
 int run(Scheme_Env* se, int argc, char *argv[])
 {
-  Interpreter::Register(se);
+	// we create our own Scheme_Env in here, as we need 
+	// to be able to reset it with F6. Seems to be ok to ignore se...
+  Interpreter::Register();
   Interpreter::Initialise();
 
   srand(time(NULL));

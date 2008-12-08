@@ -121,41 +121,42 @@ void AsyncSampleLoader::LoadLoop()
 		{
 			cerr<<"Error opening ["<<Item.Name<<"]"<<endl;
 		}
-		
-		unsigned short channels=0;
-		unsigned int size=0;
-		short *data = LoadWav(file,size,channels);
-		size/=2; // bytes -> samples
-		
-		if (data)
+		else
 		{
-			unsigned int samples=size/channels;
-			Item.SamplePtr->Allocate(samples);
+			unsigned short channels=0;
+			unsigned int size=0;
+			short *data = LoadWav(file,size,channels);
+			size/=2; // bytes -> samples
 			
-			// mix down to mono if need be
-			if (channels>1)
+			if (data)
 			{
-				int from=0;
-				for (unsigned int n=0; n<samples; n++)
+				unsigned int samples=size/channels;
+				Item.SamplePtr->Allocate(samples);
+				
+				// mix down to mono if need be
+				if (channels>1)
 				{
-					for (int c=0; c<channels; c++)
+					int from=0;
+					for (unsigned int n=0; n<samples; n++)
 					{
-						//cerr<<n<<endl; // 60414
-						Item.SamplePtr->Set(n,((*Item.SamplePtr)[n]+(data[from++]/32767.0f))/(float)channels);
+						for (int c=0; c<channels; c++)
+						{
+							//cerr<<n<<endl; // 60414
+							Item.SamplePtr->Set(n,((*Item.SamplePtr)[n]+(data[from++]/32767.0f))/(float)channels);
+						}
 					}
 				}
-			}
-			else
-			{
-				for (unsigned int n=0; n<size; n++)
+				else
 				{
-					Item.SamplePtr->Set(n,data[n]/32767.0f);
+					for (unsigned int n=0; n<size; n++)
+					{
+						Item.SamplePtr->Set(n,data[n]/32767.0f);
+					}
 				}
+				delete[] data;
 			}
-			delete[] data;
+			fclose(file);
 		}
-		fclose(file);
-		
 		sleep(1);
 	}		
 	pthread_mutex_unlock(m_Mutex);

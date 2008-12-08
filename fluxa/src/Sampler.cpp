@@ -112,7 +112,7 @@ void Sampler::Process(uint32 BufSize, Sample &left, Sample &right)
 		// check we still have the sample
 		if (sample != NULL)
 		{			
-			float Volume = ch->Volume*m_Globals.Volume*0.3;
+			float Volume = ch->Volume*m_Globals.Volume*10.0f;
 			float Speed =  (ch->Frequency/440.0)*(m_Globals.Frequency/440.0);
 			
 			float Pan = 0;

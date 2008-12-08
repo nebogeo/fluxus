@@ -14,7 +14,6 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <assert.h>
 #include "SchemeHelper.h"
 #include "MathsFunctions.h"
 #include "dada.h"
@@ -889,6 +888,16 @@ Scheme_Object *fmod(int argc, Scheme_Object **argv)
 // Example:
 // (snoise 1.0 2.0) ; 2D noise
 // (snoise 6.1 2.4 .5 1.3) ; 4D noise
+// 
+// ; example on a pixel prim
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (snoise (* 0.1 (modulo i (pixels-width)))
+//                     (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
 // EndFunctionDoc
 
 Scheme_Object *snoise(int argc, Scheme_Object **argv)
@@ -921,7 +930,9 @@ Scheme_Object *snoise(int argc, Scheme_Object **argv)
 									scheme_real_to_double(argv[3]));
 			break;
 		default:
-			assert(0);
+			Trace::Stream<<"snoise - wrong number of arguments"<<endl;
+			MZ_GC_UNREG();
+			return scheme_make_double(0);
 			break;
 	}
 	MZ_GC_UNREG();
@@ -936,6 +947,16 @@ Scheme_Object *snoise(int argc, Scheme_Object **argv)
 // Example:
 // (noise 1.0 2.0) ; 2D noise
 // (noise 6.1 2.4 .5) ; 3D noise
+//
+// ; example on a pixel prim
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (noise (* 0.1 (modulo i (pixels-width)))
+//                    (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
 // EndFunctionDoc
 
 Scheme_Object *noise(int argc, Scheme_Object **argv)
@@ -961,7 +982,9 @@ Scheme_Object *noise(int argc, Scheme_Object **argv)
 							 scheme_real_to_double(argv[2]));
 			break;
 		default:
-			assert(0);
+			Trace::Stream<<"noise - wrong number of arguments"<<endl;
+			MZ_GC_UNREG();
+			return scheme_make_double(0);
 			break;
 	}
 	MZ_GC_UNREG();
@@ -1013,7 +1036,7 @@ Scheme_Object *noise_detail(int argc, Scheme_Object **argv)
 			break;
 
 		default:
-			assert(0);
+			Trace::Stream<<"noise-detail - wrong number of arguments"<<endl;
 			break;
 	}
 	MZ_GC_UNREG();
@@ -1055,7 +1078,7 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("qtomatrix", scheme_make_prim_w_arity(qtomatrix, "qtomatrix", 1, 1), env);
 	scheme_add_global("qconjugate", scheme_make_prim_w_arity(qconjugate, "qconjugate", 1, 1), env);
 	scheme_add_global("fmod", scheme_make_prim_w_arity(fmod, "fmod", 2, 2), env);
-	scheme_add_global("snoise", scheme_make_prim_w_arity(noise, "snoise", 1, 4), env);
+	scheme_add_global("snoise", scheme_make_prim_w_arity(snoise, "snoise", 1, 4), env);
 	scheme_add_global("noise", scheme_make_prim_w_arity(noise, "noise", 1, 3), env);
 	scheme_add_global("noise-seed", scheme_make_prim_w_arity(noise_seed, "noise-seed", 1, 1), env);
 	scheme_add_global("noise-detail", scheme_make_prim_w_arity(noise_detail, "noise-detail", 1, 2), env);

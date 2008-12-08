@@ -39,10 +39,8 @@ Scheme_Object *Interpreter::m_OutWritePort=NULL;
 Scheme_Object *Interpreter::m_ErrWritePort=NULL;
 std::string Interpreter::m_Language;
 	
-void Interpreter::Register(Scheme_Env* se)
+void Interpreter::Register()
 {
-  Interpreter::m_Scheme = se;
-
 	MZ_GC_DECL_REG(0);	
     MZ_GC_REG();
 
@@ -64,6 +62,8 @@ void Interpreter::Initialise()
 	MZ_GC_VAR_IN_REG(0, v);
     MZ_GC_VAR_IN_REG(1, config);
 	MZ_GC_REG();
+
+	m_Scheme=scheme_basic_env();
 
 	scheme_pipe(&m_OutReadPort,&m_OutWritePort);
 	scheme_pipe(&m_ErrReadPort,&m_ErrWritePort);

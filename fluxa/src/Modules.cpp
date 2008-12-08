@@ -179,7 +179,7 @@ void WaveTable::Trigger(float time, float pitch, float slidepitch, float vol)
 {
 	m_TargetPitch=pitch;
 	if (m_SlideLength==0) m_Pitch=pitch; 
-	m_Volume=vol;
+	m_Volume=vol*1.0f;
 	m_SlideTime=0;
 }
 
@@ -297,7 +297,7 @@ void SimpleWave::Trigger(float time, float pitch, float slidepitch, float vol)
 {
 	m_Pitch=pitch; 
 	m_SlidePitch=slidepitch; 
-	m_Volume=vol;
+	m_Volume=vol*1.0;
 }
 
 void SimpleWave::Process(unsigned int BufSize, Sample &In)
@@ -471,7 +471,7 @@ Module(SampleRate)
 	m_SampleTime=1.0/(float)m_SampleRate;
 	Reset();
 	m_Decay=1.0f;
-	m_Volume=0.1f;
+	m_Volume=1.0f;
 }
 	
 void SimpleEnvelope::Reset()
