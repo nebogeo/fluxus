@@ -593,19 +593,6 @@ void Renderer::DrawText(const string &Text)
 	glPopMatrix();	
 }
 
-void Renderer::ShowCursor(bool s)
-{
-	if (s)
-	{
-		glutSetCursor(GLUT_CURSOR_INHERIT); 
-	}
-	else 
-	{
-		glutSetCursor(GLUT_CURSOR_NONE); 
-	}
-
-}
-
 void Renderer::DrawBuffer(GLenum mode)
 {
 	glDrawBuffer(mode);

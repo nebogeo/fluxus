@@ -132,7 +132,6 @@ public:
 	void GetResolution(int &x, int &y)       { x=m_Width; y=m_Height; }
 	TexturePainter *GetTexturePainter()      { return TexturePainter::Get(); }
 	void ShowAxis(bool s)                    { m_ShowAxis=s; }
-	void ShowCursor(bool s);
 	void SetBGColour(const dColour &s)       { m_BGColour=s; }
 	void SetClearFrame(bool s)               { m_ClearFrame=s; }
 	void SetClearZBuffer(bool s)             { m_ClearZBuffer=s; }
