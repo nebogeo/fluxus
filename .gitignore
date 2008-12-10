@@ -1,0 +1,16 @@
+CVS
+*.o
+*.os
+/tags
+*~
+*.so
+lib*.a
+/fluxus
+/fluxa/fluxa
+/.sconf_temp
+/config.log
+/src/base.c
+.sconsign.dblite
+helpmap.scm
+moc_*.cc
+*.pyc
