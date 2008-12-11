@@ -260,8 +260,7 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
  	ArgCheck("lock-camera", "i", argc, argv);
-    Engine::Get()->GetCamera()->LockCamera(
-		Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+    Engine::Get()->GetCamera()->LockCamera( IntFromScheme(argv[0]) );
 	MZ_GC_UNREG(); 
     return scheme_void;
 }

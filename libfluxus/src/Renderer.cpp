@@ -321,7 +321,7 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	}
 
 	RenderLights(true); // camera locked
-	Cam.DoCamera();
+	Cam.DoCamera(this);
 	RenderLights(false); // world space
 	
 	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);

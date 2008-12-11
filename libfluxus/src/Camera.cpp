@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include "Renderer.h"
 #include "Camera.h"
 
 using namespace Fluxus;
@@ -21,7 +22,7 @@ using namespace Fluxus;
 Camera::Camera() :
 m_Initialised(false),
 m_Ortho(false),
-m_CameraAttached(NULL),
+m_CameraAttached(0),
 m_CameraLag(0),
 m_Up(-1),
 m_Down(1),
@@ -49,26 +50,27 @@ void Camera::DoProjection()
   	else glFrustum(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
 }
 
-void Camera::DoCamera()
+void Camera::DoCamera(Renderer * renderer)
 {
 	glMultMatrixf(m_Transform.arr());
 
 	if (m_CameraAttached)
 	{
+        dMatrix worldmat = renderer->GetGlobalTransform(m_CameraAttached).inverse();
 		if (m_CameraLag!=0)
 		{
-			m_LockedMatrix.blend(m_CameraAttached->GetState()->Transform.inverse(),m_CameraLag);
+			m_LockedMatrix.blend(worldmat,m_CameraLag);
 		}
 		else
 		{
-			m_LockedMatrix=m_CameraAttached->GetState()->Transform.inverse();
+			m_LockedMatrix=worldmat;
 		}
 
 		glMultMatrixf(m_LockedMatrix.arr());		
 	}
 }
 
-void Camera::LockCamera(Primitive *p)
+void Camera::LockCamera(int p)
 {
      m_CameraAttached=p;
 }

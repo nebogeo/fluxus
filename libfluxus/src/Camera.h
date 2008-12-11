@@ -19,9 +19,11 @@
 
 #include "Primitive.h"
 
+
 namespace Fluxus
 {
 
+class Renderer;
 //////////////////////////////////////////////////////
 /// The fluxus camera
 class Camera
@@ -43,7 +45,7 @@ public:
 	void DoProjection();
 	
 	/// Apply the camera matrix to the stack
-	void DoCamera();
+	void DoCamera(Renderer * renderer);
 	///@}
 	
 	/////////////////////////////////////////////
@@ -56,7 +58,7 @@ public:
 	float GetUp() { return m_Up; }
 	float GetLeft() { return m_Left; }
 	/// Lock the camera to this primitive's position
-	void LockCamera(Primitive *p);
+	void LockCamera(int p);
 	void SetCameraLag(float s)               { m_CameraLag=s; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
@@ -75,7 +77,7 @@ private:
 	bool m_Initialised;
 	dMatrix m_Transform;
  	bool  m_Ortho;
-	Primitive *m_CameraAttached;
+	int m_CameraAttached;
 	float m_CameraLag;
 	dMatrix  m_LockedMatrix;
 	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
