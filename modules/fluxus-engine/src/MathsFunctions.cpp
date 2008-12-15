@@ -744,7 +744,7 @@ Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("qaxisangle", "vf", argc, argv);
 	dQuat q;
-	q.setaxisangle(VectorFromScheme(argv[0]),scheme_real_to_double(argv[1]));
+	q.setAxisAngle(VectorFromScheme(argv[0]),scheme_real_to_double(argv[1]));
 	MZ_GC_UNREG(); 
 	return FloatsToScheme(q.arr(),4);
 }

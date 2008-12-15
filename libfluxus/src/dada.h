@@ -43,6 +43,11 @@ float RandFloat();
 float RandRange(float L, float H);
 void  dSinCos(float a, float &s, float &c);
 
+template<class T> T clamp(T x, T mi, T ma) 
+{
+    return std::min( ma, std::max( mi, x));
+}
+
 class dVector
 {
 public:
@@ -776,7 +781,7 @@ public:
 		m[0][3]=glm[3]; m[1][3]=glm[7]; m[2][3]=glm[11]; m[3][3]=glm[15];
 	}
 
-	inline void transpose()
+	inline dMatrix getTranspose() const
 	{
 		dMatrix t;
 		for (int i=0; i<4; i++)
@@ -786,8 +791,13 @@ public:
             	t.m[i][j]=m[j][i];
 			}
 		}
-    	*this=t;
+    	return t;
 	}
+
+    inline void transpose()
+    {
+        *this = getTranspose();
+    }
 
 	inline dMatrix inverse() const
 	{
@@ -858,7 +868,7 @@ public:
 		Trace::Stream<<d1<<" "<<d2<<" "<<z<<endl;*/
 	}
 
-	inline void aim(dVector v, dVector up)
+	inline void aim(dVector v, const dVector& up)
 	{
 		v.normalise();
 		dVector l=v.cross(up);
@@ -871,7 +881,7 @@ public:
 		m[2][0]=u.x; m[2][1]=u.y; m[2][2]=u.z;	
 	}
 
-	inline void blend(dMatrix other, float amount)
+	inline void blend(const dMatrix& other, float amount)
 	{
 		for (int j=0; j<4; j++)
 		{
@@ -881,6 +891,8 @@ public:
 			}
 		}
 	}
+
+    void RigidBlend(const dMatrix& other, float amount);
 	
     friend ostream &operator<<(ostream &os, dMatrix const &om);
 
@@ -916,23 +928,49 @@ public:
 	dQuat():x(0),y(0),z(0),w(1){}
 	dQuat(float x, float y, float z, float w):x(x),y(y),z(z),w(w){}
 	dQuat(const dQuat& q):x(q.x),y(q.y),z(q.z),w(q.w){}
+
+    dQuat& operator=(const dQuat& q) 
+    { x = q.x; y = q.y; z = q.z; w = q.w; return *this; }
 	
 	// conversions
 	dMatrix toMatrix() const;
+    dQuat(const dMatrix& m); // from matrix
+    void toAxisAngle(dVector& axis, float& angle) const;
 	
 	// operations
 	dQuat conjugate() const;
-	void setaxisangle(dVector axis, float angle);
+	void setAxisAngle(dVector axis, float angle);
+    float dot(const dQuat& q) const 
+    { return x*q.x + y*q.y + z*q.x + w*q.w; }
 	
 	// make multiply look like multiply
 	dQuat operator* (const dQuat&qR) const;
+    inline dQuat operator+ (const dQuat& q) const 
+    { return dQuat(x+q.x, y+q.y, z+q.z, w+q.w); }
+    inline dQuat operator- (const dQuat& q) const 
+    { return dQuat(x-q.x, y-q.y, z-q.z, w-q.w); }
+	inline dQuat operator* (float a) const
+    { return dQuat(a*x, a*y, a*z, a*w); }
 	
 	void renorm();
+    inline dQuat getNormlised() const
+    {
+        dQuat res = *this;
+        res.renorm();
+        return res;
+    }
+
 	float *arr() {return &x;}
 	
 	// the data
 	float x,y,z,w;
 };
+
+dQuat slerp(const dQuat& from, const dQuat& to, float t);
+
+inline float dot(const dQuat& a, const dQuat& b) { return a.dot(b); }
+inline dQuat operator*(float a, const dQuat& q) { return q * a; }
+
 
 ////
 

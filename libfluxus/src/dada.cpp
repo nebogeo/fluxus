@@ -232,6 +232,16 @@ ostream &Fluxus::operator<<(ostream &os, dVertex const &v)
 
 ////
 
+void dMatrix::RigidBlend(const dMatrix& other, float amount)
+{
+    dQuat qa = dQuat(*this), qb = dQuat(other);
+    qa.renorm();
+    qb.renorm();
+    dMatrix mat = slerp(qa, qb, amount).toMatrix();
+    mat.settranslate( gettranslate() * (1.0-amount) + other.gettranslate() * amount);
+    *this = mat;
+}
+
 ostream &Fluxus::operator<<(ostream &os, dMatrix const &om)
 {
     for (int j=0; j<4; j++)
@@ -317,19 +327,11 @@ dMatrix dQuat::toMatrix() const
 	float wx = w*xs, wy = w*ys, wz = w*zs;
 	float xx = x*xs, xy = x*ys, xz = x*zs;
 	float yy = y*ys, yz = y*zs, zz = z*zs;
-	return dMatrix(1.0f - (yy + zz),
-			   xy + wz,
-			   xz - wy,
-			   0,
-			   xy - wz,          
-			   1.0f - (xx + zz),
-			   yz + wx,
-			   0,
-			   xz + wy,          
-			   yz - wx,          
-			   1.0f - (xx + yy),
-			   0, 0, 0, 0, 1.0f);
-
+	return 
+        dMatrix(1.0f - (yy + zz), xy + wz, xz - wy, 0,
+			   xy - wz, 1.0f - (xx + zz), yz + wx, 0,
+			   xz + wy, yz - wx, 1.0f - (xx + yy), 0, 
+               0, 0, 0, 1.0f);
 }
 
 // operations
@@ -358,7 +360,7 @@ void dQuat::renorm()
 	w *= Nq;
 }
 
-void dQuat::setaxisangle(dVector axis, float angle)
+void dQuat::setAxisAngle(dVector axis, float angle)
 { 
 	angle*=0.017453292;
 	w = cos(angle/2);
@@ -367,6 +369,82 @@ void dQuat::setaxisangle(dVector axis, float angle)
 	x=axis.x;
 	y=axis.y;
 	z=axis.z;
+}
+
+dQuat::dQuat(const dMatrix& mat)
+{
+    float tr, s, q[4];
+    int i, j, k;
+
+    int nxt[3] = {1, 2, 0};
+
+    tr = mat.m[0][0] + mat.m[1][1] + mat.m[2][2] + 1.0f;
+
+    if (tr > 0.0) {
+        s = sqrt (tr);
+        w = s / 2.0;
+        s = 0.5 / s;
+        x = (mat.m[2][1] - mat.m[1][2]) * s;
+        y = (mat.m[0][2] - mat.m[2][0]) * s;
+        z = (mat.m[1][0] - mat.m[0][1]) * s;
+    } else {		
+        i = 0;
+        if (mat.m[1][1] > mat.m[0][0]) i = 1;
+        if (mat.m[2][2] > mat.m[i][i]) i = 2;
+        j = nxt[i];
+        k = nxt[j];
+
+        s = sqrt ((mat.m[i][i] - (mat.m[j][j] + mat.m[k][k])) + 1.0);
+
+        q[i] = s * 0.5;
+
+        if (s != 0.0) s = 0.5 / s;
+
+        q[3] = (mat.m[k][j] - mat.m[j][k]) * s;
+        q[j] = (mat.m[j][i] + mat.m[i][j]) * s;
+        q[k] = (mat.m[k][i] + mat.m[i][k]) * s;
+
+        x = q[0];
+        y = q[1];
+        z = q[2];
+        w = q[3];
+    }
+}
+
+dQuat Fluxus::slerp(const dQuat& from, const dQuat& to, float t)
+{
+    float cosa = dot(from,to);
+
+    // too close
+    if (cosa > 0.9995) {
+        dQuat q = from + t*(to-from);
+        q.renorm();
+        return q;
+    }
+
+    cosa = clamp(cosa, -1.0f, 1.0f);
+    float angle = acos(cosa) * t;
+
+    dQuat q = to - from * cosa;
+    q.renorm();
+
+    return from * cos(angle) + to * sin(angle);
+}
+
+
+void dQuat::toAxisAngle(dVector& axis, float& angle) const
+{
+    dQuat n = *this;
+    n.renorm();
+
+    float cos_a = n.w;
+    angle = acos( cos_a ) * 2.0;
+
+    float sin_a = sqrt( 1.0 - cos_a * cos_a );
+    if ( fabs( sin_a ) < 0.0005 ) sin_a = 1.0;
+    axis.x = n.x / sin_a;
+    axis.y = n.y / sin_a;
+    axis.z = n.z / sin_a;
 }
 
 
