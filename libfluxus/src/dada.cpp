@@ -234,11 +234,13 @@ ostream &Fluxus::operator<<(ostream &os, dVertex const &v)
 
 void dMatrix::RigidBlend(const dMatrix& other, float amount)
 {
-    dQuat qa = dQuat(*this), qb = dQuat(other);
+    dQuat qa(*this), qb(other);
     qa.renorm();
     qb.renorm();
     dMatrix mat = slerp(qa, qb, amount).toMatrix();
-    mat.settranslate( gettranslate() * (1.0-amount) + other.gettranslate() * amount);
+    mat.settranslate( lerp( gettranslate(), other.gettranslate(), amount) );
+    // here scale is still 1.0 because of quaternion normalisation
+    mat.scale( lerp( get_scale(), other.get_scale(), amount) );
     *this = mat;
 }
 

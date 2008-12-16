@@ -207,6 +207,14 @@ dVector operator-(dVector rhs);
 ostream &operator<<(ostream &os, dVector const &om);
 istream &operator>>(istream &is, dVector &om);
 
+// linear interpolation between two vectors. 
+// t=0.0 => lhs
+// t=1.0 => rhs
+inline dVector lerp(const dVector& lhs, const dVector& rhs, float t)
+{
+    return lhs + (rhs - lhs) * t;
+}
+
 ////
 
 // colour modes
@@ -378,12 +386,19 @@ public:
 		memset(m,0,sizeof(float)*16);
 	}
 
-	inline dVector get_hori_i() {return dVector(m[0][0],m[1][0],m[2][0]);}
-	inline dVector get_hori_j() {return dVector(m[0][1],m[1][1],m[2][1]);}
-	inline dVector get_hori_k() {return dVector(m[0][2],m[1][2],m[2][2]);}
-	inline dVector get_vert_i() {return dVector(m[0][0],m[0][1],m[0][2]);}
-	inline dVector get_vert_j() {return dVector(m[1][0],m[1][1],m[1][2]);}
-	inline dVector get_vert_k() {return dVector(m[2][0],m[2][1],m[2][2]);}
+	inline dVector get_hori_i() const {return dVector(m[0][0],m[1][0],m[2][0]);}
+	inline dVector get_hori_j() const {return dVector(m[0][1],m[1][1],m[2][1]);}
+	inline dVector get_hori_k() const {return dVector(m[0][2],m[1][2],m[2][2]);}
+	inline dVector get_vert_i() const {return dVector(m[0][0],m[0][1],m[0][2]);}
+	inline dVector get_vert_j() const {return dVector(m[1][0],m[1][1],m[1][2]);}
+	inline dVector get_vert_k() const {return dVector(m[2][0],m[2][1],m[2][2]);}
+	
+    inline void set_hori_i(const dVector& v) { m[0][0] = v.x; m[1][0] = v.y; m[2][0] = v.z; }
+    inline void set_hori_j(const dVector& v) { m[0][1] = v.x; m[1][1] = v.y; m[2][1] = v.z; }
+    inline void set_hori_k(const dVector& v) { m[0][2] = v.x; m[1][2] = v.y; m[2][2] = v.z; }
+    inline void set_vert_i(const dVector& v) { m[0][0] = v.x; m[0][1] = v.y; m[0][2] = v.z; }
+    inline void set_vert_j(const dVector& v) { m[1][0] = v.x; m[1][1] = v.y; m[1][2] = v.z; }
+    inline void set_vert_k(const dVector& v) { m[2][0] = v.x; m[2][1] = v.y; m[2][2] = v.z; }
 
 	inline const dMatrix &operator=(dMatrix const &rhs)
 	{
@@ -718,6 +733,11 @@ public:
     	return *this;
 	}
 
+    inline dMatrix& scale(const dVector& s)
+    {
+        return scale(s.x, s.y, s.z);
+    }
+
 	inline dVector transform(dVector const &p) const
 	{
     	dVector t;
@@ -836,14 +856,18 @@ public:
 
 	inline void remove_scale()
 	{
-		dVector xvec = get_hori_i().normalise();
-		dVector yvec = get_hori_j().normalise();
-		dVector zvec = get_hori_k().normalise();
-
-		m[0][0]=xvec.x; m[1][0]=xvec.y; m[2][0]=xvec.z;
-		m[0][1]=yvec.x; m[1][1]=yvec.y; m[2][1]=yvec.z;
-		m[0][2]=zvec.x; m[1][2]=zvec.y; m[2][2]=zvec.z;
+		set_hori_i( get_hori_i().normalise() );
+		set_hori_j( get_hori_j().normalise() );
+		set_hori_k( get_hori_k().normalise() );
 	}
+
+    inline dVector get_scale() const 
+    {
+        return dVector(
+                get_hori_i().mag(),
+                get_hori_j().mag(),
+                get_hori_k().mag());
+    }
 
 	inline void extract_euler(float &x, float &y, float &z) const
 	{
