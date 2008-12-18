@@ -1,7 +1,7 @@
 This is an experimental binding of fluxus to python. 
 Intended as a simple sketchbook tool for games design rather than livecoded 
 visuals, as personally I think python is more suited to that than scheme is.
-
+ 
 I might flesh this out a little more in the future, but its highly labcoat stuff
 for now... feel free to expand.
 
