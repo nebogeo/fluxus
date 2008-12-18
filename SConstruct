@@ -110,7 +110,8 @@ LibList = [["m", "math.h"],
                 ["jack", "jack/jack.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
-                ["lo", "lo/lo.h"]]
+                ["lo", "lo/lo.h"],
+                ["asound", "alsa/asoundlib.h"]]
 
 
 if env['PLATFORM'] == 'posix':

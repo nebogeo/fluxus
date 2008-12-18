@@ -430,7 +430,8 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 			tp->SetText(StringFromScheme(argv[0]),FloatFromScheme(argv[7]),
 						FloatFromScheme(argv[8]),FloatFromScheme(argv[9]));
 		}
-	}
+	}	
+	MZ_GC_UNREG(); 
 	return scheme_void;
 }	
 
