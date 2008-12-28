@@ -26,6 +26,7 @@
 #include "LocatorPrimitive.h"
 #include "PixelPrimitive.h"
 #include "BlobbyPrimitive.h"
+#include "TypePrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
 #include "Evaluator.h"
@@ -401,6 +402,48 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 	MZ_GC_UNREG(); 
 	
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TextPrim));
+}
+
+// StartFunctionDoc-en
+// build-type text-string
+// Returns: primitiveid-number
+// Description:
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *build_type(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-type", "ss", argc, argv);
+		
+	// 16*16 grid of letters
+	TypePrimitive *TypePrim = new TypePrimitive();
+	TypePrim->LoadTTF(StringFromScheme(argv[0]));
+	TypePrim->SetText(StringFromScheme(argv[1]));
+	MZ_GC_UNREG(); 
+	
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+}
+
+// StartFunctionDoc-en
+// build-extruded-type text-string
+// Returns: primitiveid-number
+// Description:
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-extruded-type", "ssf", argc, argv);
+		
+	// 16*16 grid of letters
+	TypePrimitive *TypePrim = new TypePrimitive();
+	TypePrim->LoadTTF(StringFromScheme(argv[0]));
+	TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+	MZ_GC_UNREG(); 
+	
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 }
 
 // StartFunctionDoc-en
@@ -2094,6 +2137,8 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
+	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
+	scheme_add_global("build-extruded-type", scheme_make_prim_w_arity(build_extruded_type, "build-extruded-type", 3, 3), env);
 	scheme_add_global("load-primitive", scheme_make_prim_w_arity(load_primitive, "load-primitive", 1, 1), env);
 	scheme_add_global("save-primitive", scheme_make_prim_w_arity(save_primitive, "save-primitive", 1, 1), env);
 	scheme_add_global("clear-geometry-cache", scheme_make_prim_w_arity(clear_geometry_cache, "clear-geometry-cache", 0, 0), env);
