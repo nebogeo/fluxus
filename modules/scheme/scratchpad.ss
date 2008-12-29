@@ -17,10 +17,10 @@
 (require "fluxus-engine.ss"
 	     "fluxus-audio.ss"
          "fluxus-osc.ss"
-		 fluxus-015/input
-		 fluxus-015/help
-		 fluxus-015/camera
-		 fluxus-015/building-blocks
+		 fluxus-016/input
+		 fluxus-016/help
+		 fluxus-016/camera
+		 fluxus-016/building-blocks
 		 (only-in srfi/13 string-pad))
 		 
 (provide 

@@ -1,3 +1,3 @@
-(require fluxus-015/frisbee)
+(require fluxus-016/frisbee)
 
 (scene (list (object)))

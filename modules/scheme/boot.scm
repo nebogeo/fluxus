@@ -28,7 +28,7 @@
 
 ; now require everything
 (require scheme/pretty)
-(require fluxus-015/fluxus)
+(require fluxus-016/fluxus)
 
 ; load the helpmap
 (init-help (string-append (path->string (car (current-library-collection-paths)))

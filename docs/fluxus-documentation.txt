@@ -1587,7 +1587,7 @@ which is a scheme binding to sc)
 
 Example:
 
-(require fluxus-015/fluxa)
+(require fluxus-016/fluxa)
 
 (seq
   (lambda (time clock)

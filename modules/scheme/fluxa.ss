@@ -9,7 +9,7 @@
 ;; EndSectionDoc 
 #lang scheme/base
 
-(require fluxus-015/scratchpad 
+(require fluxus-016/scratchpad 
 	     "fluxus-osc.ss" 
 	     "fluxus-engine.ss" 
 	      scheme/list)

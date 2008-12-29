@@ -2,7 +2,7 @@
 ; make sure fluxa is running and connected 
 ; to jack [run 'fluxa' on the command line].
 
-(require fluxus-015/fluxa)
+(require fluxus-016/fluxa)
 
 (seq  
     (lambda (time clock)

@@ -8,7 +8,7 @@
 ; update if the model deforms or moves.
 
 ; need to include the optional extras
-(require fluxus-015/tricks)
+(require fluxus-016/tricks)
 
 (clear)
 

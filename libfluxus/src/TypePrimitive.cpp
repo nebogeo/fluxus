@@ -19,9 +19,9 @@
 #include "State.h"
 
 using namespace Fluxus;
-	
+
 #define FT_SCALE 0.001f	
-	
+
 TypePrimitive::TypePrimitive() 
 {
 }

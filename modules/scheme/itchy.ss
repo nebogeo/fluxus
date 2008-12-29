@@ -2,8 +2,8 @@
 
 #lang scheme/base
 (require scheme/class)
-(require fluxus-015/fluxus)
-(require fluxus-015/time)
+(require fluxus-016/fluxus)
+(require fluxus-016/time)
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; a client for itchy - a multitimbral lo tech rave synth and sampler
