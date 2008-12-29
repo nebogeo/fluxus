@@ -203,23 +203,11 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
 		int end = glyph->outline.contours[c]+1;
-		if (winding)
+		for(int p = start; p<end; p++)
 		{
-			for(int p = start; p<end; p++)
-			{
-				points.push_back(glyph->outline.points[p].x);
-				points.push_back(glyph->outline.points[p].y);
-				points.push_back(depth);
-			}
-		}
-		else
-		{
-			for(int p = end-1; p>=start; p--)
-			{
-				points.push_back(glyph->outline.points[p].x);
-				points.push_back(glyph->outline.points[p].y);
-				points.push_back(depth);
-			}
+			points.push_back(glyph->outline.points[p].x);
+			points.push_back(glyph->outline.points[p].y);
+			points.push_back(depth);
 		}
 		start=end;
 	}
