@@ -110,9 +110,7 @@ LibList = [["m", "math.h"],
                 ["jack", "jack/jack.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
-                ["lo", "lo/lo.h"],
-                ["asound", "alsa/asoundlib.h"]]
-
+                ["lo", "lo/lo.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -120,7 +118,9 @@ if env['PLATFORM'] == 'posix':
                     ["GL", "GL/gl.h"],
                     ["GLU", "GL/glu.h"],
                 ["glut", "GL/glut.h"],
-                ["GLEW", "GL/glew.h"]]
+                ["GLEW", "GL/glew.h"],
+                ["asound", "alsa/asoundlib.h"]]
+
         env.Append(LIBPATH = ["/usr/X11R6/lib"])
 
         # add the X11 libs on - needed if we are not building on xorg
