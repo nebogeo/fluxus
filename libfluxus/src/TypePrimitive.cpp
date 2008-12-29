@@ -20,6 +20,8 @@
 
 using namespace Fluxus;
 	
+#define FT_SCALE 0.001f	
+	
 TypePrimitive::TypePrimitive() 
 {
 }
@@ -41,7 +43,7 @@ bool TypePrimitive::LoadTTF(const string &FontFilename)
 
 	if (error)
 	{
-		cerr<<"TypePrimitive::TypePrimitive: could not load font: "<<FontFilename<<endl;
+		Trace::Stream<<"TypePrimitive::TypePrimitive: could not load font: "<<FontFilename<<endl;
 		return false;
 	}
 
@@ -74,6 +76,7 @@ void TypePrimitive::SetText(const string &s)
 		int glList = glGenLists(2);
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo,0);
+		geo->m_Advance=m_Slot->metrics.horiAdvance;
 		m_GlyphVec.push_back(geo);	
 	}
 }
@@ -81,6 +84,7 @@ void TypePrimitive::SetText(const string &s)
 void TypePrimitive::SetTextExtruded(const string &s, float depth)
 {
 	Clear();
+	depth/=FT_SCALE;
 	
 	for (unsigned int n=0; n<s.size(); n++)
 	{
@@ -92,31 +96,41 @@ void TypePrimitive::SetTextExtruded(const string &s, float depth)
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo,0);
 		BuildExtrusion(m_Slot,*geo,-depth);
-		//BuildGeometry(m_Slot,*geo,-1000,false);
+		BuildGeometry(m_Slot,*geo,-depth,false);
+		geo->m_Advance=m_Slot->metrics.horiAdvance;
 		m_GlyphVec.push_back(geo);	
 	}
 }
 
 void TypePrimitive::Render()
 {
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
+	
+	glScalef(FT_SCALE,FT_SCALE,FT_SCALE);
+	
 	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin(); 
 		i!=m_GlyphVec.end(); ++i)
 	{
 		RenderGeometry(**i);
-		glTranslatef(m_Slot->metrics.horiAdvance,0,0);
+		glTranslatef((*i)->m_Advance,0,0);
 	}
+	
+	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
+	
+	glEnableClientState(GL_COLOR_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 {
-	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_NORMAL_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	
 	if (m_State.Hints & HINT_SOLID)
 	{
+		glColor4fv(m_State.Colour.arr());
 		for (vector<GlyphGeometry::Mesh>::const_iterator i=geo.m_Meshes.begin(); i!=geo.m_Meshes.end(); i++)
 		{
 			if (!i->m_Normals.empty())
@@ -149,12 +163,6 @@ void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL); 
 		glEnable(GL_LIGHTING);
 	}
-	
-	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
-	
-	glEnableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_NORMAL_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 }
 
 void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth, bool winding)
@@ -176,30 +184,42 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (void (*)())TypePrimitive::TessError);
 #endif
 
-	if (winding)
+	if (winding) 
 	{
-		gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-		gluTessNormal(t, 0.0f, 0.0f, 1.0f);
+		geo.m_Normal = dVector(0,0,1);
+		gluTessNormal(t, 0.0f, 0.0f, 1.0f);	
 	}
 	else 
 	{
-		gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
-//		gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NEGATIVE);
-		gluTessNormal(t, 0.0f, 0.0f, -1.0f);
+		geo.m_Normal = dVector(0,0,-1);
+		gluTessNormal(t, 0.0f, 0.0f, -1.0f);	
 	}
 	
+	gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 	gluTessProperty(t, GLU_TESS_TOLERANCE, 0);
 	gluTessBeginPolygon(t, &geo);
 
-	unsigned int start=0;
+	int start=0;
 	for(int c=0; c<glyph->outline.n_contours; c++)
 	{
-		unsigned int end = glyph->outline.contours[c]+1;
-		for(unsigned int p = start; p<end; p++)
+		int end = glyph->outline.contours[c]+1;
+		if (winding)
 		{
-			points.push_back(glyph->outline.points[p].x);
-			points.push_back(glyph->outline.points[p].y);
-			points.push_back(depth);
+			for(int p = start; p<end; p++)
+			{
+				points.push_back(glyph->outline.points[p].x);
+				points.push_back(glyph->outline.points[p].y);
+				points.push_back(depth);
+			}
+		}
+		else
+		{
+			for(int p = end-1; p>=start; p--)
+			{
+				points.push_back(glyph->outline.points[p].x);
+				points.push_back(glyph->outline.points[p].y);
+				points.push_back(depth);
+			}
 		}
 		start=end;
 	}
@@ -232,6 +252,7 @@ void TypePrimitive::TessVertex(void* data, GlyphGeometry* geo)
 {
 	double *ptr = (double*)data;
     geo->m_Meshes[geo->m_Meshes.size()-1].m_Positions.push_back(dVector(ptr[0],ptr[1],ptr[2]));
+	geo->m_Meshes[geo->m_Meshes.size()-1].m_Normals.push_back(geo->m_Normal);
 }
 
 
@@ -251,6 +272,31 @@ void TypePrimitive::TessEnd(GlyphGeometry* geo)
 {
 }
 
+void TypePrimitive::GenerateExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, int from, int to, float depth)
+{
+	dVector a(glyph->outline.points[from].x, glyph->outline.points[from].y, 0);
+	dVector b(glyph->outline.points[to].x, glyph->outline.points[to].y, 0);
+	dVector c(glyph->outline.points[to].x, glyph->outline.points[to].y, depth);
+	dVector d(glyph->outline.points[from].x, glyph->outline.points[from].y, depth);
+
+	dVector sidea = a-b;
+	dVector sideb = a-c;
+	sidea.normalise();
+	sideb.normalise();
+	dVector n=sidea.cross(sideb);
+	n.normalise();
+
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
+
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(a);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(b);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(c);
+	geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(d);
+}
+
 void TypePrimitive::BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth)
 {
 	unsigned int start=0;
@@ -261,29 +307,10 @@ void TypePrimitive::BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo
 		unsigned int p = start+1;
 		while(p<end)
 		{
-			dVector a(glyph->outline.points[p-1].x, glyph->outline.points[p-1].y, 0);
-			dVector b(glyph->outline.points[p].x, glyph->outline.points[p].y, 0);
-			dVector c(glyph->outline.points[p].x, glyph->outline.points[p].y, depth);
-			dVector d(glyph->outline.points[p-1].x, glyph->outline.points[p-1].y, depth);
-			
-			dVector sidea = a-b;
-			dVector sideb = a-c;
-			sidea.normalise();
-			sideb.normalise();
-			dVector n=sidea.cross(sideb);
-			n.normalise();
-			
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Normals.push_back(n);
-
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(a);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(b);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(c);
-			geo.m_Meshes[geo.m_Meshes.size()-1].m_Positions.push_back(d);
+			GenerateExtrusion(glyph,geo,p-1,p,depth);
 			p++;
 		}
+		GenerateExtrusion(glyph,geo,end-1,start,depth);
 		start=end;
 	}
 }

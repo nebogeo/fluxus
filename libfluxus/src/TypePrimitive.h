@@ -66,7 +66,9 @@ protected:
 			vector<dVector> m_Positions;
 			vector<dVector> m_Normals;
 		};
-
+		
+		float m_Advance;
+		dVector	m_Normal;
 		GLenum m_Error;
 		vector<Mesh> m_Meshes;
 	};
@@ -74,6 +76,7 @@ protected:
 	void Clear();
 	void BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth, bool winding=true);
 	void BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth);
+	void GenerateExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, int from, int to, float depth);
 	void RenderGeometry(const GlyphGeometry &geo);
 	vector<GlyphGeometry*> m_GlyphVec;
 	
