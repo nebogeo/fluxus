@@ -12,7 +12,7 @@ else:
 		Target = "fluxus-engine_ss.so"
 
 Install = BinaryModulesLocation
-Libs = Split("GLEW fluxus png ode tiff jpeg")
+Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
 if env['PLATFORM'] != 'darwin':
 	    Libs += Split("GL GLU glut")
 
