@@ -158,7 +158,7 @@ if not GetOption('clean'):
                         print "ERROR: '%s' must be installed!" % (lib)
                         Exit(1)
 
-        if not conf.CheckFunc("dInitOde2", "ode/odeinit.h"):
+        if not conf.CheckFunc("dInitODE2", "ode/odeinit.h"):
             env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
 
         # the ole version 0.25 does not include the declaration of lo_arg_size anymore
