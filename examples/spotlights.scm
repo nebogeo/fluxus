@@ -83,5 +83,5 @@
     ; build the actual blob
     (let ((b (blob 10 8)))
         ; hide it (we only want the see the instances of it)
-        (with-primitive b (hide 1))    
-        (copy 10 b)))
+        (copy 10 b)
+        (with-primitive b (hide 1))))

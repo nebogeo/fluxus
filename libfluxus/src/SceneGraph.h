@@ -81,7 +81,7 @@ public:
 	void GetConnections(const Node *node, 
 		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
-	//\todo fix const correctness from here...
+	///\todo fix const correctness from here...
 	bool Intersect(const SceneNode *a, const SceneNode *b, float threshold);
 
 private:

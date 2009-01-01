@@ -49,6 +49,10 @@ public:
 	void SetText(const string &s);
 	void SetTextExtruded(const string &s, float depth);
 	
+	/// Fills supplied polygon primitive with the mesh
+	/// (needs to be an empty triangle list) 
+	void ConvertToPoly(PolyPrimitive &poly);
+
 protected:
 	class GlyphGeometry
 	{

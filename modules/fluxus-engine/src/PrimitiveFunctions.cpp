@@ -2114,7 +2114,119 @@ Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
 	return scheme_false;
 }
 
+// StartFunctionDoc-en
+// get-children 
+// Returns: void
+// Description:
+// Gets a list of primitives parented to this one.
+// Example:
+// ; build a random heirachical structure
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)            
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// 
+// ; navigate the scene graph and print it out
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
 
+Scheme_Object *get_children(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *l = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(1, l);
+	MZ_GC_REG();
+	l = scheme_null;
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+				
+		for (vector<Node*>::iterator n=a->Children.begin(); 
+			n<a->Children.end(); n++)
+		{
+			l=scheme_make_pair(scheme_make_integer((*n)->ID),l);
+		}
+	}
+	else // return the root node's children
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().Root());
+				
+		for (vector<Node*>::iterator n=a->Children.begin(); 
+			n<a->Children.end(); n++)
+		{
+			l=scheme_make_pair(scheme_make_integer((*n)->ID),l);
+		}
+	}
+	
+	MZ_GC_UNREG(); 
+    return l;
+}
+
+// StartFunctionDoc-en
+// get-parent 
+// Returns: void
+// Description:
+// Gets the parent of this node. 1 is the root node.
+// Example:
+// ; build a random heirachical structure
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)            
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// 
+// ; navigate the scene graph and print it out
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
+
+Scheme_Object *get_parent(int argc, Scheme_Object **argv)
+{	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));		
+    	return scheme_make_integer(a->Parent->ID);
+	}
+	Trace::Stream<<"get-parent: no primitive current"<<endl;
+	return scheme_void;
+}
 
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
@@ -2168,5 +2280,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
 	scheme_add_global("line-intersect", scheme_make_prim_w_arity(line_intersect, "line-intersect", 2, 2), env);
 	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
+	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
+	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
  	MZ_GC_UNREG(); 
 }

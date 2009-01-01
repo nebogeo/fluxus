@@ -302,3 +302,24 @@ void TypePrimitive::BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo
 		start=end;
 	}
 }
+
+void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
+{
+	for (vector<GlyphGeometry*>::iterator g=m_GlyphVec.begin(); 
+		g!=m_GlyphVec.end(); ++g)
+	{
+		for (vector<GlyphGeometry::Mesh>::const_iterator m=(*g)->m_Meshes.begin(); 
+			m!=(*g)->m_Meshes.end(); m++)
+		{
+			switch(m->m_Type)
+			{
+				case GL_TRIANGLES : 
+					for(unsigned int i=0; i<m->m_Positions.size(); i++)
+					{
+						poly.AddVertex(dVertex(m->m_Positions[i],m->m_Normals[i]));
+					}
+				break;
+			};
+		}		
+	}
+}
