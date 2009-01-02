@@ -18,6 +18,10 @@
 #include "TypePrimitive.h"
 #include "State.h"
 
+#ifdef __APPLE__
+#include <AvailabilityMacros.h>
+#endif
+
 using namespace Fluxus;
 
 #define FT_SCALE 0.001f	
@@ -181,17 +185,17 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (void (*)())TypePrimitive::TessError);
 #endif
 
-	if (winding) 
+	if (winding)
 	{
 		geo.m_Normal = dVector(0,0,1);
-		gluTessNormal(t, 0.0f, 0.0f, 1.0f);	
+		gluTessNormal(t, 0.0f, 0.0f, 1.0f);
 	}
-	else 
+	else
 	{
 		geo.m_Normal = dVector(0,0,-1);
-		gluTessNormal(t, 0.0f, 0.0f, -1.0f);	
+		gluTessNormal(t, 0.0f, 0.0f, -1.0f);
 	}
-	
+
 	gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
 	gluTessProperty(t, GLU_TESS_TOLERANCE, 0);
 	gluTessBeginPolygon(t, &geo);
