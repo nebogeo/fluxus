@@ -2134,7 +2134,22 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 // Returns #t if the current primitive bounding box intersects with the supplied one, 
 // with an additional expanding threshold.
 // Example:
+// (clear)
 // 
+// (define a (with-state
+//      (build-sphere 10 10)))
+// 
+// (define b (with-state
+//      (translate (vector 2 0 0))
+//      (build-sphere 10 10)))
+// 
+// (every-frame
+//     (begin
+//         (with-primitive b
+//             (translate (vector (* -0.1 (sin (time))) 0 0)))
+//         (with-primitive a
+//             (when (bb-intersect b 0)
+//                 (colour (rndvec))))))
 // EndFunctionDoc
 
 Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)

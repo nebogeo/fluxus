@@ -18,6 +18,10 @@
 #include "TypePrimitive.h"
 #include "State.h"
 
+#ifdef __APPLE__
+#include <AvailabilityMacros.h>
+#endif
+
 using namespace Fluxus;
 
 #define FT_SCALE 0.001f	
