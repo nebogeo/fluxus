@@ -447,6 +447,50 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// type->poly blobbyprimitiveid-number
+// Returns: polyprimid-number
+// Description:
+// Converts the mesh of a blobby primitive into a triangle list polygon primitive. This is useful as
+// the polygon primitive will be much much faster to render, but can't deform in the blobby way.
+// Doesn't convert vertex colours over yet unfortunately.
+// Example:
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// type->poly número-id-blobbyprimitiva
+// Retorna: número-id-primitivapoly
+// Descrição:
+// Converte a malha de uma primitiva blobby em uma primitiva poligonal
+// de lista de triângulos.
+// Exemplo:
+// EndFunctionDoc
+
+Scheme_Object *type2poly(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("type->poly", "i", argc, argv);
+	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (Prim) 
+	{
+		// only if this is a pixel primitive
+		TypePrimitive *tp = dynamic_cast<TypePrimitive *>(Prim);
+		if (tp)
+		{
+			PolyPrimitive *np = new PolyPrimitive(PolyPrimitive::TRILIST);
+			tp->ConvertToPoly(*np);
+			MZ_GC_UNREG();
+    		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(np));
+		}
+	}
+	
+	Trace::Stream<<"type->poly can only be called on a typeprimitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+
+
+// StartFunctionDoc-en
 // text-params width-number height-number stride-number wrap-number
 // Returns: primitiveid-number
 // Description:
@@ -2262,6 +2306,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
+	scheme_add_global("type->poly", scheme_make_prim_w_arity(type2poly, "type->poly", 1, 1), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);
 	scheme_add_global("draw-cube", scheme_make_prim_w_arity(draw_cube, "draw-cube", 0, 0), env);
 	scheme_add_global("draw-plane", scheme_make_prim_w_arity(draw_plane, "draw-plane", 0, 0), env);

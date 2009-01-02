@@ -76,7 +76,7 @@ void TypePrimitive::SetText(const string &s)
 		int glList = glGenLists(2);
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo,0);
-		geo->m_Advance=m_Slot->metrics.horiAdvance;
+		geo->m_Advance=m_Slot->metrics.horiAdvance*FT_SCALE;
 		m_GlyphVec.push_back(geo);	
 	}
 }
@@ -84,7 +84,6 @@ void TypePrimitive::SetText(const string &s)
 void TypePrimitive::SetTextExtruded(const string &s, float depth)
 {
 	Clear();
-	depth/=FT_SCALE;
 	
 	for (unsigned int n=0; n<s.size(); n++)
 	{
@@ -97,7 +96,7 @@ void TypePrimitive::SetTextExtruded(const string &s, float depth)
 		BuildGeometry(m_Slot,*geo,0);
 		BuildExtrusion(m_Slot,*geo,-depth);
 		BuildGeometry(m_Slot,*geo,-depth,false);
-		geo->m_Advance=m_Slot->metrics.horiAdvance;
+		geo->m_Advance=m_Slot->metrics.horiAdvance*FT_SCALE;
 		m_GlyphVec.push_back(geo);	
 	}
 }
@@ -109,9 +108,7 @@ void TypePrimitive::Render()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-	
-	glScalef(FT_SCALE,FT_SCALE,FT_SCALE);
-	
+		
 	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin(); 
 		i!=m_GlyphVec.end(); ++i)
 	{
@@ -205,8 +202,8 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 		int end = glyph->outline.contours[c]+1;
 		for(int p = start; p<end; p++)
 		{
-			points.push_back(glyph->outline.points[p].x);
-			points.push_back(glyph->outline.points[p].y);
+			points.push_back(glyph->outline.points[p].x*FT_SCALE);
+			points.push_back(glyph->outline.points[p].y*FT_SCALE);
 			points.push_back(depth);
 		}
 		start=end;
@@ -262,10 +259,10 @@ void TypePrimitive::TessEnd(GlyphGeometry* geo)
 
 void TypePrimitive::GenerateExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, int from, int to, float depth)
 {
-	dVector a(glyph->outline.points[from].x, glyph->outline.points[from].y, 0);
-	dVector b(glyph->outline.points[to].x, glyph->outline.points[to].y, 0);
-	dVector c(glyph->outline.points[to].x, glyph->outline.points[to].y, depth);
-	dVector d(glyph->outline.points[from].x, glyph->outline.points[from].y, depth);
+	dVector a(glyph->outline.points[from].x*FT_SCALE, glyph->outline.points[from].y*FT_SCALE, 0);
+	dVector b(glyph->outline.points[to].x*FT_SCALE, glyph->outline.points[to].y*FT_SCALE, 0);
+	dVector c(glyph->outline.points[to].x*FT_SCALE, glyph->outline.points[to].y*FT_SCALE, depth);
+	dVector d(glyph->outline.points[from].x*FT_SCALE, glyph->outline.points[from].y*FT_SCALE, depth);
 
 	dVector sidea = a-b;
 	dVector sideb = a-c;
@@ -305,6 +302,8 @@ void TypePrimitive::BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo
 
 void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
 {
+	dVector tx(0,0,0);
+	
 	for (vector<GlyphGeometry*>::iterator g=m_GlyphVec.begin(); 
 		g!=m_GlyphVec.end(); ++g)
 	{
@@ -316,10 +315,48 @@ void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
 				case GL_TRIANGLES : 
 					for(unsigned int i=0; i<m->m_Positions.size(); i++)
 					{
-						poly.AddVertex(dVertex(m->m_Positions[i],m->m_Normals[i]));
+						poly.AddVertex(dVertex(m->m_Positions[i]+tx,m->m_Normals[i]));
 					}
+				break;
+				case GL_QUADS : 
+					for(unsigned int f=0; f<m->m_Positions.size()/4; f++)
+					{
+						poly.AddVertex(dVertex(m->m_Positions[f*4]+tx,m->m_Normals[f*4]));
+						poly.AddVertex(dVertex(m->m_Positions[f*4+1]+tx,m->m_Normals[f*4+1]));
+						poly.AddVertex(dVertex(m->m_Positions[f*4+2]+tx,m->m_Normals[f*4+2]));
+						poly.AddVertex(dVertex(m->m_Positions[f*4+2]+tx,m->m_Normals[f*4+2]));
+						poly.AddVertex(dVertex(m->m_Positions[f*4+3]+tx,m->m_Normals[f*4+3]));
+						poly.AddVertex(dVertex(m->m_Positions[f*4]+tx,m->m_Normals[f*4]));
+					}
+				break;
+				case GL_TRIANGLE_FAN : 				
+					for(unsigned int v=1; v<m->m_Positions.size(); v++)
+					{
+						poly.AddVertex(dVertex(m->m_Positions[0]+tx,m->m_Normals[0]));
+						poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
+						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));						
+					}
+				break;
+				case GL_TRIANGLE_STRIP : 				
+					for(unsigned int v=2; v<m->m_Positions.size(); v+=2)
+					{
+						poly.AddVertex(dVertex(m->m_Positions[v-2]+tx,m->m_Normals[v-2]));
+						poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
+						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));						
+
+						if (v+1<m->m_Positions.size())
+						{
+							poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));
+							poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
+							poly.AddVertex(dVertex(m->m_Positions[v+1]+tx,m->m_Normals[v+1]));						
+						}
+					}
+				break;
+				default:
+					Trace::Stream<<"type->poly - unhandled mesh type: "<<m->m_Type<<" please tell dave@pawfal.org :)"<<endl;
 				break;
 			};
 		}		
+		tx.x+=(*g)->m_Advance;
 	}
 }
