@@ -132,25 +132,29 @@ void PolyPrimitive::Render()
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 	
-	if (m_State.Hints & HINT_MULTITEX)
+	#ifdef ENABLE_MULTITEXTURE
+	// possibly a candidate to put in Primitive:PreRender()
+	for (int n=1; n<MAX_TEXTURES; n++)
 	{
-		for (int n=1; n<MAX_TEXTURES; n++)
+		if (m_State.Textures[n]!=0)
 		{
 			char name[3]; 
 			snprintf(name,3,"t%d",n);
 			TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
+			glClientActiveTexture(GL_TEXTURE0+n);
+
 			if (tex!=NULL)
 			{	
-				#ifdef ENABLE_MULTITEXTURE
-				glClientActiveTexture(GL_TEXTURE0+n);
-				#endif
 				glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
 			}
+			else // default to using the normal vertex coordinates
+			{
+				glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
+			}
 		}
-		#ifdef ENABLE_MULTITEXTURE
-		glClientActiveTexture(GL_TEXTURE0);
-		#endif
 	}
+	glClientActiveTexture(GL_TEXTURE0);
+	#endif	
 	
 	if (m_State.Hints & HINT_VERTCOLS)
 	{

@@ -17,6 +17,7 @@
 #include "Renderer.h"
 #include "TypePrimitive.h"
 #include "State.h"
+#include "SearchPaths.h"
 
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
@@ -41,13 +42,14 @@ TypePrimitive* TypePrimitive::Clone() const
 
 bool TypePrimitive::LoadTTF(const string &FontFilename)
 {
+	string fullpath=SearchPaths::Get()->GetFullPath(FontFilename);
 	FT_Error error;
 	error = FT_Init_FreeType(&m_Library);
-	error = FT_New_Face(m_Library, FontFilename.c_str(), 0, &m_Face);
+	error = FT_New_Face(m_Library, fullpath.c_str(), 0, &m_Face);
 
 	if (error)
 	{
-		Trace::Stream<<"TypePrimitive::TypePrimitive: could not load font: "<<FontFilename<<endl;
+		Trace::Stream<<"TypePrimitive::TypePrimitive: could not load font: "<<fullpath<<endl;
 		return false;
 	}
 

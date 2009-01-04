@@ -59,11 +59,16 @@
 		(fprintf log "--------------------~n")
     	(fprintf log "~a~n" name)
     	(fprintf log "~a~n" code))
-		
-	(eval-string code (lambda (s) 
-			(when do-log (fprintf log "~a~n" s))
+	
+	(cond 
+		((string=? code "")
 			(set! errors (+ errors 1))
-			(set! error-list (cons name error-list))))
+			(set! error-list (cons name error-list)))
+		(else
+			(eval-string code (lambda (s) 
+				(when do-log (fprintf log "~a~n" s))
+					(set! errors (+ errors 1))
+					(set! error-list (cons name error-list))))))
     (sleep 0.1)
     )
 

@@ -270,6 +270,7 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // Description:
 // Updates the audio subsytem. This function is called for you (per frame) in fluxus-canvas.ss.
 // Example:
+// (update-audio)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -279,6 +280,7 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // Atualiza o subsistema de áudio. Esta função é chamada para você
 // (por frame) no fluxus-canvas.ss
 // Exemplo:
+// (update-audio)
 // EndFunctionDoc
 
 Scheme_Object *update_audio(int argc, Scheme_Object **argv)

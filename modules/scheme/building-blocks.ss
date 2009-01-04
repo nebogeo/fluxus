@@ -34,9 +34,43 @@
 ;; Removes the parent for the current primitive, and fixes up the 
 ;; transform so the primitive doesn't move. Use (parent 1) to avoid this fix up.
 ;; Example:
+;; ; builds and animates a random heirarchical structure,
+;; ; click on the objects to detach them from their parents
+;; (define (build-heir depth)
+;;     (with-state
+;;         (let ((p (with-state
+;;                         (translate (vector 2 0 0))
+;;                         (scale 0.9)
+;;                         (build-cube))))
+;;             (when (> depth 0)
+;;                 (parent p)            
+;;                 (for ((i (in-range 0 5)))
+;;                     (when (zero? (random 3))
+;;                         (rotate (vector 0 0 (* 45 (crndf))))
+;;                         (build-heir (- depth 1))))))))
+;; 
+;; (define (animate-heir children depth)
+;;     (for-each
+;;         (lambda (child)
+;;             (with-primitive child           
+;;                 (rotate (vector 0 0 (sin (+ depth (time)))))
+;;                 (animate-heir (get-children) (+ depth 1))))
+;;         children))
+;; 
+;; (define (animate)
+;;     (animate-heir (get-children) 0)
+;;     (when (mouse-button 1)
+;;         (let ((s (select (mouse-x) (mouse-y) 2)))
+;;             (when (not (zero? s))
+;;                 (with-primitive s
+;;                     (detach-parent))))))
+;; 
+;; (clear)
+;; (build-heir 5)
+;; (every-frame (animate))
 ;; EndFunctionDoc  
-
-(define (detach-parent)
+ 
+ (define (detach-parent)
 	(let ((m (get-global-transform)))
 		(parent 1)
 		(identity)

@@ -21,6 +21,7 @@
 #include "SearchPaths.h"
 #include "PrimitiveIO.h"
 #include "ShaderCache.h"
+#include "GLSLShader.h"
 #include "Trace.h"
 #include <sys/time.h>
 #include <stdio.h>
@@ -331,8 +332,8 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 void Renderer::PostRender()
 {
 	// clear the texture, if the last primitive assigned one...
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_TEXTURE_CUBE_MAP);
+	TexturePainter::Get()->DisableAll();
+	
 	GLSLShader::Unapply();
 	glFrontFace(GL_CCW);
 

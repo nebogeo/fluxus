@@ -22,6 +22,8 @@
 #include <iostream>
 #include <string>
 
+#include "GL/glew.h"
+
 #ifndef __APPLE__
 #include "GL/glut.h"
 #else
@@ -170,6 +172,7 @@ void ExitHandler()
 
 int run(Scheme_Env* se, int argc, char *argv[])
 {
+	
 	// we create our own Scheme_Env in here, as we need 
 	// to be able to reset it with F6. Seems to be ok to ignore se...
   Interpreter::Register();
@@ -204,8 +207,12 @@ int run(Scheme_Env* se, int argc, char *argv[])
   glutSpecialUpFunc(SpecialKeyboardUpCallback);
   atexit(ExitHandler);
 
-  recorder = new EventRecorder;
+	if(glewInit() != GLEW_OK)
+	{
+		cerr<< "ERROR Unable to check OpenGL extensions" << endl;
+	}
 
+  recorder = new EventRecorder;
   int arg=1;
   int currentEditor=0;
   bool exe=false;
