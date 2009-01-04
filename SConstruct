@@ -72,7 +72,7 @@ env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
-if ARGUMENTS.get("MULTITEXTURE","0")=="1":
+if ARGUMENTS.get("MULTITEXTURE","1")=="1":
         env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
 
 if ARGUMENTS.get("GLSL","1")=="1":

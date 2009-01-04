@@ -405,10 +405,28 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-type text-string
+// build-type ttf-filename text-string
 // Returns: primitiveid-number
 // Description:
+// Builds a geometric type primitive from a ttf font and some text.
 // Example:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!"))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
 // EndFunctionDoc
 
 Scheme_Object *build_type(int argc, Scheme_Object **argv)
@@ -418,18 +436,38 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 		
 	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
-	TypePrim->LoadTTF(StringFromScheme(argv[0]));
-	TypePrim->SetText(StringFromScheme(argv[1]));
+	if (TypePrim->LoadTTF(StringFromScheme(argv[0])))
+	{
+		TypePrim->SetText(StringFromScheme(argv[1]));
+	}
 	MZ_GC_UNREG(); 
 	
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 }
 
 // StartFunctionDoc-en
-// build-extruded-type text-string
+// build-extruded-type ttf-filename text-string extrude-depth
 // Returns: primitiveid-number
 // Description:
+// Builds an extruded geometric type primitive from a ttf font and some text.
 // Example:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
 // EndFunctionDoc
 
 Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
@@ -439,30 +477,40 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 		
 	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
-	TypePrim->LoadTTF(StringFromScheme(argv[0]));
-	TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+	if(TypePrim->LoadTTF(StringFromScheme(argv[0])))
+	{
+		TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+	}
 	MZ_GC_UNREG(); 
 	
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 }
 
 // StartFunctionDoc-en
-// type->poly blobbyprimitiveid-number
+// type->poly typeprimitiveid-number
 // Returns: polyprimid-number
 // Description:
-// Converts the mesh of a blobby primitive into a triangle list polygon primitive. This is useful as
-// the polygon primitive will be much much faster to render, but can't deform in the blobby way.
-// Doesn't convert vertex colours over yet unfortunately.
+// Converts the mesh of a type primitive into a triangle list polygon primitive. The poly primitive
+// will be a bit slower to render, but you'll be able to do everything you can do with a poly primitive
+// with it, such as add textures and deform it.
 // Example:
-// EndFunctionDoc
-
-// StartFunctionDoc-pt
-// type->poly número-id-blobbyprimitiva
-// Retorna: número-id-primitivapoly
-// Descrição:
-// Converte a malha de uma primitiva blobby em uma primitiva poligonal
-// de lista de triângulos.
-// Exemplo:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
 // EndFunctionDoc
 
 Scheme_Object *type2poly(int argc, Scheme_Object **argv)
@@ -496,6 +544,7 @@ Scheme_Object *type2poly(int argc, Scheme_Object **argv)
 // Description:
 // Sets parameters for making fonts from texture maps. Defaults: 16/256 16/256 16 0
 // Example:
+// ; don't use me!
 // EndFunctionDoc
 
 Scheme_Object *text_params(int argc, Scheme_Object **argv)
@@ -1444,6 +1493,11 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 // Gets the vertex indices from this primitive
 // primitive.
 // Example:
+// (define p (build-cube))
+// 
+// (with-primitive p
+//     (poly-convert-to-indexed)
+//     (display (poly-indices))(newline))
 // EndFunctionDoc
 
 Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
@@ -1484,6 +1538,14 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 // Use (poly-type) instead of this directly.
 // primitive.
 // Example:
+// (define (poly-type)	
+//   (let ((t (poly-type-enum)))
+//     (cond
+//       ((eq? t 0) 'triangle-strip)
+//       ((eq? t 1) 'quad-list)
+//       ((eq? t 2) 'triangle-list)
+//       ((eq? t 3) 'triangle-fan)
+//       ((eq? t 4) 'polygon))))
 // EndFunctionDoc
 
 Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)

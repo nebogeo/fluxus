@@ -619,27 +619,6 @@ Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// finalise
-// Returns: void
-// Description:
-// Doesn't do anything anymore, I need to remove this :)
-// Example:
-// EndFunctionDoc
-
-// StartFunctionDoc-pt
-// finalise
-// Retorna: void
-// Descrição:
-// Não faz nada mais, precisa ser removido :)
-// Exemplo:
-// EndFunctionDoc
-
-Scheme_Object *finalise(int argc, Scheme_Object **argv)
-{
-	return scheme_void;
-}
-
-// StartFunctionDoc-en
 // recalc-normals smoothornot-number
 // Returns: void
 // Description:
@@ -687,7 +666,6 @@ void PDataFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pdata-op", scheme_make_prim_w_arity(pdata_op, "pdata-op", 3, 3), env);
 	scheme_add_global("pdata-copy", scheme_make_prim_w_arity(pdata_copy, "pdata-copy", 2, 2), env);
 	scheme_add_global("pdata-size", scheme_make_prim_w_arity(pdata_size, "pdata-size", 0, 0), env);
-	scheme_add_global("finalise", scheme_make_prim_w_arity(finalise, "finalise", 0, 0), env);
 	scheme_add_global("recalc-normals", scheme_make_prim_w_arity(recalc_normals, "recalc-normals", 1, 1), env);
  	MZ_GC_UNREG(); 
 }

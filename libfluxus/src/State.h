@@ -47,13 +47,12 @@ namespace Fluxus
 #define HINT_BOUND          0x0020
 #define HINT_UNLIT          0x0040
 #define HINT_VERTCOLS       0x0080
-#define HINT_MULTITEX       0x0100
-#define HINT_ORIGIN         0x0200
-#define HINT_CAST_SHADOW    0x0400
-#define HINT_IGNORE_DEPTH   0x0800
-#define HINT_DEPTH_SORT     0x1000
-#define HINT_LAZY_PARENT    0x2000
-#define HINT_CULL_CCW       0x4000
+#define HINT_ORIGIN         0x0100
+#define HINT_CAST_SHADOW    0x0200
+#define HINT_IGNORE_DEPTH   0x0400
+#define HINT_DEPTH_SORT     0x0800
+#define HINT_LAZY_PARENT    0x1000
+#define HINT_CULL_CCW       0x2000
 
 ///\todo use glew for this
 #ifdef ENABLE_MULTITEXTURE

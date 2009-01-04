@@ -774,13 +774,44 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 // Returns a matrix representing the current state transform or for the 
 // current primitive.
 // Example:
-// (translate (vector 1 0 0))
-// (display (get-transform))(newline) ; prints the current transform
-// (define shape (build-sphere 10 10))
-// (grab shape)
-// (translate (vector 0 1 0))
-// (display (get-transform))(newline) ; prints shape's transform
-// (ungrab)
+// (clear)
+// ; build a hierarchy
+// (define a 
+//     (with-state
+//         (colour (vector 1 0.5 0.5))
+//         (build-cube)))
+// (define b (with-state
+//         (colour (vector 0.5 1 0.5))
+//         (parent a)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// (define c (with-state
+//         (colour (vector 0.5 0.5 1))
+//         (parent b)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// 
+// (define (animate)
+//     ; animate the heirarchy
+//     (with-primitive a (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive b (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive c (rotate (vector 0 0 (sin (time)))))
+// 
+//     ; position a yellow sphere with c's local transform
+//     (with-state
+//         (concat (with-primitive c (get-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 1 0))
+//         (draw-sphere))
+// 
+//     ; position a purple sphere with c's global transform
+//     (with-state
+//         (concat (with-primitive c (get-global-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 0 1))
+//         (draw-sphere)))
+// 
+// (every-frame (animate))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -790,13 +821,44 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 // Retorna uma matriz representando o estado de tranformação corrente
 // ou para a primitiva pega.
 // Exemplo:
-// (translate (vector 1 0 0))
-// (display (get-transform))(newline) ; imprime a transformação corrente
-// (define shape (build-sphere 10 10))
-// (grab shape)
-// (translate (vector 0 1 0))
-// (display (get-transform))(newline) ; imprime a transformação da forma
-// (ungrab)
+// (clear)
+// ; build a hierarchy
+// (define a 
+//     (with-state
+//         (colour (vector 1 0.5 0.5))
+//         (build-cube)))
+// (define b (with-state
+//         (colour (vector 0.5 1 0.5))
+//         (parent a)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// (define c (with-state
+//         (colour (vector 0.5 0.5 1))
+//         (parent b)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// 
+// (define (animate)
+//     ; animate the heirarchy
+//     (with-primitive a (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive b (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive c (rotate (vector 0 0 (sin (time)))))
+// 
+//     ; position a yellow sphere with c's local transform
+//     (with-state
+//         (concat (with-primitive c (get-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 1 0))
+//         (draw-sphere))
+// 
+//     ; position a purple sphere with c's global transform
+//     (with-state
+//         (concat (with-primitive c (get-global-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 0 1))
+//         (draw-sphere)))
+// 
+// (every-frame (animate))
 // EndFunctionDoc
 
 Scheme_Object *get_transform(int argc, Scheme_Object **argv)
@@ -811,6 +873,44 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 // Returns a matrix representing the current global transform for the 
 // current primitive.
 // Example:
+// (clear)
+// ; build a hierarchy
+// (define a 
+//     (with-state
+//         (colour (vector 1 0.5 0.5))
+//         (build-cube)))
+// (define b (with-state
+//         (colour (vector 0.5 1 0.5))
+//         (parent a)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// (define c (with-state
+//         (colour (vector 0.5 0.5 1))
+//         (parent b)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// 
+// (define (animate)
+//     ; animate the heirarchy
+//     (with-primitive a (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive b (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive c (rotate (vector 0 0 (sin (time)))))
+// 
+//     ; position a yellow sphere with c's local transform
+//     (with-state
+//         (concat (with-primitive c (get-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 1 0))
+//         (draw-sphere))
+// 
+//     ; position a purple sphere with c's global transform
+//     (with-state
+//         (concat (with-primitive c (get-global-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 0 1))
+//         (draw-sphere)))
+// 
+// (every-frame (animate))
 // EndFunctionDoc
 
 Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
@@ -1339,42 +1439,6 @@ Scheme_Object *hint_box(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// hint-multitex
-// Returns: void
-// Description: 
-// Sets the render hints to use multitexturing in the current drawing state, or the 
-// current primitive. Render hints change the way that primitives are rendered, 
-// but may have different effects - or no effect on certain primitive types, hence the 
-// name hint. 
-// Example:
-// (hint-multitex)
-// (multitexture 0 (load-texture "tex1.png"))
-// (multitexture 1 (load-texture "tex2.png"))
-// (build-sphere 10 10) ; make a sphere with overlayed textures
-// EndFunctionDoc
-
-// StartFunctionDoc-pt
-// hint-multitex
-// Retorna: void
-// Descrição:
-// Ajusta as dicas de render para usar multiplas texturas no estado de
-// desenho corrente. Dicas de render mudam a forma como
-// as primitivas são renderizadas, mas podem ter efeitos diferentes -
-// ou nenhum efeito em certas primitivas portanto o nome dicas.
-// Exemplo:
-// (hint-multitex)
-// (multitexture 0 (load-texture "tex1.png"))
-// (multitexture 1 (load-texture "tex2.png"))
-// (build-sphere 10 10) ; faz uma esfera com texturas sobrepostas
-// EndFunctionDoc
-
-Scheme_Object *hint_multitex(int argc, Scheme_Object **argv)
-{
-    Engine::Get()->State()->Hints|=HINT_MULTITEX;
-    return scheme_void;
-}
-
-// StartFunctionDoc-en
 // hint-none
 // Returns: void
 // Description: 
@@ -1650,7 +1714,7 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
-
+ 
 // StartFunctionDoc-en
 // multitexture textureunit-number textureid-number
 // Returns: void
@@ -1665,13 +1729,12 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 // placed on background textures.
 // Note: fluxus needs to be built using scons MULTITEXTURE=1 to enable this feature.
 // Example:
-// (define obj (build-sphere 10 10)) ; make a sphere 
-// (grab obj)
-// (multitexture 0 (load-texture "mytextureA.png")) 
-// (multitexture 1 (load-texture "mytextureB.png"))
-// (pdata-add "t1" "v")   ; make some texture coords for texture B
-// (pdata-copy "t" "t1")  ; copy them from the default texture coords
-// (ungrab)
+// (clear)
+// (define p (build-torus 1 2 20 20))
+// 
+// (with-primitive p
+//     (multitexture 0 (load-texture "refmap.png"))
+//     (multitexture 1 (load-texture "transp.png")))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -2412,7 +2475,6 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-unlit",scheme_make_prim_w_arity(hint_unlit,"hint-unlit",0,0), env);
     scheme_add_global("hint-vertcols",scheme_make_prim_w_arity(hint_vertcols,"hint-vertcols",0,0), env);
     scheme_add_global("hint-box",scheme_make_prim_w_arity(hint_box,"hint-box",0,0), env);
-    scheme_add_global("hint-multitex",scheme_make_prim_w_arity(hint_multitex,"hint-multitex",0,0), env);
     scheme_add_global("hint-origin",scheme_make_prim_w_arity(hint_origin,"hint-origin",0,0), env);
     scheme_add_global("hint-cast-shadow",scheme_make_prim_w_arity(hint_cast_shadow,"hint-cast-shadow",0,0), env);
     scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
