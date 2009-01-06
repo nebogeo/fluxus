@@ -111,16 +111,16 @@ LibList = [["m", "math.h"],
                 ["jack", "jack/jack.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
-                ["lo", "lo/lo.h"]]
+                ["lo", "lo/lo.h"],
+                ["GLEW", "GL/glew.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
         LibList += [["X11", "X11/Xlib.h"],
                     ["GL", "GL/gl.h"],
                     ["GLU", "GL/glu.h"],
-                ["glut", "GL/glut.h"],
-                ["GLEW", "GL/glew.h"],
-                ["asound", "alsa/asoundlib.h"]]
+                    ["glut", "GL/glut.h"],
+                    ["asound", "alsa/asoundlib.h"]]
 
         env.Append(LIBPATH = ["/usr/X11R6/lib"])
 
