@@ -2,6 +2,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.16
 
+* added (build-type) and (build-extruded-type)
 * added Perlin noise and Simplex noise functions (noise), (snoise)
 * lots of fixes to fluxa to make it stable
 * (reparent)

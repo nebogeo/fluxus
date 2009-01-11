@@ -11,14 +11,14 @@
 
 (require scheme/class
          mred/mred
-         fluxus-015/fluxus
+         fluxus-016/fluxus
          (prefix-in gl- sgl/sgl))
 
 (provide 
- (all-from-out fluxus-015/fluxus))
+ (all-from-out fluxus-016/fluxus))
 
 (define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
-(define fluxus-version "0.15")
+(define fluxus-version "0.16")
 
 (define fluxus-canvas%
   (class* canvas% ()

@@ -22,7 +22,7 @@
 using namespace std;
 using namespace Fluxus;
 
-bool GLSLShader::m_Enabled(false);
+bool GLSLShader::m_Enabled(true);
 
 
 GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fragment)

@@ -6,7 +6,8 @@
 
 ; you need to have built fluxus with GLSL=1
 (clear)
-(fluxus-init) ; this is important to add when using shaders 
+
+;(fluxus-init) ; this is important to add when using shaders 
               ; at the moment, it will be moved somewhere
               ; to run automatically...
 

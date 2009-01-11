@@ -65,4 +65,5 @@
 ; 110 fps
 ; 0.15 (with silly dynamic_cast removed)
 ; 115 fps
-
+; 0.15-0.16 with new drivers
+; 140 fps

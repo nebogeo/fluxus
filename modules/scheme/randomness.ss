@@ -169,7 +169,7 @@
 ;; grndf 
 ;; Returns: number
 ;; Description:
-;; Returns a gaussian random number in the range -1->1 (centred on zero)
+;; Returns a gaussian random number in the range centred on zero, with a variance of 1
 ;; Example:
 ;; (display (grndf))(newline)
 ;; EndFunctionDoc 

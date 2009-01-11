@@ -22,6 +22,7 @@ Source = Split("src/PData.cpp \
 		src/BlobbyPrimitive.cpp \
 		src/NURBSPrimitive.cpp \
 		src/LocatorPrimitive.cpp \
+		src/TypePrimitive.cpp \
 		src/Primitive.cpp \
 		src/Camera.cpp \
 		src/ImmediateMode.cpp \

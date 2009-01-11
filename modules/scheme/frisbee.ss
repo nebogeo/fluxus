@@ -20,12 +20,12 @@
  frtime/lang-ext
  (all-except frtime/frp-core undefined?)
  ; import the procedures we want lifted
- (lifted fluxus-015/fluxus 
+ (lifted fluxus-016/fluxus 
  		 vadd vsub vmul vdiv vtransform vtransform-rot
          vnormalise vdot vreflect vdist vmag vcross madd msub mdiv mmul mident mtranslate
          mrotate mscale mtranspose minverse maim qaxisangle qmul qnormalise qtomatrix qconjugate
          set-camera rndvec crndvec srndvec rndf crndf hsrndvec grndf grndvec)
- (prefix flx- fluxus-015/fluxus))
+ (prefix flx- fluxus-016/fluxus))
 
 (provide 
  (all-defined)

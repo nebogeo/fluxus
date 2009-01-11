@@ -271,6 +271,7 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 
 Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 {
+/*cerr<<"fluxus_init"<<endl;
 	#ifdef GLSL
 	if(glewInit() != GLEW_OK)
 	{
@@ -280,8 +281,8 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 	Fluxus::GLSLShader::Init();
 	#endif
 	
-	Engine::Get()->Reinitialise();
-	
+	//Engine::Get()->Reinitialise();
+*/
 	return scheme_void;
 }
 

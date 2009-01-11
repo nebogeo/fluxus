@@ -364,10 +364,12 @@ void TexturePainter::DisableAll()
 	{
 		glActiveTexture(GL_TEXTURE0+c);
 		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_TEXTURE_CUBE_MAP);
 	}
 	glClientActiveTexture(GL_TEXTURE0);
 	#else
 	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_TEXTURE_CUBE_MAP);
 	#endif
 }
 

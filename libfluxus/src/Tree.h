@@ -71,6 +71,9 @@ public:
 	
 	/// Is the child attached to the parent?
 	bool IsDecendedFrom(Node *Parent, Node *Child) const;
+	
+	/// Get the root
+	Node *Root() { return m_Root; }
 
 protected:
 	void RemoveNodeWalk(Node *node);

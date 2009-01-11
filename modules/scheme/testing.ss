@@ -59,11 +59,16 @@
 		(fprintf log "--------------------~n")
     	(fprintf log "~a~n" name)
     	(fprintf log "~a~n" code))
-		
-	(eval-string code (lambda (s) 
-			(when do-log (fprintf log "~a~n" s))
+	
+	(cond 
+		((string=? code "")
 			(set! errors (+ errors 1))
-			(set! error-list (cons name error-list))))
+			(set! error-list (cons name error-list)))
+		(else
+			(eval-string code (lambda (s) 
+				(when do-log (fprintf log "~a~n" s))
+					(set! errors (+ errors 1))
+					(set! error-list (cons name error-list))))))
     (sleep 0.1)
     )
 
@@ -91,14 +96,14 @@
 	(thread go))
 
 ;; StartFunctionDoc-en
-;; test-example path-to-examples
+;; run-scripts path-to-examples
 ;; Returns: void
 ;; Description:
 ;; Runs all of the example scripts in a separate 
 ;; thread so you can watch it in action. 
 ;; Example:
-;; (test-example path-to-examples)
-;; EndFunctionDoc  
+;; (run-scripts path-to-scripts seconds-per-script)
+;; EndFunctionDoc 
 
 (define example "")
 (define run-time 5)

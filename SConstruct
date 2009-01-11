@@ -9,9 +9,10 @@
 import os, sys
 
 MajorVersion = "0"
-MinorVersion = "15"
+MinorVersion = "16"
 FluxusVersion = MajorVersion+MinorVersion
-Target = "fluxus"
+# remember to change fluxa too...
+Target = "fluxus-0.16"
 
 # changed prefix and pltprefix so they can be invoked at runtime
 # like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
@@ -71,7 +72,7 @@ env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
 # multitexturing causes crashes on some cards, default it to off, and
 # enable users to enable manually while I figure out what it is...
-if ARGUMENTS.get("MULTITEXTURE","0")=="1":
+if ARGUMENTS.get("MULTITEXTURE","1")=="1":
         env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
 
 if ARGUMENTS.get("GLSL","1")=="1":
@@ -111,16 +112,16 @@ LibList = [["m", "math.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
-                ["asound", "alsa/asoundlib.h"]]
-
+                ["GLEW", "GL/glew.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
         LibList += [["X11", "X11/Xlib.h"],
                     ["GL", "GL/gl.h"],
                     ["GLU", "GL/glu.h"],
-                ["glut", "GL/glut.h"],
-                ["GLEW", "GL/glew.h"]]
+                    ["glut", "GL/glut.h"],
+                    ["asound", "alsa/asoundlib.h"]]
+
         env.Append(LIBPATH = ["/usr/X11R6/lib"])
 
         # add the X11 libs on - needed if we are not building on xorg
@@ -158,12 +159,12 @@ if not GetOption('clean'):
                         print "ERROR: '%s' must be installed!" % (lib)
                         Exit(1)
 
-        if not conf.CheckFunc("dInitOde2", "ode/odeinit.h"):
+        if not conf.CheckFunc("dInitODE2"):
             env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
 
         # the ole version 0.25 does not include the declaration of lo_arg_size anymore
         # This will be re-included in future version
-        if not conf.CheckFunc("lo_arg_size", "lo/lo_lowlevel.h"):
+        if not conf.CheckFunc("lo_arg_size"):
             env.Append(CCFLAGS=' -DNO_LO_ARG_SIZE_DECL')
 
         env = conf.Finish()

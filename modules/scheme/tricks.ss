@@ -8,7 +8,7 @@
 
 #lang scheme/base
 (require scheme/class)
-(require fluxus-015/fluxus)
+(require fluxus-016/fluxus)
 
 (provide 
  expand

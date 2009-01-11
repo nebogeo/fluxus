@@ -26,6 +26,7 @@
 #include "LocatorPrimitive.h"
 #include "PixelPrimitive.h"
 #include "BlobbyPrimitive.h"
+#include "TypePrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
 #include "Evaluator.h"
@@ -404,11 +405,146 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// build-type ttf-filename text-string
+// Returns: primitiveid-number
+// Description:
+// Builds a geometric type primitive from a ttf font and some text.
+// Example:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!"))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
+Scheme_Object *build_type(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-type", "ss", argc, argv);
+		
+	// 16*16 grid of letters
+	TypePrimitive *TypePrim = new TypePrimitive();
+	if (TypePrim->LoadTTF(StringFromScheme(argv[0])))
+	{
+		TypePrim->SetText(StringFromScheme(argv[1]));
+	}
+	MZ_GC_UNREG(); 
+	
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+}
+
+// StartFunctionDoc-en
+// build-extruded-type ttf-filename text-string extrude-depth
+// Returns: primitiveid-number
+// Description:
+// Builds an extruded geometric type primitive from a ttf font and some text.
+// Example:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
+Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-extruded-type", "ssf", argc, argv);
+		
+	// 16*16 grid of letters
+	TypePrimitive *TypePrim = new TypePrimitive();
+	if(TypePrim->LoadTTF(StringFromScheme(argv[0])))
+	{
+		TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+	}
+	MZ_GC_UNREG(); 
+	
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+}
+
+// StartFunctionDoc-en
+// type->poly typeprimitiveid-number
+// Returns: polyprimid-number
+// Description:
+// Converts the mesh of a type primitive into a triangle list polygon primitive. The poly primitive
+// will be a bit slower to render, but you'll be able to do everything you can do with a poly primitive
+// with it, such as add textures and deform it.
+// Example:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; this font should be on the default fluxus path (as it's the editor font)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+// 
+// ; make a poly primitive from the type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+// 
+// ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
+Scheme_Object *type2poly(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("type->poly", "i", argc, argv);
+	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (Prim) 
+	{
+		// only if this is a pixel primitive
+		TypePrimitive *tp = dynamic_cast<TypePrimitive *>(Prim);
+		if (tp)
+		{
+			PolyPrimitive *np = new PolyPrimitive(PolyPrimitive::TRILIST);
+			tp->ConvertToPoly(*np);
+			MZ_GC_UNREG();
+    		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(np));
+		}
+	}
+	
+	Trace::Stream<<"type->poly can only be called on a typeprimitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+
+
+// StartFunctionDoc-en
 // text-params width-number height-number stride-number wrap-number
 // Returns: primitiveid-number
 // Description:
 // Sets parameters for making fonts from texture maps. Defaults: 16/256 16/256 16 0
 // Example:
+// ; don't use me!
 // EndFunctionDoc
 
 Scheme_Object *text_params(int argc, Scheme_Object **argv)
@@ -1357,6 +1493,11 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 // Gets the vertex indices from this primitive
 // primitive.
 // Example:
+// (define p (build-cube))
+// 
+// (with-primitive p
+//     (poly-convert-to-indexed)
+//     (display (poly-indices))(newline))
 // EndFunctionDoc
 
 Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
@@ -1397,6 +1538,14 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 // Use (poly-type) instead of this directly.
 // primitive.
 // Example:
+// (define (poly-type)	
+//   (let ((t (poly-type-enum)))
+//     (cond
+//       ((eq? t 0) 'triangle-strip)
+//       ((eq? t 1) 'quad-list)
+//       ((eq? t 2) 'triangle-list)
+//       ((eq? t 3) 'triangle-fan)
+//       ((eq? t 4) 'polygon))))
 // EndFunctionDoc
 
 Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)
@@ -2047,7 +2196,22 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 // Returns #t if the current primitive bounding box intersects with the supplied one, 
 // with an additional expanding threshold.
 // Example:
+// (clear)
 // 
+// (define a (with-state
+//      (build-sphere 10 10)))
+// 
+// (define b (with-state
+//      (translate (vector 2 0 0))
+//      (build-sphere 10 10)))
+// 
+// (every-frame
+//     (begin
+//         (with-primitive b
+//             (translate (vector (* -0.1 (sin (time))) 0 0)))
+//         (with-primitive a
+//             (when (bb-intersect b 0)
+//                 (colour (rndvec))))))
 // EndFunctionDoc
 
 Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
@@ -2071,7 +2235,119 @@ Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
 	return scheme_false;
 }
 
+// StartFunctionDoc-en
+// get-children 
+// Returns: void
+// Description:
+// Gets a list of primitives parented to this one.
+// Example:
+// ; build a random heirachical structure
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)            
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// 
+// ; navigate the scene graph and print it out
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
 
+Scheme_Object *get_children(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *l = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(1, l);
+	MZ_GC_REG();
+	l = scheme_null;
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+				
+		for (vector<Node*>::iterator n=a->Children.begin(); 
+			n<a->Children.end(); n++)
+		{
+			l=scheme_make_pair(scheme_make_integer((*n)->ID),l);
+		}
+	}
+	else // return the root node's children
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().Root());
+				
+		for (vector<Node*>::iterator n=a->Children.begin(); 
+			n<a->Children.end(); n++)
+		{
+			l=scheme_make_pair(scheme_make_integer((*n)->ID),l);
+		}
+	}
+	
+	MZ_GC_UNREG(); 
+    return l;
+}
+
+// StartFunctionDoc-en
+// get-parent 
+// Returns: void
+// Description:
+// Gets the parent of this node. 1 is the root node.
+// Example:
+// ; build a random heirachical structure
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)            
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// 
+// ; navigate the scene graph and print it out
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
+
+Scheme_Object *get_parent(int argc, Scheme_Object **argv)
+{	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));		
+    	return scheme_make_integer(a->Parent->ID);
+	}
+	Trace::Stream<<"get-parent: no primitive current"<<endl;
+	return scheme_void;
+}
 
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {	
@@ -2094,6 +2370,8 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
+	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
+	scheme_add_global("build-extruded-type", scheme_make_prim_w_arity(build_extruded_type, "build-extruded-type", 3, 3), env);
 	scheme_add_global("load-primitive", scheme_make_prim_w_arity(load_primitive, "load-primitive", 1, 1), env);
 	scheme_add_global("save-primitive", scheme_make_prim_w_arity(save_primitive, "save-primitive", 1, 1), env);
 	scheme_add_global("clear-geometry-cache", scheme_make_prim_w_arity(clear_geometry_cache, "clear-geometry-cache", 0, 0), env);
@@ -2105,6 +2383,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
+	scheme_add_global("type->poly", scheme_make_prim_w_arity(type2poly, "type->poly", 1, 1), env);
 	scheme_add_global("draw-instance", scheme_make_prim_w_arity(draw_instance, "draw-instance", 1, 1), env);
 	scheme_add_global("draw-cube", scheme_make_prim_w_arity(draw_cube, "draw-cube", 0, 0), env);
 	scheme_add_global("draw-plane", scheme_make_prim_w_arity(draw_plane, "draw-plane", 0, 0), env);
@@ -2123,5 +2402,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
 	scheme_add_global("line-intersect", scheme_make_prim_w_arity(line_intersect, "line-intersect", 2, 2), env);
 	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
+	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
+	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
  	MZ_GC_UNREG(); 
 }

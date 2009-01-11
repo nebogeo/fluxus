@@ -1,4 +1,4 @@
-(require fluxus-015/frisbee)
+(require fluxus-016/frisbee)
 
 (define player-pos
   (vec3 (key-control-b #\d #\a 0.01)
