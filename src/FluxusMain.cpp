@@ -26,10 +26,12 @@ using namespace std;
 using namespace fluxus;
 
 ////////////////////////////////////////////////////////////////
-// despite attempts at clearing all this up, this 
+// despite attempts at clearing all this up, this
 // is still an area of awkward code...
 
 FluxusMain::FluxusMain(int x, int y) :
+m_OrigWidth(x),
+m_OrigHeight(y),
 m_CurrentEditor(9),
 m_Width(x),
 m_Height(y),
@@ -44,7 +46,7 @@ m_ShowFileDialog(false)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_VAR_IN_REG(1, t);
-	MZ_GC_REG();	
+	MZ_GC_REG();
 	Interpreter::Interpret("fluxus-scratchpad-font", &txt);
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
 	Interpreter::Interpret("fluxus-scratchpad-do-autofocus", &t);
@@ -73,24 +75,24 @@ m_ShowFileDialog(false)
 	GLEditor::m_XPos=(int)scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-y-pos", &t);
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
-  	MZ_GC_UNREG();
-	
+	MZ_GC_UNREG();
+
 	GLEditor::InitFont(s);
 	m_FileDialog = new GLFileDialog;
 
-	for(int i=0; i<9; i++) 
+	for(int i=0; i<9; i++)
 	{
 		m_Editor[i] = new GLEditor();
 	}
 	Repl *repl = new Repl();
 	m_Editor[9] = repl;
-	
+
 	// register the repl with the interpreter so we can
 	// use it to output error and output messages
 	Interpreter::SetRepl(repl);
 }
 
-FluxusMain::~FluxusMain() 
+FluxusMain::~FluxusMain()
 {
 	for(int i=0; i<10; i++)
 	{
@@ -99,41 +101,41 @@ FluxusMain::~FluxusMain()
 }
 
 void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y, int mod) 
-{	
+{
 	if (mod&GLUT_ACTIVE_CTRL)
 	{
 		// pretty sure this is going to have to change...
 		switch(key)
 		{
-			case 6: glutFullScreen(); break; // f	
+			case 6: glutFullScreen(); break; // f
 			case 23: // w
 			{
-				glutReshapeWindow(720,576);
+				glutReshapeWindow(m_OrigWidth,m_OrigHeight);
 				glutPositionWindow(100,100);
-			} 
+			}
 			break;
 			case 16: Pretty(); break; // p
-			case 19: if (m_CurrentEditor!=9) SaveScript(); break; // s			
+			case 19: if (m_CurrentEditor!=9) SaveScript(); break; // s
 			case 8: HideScript(); break; // h
 			case 13: HideCursor(); break; // m
-			case 12: 
+			case 12:
 				if (m_CurrentEditor!=9) // don't go into the dialogs from the repl
 				{
 					m_FileDialog->SetSaveAsMode(false);
 					m_ShowFileDialog=!m_ShowFileDialog;
-				} 
+				}
 			break; // l
 			case 4: // d
 				if (m_CurrentEditor!=9) // don't go into the dialogs from the repl
 				{
 					m_FileDialog->SetSaveAsMode(true);
-					m_ShowFileDialog=!m_ShowFileDialog; 
+					m_ShowFileDialog=!m_ShowFileDialog;
 				}
 			break; // l
 			case 5: // e
 			{
 				Execute();
-			}			
+			}
 			break;
 #ifndef __APPLE__
 			case 49: SetCurrentEditor(0); break; // 1
@@ -160,24 +162,24 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 #endif
 		}
 	}
-	
-	if (key!=0 || special!=-1) 
+
+	if (key!=0 || special!=-1)
 	{
-		if (special==GLUT_KEY_F9) 
+		if (special==GLUT_KEY_F9)
 		{
 			m_Editor[m_CurrentEditor]->m_TextColourRed=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
-		}	
-		else if (special==GLUT_KEY_F10) 
+		}
+		else if (special==GLUT_KEY_F10)
 		{
 			m_Editor[m_CurrentEditor]->m_TextColourAlpha-=0.05;
 			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha<0)
 			{
 				m_Editor[m_CurrentEditor]->m_TextColourAlpha=0;
 			}
-		}	
-		else if (special==GLUT_KEY_F11) 
+		}
+		else if (special==GLUT_KEY_F11)
 		{
 			m_Editor[m_CurrentEditor]->m_TextColourAlpha+=0.05;
 			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha>1)
@@ -185,38 +187,38 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				m_Editor[m_CurrentEditor]->m_TextColourAlpha=1;
 			}
 		}
-		else if (special==GLUT_KEY_F4 && m_CurrentEditor<9) 
+		else if (special==GLUT_KEY_F4 && m_CurrentEditor<9)
 		{
-			m_Script=m_Editor[m_CurrentEditor]->GetSExpr();				
+			m_Script=m_Editor[m_CurrentEditor]->GetSExpr();
 		}
-		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9) 
+		else if (special==GLUT_KEY_F5 && m_CurrentEditor<9)
 		{
 			Execute();
 		}
-		else if (special==GLUT_KEY_F6 && m_CurrentEditor<9) 
+		else if (special==GLUT_KEY_F6 && m_CurrentEditor<9)
 		{
 			Interpreter::Initialise();
 			m_Script=m_Editor[m_CurrentEditor]->GetText();
 			SaveBackupScript();
 		}
-	
+
 		// the editors only take keyboard events
-		if (m_ShowFileDialog) 
+		if (m_ShowFileDialog)
 		{
-			if (key==27) // escape 
+			if (key==27) // escape
 			{
 				m_ShowFileDialog=false;
 			}
-			
+
 			m_FileDialog->Handle(button,key,special,state,x,y,mod);
 			if (m_FileDialog->GetOutput()!="")
 			{
-				if (m_FileDialog->GetSaveAsMode()) 
+				if (m_FileDialog->GetSaveAsMode())
 				{
 					m_SaveName[m_CurrentEditor]=m_FileDialog->GetOutput();
 					SaveScript();
 				}
-				else 
+				else
 				{
 					LoadScript(m_FileDialog->GetOutput());
 				}
@@ -224,7 +226,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				m_ShowFileDialog=false;
 			}
 		}
-		else if (!m_HideScript) 
+		else if (!m_HideScript)
 		{
 			m_Editor[m_CurrentEditor]->Handle(button,key,special,state,x,y,mod);
 		}
@@ -237,59 +239,59 @@ void FluxusMain::Reshape(int width, int height)
 	{
 		m_Editor[n]->Reshape(width,height);
 	}
-	
+
 	m_FileDialog->Reshape(width,height);
 	m_Width=width;
 	m_Height=height;
 }
 
 void FluxusMain::Render()
-{		
+{
 	if (m_ShowFileDialog) m_FileDialog->Render();
 	else if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 }
 
-void FluxusMain::LoadScript(const string &Filename) 
-{ 
+void FluxusMain::LoadScript(const string &Filename)
+{
 	FILE *file=fopen(Filename.c_str(),"r");
 	if (file)
 	{
 		fseek(file,0,SEEK_END);
 		long size=ftell(file);
-		fseek(file,0,SEEK_SET);		
-		
-		if (size==0) 
+		fseek(file,0,SEEK_SET);
+
+		if (size==0)
 		{
 			fclose(file);
 			cerr<<"empty file: "<<Filename<<endl;
 			return;
 		}
 
-		if (size<0) 
+		if (size<0)
 		{
 			fclose(file);
 			cerr<<"error loading file: "<<Filename<<" size: "<<size<<"??"<<endl;
 			return;
 		}
-		
+
 		char *buffer = new char[size+1];
 		if (buffer)
 		{
-			if (size!=(long)fread(buffer,1,size,file))	
+			if (size!=(long)fread(buffer,1,size,file))
 			{
 				delete[] buffer;
 				fclose(file);
 				cerr<<"read error: "<<Filename<<endl;
 				return;
-			}			
+			}
 			buffer[size]='\0';
-			m_Editor[m_CurrentEditor]->SetText(buffer);	
+			m_Editor[m_CurrentEditor]->SetText(buffer);
 		}
 		else
 		{
 			cerr<<"couldn't allocate buffer for load"<<endl;
 		}
-		
+
 		delete[] buffer;
 		fclose(file);
 	}
@@ -297,10 +299,10 @@ void FluxusMain::LoadScript(const string &Filename)
 	{
 		cerr<<"couldn't load: "<<Filename<<endl;
 	}
-	
+
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
 }
- 
+
 void FluxusMain::Execute()
 {
 	m_Script=m_Editor[m_CurrentEditor]->GetText();
@@ -374,3 +376,4 @@ void FluxusMain::HideCursor()
 	if (m_ShowCursor) glutSetCursor(GLUT_CURSOR_INHERIT); 
 	else glutSetCursor(GLUT_CURSOR_NONE); 
 }
+

@@ -14,10 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
+#include <stdlib.h>
+#include <limits.h>
 #include <sys/time.h>
 #include <iostream>
 #include <string>
@@ -172,146 +170,171 @@ void ExitHandler()
 
 int run(Scheme_Env* se, int argc, char *argv[])
 {
-	
-	// we create our own Scheme_Env in here, as we need 
-	// to be able to reset it with F6. Seems to be ok to ignore se...
-  Interpreter::Register();
-  Interpreter::Initialise();
 
-  srand(time(NULL));
-  
-  unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+	// we create our own Scheme_Env in here, as we need
+	// to be able to reset it with F6. Seems to be ok to ignore se...
+	Interpreter::Register();
+	Interpreter::Initialise();
+
+	srand(time(NULL));
+
+	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 #ifdef ACCUM_BUFFER
-  flags|=GLUT_ACCUM;
+	flags|=GLUT_ACCUM;
 #endif
 #ifdef STEREODEFAULT
-  flags|=GLUT_STEREO;
+	flags|=GLUT_STEREO;
 #endif
 
-  // init OpenGL
-  glutInit(&argc,argv);
-  glutInitWindowSize(720,576);
-  app = new FluxusMain(720,576);
-  glutInitDisplayMode(flags);
-  char windowtitle[256];
-  snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
-  glutCreateWindow(windowtitle);
-  glutDisplayFunc(DisplayCallback);
-  glutReshapeFunc(ReshapeCallback);
-  glutKeyboardFunc(KeyboardCallback);
-  glutSpecialFunc(SpecialKeyboardCallback);
-  glutMouseFunc(MouseCallback);
-  glutMotionFunc(MotionCallback);
-  glutIdleFunc(IdleCallback);
-  glutKeyboardUpFunc(KeyboardUpCallback);
-  glutSpecialUpFunc(SpecialKeyboardUpCallback);
-  atexit(ExitHandler);
+	// init OpenGL
+	glutInit(&argc,argv);
+	glutInitWindowSize(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	app = new FluxusMain(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	glutInitDisplayMode(flags);
+	char windowtitle[256];
+	snprintf(windowtitle,256,"fluxus scratchpad %d.%d",FLUXUS_MAJOR_VERSION,FLUXUS_MINOR_VERSION);
+	glutCreateWindow(windowtitle);
+	glutDisplayFunc(DisplayCallback);
+	glutReshapeFunc(ReshapeCallback);
+	glutKeyboardFunc(KeyboardCallback);
+	glutSpecialFunc(SpecialKeyboardCallback);
+	glutMouseFunc(MouseCallback);
+	glutMotionFunc(MotionCallback);
+	glutIdleFunc(IdleCallback);
+	glutKeyboardUpFunc(KeyboardUpCallback);
+	glutSpecialUpFunc(SpecialKeyboardUpCallback);
+	atexit(ExitHandler);
 
 	if(glewInit() != GLEW_OK)
 	{
 		cerr<< "ERROR Unable to check OpenGL extensions" << endl;
 	}
 
-  recorder = new EventRecorder;
-  int arg=1;
-  int currentEditor=0;
-  bool exe=false;
+	recorder = new EventRecorder;
+	int arg=1;
+	int currentEditor=0;
+	bool exe=false;
 
-  while(arg<argc)
-    {
-      if (!strcmp(argv[arg],"-v"))
+	while(arg<argc)
 	{
-	  cerr<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
-	  exit(1);
-	}
-      else if (!strcmp(argv[arg],"-h"))
-	{
-	  cerr<<"fluxus [options] [filename1] [filename2] ..."<<endl;
-	  cerr<<"options:"<<endl;
-	  cerr<<"-h : help"<<endl;
-	  cerr<<"-v : version info"<<endl;
-	  cerr<<"-r filename : record keypresses"<<endl;
-	  cerr<<"-p filename : playback keypresses"<<endl;
-	  cerr<<"-d time : set delta time between frames for keypress playback"<<endl;
-	  cerr<<"-lang language : sets the PLT language to use (may not work)"<<endl;
-	  cerr<<"-fs : startup in fullscreen mode"<<endl;
-	  cerr<<"-hm : hide the mouse pointer on startup"<<endl;
-	  cerr<<"-x : execute and hide script at startup"<<endl;
-	  exit(1);
-	}
-      else if (!strcmp(argv[arg],"-r"))
-	{
-	  if (arg+1 < argc)
-	    {
-	      recorder->SetFilename(argv[arg+1]);
-	      recorder->SetMode(EventRecorder::RECORD);
-	      arg++;
-	    }
-	}
-      else if (!strcmp(argv[arg],"-p"))
-	{
-	  if (arg+1 < argc)
-	    {
-	      recorder->SetFilename(argv[arg+1]);
-	      recorder->Load();
-	      recorder->SetMode(EventRecorder::PLAYBACK);
-	      arg++;
-	    }
-	}
-      else if (!strcmp(argv[arg],"-d"))
-	{
-	  if (arg+1 < argc)
-	    {
-	      recorder->SetDelta(atof(argv[arg+1]));
-	      arg++;
-	    }
-	}
-      else if (!strcmp(argv[arg],"-lang"))
-	{
-	  if (arg+1 < argc)
-	    {
-	      Interpreter::SetLanguage(argv[arg+1]);
-	      arg++;
-	    }
-	}
-      else if (!strcmp(argv[arg],"-fs"))
-	{
-	  glutFullScreen();
-	}
-      else if (!strcmp(argv[arg],"-hm"))
-	{
-	  app->HideCursor();
-	}
-      else if (!strcmp(argv[arg],"-x"))
-	{
-	  exe=true;
-	}
-      else
-	{
-	  if (currentEditor<fluxus::NUM_EDITORS)
-	    {
-	      app->SetCurrentEditor(currentEditor); // flip it out of the repl
-	      app->LoadScript(argv[arg]);
-	      if (exe && currentEditor==0)
+		if (!strcmp(argv[arg],"-v"))
 		{
-		  app->Execute();
-		  app->HideScript();
+			cerr<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
+			exit(1);
 		}
-	      currentEditor++;
-	    }
+		else if (!strcmp(argv[arg],"-h"))
+		{
+			cerr<<"fluxus [options] [filename1] [filename2] ..."<<endl;
+			cerr<<"options:"<<endl;
+			cerr<<"-h : help"<<endl;
+			cerr<<"-v : version info"<<endl;
+			cerr<<"-r filename : record keypresses"<<endl;
+			cerr<<"-p filename : playback keypresses"<<endl;
+			cerr<<"-d time : set delta time between frames for keypress playback"<<endl;
+			cerr<<"-lang language : sets the PLT language to use (may not work)"<<endl;
+			cerr<<"-fs : startup in fullscreen mode"<<endl;
+			cerr<<"-hm : hide the mouse pointer on startup"<<endl;
+			cerr<<"-geom wxh : set window geometry, e.g. 640x480"<<endl;
+			cerr<<"-x : execute and hide script at startup"<<endl;
+			exit(1);
+		}
+		else if (!strcmp(argv[arg],"-r"))
+		{
+			if (arg+1 < argc)
+			{
+				recorder->SetFilename(argv[arg+1]);
+				recorder->SetMode(EventRecorder::RECORD);
+				arg++;
+			}
+		}
+		else if (!strcmp(argv[arg],"-p"))
+		{
+			if (arg+1 < argc)
+			{
+				recorder->SetFilename(argv[arg+1]);
+				recorder->Load();
+				recorder->SetMode(EventRecorder::PLAYBACK);
+				arg++;
+			}
+		}
+		else if (!strcmp(argv[arg],"-d"))
+		{
+			if (arg+1 < argc)
+			{
+				recorder->SetDelta(atof(argv[arg+1]));
+				arg++;
+			}
+		}
+		else if (!strcmp(argv[arg],"-lang"))
+		{
+			if (arg+1 < argc)
+			{
+				Interpreter::SetLanguage(argv[arg+1]);
+				arg++;
+			}
+		}
+		else if (!strcmp(argv[arg],"-fs"))
+		{
+			glutFullScreen();
+		}
+		else if (!strcmp(argv[arg],"-hm"))
+		{
+			app->HideCursor();
+		}
+		else if (!strcmp(argv[arg],"-x"))
+		{
+			exe=true;
+		}
+		else if (!strcmp(argv[arg],"-geom"))
+		{
+			if (arg+1 < argc)
+			{
+				char *endptr;
+				int width=strtol(argv[arg+1], &endptr, 10);
+				arg++;
+				if (*endptr != 'x')
+				{
+					arg++;
+					continue;
+				}
+
+				int height=strtol(endptr+1, NULL, 10);
+
+				if ((width > 0) && (height > 0))
+				{
+					glutReshapeWindow(width,height);
+					app->m_OrigWidth=width;
+					app->m_OrigHeight=height;
+					app->Reshape(width,height);
+				}
+
+			}
+		}
+		else
+		{
+			if (currentEditor<fluxus::NUM_EDITORS)
+			{
+				app->SetCurrentEditor(currentEditor); // flip it out of the repl
+				app->LoadScript(argv[arg]);
+				if (exe && currentEditor==0)
+				{
+					app->Execute();
+					app->HideScript();
+				}
+				currentEditor++;
+			}
+		}
+		arg++;
 	}
-      arg++;
-    }
 
-  glutMainLoop();
+	glutMainLoop();
 
-  return 0;
+	return 0;
 }
 
 int main(int argc, char *argv[])
 {
   return scheme_main_setup(1, run, argc, argv);
 }
-
 
 

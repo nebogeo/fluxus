@@ -28,19 +28,21 @@ namespace fluxus
 {
 
 static const int NUM_EDITORS=10;
+static const int DEFAULT_WIDTH=720;
+static const int DEFAULT_HEIGHT=576;
 
-class FluxusMain 
+class FluxusMain
 {
 public:
 	FluxusMain(int x, int y);
 	virtual ~FluxusMain();
-	
+
 	void Handle(unsigned char key, int button, int special, int state, int x, int y, int mod);
 	void Render();
 	void Reshape(int width, int height);
-		
+
 	bool KeyPressed(char b);
-	
+
     string GetScriptFragment() { string temp=m_Script; m_Script=""; return temp; }
     void LoadScript(const string &Filename);
     void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
@@ -48,21 +50,24 @@ public:
     void SaveBackupScript();
 	void HideScript() { m_HideScript=!m_HideScript; }
 	void HideCursor();
-	void SetCurrentEditor(int s) { m_CurrentEditor=s; } 
-  	void Execute();
-	
+	void SetCurrentEditor(int s) { m_CurrentEditor=s; }
+	void Execute();
+
 	Repl * GetRepl() { return (Repl*)m_Editor[9]; }
     void SwitchToRepl() { m_CurrentEditor = 9; }
-	
+
+	int m_OrigWidth;
+	int m_OrigHeight;
+
 private:
-	
+
 	void Pretty();
-	
+
 	GLEditor *m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
 	string m_SaveName[NUM_EDITORS];
 	GLFileDialog *m_FileDialog;
-	
+
 	int m_Width;
 	int m_Height;
 	string m_Script;
@@ -74,3 +79,4 @@ private:
 };
 
 #endif
+
