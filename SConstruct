@@ -23,10 +23,19 @@ DESTDIR = ARGUMENTS.get('DESTDIR', '')
 if len(DESTDIR)>0 and DESTDIR[0] != "/":
                 DESTDIR = "#" + DESTDIR
 
-Prefix = ARGUMENTS.get('Prefix','/usr/local')
-PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
-PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
-PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
+if sys.platform == 'darwin':
+	file = os.popen('dirname "`which mzscheme`"')
+	PLTBin = file.read()
+	file.close()
+	Prefix = ARGUMENTS.get('Prefix','/opt/local')
+	PLTPrefix = ARGUMENTS.get('PLTPrefix', PLTBin[:-5])
+	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
+	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+else:
+	Prefix = ARGUMENTS.get('Prefix','/usr/local')
+	PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
+	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
+	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
