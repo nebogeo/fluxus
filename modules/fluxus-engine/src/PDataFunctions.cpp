@@ -262,23 +262,23 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// pdata-add type-string name-string
+// pdata-add name-string type-string
 // Returns: void
 // Description:
 // Adds a new user pdata array. Type is one of "v":vector, "c":colour, "f":float or "m":matrix.
 // Example:
-// (pdata-add "v" "mydata")
+// (pdata-add "mydata" "v")
 // (pdata-set "mydata" 0 (vector 1 2 3))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// pdata-add string-tipo nome-string
+// pdata-add nome-string string-tipo
 // Retorna: void
 // Descrição:
 // Adiciona um novo usuario de disposição ao pdata. Tipo é um dos
 // sequintes "v":vector, "c":colour, "f":float ou "m":matrix.
 // Exemplo:
-// (pdata-add "v" "mydata")
+// (pdata-add "mydata" "v")
 // (pdata-set "mydata" 0 (vector 1 2 3))
 // EndFunctionDoc
 

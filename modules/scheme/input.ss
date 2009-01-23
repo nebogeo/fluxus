@@ -163,7 +163,7 @@
   (eq? n (vector-ref mouse 2)))
   
 ;; StartFunctionDoc-en
-;; mouse-button
+;; mouse-wheel
 ;; Returns: boolean
 ;; Description:
 ;; Returns 1 if the mouse wheel was moved in one direction in the last frame

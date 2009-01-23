@@ -112,6 +112,15 @@ void MotionCallback(int x, int y)
   recorder->Record(RecorderMessage("motion",x,y));
 }
 
+void PassiveMotionCallback(int x, int y)
+{
+  app->Handle(0, -1, -1, -1, x, y, 0);
+  char code[256];
+  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+  Interpreter::Interpret(code);
+  recorder->Record(RecorderMessage("motion",x,y));
+}
+
 void IdleCallback()
 {
   glutPostRedisplay();
@@ -203,6 +212,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 	glutIdleFunc(IdleCallback);
 	glutKeyboardUpFunc(KeyboardUpCallback);
 	glutSpecialUpFunc(SpecialKeyboardUpCallback);
+	glutPassiveMotionFunc(PassiveMotionCallback);
 	atexit(ExitHandler);
 
 	if(glewInit() != GLEW_OK)
