@@ -21,7 +21,10 @@
 ; setup where to find the library module collections
 (current-library-collection-paths 
 	(path-list-string->path-list 
-         (or (getenv "PLTCOLLECTS") fluxus-collects-location)
+         (string-append
+		   (or (getenv "PLTCOLLECTS") plt-collects-location)
+		   ":" 
+		   fluxus-collects-location)
          (current-library-collection-paths)))
 
 (define fluxus-name (string-append "fluxus-" fluxus-version))
@@ -31,8 +34,7 @@
 (require fluxus-016/fluxus)
 
 ; load the helpmap
-(init-help (string-append (path->string (car (current-library-collection-paths)))
-                          fluxus-name "/helpmap.scm"))
+(init-help (string-append fluxus-collects-location "/" fluxus-name "/helpmap.scm"))
 
 ; set the font for the scratchpad
 (define fluxus-scratchpad-font

@@ -25,7 +25,8 @@ using namespace fluxus;
 
 static const int LOG_SIZE=256;
 
-static const string STARTUP_SCRIPT="(define fluxus-collects-location \"%s\") \
+static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") \
+									(define fluxus-collects-location \"%s\") \
 									(define fluxus-version \"%d%d\") \
 									(define fluxus-data-location \"%s\") \
 									(load (string-append fluxus-collects-location \"/fluxus-\"\
@@ -79,7 +80,8 @@ void Interpreter::Initialise()
 	char startup[1024];
 	// insert the version number
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		COLLECTS_LOCATION,
+		PLT_COLLECTS_LOCATION,
+		FLUXUS_COLLECTS_LOCATION,
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
 		DATA_LOCATION);

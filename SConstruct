@@ -40,12 +40,13 @@ BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
 DataInstall = DESTDIR + DataLocation
+FluxusCollectsLocation = Prefix + "/lib"
+CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
 
 if sys.platform == 'darwin':
-        CollectsLocation = PLTPrefix + "/collects/"
+        PLTCollectsLocation = PLTPrefix + "/collects/"
 else:
-        CollectsLocation = PLTLib + "/collects/"
-CollectsInstall = DESTDIR + CollectsLocation + "fluxus-" + FluxusVersion
+        PLTCollectsLocation = PLTLib + "/collects/"
 
 LibPaths     = [
         PLTLib,
@@ -76,7 +77,8 @@ env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
-env.Append(CCFLAGS=" -DCOLLECTS_LOCATION="+"\"\\\""+CollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=" -DPLT_COLLECTS_LOCATION="+"\"\\\""+PLTCollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=" -DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
 # multitexturing causes crashes on some cards, default it to off, and
