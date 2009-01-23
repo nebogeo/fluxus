@@ -440,7 +440,10 @@
       (if (< f 0.5)
           (* f tick)
           (- (* (- 1 f) tick))))))
-
+		  
+(define (fluxa-error-handler n)
+  (printf "fluxa error:~a~n" n))
+  
 (define (go-flux)
   ; check for sync messages 
   (cond ((osc-msg "/sync")
@@ -456,8 +459,10 @@
          (set! logical-time (time-now))))
   
   ; time for an update?
-  (cond ((> (time-now) logical-time)	   
-         (set! tempo (proc (+ logical-time (* bpb tempo)) clock))
+  (cond ((> (time-now) logical-time)	
+  		 ; todo: fall back on last thunk if there is an error
+		 (with-handlers ([(lambda (x) #t) fluxa-error-handler])
+	         (set! tempo (proc (+ logical-time (* bpb tempo)) clock)))   
          (set! logical-time (+ logical-time tempo))
          (set! clock (+ clock 1))
          (set! sync-clock (+ sync-clock 1))))

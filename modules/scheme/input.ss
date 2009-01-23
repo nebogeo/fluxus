@@ -19,11 +19,14 @@
  mouse-over
  register-down
  register-up
- clear-down)
+ clear-down
+ update-input
+ mouse-wheel)
 
 (define keys '())
 (define special-keys '())
 (define mouse (vector 0 0 #f))
+(define mouse-wheel-v 0)
 
 ; utils funcs for using lists as sets
 (define (set-remove a l)
@@ -46,6 +49,9 @@
 (define (clear-down)
   (set! keys '()))
 
+(define (update-input)
+	(set! mouse-wheel-v 0))
+
 (define (register-down key button special state x y mod)
   (when (not (or (number? key) (eq? key -1))) ; ordinary keypress
     (set! keys (set-add key keys)))
@@ -53,6 +59,8 @@
     (set! special-keys (set-add special special-keys)))
   (cond  ; mouse
     ((and (eq? key 0) (eq? special -1)) 
+	 (when (eq? button 3) (set! mouse-wheel-v 1))
+	 (when (eq? button 4) (set! mouse-wheel-v -1))
      (when (eq? state 0) (vector-set! mouse 2 (+ button 1)))
      (when (eq? state 1) (vector-set! mouse 2 0))
      (vector-set! mouse 0 x)
@@ -153,6 +161,19 @@
 
 (define (mouse-button n)
   (eq? n (vector-ref mouse 2)))
+  
+;; StartFunctionDoc-en
+;; mouse-button
+;; Returns: boolean
+;; Description:
+;; Returns 1 if the mouse wheel was moved in one direction in the last frame
+;; or -1 if it was turned the other way, otherwise returns 0.
+;; Example:
+;; (display (mouse-wheel))
+;; EndFunctionDoc
+
+(define (mouse-wheel)
+	mouse-wheel-v)
 
 ;; StartFunctionDoc-en
 ;; mouse-over
