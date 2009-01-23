@@ -118,7 +118,7 @@ void PassiveMotionCallback(int x, int y)
   char code[256];
   snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
   Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("motion",x,y));
+  recorder->Record(RecorderMessage("passivemotion",x,y));
 }
 
 void IdleCallback()
@@ -147,6 +147,7 @@ void DoRecorder()
 	  else if (i->Name=="specialkeyup") SpecialKeyboardUpCallback(i->Data,0,0);
 	  else if (i->Name=="mouse") MouseCallback(i->Button,i->State,i->Data,i->Mod);
 	  else if (i->Name=="motion") MotionCallback(i->Data,i->Mod);
+	  else if (i->Name=="passivemotion") PassiveMotionCallback(i->Data,i->Mod);
 	}
     }
   recorder->UpdateClock();

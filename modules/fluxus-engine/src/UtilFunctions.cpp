@@ -21,6 +21,7 @@
 #include "Renderer.h"
 #include "Utils.h"
 #include "SearchPaths.h"
+#include "TiledRender.h"
 
 using namespace UtilFunctions;
 using namespace SchemeHelper;
@@ -337,6 +338,18 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+Scheme_Object *tiledframedump(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("tiled-framedump", "sii", argc, argv);
+		
+	string filename=StringFromScheme(argv[0]);
+	TiledRender(filename, Engine::Get()->Renderer(), IntFromScheme(argv[1]), IntFromScheme(argv[2]));
+	
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
 void UtilFunctions::AddGlobals(Scheme_Env *env)
 {	
 	MZ_GC_DECL_REG(1);
@@ -351,5 +364,6 @@ void UtilFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-searchpaths",scheme_make_prim_w_arity(get_searchpaths,"get-searchpaths",0,0), env);	
 	scheme_add_global("fullpath",scheme_make_prim_w_arity(fullpath,"fullpath",1,1), env);	
 	scheme_add_global("framedump",scheme_make_prim_w_arity(framedump,"framedump",1,1), env);	
+	scheme_add_global("tiled-framedump",scheme_make_prim_w_arity(tiledframedump,"tiled-framedump",3,3), env);
  	MZ_GC_UNREG(); 
 }

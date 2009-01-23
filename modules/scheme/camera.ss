@@ -8,6 +8,7 @@
 #lang scheme/base
 
 (require "fluxus-engine.ss")
+(require "input.ss")
 (provide 
  input-camera
  set-camera-transform
@@ -87,7 +88,7 @@
 
 
 (define (input-camera key button special state x y mod width height)
-  (when (and (number? key) (zero? key) (eq? special -1)) ; = mouse event
+  (when (or (mouse-button 1) (mouse-button 2) (mouse-button 3))
     (cond 
       ((zero? state) ; click                      
        (vector-set! last-mouse 0 x)

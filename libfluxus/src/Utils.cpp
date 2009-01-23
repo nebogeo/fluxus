@@ -26,7 +26,7 @@ extern "C"
 
 using namespace std;
 
-GLubyte *GetScreenBuffer(int x, int y, int &width, int &height, int super)
+GLubyte *GetScreenBuffer(int x, int y, unsigned int width, unsigned int height, int super)
 {
 	// get the raw image
 	GLubyte *image = (GLubyte *) malloc(width * height * sizeof(GLubyte) * 3);
@@ -177,6 +177,51 @@ int WritePPM(const char *filename, const char *description, int x, int y, int wi
 		fwrite(image+y*width*3,width*3,1,file);
 	}
 	fclose(file);
+	free(image);
+	
+	return 0;
+}	
+
+int WriteJPGt(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
+{
+	struct jpeg_compress_struct cinfo;
+	struct jpeg_error_mgr jerr;
+ 
+ 	FILE * outfile;		
+	JSAMPROW row_pointer[1];
+	int row_stride;		
+
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_compress(&cinfo);
+ 
+	if ((outfile = fopen(filename, "wb")) == NULL) 
+	{
+    	return 1;
+  	}
+  	
+	jpeg_stdio_dest(&cinfo, outfile);
+	
+ 	cinfo.image_width = width; 
+  	cinfo.image_height = height;
+  	cinfo.input_components = 3;	
+  	cinfo.in_color_space = JCS_RGB;
+ 
+ 	jpeg_set_defaults(&cinfo);
+	jpeg_set_quality(&cinfo, quality, TRUE);
+	jpeg_start_compress(&cinfo, TRUE);
+
+	row_stride = width * 3;	
+
+	while (cinfo.next_scanline < cinfo.image_height) 
+	{
+    	row_pointer[0] = & image[(cinfo.image_height-1-cinfo.next_scanline) * row_stride];
+    	(void) jpeg_write_scanlines(&cinfo, row_pointer, 1);
+  	}
+
+	jpeg_finish_compress(&cinfo);
+ 	fclose(outfile);
+
+	jpeg_destroy_compress(&cinfo);
 	free(image);
 	
 	return 0;

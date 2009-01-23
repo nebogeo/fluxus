@@ -22,7 +22,8 @@
 #endif 
 #include <stdlib.h> 
 
-GLubyte *GetScreenBuffer(int x, int y, int &width, int &height, int super=1);
+GLubyte *GetScreenBuffer(int x, int y, unsigned int width, unsigned int height, int super=1);
 int WriteTiff(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super=1);
 int WriteJPG(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super=1);
 int WritePPM(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super=1);
+int WriteJPGt(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int quality, int super=1);
