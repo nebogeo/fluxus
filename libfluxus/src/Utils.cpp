@@ -74,10 +74,25 @@ GLubyte *GetScreenBuffer(int x, int y, unsigned int width, unsigned int height, 
 	return image2;
 }
 
-int WriteTiff(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
+int ScreenCapTiff(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
+{
+	return WriteTiff(GetScreenBuffer(x, y, width, height, super),filename,description,x,y,width,height,compression,super);
+}
+
+int ScreenCapJPG(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
+{
+	return WriteJPG(GetScreenBuffer(x, y, width, height, super),filename,description,x,y,width,height,quality,super);
+}
+
+int ScreenCapPPM(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
+{
+	return WritePPM(GetScreenBuffer(x, y, width, height, super),filename,description,x,y,width,height,quality,super);
+}
+
+int WriteTiff(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
 {
 	TIFF *file;
-	GLubyte *image, *p;
+	GLubyte *p;
 	int i;
 
 	file = TIFFOpen(filename, "w");
@@ -85,9 +100,7 @@ int WriteTiff(const char *filename, const char *description, int x, int y, int w
 	{
 		return 1;
 	}
-	
-	image = GetScreenBuffer(x, y, width, height, super);
-	
+		
 	TIFFSetField(file, TIFFTAG_IMAGEWIDTH, (uint32) width);
 	TIFFSetField(file, TIFFTAG_IMAGELENGTH, (uint32) height);
 	TIFFSetField(file, TIFFTAG_BITSPERSAMPLE, 8);
@@ -113,10 +126,8 @@ int WriteTiff(const char *filename, const char *description, int x, int y, int w
 	return 0;
 }	
 
-int WriteJPG(const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
+int WriteJPG(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int quality, int super)
 {
-	GLubyte *image = GetScreenBuffer(x, y, width, height, super);
-
 	struct jpeg_compress_struct cinfo;
 	struct jpeg_error_mgr jerr;
  
@@ -160,7 +171,7 @@ int WriteJPG(const char *filename, const char *description, int x, int y, int wi
 	return 0;
 }	
 
-int WritePPM(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
+int WritePPM(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int compression, int super)
 {
 	FILE* file = fopen(filename,"w");
 	if (file == NULL) 
@@ -168,7 +179,6 @@ int WritePPM(const char *filename, const char *description, int x, int y, int wi
 		return 1;
 	}
 	
-	GLubyte *image = GetScreenBuffer(x, y, width, height, super);
 	char buf[256];
 	sprintf(buf,"P6\n%d\n%d\n255\n",width,height);
 	fwrite(buf,strlen(buf)*sizeof(char),1,file);
@@ -222,7 +232,6 @@ int WriteJPGt(GLubyte *image, const char *filename, const char *description, int
  	fclose(outfile);
 
 	jpeg_destroy_compress(&cinfo);
-	free(image);
 	
 	return 0;
 }	

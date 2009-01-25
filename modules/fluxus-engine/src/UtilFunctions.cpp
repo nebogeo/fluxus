@@ -318,15 +318,15 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 	{
 		if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"tif"))
 		{
-			WriteTiff(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
+			ScreenCapTiff(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
 		}
 		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"jpg"))
 		{
-			WriteJPG(filename.c_str(), "made in fluxus", 0, 0, w, h, 80);
+			ScreenCapJPG(filename.c_str(), "made in fluxus", 0, 0, w, h, 80);
 		}
 		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"ppm"))
 		{
-			WritePPM(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
+			ScreenCapPPM(filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
 		}
 		else
 		{
@@ -338,13 +338,48 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// framedump filename
+// Returns: void
+// Description:
+// For rendering images that are bigger than the screen, for printing or other similar stuff.
+// This command uses a tiled rendering method to render bits of the image and splice them 
+// together into the image to save. Reads the filename extension to 
+// decide on the format used for saving, "tif", "jpg" or "ppm" are supported. 
+// Example:
+// (tiled-framedump "picture.jpg" 3000 2000)
+// EndFunctionDoc
+
 Scheme_Object *tiledframedump(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("tiled-framedump", "sii", argc, argv);
 		
 	string filename=StringFromScheme(argv[0]);
-	TiledRender(filename, Engine::Get()->Renderer(), IntFromScheme(argv[1]), IntFromScheme(argv[2]));
+	int w = IntFromScheme(argv[1]);
+	int h = IntFromScheme(argv[2]);
+	
+	unsigned char *image = TiledRender(Engine::Get()->Renderer(), w, h);
+		
+	if (strlen(filename.c_str())>3)
+	{
+		if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"tif"))
+		{
+			WriteTiff(image,filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
+		}
+		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"jpg"))
+		{
+			WriteJPG(image,filename.c_str(), "made in fluxus", 0, 0, w, h, 80);
+		}
+		else if (!strcmp(filename.c_str()+strlen(filename.c_str())-3,"ppm"))
+		{
+			WritePPM(image,filename.c_str(), "made in fluxus", 0, 0, w, h, 1);
+		}
+		else
+		{
+			Trace::Stream<<"tiled-framedump: Unknown image extension "<<filename.c_str()+strlen(filename.c_str())-3<<endl;
+		}
+	}
 	
 	MZ_GC_UNREG(); 
 	return scheme_void;

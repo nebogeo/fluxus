@@ -24,10 +24,14 @@ m_Initialised(false),
 m_Ortho(false),
 m_CameraAttached(0),
 m_CameraLag(0),
-m_Up(-1),
+/*m_Up(-1),
 m_Down(1),
 m_Left(-0.75),
-m_Right(0.75),
+m_Right(0.75),*/
+m_Left(-1),
+m_Right(1),
+m_Bottom(-0.75),
+m_Top(0.75),
 m_Front(1),
 m_Back(10000),
 m_OrthZoom(1.0f),
@@ -46,8 +50,8 @@ Camera::~Camera()
 
 void Camera::DoProjection()
 {
-	if (m_Ortho) glOrtho(m_Down*m_OrthZoom,m_Up*m_OrthZoom,m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Front,m_Back);
-  	else glFrustum(m_Up,m_Down,m_Left,m_Right,m_Front,m_Back);
+	if (m_Ortho) glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
+	else glFrustum(m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back);
 }
 
 void Camera::DoCamera(Renderer * renderer)

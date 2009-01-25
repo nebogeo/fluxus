@@ -21,7 +21,7 @@
 
 namespace Fluxus
 {
-	void TiledRender(const string &filename, Renderer *renderer, int width, int height);
+	unsigned char *TiledRender(Renderer *renderer, int width, int height);
 };
 
 #endif

@@ -55,14 +55,16 @@ public:
 	void SetMatrix(const dMatrix &m)         { m_Transform=m; }
 	dMatrix *GetLockedMatrix()               { return &m_LockedMatrix; }
 	dMatrix GetProjection();
-	float GetUp() { return m_Up; }
+	float GetTop() { return m_Top; }
 	float GetLeft() { return m_Left; }
+	float GetBottom() { return m_Bottom; }
+	float GetRight() { return m_Right; }
 	/// Lock the camera to this primitive's position
 	void LockCamera(int p);
 	void SetCameraLag(float s)               { m_CameraLag=s; }
 	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
-	void SetFrustum(float u, float d, float l, float r) { m_Up=u; m_Down=d; m_Left=l; m_Right=r; m_Initialised=false; }
+	void SetFrustum(float l, float r, float b, float t) { m_Left=l; m_Right=r; m_Bottom=b; m_Top=t; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
 	void SetViewport(float x, float y, float w, float h)
 		{ m_ViewX=x; m_ViewY=y; m_ViewWidth=w; m_ViewHeight=h; }
@@ -80,7 +82,7 @@ private:
 	int m_CameraAttached;
 	float m_CameraLag;
 	dMatrix  m_LockedMatrix;
-	float m_Up,m_Down,m_Left,m_Right,m_Front,m_Back;
+	float m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back;
 	float m_OrthZoom;
 	float m_ViewX,m_ViewY,m_ViewWidth,m_ViewHeight;
 };

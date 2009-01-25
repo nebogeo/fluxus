@@ -313,7 +313,7 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	if (m_FPSDisplay && !PickMode)
 	{
 		PushState();
-		GetState()->Transform.translate(Cam.GetUp(),Cam.GetLeft(),0);
+		GetState()->Transform.translate(Cam.GetLeft(),Cam.GetBottom(),0);
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
