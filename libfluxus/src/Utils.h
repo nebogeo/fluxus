@@ -14,6 +14,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef N_UTILS
+#define N_UTILS
+
 #ifndef __APPLE__
 #include <GL/gl.h> 
 #else
@@ -30,3 +33,6 @@ int ScreenCapPPM(const char *filename, const char *description, int x, int y, in
 int WriteTiff(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int compression, int super=1);
 int WriteJPG(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int quality, int super=1);
 int WritePPM(GLubyte *image, const char *filename, const char *description, int x, int y, int width, int height, int quality, int super=1);
+
+#endif
+

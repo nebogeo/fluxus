@@ -13,7 +13,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-         	
+
+#ifndef N_STATE
+#define N_STATE
+
 #ifdef GLSL
 #include "GL/glew.h"
 #endif
@@ -27,13 +30,11 @@
 #include "GLUT/glut.h"
 #endif
 
+#include <iostream>
+
 #include "dada.h"
-#include "iostream"  
-#include "GLSLShader.h" 
-#include "TexturePainter.h" 
- 
-#ifndef N_STATE
-#define N_STATE
+#include "GLSLShader.h"
+#include "TexturePainter.h"
 
 namespace Fluxus
 {
@@ -61,9 +62,11 @@ namespace Fluxus
 #define MAX_TEXTURES  1
 #endif
 
+class PixelPrimitive;
+
 ///////////////////////////////////////
 /// The fluxus graphics state
-/// This is used to form the state stack 
+/// This is used to form the state stack
 /// for immediate mode, and is contained
 /// inside each primitive in retained mode.
 class State
@@ -96,8 +99,10 @@ public:
 	float WireOpacity;
 	COLOUR_MODE ColourMode;
 	dMatrix Transform;
-	GLSLShader *Shader; 
+	GLSLShader *Shader;
 	bool Cull;
+
+	PixelPrimitive *Target;
 };
 
 };

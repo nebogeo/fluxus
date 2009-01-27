@@ -1064,6 +1064,37 @@ Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// bind pixelprimitiveid-number
+// Returns: void
+// Description:
+// Binds the pixel primitive as render target for the current state.
+// Example:
+// (define p (build-pixels 16 16))
+// (bind p)
+// EndFunctionDoc
+Scheme_Object *bind(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("bind", "i", argc, argv);
+	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (Prim)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
+		if (pp)
+		{
+			Engine::Get()->State()->Target = pp;
+			MZ_GC_UNREG();
+			return scheme_void;
+		}
+	}
+
+	Trace::Stream<<"bind can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // build-blobby numinfluences subdivisionsvec boundingvec
 // Returns: primitiveid-number
 // Description:
@@ -2380,6 +2411,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
+	scheme_add_global("bind", scheme_make_prim_w_arity(bind, "bind", 1, 1), env);
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);

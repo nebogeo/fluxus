@@ -33,8 +33,8 @@
  * on some platforms. A templatized version of SimplexNoise could be useful.
  */
 
-#ifndef M_SIMPLEXNOISE
-#define M_SIMPLEXNOISE
+#ifndef N_SIMPLEXNOISE
+#define N_SIMPLEXNOISE
 
 namespace Fluxus
 {
@@ -45,8 +45,6 @@ class SimplexNoise {
     SimplexNoise() {}
     ~SimplexNoise() {}
 
-/** 1D, 2D, 3D and 4D float Perlin noise
- */
     static float noise( float x );
     static float noise( float x, float y );
     static float noise( float x, float y, float z );
@@ -62,5 +60,5 @@ class SimplexNoise {
 
 }
 
-#endif // M_SIMPLEXNOISE
+#endif // N_SIMPLEXNOISE
 

@@ -33,7 +33,7 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode re
 {
 	//RenderWalk((SceneNode*)m_Root,0);
 
-	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());	
+	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());
 
 	unsigned int cameracode = 1<<camera;
 
@@ -42,7 +42,7 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode re
 	{
 		RenderWalk((SceneNode*)*i,0,cameracode,shadowgen,rendermode);
 	}
-	
+
 	// now render the depth sorted primitives:
 	m_DepthSorter.Render();
 	m_DepthSorter.Clear();
@@ -50,13 +50,13 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode re
 
 void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode)
 {
-	// max gl matrix stack is 32 
+	// max gl matrix stack is 32
 	/*if (depth>=30)
 	{
 		Trace::Stream<<"SceneGraph::RenderWalk: max stack reached"<<endl;
 		return;
 	}*/
-	
+
 	if ((node->Prim->GetVisibility()&cameracode)==0) return;
 	if (rendermode==SELECT && !node->Prim->IsSelectable()) return;
 
@@ -66,19 +66,19 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 	{
 		glGetFloatv(GL_MODELVIEW_MATRIX,parent.arr());
 	}
-	
-	glPushMatrix();		
-	
-	// if we are a lazy parent then we need to ignore 
-	// the effects of the heirachical transform - we 
+
+	glPushMatrix();
+
+	// if we are a lazy parent then we need to ignore
+	// the effects of the heirachical transform - we
 	// treat their transform as a world space one
 	if (node->Prim->GetState()->Hints & HINT_LAZY_PARENT)
 	{
 		glLoadMatrixf(m_TopTransform.arr());
 	}
-	
+
 	node->Prim->ApplyState();
-	
+
 	///\todo fix frustum culling
 	//if (!FrustumClip(node))
 	{
@@ -92,8 +92,9 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 			glPushName(node->ID);
 			node->Prim->Prerender();
 			node->Prim->Render();
+			node->Prim->Postrender();
 			glPopName();
-    	}
+		}
 
 		depth++;
 
@@ -103,40 +104,40 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 		}
 	}
 	glPopMatrix();
-	
+
 	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)
 	{
 		shadowgen->Generate(node->Prim);
 	}
 }
 
-// this is working the wrong way - need to write proper 
-// frustum culling by building planes from the camera 
+// this is working the wrong way - need to write proper
+// frustum culling by building planes from the camera
 // frustum and checking is any points are inside
 bool SceneGraph::FrustumClip(SceneNode *node)
 {
 	// do the frustum clip
-	dBoundingBox box; 
+	dBoundingBox box;
 	GetBoundingBox(node,box);
 	dMatrix mat,proj;
 	glGetFloatv(GL_MODELVIEW_MATRIX,mat.arr());
 	glGetFloatv(GL_PROJECTION_MATRIX,proj.arr());
 	mat=proj*mat;
 	char cs = 0xff;
-	
+
 	dVector p = mat.transform_persp(box.min);
 	CohenSutherland(p,cs);
- 	p=mat.transform_persp(box.max);
+	p=mat.transform_persp(box.max);
 	CohenSutherland(p,cs);
- 	p=mat.transform_persp(dVector(box.min.x,box.min.y,box.max.z));
+	p=mat.transform_persp(dVector(box.min.x,box.min.y,box.max.z));
 	CohenSutherland(p,cs);
 	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.min.z));
 	CohenSutherland(p,cs);
- 	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.max.z));
+	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.max.z));
 	CohenSutherland(p,cs);
 	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.min.z));
 	CohenSutherland(p,cs);
- 	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.max.z));
+	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.max.z));
 	CohenSutherland(p,cs);
 	p=mat.transform_persp(dVector(box.max.x,box.max.y,box.min.z));
 	CohenSutherland(p,cs);
@@ -170,7 +171,7 @@ void SceneGraph::Detach(SceneNode *node)
 	{
 		// keep the concatenated transform
 		node->Prim->GetState()->Transform=GetGlobalTransform(node);
-		
+
 		// move node to the root
 		node->Parent->RemoveChild(node->ID);
 		m_Root->Children.push_back(node);
@@ -181,11 +182,11 @@ void SceneGraph::Detach(SceneNode *node)
 dMatrix SceneGraph::GetGlobalTransform(const SceneNode *node) const
 {
 	dMatrix Mat,Ret;
-	
+
 	list<const SceneNode*> Path;
-	
+
 	const SceneNode* current=node;
-	
+
 	// iterate back up the tree storing parents...
 	// lazy parent objects are treated as non-heirachical,
 	// so we can stop if we find one of them - and
@@ -193,14 +194,14 @@ dMatrix SceneGraph::GetGlobalTransform(const SceneNode *node) const
 	bool foundlazy=false;
 	while(current!=NULL && !foundlazy)
 	{
-		if (current && current->Prim) 
+		if (current && current->Prim)
 		{
 			Path.push_front(current);
 			foundlazy = current->Prim->GetState()->Hints & HINT_LAZY_PARENT;
 		}
 		current=(const SceneNode*)current->Parent;
 	}
-		
+
 	// concatenate the matrices together to get the global
 	for (list<const SceneNode*>::iterator i=Path.begin(); i!=Path.end(); ++i)
 	{
@@ -219,7 +220,7 @@ void SceneGraph::GetBoundingBox(SceneNode *node, dBoundingBox &result)
 void SceneGraph::GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result)
 {
 	if (!node) return;
-	
+
 	if (node->Prim)
 	{
 		dVector point(0,0,0);
@@ -235,10 +236,10 @@ void SceneGraph::GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &resu
 }
 
 void SceneGraph::GetNodes(const Node *node, vector<const SceneNode*> &nodes) const
-{		
+{
 	nodes.push_back(static_cast<const SceneNode*>(node));
-	
-	for (vector<Node*>::const_iterator i=node->Children.begin(); 
+
+	for (vector<Node*>::const_iterator i=node->Children.begin();
 			i!=node->Children.end(); i++)
 	{
 		GetNodes(*i,nodes);
@@ -246,13 +247,13 @@ void SceneGraph::GetNodes(const Node *node, vector<const SceneNode*> &nodes) con
 }
 
 void SceneGraph::GetConnections(const Node *node, vector<pair<const SceneNode*,const SceneNode*> > &connections) const
-{		
-	for (vector<Node*>::const_iterator i=node->Children.begin(); 
+{
+	for (vector<Node*>::const_iterator i=node->Children.begin();
 			i!=node->Children.end(); i++)
 	{
 		connections.push_back(pair<const SceneNode *,const SceneNode *>
 								(static_cast<const SceneNode*>(node),
-		                    	 static_cast<const SceneNode*>(*i)));
+								 static_cast<const SceneNode*>(*i)));
 		GetConnections(*i,connections);
 	}
 }
@@ -269,4 +270,4 @@ bool SceneGraph::Intersect(const SceneNode *a, const SceneNode *b, float thresho
 	dBoundingBox otherbb = a->Prim->GetBoundingBox(GetGlobalTransform(a));
 	return b->Prim->GetBoundingBox(GetGlobalTransform(b)).inside(otherbb, threshold);
 }
-	
+

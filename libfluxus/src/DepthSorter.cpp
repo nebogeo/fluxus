@@ -57,6 +57,7 @@ void DepthSorter::Render()
 		i->Prim->ApplyState();
 		i->Prim->Prerender();
 		i->Prim->Render();
+		i->Prim->Postrender();
 		glPopName();
 		glPopMatrix();
 	}

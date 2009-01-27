@@ -1,5 +1,5 @@
-#ifndef M_NOISE
-#define M_NOISE
+#ifndef N_NOISE
+#define N_NOISE
 
 namespace Fluxus
 {
@@ -30,4 +30,4 @@ class Noise
 
 }
 
-#endif /* M_NOISE */
+#endif /* N_NOISE */

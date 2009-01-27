@@ -14,11 +14,11 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "dada.h"
-#include <vector>
-
 #ifndef N_GEOMETRY
 #define N_GEOMETRY
+
+#include "dada.h"
+#include <vector>
 
 namespace Fluxus
 {

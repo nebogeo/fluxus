@@ -14,14 +14,14 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef N_PRIMITIVE_FUNCTION
+#define N_PRIMITIVE_FUNCTION
+
 #include <string>
 #include <map>
 #include "PData.h"
 #include "Primitive.h"
 #include "SceneGraph.h"
-
-#ifndef N_PRIMITIVE_FUNCTION
-#define N_PRIMITIVE_FUNCTION
 
 using namespace std;
 

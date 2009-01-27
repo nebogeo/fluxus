@@ -32,21 +32,21 @@ namespace Fluxus
 /// The texture state
 class TextureState
 {
-	public:
-	
-	TextureState(): TexEnv(GL_MODULATE), Min(GL_LINEAR_MIPMAP_LINEAR), 
-	 Mag(GL_LINEAR_MIPMAP_LINEAR), WrapS(GL_REPEAT), WrapT(GL_REPEAT), WrapR(GL_REPEAT), 
-	 Priority(1), MinLOD(-1000), MaxLOD(1000) {}
-	
-	int TexEnv; 
-    int Min;
-    int Mag;
-    int WrapS;
-    int WrapT;
+public:
+
+	TextureState(): TexEnv(GL_MODULATE), Min(GL_LINEAR_MIPMAP_LINEAR),
+	Mag(GL_LINEAR), WrapS(GL_REPEAT), WrapT(GL_REPEAT), WrapR(GL_REPEAT),
+	Priority(1), MinLOD(-1000), MaxLOD(1000) {}
+
+	int TexEnv;
+	int Min;
+	int Mag;
+	int WrapS;
+	int WrapT;
 	int WrapR;
-    dColour BorderColour; 
-    float Priority; 
-    dColour EnvColour; 
+	dColour BorderColour;
+	float Priority;
+	dColour EnvColour;
 	float MinLOD;
 	float MaxLOD;
 };

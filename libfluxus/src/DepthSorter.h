@@ -21,10 +21,10 @@
 // Can we accelerate the process by caching as much as possible, and 
 // changing only when light positions/primitive transforms/deform?
 
-#include "Primitive.h"
-
 #ifndef N_DEPTHSORTER
 #define N_DEPTHSORTER
+
+#include "Primitive.h"
 
 namespace Fluxus
 {

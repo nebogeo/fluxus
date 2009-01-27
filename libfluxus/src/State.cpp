@@ -17,6 +17,7 @@
 #include "Renderer.h"
 #include "TexturePainter.h"
 #include "State.h"
+#include "PixelPrimitive.h"
 
 using namespace Fluxus;
 
@@ -34,7 +35,8 @@ WireColour(1,1,1),
 WireOpacity(1.0f),
 ColourMode(MODE_RGB),
 Shader(NULL),
-Cull(true)
+Cull(true),
+Target(NULL)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
@@ -67,8 +69,9 @@ const State &State::operator=(const State &other)
 	Transform=other.Transform;
 	Shader=other.Shader;
 	Cull=other.Cull;
-	
-	if (Shader!=NULL) 
+	Target=other.Target;
+
+	if (Shader!=NULL)
 	{
 		Shader->IncRef();
 	}
@@ -77,7 +80,7 @@ const State &State::operator=(const State &other)
 		Textures[n]=other.Textures[n];
 		TextureStates[n]=other.TextureStates[n];
 	}
-	
+
 	return *this;
 }
 
@@ -100,16 +103,16 @@ void State::Apply()
 	glLineWidth(LineWidth);
 	glPointSize(PointWidth);
 	glBlendFunc(SourceBlend,DestinationBlend);
-	
+
 	if (Cull) glEnable(GL_CULL_FACE);
 	else glDisable(GL_CULL_FACE);
-		
+
 	if (Hints&HINT_CULL_CCW) glFrontFace(GL_CW);
 	else glFrontFace(GL_CCW);
-	
+
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
-	if (Shader!=NULL) 
+	if (Shader!=NULL)
 	{
 		Shader->Apply();
 	}

@@ -14,21 +14,21 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef N_PRIM
+#define N_PRIM
+
 #include <string>
 #include <map>
 #include <assert.h>
-#include "State.h"
 #include "PDataContainer.h"
 #include "Evaluator.h"
-
-#ifndef N_PRIM
-#define N_PRIM
+#include "State.h"
 
 namespace Fluxus
 {
 
 //////////////////////////////////////////////////
-/// The base primitive class. 
+/// The base primitive class.
 class Primitive : public PDataContainer
 {
 public:
@@ -45,44 +45,45 @@ public:
 	virtual void ApplyTransform(bool ScaleRotOnly=false)=0;
 	virtual Evaluator *MakeEvaluator()=0;
 	///@}
-    
+
 	/// This needs to be set appropriately for all derived types
 	virtual string GetTypeName()    { return "Primitive"; }
-		
+
 	/// Only makes sense for certain primitive types
 	virtual void RecalculateNormals(bool smooth) {}
-	
+
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
 	void RenderBoundingBox();
 	static void RenderAxes();
 	void Prerender();
+	void Postrender();
 	void ApplyState()               { m_State.Apply(); }
-	
-	/// The primitives state stores everything 
+
+	/// The primitives state stores everything
 	/// general to all primitives
 	void SetState(State *s)         { assert(s); m_State=*s; }
 	State *GetState()               { return &m_State; }
-	
+
 	/// A hint if we are in the physics system or not
 	void SetPhysicalHint(bool s)    { m_IsPhysical=s; }
 	bool IsPhysicalHint()           { return m_IsPhysical; }
-	
+
 	/// Visibility status bitfield - prevents rendering for different cameras
 	unsigned int GetVisibility()    { return m_Visibility; }
-	void SetVisibility(unsigned int s) { m_Visibility=s; } 
-	
+	void SetVisibility(unsigned int s) { m_Visibility=s; }
+
 	/// Whether we should be included in the selection pass
-	bool IsSelectable()      		{ return m_Selectable; }
-	void Selectable(bool s)      	{ m_Selectable=s; }
+	bool IsSelectable()				{ return m_Selectable; }
+	void Selectable(bool s)			{ m_Selectable=s; }
 	///@}
 
 protected:
 	State m_State;
-	
+
 private:
-	
+
 	///\todo: make these into an enum/bitfield?
 	bool  m_IsPhysical;
 	unsigned int m_Visibility;

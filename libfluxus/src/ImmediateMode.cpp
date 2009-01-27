@@ -50,6 +50,7 @@ void ImmediateMode::Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen)
 	    (*i)->m_Primitive->SetState(&(*i)->m_State);	
 		(*i)->m_Primitive->Prerender();
 		(*i)->m_Primitive->Render();
+		(*i)->m_Primitive->Postrender();
 		
 		if (shadowgen && (*i)->m_Primitive->GetState()->Hints & HINT_CAST_SHADOW)
 		{

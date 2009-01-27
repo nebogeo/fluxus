@@ -14,12 +14,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef FLUXUS_PHYSICS
+#define FLUXUS_PHYSICS
+
 #include <ode/ode.h>
 #include "Renderer.h"
 #include <set>
-
-#ifndef FLUXUS_PHYSICS
-#define FLUXUS_PHYSICS
 
 ///\todo rename to Fluxus
 namespace Fluxus

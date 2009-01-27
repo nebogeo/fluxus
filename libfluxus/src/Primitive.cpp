@@ -14,11 +14,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "Primitive.h"                      	
+#include "Primitive.h"
+#include "PixelPrimitive.h"
 
-using namespace Fluxus; 
+using namespace Fluxus;
 
-Primitive::Primitive() : 
+Primitive::Primitive() :
 m_IsPhysical(false),
 m_Visibility(0xffffffff),
 m_Selectable(true)
@@ -30,36 +31,43 @@ PDataContainer(other),
 m_State(other.m_State),
 m_IsPhysical(other.m_IsPhysical),
 m_Visibility(other.m_Visibility),
-m_Selectable(other.m_Selectable) 
+m_Selectable(other.m_Selectable)
 {
 }
-           
+
 Primitive::~Primitive()
 {
-}	
-	   			
+}
+
 void Primitive::Prerender()
 {
+	//cout << "bind target " << m_State.Target << endl;
+	if (m_State.Target != NULL)
+	{
+		m_State.Target->Bind();
+		m_State.Target->Clear(); // FIXME: test only
+	}
+
 	///\todo put other common state things here...
 	// (not all, as they are often primitive dependant)
-	if (m_State.Hints & HINT_ORIGIN) RenderAxes();	
+	if (m_State.Hints & HINT_ORIGIN) RenderAxes();
 	if (m_State.Hints & HINT_VERTCOLS) glEnable(GL_COLOR_MATERIAL);
 	else glDisable(GL_COLOR_MATERIAL);
 	if (m_State.Hints & HINT_IGNORE_DEPTH) glDisable(GL_DEPTH_TEST);
 	else glEnable(GL_DEPTH_TEST);
 	if (m_State.Hints & HINT_BOUND) RenderBoundingBox();
-	
+
 	if (m_State.Shader!=NULL)
 	{
 		for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
 		{
-			TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(i->second);	
+			TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(i->second);
 			if (data) m_State.Shader->SetVectorArray(i->first,data->m_Data);
 			else
 			{
 				TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(i->second);
 				if (data) m_State.Shader->SetColourArray(i->first,data->m_Data);
-				else 
+				else
 				{
 					TypedPData<float> *data = dynamic_cast<TypedPData<float>*>(i->second);
 					if (data) m_State.Shader->SetFloatArray(i->first,data->m_Data);
@@ -67,9 +75,18 @@ void Primitive::Prerender()
 			}
 		}
 	}
-	
+
 }
-	
+
+void Primitive::Postrender()
+{
+	//cout << "unbind target " << m_State.Target << endl;
+	if (m_State.Target != NULL)
+	{
+		m_State.Target->Unbind();
+	}
+}
+
 void Primitive::RenderAxes()
 {
 	glLineWidth(1);
@@ -78,11 +95,11 @@ void Primitive::RenderAxes()
 		glColor3f(1,0,0);
 		glVertex3f(0,0,0);
 		glVertex3f(1,0,0);
-	
+
 		glColor3f(0,1,0);
 		glVertex3f(0,0,0);
 		glVertex3f(0,1,0);
-		
+
 		glColor3f(0,0,1);
 		glVertex3f(0,0,0);
 		glVertex3f(0,0,1);
@@ -99,7 +116,7 @@ void Primitive::RenderAxes()
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');*/
     glEnable(GL_LIGHTING);
 }
-		   	
+
 void Primitive::RenderBoundingBox()
 {
 	dMatrix m;

@@ -18,6 +18,9 @@
 // Dada.h 
 // A collection of classes for 3D graphics.
 
+#ifndef DADA
+#define DADA
+
 #include <cstring>
 #include <math.h>
 #include <iostream>
@@ -25,9 +28,6 @@
 #include "Trace.h"
 
 using namespace std;
-
-#ifndef DADA
-#define DADA
 
 namespace Fluxus
 {

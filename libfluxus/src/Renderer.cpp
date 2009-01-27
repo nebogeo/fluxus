@@ -17,6 +17,7 @@
 #include "Renderer.h"
 #include "State.h"
 #include "Primitive.h"
+#include "PixelPrimitive.h"
 #include "PNGLoader.h"
 #include "SearchPaths.h"
 #include "PrimitiveIO.h"

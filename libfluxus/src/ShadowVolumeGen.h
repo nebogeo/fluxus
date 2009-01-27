@@ -21,12 +21,12 @@
 // Can we accelerate the process by caching as much as possible, and 
 // changing only when light positions/primitive transforms/deform?
 
+#ifndef N_SHADOWGEN
+#define N_SHADOWGEN
+
 #include "Primitive.h"
 #include "PolyPrimitive.h"
 #include "NURBSPrimitive.h"
-
-#ifndef N_SHADOWGEN
-#define N_SHADOWGEN
 
 namespace Fluxus
 {

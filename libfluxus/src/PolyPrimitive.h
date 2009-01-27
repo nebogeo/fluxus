@@ -14,13 +14,13 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef N_POLYPRIM
+#define N_POLYPRIM
+
 #include <set>
 
 #include "Primitive.h"
 #include "PolyEvaluator.h"
-
-#ifndef N_POLYPRIM
-#define N_POLYPRIM
 
 namespace Fluxus
 {

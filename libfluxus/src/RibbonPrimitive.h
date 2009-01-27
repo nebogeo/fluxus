@@ -14,10 +14,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "PolyPrimitive.h"
-
 #ifndef N_LINEPRIM
 #define N_LINEPRIM
+
+#include "PolyPrimitive.h"
 
 namespace Fluxus
 {

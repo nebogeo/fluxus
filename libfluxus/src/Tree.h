@@ -14,12 +14,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef N_TREE
+#define N_TREE
+
 #include <vector>
 #include <map>
 #include <iostream>
-
-#ifndef N_TREE
-#define N_TREE
 
 using namespace std;
 
@@ -33,9 +33,9 @@ class Node
 public:
 	Node() : Parent(NULL) {}
 	virtual ~Node() {}
-	
+
 	void RemoveChild(int ID);
-	
+
 	Node *Parent;
 	vector<Node*> Children;
 	int ID;
