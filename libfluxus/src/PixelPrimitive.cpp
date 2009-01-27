@@ -117,13 +117,14 @@ m_ReadyForUpload(false)
 				m_State.TextureStates[0].WrapS);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
 				m_State.TextureStates[0].WrapT);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-		/*
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
-				GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		*/
+				GL_RGBA, GL_FLOAT, NULL);
+		/*
 		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_FBOWidth, m_FBOHeight,
-			GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+			RGL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+		*/
 
 		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
 		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
@@ -265,6 +266,11 @@ void PixelPrimitive::Unbind()
 	glPopAttrib();
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
+	// generate mipmaps
+	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	if (m_FBOSupported)
+		glGenerateMipmapEXT(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, 0);
 	//cout << "pix " << "unbound " << hex << this << endl;
 }
 
@@ -315,6 +321,7 @@ void PixelPrimitive::Render()
 	// override the state texture!
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D,m_Texture);
+
 	glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0,0);
