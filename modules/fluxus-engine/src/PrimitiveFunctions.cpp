@@ -1095,6 +1095,70 @@ Scheme_Object *bind(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// pixels-clear col
+// Returns: void
+// Description:
+// Sets all of the pixels to the supplied colour or clears the buffer
+// if the pixel primitive is bound as render target.
+// Example:
+// (with-primitive (build-pixels 100 100)
+//     (pixels-clear (vector 1 0 0))
+//     (pixels-upload))
+// EndFunctionDoc
+
+Scheme_Object *pixels_clear(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	dColour c;
+	PixelPrimitive *target = Engine::Get()->State()->Target;
+	if (Grabbed || (target != NULL))
+	{
+		PixelPrimitive *pp;
+
+		if (target != NULL)
+		{
+			// bound as target, the render target will be cleared, when bound
+			pp = target;
+		}
+		else
+		{
+			// pixelprimitive grabbed, pdata is cleared
+			pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		}
+		if (pp)
+		{
+			switch (argc)
+			{
+				case 0:
+					if (target != NULL)
+						pp->RequestClear();
+					else
+						pp->ClearPixels();
+					break;
+				case 1:
+					ArgCheck("clear-pixels", "c", argc, argv);
+					c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+					if (target != NULL)
+						pp->RequestClear(c);
+					else
+						pp->ClearPixels(c);
+					break;
+				default:
+					Trace::Stream<<"clear-pixels - wrong number of arguments"<<endl;
+					MZ_GC_UNREG();
+					break;
+			}
+			MZ_GC_UNREG();
+			return scheme_void;
+		}
+	}
+
+	Trace::Stream<<"pixels-clear can only be called when a pixelprimitive is grabbed or bound"<<endl;
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+// StartFunctionDoc-en
 // build-blobby numinfluences subdivisionsvec boundingvec
 // Returns: primitiveid-number
 // Description:
@@ -2410,6 +2474,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
+	scheme_add_global("pixels-clear", scheme_make_prim_w_arity(pixels_clear, "pixels-clear", 0, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("bind", scheme_make_prim_w_arity(bind, "bind", 1, 1), env);
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);

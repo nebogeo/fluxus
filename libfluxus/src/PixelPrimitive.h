@@ -65,9 +65,12 @@ public:
 	/// Get the height
 	unsigned int GetHeight() { return m_Height; }
 
+	/// Request clearing at the next binding
+	void RequestClear(const dColour &bg = dColour(1, 1, 1, 1));
+
 	void Bind();
 	void Unbind();
-	void Clear();
+	void ClearPixels(const dColour &c = dColour(1, 1, 1, 1));
 
 protected:
 
@@ -86,9 +89,11 @@ protected:
 	unsigned int m_FBOHeight;
 	float m_FBOMaxS;
 	float m_FBOMaxT;
+	dColour m_BGColour;
 
 	bool m_ReadyForUpload;
 	bool m_FBOSupported;
+	bool m_ClearRequested;
 };
 
 };

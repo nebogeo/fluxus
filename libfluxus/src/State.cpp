@@ -91,6 +91,12 @@ State::~State()
 
 void State::Apply()
 {
+	//cout << "bind target " << Target << endl;
+	if (Target != NULL)
+	{
+		Target->Bind();
+	}
+
 	glMultMatrixf(Transform.arr());
 	if (Opacity != 1.0f) Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
 	if (WireOpacity != 1.0f) WireColour.a=WireOpacity;
@@ -117,6 +123,15 @@ void State::Apply()
 		Shader->Apply();
 	}
 	else GLSLShader::Unapply();
+}
+
+void State::Unapply()
+{
+	//cout << "unbind target " << Target << endl;
+	if (Target != NULL)
+	{
+		Target->Unbind();
+	}
 }
 
 void State::Spew()

@@ -79,6 +79,7 @@ public:
 	const State &operator=(const State &other);
 
 	void Apply();
+	void Unapply();
 	void Spew();
 
 	dColour Colour;

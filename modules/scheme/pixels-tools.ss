@@ -14,9 +14,8 @@
 	pixels-circle
 	pixels-blend-circle
 	pixels-dodge
-	pixels-burn
-	pixels-clear)
-		
+	pixels-burn)
+
 ;; StartFunctionDoc-en
 ;; pixels-circle pos radius colour
 ;; Returns: void
@@ -109,20 +108,4 @@
 						(/ d radius)))
                     c)))
         "c")))
-		
-;; StartFunctionDoc-en
-;; pixels-clear col
-;; Returns: void
-;; Description:
-;; Sets all of the pixels to the supplied colour
-;; Example: 
-;; (with-primitive (build-pixels 100 100)
-;;     (pixels-clear (vector 1 0 0))
-;;     (pixels-upload))
-;; EndFunctionDoc  
 
-(define (pixels-clear col)
-    (pdata-map!
-        (lambda (c)
-            col)
-        "c"))

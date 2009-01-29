@@ -37,7 +37,7 @@ void DepthSorter::Add(const dMatrix &globaltransform, Primitive *prim, int id)
 	item.Prim=prim;
 	item.GlobalTransform=globaltransform;
 	item.ID=id;
-	
+
 	dMatrix all=globaltransform*prim->GetState()->Transform;
 	dVector pos=all.transform(dVector(0,0,0));
 	item.Depth=pos.z;
@@ -50,15 +50,16 @@ void DepthSorter::Render()
 
 	for(list<Item>::iterator i=m_RenderList.begin(); i!=m_RenderList.end(); i++)
 	{
-		glPushMatrix();	
+		glPushMatrix();
 		glPushName(i->ID);
 		glLoadIdentity();
 		glMultMatrixf(i->GlobalTransform.arr());
 		i->Prim->ApplyState();
 		i->Prim->Prerender();
 		i->Prim->Render();
-		i->Prim->Postrender();
+		i->Prim->UnapplyState();
 		glPopName();
 		glPopMatrix();
 	}
 }
+

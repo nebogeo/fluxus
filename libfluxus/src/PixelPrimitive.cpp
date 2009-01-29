@@ -72,7 +72,8 @@ PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h) :
 m_Texture(0),
 m_Width(w),
 m_Height(h),
-m_ReadyForUpload(false)
+m_ReadyForUpload(false),
+m_ClearRequested(false)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
 
@@ -120,7 +121,7 @@ m_ReadyForUpload(false)
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
-				GL_RGBA, GL_FLOAT, NULL);
+				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 		/*
 		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_FBOWidth, m_FBOHeight,
 			RGL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
@@ -222,7 +223,13 @@ void PixelPrimitive::PDataDirty()
 
 void PixelPrimitive::Upload()
 {
-	m_ReadyForUpload=true;
+	m_ReadyForUpload = true;
+}
+
+void PixelPrimitive::RequestClear(const dColour &bg /* = dColour(1, 1, 1, 1) */)
+{
+	m_ClearRequested = true;
+	m_BGColour = bg;
 }
 
 void PixelPrimitive::Load(const string &filename)
@@ -254,6 +261,13 @@ void PixelPrimitive::Bind()
 	glViewport(0, 0, m_Width, m_Height);
 	/* set rendering */
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	if (m_ClearRequested)
+	{
+		// clear FBO
+		glClearColor(m_BGColour.r, m_BGColour.g, m_BGColour.b, m_BGColour.a);
+		glClear(GL_COLOR_BUFFER_BIT | (m_DepthBuffer ? GL_DEPTH_BUFFER_BIT : 0));
+		m_ClearRequested = false;
+	}
 
 	//cout << "pix " << " bound " << hex << this << endl;
 }
@@ -274,10 +288,13 @@ void PixelPrimitive::Unbind()
 	//cout << "pix " << "unbound " << hex << this << endl;
 }
 
-void PixelPrimitive::Clear()
+void PixelPrimitive::ClearPixels(const dColour &c /* = dColour(1, 1, 1, 1) */)
 {
-	glClearColor(0,0,0,0);
-	glClear(GL_COLOR_BUFFER_BIT | (m_DepthBuffer ? GL_DEPTH_BUFFER_BIT : 0));
+	// clear pdata
+	for (unsigned i = 0; i < m_Width * m_Height; i++)
+	{
+		(*m_ColourData)[i] = dColour(c.r, c.g, c.b, c.a);
+	}
 }
 
 void PixelPrimitive::Render()
@@ -286,10 +303,6 @@ void PixelPrimitive::Render()
 	{
 		if (m_FBOSupported)
 		{
-			Bind();
-			Clear();
-			Unbind();
-
 			glBindTexture(GL_TEXTURE_2D, m_Texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
@@ -313,6 +326,26 @@ void PixelPrimitive::Render()
 					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 		}
 		m_ReadyForUpload=false;
+	}
+
+	if (m_State.Hints & HINT_WIRE)
+	{
+		glDisable(GL_TEXTURE_2D);
+		glDisable(GL_LIGHTING);
+		glPolygonOffset(1, 1);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glColor4fv(m_State.WireColour.arr());
+
+		glBegin(GL_QUADS);
+		glVertex3fv(m_Points[0].arr());
+		glVertex3fv(m_Points[1].arr());
+		glVertex3fv(m_Points[2].arr());
+		glVertex3fv(m_Points[3].arr());
+		glEnd();
+
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_TEXTURE_2D);
 	}
 
 	float s = m_FBOSupported ? m_FBOMaxS : 1;

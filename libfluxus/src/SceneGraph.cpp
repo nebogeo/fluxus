@@ -92,7 +92,6 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 			glPushName(node->ID);
 			node->Prim->Prerender();
 			node->Prim->Render();
-			node->Prim->Postrender();
 			glPopName();
 		}
 
@@ -103,6 +102,7 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 			RenderWalk((SceneNode*)*i,depth,cameracode,shadowgen,rendermode);
 		}
 	}
+	node->Prim->UnapplyState();
 	glPopMatrix();
 
 	if (node->Prim->GetState()->Hints & HINT_CAST_SHADOW)

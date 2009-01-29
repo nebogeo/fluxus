@@ -15,7 +15,6 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Primitive.h"
-#include "PixelPrimitive.h"
 
 using namespace Fluxus;
 
@@ -41,13 +40,6 @@ Primitive::~Primitive()
 
 void Primitive::Prerender()
 {
-	//cout << "bind target " << m_State.Target << endl;
-	if (m_State.Target != NULL)
-	{
-		m_State.Target->Bind();
-		m_State.Target->Clear(); // FIXME: test only
-	}
-
 	///\todo put other common state things here...
 	// (not all, as they are often primitive dependant)
 	if (m_State.Hints & HINT_ORIGIN) RenderAxes();
@@ -76,15 +68,6 @@ void Primitive::Prerender()
 		}
 	}
 
-}
-
-void Primitive::Postrender()
-{
-	//cout << "unbind target " << m_State.Target << endl;
-	if (m_State.Target != NULL)
-	{
-		m_State.Target->Unbind();
-	}
 }
 
 void Primitive::RenderAxes()

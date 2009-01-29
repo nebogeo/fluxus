@@ -58,8 +58,8 @@ public:
 	void RenderBoundingBox();
 	static void RenderAxes();
 	void Prerender();
-	void Postrender();
 	void ApplyState()               { m_State.Apply(); }
+	void UnapplyState()             { m_State.Unapply(); }
 
 	/// The primitives state stores everything
 	/// general to all primitives
