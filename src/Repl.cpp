@@ -202,8 +202,11 @@ bool Repl::TryEval()
 		string defun = m_Text.substr(m_PromptPos);
 
 		if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
+		{
+			MZ_GC_UNREG();
 			return true;
-
+		}
+		
 		if (!Empty(defun)) {
 			m_InsertPos = m_Text.length();
 			Print("\n");
