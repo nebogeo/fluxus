@@ -76,6 +76,7 @@ m_ReadyForUpload(false),
 m_ClearRequested(false)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
+	m_Renderer = new Renderer();
 
 	AddData("c",new TypedPData<dColour>);
 
@@ -170,6 +171,7 @@ m_ClearRequested(false)
 #ifdef DEBUG_GL
 		cout << "pix created " << dec << m_FBOWidth << "x" << m_FBOHeight << " (" << m_Width <<
 			"x" << m_Height << ") " << hex << this << endl;
+		cout << "\trenderer: " << hex << m_Renderer << endl;
 #endif
 	}
 	else
@@ -208,6 +210,8 @@ PixelPrimitive::~PixelPrimitive()
 		if (m_DepthBuffer!=0)
 			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 	}
+
+	//delete m_Renderer;
 }
 
 PixelPrimitive* PixelPrimitive::Clone() const
@@ -312,20 +316,31 @@ void PixelPrimitive::Render()
 		else
 		{
 			/*
-			if (m_Texture!=0)
-			{
-				glDeleteTextures(1,(GLuint*)&m_Texture);
-			}
+			   if (m_Texture!=0)
+			   {
+			   glDeleteTextures(1,(GLuint*)&m_Texture);
+			   }
 
-			glBindTexture(GL_TEXTURE_2D,m_Texture);
-			gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
-			*/
+			   glBindTexture(GL_TEXTURE_2D,m_Texture);
+			   gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
+			   */
 
 			glBindTexture(GL_TEXTURE_2D,m_Texture);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 		}
 		m_ReadyForUpload=false;
+	}
+
+
+	// render the pixel primitive scenegraph
+	if (m_FBOSupported)
+	{
+		glPushMatrix();
+		Bind();
+		m_Renderer->Render();
+		Unbind();
+		glPopMatrix();
 	}
 
 	if (m_State.Hints & HINT_WIRE)

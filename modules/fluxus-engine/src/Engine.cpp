@@ -17,6 +17,7 @@
 #include <assert.h>
 #include "Engine.h"
 #include "GraphicsUtils.h"
+#include "PixelPrimitive.h"
 
 using namespace Fluxus;
 
@@ -80,11 +81,31 @@ void Engine::PopRenderer()
 
 Renderer *Engine::Renderer()
 {
-	// the renderer stack should never be empty
-	assert(!m_RendererStack.empty());
-	// and this should have been checked by push renderer
-	assert(*m_RendererStack.rbegin()<m_RendererVec.size());
-	return m_RendererVec[*m_RendererStack.rbegin()].first;
+	Fluxus::State *state;
+	if (Grabbed())
+	{
+		state = Grabbed()->GetState();
+	}
+	else
+	{
+		state = m_RendererVec[*m_RendererStack.rbegin()].first->GetState();
+	}
+
+	// pixel primitive target
+	PixelPrimitive *pp = state->Target;
+	if (pp != NULL)
+	{
+		//cout << "engine::renderer " << hex << pp->GetRenderer() << endl;
+		return pp->GetRenderer();
+	}
+	else
+	{
+		// the renderer stack should never be empty
+		assert(!m_RendererStack.empty());
+		// and this should have been checked by push renderer
+		assert(*m_RendererStack.rbegin()<m_RendererVec.size());
+		return m_RendererVec[*m_RendererStack.rbegin()].first;
+	}
 }
 
 Physics *Engine::Physics()

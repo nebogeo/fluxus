@@ -18,6 +18,7 @@
 #define N_PIXELPRIM
 
 #include "Primitive.h"
+#include "Renderer.h"
 
 namespace Fluxus
 {
@@ -33,7 +34,7 @@ class PixelPrimitive : public Primitive
 public:
 	PixelPrimitive(unsigned int w, unsigned int h);
 	PixelPrimitive(const PixelPrimitive &other);
-	virtual  ~PixelPrimitive();
+	virtual ~PixelPrimitive();
 
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
@@ -72,6 +73,8 @@ public:
 	void Unbind();
 	void ClearPixels(const dColour &c = dColour(1, 1, 1, 1));
 
+	Renderer *GetRenderer() { return m_Renderer; }
+
 protected:
 
 	virtual void PDataDirty();
@@ -90,6 +93,8 @@ protected:
 	float m_FBOMaxS;
 	float m_FBOMaxT;
 	dColour m_BGColour;
+
+	Renderer *m_Renderer;
 
 	bool m_ReadyForUpload;
 	bool m_FBOSupported;

@@ -173,9 +173,9 @@ if not GetOption('clean'):
         if not conf.CheckFunc("dInitODE2"):
             env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
 
-        # the ole version 0.25 does not include the declaration of lo_arg_size anymore
+        # the liblo version 0.25 does not include the declaration of lo_arg_size anymore
         # This will be re-included in future version
-        if not conf.CheckFunc("lo_arg_size"):
+        if not conf.CheckFunc("lo_arg_size_check", "#include <lo/lo.h>\n#define lo_arg_size_check() lo_arg_size(LO_INT32, NULL)", "C++"):
             env.Append(CCFLAGS=' -DNO_LO_ARG_SIZE_DECL')
 
         env = conf.Finish()

@@ -91,11 +91,13 @@ State::~State()
 
 void State::Apply()
 {
-	//cout << "bind target " << Target << endl;
+	/*
 	if (Target != NULL)
 	{
+		cout << "state bind target " << Target << endl;
 		Target->Bind();
 	}
+	*/
 
 	glMultMatrixf(Transform.arr());
 	if (Opacity != 1.0f) Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
@@ -127,11 +129,14 @@ void State::Apply()
 
 void State::Unapply()
 {
-	//cout << "unbind target " << Target << endl;
+	/*
 	if (Target != NULL)
 	{
+		cout << "state unbind target " << Target << endl;
 		Target->Unbind();
 	}
+	*/
+
 }
 
 void State::Spew()

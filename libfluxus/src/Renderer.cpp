@@ -71,7 +71,7 @@ m_Time(0),
 m_Delta(0)
 {
 	Clear();
-	
+
 	// stop valgrind complaining
 	m_LastTime.tv_sec=0;
 	m_LastTime.tv_usec=0;
@@ -100,8 +100,7 @@ void Renderer::Clear()
 }	
 
 void Renderer::Render()
-{			
-	
+{
 	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{
@@ -118,14 +117,14 @@ void Renderer::Render()
 	{
 		glClear(GL_ACCUM_BUFFER_BIT);
 	}
-	
+
 	for (unsigned int cam=0; cam<m_CameraVec.size(); cam++)
 	{
 		// need to clear this even if we aren't using shadows
 		m_ShadowVolumeGen.Clear();
-		
+
 		if (m_ShadowLight!=0)
-		{		
+		{
 			RenderStencilShadows(cam);
 		}
 		else
@@ -135,14 +134,14 @@ void Renderer::Render()
 			m_ImmediateMode.Render(cam);
 			m_ImmediateMode.Clear();
 			PostRender();
-		}		
+		}
 	}
-		
+
 	timeval ThisTime;
 	// stop valgrind complaining
 	ThisTime.tv_sec=0;
 	ThisTime.tv_usec=0;
-	
+
 	gettimeofday(&ThisTime,NULL);
 	m_Delta=(ThisTime.tv_sec-m_LastTime.tv_sec)+
 			(ThisTime.tv_usec-m_LastTime.tv_usec)*0.000001f;
@@ -155,7 +154,7 @@ void Renderer::Render()
 			usleep((int)((m_Deadline-m_Delta)*1000000.0f));
 		}
 	}
-	
+
 	m_LastTime=ThisTime;
 	//if (m_Delta>0) m_Time=ThisTime.tv_sec+ThisTime.tv_usec*0.000001f;
 	if (m_Delta>0.0f && m_Delta<100.0f) m_Time+=m_Delta;

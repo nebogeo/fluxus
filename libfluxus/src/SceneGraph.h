@@ -30,8 +30,8 @@ namespace Fluxus
 {
 
 /////////////////////////////////////
-/// A scene graph node 
-/// The state is contained within the 
+/// A scene graph node
+/// The state is contained within the
 /// primitive itself.
 class SceneNode : public Node
 {
@@ -57,28 +57,28 @@ public:
 	/// Traverses the graph depth first, rendering
 	/// all nodes
 	void Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode=RENDER);
-	
+
 	/// Clears the graph of all primitives
 	virtual void Clear();
-	
-	/// Parents the node to the root, and sets its 
-	/// transform to keep it physically in the same 
-	/// place in the world. 
+
+	/// Parents the node to the root, and sets its
+	/// transform to keep it physically in the same
+	/// place in the world.
 	///\todo make the maintain transform optional
 	void Detach(SceneNode *node);
-	
+
 	/// Gets the world space transfrom of the node
 	dMatrix GetGlobalTransform(const SceneNode *node) const;
-	
-	/// Gets the bounding box of the node, and all 
+
+	/// Gets the bounding box of the node, and all
 	/// its children too
 	void GetBoundingBox(SceneNode *node, dBoundingBox &result);
-	
+
 	/// A utility for getting all the node in a subtree, as a flat list
 	void GetNodes(const Node *node, vector<const SceneNode*> &nodes) const;
 
 	/// A utility for getting all the connections in a subtree, as a flat list
-	void GetConnections(const Node *node, 
+	void GetConnections(const Node *node,
 		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
 	///\todo fix const correctness from here...
@@ -89,7 +89,7 @@ private:
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	bool FrustumClip(SceneNode *node);
 	void CohenSutherland(const dVector &p, char &cs);
-	
+
 	DepthSorter m_DepthSorter;
 	dMatrix m_TopTransform;
 };
@@ -97,3 +97,4 @@ private:
 }
 
 #endif
+

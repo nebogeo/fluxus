@@ -71,7 +71,7 @@ Scheme_Object *build_cube(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *BoxPrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(BoxPrim);
-    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(BoxPrim));    
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(BoxPrim));
 }
 
 Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
