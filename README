@@ -70,6 +70,36 @@ Startup with an accumulation buffer (again, bad tempered on some drivers)
 There are more settings at the top of the SConstruct file which may need to be
 tweaked to correctly find things.
 
+Fluxus install instructions for OS X
+------------------------------------
+
+Install PLT Scheme binary (http://download.plt-scheme.org/) and
+MacPorts (http://www.macports.org/).
+
+Put the bin directory of PLT Scheme and MacPorts to your path by adding
+the following line to the .bash_profile file in your home directory:
+
+PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.1.4/bin/
+
+You might need to change the PLT Scheme version number according to
+the binary package you have installed.
+
+Install dependencies from MacPorts:
+
+sudo port install fftw-3 glew freetype jack jpeg liblo libpng libsndfile ode scons tiff zlib
+
+To build and install, type:
+
+scons
+sudo scons install
+
+If you have an older graphics card (Mac mini or older MacBook model), you might
+need to build and install Fluxus with
+
+scons MULTITEXTURE=0 GLSL=0
+sudo scons MULTITEXTURE=0 GLSL=0 install
+
+
 Using fluxus
 ------------
 
