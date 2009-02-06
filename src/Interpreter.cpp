@@ -25,12 +25,12 @@ using namespace fluxus;
 
 static const int LOG_SIZE=256;
 
-static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") \
-									(define fluxus-collects-location \"%s\") \
-									(define fluxus-version \"%d%d\") \
-									(define fluxus-data-location \"%s\") \
-									(load (string-append fluxus-collects-location \"/fluxus-\"\
-										fluxus-version \"/boot.scm\"))";
+static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
+									"(define fluxus-collects-location \"%s\") " \
+									"(define fluxus-version \"%d%d\") " \
+									"(define fluxus-data-location \"%s\") " \
+									"(load (string-append fluxus-collects-location \"/fluxus-\" " \
+										"fluxus-version \"/boot.scm\")) ";
 
 Scheme_Env *Interpreter::m_Scheme=NULL;
 Repl *Interpreter::m_Repl=NULL;
@@ -71,11 +71,11 @@ void Interpreter::Initialise()
 	config = scheme_current_config();
 	scheme_set_param(config, MZCONFIG_OUTPUT_PORT, m_OutWritePort);
 	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);
-	
+
 	declare_modules(m_Scheme);
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
-	
+
 	// load the startup script
 	char startup[1024];
 	// insert the version number
@@ -85,9 +85,9 @@ void Interpreter::Initialise()
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
 		DATA_LOCATION);
-		
+
 	Interpret(startup,NULL,true);
-	
+
     MZ_GC_UNREG();
 }
 

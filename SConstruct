@@ -24,6 +24,7 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
                 DESTDIR = "#" + DESTDIR
 
 if sys.platform == 'darwin':
+	AddOption('--app', action='store_true', help='Build OSX application')
 	file = os.popen('dirname "`which mzscheme`"')
 	PLTBin = file.read()
 	file.close()
@@ -47,6 +48,11 @@ if sys.platform == 'darwin':
         PLTCollectsLocation = PLTPrefix + "/collects/"
 else:
         PLTCollectsLocation = PLTLib + "/collects/"
+
+if sys.platform == 'darwin' and GetOption('app'):
+        PLTCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
+        FluxusCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
+        DataLocation = '/Applications/Fluxus.app/Contents/Resources'
 
 LibPaths     = [
         PLTLib,
@@ -182,6 +188,12 @@ if not GetOption('clean'):
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])
 
+# replace libs with static libs if building an osx app
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
+	for l in ['png', 'jpeg', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode']:
+		env['LIBS'].remove(l)
+		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+
 ################################################################################
 # Build the fluxus application
 Install = BinInstall
@@ -211,25 +223,47 @@ SConscript(dirs = Split("libfluxus modules fluxa"),
 
 ################################################################################
 # packaging / installing
-'''
-if env['PLATFORM'] == 'darwin':
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from macos.osxbundle import *
         TOOL_BUNDLE(env)
         # We add frameworks after configuration bit so that testing is faster.
-        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio"))
+        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MzScheme"))
+        # add dynamic libs
+        frameworks = [PLTLib + '/PLT_MzScheme.framework']
+        dylibs = [ '/opt/local/lib/liblo.dylib',
+                   '/opt/local/lib/libjack.dylib']
+
         env.Alias("app", env.MakeBundle("Fluxus.app",
-                                        "fluxus",
+                                        Target,
                                         "key",
                                         "macos/fluxus-Info.plist",
+                                        dylibs = dylibs,
+                                        frameworks = frameworks,
+                                        resources=[['modules/material/fonts/', 'material/fonts/'],
+                                                   ['modules/material/meshes/', 'material/meshes/'],
+                                                   ['modules/material/shaders/', 'material/shaders/'],
+                                                   ['modules/material/textures/', 'material/textures/'],
+                                                   ['modules/scheme/', 'collects/fluxus-%s/' % FluxusVersion],
+                                                   ['modules/fluxus-engine/fluxus-engine_ss.dylib',
+                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-engine_ss.dylib'],
+                                                   ['modules/fluxus-audio/fluxus-audio_ss.dylib',
+                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-audio_ss.dylib'],
+                                                   ['modules/fluxus-midi/fluxus-midi_ss.dylib',
+                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-midi_ss.dylib'],
+                                                   ['modules/fluxus-osc/fluxus-osc_ss.dylib',
+                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-osc_ss.dylib']],
                                         typecode='APPL',
                                         icon_file='macos/fluxus.icns'))
-
+        # build dmg
+        '''
         env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
-        DmgFiles = [File("COPYING"), Dir("Fluxus.app"), Dir("docs"), Dir("examples"), Dir("scm")]
+        DmgFiles = [File('AUTHORS'), File('CHANGES'), File('LICENCE'), \
+                File('README'), File('COPYING'), Dir("Fluxus.app"), \
+                Dir("examples")]
         env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
                                        DmgFiles))
-else:
-'''
+        '''
+
 env.Install(Install, Target)
 env.Alias('install', [DESTDIR + Prefix, CollectsInstall])
 

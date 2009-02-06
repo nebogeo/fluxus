@@ -11,10 +11,17 @@ if env['PLATFORM'] == 'darwin':
 else:
 		Target = "fluxus-engine_ss.so"
 
-Install = BinaryModulesLocation
 Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
+Install = BinaryModulesLocation
 if env['PLATFORM'] != 'darwin':
 	    Libs += Split("GL GLU glut")
+
+# link libraries statically when making an os x app
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
+	for l in ['png', 'jpeg', 'tiff', 'GLEW', 'freetype', 'ode', 'z']:
+		if l in Libs:
+			Libs.remove(l)
+		Libs.append(File('/opt/local/lib/lib%s.a' % l))
 
 Source = Split("src/Engine.cpp \
 		src/FluxusEngine.cpp \
