@@ -19,6 +19,8 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 		if l in Libs:
 			Libs.remove(l)
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))
+	Libs.remove('jack')
+
 
 Source = Split("src/FluxusAudio.cpp \
 		src/AudioCollector.cpp \

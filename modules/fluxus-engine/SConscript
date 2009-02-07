@@ -18,7 +18,7 @@ if env['PLATFORM'] != 'darwin':
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'jpeg', 'tiff', 'GLEW', 'freetype', 'ode', 'z']:
+	for l in ['png', 'tiff', 'GLEW', 'freetype', 'ode', 'z', 'jpeg']:
 		if l in Libs:
 			Libs.remove(l)
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))

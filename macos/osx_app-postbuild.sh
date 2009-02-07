@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os
+import os, re
 
 MajorVersion = "0"
 MinorVersion = "16"
@@ -8,10 +8,9 @@ Target = "fluxus-0.16"
 
 BundleDir = 'Fluxus.app'
 
-file = os.popen('dirname "`which mzscheme`"')
-PLTBin = file.read()
-file.close()
-PLTPrefix = PLTBin[:-5]
+pipe = os.popen('dirname "`which mzscheme`"')
+PLTPrefix = pipe.read()[:-5]
+pipe.close()
 
 # copy plt collects path manually
 print 'copying plt collects path...'
@@ -21,81 +20,63 @@ os.system('cp -r "%s"* Fluxus.app/Contents/Resources/collects/' % (PLTPrefix + '
 print 'copying fluxus collects path...'
 os.system('cp modules/scheme/*.s* Fluxus.app/Contents/Resources/collects/fluxus-%s/' % FluxusVersion)
 
-# scheme modules don't get installed for some reason
+# copy helpfile
 print 'copying help...'
 os.system('cp docs/helpmap.scm Fluxus.app/Contents/Resources/collects/fluxus-%s/' % FluxusVersion)
 
-# change dynamic shared library install names
-def get_dlibs(target):
+# find all executable files, dynamic libraries, frameworks, whose install
+# names have to be changed
+def find_executables():
+	pipe = os.popen('find %s -perm -755 -type f' % BundleDir)
+	dtargets = pipe.readlines()
+	pipe.close()
+	return map(lambda (l): l[:-1], dtargets) # remove lineends
+
+# returns the shared libraries used by target
+# first one in the list is the shared library identification name if
+# it is a dynamic library or framework
+def get_sharedlibs(target):
 	file = os.popen('otool -L %s' % target)
 	dlibs = file.readlines()
 	file.close()
 	return dlibs[1:]
 
-dlibs = get_dlibs('%s/Contents/MacOS/%s' % (BundleDir, Target))
+install_names = {}
+target_dlibs = {}
 
-sdylibs = ['liblo', 'libjack']
-sframeworks = ['PLT_MzScheme.framework']
+def change_id(target):
+	global install_names
+	print 'processing %s...' % target
+	dlibs = get_sharedlibs(target)
+	dlibs = map(lambda (d): d.strip().split()[0], dlibs)
+	# change identification name of shared library or framework
+	if ((target.find('framework') > -1) or (target.find('dylib') > -1)) and \
+		(dlibs[0].find('@') == -1):
+		id = dlibs[0]
+		try:
+			m = re.search('.*?/(Frameworks/.+)', target)
+			nid = '@executable_path/../' + m.group(1)
 
-for l in dlibs:
-    dylib = l.split()[0]
-    for slib in sdylibs:
-        if ((dylib.find(slib)) > -1) and (dylib.find('@') == -1):
-            print 'changing install name %s -> @executable_path/../Frameworks/%s.dylib' % (dylib, slib)
-            os.system('install_name_tool -change %s @executable_path/../Frameworks/%s.dylib %s' %
-                    (dylib, slib, BundleDir + '/Contents/MacOS/' + Target))
+			print 'changing identification name %s -> %s' % (id, nid)
+			install_names[id] = nid
+			os.system('install_name_tool -id %s %s' % (nid, target))
+		except:
+			pass
+		dlibs = dlibs[1:] # remove the id
+	target_dlibs[target] = dlibs
 
-# change the dylib self-references
-for l in sdylibs:
-    print 'changing self-reference %s.dylib -> @executable_path/../Frameworks/%s.dylib' % \
-                    (l, l)
-    os.system('install_name_tool -id @executable_path/../Frameworks/%s.dylib %s.dylib' %
-                    (l, BundleDir + '/Contents/Frameworks/' + l))
+def change_dlibs(target):
+	print 'processing %s...' % target
+	dlibs = target_dlibs[target]
+	for d in dlibs:
+		if d in install_names:
+			print 'changing install name %s -> %s' % (d, install_names[d])
+			os.system('install_name_tool -change %s %s %s' % \
+				(d, install_names[d], target))
 
-# change frameworks install names
-for l in dlibs:
-    dylib = l.split()[0]
-    for slib in sframeworks:
-        if ((dylib.find(slib)) > -1) and (dylib.find('@') == -1):
-            print 'changing install name %s -> @executable_path/../Frameworks/%s' % (dylib, dylib)
-            os.system('install_name_tool -change %s @executable_path/../Frameworks/%s %s' %
-                    (dylib, dylib, BundleDir + '/Contents/MacOS/' + Target))
-            print 'changing self-reference %s -> @executable_path/../Frameworks/%s' % (dylib, dylib)
-            os.system('install_name_tool -id @executable_path/../Frameworks/%s %s' %
-                    (dylib, BundleDir + '/Contents/Frameworks/' + dylib ))
-
-            if slib == 'PLT_MzScheme.framework':
-                print 'changing self-reference PLT_MzScheme.framework -> @executable_path/../Frameworks/%s' % dylib
-                os.system('install_name_tool -id @executable_path/../Frameworks/%s %s' %
-                        ('PLT_MzScheme.framework/PLT_MzScheme',
-                         BundleDir + '/Contents/Frameworks/PLT_MzScheme.framework/PLT_MzScheme'))
-
-# change module install names
-
-modules = ['fluxus-engine_ss.dylib', 'fluxus-audio_ss.dylib',
-		   'fluxus-midi_ss.dylib', 'fluxus-osc_ss.dylib']
-
-for m in modules:
-	print 'changing install names of', m
-	modulepath = BundleDir + '/Contents/Resources/collects/fluxus-' + \
-					FluxusVersion + \
-					'/compiled/native/i386-macosx/3m/' + m
-	dlibs = get_dlibs(modulepath)
-	for l in dlibs:
-		dylib = l.split()[0]
-		# change frameworks
-		for slib in sframeworks:
-			if ((dylib.find(slib)) > -1) and (dylib.find('@') == -1):
-				print 'changing install name %s -> @executable_path/../Frameworks/%s' % (dylib, dylib)
-				print ('install_name_tool -change %s @executable_path/../Frameworks/%s %s' %
-						(dylib, dylib, modulepath))
-				os.system('install_name_tool -change %s @executable_path/../Frameworks/%s %s' %
-						(dylib, dylib, modulepath))
-		# change dylibs
-		for slib in sdylibs:
-			if ((dylib.find(slib)) > -1) and (dylib.find('@') == -1):
-				print 'changing install name %s -> @executable_path/../Frameworks/%s.dylib' % (dylib, slib)
-				os.system('install_name_tool -change %s @executable_path/../Frameworks/%s.dylib %s' %
-						(dylib, slib, modulepath))
-
+dtargets = find_executables()
+for t in dtargets:
+	change_id(t)
+for t in dtargets:
+	change_dlibs(t)
 

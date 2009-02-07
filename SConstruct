@@ -125,7 +125,6 @@ LibList = [["m", "math.h"],
                 ["z", "zlib.h"],
                 ["png", "png.h"],
                 ["ode", "ode/ode.h"],
-                ["jack", "jack/jack.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
@@ -150,6 +149,10 @@ if env['PLATFORM'] == 'posix':
                                  ["SM", "X11/Xlib.h"],
                                  ["ICE", "X11/Xlib.h"]] + LibList;
 elif env['PLATFORM'] == 'darwin':
+        # add jack as a library if not making an app
+        if not GetOption('app'):
+            LibList += [["jack", "jack/jack.h"]]
+
         env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MzScheme'],
                 FRAMEWORKPATH = [PLTLib])
 
@@ -190,7 +193,7 @@ if not GetOption('clean'):
 
 # replace libs with static libs if building an osx app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'jpeg', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode']:
+	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 		env['LIBS'].remove(l)
 		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
@@ -227,11 +230,12 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from macos.osxbundle import *
         TOOL_BUNDLE(env)
         # We add frameworks after configuration bit so that testing is faster.
-        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MzScheme"))
+        # FIXME: check if Jackmp is available if making an app
+        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MzScheme Jackmp"))
         # add dynamic libs
-        frameworks = [PLTLib + '/PLT_MzScheme.framework']
-        dylibs = [ '/opt/local/lib/liblo.dylib',
-                   '/opt/local/lib/libjack.dylib']
+        frameworks = [PLTLib + '/PLT_MzScheme.framework',
+                     '/Library/Frameworks/Jackmp.framework']
+        dylibs = [ '/opt/local/lib/liblo.dylib']
 
         env.Alias("app", env.MakeBundle("Fluxus.app",
                                         Target,
