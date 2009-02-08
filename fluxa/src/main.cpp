@@ -26,13 +26,18 @@ void printusage()
 
 int main(int argc, char **argv)
 {
+#ifdef __APPLE__
+	string leftport("system:playback_1");
+	string rightport("system:playback_2");
+#else
 	string leftport("alsa_pcm:playback_1");
 	string rightport("alsa_pcm:playback_2");
+#endif
 	string port("4004");
-	
+
 	int arg=1;
 	while(arg<argc)
-	{		
+	{
 		if (!strcmp(argv[arg],"-osc"))
 		{
 			if (arg+1 < argc) port=argv[arg+1];
@@ -40,20 +45,21 @@ int main(int argc, char **argv)
 		}
 		if (!strcmp(argv[arg],"-jackports"))
 		{
-			if (arg+2 < argc) 
+			if (arg+2 < argc)
 			{
 				leftport=argv[arg+1];
 				rightport=argv[arg+2];
 			}
 			else printusage();
 		}
-		arg++;	
+		arg++;
 	}
-				
+
 	OSCServer server(port);
 	JackClient* jack=JackClient::Get();
- 	jack->Attach("fluxa");	
+	jack->Attach("fluxa");
 	Fluxa engine(&server,jack,leftport,rightport);
 	server.Run();
 	return 0;
 }
+

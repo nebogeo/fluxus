@@ -4,9 +4,9 @@ import os, re
 MajorVersion = "0"
 MinorVersion = "16"
 FluxusVersion = MajorVersion+MinorVersion
-Target = "fluxus-0.16"
 
-BundleDir = 'Fluxus.app'
+FluxusBundleDir = 'Fluxus.app'
+FluxaBundleDir = 'Fluxa.app'
 
 pipe = os.popen('dirname "`which mzscheme`"')
 PLTPrefix = pipe.read()[:-5]
@@ -26,8 +26,8 @@ os.system('cp docs/helpmap.scm Fluxus.app/Contents/Resources/collects/fluxus-%s/
 
 # find all executable files, dynamic libraries, frameworks, whose install
 # names have to be changed
-def find_executables():
-	pipe = os.popen('find %s -perm -755 -type f' % BundleDir)
+def find_executables(bundledir):
+	pipe = os.popen('find %s -perm -755 -type f' % bundledir)
 	dtargets = pipe.readlines()
 	pipe.close()
 	return map(lambda (l): l[:-1], dtargets) # remove lineends
@@ -74,9 +74,13 @@ def change_dlibs(target):
 			os.system('install_name_tool -change %s %s %s' % \
 				(d, install_names[d], target))
 
-dtargets = find_executables()
-for t in dtargets:
-	change_id(t)
-for t in dtargets:
-	change_dlibs(t)
+def app_postprocess(bundledir):
+	dtargets = find_executables(bundledir)
+	for t in dtargets:
+		change_id(t)
+	for t in dtargets:
+		change_dlibs(t)
+
+app_postprocess(FluxusBundleDir)
+app_postprocess(FluxaBundleDir)
 

@@ -237,10 +237,10 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                      '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
 
-        env.Alias("app", env.MakeBundle("Fluxus.app",
+        env.Alias('app', env.MakeBundle('Fluxus.app',
                                         Target,
-                                        "key",
-                                        "macos/fluxus-Info.plist",
+                                        'key',
+                                        'macos/fluxus-Info.plist',
                                         dylibs = dylibs,
                                         frameworks = frameworks,
                                         resources=[['modules/material/fonts/', 'material/fonts/'],
@@ -267,6 +267,19 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         env.Alias("dmg", env.DiskImage('Fluxus-' + FluxusVersion + '.dmg',
                                        DmgFiles))
         '''
+
+        # fluxa
+        frameworks = [ '/Library/Frameworks/Jackmp.framework']
+        dylibs = [ '/opt/local/lib/liblo.dylib']
+        env.Alias('app', env.MakeBundle('Fluxa.app',
+                                        'fluxa/fluxa-0.16',
+                                        'key',
+                                        'macos/fluxa-Info.plist',
+                                        dylibs = dylibs,
+                                        frameworks = frameworks,
+                                        typecode='APPL',
+                                        icon_file='macos/fluxa.icns'))
+
 
 env.Install(Install, Target)
 env.Alias('install', [DESTDIR + Prefix, CollectsInstall])

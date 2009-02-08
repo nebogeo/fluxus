@@ -9,6 +9,7 @@ Import("env", "BinInstall")
 Target       = "fluxa-0.16"
 Install      = BinInstall
 Libs = Split("m sndfile jack lo")
+Frameworks = []
 
 Source = Split("src/Sample.cpp \
 				src/SearchPaths.cpp \
@@ -30,7 +31,22 @@ Source = Split("src/Sample.cpp \
 				src/Graph.cpp \
 				src/main.cpp")					
 
-env.Program(source = Source, target = Target, LIBS=Libs)
+if env['PLATFORM'] == 'darwin':
+	Frameworks = Split("GLUT OpenGL CoreAudio")
+
+# link libraries statically when making an os x app
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
+	from macos.osxbundle import *
+	TOOL_BUNDLE(env)
+	Frameworks += ["Jackmp"]
+
+	for l in ['sndfile']:
+		if l in Libs:
+			Libs.remove(l)
+		Libs.append(File('/opt/local/lib/lib%s.a' % l))
+	Libs.remove('jack')
+
+env.Program(source = Source, target = Target, LIBS = Libs, FRAMEWORKS = Frameworks)
 env.Install(Install, Target)
 env.Alias('install', Install)
-	  
+
