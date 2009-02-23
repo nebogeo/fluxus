@@ -31,7 +31,7 @@ public:
 	/// charw,h are in _texture_ coords not pixels
 	TypePrimitive();
 	TypePrimitive(const TypePrimitive &other);
-	virtual ~TypePrimitive() {}
+	virtual ~TypePrimitive();
 	
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
