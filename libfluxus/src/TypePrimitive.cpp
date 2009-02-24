@@ -40,6 +40,12 @@ TypePrimitive* TypePrimitive::Clone() const
 	return new TypePrimitive(*this); 
 }
 
+TypePrimitive::~TypePrimitive()
+{
+	FT_Done_Face(m_Face);
+	FT_Done_FreeType(m_Library);
+}
+
 bool TypePrimitive::LoadTTF(const string &FontFilename)
 {
 	string fullpath=SearchPaths::Get()->GetFullPath(FontFilename);

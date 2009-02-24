@@ -159,7 +159,7 @@ void PolyPrimitive::Render()
 	if (m_State.Hints & HINT_VERTCOLS)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
-		glColorPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_ColData->begin()->arr());
+		glColorPointer(4,GL_FLOAT,sizeof(dVector),(void*)m_ColData->begin()->arr());
 	}
 	else
 	{

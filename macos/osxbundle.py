@@ -120,6 +120,8 @@ def TOOL_BUNDLE(env):
                        key, info_plist,
                        typecode='BNDL', creator='SapP',
                        icon_file='#macosx-install/sapphire-icon.icns',
+                       dylibs=[],
+                       frameworks=[],
                        subst_dict=None,
                        resources=None):
             """Install a bundle into its dir, in the proper format"""
@@ -153,6 +155,8 @@ def TOOL_BUNDLE(env):
                             '%TYPE%': typecode,
                             '%BUNDLE_KEY%': key}
             env.Install(bundledir+'/Contents/MacOS', app)
+            for f in frameworks + dylibs:
+                env.Install(bundledir+'/Contents/Frameworks', f)
             f=env.SubstInFile(bundledir+'/Contents/Info.plist', info_plist,
                             SUBST_DICT=subst_dict)
             env.Depends(f, SCons.Node.Python.Value(key+creator+typecode)) #+env['VERSION_NUM']+env['VERSION_NAME']))
@@ -195,8 +199,8 @@ def BuildDmg(target, source, env):
     outs = os.popen('hdiutil attach ' + tmp_dmg, 'r')
     disk = outs.readline().split()[0]
     for src in source:
-	# FIXME
-	os.system('cp -r ' + str(src) + ' /Volumes/Fluxus')
+        # FIXME
+        os.system('cp -r ' + str(src) + ' /Volumes/Fluxus')
     os.system('hdiutil detach ' + disk)
     os.system('hdiutil convert -format UDZO -o ' + str(target[0]) + ' ' + tmp_dmg)
     os.remove(tmp_dmg)
