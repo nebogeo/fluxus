@@ -1212,7 +1212,7 @@ Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
 // different effects - or no effect on certain primitive types, hence the name hint.
 // Example:
 // (hint-wire)
-// (build-cube) ; make a wirefame rendered cube 
+// (build-cube) ; make a wirefame rendered cube
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1225,7 +1225,7 @@ Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
 // ou nenhum efeito em certas primitivas portanto o nome dicas.
 // Exemplo:
 // (hint-wire)
-// (build-cube) ; faz um cubo em wireframe 
+// (build-cube) ; faz um cubo em wireframe
 // EndFunctionDoc
 
 
@@ -1236,9 +1236,50 @@ Scheme_Object *hint_wire(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-wire-stippled
+// Returns: void
+// Description:
+// Sets the render hints to stippled wireframe of the current drawing state, or the
+// current primitive.
+// Example:
+// (hint-none)
+// (hint-wire-stippled)
+// (build-cube) ; make a stippled wirefame cube
+// EndFunctionDoc
+
+Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_WIRE_STIPPLED;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// line-pattern factor pattern
+// Returns: void
+// Description:
+// Factor specifies a multiplier for each bit in the line stipple pattern.
+// Pattern specifies a 16-bit integer whose bit pattern determines which
+// fragments of a line will be drawn when the line is rasterized.
+// Example:
+// (hint-none)
+// (hint-wire-stippled)
+// (line-pattern 4 #x0aaaa)
+// (build-cube) ; make a stippled wirefame cube
+// EndFunctionDoc
+Scheme_Object *line_pattern(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("line-pattern", "ii", argc, argv);
+    Engine::Get()->State()->StippleFactor=IntFromScheme(argv[0]);
+    Engine::Get()->State()->StipplePattern=IntFromScheme(argv[1]);
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // hint-normal
 // Returns: void
-// Description: 
+// Description:
 // Sets the render hints to display normals in the current drawing state, or the current 
 // primitive. Render hints change the way that primitives are rendered, but may have 
 // different effects - or no effect on certain primitive types, hence the name hint.
@@ -2468,6 +2509,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
     scheme_add_global("hint-solid",scheme_make_prim_w_arity(hint_solid,"hint-solid",0,0), env);
     scheme_add_global("hint-wire",scheme_make_prim_w_arity(hint_wire,"hint-wire",0,0), env);
+    scheme_add_global("hint-wire-stippled",scheme_make_prim_w_arity(hint_wire_stippled,"hint-wire-stippled",0,0), env);
     scheme_add_global("hint-normal",scheme_make_prim_w_arity(hint_normal,"hint-normal",0,0), env);
     scheme_add_global("hint-points",scheme_make_prim_w_arity(hint_points,"hint-points",0,0), env);
     scheme_add_global("hint-anti-alias",scheme_make_prim_w_arity(hint_anti_alias,"hint-anti-alias",0,0), env);
@@ -2482,6 +2524,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
     scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
+	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
 	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
     scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);

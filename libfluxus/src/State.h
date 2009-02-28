@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-         	
+
 #ifdef GLSL
 #include "GL/glew.h"
 #endif
@@ -28,10 +28,10 @@
 #endif
 
 #include "dada.h"
-#include "iostream"  
-#include "GLSLShader.h" 
-#include "TexturePainter.h" 
- 
+#include "iostream"
+#include "GLSLShader.h"
+#include "TexturePainter.h"
+
 #ifndef N_STATE
 #define N_STATE
 
@@ -53,6 +53,7 @@ namespace Fluxus
 #define HINT_DEPTH_SORT     0x0800
 #define HINT_LAZY_PARENT    0x1000
 #define HINT_CULL_CCW       0x2000
+#define HINT_WIRE_STIPPLED  0x4002
 
 ///\todo use glew for this
 #ifdef ENABLE_MULTITEXTURE
@@ -63,7 +64,7 @@ namespace Fluxus
 
 ///////////////////////////////////////
 /// The fluxus graphics state
-/// This is used to form the state stack 
+/// This is used to form the state stack
 /// for immediate mode, and is contained
 /// inside each primitive in retained mode.
 class State
@@ -89,6 +90,9 @@ public:
 	int Parent;
 	int Hints;
 	float LineWidth;
+	bool StippledLines;
+	int StippleFactor;
+	int StipplePattern;
 	float PointWidth;
 	int SourceBlend;
 	int DestinationBlend;
@@ -96,10 +100,11 @@ public:
 	float WireOpacity;
 	COLOUR_MODE ColourMode;
 	dMatrix Transform;
-	GLSLShader *Shader; 
+	GLSLShader *Shader;
 	bool Cull;
 };
 
 };
 
 #endif
+

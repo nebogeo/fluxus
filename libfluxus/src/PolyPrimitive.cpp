@@ -178,12 +178,22 @@ void PolyPrimitive::Render()
 		glPolygonOffset(1,1);
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 		glColor4fv(m_State.WireColour.arr());
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(m_State.StippleFactor, m_State.StipplePattern);
+		}
+
 		glDisable(GL_LIGHTING);
 		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
 		else glDrawArrays(type,0,m_VertData->size());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glDisable(GL_LINE_STIPPLE);
+		}
 	}
 
 	if (m_State.Hints & HINT_POINTS)

@@ -27,6 +27,9 @@ Opacity(1.0f),
 Parent(1),
 Hints(HINT_SOLID),
 LineWidth(1),
+StippledLines(false),
+StippleFactor(4),
+StipplePattern(0xaaaa),
 PointWidth(1),
 SourceBlend(GL_SRC_ALPHA),
 DestinationBlend(GL_ONE_MINUS_SRC_ALPHA),
@@ -58,6 +61,9 @@ const State &State::operator=(const State &other)
 	Parent=other.Parent;
 	Hints=other.Hints;
 	LineWidth=other.LineWidth;
+	StippledLines=other.StippledLines;
+	StippleFactor=other.StippleFactor;
+	StipplePattern=other.StipplePattern;
 	PointWidth=other.PointWidth;
 	SourceBlend=other.SourceBlend;
 	DestinationBlend=other.DestinationBlend;
