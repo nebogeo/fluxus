@@ -147,19 +147,24 @@ void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 				glEnableClientState(GL_NORMAL_ARRAY);
 				glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)(&i->m_Normals.begin()->x));
 			}
-			
+
 			glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)(&i->m_Positions.begin()->x));
 			glDrawArrays(i->m_Type,0,i->m_Positions.size());
-			
+
 			if (!i->m_Normals.empty())
 			{
 				glDisableClientState(GL_NORMAL_ARRAY);
 			}
 		}
 	}
-	
+
 	if (m_State.Hints & HINT_WIRE)
 	{
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(m_State.StippleFactor, m_State.StipplePattern);
+		}
 		glDisable(GL_LIGHTING);
 		glPolygonOffset(1,1);
 		glColor4fv(m_State.WireColour.arr());
@@ -169,8 +174,12 @@ void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 			glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)(&i->m_Positions.begin()->x));
 			glDrawArrays(i->m_Type,0,i->m_Positions.size());
 		}
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL); 
+		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glDisable(GL_LINE_STIPPLE);
+		}
 	}
 }
 

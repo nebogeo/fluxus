@@ -134,7 +134,10 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			break; // l
 			case 5: // e
 			{
-				Execute();
+				if (m_CurrentEditor!=9)
+				{
+					Execute();
+				}
 			}
 			break;
 #ifndef __APPLE__

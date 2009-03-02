@@ -10,6 +10,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * (bb-intersect)
 * inline GLSL code
 * F4 execute s expr
+* added stippled lines, (hint-wire-stippled), (line-pattern)
 
 0.15
 

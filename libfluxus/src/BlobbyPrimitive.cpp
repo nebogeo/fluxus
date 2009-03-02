@@ -136,13 +136,13 @@ float BlobbyPrimitive::SampleCol(const dVector &pos, dColour &col)
 }
 
 void BlobbyPrimitive::Render()
-{	
+{
 	for (unsigned int i=0; i<m_Voxels.size(); i++)
 	{
 		for (int c=0; c<8; c++)
 		{
 			dVector pos = m_Voxels[i].p[c];
-			
+
 			if (m_State.Hints & HINT_VERTCOLS)
 			{
 				m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
@@ -150,30 +150,38 @@ void BlobbyPrimitive::Render()
 			else
 			{
 				m_Voxels[i].val[c]=Sample(pos);
-			}	
+			}
 		}
 	}
-	
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		glBegin(GL_TRIANGLES);
-		Draw(1, true, m_State.Hints & HINT_VERTCOLS);	
+		Draw(1, true, m_State.Hints & HINT_VERTCOLS);
 		glEnd();
 	}
-	
+
 	if (m_State.Hints & HINT_WIRE)
 	{
 		glPolygonOffset(1,1);
 		glColor4fv(m_State.WireColour.arr());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
-		glDisable(GL_LIGHTING);	
+		glDisable(GL_LIGHTING);
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(m_State.StippleFactor, m_State.StipplePattern);
+		}
 		glBegin(GL_TRIANGLES);
-		Draw(1, false, false);	
+		Draw(1, false, false);
 		glEnd();
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glDisable(GL_LINE_STIPPLE);
+		}
 	}
-	
 }
 
 void BlobbyPrimitive::RecalculateNormals(bool smooth)

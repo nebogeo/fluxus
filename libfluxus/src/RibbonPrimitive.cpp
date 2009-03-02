@@ -129,6 +129,12 @@ void RibbonPrimitive::Render()
 
 	if (m_State.Hints & HINT_WIRE)
 	{
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(m_State.StippleFactor, m_State.StipplePattern);
+		}
+
 		if (m_State.Hints & HINT_VERTCOLS)
 		{
 			glBegin(GL_LINE_STRIP);
@@ -159,6 +165,11 @@ void RibbonPrimitive::Render()
 				glVertex3fv((*m_VertData)[n+1].arr());
 			}
 			glEnd();
+		}
+
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glDisable(GL_LINE_STIPPLE);
 		}
 	}
 

@@ -39,7 +39,7 @@ int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 	MZ_GC_VAR_IN_REG(0, ob);
 	MZ_GC_REG();
 	int ret=(int)scheme_real_to_double(ob);
-  	MZ_GC_UNREG();
+	MZ_GC_UNREG();
 	return ret;
 }
 
@@ -49,9 +49,9 @@ string SchemeHelper::StringFromScheme(Scheme_Object *ob)
 	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, ob);
 	MZ_GC_VAR_IN_REG(1, ret);
-	MZ_GC_REG();	
+	MZ_GC_REG();
 	ret=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob),SCHEME_CHAR_STRLEN_VAL(ob),NULL,0);
-  	MZ_GC_UNREG();
+	MZ_GC_UNREG();
 	return string(ret);
 }
 
@@ -89,7 +89,7 @@ Scheme_Object *SchemeHelper::FloatsToScheme(float *src, unsigned int size)
 bool SchemeHelper::IsSymbol(Scheme_Object *src, const string &symbol)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	bool ret = SAME_OBJ(src, scheme_intern_symbol(symbol.c_str()));
 	MZ_GC_UNREG();
@@ -99,7 +99,7 @@ bool SchemeHelper::IsSymbol(Scheme_Object *src, const string &symbol)
 string SchemeHelper::SymbolName(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	string ret = scheme_symbol_name(src);
 	MZ_GC_UNREG();
@@ -113,7 +113,7 @@ dVector SchemeHelper::VectorFromScheme(Scheme_Object *src)
 	MZ_GC_REG();
 	dVector ret;
 	if (SCHEME_VEC_SIZE(src)==3) FloatsFromScheme(src,ret.arr(),3);
-	else if (SCHEME_VEC_SIZE(src)==4) FloatsFromScheme(src,ret.arr(),4);	
+	else if (SCHEME_VEC_SIZE(src)==4) FloatsFromScheme(src,ret.arr(),4);
 	MZ_GC_UNREG();
 	return ret;
 }
@@ -152,7 +152,7 @@ dColour SchemeHelper::ColourFromScheme(Scheme_Object *src, Fluxus::COLOUR_MODE m
 dQuat SchemeHelper::QuatFromScheme(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	dQuat ret;
 	FloatsFromScheme(src,ret.arr(),4);
@@ -163,7 +163,7 @@ dQuat SchemeHelper::QuatFromScheme(Scheme_Object *src)
 dMatrix SchemeHelper::MatrixFromScheme(Scheme_Object *src)
 {
 	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, src);	
+	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
 	dMatrix ret;
 	FloatsFromScheme(src,ret.arr(),16);
@@ -172,11 +172,11 @@ dMatrix SchemeHelper::MatrixFromScheme(Scheme_Object *src)
 }
 
 vector<int> SchemeHelper::IntVectorFromScheme(Scheme_Object *src)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
-	
+
 	vector<int> ret;
 	for (int n=0; n<SCHEME_VEC_SIZE(src); n++)
 	{
@@ -185,16 +185,16 @@ vector<int> SchemeHelper::IntVectorFromScheme(Scheme_Object *src)
 			ret.push_back(IntFromScheme(SCHEME_VEC_ELS(src)[n]));
 		}
 	}
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return ret;
 }
 
 vector<float> SchemeHelper::FloatVectorFromScheme(Scheme_Object *src)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, src);
 	MZ_GC_REG();
-	
+
 	vector<float> ret;
 	for (int n=0; n<SCHEME_VEC_SIZE(src); n++)
 	{
@@ -203,7 +203,7 @@ vector<float> SchemeHelper::FloatVectorFromScheme(Scheme_Object *src)
 			ret.push_back(FloatFromScheme(SCHEME_VEC_ELS(src)[n]));
 		}
 	}
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return ret;
 }
 

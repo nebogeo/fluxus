@@ -116,6 +116,11 @@ void NURBSPrimitive::Render()
 
 	if (m_State.Hints & HINT_WIRE)
 	{
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glEnable(GL_LINE_STIPPLE);
+			glLineStipple(m_State.StippleFactor, m_State.StipplePattern);
+		}
 		glDisable(GL_LIGHTING);
 		glColor4fv(m_State.WireColour.arr());
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
@@ -127,6 +132,10 @@ void NURBSPrimitive::Render()
 
 		gluEndSurface(m_Surface);
 		glEnable(GL_LIGHTING);
+		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
+		{
+			glDisable(GL_LINE_STIPPLE);
+		}
 	}
 
 	if (m_State.Hints & HINT_POINTS)

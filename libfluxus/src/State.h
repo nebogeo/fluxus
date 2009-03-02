@@ -54,6 +54,7 @@ namespace Fluxus
 #define HINT_DEPTH_SORT     0x0800
 #define HINT_LAZY_PARENT    0x1000
 #define HINT_CULL_CCW       0x2000
+#define HINT_WIRE_STIPPLED  0x4002
 
 ///\todo use glew for this
 #ifdef ENABLE_MULTITEXTURE
@@ -93,6 +94,9 @@ public:
 	int Parent;
 	int Hints;
 	float LineWidth;
+	bool StippledLines;
+	int StippleFactor;
+	int StipplePattern;
 	float PointWidth;
 	int SourceBlend;
 	int DestinationBlend;
@@ -109,3 +113,4 @@ public:
 };
 
 #endif
+
