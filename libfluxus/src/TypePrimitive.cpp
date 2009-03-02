@@ -25,23 +25,24 @@
 
 using namespace Fluxus;
 
-#define FT_SCALE 0.001f	
+#define FT_SCALE 0.001f
 
-TypePrimitive::TypePrimitive() 
+TypePrimitive::TypePrimitive()
 {
 }
 
-TypePrimitive::TypePrimitive(const TypePrimitive &other) 
+TypePrimitive::TypePrimitive(const TypePrimitive &other)
 {
 }
 
-TypePrimitive* TypePrimitive::Clone() const 
+TypePrimitive* TypePrimitive::Clone() const
 {
-	return new TypePrimitive(*this); 
+	return new TypePrimitive(*this);
 }
 
 TypePrimitive::~TypePrimitive()
 {
+	Clear();
 	FT_Done_Face(m_Face);
 	FT_Done_FreeType(m_Library);
 }
@@ -67,7 +68,7 @@ bool TypePrimitive::LoadTTF(const string &FontFilename)
 
 void TypePrimitive::Clear()
 {
-	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin(); 
+	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin();
 		i!=m_GlyphVec.end(); ++i)
 	{
 		delete *i;
@@ -78,7 +79,7 @@ void TypePrimitive::Clear()
 void TypePrimitive::SetText(const string &s)
 {
 	Clear();
-	
+
 	for (unsigned int n=0; n<s.size(); n++)
 	{
 		FT_Error error;
@@ -89,14 +90,14 @@ void TypePrimitive::SetText(const string &s)
 		GlyphGeometry* geo = new GlyphGeometry;
 		BuildGeometry(m_Slot,*geo,0);
 		geo->m_Advance=m_Slot->metrics.horiAdvance*FT_SCALE;
-		m_GlyphVec.push_back(geo);	
+		m_GlyphVec.push_back(geo);
 	}
 }
 
 void TypePrimitive::SetTextExtruded(const string &s, float depth)
 {
 	Clear();
-	
+
 	for (unsigned int n=0; n<s.size(); n++)
 	{
 		FT_Error error;
@@ -109,7 +110,7 @@ void TypePrimitive::SetTextExtruded(const string &s, float depth)
 		BuildExtrusion(m_Slot,*geo,-depth);
 		BuildGeometry(m_Slot,*geo,-depth,false);
 		geo->m_Advance=m_Slot->metrics.horiAdvance*FT_SCALE;
-		m_GlyphVec.push_back(geo);	
+		m_GlyphVec.push_back(geo);
 	}
 }
 
@@ -120,16 +121,16 @@ void TypePrimitive::Render()
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-		
-	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin(); 
+
+	for (vector<GlyphGeometry*>::iterator i=m_GlyphVec.begin();
 		i!=m_GlyphVec.end(); ++i)
 	{
 		RenderGeometry(**i);
 		glTranslatef((*i)->m_Advance,0,0);
 	}
-	
+
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
-	
+
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -324,22 +325,22 @@ void TypePrimitive::BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo
 void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
 {
 	dVector tx(0,0,0);
-	
-	for (vector<GlyphGeometry*>::iterator g=m_GlyphVec.begin(); 
+
+	for (vector<GlyphGeometry*>::iterator g=m_GlyphVec.begin();
 		g!=m_GlyphVec.end(); ++g)
 	{
-		for (vector<GlyphGeometry::Mesh>::const_iterator m=(*g)->m_Meshes.begin(); 
+		for (vector<GlyphGeometry::Mesh>::const_iterator m=(*g)->m_Meshes.begin();
 			m!=(*g)->m_Meshes.end(); m++)
 		{
 			switch(m->m_Type)
 			{
-				case GL_TRIANGLES : 
+				case GL_TRIANGLES :
 					for(unsigned int i=0; i<m->m_Positions.size(); i++)
 					{
 						poly.AddVertex(dVertex(m->m_Positions[i]+tx,m->m_Normals[i]));
 					}
 				break;
-				case GL_QUADS : 
+				case GL_QUADS :
 					for(unsigned int f=0; f<m->m_Positions.size()/4; f++)
 					{
 						poly.AddVertex(dVertex(m->m_Positions[f*4]+tx,m->m_Normals[f*4]));
@@ -350,26 +351,26 @@ void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
 						poly.AddVertex(dVertex(m->m_Positions[f*4]+tx,m->m_Normals[f*4]));
 					}
 				break;
-				case GL_TRIANGLE_FAN : 				
+				case GL_TRIANGLE_FAN :
 					for(unsigned int v=1; v<m->m_Positions.size(); v++)
 					{
 						poly.AddVertex(dVertex(m->m_Positions[0]+tx,m->m_Normals[0]));
 						poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
-						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));						
+						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));
 					}
 				break;
-				case GL_TRIANGLE_STRIP : 				
+				case GL_TRIANGLE_STRIP :
 					for(unsigned int v=2; v<m->m_Positions.size(); v+=2)
 					{
 						poly.AddVertex(dVertex(m->m_Positions[v-2]+tx,m->m_Normals[v-2]));
 						poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
-						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));						
+						poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));
 
 						if (v+1<m->m_Positions.size())
 						{
 							poly.AddVertex(dVertex(m->m_Positions[v]+tx,m->m_Normals[v]));
 							poly.AddVertex(dVertex(m->m_Positions[v-1]+tx,m->m_Normals[v-1]));
-							poly.AddVertex(dVertex(m->m_Positions[v+1]+tx,m->m_Normals[v+1]));						
+							poly.AddVertex(dVertex(m->m_Positions[v+1]+tx,m->m_Normals[v+1]));
 						}
 					}
 				break;
@@ -377,7 +378,8 @@ void TypePrimitive::ConvertToPoly(PolyPrimitive &poly)
 					Trace::Stream<<"type->poly - unhandled mesh type: "<<m->m_Type<<" please tell dave@pawfal.org :)"<<endl;
 				break;
 			};
-		}		
+		}
 		tx.x+=(*g)->m_Advance;
 	}
 }
+
