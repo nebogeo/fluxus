@@ -32,7 +32,7 @@ public:
 	TypePrimitive();
 	TypePrimitive(const TypePrimitive &other);
 	virtual ~TypePrimitive();
-	
+
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
@@ -44,13 +44,13 @@ public:
 	virtual dBoundingBox GetBoundingBox(const dMatrix&) { return dBoundingBox(); }
 	virtual void ApplyTransform(bool s) {}
 	 ///@}
-	
+
 	bool LoadTTF(const string &FontFilename);
 	void SetText(const string &s);
 	void SetTextExtruded(const string &s, float depth);
-	
+
 	/// Fills supplied polygon primitive with the mesh
-	/// (needs to be an empty triangle list) 
+	/// (needs to be an empty triangle list)
 	void ConvertToPoly(PolyPrimitive &poly);
 
 protected:
@@ -59,44 +59,45 @@ protected:
 	public:
 		GlyphGeometry() {}
 		~GlyphGeometry() {}
-	
+
 		class Mesh
 		{
 		public:
 			Mesh(GLenum type) : m_Type(type) {}
-			~Mesh() {}	
+			~Mesh() {}
 
 			GLenum m_Type;
 			vector<dVector> m_Positions;
 			vector<dVector> m_Normals;
 		};
-		
+
 		float m_Advance;
 		dVector	m_Normal;
 		GLenum m_Error;
 		vector<Mesh> m_Meshes;
 	};
-	
+
 	void Clear();
 	void BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth, bool winding=true);
 	void BuildExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth);
 	void GenerateExtrusion(const FT_GlyphSlot &glyph, GlyphGeometry &geo, int from, int to, float depth);
 	void RenderGeometry(const GlyphGeometry &geo);
 	vector<GlyphGeometry*> m_GlyphVec;
-	
+
 	FT_Library    m_Library;
 	FT_Face       m_Face;
 	FT_GlyphSlot  m_Slot;
-	
+
 	static void TessError(GLenum errCode, GlyphGeometry* geo);
 	static void TessVertex(void* data, GlyphGeometry* geo);
 	static void TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);
 	static void TessBegin(GLenum type, GlyphGeometry* geo);
 	static void TessEnd(GlyphGeometry* geo);
-	
+
 };
 
 
 };
 
 #endif
+
