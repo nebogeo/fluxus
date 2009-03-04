@@ -19,6 +19,7 @@
 
 #include "Primitive.h"
 #include "Renderer.h"
+#include "Physics.h"
 
 namespace Fluxus
 {
@@ -74,6 +75,7 @@ public:
 	void ClearPixels(const dColour &c = dColour(1, 1, 1, 1));
 
 	Renderer *GetRenderer() { return m_Renderer; }
+	Physics *GetPhysics() { return m_Physics; }
 
 protected:
 
@@ -95,6 +97,7 @@ protected:
 	dColour m_BGColour;
 
 	Renderer *m_Renderer;
+	Physics *m_Physics;
 
 	bool m_ReadyForUpload;
 	bool m_FBOSupported;

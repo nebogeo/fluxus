@@ -30,10 +30,25 @@ public:
 		return m_Engine;
 	}
 	
-	unsigned int MakeRenderer();
-	bool PushRenderer(unsigned int);
+	class StackItem
+	{
+	public:
+		StackItem(Fluxus::Renderer *r, Fluxus::Physics *p) :
+		m_Renderer(r),
+		m_Physics(p),
+		m_Grabbed(NULL),
+		m_CurrentCamera(0)
+		{}
+			
+		Fluxus::Renderer *m_Renderer;
+		Fluxus::Physics *m_Physics;
+		deque<unsigned int> m_GrabStack;
+		Fluxus::Primitive *m_Grabbed;
+		unsigned int m_CurrentCamera;
+	};	
+	
+	bool PushRenderer(const StackItem &si);
 	void PopRenderer();
-	void ResetRenderers();
 	void Reinitialise();  
 	Fluxus::Renderer *Renderer();
 	Fluxus::Physics *Physics();
@@ -42,11 +57,11 @@ public:
 	void PushGrab(int id);
 	void PopGrab();
 	void ClearGrabStack();
-	Fluxus::Primitive *Grabbed() { return m_Grabbed; }
+	Fluxus::Primitive *Grabbed() { return m_RendererStack.rbegin()->m_Grabbed; }
 	unsigned int GrabbedID();
 	
 	bool GrabCamera(unsigned int cam);
-	unsigned int GrabbedCamera() { return m_CurrentCamera; }
+	unsigned int GrabbedCamera() { return m_RendererStack.rbegin()->m_CurrentCamera; }
 	Fluxus::Camera *GetCamera();
 	
 	static Fluxus::PolyPrimitive* StaticCube;
@@ -67,11 +82,7 @@ private:
 	
 	static Engine *m_Engine;
 	
-	vector<pair<Fluxus::Renderer *, Fluxus::Physics *> > m_RendererVec;
-	deque<unsigned int> m_RendererStack;
-	deque<unsigned int> m_GrabStack;
-	Fluxus::Primitive *m_Grabbed;
+	deque<StackItem> m_RendererStack;
 	Fluxus::TurtleBuilder m_Turtle;
 	Fluxus::PFuncContainer m_PFuncContainer;
-	unsigned int m_CurrentCamera;
 };

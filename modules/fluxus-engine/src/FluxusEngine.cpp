@@ -30,6 +30,7 @@
 #include "PhysicsFunctions.h"
 #include "SchemeHelper.h"
 #include "Trace.h"
+#include "PixelPrimitive.h"
 
 using namespace SchemeHelper;
 
@@ -72,7 +73,7 @@ using namespace SchemeHelper;
 
 Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 {
-	return scheme_make_integer_value(Engine::Get()->MakeRenderer());
+	return scheme_make_integer_value(0);//Engine::Get()->MakeRenderer());
 }
 
 // StartFunctionDoc-en
@@ -97,7 +98,19 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("renderer-grab", "integer", 0, argc, argv);
-	Engine::Get()->PushRenderer(IntFromScheme(argv[0]));
+	
+	Fluxus::PixelPrimitive * p = dynamic_cast<Fluxus::PixelPrimitive*>
+		(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+	if (p)
+	{
+		Engine::Get()->PushRenderer(Engine::StackItem(p->GetRenderer(), p->GetPhysics()));
+	}
+	else
+	{		
+		Trace::Stream<<"renderer_grab: needs a pixelsprimitive"<<endl;
+	}
+	
+	
 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
@@ -219,7 +232,7 @@ Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 
 Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->ResetRenderers();
+	//Engine::Get()->ResetRenderers();
 	return scheme_void;
 }
 
