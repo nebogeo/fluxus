@@ -236,6 +236,7 @@ Scheme_Object *get_searchpaths(int argc, Scheme_Object **argv)
 	Scheme_Object *ret=NULL;
 	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, vec);
+	MZ_GC_VAR_IN_REG(1, argv);
 	MZ_GC_REG();	
  	
 	vec = scheme_make_vector(SearchPaths::Get()->m_Paths.size(), scheme_void);
