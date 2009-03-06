@@ -1598,7 +1598,8 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *l = NULL;
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, l);
 	MZ_GC_REG();
 	
@@ -1646,7 +1647,8 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *ret = NULL;
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, ret);
 	MZ_GC_REG();
 	
@@ -1684,7 +1686,8 @@ Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)
 Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *ret = NULL;
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, ret);
 	MZ_GC_REG();
 	
@@ -2234,7 +2237,7 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 	Scheme_Object *l = NULL;
 	Scheme_Object *pl = NULL;
 
-	MZ_GC_DECL_REG(5);
+	MZ_GC_DECL_REG(6);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, name);
 	MZ_GC_VAR_IN_REG(2, value);
@@ -2367,7 +2370,8 @@ Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
 Scheme_Object *get_children(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *l = NULL;
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, l);
 	MZ_GC_REG();
 	l = scheme_null;

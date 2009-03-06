@@ -197,7 +197,6 @@ void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const 
 	{		
 		//\todo check power of two
 		//\todo and scale?
-
 		if (desc.Format==RGB)
     	{				
 			glTexImage2D(params.Type,params.MipLevel,3,desc.Width,desc.Height,params.Border,
