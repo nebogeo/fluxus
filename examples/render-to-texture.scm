@@ -1,4 +1,5 @@
 (clear)
+(texture-params 0 '(min nearest mag nearest))
 (define p (build-pixels 256 256))
 
 (renderer-grab p)

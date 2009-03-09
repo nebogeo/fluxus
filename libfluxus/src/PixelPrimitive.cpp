@@ -261,7 +261,7 @@ void PixelPrimitive::Bind()
 	if (!m_FBOSupported)
 		return;
 
-	glPushAttrib(GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);//GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_FBO);
 	//glViewport(0, 0, m_Width, m_Height);
