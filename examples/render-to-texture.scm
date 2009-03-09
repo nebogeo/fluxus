@@ -1,0 +1,12 @@
+(clear)
+(define p (build-pixels 256 256))
+
+(renderer-grab p)
+(clear-colour (vector 1 0 0))
+(hint-unlit)
+(hint-wire)
+(scale 7)
+(translate (vector 1 0 0))
+(colour (vector 0 0 1))
+(build-sphere 10 10)
+(renderer-ungrab)
