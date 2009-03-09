@@ -17,6 +17,8 @@
 #include "Renderer.h"
 #include "Camera.h"
 
+#define DEBUG_CAMERA
+
 using namespace Fluxus;
 	
 Camera::Camera() :
@@ -52,12 +54,19 @@ void Camera::DoProjection()
 {
 	if (m_Ortho) glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
 	else glFrustum(m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back);
+	#ifdef DEBUG_CAMERA
+	cerr<<"camera:"<<this<<" frustum:"<<m_Left<<" "<<m_Right<<" "<<m_Bottom<<" "<<m_Top<<" "<<m_Front<<" "<<m_Back<<endl;
+	#endif
 }
 
 void Camera::DoCamera(Renderer * renderer)
 {
 	glMultMatrixf(m_Transform.arr());
-
+	
+	#ifdef DEBUG_CAMERA
+	cerr<<"camera:"<<this<<" transform:"<<m_Transform<<endl;
+	#endif
+	
 	if (m_CameraAttached)
 	{
         dMatrix worldmat = renderer->GetGlobalTransform(m_CameraAttached).inverse();

@@ -30,7 +30,7 @@
 
 using namespace Fluxus;
 
-//#define DEBUG_TRACE
+#define DEBUG_TRACE
 
 // should use glew for this?
 #ifndef GL_POLYGON_OFFSET
@@ -226,6 +226,11 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
     {
     	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
  			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
+		
+		#ifdef DEBUG_TRACE
+		cerr<<"renderer:"<<this<<" viewport:"<<Cam.GetViewportX()*(float)m_Width<<" "<<Cam.GetViewportY()*(float)m_Height<<" "<<
+			Cam.GetViewportWidth()*(float)m_Width<<" "<<Cam.GetViewportHeight()*(float)m_Height<<endl;
+		#endif
 		
     	glMatrixMode (GL_PROJECTION);
   		glLoadIdentity();
@@ -529,7 +534,7 @@ void Renderer::ApplyState()
 void Renderer::PushState()
 {
 	#ifdef DEBUG_TRACE
-	Trace::Stream<<"Renderer::PushState"<<endl;
+	//Trace::Stream<<"Renderer::PushState"<<endl;
 	#endif
 	
 	m_StateStack.push_front(*GetState());
@@ -538,7 +543,7 @@ void Renderer::PushState()
 void Renderer::PopState()
 {
 	#ifdef DEBUG_TRACE
-	Trace::Stream<<"Renderer::PopState"<<endl;
+	//Trace::Stream<<"Renderer::PopState"<<endl;
 	#endif
 	
 	if (m_StateStack.size()<2)

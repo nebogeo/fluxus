@@ -21,7 +21,7 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
-//#define DEBUG_GL
+#define DEBUG_GL
 
 using namespace Fluxus;
 
@@ -77,7 +77,8 @@ m_ClearRequested(false)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
 	m_Renderer = new Renderer();
-
+	m_Physics = new Physics(m_Renderer);
+	
 	AddData("c",new TypedPData<dColour>);
 
 	// setup the direct access for speed
@@ -103,6 +104,7 @@ m_ClearRequested(false)
 		m_FBOWidth = 1 << (unsigned)ceil(log2(w));
 		m_FBOHeight = 1 << (unsigned)ceil(log2(h));
 
+		m_Renderer->SetResolution(m_FBOWidth,m_FBOHeight);
 
 		/* setup the framebuffer */
 		glGenFramebuffersEXT(1, (GLuint *)&m_FBO);
@@ -262,16 +264,16 @@ void PixelPrimitive::Bind()
 	glPushAttrib(GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_FBO);
-	glViewport(0, 0, m_Width, m_Height);
+	//glViewport(0, 0, m_Width, m_Height);
 	/* set rendering */
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	if (m_ClearRequested)
+	/*if (m_ClearRequested)
 	{
 		// clear FBO
 		glClearColor(m_BGColour.r, m_BGColour.g, m_BGColour.b, m_BGColour.a);
 		glClear(GL_COLOR_BUFFER_BIT | (m_DepthBuffer ? GL_DEPTH_BUFFER_BIT : 0));
 		m_ClearRequested = false;
-	}
+	}*/
 
 	//cout << "pix " << " bound " << hex << this << endl;
 }
@@ -338,6 +340,7 @@ void PixelPrimitive::Render()
 	{
 		glPushMatrix();
 		Bind();
+		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
 		glPopMatrix();

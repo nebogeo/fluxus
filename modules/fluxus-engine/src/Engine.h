@@ -53,7 +53,7 @@ public:
 	Fluxus::Renderer *Renderer();
 	Fluxus::Physics *Physics();
 	void Render(); 
-	
+
 	void PushGrab(int id);
 	void PopGrab();
 	void ClearGrabStack();
@@ -79,6 +79,8 @@ public:
 private:
 	Engine();
 	~Engine();
+	
+	StackItem *StackTop();
 	
 	static Engine *m_Engine;
 	

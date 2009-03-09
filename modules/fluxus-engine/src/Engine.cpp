@@ -68,18 +68,21 @@ void Engine::PopRenderer()
 	}
 }
 
-Renderer *Engine::Renderer()
+Engine::StackItem *Engine::StackTop()
 {
 	// the renderer stack should never be empty
 	assert(!m_RendererStack.empty());
-	return m_RendererStack.rbegin()->m_Renderer;
+	return &(*m_RendererStack.rbegin());
+}
+
+Renderer *Engine::Renderer()
+{
+	return StackTop()->m_Renderer;
 }
 
 Physics *Engine::Physics()
 {
-	// the renderer stack should never be empty
-	assert(!m_RendererStack.empty());
-	return m_RendererStack.rbegin()->m_Physics;
+	return StackTop()->m_Physics;
 }
 void Engine::Render()
 {
@@ -88,9 +91,9 @@ void Engine::Render()
 
 void Engine::Reinitialise()     
 {
-	m_RendererStack.rbegin()->m_Renderer->Reinitialise();    
-	m_RendererStack.rbegin()->m_Renderer->GetTexturePainter()->Initialise();
-	m_RendererStack.rbegin()->m_Renderer->ClearLights();
+	Renderer()->Reinitialise();    
+	Renderer()->GetTexturePainter()->Initialise();
+	Renderer()->ClearLights();
 }
 
 // todo - move the grabstack into the renderer?
@@ -101,17 +104,17 @@ void Engine::PushGrab(int id)
 	// can interleave the state and primitive push/pops
 	if (id==0) 
 	{
-		m_RendererStack.rbegin()->m_Grabbed=NULL;
+		StackTop()->m_Grabbed=NULL;
 		Renderer()->UnGrab();
-		m_RendererStack.rbegin()->m_GrabStack.push_front(id);
+		StackTop()->m_GrabStack.push_front(id);
 		return;
 	}
 	
-	m_RendererStack.rbegin()->m_Grabbed=Renderer()->GetPrimitive(id);
+	StackTop()->m_Grabbed=Renderer()->GetPrimitive(id);
 	
-	if (m_RendererStack.rbegin()->m_Grabbed)
+	if (StackTop()->m_Grabbed)
 	{
-		m_RendererStack.rbegin()->m_GrabStack.push_front(id);
+		StackTop()->m_GrabStack.push_front(id);
 		Renderer()->Grab(id);
 	}
 	else
@@ -122,25 +125,25 @@ void Engine::PushGrab(int id)
 
 void Engine::PopGrab()
 {
-	m_RendererStack.rbegin()->m_Grabbed=NULL;
-	if (!m_RendererStack.rbegin()->m_GrabStack.empty())
+	StackTop()->m_Grabbed=NULL;
+	if (!StackTop()->m_GrabStack.empty())
 	{
 		Renderer()->UnGrab();
-		m_RendererStack.rbegin()->m_GrabStack.pop_front();
-		if (!m_RendererStack.rbegin()->m_GrabStack.empty() && 
-			m_RendererStack.rbegin()->m_GrabStack[0]>0)
+		StackTop()->m_GrabStack.pop_front();
+		if (!StackTop()->m_GrabStack.empty() && 
+			StackTop()->m_GrabStack[0]>0)
 		{
-			m_RendererStack.rbegin()->m_Grabbed=Renderer()->GetPrimitive(*m_RendererStack.rbegin()->m_GrabStack.begin());
-			Renderer()->Grab(*m_RendererStack.rbegin()->m_GrabStack.begin());
+			StackTop()->m_Grabbed=Renderer()->GetPrimitive(*StackTop()->m_GrabStack.begin());
+			Renderer()->Grab(*StackTop()->m_GrabStack.begin());
 		}
 	}
 }
 	
 unsigned int Engine::GrabbedID()
 {
-	if (!m_RendererStack.rbegin()->m_GrabStack.empty())
+	if (!StackTop()->m_GrabStack.empty())
 	{
-		return *m_RendererStack.rbegin()->m_GrabStack.begin();
+		return *StackTop()->m_GrabStack.begin();
 	}
 	return 0;
 }
@@ -149,7 +152,7 @@ bool Engine::GrabCamera(unsigned int cam)
 {
 	if (cam<Renderer()->GetCameraVec().size())
 	{
-		m_RendererStack.rbegin()->m_CurrentCamera=cam;
+		StackTop()->m_CurrentCamera=cam;
 		return true;
 	}
 	return false;
@@ -157,15 +160,15 @@ bool Engine::GrabCamera(unsigned int cam)
 
 Camera *Engine::GetCamera()
 {
-	assert(m_RendererStack.rbegin()->m_CurrentCamera<Renderer()->GetCameraVec().size());
-	return &Renderer()->GetCameraVec()[m_RendererStack.rbegin()->m_CurrentCamera];
+	assert(StackTop()->m_CurrentCamera<Renderer()->GetCameraVec().size());	
+	return &Renderer()->GetCameraVec()[StackTop()->m_CurrentCamera];
 }
 
 void Engine::ClearGrabStack()
 {
-	m_RendererStack.rbegin()->m_GrabStack.clear();
-	m_RendererStack.rbegin()->m_Grabbed=NULL;
-	m_RendererStack.rbegin()->m_CurrentCamera=0;
+	StackTop()->m_GrabStack.clear();
+	StackTop()->m_Grabbed=NULL;
+	StackTop()->m_CurrentCamera=0;
 }
 
 Fluxus::State *Engine::State()
