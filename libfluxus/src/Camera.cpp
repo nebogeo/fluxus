@@ -17,7 +17,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 
-#define DEBUG_CAMERA
+//#define DEBUG_CAMERA
 
 using namespace Fluxus;
 	

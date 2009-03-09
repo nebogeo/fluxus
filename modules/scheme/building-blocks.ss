@@ -18,6 +18,7 @@
 (provide 
  with-state
  with-primitive
+ with-pixels-renderer
  pdata-map!
  pdata-index-map!
  pdata-fold
@@ -160,6 +161,23 @@
        (grab a)
        (let ((r (begin b ...)))
          (ungrab)
+         r)))))
+		 
+;; StartFunctionDoc-en
+;; with-pixels-renderer pixels-primitive expression ...
+;; Returns: result of last expression
+;; Description:
+;; Allows you to render into a pixel primitive.
+;; Example:  
+;; EndFunctionDoc  
+
+(define-syntax with-pixels-renderer
+  (syntax-rules ()
+    ((_ a b ...)
+     (begin
+       (renderer-grab a)
+       (let ((r (begin b ...)))
+         (renderer-ungrab)
          r)))))
 
 ;; StartFunctionDoc-en

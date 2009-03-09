@@ -21,7 +21,7 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
-#define DEBUG_GL
+//#define DEBUG_GL
 
 using namespace Fluxus;
 
@@ -261,21 +261,12 @@ void PixelPrimitive::Bind()
 	if (!m_FBOSupported)
 		return;
 
-	glPushAttrib(GL_ALL_ATTRIB_BITS);//GL_VIEWPORT_BIT | GL_COLOR_BUFFER_BIT);
+	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_FBO);
-	//glViewport(0, 0, m_Width, m_Height);
+	
 	/* set rendering */
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
-	/*if (m_ClearRequested)
-	{
-		// clear FBO
-		glClearColor(m_BGColour.r, m_BGColour.g, m_BGColour.b, m_BGColour.a);
-		glClear(GL_COLOR_BUFFER_BIT | (m_DepthBuffer ? GL_DEPTH_BUFFER_BIT : 0));
-		m_ClearRequested = false;
-	}*/
-
-	//cout << "pix " << " bound " << hex << this << endl;
 }
 
 void PixelPrimitive::Unbind()

@@ -30,7 +30,7 @@
 
 using namespace Fluxus;
 
-#define DEBUG_TRACE
+//#define DEBUG_TRACE
 
 // should use glew for this?
 #ifndef GL_POLYGON_OFFSET
