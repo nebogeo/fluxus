@@ -44,6 +44,8 @@ Physics::JointObject::~JointObject()
 
 //////////////////////////////////////////////////////////////////////
 
+bool Physics::m_ODEInited = false;
+
 Physics::Physics(Renderer *r) :
 m_Renderer(r),
 m_MaxObjectCount(1000),
@@ -55,11 +57,16 @@ m_Slip2(0.9),
 m_SoftErp(0.25),
 m_SoftCfm(0.15)
 {
+	if (!m_ODEInited)	// init ODE only once
+	{
 #ifdef GOODE_OLDE_ODE
-        dInitODE();
+		dInitODE();
 #else
-	dInitODE2(0);
+		dInitODE2(0);
 #endif
+		m_ODEInited = true;
+	}
+
 	m_World = dWorldCreate();
 	m_Space = dHashSpaceCreate(0);
 	m_ContactGroup = dJointGroupCreate(0);

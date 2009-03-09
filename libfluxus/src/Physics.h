@@ -111,22 +111,23 @@ private:
 		dJointID Joint;
 		JointType Type;
 	};
-	
+
 	void UpdatePrimitives();
-	
+
 	static void NearCallback(void *data, dGeomID o1, dGeomID o2);
 	void NearCallback_i(dGeomID o1, dGeomID o2);
-	
+
+	static bool m_ODEInited;
     dWorldID m_World;
 	dSpaceID m_Space;
 	dGeomID m_Ground;
-	
+
 	map<int,Object*>       m_ObjectMap;
 	map<int,dGeomID>       m_GroupMap;
 	map<int,JointObject*>  m_JointMap;
 	deque<int>             m_History;
 	set<dBodyID>		   m_CollisionRecord;
-	
+
 	Renderer *m_Renderer;
 	int m_MaxObjectCount;
 	bool m_GroundCreated;
