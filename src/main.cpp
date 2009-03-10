@@ -45,142 +45,142 @@ int modifiers = 0;
 
 void ReshapeCallback(int width, int height)
 {
-  app->Reshape(width,height);
-  char code[256];
-  snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
-  Interpreter::Interpret(code);
+	app->Reshape(width,height);
+	char code[256];
+	snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	Interpreter::Interpret(code);
 }
 
 void KeyboardCallback(unsigned char key,int x, int y)
 {
-  int mod=modifiers;
-  if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
-  app->Handle(key, -1, -1, -1, x, y, mod);
-  char code[256];
-  if (key > 0) { // key is 0 on ctrl+2
-    snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
-    Interpreter::Interpret(code);
-  }
-  recorder->Record(RecorderMessage("keydown",key,mod));
+	int mod=modifiers;
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
+	app->Handle(key, -1, -1, -1, x, y, mod);
+	char code[256];
+	if (key > 0) { // key is 0 on ctrl+2
+		snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+		Interpreter::Interpret(code);
+	}
+	recorder->Record(RecorderMessage("keydown",key,mod));
 }
 
 void KeyboardUpCallback(unsigned char key,int x, int y)
 {
-  char code[256];
-  if (key > 0) { // key is 0 on ctrl+2
-    snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
-    Interpreter::Interpret(code);
-  }
-  recorder->Record(RecorderMessage("keyup",key,0));
+	char code[256];
+	if (key > 0) { // key is 0 on ctrl+2
+		snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+		Interpreter::Interpret(code);
+	}
+	recorder->Record(RecorderMessage("keyup",key,0));
 }
 
 void SpecialKeyboardCallback(int key,int x, int y)
 {
-  int mod=modifiers;
-  if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
-  app->Handle(0, -1, key, -1, x, y, mod);
-  char code[256];
-  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
-  Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("specialkeydown",key,mod));
+	int mod=modifiers;
+	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
+	app->Handle(0, -1, key, -1, x, y, mod);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	Interpreter::Interpret(code);
+	recorder->Record(RecorderMessage("specialkeydown",key,mod));
 }
 
 void SpecialKeyboardUpCallback(int key,int x, int y)
 {
-  //app->Handle( 0, 0, key, 1, x, y);
-  char code[256];
-  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
-  Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("specialkeyup",key,0));
+	//app->Handle( 0, 0, key, 1, x, y);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	Interpreter::Interpret(code);
+	recorder->Record(RecorderMessage("specialkeyup",key,0));
 }
 
 void MouseCallback(int button, int state, int x, int y)
 {
-  app->Handle(0, button, -1, state, x, y, 0);
-  char code[256];
-  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
-  Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("mouse",x,y,button,state));
+	app->Handle(0, button, -1, state, x, y, 0);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	Interpreter::Interpret(code);
+	recorder->Record(RecorderMessage("mouse",x,y,button,state));
 }
 
 void MotionCallback(int x, int y)
 {
-  app->Handle(0, -1, -1, -1, x, y, 0);
-  char code[256];
-  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
-  Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("motion",x,y));
+	app->Handle(0, -1, -1, -1, x, y, 0);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	Interpreter::Interpret(code);
+	recorder->Record(RecorderMessage("motion",x,y));
 }
 
 void PassiveMotionCallback(int x, int y)
 {
-  app->Handle(0, -1, -1, -1, x, y, 0);
-  char code[256];
-  snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
-  Interpreter::Interpret(code);
-  recorder->Record(RecorderMessage("passivemotion",x,y));
+	app->Handle(0, -1, -1, -1, x, y, 0);
+	char code[256];
+	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	Interpreter::Interpret(code);
+	recorder->Record(RecorderMessage("passivemotion",x,y));
 }
 
 void IdleCallback()
 {
-  glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 void DoRecorder()
 {
-  list<RecorderMessage> events;
-  if (recorder->Get(events))
-    {
-      for (list<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
+	list<RecorderMessage> events;
+	if (recorder->Get(events))
 	{
-	  if (i->Name=="keydown")
-	    {
-	      modifiers=i->Mod;
-	      KeyboardCallback(i->Data,0,0);
-	    }
-	  else if (i->Name=="keyup") KeyboardUpCallback(i->Data,0,0);
-	  else if (i->Name=="specialkeydown")
-	    {
-	      modifiers=i->Mod;
-	      SpecialKeyboardCallback(i->Data,0,0);
-	    }
-	  else if (i->Name=="specialkeyup") SpecialKeyboardUpCallback(i->Data,0,0);
-	  else if (i->Name=="mouse") MouseCallback(i->Button,i->State,i->Data,i->Mod);
-	  else if (i->Name=="motion") MotionCallback(i->Data,i->Mod);
-	  else if (i->Name=="passivemotion") PassiveMotionCallback(i->Data,i->Mod);
+		for (list<RecorderMessage>::iterator i=events.begin(); i!=events.end(); i++)
+		{
+			if (i->Name=="keydown")
+			{
+				modifiers=i->Mod;
+				KeyboardCallback(i->Data,0,0);
+			}
+			else if (i->Name=="keyup") KeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="specialkeydown")
+			{
+				modifiers=i->Mod;
+				SpecialKeyboardCallback(i->Data,0,0);
+			}
+			else if (i->Name=="specialkeyup") SpecialKeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="mouse") MouseCallback(i->Button,i->State,i->Data,i->Mod);
+			else if (i->Name=="motion") MotionCallback(i->Data,i->Mod);
+			else if (i->Name=="passivemotion") PassiveMotionCallback(i->Data,i->Mod);
+		}
 	}
-    }
-  recorder->UpdateClock();
+	recorder->UpdateClock();
+	recorder->Save();
 }
 
 void DisplayCallback()
 {
-  string fragment = app->GetScriptFragment();
-  if (fragment!="")
-    {
-        Interpreter::Interpret(fragment);
-    }
+	string fragment = app->GetScriptFragment();
+	if (fragment!="")
+	{
+		Interpreter::Interpret(fragment);
+	}
 
-  if (!Interpreter::Interpret(ENGINE_CALLBACK))
-    {
-      // the callback has failed, so clear the screen so we can fix the error...
-      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-    }
+	if (!Interpreter::Interpret(ENGINE_CALLBACK))
+	{
+		// the callback has failed, so clear the screen so we can fix the error...
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	}
 
-  app->Render();
-  glutSwapBuffers();
+	app->Render();
+	glutSwapBuffers();
 
-  DoRecorder();
+	DoRecorder();
 }
 
 void ExitHandler()
 {
-  delete app;
+	delete app;
 }
 
 int run(Scheme_Env* se, int argc, char *argv[])
 {
-
 	// we create our own Scheme_Env in here, as we need
 	// to be able to reset it with F6. Seems to be ok to ignore se...
 	Interpreter::Register();
@@ -233,7 +233,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 			cerr<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
 			exit(1);
 		}
-		else if (!strcmp(argv[arg],"-h"))
+		else if (!strcmp(argv[arg],"--help") || !strcmp(argv[arg],"-h") || !strcmp(argv[arg],"-?"))
 		{
 			cerr<<"fluxus [options] [filename1] [filename2] ..."<<endl;
 			cerr<<"options:"<<endl;
@@ -345,7 +345,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  return scheme_main_setup(1, run, argc, argv);
+	return scheme_main_setup(1, run, argc, argv);
 }
 
 

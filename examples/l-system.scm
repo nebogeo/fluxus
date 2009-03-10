@@ -83,9 +83,9 @@
 ;;(ls-build (ls-generate 3 "F" '(("F" "F - [ - F + F + F ] + [ + F - F - F ] F"))) 20 0.6)
 
 ;; spacefilling
-;; (ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7)
+ (ls-build (ls-generate 7 "F" '(("F" "F[^F][&F]"))) 86 0.7)
 
 ;; recursive pentagonal
-(ls-build (ls-generate 3 "F + F + F + F + F" '(("F" "F F + F + F + F + F + F F"))) 72 0.7)
+;;(ls-build (ls-generate 3 "F + F + F + F + F" '(("F" "F F + F + F + F + F + F F"))) 72 0.7)
 
 

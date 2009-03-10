@@ -115,25 +115,28 @@ void EventRecorder::Load()
 {
 	Reset();
 	ifstream is(m_Filename.c_str());
-	int version;
-	is>>version;
-	unsigned int size;
-	is>>size;
-	unsigned int count=0;
-	int temp;
-	
-	while(count<size)
+	if (is.is_open())
 	{
-		RecorderMessage event;
-		is>>event.Name;
-		is>>event.Time;
-		is>>event.Data;
-		is>>event.Mod;
-		is>>event.Button;
-		is>>event.State;
-		m_EventList.push_back(event);
-		count++;
+		int version;
+		is>>version;
+		unsigned int size;
+		is>>size;
+		unsigned int count=0;
+		int temp;
+
+		while(count<size)
+		{
+			RecorderMessage event;
+			is>>event.Name;
+			is>>event.Time;
+			is>>event.Data;
+			is>>event.Mod;
+			is>>event.Button;
+			is>>event.State;
+			m_EventList.push_back(event);
+			count++;
+		}
+
+		is.close();
 	}
-	
-	is.close();
 }
