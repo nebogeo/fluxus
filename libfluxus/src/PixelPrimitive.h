@@ -51,6 +51,9 @@ public:
 
 	/// Upload the texture to the graphics card
 	void Upload();
+	
+	/// Download the texture from the graphics card
+	void Download();
 
 	/// Load a png file into this primitive
 	void Load(const string &filename);
@@ -80,6 +83,9 @@ public:
 protected:
 
 	virtual void PDataDirty();
+	
+	void DownloadPData();
+	void UploadPData();
 
 	vector<dVector> m_Points;
 	vector<dColour> *m_ColourData;
@@ -100,6 +106,7 @@ protected:
 	Physics *m_Physics;
 
 	bool m_ReadyForUpload;
+	bool m_ReadyForDownload;
 	bool m_FBOSupported;
 	bool m_ClearRequested;
 };
