@@ -278,10 +278,12 @@ void PixelPrimitive::Unbind()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 
 	// generate mipmaps
+	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
 	if (m_FBOSupported)
 		glGenerateMipmapEXT(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	glDisable(GL_TEXTURE_2D);
 	//cout << "pix " << "unbound " << hex << this << endl;
 }
 
