@@ -18,6 +18,7 @@
 #include "Renderer.h"
 #include "PixelPrimitive.h"
 #include "State.h"
+#include "Utils.h"
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
@@ -73,6 +74,7 @@ m_Texture(0),
 m_Width(w),
 m_Height(h),
 m_ReadyForUpload(false),
+m_ReadyForDownload(false),
 m_ClearRequested(false)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
@@ -192,7 +194,8 @@ Primitive(other),
 m_Points(other.m_Points),
 m_Width(other.m_Width),
 m_Height(other.m_Height),
-m_ReadyForUpload(other.m_ReadyForUpload)
+m_ReadyForUpload(other.m_ReadyForUpload),
+m_ReadyForDownload(other.m_ReadyForDownload)
 {
 	// FIXME: make this work with FBOs
 	PDataDirty();
@@ -209,8 +212,7 @@ PixelPrimitive::~PixelPrimitive()
 	if (m_FBOSupported)
 	{
 		glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
-		if (m_DepthBuffer!=0)
-			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+		if (m_DepthBuffer!=0) glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 	}
 
 	//delete m_Renderer;
@@ -230,6 +232,11 @@ void PixelPrimitive::PDataDirty()
 void PixelPrimitive::Upload()
 {
 	m_ReadyForUpload = true;
+}
+
+void PixelPrimitive::Download()
+{
+	m_ReadyForDownload = true;
 }
 
 void PixelPrimitive::RequestClear(const dColour &bg /* = dColour(1, 1, 1, 1) */)
@@ -280,8 +287,7 @@ void PixelPrimitive::Unbind()
 	// generate mipmaps
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	if (m_FBOSupported)
-		glGenerateMipmapEXT(GL_TEXTURE_2D);
+	if (m_FBOSupported) glGenerateMipmapEXT(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	//cout << "pix " << "unbound " << hex << this << endl;
@@ -298,35 +304,12 @@ void PixelPrimitive::ClearPixels(const dColour &c /* = dColour(1, 1, 1, 1) */)
 
 void PixelPrimitive::Render()
 {
+	// we need to do uploading while we have an active gl context
 	if (m_ReadyForUpload)
 	{
-		if (m_FBOSupported)
-		{
-			glBindTexture(GL_TEXTURE_2D, m_Texture);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-			glBindTexture(GL_TEXTURE_2D, 0);
-			//cout << "pix uploaded " << m_Texture << endl;
-		}
-		else
-		{
-			/*
-			   if (m_Texture!=0)
-			   {
-			   glDeleteTextures(1,(GLuint*)&m_Texture);
-			   }
-
-			   glBindTexture(GL_TEXTURE_2D,m_Texture);
-			   gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
-			   */
-
-			glBindTexture(GL_TEXTURE_2D,m_Texture);
-			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-		}
+		UploadPData();
 		m_ReadyForUpload=false;
 	}
-
 
 	// render the pixel primitive scenegraph
 	if (m_FBOSupported)
@@ -379,6 +362,12 @@ void PixelPrimitive::Render()
 	glEnd();
 	glEnable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
+	
+	if (m_ReadyForDownload)
+	{
+		DownloadPData();
+		m_ReadyForDownload=false;
+	}
 }
 
 dBoundingBox PixelPrimitive::GetBoundingBox(const dMatrix &space)
@@ -411,3 +400,46 @@ void PixelPrimitive::ApplyTransform(bool ScaleRotOnly)
 	GetState()->Transform.init();
 }
 
+void PixelPrimitive::UploadPData()
+{
+	if (m_FBOSupported)
+	{
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
+				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+		glBindTexture(GL_TEXTURE_2D, 0);
+		//cout << "pix uploaded " << m_Texture << endl;
+	}
+	else
+	{
+		/*
+		   if (m_Texture!=0)
+		   {
+		   glDeleteTextures(1,(GLuint*)&m_Texture);
+		   }
+
+		   glBindTexture(GL_TEXTURE_2D,m_Texture);
+		   gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
+		   */
+
+		glBindTexture(GL_TEXTURE_2D,m_Texture);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
+				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+	}
+}
+
+void PixelPrimitive::DownloadPData()
+{
+	if (m_FBOSupported)
+	{
+		Bind();
+		GLubyte *data=GetScreenBuffer(0, 0, m_Width, m_Height, 1);
+		for (unsigned int i=0; i<m_Width*m_Height; i++)
+		{
+			(*m_ColourData)[i].r=data[i*3]/255.0f;
+			(*m_ColourData)[i].g=data[i*3+1]/255.0f;
+			(*m_ColourData)[i].b=data[i*3+2]/255.0f;
+		}
+		Unbind();
+	}
+}
