@@ -51,7 +51,7 @@ public:
 
 	/// Upload the texture to the graphics card
 	void Upload();
-	
+
 	/// Download the texture from the graphics card
 	void Download();
 
@@ -70,9 +70,6 @@ public:
 	/// Get the height
 	unsigned int GetHeight() { return m_Height; }
 
-	/// Request clearing at the next binding
-	void RequestClear(const dColour &bg = dColour(1, 1, 1, 1));
-
 	void Bind();
 	void Unbind();
 	void ClearPixels(const dColour &c = dColour(1, 1, 1, 1));
@@ -83,7 +80,7 @@ public:
 protected:
 
 	virtual void PDataDirty();
-	
+
 	void DownloadPData();
 	void UploadPData();
 
@@ -108,7 +105,6 @@ protected:
 	bool m_ReadyForUpload;
 	bool m_ReadyForDownload;
 	bool m_FBOSupported;
-	bool m_ClearRequested;
 };
 
 };

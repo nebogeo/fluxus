@@ -74,13 +74,12 @@ m_Texture(0),
 m_Width(w),
 m_Height(h),
 m_ReadyForUpload(false),
-m_ReadyForDownload(false),
-m_ClearRequested(false)
+m_ReadyForDownload(false)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
 	m_Renderer = new Renderer();
 	m_Physics = new Physics(m_Renderer);
-	
+
 	AddData("c",new TypedPData<dColour>);
 
 	// setup the direct access for speed
@@ -127,10 +126,6 @@ m_ClearRequested(false)
 
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-		/*
-		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_FBOWidth, m_FBOHeight,
-			RGL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-		*/
 
 		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
 		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
@@ -239,12 +234,6 @@ void PixelPrimitive::Download()
 	m_ReadyForDownload = true;
 }
 
-void PixelPrimitive::RequestClear(const dColour &bg /* = dColour(1, 1, 1, 1) */)
-{
-	m_ClearRequested = true;
-	m_BGColour = bg;
-}
-
 void PixelPrimitive::Load(const string &filename)
 {
 	TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(GetDataRaw("c"));
@@ -271,7 +260,7 @@ void PixelPrimitive::Bind()
 	glPushAttrib(GL_ALL_ATTRIB_BITS);
 
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_FBO);
-	
+
 	/* set rendering */
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
 }
@@ -362,7 +351,7 @@ void PixelPrimitive::Render()
 	glEnd();
 	glEnable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
-	
+
 	if (m_ReadyForDownload)
 	{
 		DownloadPData();
@@ -443,3 +432,4 @@ void PixelPrimitive::DownloadPData()
 		Unbind();
 	}
 }
+

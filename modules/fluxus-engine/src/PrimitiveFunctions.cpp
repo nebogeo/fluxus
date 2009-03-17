@@ -37,10 +37,10 @@ using namespace SchemeHelper;
 
 // StartSectionDoc-en
 // primitives
-// Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
+// Primitives are objects that you can render. There isn't really much else in a fluxus scene,
 // except lights, a camera and lots of primitives.
-// Example: 
-// EndSectionDoc 
+// Example:
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // primitivas
@@ -80,14 +80,14 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	ArgCheck("build-nurbs", "i", argc, argv);
 	int size=IntFromScheme(argv[0]);
 	NURBSPrimitive *Prim = new NURBSPrimitive();
-	if (size<1) 
+	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
 	}
 	Prim->Resize(size);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -95,8 +95,8 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 // build-polygons verts-number type-symbol
 // Returns: primitiveid-number
 // Description:
-// Builds a raw polygon primitive with size vertices (everything is initially set to zero). 
-// Type is a symbol that refers to the way the vertices are interpreted to build polygons, 
+// Builds a raw polygon primitive with size vertices (everything is initially set to zero).
+// Type is a symbol that refers to the way the vertices are interpreted to build polygons,
 // and can be one of the following: triangle-strip quad-list triangle-list triangle-fan polygon
 // Example:
 // (define mynewshape (build-polygons 100 'triangle-strip))
@@ -104,13 +104,13 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-pt
 // build-polygons número-de-vértices tipo-de-número
-// Retorna: número-de-id-primitiva 
+// Retorna: número-de-id-primitiva
 // Descrição:
 // Cónstroi uma primitiva de polígono cru com tamanho de vértices
 // (tudo é inicialmente tido como zero).
 // Tipo é um número que referencia a forma as quais os vértices são
 // interpretados para construir os poligonos, e podem ser os
-// seguintes: 
+// seguintes:
 // 0=TRISTRIP, 1=QUADS, 2=TRILIST, 3=TRIFAN, 4=POLYGON.
 // Exemplo:
 // (define mynewshape (build-polygons 100 'triangle-strip))
@@ -128,19 +128,19 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	else if (t=="triangle-list") type=PolyPrimitive::TRILIST;
 	else if (t=="triangle-fan") type=PolyPrimitive::TRIFAN;
 	else if (t=="polygon") type=PolyPrimitive::POLYGON;
-	else 
+	else
 	{
 		Trace::Stream<<"build-polygons: unknown poly type: "<<t<<endl;
 	}
-	if (size<1) 
+	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	PolyPrimitive *Prim = new PolyPrimitive(type);
 	Prim->Resize(size);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -172,12 +172,12 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-sphere: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}		
+	}
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(SphPrim, 1, x, y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
 
@@ -210,17 +210,17 @@ Scheme_Object *build_torus(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-torus: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
 	}
 	PolyPrimitive *Prim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), x, y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
 // StartFunctionDoc-en
-// build-plane 
+// build-plane
 // Returns: primitiveid-number
 // Description:
 // A single quad plane, texture mapped from 0->1 in both dimensions.
@@ -241,7 +241,7 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
 	MakePlane(PlanePrim);
-   	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(PlanePrim));
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(PlanePrim));
 }
 
 // StartFunctionDoc-en
@@ -271,12 +271,12 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-plane: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
-	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);	
+	}
+	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(PlanePrim,x,y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(PlanePrim));
 }
 
@@ -308,12 +308,12 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-cylinder: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(CylPrim, 1, 1, x, y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(CylPrim));
 }
 
@@ -321,11 +321,11 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // build-ribbon numpoints-number
 // Returns: primitiveid-number
 // Description:
-// Builds a ribbon consisting of numpoints points. The geometry is constantly camera facing and 
-// is texture mapped so the texture is stretched along the ribbon from start to finish. You use 
-// the pdata functions to edit the postions and widths of the segments. If used lit, the normals 
-// are faked to approximate a circular cross section. Additionally, if solid rendering is 
-// cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be 
+// Builds a ribbon consisting of numpoints points. The geometry is constantly camera facing and
+// is texture mapped so the texture is stretched along the ribbon from start to finish. You use
+// the pdata functions to edit the postions and widths of the segments. If used lit, the normals
+// are faked to approximate a circular cross section. Additionally, if solid rendering is
+// cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be
 // drawn - width specified by the (line-width) command.
 // Example:
 // (define mynewshape (build-ribbon 10))
@@ -355,12 +355,12 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 	if (size<1)
 	{
 		Trace::Stream<<"build-ribbon: size is less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	RibbonPrimitive *Prim = new RibbonPrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -368,8 +368,8 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 // build-text text-string
 // Returns: primitiveid-number
 // Description:
-// Builds a sequence of planes, texture mapped so that a font texture can be used to display 
-// text. Might also be useful for more abstract things. The font assumed to be non proportional 
+// Builds a sequence of planes, texture mapped so that a font texture can be used to display
+// text. Might also be useful for more abstract things. The font assumed to be non proportional
 // - there is an example font shipped with fluxus
 // Ok, so this isn't a very good font texture :)
 // Example:
@@ -385,7 +385,7 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 // de fonte possa ser usada para visualização. Pode vir a ser útil para
 // coisas mais abstratas. A fonte é assumida como não proporcional -
 // tem um exemplo de fonte acompanhando o fluxus.
-// Ok, so this isn't a very good font texture :) 
+// Ok, so this isn't a very good font texture :)
 // Exemplo:
 // (texture (load-texture "font.png"))
 // (define mynewshape (build-text "hello"))
@@ -395,12 +395,12 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-text", "s", argc, argv);
-		
+
 	// 16*16 grid of letters
 	TextPrimitive *TextPrim = new TextPrimitive(16/256.0f,16/256.0f,16,0);
 	TextPrim->SetText(StringFromScheme(argv[0]),20,-20,0.018);
-	MZ_GC_UNREG(); 
-	
+	MZ_GC_UNREG();
+
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TextPrim));
 }
 
@@ -414,12 +414,12 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // (wire-colour (vector 0 0 1))
 // ; this font should be on the default fluxus path (as it's the editor font)
 // (define t (build-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!"))
-// 
+//
 // ; make a poly primitive from the type
 // (define p (with-state
 //     (translate (vector 0 4 0))
 //     (type->poly t)))
-// 
+//
 // ; set some texture coords on the poly prim and load a texture onto it
 // (with-primitive p
 //     (pdata-map!
@@ -433,15 +433,15 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-type", "ss", argc, argv);
-		
+
 	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if (TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetText(StringFromScheme(argv[1]));
 	}
-	MZ_GC_UNREG(); 
-	
+	MZ_GC_UNREG();
+
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 }
 
@@ -455,12 +455,12 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 // (wire-colour (vector 0 0 1))
 // ; this font should be on the default fluxus path (as it's the editor font)
 // (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
-// 
+//
 // ; make a poly primitive from the type
 // (define p (with-state
 //     (translate (vector 0 4 0))
 //     (type->poly t)))
-// 
+//
 // ; set some texture coords on the poly prim and load a texture onto it
 // (with-primitive p
 //     (pdata-map!
@@ -474,15 +474,15 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("build-extruded-type", "ssf", argc, argv);
-		
+
 	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if(TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
 	}
-	MZ_GC_UNREG(); 
-	
+	MZ_GC_UNREG();
+
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 }
 
@@ -498,12 +498,12 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 // (wire-colour (vector 0 0 1))
 // ; this font should be on the default fluxus path (as it's the editor font)
 // (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
-// 
+//
 // ; make a poly primitive from the type
 // (define p (with-state
 //     (translate (vector 0 4 0))
 //     (type->poly t)))
-// 
+//
 // ; set some texture coords on the poly prim and load a texture onto it
 // (with-primitive p
 //     (pdata-map!
@@ -514,11 +514,11 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *type2poly(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
 	ArgCheck("type->poly", "i", argc, argv);
 	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
-	if (Prim) 
+	if (Prim)
 	{
 		// only if this is a pixel primitive
 		TypePrimitive *tp = dynamic_cast<TypePrimitive *>(Prim);
@@ -527,12 +527,12 @@ Scheme_Object *type2poly(int argc, Scheme_Object **argv)
 			PolyPrimitive *np = new PolyPrimitive(PolyPrimitive::TRILIST);
 			tp->ConvertToPoly(*np);
 			MZ_GC_UNREG();
-    		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(np));
+			return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(np));
 		}
 	}
-	
+
 	Trace::Stream<<"type->poly can only be called on a typeprimitive"<<endl;
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -550,10 +550,10 @@ Scheme_Object *type2poly(int argc, Scheme_Object **argv)
 Scheme_Object *text_params(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("text=params", "sffffffffff", argc, argv);
-	
+	ArgCheck("text-params", "sffffffffff", argc, argv);
+
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		TextPrimitive *tp = dynamic_cast<TextPrimitive *>(Grabbed);
@@ -566,10 +566,10 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 			tp->SetText(StringFromScheme(argv[0]),FloatFromScheme(argv[7]),
 						FloatFromScheme(argv[8]),FloatFromScheme(argv[9]));
 		}
-	}	
-	MZ_GC_UNREG(); 
+	}
+	MZ_GC_UNREG();
 	return scheme_void;
-}	
+}
 
 // StartFunctionDoc-en
 // build-nurbs-sphere hsegments rsegments
@@ -589,7 +589,7 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 // Exemplo:
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
-	
+
 Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -599,12 +599,12 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-nurbs-sphere: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
     MakeNURBSSphere(SphPrim, 1, x, y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
 }
 
@@ -635,12 +635,12 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-nurbs-plane: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, x, y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -648,11 +648,11 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // build-particles count-number
 // Returns: primitiveid-number
 // Description:
-// Builds a particles primitive containing num points, all initially set to the  origin. You 
-// use the pdata functions to edit the postions, colours and sizes. Particles come in two 
-// flavors, camera facing sprites, which are the default, can be textured and individually 
-// scaled; and points (when hint-points is set), which cannot be textured but are much faster 
-// to render, as they are hardware supported gl points. By default these point particles are 
+// Builds a particles primitive containing num points, all initially set to the  origin. You
+// use the pdata functions to edit the postions, colours and sizes. Particles come in two
+// flavors, camera facing sprites, which are the default, can be textured and individually
+// scaled; and points (when hint-points is set), which cannot be textured but are much faster
+// to render, as they are hardware supported gl points. By default these point particles are
 // square, turn on hint-anti-alias to make them circular.
 // Example:
 // (define mynewshape (build-particles 100))
@@ -683,24 +683,24 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 	if (size<1)
 	{
 		Trace::Stream<<"build-particles: size less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	ParticlePrimitive *Prim = new ParticlePrimitive;
 	for (int i=0; i<size; i++)
 	{
 		Prim->AddParticle(dVector(0,0,0),dColour(0,0,0),dVector(0.1,0.1,0.1));
 	}
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
 // StartFunctionDoc-en
-// build-locator 
+// build-locator
 // Returns: primitiveid-number
 // Description:
-// A locator is an empty primitive, useful for parenting to (when you don't want to have the 
-// parent object visible). This primitive can only be visualised with (hint-origin) to display 
+// A locator is an empty primitive, useful for parenting to (when you don't want to have the
+// parent object visible). This primitive can only be visualised with (hint-origin) to display
 // it's local transform origin.
 // Example:
 // (define mynewshape (build-locator))
@@ -725,7 +725,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// load-primitive 
+// load-primitive
 // Returns: primitiveid-number
 // Description:
 // Loads a primitive from disk
@@ -749,14 +749,14 @@ Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 	Primitive *Prim = PrimitiveIO::Read(SearchPaths::Get()->GetFullPath(filename));
 	if (Prim!=NULL)
 	{
-    	MZ_GC_UNREG();
-    	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
-	}	
+		MZ_GC_UNREG();
+		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+	}
 	return scheme_make_integer_value(0);
 }
 
 // StartFunctionDoc-en
-// clear-geometry-cache 
+// clear-geometry-cache
 // Returns: void
 // Description:
 // Clears cached geometry, so subsequent loads with come from the disk.
@@ -765,7 +765,7 @@ Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// clear-geometry-cache 
+// clear-geometry-cache
 // Retorna: número-id-primitiva
 // Descrição:
 // Exemplo:
@@ -779,12 +779,12 @@ Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// save-primitive 
+// save-primitive
 // Returns: void
 // Description:
 // Saves the current primitive to disk
 // Example:
-// (with-primitive (build-sphere 10 10) 
+// (with-primitive (build-sphere 10 10)
 //     (save-primitive "mymesh.obj"))
 // EndFunctionDoc
 
@@ -793,7 +793,7 @@ Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Exemplo:
-// (with-primitive (build-sphere 10 10) 
+// (with-primitive (build-sphere 10 10)
 //     (save-primitive "mymesh.obj"))
 // EndFunctionDoc
 
@@ -803,20 +803,20 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 	ArgCheck("save-primitive", "s", argc, argv);
 	string filename=StringFromScheme(argv[0]);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		PrimitiveIO::Write(SearchPaths::Get()->GetFullPath(filename),Grabbed);
-	}	    	
+	}
 	MZ_GC_UNREG();
     return scheme_void;
 }
 
 // StartFunctionDoc-en
-// build-pixels width-number height-number 
+// build-pixels width-number height-number
 // Returns: primitiveid-number
 // Description:
-// Makes a new pixel primitive. A pixel primitive is used for making procedural textures, which 
-// can then be applied to other primitives. For this reason, pixel primitives probably wont be 
+// Makes a new pixel primitive. A pixel primitive is used for making procedural textures, which
+// can then be applied to other primitives. For this reason, pixel primitives probably wont be
 // rendered much, but you can render them to preview the texture on a flat plane.
 // Example:
 // (define mynewshape (build-pixels 100 100))
@@ -856,11 +856,11 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 	if (x<1 || y<1)
 	{
 		Trace::Stream<<"build-pixels: resolution in x or y less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return 0;
-	}	
+	}
 	PixelPrimitive *Prim = new PixelPrimitive(x,y);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -897,9 +897,9 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
-{	
+{
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
@@ -909,7 +909,7 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 		    return scheme_void;
 		}
 	}
-	
+
 	Trace::Stream<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -923,9 +923,9 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
-{	
+{
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
@@ -935,22 +935,22 @@ Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
 		    return scheme_void;
 		}
 	}
-	
+
 	Trace::Stream<<"pixels-download can only be called while a pixelprimitive is grabbed"<<endl;
     return scheme_void;
 }
 
-// TODO:document 
+// TODO:document
 
 Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
- 	ArgCheck("pixels-load", "s", argc, argv);	
-	
+	ArgCheck("pixels-load", "s", argc, argv);
+
 	Trace::Stream<<"pixels-load is deprecated! use load-primitive"<<endl;
 
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
@@ -961,9 +961,9 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 			return scheme_void;
 		}
 	}
-	
+
 	Trace::Stream<<"pixels-load can only be called while a pixelprimitive is grabbed"<<endl;
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -979,7 +979,7 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 //         (lambda (c)
 //             (rndvec))
 //         "c")
-//     (pixels-upload)) 
+//     (pixels-upload))
 //
 // (with-state
 //     (texture (pixels->texture mypixels))
@@ -999,7 +999,7 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 //         (lambda (c)
 //             (rndvec))
 //         "c")
-//     (pixels-upload)) 
+//     (pixels-upload))
 //
 // (with-state
 //     (texture (pixels->texture mypixels))
@@ -1007,28 +1007,28 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
 	ArgCheck("pixels->texture", "i", argc, argv);
 	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
-	if (Prim) 
+	if (Prim)
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
 		if (pp)
 		{
-			MZ_GC_UNREG(); 
+			MZ_GC_UNREG();
 		    return scheme_make_integer_value(pp->GetTexture());
 		}
 	}
-	
+
 	Trace::Stream<<"pixels->texture can only be called on a pixelprimitive"<<endl;
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
 // StartFunctionDoc-en
-// pixels-width 
+// pixels-width
 // Returns: width-number
 // Description:
 // Returns the width of the current pixel primitive.
@@ -1039,7 +1039,7 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *pixels_width(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed)
@@ -1048,18 +1048,18 @@ Scheme_Object *pixels_width(int argc, Scheme_Object **argv)
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
 		if (pp)
 		{
-			MZ_GC_UNREG(); 
+			MZ_GC_UNREG();
 		    return scheme_make_integer_value(pp->GetWidth());
 		}
 	}
-	
+
 	Trace::Stream<<"pixels-width can only be called on a pixelprimitive"<<endl;
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
 // StartFunctionDoc-en
-// pixels-height 
+// pixels-height
 // Returns: width-number
 // Description:
 // Returns the height of the current pixel primitive.
@@ -1089,101 +1089,6 @@ Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-// StartFunctionDoc-en
-// bind pixelprimitiveid-number
-// Returns: void
-// Description:
-// Binds the pixel primitive as render target for the current state.
-// Example:
-// (define p (build-pixels 16 16))
-// (bind p)
-// EndFunctionDoc
-Scheme_Object *bind(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
-	ArgCheck("bind", "i", argc, argv);
-	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
-	if (Prim)
-	{
-		// only if this is a pixel primitive
-		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
-		if (pp)
-		{
-			Engine::Get()->State()->Target = pp;
-			MZ_GC_UNREG();
-			return scheme_void;
-		}
-	}
-
-	Trace::Stream<<"bind can only be called on a pixelprimitive"<<endl;
-	MZ_GC_UNREG();
-    return scheme_void;
-}
-
-// StartFunctionDoc-en
-// pixels-clear col
-// Returns: void
-// Description:
-// Sets all of the pixels to the supplied colour or clears the buffer
-// if the pixel primitive is bound as render target.
-// Example:
-// (with-primitive (build-pixels 100 100)
-//     (pixels-clear (vector 1 0 0))
-//     (pixels-upload))
-// EndFunctionDoc
-
-Scheme_Object *pixels_clear(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
-	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	dColour c;
-	PixelPrimitive *target = Engine::Get()->State()->Target;
-	if (Grabbed || (target != NULL))
-	{
-		PixelPrimitive *pp;
-
-		if (target != NULL)
-		{
-			// bound as target, the render target will be cleared, when bound
-			pp = target;
-		}
-		else
-		{
-			// pixelprimitive grabbed, pdata is cleared
-			pp = dynamic_cast<PixelPrimitive *>(Grabbed);
-		}
-		if (pp)
-		{
-			switch (argc)
-			{
-				case 0:
-					if (target != NULL)
-						pp->RequestClear();
-					else
-						pp->ClearPixels();
-					break;
-				case 1:
-					ArgCheck("clear-pixels", "c", argc, argv);
-					c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
-					if (target != NULL)
-						pp->RequestClear(c);
-					else
-						pp->ClearPixels(c);
-					break;
-				default:
-					Trace::Stream<<"clear-pixels - wrong number of arguments"<<endl;
-					MZ_GC_UNREG();
-					break;
-			}
-			MZ_GC_UNREG();
-			return scheme_void;
-		}
-	}
-
-	Trace::Stream<<"pixels-clear can only be called when a pixelprimitive is grabbed or bound"<<endl;
-	MZ_GC_UNREG();
-    return scheme_void;
-}
 // StartFunctionDoc-en
 // build-blobby numinfluences subdivisionsvec boundingvec
 // Returns: primitiveid-number
@@ -2463,19 +2368,19 @@ Scheme_Object *get_children(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *get_parent(int argc, Scheme_Object **argv)
-{	
+{
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
-		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));		
-    	return scheme_make_integer(a->Parent->ID);
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		return scheme_make_integer(a->Parent->ID);
 	}
 	Trace::Stream<<"get-parent: no primitive current"<<endl;
 	return scheme_void;
 }
 
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -2505,9 +2410,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
-	scheme_add_global("pixels-clear", scheme_make_prim_w_arity(pixels_clear, "pixels-clear", 0, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
-	scheme_add_global("bind", scheme_make_prim_w_arity(bind, "bind", 1, 1), env);
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
@@ -2532,5 +2435,5 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
 	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
 	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }
