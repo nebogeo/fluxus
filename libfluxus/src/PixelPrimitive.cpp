@@ -124,7 +124,11 @@ m_ReadyForDownload(false)
 				m_State.TextureStates[0].WrapT);
 		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
+		/* create a texture of m_FBOWidth x m_FBOHeight size */
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
+				GL_RGBA, GL_FLOAT, NULL);
+		/* upload pdata to the top left corner of m_Width x m_Height size */
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 
 		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
