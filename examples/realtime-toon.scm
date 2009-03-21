@@ -67,3 +67,5 @@
 ; 115 fps
 ; 0.15-0.16 with new drivers
 ; 140 fps
+; 0.16 ??
+; 151 fps

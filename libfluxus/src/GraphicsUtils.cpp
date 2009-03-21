@@ -41,53 +41,53 @@ void Fluxus::MakeCube(PolyPrimitive *p, float size)
     boxv7.x = -size; boxv7.y =  size; boxv7.z =  size;
 
 	Normal=dVector(0,0,-1);
-    p->AddVertex(dVertex(boxv3,Normal,0,0));
-    p->AddVertex(dVertex(boxv2,Normal,1,0));
-    p->AddVertex(dVertex(boxv1,Normal,1,1));
-    p->AddVertex(dVertex(boxv0,Normal,0,1));
+    p->AddVertex(dVertex(boxv3,Normal,0,1));
+    p->AddVertex(dVertex(boxv2,Normal,1,1));
+    p->AddVertex(dVertex(boxv1,Normal,1,0));
+    p->AddVertex(dVertex(boxv0,Normal,0,0));
 
     Normal=dVector(0,-1,0);
-    p->AddVertex(dVertex(boxv1,Normal,0,0));
-    p->AddVertex(dVertex(boxv5,Normal,1,0));
-    p->AddVertex(dVertex(boxv4,Normal,1,1));
-    p->AddVertex(dVertex(boxv0,Normal,0,1));
+    p->AddVertex(dVertex(boxv1,Normal,0,1));
+    p->AddVertex(dVertex(boxv5,Normal,1,1));
+    p->AddVertex(dVertex(boxv4,Normal,1,0));
+    p->AddVertex(dVertex(boxv0,Normal,0,0));
 
     Normal=dVector(0,1,0);
-    p->AddVertex(dVertex(boxv3,Normal,0,0));
-    p->AddVertex(dVertex(boxv7,Normal,1,0));
-    p->AddVertex(dVertex(boxv6,Normal,1,1));
-    p->AddVertex(dVertex(boxv2,Normal,0,1));
+    p->AddVertex(dVertex(boxv3,Normal,0,1));
+    p->AddVertex(dVertex(boxv7,Normal,1,1));
+    p->AddVertex(dVertex(boxv6,Normal,1,0));
+    p->AddVertex(dVertex(boxv2,Normal,0,0));
 
     Normal=dVector(0,0,1);
-    p->AddVertex(dVertex(boxv4,Normal,0,0));
-    p->AddVertex(dVertex(boxv5,Normal,1,0));
-    p->AddVertex(dVertex(boxv6,Normal,1,1));
-    p->AddVertex(dVertex(boxv7,Normal,0,1));
+    p->AddVertex(dVertex(boxv4,Normal,0,1));
+    p->AddVertex(dVertex(boxv5,Normal,1,1));
+    p->AddVertex(dVertex(boxv6,Normal,1,0));
+    p->AddVertex(dVertex(boxv7,Normal,0,0));
 
     Normal=dVector(-1,0,0);
-    p->AddVertex(dVertex(boxv4,Normal,0,0));
-    p->AddVertex(dVertex(boxv7,Normal,1,0));
-    p->AddVertex(dVertex(boxv3,Normal,1,1));
-    p->AddVertex(dVertex(boxv0,Normal,0,1));
+    p->AddVertex(dVertex(boxv4,Normal,0,1));
+    p->AddVertex(dVertex(boxv7,Normal,1,1));
+    p->AddVertex(dVertex(boxv3,Normal,1,0));
+    p->AddVertex(dVertex(boxv0,Normal,0,0));
 
     Normal=dVector(1,0,0);
-    p->AddVertex(dVertex(boxv2,Normal,0,0));
-    p->AddVertex(dVertex(boxv6,Normal,1,0));
-    p->AddVertex(dVertex(boxv5,Normal,1,1));
-    p->AddVertex(dVertex(boxv1,Normal,0,1));
+    p->AddVertex(dVertex(boxv2,Normal,0,1));
+    p->AddVertex(dVertex(boxv6,Normal,1,1));
+    p->AddVertex(dVertex(boxv5,Normal,1,0));
+    p->AddVertex(dVertex(boxv1,Normal,0,0));
 }
 
 void Fluxus::MakePlane(PolyPrimitive *p)
 {
-    p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,1),0,0));
-    p->AddVertex(dVertex(dVector(0.5,-0.5,0),dVector(0,0,1),1,0));
-    p->AddVertex(dVertex(dVector(0.5,0.5,0),dVector(0,0,1),1,1));
-    p->AddVertex(dVertex(dVector(-0.5,0.5,0),dVector(0,0,1),0,1));
+    p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,1),0,1));
+    p->AddVertex(dVertex(dVector(0.5,-0.5,0),dVector(0,0,1),1,1));
+    p->AddVertex(dVertex(dVector(0.5,0.5,0),dVector(0,0,1),1,0));
+    p->AddVertex(dVertex(dVector(-0.5,0.5,0),dVector(0,0,1),0,0));
 
-    p->AddVertex(dVertex(dVector(-0.5,0.5,0),dVector(0,0,-1),0,1));
-    p->AddVertex(dVertex(dVector(0.5,0.5,0),dVector(0,0,-1),1,1));
-    p->AddVertex(dVertex(dVector(0.5,-0.5,0),dVector(0,0,-1),1,0));
-    p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,-1),0,0));
+    p->AddVertex(dVertex(dVector(-0.5,0.5,0),dVector(0,0,-1),1,0));
+    p->AddVertex(dVertex(dVector(0.5,0.5,0),dVector(0,0,-1),0,0));
+    p->AddVertex(dVertex(dVector(0.5,-0.5,0),dVector(0,0,-1),0,1));
+    p->AddVertex(dVertex(dVector(-0.5,-0.5,0),dVector(0,0,-1),1,1));
 }
 
 void Fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
@@ -100,11 +100,11 @@ void Fluxus::MakePlane(PolyPrimitive *p, int xsegs, int ysegs)
 		for (int y=0; y<ysegs; y++)
 		{
 			float u=x/(float)xsegs;
-			float v=y/(float)ysegs;
-			p->AddVertex(dVertex(dVector(u,v,0),dVector(0,0,1),u,v));
-			p->AddVertex(dVertex(dVector(u+usegsize,v,0),dVector(0,0,1),u+usegsize,v));
-			p->AddVertex(dVertex(dVector(u+usegsize,v+vsegsize,0),dVector(0,0,1),u+usegsize,v+vsegsize));
-			p->AddVertex(dVertex(dVector(u,v+vsegsize,0),dVector(0,0,1),u,v+vsegsize));
+			float v=y/(float)ysegs;			
+			p->AddVertex(dVertex(dVector(u-0.5f,v-0.5f,0),dVector(0,0,1),u,1-v));
+			p->AddVertex(dVertex(dVector(u+usegsize-0.5f,v-0.5f,0),dVector(0,0,1),u+usegsize,1-v));
+			p->AddVertex(dVertex(dVector(u+usegsize-0.5f,v+vsegsize-0.5f,0),dVector(0,0,1),u+usegsize,1-(v+vsegsize)));
+			p->AddVertex(dVertex(dVector(u-0.5f,v+vsegsize-0.5f,0),dVector(0,0,1),u,1-(v+vsegsize)));
 		}
 	}
 }
@@ -297,18 +297,29 @@ void Fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int
 
 void Fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
 {
-	p->Init(3,3,usegments,vsegments);
+	p->Init(3,3,usegments+1,vsegments+1);
 
-	for (int n=-1; n<=usegments+1; n++) p->AddUKnot(n/(float)usegments);
-	for (int n=-1; n<=vsegments+1; n++) p->AddVKnot(n/(float)vsegments);
+	// wangle the knots so the surface reaches 
+	// to the edge of the vertex grid
+	p->AddUKnot(0);
+	p->AddUKnot(0);
+	for (int n=0; n<usegments; n++) p->AddUKnot(n/((float)usegments-1.0f));
+	p->AddUKnot(1);
+	p->AddUKnot(1);
+	
+	p->AddVKnot(0);
+	p->AddVKnot(0);
+	for (int n=0; n<vsegments; n++) p->AddVKnot(n/((float)vsegments-1.0f));
+	p->AddVKnot(1);
+	p->AddVKnot(1);
 
-	for (int i=0; i<usegments; i++)
+	for (int i=0; i<usegments+1; i++)
 	{
-		for (int j=0; j<vsegments; j++)
+		for (int j=0; j<vsegments+1; j++)
 		{
-			p->AddCV(dVector(i/(float)usegments,0,j/(float)vsegments));
-			p->AddN(dVector(0,1,0));
-			p->AddTex(dVector(i/(float)usegments,j/(float)vsegments,0));
+			p->AddCV(dVector(i/(float)usegments-0.5,j/(float)vsegments-0.5,0));
+			p->AddN(dVector(0,0,1));
+			p->AddTex(dVector(i/(float)usegments,1-(j/(float)vsegments),0));
 		}
 	}
 }
