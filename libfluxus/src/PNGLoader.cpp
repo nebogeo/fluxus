@@ -47,7 +47,7 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		
 		ImageData = new unsigned char[png_ptr->rowbytes*png_ptr->height];
 		int p=0;
-		for (unsigned int row = png_ptr->height-1; row>0; row--) ; flip around to fit opengl
+		for (unsigned int row = png_ptr->height-1; row>0; row--) // flip around to fit opengl
 		{
 			for (unsigned int i=0; i<png_ptr->rowbytes; i++)
 			{
