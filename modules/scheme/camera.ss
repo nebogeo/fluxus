@@ -106,7 +106,7 @@
           (let ((d (on-unit-sphere (vector-ref click-mouse 0) 
                                    (vector-ref click-mouse 1)))
                 (m (on-unit-sphere (- (/ x (/ (- width  1) 2)) 1)
-                                   (- (/ y (/ (- height 1) 2)) 1))))
+                                   (- (- (/ y (/ (- height 1) 2)) 1)))))
             (vector-set! camera-rot-now 0 (- (* (vector-ref d 1) (vector-ref m 2))
                                              (* (vector-ref d 2) (vector-ref m 1))))
             (vector-set! camera-rot-now 1 (- (* (vector-ref d 2) (vector-ref m 0))
@@ -133,9 +133,9 @@
 (define (update-camera)
   (set! camera-matrix
         (mmul (mtranslate camera-position)
-              (qtomatrix (qconjugate 
-                          (qmul camera-rot-now
-                                camera-rot-start)))))
+              (mtranspose (qtomatrix (qconjugate 
+                              (qmul camera-rot-now
+                                    camera-rot-start))))))
   (set-ortho-zoom (vector-ref camera-position 2)))
 
 ; set the initial camera matrix
