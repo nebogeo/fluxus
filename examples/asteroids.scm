@@ -22,11 +22,11 @@
 (hint-wire)
 
 (clip 1 100000)
-(camera-lag 0.02)
+(camera-lag 0.0)
 (reset-camera)
 
 (set-camera-transform (mmul (mtranslate (vector 0 -5 -10))
-                            (mrotate (vector 0 90 0))))
+                            (mrotate (vector 0 -90 0))))
 
 (define WORLD_SIZE 2000)
 
