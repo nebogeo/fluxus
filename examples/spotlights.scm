@@ -41,7 +41,6 @@
 (with-state
     (rotate (vector 90 180 0))
     (scale (vector 10 10 10))
-    (translate (vector -0.5 -0.5 0))
     (build-seg-plane 100 100))
 
 ; build and deform a sphere

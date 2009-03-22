@@ -15,13 +15,13 @@
 (define (simulate n)
     (cond ((not (zero? n))
         (let ((result (vector 0 0 0)) 
-              (p (vector-ref (pdata-get "p" n) 1))) 
+              (p (vector-ref (pdata-get "p" n) 2)))
     
             (if (> p 0)
                 ; we are above "sea level" head down
-                (set! result (vector 0 -0.001 0)) 
+                (set! result (vector 0 0 -0.001))
                 ; we are below "sea level" head up
-                (set! result (vector 0 0.001 0))) 
+                (set! result (vector 0 0 0.001)))
     
             ; mix in the surrounding verts to transmit energy around
             (set! result (vadd result 
@@ -38,10 +38,10 @@
     
             ; clamp the velocity - this stops the 
             ; simulation going too fast and blowing up
-            (when (< (vector-ref (pdata-get "vel" n) 1) (- clamp))
-                (pdata-set "vel" n (vector 0 (- clamp) 0))) 
-            (when (> (vector-ref (pdata-get "vel" n) 1) clamp)
-                (pdata-set "vel" n (vector 0 clamp 0))) 
+            (when (< (vector-ref (pdata-get "vel" n) 2) (- clamp))
+                (pdata-set "vel" n (vector 0 0 (- clamp))))
+            (when (> (vector-ref (pdata-get "vel" n) 2) clamp)
+                (pdata-set "vel" n (vector 0 0 clamp)))
             (simulate (- n 1)))))
 
 (define (render)
@@ -54,16 +54,17 @@
     (specular (vector 1 1 1))
     (shinyness 3)
     (texture (load-texture "test.png"))
+    (rotate (vector -80 0 0))
     (scale (vector 10 30 10))
     (build-nurbs-plane w h)))
 
 (with-primitive s
     (pdata-add "vel" "v")
     ; start off the simulation with random point heights 
-    ; (the simulation only works in Y)
+    ; (the simulation only works in Z)
     (pdata-map! 
         (lambda (p)
-            (vadd p (vector 0 (* (- (flxrnd) 0.5) 0.1) 0)))
+            (vadd p (vector 0 0 (* (crndf) 0.1))))
         "p"))
 
 (every-frame (render))
