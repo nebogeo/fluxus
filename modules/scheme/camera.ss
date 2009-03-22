@@ -9,6 +9,7 @@
 
 (require "fluxus-engine.ss")
 (require "input.ss")
+(require "building-blocks.ss")
 (provide 
  input-camera
  set-camera-transform

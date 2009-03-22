@@ -1049,8 +1049,8 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
 	scheme_add_global("vmul", scheme_make_prim_w_arity(vmul, "vmul", 2, 2), env);
-	scheme_add_global("vadd", scheme_make_prim_w_arity(vadd, "vadd", 2, 2), env);
-	scheme_add_global("vsub", scheme_make_prim_w_arity(vsub, "vsub", 2, 2), env);
+	scheme_add_global("vadd2", scheme_make_prim_w_arity(vadd, "vadd", 2, 2), env);
+	scheme_add_global("vsub2", scheme_make_prim_w_arity(vsub, "vsub", 2, 2), env);
 	scheme_add_global("vdiv", scheme_make_prim_w_arity(vdiv, "vdiv", 2, 2), env);
 	scheme_add_global("vtransform", scheme_make_prim_w_arity(vtransform, "vtransform", 2, 2), env);
 	scheme_add_global("vtransform-rot", scheme_make_prim_w_arity(vtransform_rot, "vtransform-rot", 2, 2), env);
@@ -1061,10 +1061,10 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("vdist-sq", scheme_make_prim_w_arity(vdistsq, "vdist-sq", 2, 2), env);
 	scheme_add_global("vmag", scheme_make_prim_w_arity(vmag, "vmag", 1, 1), env);
 	scheme_add_global("vcross", scheme_make_prim_w_arity(vcross, "vcross", 2, 2), env);
-	scheme_add_global("mmul", scheme_make_prim_w_arity(mmul, "mmul", 2, 2), env);
-	scheme_add_global("madd", scheme_make_prim_w_arity(madd, "madd", 2, 2), env);
-	scheme_add_global("msub", scheme_make_prim_w_arity(msub, "msuv", 2, 2), env);
-	scheme_add_global("mdiv", scheme_make_prim_w_arity(mdiv, "mdiv", 2, 2), env);
+	scheme_add_global("mmul2", scheme_make_prim_w_arity(mmul, "mmul", 2, 2), env);
+	scheme_add_global("madd2", scheme_make_prim_w_arity(madd, "madd", 2, 2), env);
+	scheme_add_global("msub2", scheme_make_prim_w_arity(msub, "msuv", 2, 2), env);
+	scheme_add_global("mdiv2", scheme_make_prim_w_arity(mdiv, "mdiv", 2, 2), env);
 	scheme_add_global("mident", scheme_make_prim_w_arity(mident, "mident", 0, 0), env);
 	scheme_add_global("mtranslate", scheme_make_prim_w_arity(mtranslate, "mtranslate", 1, 1), env);
 	scheme_add_global("mrotate", scheme_make_prim_w_arity(mrotate, "mrotate", 1, 1), env);

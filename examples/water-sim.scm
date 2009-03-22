@@ -55,7 +55,7 @@
     (shinyness 3)
     (texture (load-texture "test.png"))
     (rotate (vector -80 0 0))
-    (scale (vector 10 30 10))
+    (scale (vector 10 10 30))
     (build-nurbs-plane w h)))
 
 (with-primitive s

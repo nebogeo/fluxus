@@ -62,7 +62,7 @@
     (scale (vector 0.5 0.5 0.5))
     (with-primitive (build-nurbs-plane 10 10)
         ; tweak a vertex to prove it's curvy
-        (pdata-set "p" 45 (vector 0.4 1 0.4))
+        (pdata-set "p" 40 (vector 0.4 0.4 1))
         (recalc-normals 1)))
 
 ; particles
@@ -70,7 +70,7 @@
 (with-state
     (hint-none)
     (hint-points)
-    (point-width 10)
+    (point-width 3)
     (with-primitive (build-particles 100)
         ; randomise the particle positions
         (pdata-map!
