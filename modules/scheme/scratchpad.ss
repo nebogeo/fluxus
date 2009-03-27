@@ -32,10 +32,10 @@
  fluxus-input-release-callback
  fluxus-frame-callback
  override-frame-callback
- set-user-callback!
  every-frame
- clear-frame-hooks
- add-frame-hook
+ clear-frame-hooks!
+ add-frame-hook!
+ remove-frame-hook!
  clear
  start-framedump
  end-framedump
@@ -46,12 +46,7 @@
  )
 
 ;-------------------------------------------------
-; every frame stuff 
-
-(define user-callback '())
-
-(define (set-user-callback! s)
-  (set! user-callback s))  
+; every frame stuff   
 
 ;; StartFunctionDoc-en
 ;; every-frame callback-function
@@ -84,22 +79,63 @@
 (define-syntax every-frame
   (syntax-rules ()
     ((every-frame expr)
-     (set-user-callback! (lambda () expr)))))
+     (add-frame-hook! 0 (lambda () expr)))))
 
 ;---------------------------------------------------------------
 
 (define frame-hooks '())
 
-(define (clear-frame-hooks)
-	(set! frame-hooks '()))
+;; StartFunctionDoc-en
+;; clear-frame-hooks!
+;; Returns: void
+;; Description:
+;; Clears all the frame hooks currently set. A frame hook is a function which is called every frame.
+;; Example:
+;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
+;; (clear-frame-hooks) ; clear it again
+;; EndFunctionDoc    
 
-(define (add-frame-hook hook)
-	(set! frame-hooks (cons hook frame-hooks)))
+(define (clear-frame-hooks!)
+	(set! frame-hooks '()))
+	
+;; StartFunctionDoc-en
+;; add-frame-hook! id-number thunk
+;; Returns: void
+;; Description:
+;; Adds a new frame hook. A frame hook is a function which is called every frame, frame hook 0 
+;; is the one set by every-frame, so (every-frame (draw-cube)) is exactly the same as 
+;; (add-frame-hook! 0 (lambda () (draw-cube))). Frame hooks with id's other than zero won't be 
+;; removed by (clear), so you need to manage them yourself by using clear-frame-hooks! and
+;; remove-frame-hook.
+;; Example:
+;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
+;; (remove-frame-hook 1) ; clear it again
+;; EndFunctionDoc    
+
+(define (add-frame-hook! id hook)
+	(remove-frame-hook! id)
+	(set! frame-hooks (cons (cons id hook) frame-hooks)))
+
+;; StartFunctionDoc-en
+;; remove-frame-hook! id-number
+;; Returns: void
+;; Description:
+;; Removes a frame hook. A frame hook is a function which is called every frame.
+;; Example:
+;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
+;; (remove-frame-hook 1) ; clear it again
+;; EndFunctionDoc    
+
+(define (remove-frame-hook! id)
+	(set! frame-hooks (filter
+	 	(lambda (hook)
+			(not (eq? (car hook) id)))
+		frame-hooks)))
 
 (define (run-frame-hooks)
 	(for-each
 		(lambda (hook)
-			(hook))
+			((cdr hook)))
 		frame-hooks))
 
 ;---------------------------------------------------------------
@@ -131,7 +167,7 @@
 ;; EndFunctionDoc
 
 (define (clear)
-  (set! user-callback '())
+  (add-frame-hook! 0 (lambda () 0))
   (clear-engine)
   (light-diffuse 0 (vector 1 1 1))
   (unlock-camera))
@@ -338,9 +374,6 @@
     (set! camera-update s))
 		
 (define (do-render)
-     (when (not (null? user-callback))
-       (with-state
-        (user-callback)))
 	 (run-frame-hooks)
      (fluxus-render))
 	 

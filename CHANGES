@@ -2,6 +2,15 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.16
 
+* frame-hooks
+* fixed orientations and texture coordinates to be more consistent
+* particle depth sorting
+* tiled-framedump for massive resolutions
+* moved install out of plt collects
+* (mouse-wheel)
+* GLSL and multitexturing on by default
+* new documentation pdf
+* lots of fluxa stability fixes
 * internal depth sort on particles
 * added (build-type) and (build-extruded-type)
 * added Perlin noise and Simplex noise functions (noise), (snoise)

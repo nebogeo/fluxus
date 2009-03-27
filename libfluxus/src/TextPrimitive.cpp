@@ -81,10 +81,10 @@ void TextPrimitive::SetText(const string &s, float Width, float Height, float Zo
 		min.x+=Zoom;
 		max.x-=Zoom;
 		
-		AddVertex(dVertex(dVector(x,y,0),Normal,min.x,min.y));
-		AddVertex(dVertex(dVector(x+w,y,0),Normal,max.x,min.y));
-		AddVertex(dVertex(dVector(x+w,y+h,0),Normal,max.x,max.y));
-		AddVertex(dVertex(dVector(x,y+h,0),Normal,min.x,max.y));
+		AddVertex(dVertex(dVector(x,y,0),Normal,min.x,1-min.y));
+		AddVertex(dVertex(dVector(x+w,y,0),Normal,max.x,1-min.y));
+		AddVertex(dVertex(dVector(x+w,y+h,0),Normal,max.x,1-max.y));
+		AddVertex(dVertex(dVector(x,y+h,0),Normal,min.x,1-max.y));
 		if (m_WrapChars) wrapcount++;
 		
 		if (s[n]=='\n' || (m_WrapChars && wrapcount>m_WrapChars))

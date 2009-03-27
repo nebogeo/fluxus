@@ -33,7 +33,7 @@
   (osc-source "4444")
   (osc-send "/setclock" "" '())
   (searchpath nm-searchpath)
-  (add-frame-hook go-flux))
+  (add-frame-hook! 1 go-flux))
 
 ;------------------------------
 ; infrastructure

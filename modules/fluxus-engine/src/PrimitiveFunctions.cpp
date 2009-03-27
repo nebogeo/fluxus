@@ -725,6 +725,39 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// locator-bounding-radius size-number
+// Returns: void
+// Description:
+// Sets the bounding box radius for the locator
+// Example:
+// (define mylocator (build-locator))
+// (with-primitive mylocator
+//     (locator-bounding-radius 23.4))
+// EndFunctionDoc
+
+Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
+{	
+	DECL_ARGV();
+	ArgCheck("locator-bounding-radius", "i", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		LocatorPrimitive *lp = dynamic_cast<LocatorPrimitive *>(Grabbed);
+		if (lp)
+		{
+			lp->SetBoundingBoxRadius(FloatFromScheme(argv[0]));
+    		MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	
+	Trace::Stream<<"pixels-upload can only be called while a pixelprimitive is grabbed"<<endl;
+    MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // load-primitive 
 // Returns: primitiveid-number
 // Description:
@@ -2373,6 +2406,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-nurbs-plane", scheme_make_prim_w_arity(build_nurbs_plane, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
+	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
 	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
 	scheme_add_global("build-extruded-type", scheme_make_prim_w_arity(build_extruded_type, "build-extruded-type", 3, 3), env);
