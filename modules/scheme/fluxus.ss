@@ -18,6 +18,7 @@
 		 fluxus-016/scratchpad
 		 fluxus-016/maths
 		 fluxus-016/testing
+		 fluxus-016/tasks
 		 (only-in srfi/13 string-pad))
 		 
 (provide 
@@ -35,4 +36,5 @@
  (all-from-out fluxus-016/pixels-tools)  
  (all-from-out fluxus-016/scratchpad)
  (all-from-out fluxus-016/maths)
- (all-from-out fluxus-016/testing))
+ (all-from-out fluxus-016/testing)
+ (all-from-out fluxus-016/tasks))

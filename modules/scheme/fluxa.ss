@@ -10,13 +10,14 @@
 #lang scheme/base
 
 (require fluxus-016/scratchpad 
+	     fluxus-016/tasks 
 	     "fluxus-osc.ss" 
 	     "fluxus-engine.ss" 
 	      scheme/list)
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug at)
+ crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug)
 
 (define time-offset 0.0) 
 (define sync-offset 0.01)
@@ -33,7 +34,7 @@
   (osc-source "4444")
   (osc-send "/setclock" "" '())
   (searchpath nm-searchpath)
-  (add-frame-hook! 1 go-flux))
+  (spawn-task go-flux 'fluxa-update-task))
 
 ;------------------------------
 ; infrastructure
@@ -301,11 +302,13 @@
   (operator ECHO (list in delaytime feedback)))
 
 
-(define (play time node)
+(define (play time node (f '()))
   (let ((time (time->timestamp time)))
     (osc-send "/play" "iii" (list (vector-ref time 0) 
                                   (vector-ref time 1) 
-                                  (node-id node)))))
+                                  (node-id node))))
+  (when (not (null? f))
+   	(spawn-timed-task time f)))
 
 (define (play-now node)
   (osc-send "/play" "iii" (list 0 0 (node-id node))))
@@ -400,28 +403,6 @@
   (lambda (time clock)
     0))
 
-(define (time-now)
-  (/ (current-inexact-milliseconds) 1000))
-
-;---------------------------------------
-; timed callbacks
-
-(define callbacks '())
-(define-struct callback (time proc data))
-
-(define (at time proc data)
-	(set! callbacks (cons (make-callback time proc data) callbacks)))
-	
-(define (update-callbacks)
-	(set! callbacks
-		(filter
-			(lambda (callback)
-				(cond ((> (time-now) (callback-time callback))
-					((callback-proc callback) (callback-data callback))
-					#f)
-					(else #t)))
-			callbacks)))						
-
 ;---------------------------------------
 ; fluxus implementation 
 
@@ -466,8 +447,6 @@
          (set! logical-time (+ logical-time tempo))
          (set! clock (+ clock 1))
          (set! sync-clock (+ sync-clock 1))))
-
-  (update-callbacks)
     
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)	   

@@ -21,6 +21,7 @@
 		 fluxus-016/help
 		 fluxus-016/camera
 		 fluxus-016/building-blocks
+		 fluxus-016/tasks
 		 (only-in srfi/13 string-pad))
 		 
 (provide 
@@ -33,9 +34,6 @@
  fluxus-frame-callback
  override-frame-callback
  every-frame
- clear-frame-hooks!
- add-frame-hook!
- remove-frame-hook!
  clear
  start-framedump
  end-framedump
@@ -79,64 +77,7 @@
 (define-syntax every-frame
   (syntax-rules ()
     ((every-frame expr)
-     (add-frame-hook! 0 (lambda () expr)))))
-
-;---------------------------------------------------------------
-
-(define frame-hooks '())
-
-;; StartFunctionDoc-en
-;; clear-frame-hooks!
-;; Returns: void
-;; Description:
-;; Clears all the frame hooks currently set. A frame hook is a function which is called every frame.
-;; Example:
-;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
-;; (clear-frame-hooks) ; clear it again
-;; EndFunctionDoc    
-
-(define (clear-frame-hooks!)
-	(set! frame-hooks '()))
-	
-;; StartFunctionDoc-en
-;; add-frame-hook! id-number thunk
-;; Returns: void
-;; Description:
-;; Adds a new frame hook. A frame hook is a function which is called every frame, frame hook 0 
-;; is the one set by every-frame, so (every-frame (draw-cube)) is exactly the same as 
-;; (add-frame-hook! 0 (lambda () (draw-cube))). Frame hooks with id's other than zero won't be 
-;; removed by (clear), so you need to manage them yourself by using clear-frame-hooks! and
-;; remove-frame-hook.
-;; Example:
-;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
-;; (remove-frame-hook 1) ; clear it again
-;; EndFunctionDoc    
-
-(define (add-frame-hook! id hook)
-	(remove-frame-hook! id)
-	(set! frame-hooks (cons (cons id hook) frame-hooks)))
-
-;; StartFunctionDoc-en
-;; remove-frame-hook! id-number
-;; Returns: void
-;; Description:
-;; Removes a frame hook. A frame hook is a function which is called every frame.
-;; Example:
-;; (add-frame-hook! 1 (lambda () (draw-cube))) ; add a frame hook
-;; (remove-frame-hook 1) ; clear it again
-;; EndFunctionDoc    
-
-(define (remove-frame-hook! id)
-	(set! frame-hooks (filter
-	 	(lambda (hook)
-			(not (eq? (car hook) id)))
-		frame-hooks)))
-
-(define (run-frame-hooks)
-	(for-each
-		(lambda (hook)
-			((cdr hook)))
-		frame-hooks))
+	 (spawn-task (lambda () expr) 'every-frame-task))))
 
 ;---------------------------------------------------------------
 
@@ -167,7 +108,7 @@
 ;; EndFunctionDoc
 
 (define (clear)
-  (add-frame-hook! 0 (lambda () 0))
+  (rm-task 'every-frame-task)
   (clear-engine)
   (light-diffuse 0 (vector 1 1 1))
   (unlock-camera))
@@ -374,7 +315,7 @@
     (set! camera-update s))
 		
 (define (do-render)
-	 (run-frame-hooks)
+	 (run-tasks)
      (fluxus-render))
 	 
 ;-------------------------------------------------
