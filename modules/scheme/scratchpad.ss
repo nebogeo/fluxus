@@ -377,7 +377,8 @@
      (do-render)
      (when physics-debug (render-physics))
      (tick-physics)
-     (update-audio))
+     (update-audio)
+	 (update-input))
     (else
      (stereo-render)))
   (display (fluxus-error-log)))

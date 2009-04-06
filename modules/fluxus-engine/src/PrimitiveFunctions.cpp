@@ -84,7 +84,7 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}
 	Prim->Resize(size);
 	MZ_GC_UNREG(); 
@@ -136,7 +136,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	PolyPrimitive *Prim = new PolyPrimitive(type);
 	Prim->Resize(size);
@@ -173,7 +173,7 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-sphere: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}		
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(SphPrim, 1, x, y);
@@ -211,7 +211,7 @@ Scheme_Object *build_torus(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-torus: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *Prim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), x, y);
@@ -272,7 +272,7 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-plane: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);	
     MakePlane(PlanePrim,x,y);
@@ -309,7 +309,7 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-cylinder: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(CylPrim, 1, 1, x, y);
@@ -356,7 +356,7 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-ribbon: size is less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	RibbonPrimitive *Prim = new RibbonPrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
@@ -600,7 +600,7 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs-sphere: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
     MakeNURBSSphere(SphPrim, 1, x, y);
@@ -636,7 +636,7 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs-plane: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, x, y);
@@ -684,7 +684,7 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-particles: size less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	ParticlePrimitive *Prim = new ParticlePrimitive;
 	for (int i=0; i<size; i++)
@@ -890,7 +890,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-pixels: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	PixelPrimitive *Prim = new PixelPrimitive(x,y);
 	MZ_GC_UNREG(); 
@@ -1188,7 +1188,7 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-blobby: size less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	
 	dVector dim;

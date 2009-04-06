@@ -201,7 +201,11 @@ void Fluxa::ProcessCommands()
 		}
 		else if (name=="/addtoqueue")
 		{
-			SampleStore::Get()->AddToQueue(cmd.GetInt(0), cmd.GetString(1));
+			char *filename = cmd.GetString(1);
+			if (filename!=NULL)
+			{
+				SampleStore::Get()->AddToQueue(cmd.GetInt(0), filename);
+			}
 		}
 		else if (name=="/loadqueue")
 		{

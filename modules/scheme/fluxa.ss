@@ -17,7 +17,7 @@
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug)
+ crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset)
 
 (define time-offset 0.0) 
 (define sync-offset 0.01)
@@ -413,6 +413,10 @@
 (define sync-tempo 0.5)
 (define sync-clock 0)
 (define bpb 4)
+(define global-offset 0)
+
+(define (set-global-offset s)
+	(set! global-offset s))
 
 ; figures out the offset to the nearest tick    
 (define (calc-offset timenow synctime tick)
@@ -433,7 +437,7 @@
          (let* ((sync-time (+ sync-offset (timestamp->time (vector (osc 0) (osc 1)))))
                 (offset (calc-offset logical-time sync-time sync-tempo)))
            (printf "time offset: ~a~n" offset)
-           (set! logical-time (+ logical-time offset))
+           (set! logical-time (+ logical-time offset global-offset))
            (set! sync-clock 0))))
   
   (cond ((> (- (time-now) logical-time) 3)
