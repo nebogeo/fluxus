@@ -272,7 +272,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         frameworks = [ '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
         env.Alias('app', env.MakeBundle('Fluxa.app',
-                                        'fluxa/fluxa-0.16',
+                                        'fluxa/fluxa',
                                         'key',
                                         'macos/fluxa-Info.plist',
                                         dylibs = dylibs,
