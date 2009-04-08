@@ -81,6 +81,11 @@ the following line to the .bash_profile file in your home directory:
 
 PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.1.4/bin/
 
+Also add this line to .bash_profile, which is necessary for Fluxus to
+find the PLT frameworks:
+
+export DYLD_FRAMEWORK_PATH=/Applications/PLT\ Scheme\ v4.1.4/lib/
+
 You might need to change the PLT Scheme version number according to
 the binary package you have installed.
 

@@ -153,7 +153,7 @@ elif env['PLATFORM'] == 'darwin':
         if not GetOption('app'):
             LibList += [["jack", "jack/jack.h"]]
 
-        env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MzScheme'],
+        env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MrEd'],
                 FRAMEWORKPATH = [PLTLib])
 
 ################################################################################
@@ -231,9 +231,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         TOOL_BUNDLE(env)
         # We add frameworks after configuration bit so that testing is faster.
         # FIXME: check if Jackmp is available if making an app
-        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MzScheme Jackmp"))
+        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd Jackmp"))
         # add dynamic libs
-        frameworks = [PLTLib + '/PLT_MzScheme.framework',
+        frameworks = [PLTLib + '/PLT_MrEd.framework',
                      '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
 
