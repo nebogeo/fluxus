@@ -146,7 +146,7 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 	unsigned int stride=w*numchannels;
 	{
 		png_bytep *aprow = (png_bytep*) malloc(h * sizeof(png_bytep));
-		for (i = 0; i < h; ++i) aprow[i] = data + stride * i;
+		for (i = 0; i < h; ++i) aprow[i] = data + stride * (h - 1 - i);	// flip Y for opengl
 		png_write_image (ppng, aprow);
 		free(aprow);
 	}
