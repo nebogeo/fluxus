@@ -13,8 +13,13 @@ PLTPrefix = pipe.read()[:-5]
 pipe.close()
 
 # copy plt collects path manually
-print 'copying plt collects path...'
-os.system('cp -r "%s"* Fluxus.app/Contents/Resources/collects/' % (PLTPrefix + '/collects/'))
+print 'copying required plt modules...'
+for m in ['compiler', 'config', 'defaults', 'ffi', 'frtime', \
+		  'lang', 'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
+		  'syntax', 'xml']:
+	print '\t', m
+	os.system('cp -r "%s" Fluxus.app/Contents/Resources/collects/%s' %
+		(PLTPrefix + '/collects/' + m, m))
 
 # scheme modules don't get installed for some reason
 print 'copying fluxus collects path...'
