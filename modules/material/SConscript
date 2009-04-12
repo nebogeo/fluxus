@@ -38,6 +38,25 @@ Textures =   ["textures/gradient.png",
               "textures/transp.png",
               "textures/lights.png"]
 
+TxtsInvaders = ["textures/invaders/barricade.png",
+			  "textures/invaders/invader00.png",
+			  "textures/invaders/invader01.png",
+			  "textures/invaders/invader10.png",
+			  "textures/invaders/invader11.png",
+			  "textures/invaders/invader20.png",
+			  "textures/invaders/invader21.png",
+			  "textures/invaders/invaderxx.png",
+			  "textures/invaders/missile00.png",
+			  "textures/invaders/missile01.png",
+			  "textures/invaders/missile02.png",
+			  "textures/invaders/missile10.png",
+			  "textures/invaders/missile11.png",
+			  "textures/invaders/missile12.png",
+			  "textures/invaders/missile20.png",
+			  "textures/invaders/ship00.png",
+			  "textures/invaders/ship01.png",
+			  "textures/invaders/ship02.png"]
+
 Meshes =      ["meshes/bot.obj", 
                "meshes/alien.obj",
                "meshes/rocket.obj",
@@ -49,10 +68,13 @@ Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
 
 InstallShaders = DataInstall+"/material/shaders"
 InstallTextures = DataInstall+"/material/textures"
+InstallTxtsInvaders = DataInstall+"/material/textures/invaders"
 InstallMeshes = DataInstall+"/material/meshes"
 InstallFonts = DataInstall+"/material/fonts"
 
 env.Install(InstallShaders, Shaders)
 env.Install(InstallTextures, Textures)
+env.Install(InstallTxtsInvaders, TxtsInvaders)
 env.Install(InstallMeshes, Meshes)
 env.Install(InstallFonts, Fonts)
+
