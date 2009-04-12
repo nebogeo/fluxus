@@ -315,7 +315,7 @@
     (set! camera-update s))
 		
 (define (do-render)
-	 (run-tasks)
+	 (with-state (run-tasks))
      (fluxus-render))
 	 
 ;-------------------------------------------------
