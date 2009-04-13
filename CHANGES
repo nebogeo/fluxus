@@ -22,6 +22,9 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * F4 execute s expr
 * added stippled lines, (hint-wire-stippled), (line-pattern)
 * added (set-cursor)
+* new example game, fluxus invaders
+* colour support for NURBS primitives
+* OSX application
 
 0.15
 

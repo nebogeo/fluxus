@@ -30,6 +30,7 @@ m_Stride(sizeof(dVector)/sizeof(float))
 	AddData("p",new TypedPData<dVector>);
 	AddData("t",new TypedPData<dVector>);
 	AddData("n",new TypedPData<dVector>);
+	AddData("c",new TypedPData<dColour>);
 
 	// direct access for speed
 	PDataDirty();
@@ -67,6 +68,7 @@ void NURBSPrimitive::PDataDirty()
 	m_CVVec=GetDataVec<dVector>("p");
 	m_STVec=GetDataVec<dVector>("t");
 	m_NVec=GetDataVec<dVector>("n");
+	m_ColData=GetDataVec<dColour>("c");
 }
 
 void NURBSPrimitive::SetupSurface()
@@ -110,6 +112,14 @@ void NURBSPrimitive::Render()
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
 								 m_VCVCount*m_Stride,m_Stride,
 								 m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
+
+		if (m_State.Hints & HINT_VERTCOLS)
+		{
+			gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),
+					m_VKnotVec.size(),&(*m_VKnotVec.begin()),
+					m_VCVCount*m_Stride,m_Stride,
+					m_ColData->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_COLOR_4);
+		}
 
 		gluEndSurface(m_Surface);
 	}
