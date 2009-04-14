@@ -1324,10 +1324,19 @@ Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
-{    	
+{
 	DECL_ARGV();
 	ArgCheck("draw-instance", "i", argc, argv);
-    Engine::Get()->Renderer()->RenderPrimitive(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+	Primitive *p = Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (p)
+	{
+		Engine::Get()->Renderer()->RenderPrimitive(p);
+	}
+	else
+	{
+		Trace::Stream<<"draw-instance can only be called with an existing object id"<<endl;
+	}
+
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
