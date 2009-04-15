@@ -26,6 +26,7 @@ TexturePainter *TexturePainter::m_Singleton=NULL;
 
 TexturePainter::TexturePainter() 
 {
+	
 }
 
 TexturePainter::~TexturePainter()
@@ -35,20 +36,24 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-	for (int c=0; c<MAX_TEXTURES; c++)
+	if (GLEW_ARB_multitexture)
 	{
-		#ifdef ENABLE_MULTITEXTURE
-		glActiveTexture(GL_TEXTURE0+c);
-		glClientActiveTexture(GL_TEXTURE0+c);
-		#endif
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				
+		for (int c=0; c<MAX_TEXTURES; c++)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+			glClientActiveTexture(GL_TEXTURE0+c);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);		
+    		glMatrixMode(GL_TEXTURE);
+    		glLoadIdentity();
+		}
+		glClientActiveTexture(GL_TEXTURE0);
+	}
+	else
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);		
     	glMatrixMode(GL_TEXTURE);
     	glLoadIdentity();
 	}
-	#ifdef ENABLE_MULTITEXTURE
-	glClientActiveTexture(GL_TEXTURE0);
-	#endif
 }
 
 void TexturePainter::ClearCache()
@@ -298,9 +303,10 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 	
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
-		#ifdef ENABLE_MULTITEXTURE
-		glActiveTexture(GL_TEXTURE0+c);
-		#endif
+		if (GLEW_ARB_multitexture)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+		}
 				
 		if (ids[c]!=0)
 		{
@@ -334,10 +340,11 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 		}
 	}
 	
-	#ifdef ENABLE_MULTITEXTURE
-	glActiveTexture(GL_TEXTURE0);
-	#endif
-	
+	if (GLEW_ARB_multitexture)
+	{
+		glActiveTexture(GL_TEXTURE0);
+	}
+		
 	return ret;
 }
 
@@ -358,18 +365,21 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 
 void TexturePainter::DisableAll()
 {
-	#ifdef ENABLE_MULTITEXTURE
-	for (int c=0; c<MAX_TEXTURES; c++)
+	if (GLEW_ARB_multitexture)
 	{
-		glActiveTexture(GL_TEXTURE0+c);
+		for (int c=0; c<MAX_TEXTURES; c++)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
+		}
+		glClientActiveTexture(GL_TEXTURE0);
+	}
+	else
+	{
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_TEXTURE_CUBE_MAP);
 	}
-	glClientActiveTexture(GL_TEXTURE0);
-	#else
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_TEXTURE_CUBE_MAP);
-	#endif
 }
 
 void TexturePainter::Dump()

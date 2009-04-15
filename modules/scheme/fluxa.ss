@@ -4,7 +4,11 @@
 
 ;; StartSectionDoc-en
 ;; fluxa
-;; Fluxa is the fluxus audio synth
+;; Fluxa is the fluxus audio synth for livecoding, it contains quite basic atomic components which can be 
+;; used together to create more complicated sounds. It uses an experimental and fairly brutal method of graph node 
+;; garbage collection which gives it certain non-deterministic qualities. It's also been battle tested in 
+;; many a live performance. The fluxa server needs to be run and connected to jack in order for you to hear
+;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-016/fluxa).
 ;; Example:
 ;; EndSectionDoc 
 #lang scheme/base
@@ -78,6 +82,15 @@
 
 (define current-sample-id 0)
 (define samples '())
+
+;; StartFunctionDoc-en
+;; reload 
+;; Returns: void
+;; Description:
+;; Causes samples to be reloaded if you need to restart the fluxa server
+;; Example:
+;; (reload)
+;; EndFunctionDoc    
 
 (define (reload)
   (set! samples '()))
@@ -286,21 +299,74 @@
 (define (formant in cutoff resonance)
   (operator FORMANT (list in cutoff resonance)))
 
+;; StartFunctionDoc-en
+;; sample sample-filename-string frequency-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a sample playback node
+;; Example:
+;; (play-now (sample "helicopter.wav" 440))
+;; EndFunctionDoc 
+
 (define (sample filename freq)
   (operator SAMPLE (list (get-sample-id filename) freq)))
+
+;; StartFunctionDoc-en
+;; crush signal-node frequency-number-or-node bit-depth-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a crush effect node
+;; Example:
+;; (play-now (crush (sine 440) 0.4 8))
+;; EndFunctionDoc 
 
 (define (crush in freq bits)
   (operator CRUSH (list in bits freq)))
 
+;; StartFunctionDoc-en
+;; distort signal-node amount-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a distortion effect node
+;; Example:
+;; (play-now (distort (sine 440) 0.9))
+;; EndFunctionDoc 
+
 (define (distort in amount)
   (operator DISTORT (list in amount)))
+
+;; StartFunctionDoc-en
+;; klip signal-node amount-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a hard clipping distortion effect node
+;; Example:
+;; (play-now (klip (sine 440) 0.9))
+;; EndFunctionDoc 
 
 (define (klip in amount)
   (operator CLIP (list in amount)))
 
+;; StartFunctionDoc-en
+;; echo signal-node delay-time-number-or-node feedback-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a hard clipping distortion effect node
+;; Example:
+;; (play-now (klip (sine 440) 0.9))
+;; EndFunctionDoc 
+
 (define (echo in delaytime feedback)
   (operator ECHO (list in delaytime feedback)))
 
+;; StartFunctionDoc-en
+;; play time node
+;; Returns: void
+;; Description:
+;; Plays a supplied node at the specified time.
+;; Example:
+;; (play (+ (time-now) 10) (mul (adsr 0 0.1 0 0) (sine 440)))
+;; EndFunctionDoc 
 
 (define (play time node (f '()))
   (let ((time (time->timestamp time)))
@@ -309,6 +375,15 @@
                                   (node-id node))))
   (when (not (null? f))
    	(spawn-timed-task time f)))
+	
+;; StartFunctionDoc-en
+;; play-now node
+;; Returns: void
+;; Description:
+;; Plays a supplied node as soon as possible
+;; Example:
+;; (play-now (mul (adsr 0 0.1 0 0) (sine 440)))
+;; EndFunctionDoc 
 
 (define (play-now node)
   (osc-send "/play" "iii" (list 0 0 (node-id node))))
@@ -316,29 +391,112 @@
 ;------------------------------
 ; global controls
 
+;; StartFunctionDoc-en
+;; fluxa-debug true-or-false
+;; Returns: void
+;; Description:
+;; Turns on or off fluxa debugging, the server will print information out to stdout
+;; Example:
+;; (fluxa-debug #t)
+;; EndFunctionDoc 
+
 (define (fluxa-debug v)
   (osc-send "/debug" "i" (list v)))
+
+;; StartFunctionDoc-en
+;; volume amount-number
+;; Returns: void
+;; Description:
+;; Sets the global volume
+;; Example:
+;; (volume 2.5)
+;; EndFunctionDoc 
 
 (define (volume v)
   (osc-send "/globalvolume" "f" (list v)))
 
+;; StartFunctionDoc-en
+;; pan pan-number
+;; Returns: void
+;; Description:
+;; Sets the global pan where -1 is left and 1 is right (probably)
+;; Example:
+;; (pan 0)
+;; EndFunctionDoc 
+
 (define (pan v)
   (osc-send "/pan" "f" (list v)))
+
+;; StartFunctionDoc-en
+;; max-synths number
+;; Returns: void
+;; Description:
+;; Sets the maximum amount of synth graphs fluxa will run at the same time. This is a processor usage safeguard,
+;; when the count is exceeded the oldest synth graph will be stopped so it's nodes can be recycled. 
+;; The default count is 10.
+;; Example:
+;; (max-synths 10)
+;; EndFunctionDoc 
 
 (define (max-synths s)
   (osc-send "/maxsynths" "i" (list s)))
 
+;; StartFunctionDoc-en
+;; searchpath path-string
+;; Returns: void
+;; Description:
+;; Add a searchpath to use when looking for samples
+;; Example:
+;; (searchpath "/path/to/my/samples/)
+;; EndFunctionDoc 
+
 (define (searchpath path)
   (osc-send "/addsearchpath" "s" (list path)))
+
+;; StartFunctionDoc-en
+;; eq bass-number middle-number high-number
+;; Returns: void
+;; Description:
+;; Sets a simple global equaliser. This is more as a last resort when performing without a mixer.
+;; Example:
+;; (eq 2 1 0.5) ; bass boost
+;; EndFunctionDoc 
 
 (define (eq l m h)
   (osc-send "/eq" "fff" (list l m h)))
 
+;; StartFunctionDoc-en
+;; comp attack-number release-number threshold-number slope-number
+;; Returns: void
+;; Description:
+;; A global compressor. Not sure if this works yet.
+;; Example:
+;; (comp 0.1 0.1 0.5 3)
+;; EndFunctionDoc 
+
 (define (comp a r t s)
   (osc-send "/comp" "ffff" (list a r t s)))
 
+;; StartFunctionDoc-en
+;; note note-number
+;; Returns: frequency-number
+;; Description:
+;; Returns the frequency for the supplied note. Fluxa uses just intonation by default.
+;; Example:
+;; (comp 0.1 0.1 0.5 3)
+;; EndFunctionDoc 
+
 (define (note n)
   (list-ref scale-lut (modulo n (length scale-lut))))
+
+;; StartFunctionDoc-en
+;; reset
+;; Returns: void
+;; Description:
+;; Resets the server.
+;; Example:
+;; (reset)
+;; EndFunctionDoc 
 
 (define (reset)
   (osc-send "/reset" "" '()))
@@ -378,6 +536,22 @@
 ;------------------------------
 ; sequencing forms
 
+;; StartFunctionDoc-en
+;; clock-map
+;; Returns: void
+;; Description:
+;; A way of using lists as sequences. The lists can be of differing length, leading to polyrhythms.
+;; Example:
+;; (seq (lambda (time clock)
+;;		(clock-map
+;;			(lambda (nt cutoff)
+;;				(play time (mul (adsr 0 0.1 0 0)
+;;					(mooglp (saw (note nt))	cutoff 0.4))))
+;;			clock
+;;			(list 39 28 3)
+;;			(list 0.1 0.1 0.4 0.9))))
+;; EndFunctionDoc 
+
 (define-syntax clock-map
   (syntax-rules ()
     ((_ proc clock data ...)
@@ -393,8 +567,32 @@
              (modulo (quotient clock div) 
                      (length proclist)))))
 
+;; StartFunctionDoc-en
+;; zmod clock-number count-number
+;; Returns: true-or-false
+;; Description:
+;; Just shorthand for (zero? (modulo clock-number count-number)), as it can be used a lot.
+;; Example:
+;; (seq (lambda (time clock)
+;;     (when (zmod clock 4) ; play the note every 4th beat
+;;         (play time (mul (adsr 0 0.1 0 0) (sine (note nt)))))))
+;; EndFunctionDoc 
+
 (define (zmod clock n)
   (zero? (modulo clock n)))
+
+;; StartFunctionDoc-en
+;; seq proc
+;; Returns: void
+;; Description:
+;; Sets the global fluxa sequence procedure, which will be called automatically 
+;; in order to create new events. seq can be repeatedly called to update the procedure
+;; as in livecoding.
+;; Example:
+;; (seq (lambda (time clock)
+;;     (when (zmod clock 4) ; play the note every 4th beat
+;;         (play time (mul (adsr 0 0.1 0 0) (sine (note nt)))))))
+;; EndFunctionDoc 
 
 (define (seq p)
   (set! proc p))

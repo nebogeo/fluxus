@@ -55,12 +55,7 @@ namespace Fluxus
 #define HINT_CULL_CCW       0x2000
 #define HINT_WIRE_STIPPLED  0x4002
 
-///\todo use glew for this
-#ifdef ENABLE_MULTITEXTURE
 #define MAX_TEXTURES  8
-#else
-#define MAX_TEXTURES  1
-#endif
 
 ///////////////////////////////////////
 /// The fluxus graphics state
