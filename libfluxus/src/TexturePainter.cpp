@@ -26,9 +26,8 @@ using namespace Fluxus;
 
 TexturePainter *TexturePainter::m_Singleton=NULL;
 
-TexturePainter::TexturePainter() 
+TexturePainter::TexturePainter()
 {
-	
 }
 
 TexturePainter::~TexturePainter()
@@ -38,23 +37,23 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-	if (GLEW_ARB_multitexture)
+	if (GLEW_ARB_multitexture && (glActiveTexture != NULL))
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
 		{
 			glActiveTexture(GL_TEXTURE0+c);
 			glClientActiveTexture(GL_TEXTURE0+c);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);		
-    		glMatrixMode(GL_TEXTURE);
-    		glLoadIdentity();
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
 		}
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	else
 	{
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);		
-    	glMatrixMode(GL_TEXTURE);
-    	glLoadIdentity();
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
 	}
 }
 
@@ -367,7 +366,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 
 void TexturePainter::DisableAll()
 {
-	if (GLEW_ARB_multitexture)
+	if (GLEW_ARB_multitexture && (glActiveTexture != NULL))
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
 		{
