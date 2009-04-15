@@ -290,6 +290,7 @@ void Fluxus::MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int
 		{
 			p->AddCV(dVector(sin(i*radpersegment)*radius*scale,height,cos(i*radpersegment)*radius*scale));
 			p->AddN(dVector(sin(i*radpersegment)*scale,height,cos(i*radpersegment)*scale));
+			p->AddColour(dColour(1,1,1));
 			p->AddTex(dVector(i/(float)rsegments,j/(float)hsegments,0));
 		}
 	}
@@ -299,14 +300,14 @@ void Fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
 {
 	p->Init(3,3,usegments+1,vsegments+1);
 
-	// wangle the knots so the surface reaches 
+	// wangle the knots so the surface reaches
 	// to the edge of the vertex grid
 	p->AddUKnot(0);
 	p->AddUKnot(0);
 	for (int n=0; n<usegments; n++) p->AddUKnot(n/((float)usegments-1.0f));
 	p->AddUKnot(1);
 	p->AddUKnot(1);
-	
+
 	p->AddVKnot(0);
 	p->AddVKnot(0);
 	for (int n=0; n<vsegments; n++) p->AddVKnot(n/((float)vsegments-1.0f));
@@ -319,6 +320,7 @@ void Fluxus::MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments)
 		{
 			p->AddCV(dVector(i/(float)usegments-0.5,j/(float)vsegments-0.5,0));
 			p->AddN(dVector(0,0,1));
+			p->AddColour(dColour(1,1,1));
 			p->AddTex(dVector(i/(float)usegments,j/(float)vsegments,0));
 		}
 	}
