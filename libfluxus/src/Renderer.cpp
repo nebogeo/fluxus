@@ -124,6 +124,10 @@ void Renderer::Render()
 		// need to clear this even if we aren't using shadows
 		m_ShadowVolumeGen.Clear();
 		
+		// if we are using multiple cameras, the renderer 
+		// needs to be reinitialised for each one
+		if (m_CameraVec.size()>1) Reinitialise();
+		
 		if (m_ShadowLight!=0)
 		{		
 			RenderStencilShadows(cam);
@@ -226,7 +230,7 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
     if (!m_Initialised || PickMode || Cam.NeedsInit())
     {
 		GLSLShader::Init();
-    
+
 		glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
  			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
 		

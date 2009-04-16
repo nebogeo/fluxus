@@ -39,7 +39,7 @@ public:
 	/// Whether the camera needs the renderer to
 	/// reinitialise itself - due to the camera
 	/// having changed
-	bool NeedsInit() { return !m_Initialised; }
+	bool NeedsInit();
 	
 	/// Apply the projection matrix to the stack
 	void DoProjection();

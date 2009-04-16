@@ -24,10 +24,6 @@ m_Initialised(false),
 m_Ortho(false),
 m_CameraAttached(0),
 m_CameraLag(0),
-/*m_Up(-1),
-m_Down(1),
-m_Left(-0.75),
-m_Right(0.75),*/
 m_Left(-1),
 m_Right(1),
 m_Bottom(-0.75),
@@ -84,4 +80,17 @@ dMatrix Camera::GetProjection()
 	dMatrix Projection;
 	glGetFloatv(GL_PROJECTION_MATRIX,Projection.arr());
 	return Projection;
+}
+
+bool Camera::NeedsInit() 
+{ 
+	if (m_Initialised)
+	{
+		return false;
+	}
+	else
+	{
+		m_Initialised=true;
+		return true;
+	} 
 }
