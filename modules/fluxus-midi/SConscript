@@ -24,7 +24,7 @@ if env['PLATFORM'] == 'posix':
 elif env['PLATFORM'] == 'darwin':
 	Libs = []
 	env.Append(CCFLAGS = ' -D__MACOSX_CORE__')
-	Frameworks = ['CoreMidi', 'CoreAudio', 'CoreFoundation', 'PLT_MrEd']
+	Frameworks = ['CoreMIDI', 'CoreAudio', 'CoreFoundation', 'PLT_MrEd']
 
 env.SharedLibrary(source = Source, 
 				  target = Target,
