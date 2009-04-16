@@ -71,6 +71,7 @@ m_Delta(0)
 {
 	Clear();
 	
+	
 	// stop valgrind complaining
 	m_LastTime.tv_sec=0;
 	m_LastTime.tv_usec=0;
@@ -224,7 +225,9 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	Camera &Cam = m_CameraVec[CamIndex];
     if (!m_Initialised || PickMode || Cam.NeedsInit())
     {
-    	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
+		GLSLShader::Init();
+    
+		glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
  			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
 		
     	glMatrixMode (GL_PROJECTION);
