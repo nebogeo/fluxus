@@ -26,11 +26,13 @@ using namespace Fluxus;
 
 TexturePainter *TexturePainter::m_Singleton=NULL;
 
-TexturePainter::TexturePainter()
+TexturePainter::TexturePainter() :
+m_MultitexturingEnabled(true)
 {
-	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL))
+	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL) || (glClientActiveTexture == NULL))
 	{
 		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
+		m_MultitexturingEnabled=false;
 	}
 }
 
@@ -41,7 +43,7 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-	if (GLEW_ARB_multitexture && (glActiveTexture != NULL))
+	if (m_MultitexturingEnabled)
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
 		{
@@ -308,7 +310,7 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 	
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
-		if (GLEW_ARB_multitexture)
+		if (m_MultitexturingEnabled)
 		{
 			glActiveTexture(GL_TEXTURE0+c);
 		}
@@ -345,7 +347,7 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 		}
 	}
 	
-	if (GLEW_ARB_multitexture)
+	if (m_MultitexturingEnabled)
 	{
 		glActiveTexture(GL_TEXTURE0);
 	}
@@ -370,7 +372,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 
 void TexturePainter::DisableAll()
 {
-	if (GLEW_ARB_multitexture && (glActiveTexture != NULL))
+	if (m_MultitexturingEnabled)
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
 		{

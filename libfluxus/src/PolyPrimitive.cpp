@@ -19,6 +19,7 @@
 #include "Renderer.h"
 #include "PolyPrimitive.h"
 #include "State.h"
+#include "TexturePainter.h"
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
@@ -134,7 +135,7 @@ void PolyPrimitive::Render()
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 	
-	if (GLEW_ARB_multitexture)
+	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
 		// possibly a candidate to put in Primitive:PreRender()
 		for (int n=1; n<MAX_TEXTURES; n++)
