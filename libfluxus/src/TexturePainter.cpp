@@ -28,6 +28,10 @@ TexturePainter *TexturePainter::m_Singleton=NULL;
 
 TexturePainter::TexturePainter()
 {
+	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL))
+	{
+		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
+	}
 }
 
 TexturePainter::~TexturePainter()
