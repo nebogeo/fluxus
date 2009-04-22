@@ -384,6 +384,8 @@
 ;; Fabien Pelisson
 ;; Jeff Rose
 ;; James Tittle
+;; Scott Watson
+;; Evan Raskob
 ;;
 ;; "Computers are useless. They can only give you answers". 
 ;;     Pablo Picasso (1881 - 1973).
@@ -409,6 +411,8 @@
 ;; Fabien Pelisson
 ;; Jeff Rose
 ;; James Tittle
+;; Scott Watson
+;; Evan Raskob
 ;;
 ;; "Computadores são inúteis. Eles só podem te dar respostas". 
 ;;     Pablo Picasso (1881 - 1973).

@@ -54,10 +54,6 @@ Build options to scons are:
 X11=1
 Build with the X11 libraries - rather than Xorg which is default.			 
 
-MULTITEXTURE=1
-Multitexturing is bad tempered on some drivers - set this to enable the 
-multitexturing code.		 
-
 GLSL=0
 Set this to disable GLSL hardware shaders.
 

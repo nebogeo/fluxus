@@ -2,6 +2,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 0.16
 
+* fixed autodetect of GLSL and multitexturing 
 * frame-hooks
 * fixed orientations and texture coordinates to be more consistent
 * particle depth sorting
