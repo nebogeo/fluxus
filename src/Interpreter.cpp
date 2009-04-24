@@ -96,21 +96,24 @@ void Interpreter::SetRepl(Repl *s)
 	m_Repl=s; 
 }
 
-void fill_from_port(Scheme_Object* port, char *dest, long size)
+int fill_from_port(Scheme_Object* port, char *dest, long size)
 {
 	MZ_GC_DECL_REG(2);
-    MZ_GC_VAR_IN_REG(0, port);
-    MZ_GC_VAR_IN_REG(1, dest);
-    MZ_GC_REG();
-	
-	long pos=0;	
+	MZ_GC_VAR_IN_REG(0, port);
+	MZ_GC_VAR_IN_REG(1, dest);
+	MZ_GC_REG();
+
+	long pos=0;
 	while (scheme_char_ready(port) && pos<size)
 	{
 		dest[pos++]=scheme_getc(port);
 	}
 	dest[pos]=0;
-		
+
+	// check if there are more characters available
+	int r=scheme_char_ready(port);
 	MZ_GC_UNREG();
+	return r;
 }
 
 string Interpreter::SetupLanguage(const string &str)
@@ -120,36 +123,40 @@ string Interpreter::SetupLanguage(const string &str)
 }
 
 bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
-{	
+{
 	char msg[LOG_SIZE];
 	mz_jmp_buf * volatile save = NULL, fresh;
-	
+
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, msg);
-    MZ_GC_REG();
-		
+	MZ_GC_REG();
+
 	string code = SetupLanguage(str);
-	
+
 	save = scheme_current_thread->error_buf;
-    scheme_current_thread->error_buf = &fresh;
-	
-    if (scheme_setjmp(scheme_error_buf)) 
+	scheme_current_thread->error_buf = &fresh;
+
+	if (scheme_setjmp(scheme_error_buf))
 	{
 		scheme_current_thread->error_buf = save;
-		if (m_ErrReadPort!=NULL) 
+		if (m_ErrReadPort!=NULL)
 		{
-			fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
-			if (strlen(msg)>0) 
-			  {
-			    if (m_Repl==NULL) cerr<<msg<<endl;
-			    else m_Repl->Print(string(msg));
-			  }
+			int char_available;
+			do
+			{
+				char_available = fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
+				if (strlen(msg)>0)
+				{
+					if (m_Repl==NULL) cerr<<msg<<endl;
+					else m_Repl->Print(string(msg));
+				}
+			} while (char_available);
 		}
 		if (abort) exit(-1);
 		MZ_GC_UNREG();
 		return false;
-    }  
-	else 
+	}
+	else
 	{
 		if (ret==NULL)
 		{
@@ -160,18 +167,22 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 			*ret = scheme_eval_string_all(code.c_str(), m_Scheme, 1);
 		}
 		scheme_current_thread->error_buf = save;
-    }
-		
+	}
+
 	if (m_OutReadPort!=NULL)
 	{
-		fill_from_port(m_OutReadPort, msg, LOG_SIZE);
-		if (strlen(msg)>0)
-		  {
-		    if (m_Repl==NULL) cerr<<msg<<endl;
-		    else m_Repl->Print(string(msg));
-		  }
-	}	
-	
+		int char_available;
+		do
+		{
+			char_available = fill_from_port(m_OutReadPort, msg, LOG_SIZE);
+			if (strlen(msg)>0)
+			{
+				if (m_Repl==NULL) cerr<<msg<<endl;
+				else m_Repl->Print(string(msg));
+			}
+		} while (char_available);
+	}
+
 	MZ_GC_UNREG();
 	return true;
 }
