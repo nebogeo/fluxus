@@ -13,6 +13,8 @@
  keys-down
  key-special-pressed
  keys-special-down
+ key-pressed-this-frame
+ key-special-pressed-this-frame
  mouse-x
  mouse-y
  mouse-button
@@ -24,7 +26,9 @@
  mouse-wheel)
 
 (define keys '())
+(define keys-this-frame '())
 (define special-keys '())
+(define special-keys-this-frame '())
 (define mouse (vector 0 0 #f))
 (define mouse-wheel-v 0)
 
@@ -50,13 +54,17 @@
   (set! keys '()))
 
 (define (update-input)
+	(set! keys-this-frame '())
+	(set! special-keys-this-frame '())
 	(set! mouse-wheel-v 0))
 
 (define (register-down key button special state x y mod)
   (when (not (or (number? key) (eq? key -1))) ; ordinary keypress
-    (set! keys (set-add key keys)))
+    (set! keys (set-add key keys))
+	(set! keys-this-frame (set-add key keys-this-frame)))
   (when (not (= special -1)) ; special keypress
-    (set! special-keys (set-add special special-keys)))
+    (set! special-keys (set-add special special-keys))
+	(set! special-keys-this-frame (set-add special special-keys-this-frame)))
   (cond  ; mouse
     ((and (eq? key 0) (eq? special -1)) 
 	 (when (eq? button 3) (set! mouse-wheel-v 1))
@@ -126,6 +134,30 @@
 (define (keys-special-down)
   special-keys)
 
+;; StartFunctionDoc-en
+;; key-pressed-this-frame key-string
+;; Returns: boolean 
+;; Description:
+;; Returns true if the specified key was first pressed down this frame.
+;; Example:
+;; (when (key-pressed-this-frame "q") (display "q pressed!"))
+;; EndFunctionDoc	
+
+(define (key-pressed-this-frame s)
+  (set-contains (car (string->list s)) keys-this-frame))
+
+;; StartFunctionDoc-en
+;; key-special-pressed-this-frame key-string
+;; Returns: boolean 
+;; Description:
+;; Returns true if the specified special key was first pressed down this frame.
+;; Example:
+;; (when (key-special-pressed-this-frame "q") (display "q pressed!"))
+;; EndFunctionDoc	
+
+(define (key-special-pressed-this-frame s)
+  (set-contains s special-keys-this-frame))
+  
 ;; StartFunctionDoc-en
 ;; mouse-x
 ;; Returns: coord-number 
