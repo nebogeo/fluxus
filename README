@@ -94,12 +94,6 @@ To build and install, type:
 scons
 sudo scons install
 
-If you have an older graphics card (Mac mini or older MacBook model), you might
-need to build and install Fluxus with
-
-scons MULTITEXTURE=0 GLSL=0
-sudo scons MULTITEXTURE=0 GLSL=0 install
-
 
 It is also possible to build an OSX application of Fluxus.
 The application is built using JackOSX (http://www.jackosx.com/) instead of
