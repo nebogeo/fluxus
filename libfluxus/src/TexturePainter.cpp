@@ -307,14 +307,15 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
 bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 {
 	bool ret=false;
-	
-	for (int c=0; c<MAX_TEXTURES; c++)
+
+	int tcount = (m_MultitexturingEnabled ? MAX_TEXTURES : 1);
+	for (int c = 0; c < tcount; c++)
 	{
 		if (m_MultitexturingEnabled)
 		{
 			glActiveTexture(GL_TEXTURE0+c);
 		}
-				
+
 		if (ids[c]!=0)
 		{
 			map<unsigned int,CubeMapDesc>::iterator i=m_CubeMapMap.find(ids[c]);
@@ -327,31 +328,31 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,i->second.Negative[1]);
 				glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Z,i->second.Positive[2]);
 				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,i->second.Negative[2]);
-				
+
 				glEnable(GL_TEXTURE_CUBE_MAP);
-				ApplyState(GL_TEXTURE_CUBE_MAP,states[c],true);														
+				ApplyState(GL_TEXTURE_CUBE_MAP,states[c],true);
 			}
 			else // normal 2D texture path
 			{
 				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D,ids[c]);					
-				ApplyState(GL_TEXTURE_2D,states[c],false);				
+				glBindTexture(GL_TEXTURE_2D,ids[c]);
+				ApplyState(GL_TEXTURE_2D,states[c],false);
 			}
-			
-			ret=true;						
-    	}
+
+			ret=true;
+		}
 		else
 		{
 			glDisable(GL_TEXTURE_2D);
 			glDisable(GL_TEXTURE_CUBE_MAP);
 		}
 	}
-	
+
 	if (m_MultitexturingEnabled)
 	{
 		glActiveTexture(GL_TEXTURE0);
 	}
-		
+
 	return ret;
 }
 
