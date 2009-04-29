@@ -58,12 +58,17 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 
 		w=png_ptr->width;
 		h=png_ptr->height;
-
+		
 		switch (png_ptr->color_type)
 		{
 			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
 			case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
-        	default : Trace::Stream<<"PNG pixel format not supported : "<<png_ptr->color_type<<endl;
+        	default : 
+			{
+				Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
+				delete[] ImageData;
+				ImageData=NULL;
+			}
         }
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
