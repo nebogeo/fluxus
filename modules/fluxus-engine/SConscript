@@ -4,12 +4,14 @@
 # This is the main PLT module for fluxus, containing all core
 # graphics functions
 
-Import("env", "BinaryModulesLocation", "MZDYN")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
 if env['PLATFORM'] == 'darwin':
 	    Target = "fluxus-engine_ss.dylib"
 else:
 		Target = "fluxus-engine_ss.so"
+
+if static_modules: Target = "fluxus-engine_ss"
 
 Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
 Install = BinaryModulesLocation
@@ -39,9 +41,14 @@ Source = Split("src/Engine.cpp \
 		src/PFuncContainer.cpp") + \
 		[MZDYN]
 		
-env.SharedLibrary(source = Source, 
+if static_modules:
+	env.StaticLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs)
+else:
+	env.SharedLibrary(source = Source, 
 				  target = Target, 
 		  		  LIBS = Libs,
 		  		  SHLIBPREFIX = "")
 						  
-env.Install(Install, Target)
+if not static_modules: env.Install(Install, Target)

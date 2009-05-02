@@ -7,7 +7,7 @@
 ;; EndSectionDoc 
 
 #lang scheme/base
-(require "fluxus-engine.ss")
+(require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (require "maths.ss")
 (provide 

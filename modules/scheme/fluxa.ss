@@ -13,10 +13,9 @@
 ;; EndSectionDoc 
 #lang scheme/base
 
-(require fluxus-016/scratchpad 
-	     fluxus-016/tasks 
-	     "fluxus-osc.ss" 
-	     "fluxus-engine.ss" 
+(require "scratchpad.ss"
+	     "tasks.ss"
+		 "fluxus-modules.ss" 
 	      scheme/list)
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp

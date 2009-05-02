@@ -16,7 +16,7 @@
 ///
 
 #ifdef STATIC_LINK
-Scheme_Object *engine_scheme_reload(Scheme_Env *env);
+Scheme_Object *osc_scheme_reload(Scheme_Env *env);
 #else
 Scheme_Object *scheme_reload(Scheme_Env *env);
 #endif

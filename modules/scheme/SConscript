@@ -8,6 +8,7 @@ Import("env", "CollectsInstall")
 
 Scripts    = ["boot.scm", 
 			  "fluxus.ss", 
+			  "fluxus-modules.ss", 
 			  "scratchpad.ss", 
 			  "help.ss",
 			  "input.ss",

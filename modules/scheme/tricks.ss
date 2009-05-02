@@ -8,7 +8,7 @@
 
 #lang scheme/base
 (require scheme/class)
-(require fluxus-016/fluxus)
+(require "fluxus.ss")
 
 (provide 
  expand

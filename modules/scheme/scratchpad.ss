@@ -14,15 +14,12 @@
 
 #lang scheme/base
 
-(require "fluxus-engine.ss"
-	     "fluxus-audio.ss"
-         "fluxus-osc.ss"
-		 fluxus-016/input
-		 fluxus-016/help
-		 fluxus-016/camera
-		 fluxus-016/building-blocks
-		 fluxus-016/tasks
-		 (only-in srfi/13 string-pad))
+(require "fluxus-modules.ss"
+		 "input.ss"
+		 "help.ss"
+		 "camera.ss"
+		 "building-blocks.ss"
+		 "tasks.ss")
 		 
 (provide 
  fluxus-auto-indent
@@ -167,12 +164,15 @@
 
 (define (end-framedump)
   (set! framedump-frame -1))
+   
+ (define (string-pad b)
+   (substring (number->string (+ b 100000)) 1 6))
 
 (define (framedump-update)
   (cond 
     ((>= framedump-frame 0)
      (let ((filename (string-append framedump-filename 
-                                    (string-pad (number->string framedump-frame) 5 #\0) 
+                                    (string-pad (number->string framedump-frame)) 
                                     "." framedump-type)))
        ;(display "saving frame: ")(display filename)(newline)
        (framedump filename)

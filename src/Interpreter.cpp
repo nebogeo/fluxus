@@ -18,6 +18,14 @@
 #include "Interpreter.h"
 #include "Repl.h"
 
+#ifdef STATIC_LINK
+#include "../modules/fluxus-engine/src/FluxusEngine.h"
+#include "../modules/fluxus-audio/src/FluxusAudio.h"
+#include "../modules/fluxus-osc/src/FluxusOSC.h"
+#include "../modules/fluxus-midi/src/FluxusMIDI.h"
+#endif
+
+// include the scheme bytecode, created by mzc in SConstruct
 #include "base.c"
 
 using namespace std;
@@ -29,6 +37,7 @@ static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
 									"(define fluxus-collects-location \"%s\") " \
 									"(define fluxus-version \"%d%d\") " \
 									"(define fluxus-data-location \"%s\") " \
+									"(define static-link \"%s\") "\
 									"(load (string-append fluxus-collects-location \"/fluxus-\" " \
 										"fluxus-version \"/boot.scm\")) ";
 
@@ -76,15 +85,43 @@ void Interpreter::Initialise()
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
 
+#ifdef STATIC_LINK
+	engine_scheme_reload(m_Scheme);
+	audio_scheme_reload(m_Scheme);
+	osc_scheme_reload(m_Scheme);
+	midi_scheme_reload(m_Scheme);
+	
+	// need the cwd to hack the collects path to 'relative'
+	char cwd[1024];
+	#ifndef __APPLE__
+	getcwd(cwd, 1024);
+	#endif
+	string LocalCollects=string(cwd)+string("/collects");	
+#endif
+
 	// load the startup script
 	char startup[1024];
-	// insert the version number
+	
+	#ifdef STATIC_LINK
+	// insert the version number etc
+	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
+		LocalCollects.c_str(),
+		LocalCollects.c_str(),
+		FLUXUS_MAJOR_VERSION,
+		FLUXUS_MINOR_VERSION,
+		cwd,
+		"#t"
+		);
+#else
+	// insert the version number etc
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
 		PLT_COLLECTS_LOCATION,
 		FLUXUS_COLLECTS_LOCATION,
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
-		DATA_LOCATION);
+		DATA_LOCATION,
+		"#f");
+#endif
 
 	Interpret(startup,NULL,true);
 

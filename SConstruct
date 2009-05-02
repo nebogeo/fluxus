@@ -96,6 +96,17 @@ if ARGUMENTS.get("STEREODEFAULT","0")=="1":
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
         env.Append(CCFLAGS=' -DACCUM_BUFFER')
 
+static_modules=0
+if ARGUMENTS.get("STATIC_MODULES","0")=="1":
+	static_modules=1
+	env.Append(CCFLAGS=' -DSTATIC_LINK')
+
+static_everything=0
+if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
+	static_everything=1
+	static_modules=1
+	env.Append(CCFLAGS=' -DSTATIC_LINK')
+
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTLib + "/mzdyn.o"
@@ -199,7 +210,20 @@ Install = BinInstall
 # need to build the bytecode for the base scheme library
 # this is the wrong place to do this
 if not GetOption('clean'):
-        os.system("mzc --c-mods src/base.c ++lib scheme/base")
+	if static_modules:
+		# in static mode, we want to embed all of plt we need
+		os.system("mzc --c-mods src/base.c \
+			++lib scheme/base  \
+			++lib scheme/base/lang/reader  \
+			++lib xml/xml \
+			++lib compiler \
+			++lib mzscheme \
+			++lib mzlib/string \
+			++lib setup   \
+			++lib config  \
+			++lib stxclass")
+	else:
+		os.system("mzc --c-mods src/base.c ++lib scheme/base")
 
 Source = ["src/GLEditor.cpp",
                 "src/GLFileDialog.cpp",
@@ -210,14 +234,62 @@ Source = ["src/GLEditor.cpp",
                 "src/PolyGlyph.cpp",
                 "src/main.cpp"]
 
-env.Program(source = Source, target = Target)
+app_env = env.Clone()
+
+# statically link all the modules
+if not GetOption('clean') and static_modules:
+		
+	# statically link in all the fluxus modules
+	# these pick up the 'libfluxus-engine_ss.a' libs
+	# rather than .so due to the 'lib' at the start
+	app_env.Append(LIBPATH = ["modules/fluxus-engine/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-osc/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-audio/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-midi/"])
+	app_env.Append(LIBPATH = ["libfluxus/"])
+	app_env.Append(LIBS = ["fluxus-engine_ss"])
+	app_env.Append(LIBS = ["fluxus-osc_ss"])
+	app_env.Append(LIBS = ["fluxus-audio_ss"])
+	app_env.Append(LIBS = ["fluxus-midi_ss"])
+	
+	if static_everything:
+		# this is all a bit fragile, due to the need to put all the 
+		# dependancies of the dynamic libraries here, in the right order
+		
+		# start off with the first options
+		linkcom = " -static-libgcc -Wl,-Bstatic -lstdc++ -ljack -lrt -lasound \
+			-lfluxus -lpthread_nonshared "
+	
+		app_env['LIBS'].remove("pthread")
+		app_env['LIBS'].remove("dl")
+	
+		# now go through the rest of the libs, removing them from 
+		# the environment at the same time
+		for i in " X11 GLEW GLU glut asound m ode fftw3 mzscheme3m png tiff \
+					jpeg freetype sndfile lo z ".split():
+			app_env['LIBS'].remove(i)
+			linkcom+="-l"+i+" "
+	
+		# add the remaining dependancies
+		app_env.Append(LINKCOM = linkcom + ' -lFLAC -logg -Wl,-Bdynamic')
+	else:
+		# statically link in mzscheme only
+		app_env['LIBS'].remove('mzscheme3m')
+		app_env.Append(LINKCOM = ' -Wl,-Bstatic -lmzscheme3m -Wl,-Bdynamic')
+		
+		# have to add the libs needed by the fluxus modules here
+		app_env.Append(LIBS = ["fluxus"])
+		app_env.Append(LIBS = ["jack"])
+		app_env.Append(LIBS = ["asound"])
+
+app_env.Program(source = Source, target = Target)
 
 ################################################################################
 # Build everything else
 # call the core library builder and the scheme modules
 
 SConscript(dirs = Split("libfluxus modules fluxa"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall"])
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 ################################################################################
 # packaging / installing

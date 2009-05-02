@@ -14,7 +14,7 @@
 ;; EndSectionDoc 
 
 #lang scheme/base
-(require "fluxus-engine.ss")
+(require "fluxus-modules.ss")
 (provide 
  with-state
  with-primitive

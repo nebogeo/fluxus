@@ -5,7 +5,7 @@
 # Sets up common stuff, and calls each module SConscript 
 
 import os 
-Import("env", "CollectsInstall", "DataInstall", "MZDYN")
+Import("env", "CollectsInstall", "DataInstall", "MZDYN", "static_modules")
 
 # run mzscheme to get (path->string (system-library-subpath))
 file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
@@ -21,6 +21,6 @@ SConscript(dirs = ["fluxus-engine",
 				"scheme",
 				"material"], 
 
-				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN"])
+				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
 
 env.Install(CollectsInstall, "../docs/helpmap.scm")
