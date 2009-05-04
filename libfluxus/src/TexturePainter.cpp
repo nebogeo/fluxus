@@ -34,6 +34,10 @@ m_MultitexturingEnabled(true)
 		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
 		m_MultitexturingEnabled=false;
 	}
+	
+	#ifdef DISABLE_MULTITEXTURING
+	m_MultitexturingEnabled=false;
+	#endif
 }
 
 TexturePainter::~TexturePainter()

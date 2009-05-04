@@ -43,6 +43,7 @@ DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
 DataInstall = DESTDIR + DataLocation
 FluxusCollectsLocation = Prefix + "/lib"
 CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
+DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
 if sys.platform == 'darwin':
         PLTCollectsLocation = PLTPrefix + "/collects/"
@@ -95,6 +96,9 @@ if ARGUMENTS.get("STEREODEFAULT","0")=="1":
 
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
         env.Append(CCFLAGS=' -DACCUM_BUFFER')
+
+if ARGUMENTS.get("MULTITEXTURING","1")=="0":
+        env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 
 static_modules=0
 if ARGUMENTS.get("STATIC_MODULES","0")=="1":
@@ -292,6 +296,58 @@ SConscript(dirs = Split("libfluxus modules fluxa"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 ################################################################################
+# documentation
+
+Docs = ["docs/fluxus-documentation.pdf",
+	"examples/allprims.scm",
+	"examples/asteroids.scm",
+	"examples/bars.scm",
+	"examples/blobbies.scm",
+	"examples/cheap-outline.scm",
+	"examples/collide-seq.scm",
+	"examples/cube-matrix.scm",
+	"examples/dancing-robots.scm",
+	"examples/flocking.scm",
+	"examples/GLSL.scm",
+	"examples/GLSL-shaderlib.scm",
+	"examples/hitchcock.scm",
+	"examples/invaders.scm",
+	"examples/l-system-obj.scm",
+	"examples/l-system.scm",
+	"examples/materials.scm",
+	"examples/midi-test.scm",
+	"examples/missile-command.scm",
+	"examples/mouse-interactive.scm",
+	"examples/multitexture.scm",
+	"examples/multi-view.scm",
+	"examples/obj-import.scm",
+	"examples/occlusion-bake.scm",
+	"examples/osc-test.scm",
+	"examples/particle-paint.scm",
+	"examples/particles.scm",
+	"examples/physics-joints.scm",
+	"examples/plenty-o-particles.scm",
+	"examples/poly-eval.scm",
+	"examples/proc-texture.scm",
+	"examples/qflux-game.scm",
+	"examples/random.scm",
+	"examples/realtime-toon.scm",
+	"examples/ribbon-prim.scm",
+	"examples/scenegraph-nav.scm",
+	"examples/select.scm",
+	"examples/shadow-phys.scm",
+	"examples/shadows.scm",
+	"examples/skinning.scm",
+	"examples/sound.scm",
+	"examples/spotlights.scm",
+	"examples/sprite-particles.scm",
+	"examples/texcoords.scm",
+	"examples/toon.scm",
+	"examples/tree.scm",
+	"examples/water-sim.scm",
+	"examples/wire.scm"]
+
+################################################################################
 # packaging / installing
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from macos.osxbundle import *
@@ -348,6 +404,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         icon_file='macos/fluxa.icns'))
 
 
+env.Install(DocsInstall, Docs)
 env.Install(Install, Target)
 env.Alias('install', [DESTDIR + Prefix, CollectsInstall])
 
