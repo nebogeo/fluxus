@@ -97,6 +97,8 @@ public:
 	void         RenderPrimitive(Primitive *Prim);
 	/// Get primitive ID from screen space
 	int          Select(unsigned int CamIndex, int x, int y, int size);
+	/// Get all primitive IDs from screen space
+	int          SelectAll(unsigned int CamIndex, int x, int y, int size, unsigned int **rIDs);
 	///@}
 	
 	///////////////////////////////////////////////////////////////////////
