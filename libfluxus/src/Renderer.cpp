@@ -463,6 +463,51 @@ int Renderer::Select(unsigned int CamIndex, int x, int y, int size)
 	return ID;
 }
 
+int Renderer::SelectAll(unsigned int CamIndex, int x, int y, int size, unsigned int **rIDs)
+{
+	static const int SELECT_SIZE=512;
+	unsigned int IDs[SELECT_SIZE];
+	static unsigned int OutputIDs[SELECT_SIZE];
+
+	memset(IDs,0,SELECT_SIZE);
+	GLuint ID=0;
+	glSelectBuffer(SELECT_SIZE,(GLuint*)IDs);
+	glRenderMode(GL_SELECT);
+	glInitNames();
+
+	m_SelectInfo.x=x;
+	m_SelectInfo.y=y;
+	m_SelectInfo.size=size;
+
+	// the problem here is that select is called mid-scene, so we have to set up for 
+	// picking mode here...
+	PreRender(CamIndex,true);
+
+	// render the scene for picking
+	m_World.Render(&m_ShadowVolumeGen,SceneGraph::SELECT);
+
+	int hits=glRenderMode(GL_RENDER);
+	unsigned int *ptr=IDs, numnames;
+	float minz,maxz,closest=1000000;
+
+	// process the hit records
+	for (int n=0; n<hits; n++)
+	{
+		numnames=*ptr;
+		ptr+=3;
+		OutputIDs[n] = *ptr; // save ID
+		for (unsigned int i=0; i<numnames; i++) *ptr++;
+	}
+
+	// ... and reset the scene back here so we can carry on afterwards as if nothing
+	// has happened...
+	m_Initialised=false;
+	PreRender(CamIndex);
+
+	*rIDs = OutputIDs;
+	return hits;
+}
+
 int Renderer::AddPrimitive(Primitive *Prim)
 {
 	Prim->SetState(GetState());

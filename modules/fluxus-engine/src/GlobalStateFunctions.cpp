@@ -1139,6 +1139,49 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// select-all screenxpos-number screenypos-number pixelssize-number
+// Returns: list of primitiveid-numbers
+// Description:
+// Looks in the region specified and returns all ids rendered there in a
+// list, or '() if none exist.
+// Example:
+// (display (select-all 10 10 2))(newline)
+// EndFunctionDoc
+
+Scheme_Object *select_all(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *vec = NULL;
+	Scheme_Object *tmp = NULL;
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, vec);
+	MZ_GC_VAR_IN_REG(1, argv);
+	MZ_GC_REG();
+
+	ArgCheck("select-all", "iii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	int s=IntFromScheme(argv[2]);
+
+	unsigned int *IDs;
+	int num = Engine::Get()->Renderer()->SelectAll(
+					Engine::Get()->GrabbedCamera(),
+					x, y, s, &IDs);
+
+	vec = scheme_make_vector(num, scheme_void);
+
+	for (int i = 0; i < num; i++)
+	{
+		tmp = scheme_make_integer_value(IDs[i]);
+		SCHEME_VEC_ELS(vec)[i] = tmp;
+	}
+
+    ret = scheme_vector_to_list(vec);
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
 // desiredfps fps-number
 // Returns: void
 // Description:
@@ -1629,6 +1672,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
 	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
+	scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
 	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
 	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
 	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
