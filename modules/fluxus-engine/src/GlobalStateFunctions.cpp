@@ -1142,7 +1142,8 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 // select-all screenxpos-number screenypos-number pixelssize-number
 // Returns: list of primitiveid-numbers
 // Description:
-// Looks in the region specified and returns all ids rendered there, or 0 if none exist.
+// Looks in the region specified and returns all ids rendered there in a
+// list, or '() if none exist.
 // Example:
 // (display (select-all 10 10 2))(newline)
 // EndFunctionDoc
