@@ -38,6 +38,7 @@ static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
 									"(define fluxus-version \"%d%d\") " \
 									"(define fluxus-data-location \"%s\") " \
 									"(define static-link \"%s\") "\
+									"(define fluxus-platform '\"%s\") "\
 									"(load (string-append fluxus-collects-location \"/fluxus-\" " \
 										"fluxus-version \"/boot.scm\")) ";
 
@@ -85,6 +86,17 @@ void Interpreter::Initialise()
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
 
+	// figure out what we are running on
+	#ifdef WIN32
+	string platform = "win32";
+	#else
+	#ifdef __APPLE__
+	string platform = "apple";
+	#else
+	string platform = "linux";
+	#endif
+	#endif
+
 #ifdef STATIC_LINK
 	engine_scheme_reload(m_Scheme);
 	audio_scheme_reload(m_Scheme);
@@ -110,7 +122,8 @@ void Interpreter::Initialise()
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
 		cwd,
-		"#t"
+		"#t",
+		platform.c_str()
 		);
 #else
 	// insert the version number etc
@@ -120,7 +133,9 @@ void Interpreter::Initialise()
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
 		DATA_LOCATION,
-		"#f");
+		"#f",
+		platform.c_str()
+		);
 #endif
 
 	Interpret(startup,NULL,true);

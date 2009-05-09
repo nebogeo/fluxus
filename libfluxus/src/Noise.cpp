@@ -64,10 +64,10 @@ float Noise::noise(float x, float y /* = 0*/, float z /* = 0 */)
 {
 	if (!inited)
 	{
-		srandom(perlin_seed);
+		srand(perlin_seed);
 		for (int i = 0; i < PERLIN_SIZE; i++)
 		{
-			perlin[i] = (float)random() / (float)RAND_MAX;
+			perlin[i] = (float)rand() / (float)RAND_MAX;
 		}
 		inited = true;
 	}

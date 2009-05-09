@@ -14,7 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <GL/glew.h>
+#include "OpenGL.h"
 
 #include "Renderer.h"
 #include "PolyPrimitive.h"
@@ -135,6 +135,7 @@ void PolyPrimitive::Render()
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 	
+	#ifndef DISABLE_MULTITEXTURE
 	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
 		// possibly a candidate to put in Primitive:PreRender()
@@ -159,6 +160,7 @@ void PolyPrimitive::Render()
 		}
 		glClientActiveTexture(GL_TEXTURE0);
 	}	
+	#endif
 	
 	if (m_State.Hints & HINT_VERTCOLS)
 	{
@@ -215,6 +217,8 @@ void PolyPrimitive::Render()
 
 
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
+
 }
 
 void PolyPrimitive::RecalculateNormals(bool smooth)

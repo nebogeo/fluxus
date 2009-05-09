@@ -72,11 +72,15 @@ private:
 
 	map<wchar_t,int> m_Cache;
 
-	static void TessError(GLenum errCode, GlyphGeometry* geo);
-	static void TessVertex(void* data, GlyphGeometry* geo);
-	static void TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);
-	static void TessBegin(GLenum type, GlyphGeometry* geo);
-	static void TessEnd(GlyphGeometry* geo);
+#ifndef WIN32 
+#define __stdcall
+#endif
+
+	static void __stdcall TessError(GLenum errCode, GlyphGeometry* geo);
+	static void __stdcall TessVertex(void* data, GlyphGeometry* geo);
+	static void __stdcall TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);
+	static void __stdcall TessBegin(GLenum type, GlyphGeometry* geo);
+	static void __stdcall TessEnd(GlyphGeometry* geo);
 
 };
 

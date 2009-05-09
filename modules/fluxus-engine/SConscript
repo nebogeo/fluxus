@@ -7,9 +7,11 @@
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
 if env['PLATFORM'] == 'darwin':
-	    Target = "fluxus-engine_ss.dylib"
+	Target = "fluxus-engine_ss.dylib"
+elif env['PLATFORM'] == 'win32':
+	Target = "fluxus-engine_ss.dll"
 else:
-		Target = "fluxus-engine_ss.so"
+	Target = "fluxus-engine_ss.so"
 
 if static_modules: Target = "fluxus-engine_ss"
 
@@ -17,6 +19,9 @@ Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
 Install = BinaryModulesLocation
 if env['PLATFORM'] != 'darwin':
 	    Libs += Split("GL GLU glut")
+
+if env['PLATFORM'] == 'win32':
+	    Libs = Split("libmzsch3m_6mqxfs fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):

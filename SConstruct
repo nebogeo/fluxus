@@ -32,6 +32,11 @@ if sys.platform == 'darwin':
 	PLTPrefix = ARGUMENTS.get('PLTPrefix', PLTBin[:-5])
 	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
 	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+elif sys.platform == 'win32':
+	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
+	PLTPrefix = ARGUMENTS.get('PLTPrefix','c:/Program Files/PLT')
+	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
+	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
 	PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
@@ -45,7 +50,7 @@ FluxusCollectsLocation = Prefix + "/lib"
 CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
 DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
-if sys.platform == 'darwin':
+if sys.platform == 'darwin' or sys.platform == 'win32':
         PLTCollectsLocation = PLTPrefix + "/collects/"
 else:
         PLTCollectsLocation = PLTLib + "/collects/"
@@ -75,10 +80,13 @@ IncludePaths = [
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
 
+if env['PLATFORM'] == 'win32':
+	IncludePaths += [ "/MinGW/include/freetype2" ]
+	LibPaths += [ "/MinGW/lib" ]
+
 if env['PLATFORM'] == 'darwin':
-        IncludePaths += ['/opt/local/include',
-                                        '/opt/local/include/freetype2']
-        LibPaths += ['/opt/local/lib']
+	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
+	LibPaths += ['/opt/local/lib']
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
@@ -115,9 +123,20 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTLib + "/mzdyn.o"
 
-if ARGUMENTS.get("3M","1")=="1":
-        env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-        MZDYN = PLTLib + "/mzdyn3m.o"
+if env['PLATFORM'] == 'win32':
+	# need to do this to get scons to link plt's mzdyn.o
+	MZDYN = PLTLib + "/gcc/mzdyn.o"
+
+	if ARGUMENTS.get("3M","1")=="1":
+		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		MZDYN = PLTLib + "/gcc/mzdyn3m.o"
+else:
+	# need to do this to get scons to link plt's mzdyn.o
+	MZDYN = PLTLib + "/mzdyn.o"
+	
+	if ARGUMENTS.get("3M","1")=="1":
+		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		MZDYN = PLTLib + "/mzdyn3m.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -139,6 +158,15 @@ LibList = [["m", "math.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
                 ["GLEW", "GL/glew.h"]]
+
+if env['PLATFORM'] == 'win32':
+	LibList = [["m", "math.h"],
+			["freetype", "ft2build.h"],
+            ["glew32", "GL/glew.h"],
+            ["glut32", "GL/glut.h"],
+            ["glu32", "GL/glu.h"],
+            ["opengl32", "GL/gl.h"],
+			["libmzsch3m_6mqxfs", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -292,8 +320,14 @@ app_env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-SConscript(dirs = Split("libfluxus modules fluxa"),
+if env['PLATFORM'] == 'win32':
+	SConscript(dirs = Split("libfluxus modules"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+
+else:
+	SConscript(dirs = Split("libfluxus modules fluxa"),
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+
 
 ################################################################################
 # documentation
@@ -403,6 +437,8 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         typecode='APPL',
                                         icon_file='macos/fluxa.icns'))
 
+if (env['PLATFORM'] == "win32"):
+	Target+=".exe"
 
 env.Install(DocsInstall, Docs)
 env.Install(Install, Target)

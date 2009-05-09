@@ -6,6 +6,18 @@ a continuous succession of changes"
 Fluxus is a small realtime render engine for linux that generates animation from 
 sound. Released under the GPL licence (see COPYING)
 
+Using fluxus
+------------
+
+See docs/fluxus-documentation.pdf, the online help and most importantly the 
+example scripts (in the examples directory) for pointers on using fluxus.
+
+Load the examples on the commandline by running "fluxus scriptname.scm" or 
+loading them from inside fluxus by pressing ctrl-l and browsing.
+
+Also, sign up to the mailing list to search the archives and ask questions: 
+http://lists.pawfal.org/listinfo.cgi/fluxus-pawfal.org
+
 Installing
 ----------
 
@@ -57,6 +69,10 @@ Build with the X11 libraries - rather than Xorg which is default.
 GLSL=0
 Set this to disable GLSL hardware shaders.
 
+MULTITEXTURE=0
+There is a fluxus bug causing crashes on some systems - try this if you
+get a crash with just (build-cube)
+
 STEREODEFAULT=1
 Use hardware stereo rendering
 
@@ -107,16 +123,16 @@ scons --app
 Please note that at the time of writing the application only works if it is
 copied to the /Applications folder.
 
+Fluxus install instructions for Windows
+---------------------------------------
 
-Using fluxus
-------------
+You need to install python, scons and MinGW, then install the win32 versions of
+the dependencies from their websites (eq ode, plt) or for lower level ones 
+like libpng, libtiff etc from here: http://gnuwin32.sourceforge.net/
+Put the libs in the C:\MinGW\lib and includes in c:\MinGW\include for everything
+except PLT scheme. You should now be able to build and install fluxus. 
 
-See docs/fluxus-documentation.txt, the online help and most importantly the 
-example scripts (in the examples directory) for pointers on using fluxus.
+It installs by default to C:\Program Files\Fluxus. You now need to add copies 
+of all the dependencies dlls in the bin directory there.
 
-Load the examples on the commandline by running "fluxus scriptname.scm" or 
-loading them from inside fluxus by pressing ctrl-l and browsing.
-
-Also, sign up to the mailing list to search the archives and ask questions: 
-http://lists.pawfal.org/listinfo.cgi/fluxus-pawfal.org
 

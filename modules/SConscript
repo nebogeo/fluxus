@@ -14,7 +14,14 @@ file.close()
 
 BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
-SConscript(dirs = ["fluxus-engine", 
+if env['PLATFORM'] == 'win32':
+	SConscript(dirs = ["fluxus-engine", 
+				"scheme",
+				"material"], 
+
+				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
+else:
+	SConscript(dirs = ["fluxus-engine", 
 				"fluxus-audio", 
 				"fluxus-osc", 
 				"fluxus-midi", 

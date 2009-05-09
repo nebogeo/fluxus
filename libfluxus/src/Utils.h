@@ -14,12 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#ifndef __APPLE__
-#include <GL/gl.h> 
-#else
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#endif 
+#include "OpenGL.h"
 #include <stdlib.h> 
 
 GLubyte *GetScreenBuffer(int x, int y, unsigned int width, unsigned int height, int super=1);

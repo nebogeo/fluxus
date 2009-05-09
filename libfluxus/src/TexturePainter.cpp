@@ -14,8 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include <GL/glew.h>
-
+#include "OpenGL.h"
 #include "State.h"
 #include "TexturePainter.h"
 #include "PNGLoader.h"
@@ -29,13 +28,13 @@ TexturePainter *TexturePainter::m_Singleton=NULL;
 TexturePainter::TexturePainter() :
 m_MultitexturingEnabled(true)
 {
+	#ifndef DISABLE_MULTITEXTURING
 	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL) || (glClientActiveTexture == NULL))
 	{
 		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
 		m_MultitexturingEnabled=false;
 	}
-	
-	#ifdef DISABLE_MULTITEXTURING
+	#else
 	m_MultitexturingEnabled=false;
 	#endif
 }
@@ -47,6 +46,7 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
+#ifndef DISABLE_MULTITEXTURING
 	if (m_MultitexturingEnabled)
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
@@ -60,6 +60,7 @@ void TexturePainter::Initialise()
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	else
+#endif
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glMatrixMode(GL_TEXTURE);
@@ -315,10 +316,12 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 	int tcount = (m_MultitexturingEnabled ? MAX_TEXTURES : 1);
 	for (int c = 0; c < tcount; c++)
 	{
+	#ifndef DISABLE_MULTITEXTURE
 		if (m_MultitexturingEnabled)
 		{
 			glActiveTexture(GL_TEXTURE0+c);
 		}
+	#endif
 
 		if (ids[c]!=0)
 		{
@@ -352,11 +355,13 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 		}
 	}
 
+	#ifndef DISABLE_MULTITEXTURE
 	if (m_MultitexturingEnabled)
 	{
 		glActiveTexture(GL_TEXTURE0);
 	}
-
+	#endif
+	
 	return ret;
 }
 
@@ -377,6 +382,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 
 void TexturePainter::DisableAll()
 {
+	#ifndef DISABLE_MULTITEXTURE
 	if (m_MultitexturingEnabled)
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)
@@ -388,6 +394,7 @@ void TexturePainter::DisableAll()
 		glClientActiveTexture(GL_TEXTURE0);
 	}
 	else
+	#endif
 	{
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_TEXTURE_CUBE_MAP);
