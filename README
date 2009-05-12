@@ -77,7 +77,7 @@ STEREODEFAULT=1
 Use hardware stereo rendering
 
 ACCUM_BUFFER=1
-Startup with an accumulation buffer (again, bad tempered on some drivers)
+Startup with an accumulation buffer (another bad tempered option on some drivers)
 
 There are more settings at the top of the SConstruct file which may need to be
 tweaked to correctly find things.
@@ -123,8 +123,8 @@ scons --app
 Please note that at the time of writing the application only works if it is
 copied to the /Applications folder.
 
-Fluxus install instructions for Windows
----------------------------------------
+Building fluxus on Windows
+--------------------------
 
 You need to install python, scons and MinGW, then install the win32 versions of
 the dependencies from their websites (eq ode, plt) or for lower level ones 
@@ -134,5 +134,26 @@ except PLT scheme. You should now be able to build and install fluxus.
 
 It installs by default to C:\Program Files\Fluxus. You now need to add copies 
 of all the dependencies dlls in the bin directory there.
+
+More advanced building commands
+-------------------------------
+
+For building fluxus for packaging or as downloadable all included games or 
+applications, there are these flags:
+
+STATIC_MODULES=1
+Build fluxus such that it doesn't require PLT installed - embeds the module binaries
+and all the scheme code required from PLT. Currently you also need to change a couple
+of lines of modules/scheme/fluxus-modules, see comments in that file for more info.
+
+STATIC_EVERYTHING=1
+Build fluxus same as STATIC_MODULES=1, but also static link as much as possible, this
+results in a binary which doesn't require any dynamic linking except to GLIBC. Not
+really good practice, but helpful for run-anywhere binaries.
+
+RELATIVE_COLLECTS=1
+Create a binary which looks for it's collects in the same directory as the binary
+resides - this means that fluxus can be installed anywhere, and can carry around
+it's dependant scheme code.
 
 

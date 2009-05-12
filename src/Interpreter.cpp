@@ -102,41 +102,50 @@ void Interpreter::Initialise()
 	audio_scheme_reload(m_Scheme);
 	osc_scheme_reload(m_Scheme);
 	midi_scheme_reload(m_Scheme);
-	
+#endif
+
+	string PLTCollects(PLT_COLLECTS_LOCATION);
+	string FluxusCollects(FLUXUS_COLLECTS_LOCATION);
+	string DataLocation(DATA_LOCATION);
+	string StaticMode("#f");
+
+#ifdef RELATIVE_COLLECTS
 	// need the cwd to hack the collects path to 'relative'
 	char cwd[1024];
-	#ifndef __APPLE__
-	getcwd(cwd, 1024);
+	
+	#ifdef __APPLE__
+		// needs implementing
+		#error 
+	#else
+	#ifdef WIN32
+		// needs implementing
+		#error
+	#else // LINUX
+		getcwd(cwd, 1024);
 	#endif
-	string LocalCollects=string(cwd)+string("/collects");	
+	#endif
+	
+	PLTCollects=string(cwd)+string("/collects");	
+	FluxusCollects=PLTCollects;
+	DataLocation=cwd;
+#endif
+
+#ifdef STATIC_LINK
+	StaticMode="#t";
 #endif
 
 	// load the startup script
 	char startup[1024];
 	
-	#ifdef STATIC_LINK
 	// insert the version number etc
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		LocalCollects.c_str(),
-		LocalCollects.c_str(),
+		PLTCollects.c_str(),
+		FluxusCollects.c_str(),
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
-		cwd,
-		"#t",
-		platform.c_str()
-		);
-#else
-	// insert the version number etc
-	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		PLT_COLLECTS_LOCATION,
-		FLUXUS_COLLECTS_LOCATION,
-		FLUXUS_MAJOR_VERSION,
-		FLUXUS_MINOR_VERSION,
-		DATA_LOCATION,
-		"#f",
-		platform.c_str()
-		);
-#endif
+		DataLocation.c_str(),
+		StaticMode.c_str(),
+		platform.c_str());
 
 	Interpret(startup,NULL,true);
 

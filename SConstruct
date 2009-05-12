@@ -108,6 +108,9 @@ if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
 if ARGUMENTS.get("MULTITEXTURING","1")=="0":
         env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 
+if ARGUMENTS.get("RELATIVE_COLLECTS","0")=="1":
+	env.Append(CCFLAGS=' -DRELATIVE_COLLECTS')
+
 static_modules=0
 if ARGUMENTS.get("STATIC_MODULES","0")=="1":
 	static_modules=1
