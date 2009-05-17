@@ -423,7 +423,7 @@
 	(cond
 		((eq? (length l) 1) (car l))
 		((eq? (length l) 2) (vsub2 (car l) (cadr l)))
-		(else (vsub2 (car l) (vsub-list (cdr l))))))
+		(else (vsub2 (car l) (vadd-list (cdr l))))))
 
 (define-syntax mmul
 	(syntax-rules ()
