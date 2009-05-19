@@ -1,0 +1,30 @@
+Source: fluxus
+Section: graphics
+Priority: optional
+Maintainer: Artem Baguinski <artm@v2.nl>
+Uploaders: Javier Candeira <javier@candeira.com>, Miriam Ruiz <little_miry@yahoo.es>
+Build-Depends: debhelper (>= 4.0.0), quilt, patchutils, scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, xlibmesa-gl-dev | x11proto-gl-dev, libglu1-xorg-dev | libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev
+Standards-Version: 3.7.3
+XS-Vcs-Bzr: http://bazaar.launchpad.net/~fluxus-maintainers/fluxus/dev
+
+Package: fluxus
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: create graphics live, interpreting audio and OSC input
+ Fluxus allows you to write Scheme scripts that create graphics live,
+ interpreting audio and OSC input as a source of animation data. Fluxus also
+ uses a fully featured physics library, which means you can script physical
+ properties into objects and simulate them in realtime.
+ .
+ The built in scheme code editor runs on top of the renderer, which means you
+ can edit the scripts while they are running. This allows Fluxus to be used
+ for livecoding performances, or simply as a fast feedback way of
+ experimenting or learning about graphics and animation.
+ .
+ Fluxus lends itself to procedural modelling and animation, there is no model
+ import functionality, only simple primitives. There is an expermental
+ procedural modelling tool however, and full support for texturing and basic
+ material properties.
+ .
+ Web Page: http://www.pawfal.org/fluxus/
+

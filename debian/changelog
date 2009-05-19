@@ -1,0 +1,53 @@
+fluxus (0.16rc3-1) gutsy; urgency=low
+
+  * new release
+
+ -- Dave Griffiths <dave@pawfal.org>  Sat, 2 May 2009 12:43:11 +0100
+
+fluxus (0.14b1-2) gutsy; urgency=low
+
+  * Refreshed quilt'ed patches
+
+ -- Artem Baguinski <artm@v2.nl>  Thu, 10 Jan 2008 12:43:11 +0100
+
+fluxus (0.14b1-1) gutsy; urgency=low
+
+  * New upsream release
+  * Fixed search paths for resources
+
+ -- Artem Baguinski <artm@v2.nl>  Thu, 10 Jan 2008 10:25:16 +0100
+
+fluxus (0.13rc2-1ubuntu1) UNRELEASED; urgency=low
+
+  * New upstream release (fluxus-0.13rc2)
+    - switched from guile to mzscheme
+  * Using quilt to maintain local patches
+
+ -- Artem Baguinski <artm@v2.nl>  Thu, 22 Nov 2007 15:46:05 +0000
+
+fluxus (0.9-1) unstable; urgency=low
+
+  * New upstream release (fluxus-0.9rc1)
+
+ -- Javier Candeira <javier@candeira.com>  Fri, 10 Mar 2006 13:19:39 +0100
+
+fluxus (0.8-1) unstable; urgency=low
+
+  * New upstream release
+  * Updated build-dependencies to include libjack0.80.0-dev
+
+ -- Javier Candeira <javier@candeira.com>  Wed,  8 Mar 2006 21:10:27 +0100
+
+fluxus (0.7rc1-2) unstable; urgency=low
+
+  * Updated dependencies. As libportaudio-dev is now on Debian, we don't
+    need to package it ourselves. We make it depend on the Debian lib.
+  * Package passes from Miriam Ruiz to Javier Candeira.
+
+ -- Javier Candeira <javier@candeira.com>  Wed,  2 Nov 2005 19:21:32 +0100
+
+fluxus (0.7rc1-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Miriam Ruiz <little_miry@yahoo.es>  Fri,  1 Jul 2005 23:51:13 +0000

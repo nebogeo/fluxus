@@ -1,0 +1,6 @@
+- man page for fluxus
+- move material directory to /usr/share/fluxus
+- make library name fluxus instead of fluxus-VERSION
+- fix FSF address in copyright
+- fix menu (should go to Applications/Sound & Video on Ubuntu)
+
