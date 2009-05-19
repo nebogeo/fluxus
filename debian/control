@@ -1,8 +1,8 @@
 Source: fluxus
 Section: graphics
 Priority: optional
-Maintainer: Artem Baguinski <artm@v2.nl>
-Uploaders: Javier Candeira <javier@candeira.com>, Miriam Ruiz <little_miry@yahoo.es>
+Maintainer: Dave Griffiths <dave@pawfal.org>
+Uploaders: Artem Baguinski <artm@v2.nl>, Javier Candeira <javier@candeira.com>, Miriam Ruiz <little_miry@yahoo.es>
 Build-Depends: debhelper (>= 4.0.0), quilt, patchutils, scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, xlibmesa-gl-dev | x11proto-gl-dev, libglu1-xorg-dev | libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev
 Standards-Version: 3.7.3
 XS-Vcs-Bzr: http://bazaar.launchpad.net/~fluxus-maintainers/fluxus/dev
