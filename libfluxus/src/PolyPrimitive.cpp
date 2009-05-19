@@ -147,7 +147,8 @@ void PolyPrimitive::Render()
 				snprintf(name,3,"t%d",n);
 				TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
 				glClientActiveTexture(GL_TEXTURE0+n);
-
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				
 				if (tex!=NULL)
 				{	
 					glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());

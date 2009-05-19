@@ -52,14 +52,11 @@ void TexturePainter::Initialise()
 		for (int c=0; c<MAX_TEXTURES; c++)
 		{
 			glActiveTexture(GL_TEXTURE0+c);
-			glClientActiveTexture(GL_TEXTURE0+c);
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 			glMatrixMode(GL_TEXTURE);
 			glLoadIdentity();
 		}
-		glClientActiveTexture(GL_TEXTURE0);
 	}
-	else
+	else 
 #endif
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -393,7 +390,7 @@ void TexturePainter::DisableAll()
 		}
 		glClientActiveTexture(GL_TEXTURE0);
 	}
-	else
+	else 
 	#endif
 	{
 		glDisable(GL_TEXTURE_2D);
