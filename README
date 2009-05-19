@@ -69,7 +69,7 @@ Build with the X11 libraries - rather than Xorg which is default.
 GLSL=0
 Set this to disable GLSL hardware shaders.
 
-MULTITEXTURE=0
+MULTITEXTURING=0
 There is a fluxus bug causing crashes on some systems - try this if you
 get a crash with just (build-cube)
 
