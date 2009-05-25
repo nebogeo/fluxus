@@ -163,7 +163,7 @@
        (let ((r (begin b ...)))
          (ungrab)
          r)))))
-		 
+
 ;; StartFunctionDoc-en
 ;; with-pixels-renderer pixels-primitive expression ...
 ;; Returns: result of last expression
@@ -177,9 +177,21 @@
     ((_ a b ...)
      (begin
        (renderer-grab a)
-       (let ((r (begin b ...)))
-         (renderer-ungrab)
-         r)))))
+       (let/ec out
+           ;; handle errors
+           (let ([renderer-error
+                   (lambda (e)
+                     (printf "Error in with-pixels-renderer '~a - render target restored.~% Error: ~a ~%"
+                            a e)
+                     (renderer-ungrab)
+                     (out #t))])
+                 (call-with-exception-handler renderer-error
+                                              (lambda ()
+                                                (let ([r (begin b ...)])
+                                                  (renderer-ungrab)
+                                                  r)))
+           ))
+     ))))
 
 ;; StartFunctionDoc-en
 ;; pdata-map! procedure read/write-pdata-name read-pdata-name ...
