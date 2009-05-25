@@ -17,18 +17,8 @@
 #ifndef FLUXUS_GLSL_SHADER
 #define FLUXUS_GLSL_SHADER
 
-#ifdef GLSL
-#include "GL/glew.h"
-#endif
-#ifndef __APPLE__
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#else
-#include "OpenGL/gl.h"
-#include "OpenGL/glu.h"
-#include "GLUT/glut.h"
-#endif
+#include "OpenGL.h"
+
 #include <string>
 #include <vector>
 #include "dada.h"
@@ -39,7 +29,7 @@ namespace Fluxus
 {
 
 //////////////////////////////////////////////////////
-/// A pair of shaders, loaded and compiled - 
+/// A pair of shaders, loaded and compiled -
 /// needs to be made into a GLSLShader for use
 class GLSLShaderPair
 {
@@ -48,10 +38,10 @@ public:
 	/// if it's false, the strings are treated as the shader source.
 	GLSLShaderPair(bool load, const string &vertex, const string &fragment);
 	~GLSLShaderPair();
-	
+
 	unsigned int GetVertexShader() const { return m_VertexShader; }
 	unsigned int GetFragmentShader() const { return m_FragmentShader; }
-	
+
 private:
 	/// Returns a handle to a compiled and linked GLSL program
 	bool Load(const string &vertexfilename, const string &fragmentfilename);
@@ -85,7 +75,7 @@ public:
 	static void Unapply();
 	bool IsValid() { return m_IsValid; }
 	///@}
-	
+
 	/////////////////////////////////////////////
 	///@name Uniform variables
 	///@{
@@ -94,7 +84,7 @@ public:
 	void SetVector(const string &name, dVector s);
 	void SetColour(const string &name, dColour s);
 	///@}
-	
+
 	/////////////////////////////////////////////
 	///@name Attribute variables
 	///@{
@@ -102,9 +92,9 @@ public:
 	void SetVectorArray(const string &name, const vector<dVector> &s);
 	void SetColourArray(const string &name, const vector<dColour> &s);
 	///@}
-	
+
 	static bool m_Enabled;
-	
+
 private:
 	unsigned int m_Program;
 	unsigned int m_RefCount;
@@ -114,3 +104,4 @@ private:
 }
 
 #endif
+

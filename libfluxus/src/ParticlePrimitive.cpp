@@ -53,7 +53,7 @@ void ParticlePrimitive::PDataDirty()
 	m_SizeData=GetDataVec<dVector>("s");
 	m_RotateData=GetDataVec<float>("r");
 }
-
+	
 void ParticlePrimitive::Render()
 {
 	glDisable(GL_LIGHTING);
@@ -97,23 +97,56 @@ void ParticlePrimitive::Render()
 		across.normalise();
 		dVector down=across.cross(CameraDir);
 		down.normalise();
-
-		glBegin(GL_QUADS);
-		for (unsigned int n=0; n<m_VertData->size(); n++)
+		
+		if (m_State.Hints & HINT_DEPTH_SORT)
 		{
-			dVector scaledacross(across*(*m_SizeData)[n].x*0.5);
-			dVector scaledown(down*(*m_SizeData)[n].y*0.5);
-			glColor4fv((*m_ColData)[n].arr());
-			glTexCoord2f(0,0);
-			glVertex3fv(((*m_VertData)[n]-scaledacross-scaledown).arr());
-			glTexCoord2f(0,1);
-			glVertex3fv(((*m_VertData)[n]-scaledacross+scaledown).arr());
-			glTexCoord2f(1,1);
-			glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
-			glTexCoord2f(1,0);
-			glVertex3fv(((*m_VertData)[n]+scaledacross-scaledown).arr());
+			dMatrix ModelView2;
+			glGetFloatv(GL_MODELVIEW_MATRIX,ModelView2.arr());
+			
+			list<SortItem> sorted;
+			for (unsigned int n=0; n<m_VertData->size(); n++)
+			{
+				dVector t=ModelView2.transform((*m_VertData)[n]);
+				sorted.push_back(SortItem(n, t.z));
+			}
+			sorted.sort();
+			
+			glBegin(GL_QUADS);
+			for (list<SortItem>::iterator i=sorted.begin(); i!=sorted.end(); ++i)
+			{
+				dVector scaledacross(across*(*m_SizeData)[i->Index].x*0.5);
+				dVector scaledown(down*(*m_SizeData)[i->Index].y*0.5);
+				glColor4fv((*m_ColData)[i->Index].arr());
+				glTexCoord2f(0,0);
+				glVertex3fv(((*m_VertData)[i->Index]-scaledacross-scaledown).arr());
+				glTexCoord2f(0,1);
+				glVertex3fv(((*m_VertData)[i->Index]-scaledacross+scaledown).arr());
+				glTexCoord2f(1,1);
+				glVertex3fv(((*m_VertData)[i->Index]+scaledacross+scaledown).arr());
+				glTexCoord2f(1,0);
+				glVertex3fv(((*m_VertData)[i->Index]+scaledacross-scaledown).arr());
+			}
+			glEnd();
 		}
-		glEnd();
+		else
+		{
+			glBegin(GL_QUADS);
+			for (unsigned int n=0; n<m_VertData->size(); n++)
+			{
+				dVector scaledacross(across*(*m_SizeData)[n].x*0.5);
+				dVector scaledown(down*(*m_SizeData)[n].y*0.5);
+				glColor4fv((*m_ColData)[n].arr());
+				glTexCoord2f(0,0);
+				glVertex3fv(((*m_VertData)[n]-scaledacross-scaledown).arr());
+				glTexCoord2f(0,1);
+				glVertex3fv(((*m_VertData)[n]-scaledacross+scaledown).arr());
+				glTexCoord2f(1,1);
+				glVertex3fv(((*m_VertData)[n]+scaledacross+scaledown).arr());
+				glTexCoord2f(1,0);
+				glVertex3fv(((*m_VertData)[n]+scaledacross-scaledown).arr());
+			}
+			glEnd();
+		}
 	}
 	glEnable(GL_LIGHTING);
 }

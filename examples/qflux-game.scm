@@ -210,7 +210,7 @@
         (grab obj)
         (identity)
         (translate (vector (vector-ref pos 0) (+ height 1) (vector-ref pos 1)))
-        (rotate (vector 0 (* (entity-get-dir entity) 90) 0))
+        (rotate (vector 0 (* (entity-get-dir entity) -90) 0))
         (scale (vector 0.5 0.5 0.5))
         (ungrab)))))))
 
@@ -495,6 +495,7 @@
 (clear)
 (clear-colour (vector 0 0.4 0.8))
 (ortho)
+(set-ortho-zoom 10)
 
 (define game (make-game (list
 
@@ -504,8 +505,8 @@
                     1 1 1
                     1 1 1 )
             (mmul
-                    (mrotate (vector 45 160 20))
-                    (mtranslate (vector 0 1 15 )))
+                    (mrotate (vector 45 160 -200))
+                    (mtranslate (vector 1 0 15 )))
             (make-player 1 1 0)
             (list)) 
             
@@ -517,8 +518,8 @@
                     4 7 7 6 2
                     3 3 3 3 2 )
             (mmul
-                    (mrotate (vector -42 35 -27))
-                    (mtranslate (vector 3 3 15)))
+                    (mrotate (vector -42 35 209))
+                    (mtranslate (vector 0 -1 15)))
             (make-player 0 0 2)
             (list))
 
@@ -530,8 +531,8 @@
                     1 2 2 2 1
                     1 1 1 1 1 )
             (mmul
-                    (mrotate (vector -45 45 -34))
-                    (mtranslate (vector 3 1 10)))
+                    (mrotate (vector -45 -45 145))
+                    (mtranslate (vector -2 -2 10)))
             (make-player 2 2 3)
             (list
                 (make-enemy 0 4 0 0.5 (vector 0 0 0 0 1))))        
@@ -547,8 +548,8 @@
                     3 3 3 1 3 3 3
                     3 3 3 2 3 3 3 )
             (mmul
-                    (mrotate (vector -80 25 -35))
-                    (mtranslate (vector 5 0 10)))
+                    (mrotate (vector 240 45 -50))
+                    (mtranslate (vector 4 -2 10)))
             (make-player 1 1 0)
             (list
                 (make-enemy 0 0 0 0.5 (vector 0 0 1))
@@ -569,8 +570,8 @@
                     1 2 2 3 3 4 4 5 5 6
                     1 1 2 2 3 3 4 4 5 5)
             (mmul
-                    (mrotate (vector -45 65 -40))
-                    (mtranslate (vector 5 6 100)))
+                    (mrotate (vector 55 205 205))
+                    (mtranslate (vector 2 -8 100)))
             (make-player 0 0 0)
             (list
                 (make-enemy 4 4 2 0.6 (vector 1 0))
@@ -594,8 +595,8 @@
             (mmul 
                     (mrotate (vector 0 90 0))
                 (mmul
-                    (mrotate (vector -25 45 -20))
-                    (mtranslate (vector 0 6 100)))
+                    (mrotate (vector 200 30 -10))
+                    (mtranslate (vector -1 -7 100)))
                     )
             (make-player 4 5 0)
             (list

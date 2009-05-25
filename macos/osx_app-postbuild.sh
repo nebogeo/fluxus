@@ -13,8 +13,13 @@ PLTPrefix = pipe.read()[:-5]
 pipe.close()
 
 # copy plt collects path manually
-print 'copying plt collects path...'
-os.system('cp -r "%s"* Fluxus.app/Contents/Resources/collects/' % (PLTPrefix + '/collects/'))
+print 'copying required plt modules...'
+for m in ['compiler', 'config', 'defaults', 'ffi', 'frtime', \
+		  'lang', 'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
+		  'stxclass', 'syntax', 'xml']:
+	print '\t', m
+	os.system('cp -r "%s" Fluxus.app/Contents/Resources/collects/%s' %
+		(PLTPrefix + '/collects/' + m, m))
 
 # scheme modules don't get installed for some reason
 print 'copying fluxus collects path...'
@@ -30,7 +35,9 @@ def find_executables(bundledir):
 	pipe = os.popen('find %s -perm -755 -type f' % bundledir)
 	dtargets = pipe.readlines()
 	pipe.close()
-	return map(lambda (l): l[:-1], dtargets) # remove lineends
+	dtargets = map(lambda (l): l[:-1], dtargets) # remove lineends
+	dtargets = filter(lambda (l): l[-3:] != '.ss', dtargets) # remove executable scripts
+	return dtargets
 
 # returns the shared libraries used by target
 # first one in the list is the shared library identification name if

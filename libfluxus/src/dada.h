@@ -650,8 +650,8 @@ public:
 
 			t.init();
 			t.m[0][0]=cy;
-	    	t.m[2][0]=-sy;
-			t.m[0][2]=sy;
+	    	t.m[2][0]=sy;
+			t.m[0][2]=-sy;
 			t.m[2][2]=cy;
 			*this=*this*t;
     	}

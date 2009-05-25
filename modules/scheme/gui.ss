@@ -2,7 +2,7 @@
 
 #lang scheme/base
 (require scheme/class)
-(require fluxus-016/fluxus)
+(require "fluxus.ss")
 
 ;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ; ring menu (originally from betablocker)

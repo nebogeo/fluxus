@@ -2,37 +2,31 @@
 
 #lang scheme/base
 
-(require "fluxus-engine.ss"
-         "fluxus-audio.ss"
-         "fluxus-osc.ss"
-         "fluxus-midi.ss"
-			; todo: get rid of burnt in versions
-		 fluxus-016/input
-		 fluxus-016/help
-		 fluxus-016/camera
-		 fluxus-016/building-blocks
-		 fluxus-016/collada-import
-		 fluxus-016/randomness
-		 fluxus-016/poly-tools
-		 fluxus-016/pixels-tools
-		 fluxus-016/scratchpad
-		 fluxus-016/maths
-		 fluxus-016/testing
-		 (only-in srfi/13 string-pad))
+(require "fluxus-modules.ss"
+		 "input.ss"
+		 "help.ss"
+		 "camera.ss"
+		 "building-blocks.ss"
+		 "collada-import.ss"
+		 "randomness.ss"
+		 "poly-tools.ss"
+		 "pixels-tools.ss"
+		 "scratchpad.ss"
+		 "maths.ss"
+		 "testing.ss"
+		 "tasks.ss")
 		 
 (provide 
- (all-from-out "fluxus-engine.ss")
- (all-from-out "fluxus-audio.ss")
- (all-from-out "fluxus-osc.ss")
- (all-from-out "fluxus-midi.ss")
- (all-from-out fluxus-016/input)
- (all-from-out fluxus-016/help)
- (all-from-out fluxus-016/camera)
- (all-from-out fluxus-016/building-blocks)
- (all-from-out fluxus-016/collada-import)
- (all-from-out fluxus-016/randomness)  
- (all-from-out fluxus-016/poly-tools)  
- (all-from-out fluxus-016/pixels-tools)  
- (all-from-out fluxus-016/scratchpad)
- (all-from-out fluxus-016/maths)
- (all-from-out fluxus-016/testing))
+ (all-from-out "fluxus-modules.ss")
+ (all-from-out "input.ss")
+ (all-from-out "help.ss")
+ (all-from-out "camera.ss")
+ (all-from-out "building-blocks.ss")
+ (all-from-out "collada-import.ss")
+ (all-from-out "randomness.ss")  
+ (all-from-out "poly-tools.ss")  
+ (all-from-out "pixels-tools.ss")  
+ (all-from-out "scratchpad.ss")
+ (all-from-out "maths.ss")
+ (all-from-out "testing.ss")
+ (all-from-out "tasks.ss"))

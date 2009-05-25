@@ -83,7 +83,7 @@ Renderer::~Renderer()
 	SearchPaths::Shutdown();
 }
 
-/////////////////////////////////////	
+/////////////////////////////////////
 
 void Renderer::Clear()
 {
@@ -93,11 +93,11 @@ void Renderer::Clear()
 	UnGrab();
 	State InitialState;
 	m_StateStack.push_back(InitialState);
-	
+
 	// add the default camera
 	Camera cam;
 	m_CameraVec.push_back(cam);
-}	
+}
 
 void Renderer::Render()
 {
@@ -123,6 +123,10 @@ void Renderer::Render()
 		// need to clear this even if we aren't using shadows
 		m_ShadowVolumeGen.Clear();
 
+		// if we are using multiple cameras, the renderer 
+		// needs to be reinitialised for each one
+		if (m_CameraVec.size()>1) Reinitialise();
+		
 		if (m_ShadowLight!=0)
 		{
 			RenderStencilShadows(cam);
@@ -224,15 +228,17 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	Camera &Cam = m_CameraVec[CamIndex];
     if (!m_Initialised || PickMode || Cam.NeedsInit())
     {
-    	glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
- 			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
-		
+		GLSLShader::Init();
+
+		glViewport((int)(Cam.GetViewportX()*(float)m_Width),(int)(Cam.GetViewportY()*(float)m_Height),
+			(int)(Cam.GetViewportWidth()*(float)m_Width),(int)(Cam.GetViewportHeight()*(float)m_Height));
+
 		#ifdef DEBUG_TRACE
 		cerr<<"renderer:"<<this<<" viewport:"<<Cam.GetViewportX()*(float)m_Width<<" "<<Cam.GetViewportY()*(float)m_Height<<" "<<
 			Cam.GetViewportWidth()*(float)m_Width<<" "<<Cam.GetViewportHeight()*(float)m_Height<<endl;
 		#endif
-		
-    	glMatrixMode (GL_PROJECTION);
+
+		glMatrixMode (GL_PROJECTION);
   		glLoadIdentity();
 		
   		if (PickMode) 
@@ -459,6 +465,51 @@ int Renderer::Select(unsigned int CamIndex, int x, int y, int size)
 	PreRender(CamIndex);
 	
 	return ID;
+}
+
+int Renderer::SelectAll(unsigned int CamIndex, int x, int y, int size, unsigned int **rIDs)
+{
+	static const int SELECT_SIZE=512;
+	unsigned int IDs[SELECT_SIZE];
+	static unsigned int OutputIDs[SELECT_SIZE];
+
+	memset(IDs,0,SELECT_SIZE);
+	GLuint ID=0;
+	glSelectBuffer(SELECT_SIZE,(GLuint*)IDs);
+	glRenderMode(GL_SELECT);
+	glInitNames();
+
+	m_SelectInfo.x=x;
+	m_SelectInfo.y=y;
+	m_SelectInfo.size=size;
+
+	// the problem here is that select is called mid-scene, so we have to set up for 
+	// picking mode here...
+	PreRender(CamIndex,true);
+
+	// render the scene for picking
+	m_World.Render(&m_ShadowVolumeGen,SceneGraph::SELECT);
+
+	int hits=glRenderMode(GL_RENDER);
+	unsigned int *ptr=IDs, numnames;
+	float minz,maxz,closest=1000000;
+
+	// process the hit records
+	for (int n=0; n<hits; n++)
+	{
+		numnames=*ptr;
+		ptr+=3;
+		OutputIDs[n] = *ptr; // save ID
+		for (unsigned int i=0; i<numnames; i++) *ptr++;
+	}
+
+	// ... and reset the scene back here so we can carry on afterwards as if nothing
+	// has happened...
+	m_Initialised=false;
+	PreRender(CamIndex);
+
+	*rIDs = OutputIDs;
+	return hits;
 }
 
 int Renderer::AddPrimitive(Primitive *Prim)

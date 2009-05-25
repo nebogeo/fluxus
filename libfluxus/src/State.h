@@ -17,18 +17,7 @@
 #ifndef N_STATE
 #define N_STATE
 
-#ifdef GLSL
-#include "GL/glew.h"
-#endif
-#ifndef __APPLE__
-#include "GL/gl.h"
-#include "GL/glu.h"
-#include "GL/glut.h"
-#else
-#include "OpenGL/gl.h"
-#include "OpenGL/glu.h"
-#include "GLUT/glut.h"
-#endif
+#include "OpenGL.h"
 
 #include <iostream>
 
@@ -56,12 +45,7 @@ namespace Fluxus
 #define HINT_CULL_CCW       0x2000
 #define HINT_WIRE_STIPPLED  0x4002
 
-///\todo use glew for this
-#ifdef ENABLE_MULTITEXTURE
 #define MAX_TEXTURES  8
-#else
-#define MAX_TEXTURES  1
-#endif
 
 class PixelPrimitive;
 

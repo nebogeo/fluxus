@@ -3,12 +3,14 @@
 #
 # This is the main PLT module for the fluxus audio functions
 
-Import("env", "BinaryModulesLocation", "MZDYN")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-audio_ss.dylib"
 else:
 	Target = "fluxus-audio_ss.so"
+
+if static_modules: Target = "fluxus-audio_ss"
 
 Install = BinaryModulesLocation
 Libs =  Split("jack fftw3 sndfile")
@@ -27,9 +29,14 @@ Source = Split("src/FluxusAudio.cpp \
 		src/JackClient.cpp") + \
 		[MZDYN]
 		
-env.SharedLibrary(source = Source, 
+if static_modules:
+	env.StaticLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs)
+else:
+	env.SharedLibrary(source = Source, 
 				  target = Target,
 				  LIBS = Libs,
 				  SHLIBPREFIX = "")
 						  
-env.Install(Install, Target)
+if not static_modules: env.Install(Install, Target)

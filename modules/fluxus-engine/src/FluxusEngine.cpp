@@ -315,7 +315,11 @@ Scheme_Object *fluxus_error_log(int argc, Scheme_Object **argv)
 
 ////////////////////////////////////////////////////////////////////
 
+#ifdef STATIC_LINK
+Scheme_Object *engine_scheme_reload(Scheme_Env *env)
+#else
 Scheme_Object *scheme_reload(Scheme_Env *env)
+#endif
 {
 	Scheme_Env *menv = NULL;
 	MZ_GC_DECL_REG(2);
@@ -349,13 +353,12 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_finish_primitive_module(menv);	
 	
-	#ifdef MZ_PRECISE_GC
 	MZ_GC_UNREG();
-	#endif
 	
 	return scheme_void;
 }
 
+#ifndef STATIC_LINK
 Scheme_Object *scheme_initialize(Scheme_Env *env)
 {
 	return scheme_reload(env);
@@ -365,3 +368,4 @@ Scheme_Object *scheme_module_name()
 {
 	return scheme_intern_symbol("fluxus-engine");
 }
+#endif

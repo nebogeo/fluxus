@@ -434,7 +434,7 @@ void Physics::Free(int ID)
 		return;
 	}
 
-	delete i->second;	
+	delete i->second;
 	m_ObjectMap.erase(i);
 }
 
@@ -442,23 +442,23 @@ void Physics::Clear()
 {
 	for(map<int,Object*>::iterator i=m_ObjectMap.begin(); i!=m_ObjectMap.end(); ++i)
 	{
-		delete i->second;	
+		delete i->second;
 	}
 	m_ObjectMap.clear();
-	
+
 	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
 	{
-		delete i->second;	
+		delete i->second;
 	}
 	m_JointMap.clear();
-	
+
 	m_History.clear();
-	if (m_GroundCreated) 
+	if (m_GroundCreated)
 	{
 		dGeomDestroy(m_Ground);
 		m_GroundCreated=false;
 	}
-	
+
 	m_NextJointID=0;
 }
 

@@ -25,7 +25,7 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 {
 	unsigned char *ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
-	if (!fp || Filename=="") 
+	if (!fp || Filename=="")
 	{
 		Trace::Stream<<"Couldn't open image ["<<Filename<<"]"<<endl;
 	}
@@ -33,42 +33,47 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 	{
 		png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
 		png_infop info_ptr = png_create_info_struct(png_ptr);
-			
-		if (setjmp(png_jmpbuf(png_ptr))) 
+
+		if (setjmp(png_jmpbuf(png_ptr)))
 		{
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 			Trace::Stream<<"Error reading image ["<<Filename<<"]"<<endl;
 			return NULL;
 		}
-		
-   		png_init_io(png_ptr, fp);
-		png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);		
+
+		png_init_io(png_ptr, fp);
+		png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
 		fclose(fp);
-		
+
 		ImageData = new unsigned char[png_ptr->rowbytes*png_ptr->height];
 		int p=0;
-		for (unsigned int row = 0; row < png_ptr->height; row++)
+		for (int row = png_ptr->height-1; row>=0; row--) // flip around to fit opengl
 		{
 			for (unsigned int i=0; i<png_ptr->rowbytes; i++)
 			{
-				ImageData[p]=(unsigned char)info_ptr->row_pointers[row][i];
+				ImageData[p]=(unsigned char)(info_ptr->row_pointers[row])[i];
 				p++;
 			}
 		}
-		
+
 		w=png_ptr->width;
 		h=png_ptr->height;
 		
 		switch (png_ptr->color_type)
 		{
 			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
-        	case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
-        	default : Trace::Stream<<"PNG pixel format not supported : "<<png_ptr->color_type<<endl;
+			case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
+        	default : 
+			{
+				Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
+				delete[] ImageData;
+				ImageData=NULL;
+			}
         }
 
-		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);	
+		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	}
-	
+
 	return ImageData;
 }
 
@@ -146,7 +151,7 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 	unsigned int stride=w*numchannels;
 	{
 		png_bytep *aprow = (png_bytep*) malloc(h * sizeof(png_bytep));
-		for (i = 0; i < h; ++i) aprow[i] = data + stride * i;
+		for (i = 0; i < h; ++i) aprow[i] = data + stride * (h - 1 - i);	// flip Y for opengl
 		png_write_image (ppng, aprow);
 		free(aprow);
 	}

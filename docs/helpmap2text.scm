@@ -80,8 +80,8 @@
   (cond
     ((not (null? helpmap))
      (let ((locale (car (car helpmap))))
-       (let ((txtfile (open-output-file (string-append "fluxus-" locale ".txt") #:exists 'replace)))
-         (fprintf txtfile "Fluxus Documentation 0.15~n")
+       (let ((txtfile (open-output-file (string-append "fluxus-function-ref-" locale ".txt") #:exists 'replace)))
+         (fprintf txtfile "Fluxus Documentation 0.16~n")
          (parse-section (cadr (car helpmap)) txtfile locale)
          (close-output-port txtfile))
        (parse-locale (cdr helpmap))))))

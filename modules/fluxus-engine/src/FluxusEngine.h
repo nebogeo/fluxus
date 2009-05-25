@@ -15,4 +15,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 ///
 
-#include "SchemeHelper.h"
+#ifdef STATIC_LINK
+Scheme_Object *engine_scheme_reload(Scheme_Env *env);
+#else
+Scheme_Object *scheme_reload(Scheme_Env *env);
+#endif

@@ -6,6 +6,18 @@ a continuous succession of changes"
 Fluxus is a small realtime render engine for linux that generates animation from 
 sound. Released under the GPL licence (see COPYING)
 
+Using fluxus
+------------
+
+See docs/fluxus-documentation.pdf, the online help and most importantly the 
+example scripts (in the examples directory) for pointers on using fluxus.
+
+Load the examples on the commandline by running "fluxus scriptname.scm" or 
+loading them from inside fluxus by pressing ctrl-l and browsing.
+
+Also, sign up to the mailing list to search the archives and ask questions: 
+http://lists.pawfal.org/listinfo.cgi/fluxus-pawfal.org
+
 Installing
 ----------
 
@@ -54,18 +66,18 @@ Build options to scons are:
 X11=1
 Build with the X11 libraries - rather than Xorg which is default.			 
 
-MULTITEXTURE=1
-Multitexturing is bad tempered on some drivers - set this to enable the 
-multitexturing code.		 
-
 GLSL=0
 Set this to disable GLSL hardware shaders.
+
+MULTITEXTURING=0
+There is a fluxus bug causing crashes on some systems - try this if you
+get a crash with just (build-cube)
 
 STEREODEFAULT=1
 Use hardware stereo rendering
 
 ACCUM_BUFFER=1
-Startup with an accumulation buffer (again, bad tempered on some drivers)
+Startup with an accumulation buffer (another bad tempered option on some drivers)
 
 There are more settings at the top of the SConstruct file which may need to be
 tweaked to correctly find things.
@@ -81,6 +93,11 @@ the following line to the .bash_profile file in your home directory:
 
 PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.1.4/bin/
 
+Also add this line to .bash_profile, which is necessary for Fluxus to
+find the PLT frameworks:
+
+export DYLD_FRAMEWORK_PATH=/Applications/PLT\ Scheme\ v4.1.4/lib/
+
 You might need to change the PLT Scheme version number according to
 the binary package you have installed.
 
@@ -93,22 +110,50 @@ To build and install, type:
 scons
 sudo scons install
 
-If you have an older graphics card (Mac mini or older MacBook model), you might
-need to build and install Fluxus with
 
-scons MULTITEXTURE=0 GLSL=0
-sudo scons MULTITEXTURE=0 GLSL=0 install
+It is also possible to build an OSX application of Fluxus.
+The application is built using JackOSX (http://www.jackosx.com/) instead of
+MacPorts jack. Make sure to install it before building the application.
 
+To build, type:
 
-Using fluxus
-------------
+scons --app
+./macos/osx_app-postbuild.sh
 
-See docs/fluxus-documentation.txt, the online help and most importantly the 
-example scripts (in the examples directory) for pointers on using fluxus.
+Please note that at the time of writing the application only works if it is
+copied to the /Applications folder.
 
-Load the examples on the commandline by running "fluxus scriptname.scm" or 
-loading them from inside fluxus by pressing ctrl-l and browsing.
+Building fluxus on Windows
+--------------------------
 
-Also, sign up to the mailing list to search the archives and ask questions: 
-http://lists.pawfal.org/listinfo.cgi/fluxus-pawfal.org
+You need to install python, scons and MinGW, then install the win32 versions of
+the dependencies from their websites (eq ode, plt) or for lower level ones 
+like libpng, libtiff etc from here: http://gnuwin32.sourceforge.net/
+Put the libs in the C:\MinGW\lib and includes in c:\MinGW\include for everything
+except PLT scheme. You should now be able to build and install fluxus. 
+
+It installs by default to C:\Program Files\Fluxus. You now need to add copies 
+of all the dependencies dlls in the bin directory there.
+
+More advanced building commands
+-------------------------------
+
+For building fluxus for packaging or as downloadable all included games or 
+applications, there are these flags:
+
+STATIC_MODULES=1
+Build fluxus such that it doesn't require PLT installed - embeds the module binaries
+and all the scheme code required from PLT. Currently you also need to change a couple
+of lines of modules/scheme/fluxus-modules, see comments in that file for more info.
+
+STATIC_EVERYTHING=1
+Build fluxus same as STATIC_MODULES=1, but also static link as much as possible, this
+results in a binary which doesn't require any dynamic linking except to GLIBC. Not
+really good practice, but helpful for run-anywhere binaries.
+
+RELATIVE_COLLECTS=1
+Create a binary which looks for it's collects in the same directory as the binary
+resides - this means that fluxus can be installed anywhere, and can carry around
+it's dependant scheme code.
+
 

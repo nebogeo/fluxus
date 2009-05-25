@@ -117,7 +117,7 @@ public:
 	///@{
 	
 	/// Sets the current texture state - allow settings for each unit if multitexturing is enabled.
-	/// The size of ids is expexted to be the same as MAX_TEXTURES
+	/// The size of ids is expected to be the same as MAX_TEXTURES
 	bool SetCurrent(unsigned int *ids, TextureState *states);
 
 	/// Disables all texturing
@@ -125,6 +125,9 @@ public:
 	
 	/// Print out information
 	void Dump();
+	
+	/// Is multitexturing possible?
+	bool MultitexturingEnabled() { return m_MultitexturingEnabled; }
 	///@}
 	
 private:
@@ -162,6 +165,7 @@ private:
 	map<string,int> m_LoadedCubeMap;
 	map<unsigned int,TextureDesc> m_TextureMap;
 	map<unsigned int,CubeMapDesc> m_CubeMapMap;
+	bool m_MultitexturingEnabled;
 };
 
 }

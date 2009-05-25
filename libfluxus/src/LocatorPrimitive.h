@@ -43,9 +43,16 @@ public:
 	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 	
+	void SetBoundingBoxRadius(float s)
+	{
+		m_BoundingBoxRadius=s;
+	}
+	
 protected:
 
 	virtual void PDataDirty();
+
+	float m_BoundingBoxRadius;
 
 private:
 

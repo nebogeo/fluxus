@@ -5,8 +5,7 @@
 (define p (with-state
     (colour (vector 0.5 0.5 0.5))
     (scale (vector 100 100 100))
-    (rotate (vector 90 0 0))
-    (translate (vector -0.4 -0.2 -0.4))
+    (translate (vector 0 0 -0.4))
     (texture (load-texture "transp.png"))
     (build-nurbs-plane 5 5)))
 

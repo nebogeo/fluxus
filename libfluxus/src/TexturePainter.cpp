@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include "OpenGL.h"
 #include "State.h"
 #include "TexturePainter.h"
 #include "PNGLoader.h"
@@ -24,8 +25,18 @@ using namespace Fluxus;
 
 TexturePainter *TexturePainter::m_Singleton=NULL;
 
-TexturePainter::TexturePainter() 
+TexturePainter::TexturePainter() :
+m_MultitexturingEnabled(true)
 {
+	#ifndef DISABLE_MULTITEXTURING
+	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL) || (glClientActiveTexture == NULL))
+	{
+		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
+		m_MultitexturingEnabled=false;
+	}
+	#else
+	m_MultitexturingEnabled=false;
+	#endif
 }
 
 TexturePainter::~TexturePainter()
@@ -35,20 +46,23 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-	for (int c=0; c<MAX_TEXTURES; c++)
+#ifndef DISABLE_MULTITEXTURING
+	if (m_MultitexturingEnabled)
 	{
-		#ifdef ENABLE_MULTITEXTURE
-		glActiveTexture(GL_TEXTURE0+c);
-		glClientActiveTexture(GL_TEXTURE0+c);
-		#endif
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				
-    	glMatrixMode(GL_TEXTURE);
-    	glLoadIdentity();
+		for (int c=0; c<MAX_TEXTURES; c++)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+			glMatrixMode(GL_TEXTURE);
+			glLoadIdentity();
+		}
 	}
-	#ifdef ENABLE_MULTITEXTURE
-	glClientActiveTexture(GL_TEXTURE0);
-	#endif
+	else 
+#endif
+	{
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
+	}
 }
 
 void TexturePainter::ClearCache()
@@ -295,13 +309,17 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
 bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 {
 	bool ret=false;
-	
-	for (int c=0; c<MAX_TEXTURES; c++)
+
+	int tcount = (m_MultitexturingEnabled ? MAX_TEXTURES : 1);
+	for (int c = 0; c < tcount; c++)
 	{
-		#ifdef ENABLE_MULTITEXTURE
-		glActiveTexture(GL_TEXTURE0+c);
-		#endif
-				
+	#ifndef DISABLE_MULTITEXTURE
+		if (m_MultitexturingEnabled)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+		}
+	#endif
+
 		if (ids[c]!=0)
 		{
 			map<unsigned int,CubeMapDesc>::iterator i=m_CubeMapMap.find(ids[c]);
@@ -314,28 +332,31 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,i->second.Negative[1]);
 				glBindTexture(GL_TEXTURE_CUBE_MAP_POSITIVE_Z,i->second.Positive[2]);
 				glBindTexture(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,i->second.Negative[2]);
-				
+
 				glEnable(GL_TEXTURE_CUBE_MAP);
-				ApplyState(GL_TEXTURE_CUBE_MAP,states[c],true);														
+				ApplyState(GL_TEXTURE_CUBE_MAP,states[c],true);
 			}
 			else // normal 2D texture path
 			{
 				glEnable(GL_TEXTURE_2D);
-				glBindTexture(GL_TEXTURE_2D,ids[c]);					
-				ApplyState(GL_TEXTURE_2D,states[c],false);				
+				glBindTexture(GL_TEXTURE_2D,ids[c]);
+				ApplyState(GL_TEXTURE_2D,states[c],false);
 			}
-			
-			ret=true;						
-    	}
+
+			ret=true;
+		}
 		else
 		{
 			glDisable(GL_TEXTURE_2D);
 			glDisable(GL_TEXTURE_CUBE_MAP);
 		}
 	}
-	
-	#ifdef ENABLE_MULTITEXTURE
-	glActiveTexture(GL_TEXTURE0);
+
+	#ifndef DISABLE_MULTITEXTURE
+	if (m_MultitexturingEnabled)
+	{
+		glActiveTexture(GL_TEXTURE0);
+	}
 	#endif
 	
 	return ret;
@@ -358,18 +379,23 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 
 void TexturePainter::DisableAll()
 {
-	#ifdef ENABLE_MULTITEXTURE
-	for (int c=0; c<MAX_TEXTURES; c++)
+	#ifndef DISABLE_MULTITEXTURE
+	if (m_MultitexturingEnabled)
 	{
-		glActiveTexture(GL_TEXTURE0+c);
+		for (int c=0; c<MAX_TEXTURES; c++)
+		{
+			glActiveTexture(GL_TEXTURE0+c);
+			glDisable(GL_TEXTURE_2D);
+			glDisable(GL_TEXTURE_CUBE_MAP);
+		}
+		glClientActiveTexture(GL_TEXTURE0);
+	}
+	else 
+	#endif
+	{
 		glDisable(GL_TEXTURE_2D);
 		glDisable(GL_TEXTURE_CUBE_MAP);
 	}
-	glClientActiveTexture(GL_TEXTURE0);
-	#else
-	glDisable(GL_TEXTURE_2D);
-	glDisable(GL_TEXTURE_CUBE_MAP);
-	#endif
 }
 
 void TexturePainter::Dump()

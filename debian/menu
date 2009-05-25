@@ -1,0 +1,3 @@
+?package(fluxus):needs="x11" section="Apps/Graphics" \
+	title="Fluxus" command="/usr/bin/fluxus" \
+	hints="Video"

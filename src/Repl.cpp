@@ -244,3 +244,4 @@ void Repl::EnsureCursorVisible()
                 if (m_Text[m_TopTextPosition++] == '\n')
                         curVisLine--;				
 }
+

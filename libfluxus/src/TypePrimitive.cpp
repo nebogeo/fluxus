@@ -138,6 +138,8 @@ void TypePrimitive::Render()
 
 void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 {
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
+	
 	if (m_State.Hints & HINT_SOLID)
 	{
 		glColor4fv(m_State.Colour.arr());
@@ -182,6 +184,8 @@ void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 			glDisable(GL_LINE_STIPPLE);
 		}
 	}
+	
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
 }
 
 void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth, bool winding)
@@ -196,11 +200,19 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))TypePrimitive::TessEnd);
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))TypePrimitive::TessError);
 #else
+#ifdef WIN32	
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessError);
+#else
 	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())TypePrimitive::TessBegin);
 	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())TypePrimitive::TessVertex);
 	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (void (*)())TypePrimitive::TessCombine);
 	gluTessCallback(t, GLU_TESS_END_DATA, (void (*)())TypePrimitive::TessEnd);
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (void (*)())TypePrimitive::TessError);
+#endif
 #endif
 
 	if (winding)
@@ -249,13 +261,13 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	gluDeleteTess(t);
 }
 
-void TypePrimitive::TessError(GLenum errCode, GlyphGeometry* geo)
+void __stdcall TypePrimitive::TessError(GLenum errCode, GlyphGeometry* geo)
 {
     geo->m_Error=errCode;
 }
 
 
-void TypePrimitive::TessVertex(void* data, GlyphGeometry* geo)
+void __stdcall TypePrimitive::TessVertex(void* data, GlyphGeometry* geo)
 {
 	double *ptr = (double*)data;
     geo->m_Meshes[geo->m_Meshes.size()-1].m_Positions.push_back(dVector(ptr[0],ptr[1],ptr[2]));
@@ -263,19 +275,19 @@ void TypePrimitive::TessVertex(void* data, GlyphGeometry* geo)
 }
 
 
-void TypePrimitive::TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
+void __stdcall TypePrimitive::TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
 {
    outData=vertex_data;
 }
 
 
-void TypePrimitive::TessBegin(GLenum type, GlyphGeometry* geo)
+void __stdcall TypePrimitive::TessBegin(GLenum type, GlyphGeometry* geo)
 {
 	geo->m_Meshes.push_back(GlyphGeometry::Mesh(type));
 }
 
 
-void TypePrimitive::TessEnd(GlyphGeometry* geo)
+void __stdcall TypePrimitive::TessEnd(GlyphGeometry* geo)
 {
 }
 

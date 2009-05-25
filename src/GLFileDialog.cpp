@@ -50,6 +50,8 @@ void GLFileDialog::ReadPath()
 	// all this seems horribly linux specific...
 	glob_t g;
 
+#ifndef WIN32	
+
 // NOTE: the following snippet is from dirscan.c in ldglite, 
 //       Copyright (C) 1997-1998  Thomas Kern. 
 //       it might even do something useful....
@@ -80,6 +82,7 @@ glob("..", GLOB_PERIOD, 0, &g);
 	}
 	
 	globfree (&g);
+#endif
 }
 
 void GLFileDialog::Render()

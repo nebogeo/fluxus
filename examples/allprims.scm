@@ -54,31 +54,28 @@
         (recalc-normals 1)))
 
 ; nurbs plane
-(translate (vector 1 0 0))
+(translate (vector 1.5 0 0))
 (with-state
-    (translate (vector 0 0.5 0))
     (scale (vector 2 2 2))
-    (rotate (vector 90 0 0))
     (hint-points)
     (point-width 3)
     (scale (vector 0.5 0.5 0.5))
     (with-primitive (build-nurbs-plane 10 10)
         ; tweak a vertex to prove it's curvy
-        (pdata-set "p" 45 (vector 0.4 1 0.4))
+        (pdata-set "p" 40 (vector 0.4 0.4 1))
         (recalc-normals 1)))
 
 ; particles
-(translate (vector 1.5 -0.5 0))
+(translate (vector 1.0 -.5 0))
 (with-state
     (hint-none)
     (hint-points)
-    (point-width 10)
-    (hint-anti-alias)
+    (point-width 3)
     (with-primitive (build-particles 100)
         ; randomise the particle positions
         (pdata-map!
             (lambda (p)
-                (vector (flxrnd) (flxrnd) (flxrnd)))
+                (rndvec))
             "p")))
 
 ; sprite particles

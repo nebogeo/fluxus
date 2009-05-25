@@ -12,7 +12,7 @@ MajorVersion = "0"
 MinorVersion = "16"
 FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
-Target = "fluxus-0.16"
+Target = "fluxus"
 
 # changed prefix and pltprefix so they can be invoked at runtime
 # like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
@@ -32,6 +32,11 @@ if sys.platform == 'darwin':
 	PLTPrefix = ARGUMENTS.get('PLTPrefix', PLTBin[:-5])
 	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
 	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+elif sys.platform == 'win32':
+	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
+	PLTPrefix = ARGUMENTS.get('PLTPrefix','c:/Program Files/PLT')
+	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
+	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
 	PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
@@ -43,8 +48,9 @@ DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
 DataInstall = DESTDIR + DataLocation
 FluxusCollectsLocation = Prefix + "/lib"
 CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
+DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
-if sys.platform == 'darwin':
+if sys.platform == 'darwin' or sys.platform == 'win32':
         PLTCollectsLocation = PLTPrefix + "/collects/"
 else:
         PLTCollectsLocation = PLTLib + "/collects/"
@@ -74,10 +80,13 @@ IncludePaths = [
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
 
+if env['PLATFORM'] == 'win32':
+	IncludePaths += [ "/MinGW/include/freetype2" ]
+	LibPaths += [ "/MinGW/lib" ]
+
 if env['PLATFORM'] == 'darwin':
-        IncludePaths += ['/opt/local/include',
-                                        '/opt/local/include/freetype2']
-        LibPaths += ['/opt/local/lib']
+	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
+	LibPaths += ['/opt/local/lib']
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
@@ -86,11 +95,6 @@ env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
 env.Append(CCFLAGS=" -DPLT_COLLECTS_LOCATION="+"\"\\\""+PLTCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
-
-# multitexturing causes crashes on some cards, default it to off, and
-# enable users to enable manually while I figure out what it is...
-if ARGUMENTS.get("MULTITEXTURE","1")=="1":
-        env.Append(CCFLAGS=' -DENABLE_MULTITEXTURE')
 
 if ARGUMENTS.get("GLSL","1")=="1":
         env.Append(CCFLAGS=' -DGLSL')
@@ -101,13 +105,41 @@ if ARGUMENTS.get("STEREODEFAULT","0")=="1":
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
         env.Append(CCFLAGS=' -DACCUM_BUFFER')
 
+if ARGUMENTS.get("MULTITEXTURING","1")=="0":
+        env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
+
+if ARGUMENTS.get("RELATIVE_COLLECTS","0")=="1":
+	env.Append(CCFLAGS=' -DRELATIVE_COLLECTS')
+
+static_modules=0
+if ARGUMENTS.get("STATIC_MODULES","0")=="1":
+	static_modules=1
+	env.Append(CCFLAGS=' -DSTATIC_LINK')
+
+static_everything=0
+if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
+	static_everything=1
+	static_modules=1
+	env.Append(CCFLAGS=' -DSTATIC_LINK')
+
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTLib + "/mzdyn.o"
 
-if ARGUMENTS.get("3M","1")=="1":
-        env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-        MZDYN = PLTLib + "/mzdyn3m.o"
+if env['PLATFORM'] == 'win32':
+	# need to do this to get scons to link plt's mzdyn.o
+	MZDYN = PLTLib + "/gcc/mzdyn.o"
+
+	if ARGUMENTS.get("3M","1")=="1":
+		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		MZDYN = PLTLib + "/gcc/mzdyn3m.o"
+else:
+	# need to do this to get scons to link plt's mzdyn.o
+	MZDYN = PLTLib + "/mzdyn.o"
+	
+	if ARGUMENTS.get("3M","1")=="1":
+		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		MZDYN = PLTLib + "/mzdyn3m.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -129,6 +161,15 @@ LibList = [["m", "math.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
                 ["GLEW", "GL/glew.h"]]
+
+if env['PLATFORM'] == 'win32':
+	LibList = [["m", "math.h"],
+			["freetype", "ft2build.h"],
+            ["glew32", "GL/glew.h"],
+            ["glut32", "GL/glut.h"],
+            ["glu32", "GL/glu.h"],
+            ["opengl32", "GL/gl.h"],
+			["libmzsch3m_6mqxfs", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -153,7 +194,7 @@ elif env['PLATFORM'] == 'darwin':
         if not GetOption('app'):
             LibList += [["jack", "jack/jack.h"]]
 
-        env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MzScheme'],
+        env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MrEd'],
                 FRAMEWORKPATH = [PLTLib])
 
 ################################################################################
@@ -204,7 +245,20 @@ Install = BinInstall
 # need to build the bytecode for the base scheme library
 # this is the wrong place to do this
 if not GetOption('clean'):
-        os.system("mzc --c-mods src/base.c ++lib scheme/base")
+	if static_modules:
+		# in static mode, we want to embed all of plt we need
+		os.system("mzc --c-mods src/base.c \
+			++lib scheme/base  \
+			++lib scheme/base/lang/reader  \
+			++lib xml/xml \
+			++lib compiler \
+			++lib mzscheme \
+			++lib mzlib/string \
+			++lib setup   \
+			++lib config  \
+			++lib stxclass")
+	else:
+		os.system("mzc --c-mods src/base.c ++lib scheme/base")
 
 Source = ["src/GLEditor.cpp",
                 "src/GLFileDialog.cpp",
@@ -215,14 +269,120 @@ Source = ["src/GLEditor.cpp",
                 "src/PolyGlyph.cpp",
                 "src/main.cpp"]
 
-env.Program(source = Source, target = Target)
+app_env = env.Clone()
+
+# statically link all the modules
+if not GetOption('clean') and static_modules:
+		
+	# statically link in all the fluxus modules
+	# these pick up the 'libfluxus-engine_ss.a' libs
+	# rather than .so due to the 'lib' at the start
+	app_env.Append(LIBPATH = ["modules/fluxus-engine/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-osc/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-audio/"])
+	app_env.Append(LIBPATH = ["modules/fluxus-midi/"])
+	app_env.Append(LIBPATH = ["libfluxus/"])
+	app_env.Append(LIBS = ["fluxus-engine_ss"])
+	app_env.Append(LIBS = ["fluxus-osc_ss"])
+	app_env.Append(LIBS = ["fluxus-audio_ss"])
+	app_env.Append(LIBS = ["fluxus-midi_ss"])
+	
+	if static_everything:
+		# this is all a bit fragile, due to the need to put all the 
+		# dependancies of the dynamic libraries here, in the right order
+		
+		# start off with the first options
+		linkcom = " -static-libgcc -Wl,-Bstatic -lstdc++ -ljack -lrt -lasound \
+			-lfluxus -lpthread_nonshared "
+	
+		app_env['LIBS'].remove("pthread")
+		app_env['LIBS'].remove("dl")
+	
+		# now go through the rest of the libs, removing them from 
+		# the environment at the same time
+		for i in " X11 GLEW GLU glut asound m ode fftw3 mzscheme3m png tiff \
+					jpeg freetype sndfile lo z ".split():
+			app_env['LIBS'].remove(i)
+			linkcom+="-l"+i+" "
+	
+		# add the remaining dependancies
+		app_env.Append(LINKCOM = linkcom + ' -lFLAC -logg -Wl,-Bdynamic')
+	else:
+		# statically link in mzscheme only
+		app_env['LIBS'].remove('mzscheme3m')
+		app_env.Append(LINKCOM = ' -Wl,-Bstatic -lmzscheme3m -Wl,-Bdynamic')
+		
+		# have to add the libs needed by the fluxus modules here
+		app_env.Append(LIBS = ["fluxus"])
+		app_env.Append(LIBS = ["jack"])
+		app_env.Append(LIBS = ["asound"])
+
+app_env.Program(source = Source, target = Target)
 
 ################################################################################
 # Build everything else
 # call the core library builder and the scheme modules
 
-SConscript(dirs = Split("libfluxus modules fluxa"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall"])
+if env['PLATFORM'] == 'win32':
+	SConscript(dirs = Split("libfluxus modules"),
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+
+else:
+	SConscript(dirs = Split("libfluxus modules fluxa"),
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+
+
+################################################################################
+# documentation
+
+Docs = ["docs/fluxus-documentation.pdf",
+	"examples/allprims.scm",
+	"examples/asteroids.scm",
+	"examples/bars.scm",
+	"examples/blobbies.scm",
+	"examples/cheap-outline.scm",
+	"examples/collide-seq.scm",
+	"examples/cube-matrix.scm",
+	"examples/dancing-robots.scm",
+	"examples/flocking.scm",
+	"examples/GLSL.scm",
+	"examples/GLSL-shaderlib.scm",
+	"examples/hitchcock.scm",
+	"examples/invaders.scm",
+	"examples/l-system-obj.scm",
+	"examples/l-system.scm",
+	"examples/materials.scm",
+	"examples/midi-test.scm",
+	"examples/missile-command.scm",
+	"examples/mouse-interactive.scm",
+	"examples/multitexture.scm",
+	"examples/multi-view.scm",
+	"examples/obj-import.scm",
+	"examples/occlusion-bake.scm",
+	"examples/osc-test.scm",
+	"examples/particle-paint.scm",
+	"examples/particles.scm",
+	"examples/physics-joints.scm",
+	"examples/plenty-o-particles.scm",
+	"examples/poly-eval.scm",
+	"examples/proc-texture.scm",
+	"examples/qflux-game.scm",
+	"examples/random.scm",
+	"examples/realtime-toon.scm",
+	"examples/ribbon-prim.scm",
+	"examples/scenegraph-nav.scm",
+	"examples/select.scm",
+	"examples/shadow-phys.scm",
+	"examples/shadows.scm",
+	"examples/skinning.scm",
+	"examples/sound.scm",
+	"examples/spotlights.scm",
+	"examples/sprite-particles.scm",
+	"examples/texcoords.scm",
+	"examples/toon.scm",
+	"examples/tree.scm",
+	"examples/water-sim.scm",
+	"examples/wire.scm"]
 
 ################################################################################
 # packaging / installing
@@ -231,9 +391,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         TOOL_BUNDLE(env)
         # We add frameworks after configuration bit so that testing is faster.
         # FIXME: check if Jackmp is available if making an app
-        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MzScheme Jackmp"))
+        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd Jackmp"))
         # add dynamic libs
-        frameworks = [PLTLib + '/PLT_MzScheme.framework',
+        frameworks = [PLTLib + '/PLT_MrEd.framework',
                      '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
 
@@ -272,7 +432,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         frameworks = [ '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
         env.Alias('app', env.MakeBundle('Fluxa.app',
-                                        'fluxa/fluxa-0.16',
+                                        'fluxa/fluxa',
                                         'key',
                                         'macos/fluxa-Info.plist',
                                         dylibs = dylibs,
@@ -280,7 +440,10 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         typecode='APPL',
                                         icon_file='macos/fluxa.icns'))
 
+if (env['PLATFORM'] == "win32"):
+	Target+=".exe"
 
+env.Install(DocsInstall, Docs)
 env.Install(Install, Target)
 env.Alias('install', [DESTDIR + Prefix, CollectsInstall])
 

@@ -60,6 +60,20 @@ private:
 	vector<dColour> *m_ColData;
 	vector<dVector> *m_SizeData;
 	vector<float> *m_RotateData;
+	
+	class SortItem
+	{
+	public:
+		SortItem(int i, float d) : Index(i), Depth(d) {}
+
+		int Index;
+		float Depth;
+		
+		bool operator<(const SortItem &other) const
+		{
+			return Depth<other.Depth;
+		}
+	};
 };
 
 }

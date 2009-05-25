@@ -14,9 +14,12 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include "OpenGL.h"
+
 #include "Renderer.h"
 #include "PolyPrimitive.h"
 #include "State.h"
+#include "TexturePainter.h"
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
@@ -132,29 +135,33 @@ void PolyPrimitive::Render()
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
 	
-	#ifdef ENABLE_MULTITEXTURE
-	// possibly a candidate to put in Primitive:PreRender()
-	for (int n=1; n<MAX_TEXTURES; n++)
+	#ifndef DISABLE_MULTITEXTURE
+	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
-		if (m_State.Textures[n]!=0)
+		// possibly a candidate to put in Primitive:PreRender()
+		for (int n=1; n<MAX_TEXTURES; n++)
 		{
-			char name[3]; 
-			snprintf(name,3,"t%d",n);
-			TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
-			glClientActiveTexture(GL_TEXTURE0+n);
-
-			if (tex!=NULL)
-			{	
-				glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
-			}
-			else // default to using the normal vertex coordinates
+			if (m_State.Textures[n]!=0)
 			{
-				glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
+				char name[3]; 
+				snprintf(name,3,"t%d",n);
+				TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
+				glClientActiveTexture(GL_TEXTURE0+n);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				
+				if (tex!=NULL)
+				{	
+					glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
+				}
+				else // default to using the normal vertex coordinates
+				{
+					glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
+				}
 			}
 		}
-	}
-	glClientActiveTexture(GL_TEXTURE0);
-	#endif	
+		glClientActiveTexture(GL_TEXTURE0);
+	}	
+	#endif
 	
 	if (m_State.Hints & HINT_VERTCOLS)
 	{
@@ -211,6 +218,8 @@ void PolyPrimitive::Render()
 
 
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
+
 }
 
 void PolyPrimitive::RecalculateNormals(bool smooth)

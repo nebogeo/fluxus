@@ -14,7 +14,7 @@
 ;; EndSectionDoc 
 
 #lang scheme/base
-(require "fluxus-engine.ss")
+(require "fluxus-modules.ss")
 (provide 
  with-state
  with-primitive
@@ -26,6 +26,7 @@
  detach-parent
  vx vy vz vr vg vb va
  vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
+ vadd vsub mmul madd msub mdiv
  )
  
 ;; StartFunctionDoc-en
@@ -417,7 +418,73 @@
 (define (vb-set! v s) (vector-set! v 2 s))
 (define (va-set! v s) (vector-set! v 3 s))
 
+; macros for vadd, vsub, mmul, madd, mdiv, msub allowing 
+; them to take arbitrary counts of arguments 
+				
+(define-syntax vadd
+	(syntax-rules ()
+		((_ a ...)
+			(vadd-list (list a ...)))))
 
-				
-				
-				
+(define (vadd-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (vadd2 (car l) (cadr l)))
+		(else (vadd2 (car l) (vadd-list (cdr l))))))
+
+(define-syntax vsub
+	(syntax-rules ()
+		((_ a ...)
+			(vsub-list (list a ...)))))
+
+(define (vsub-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (vsub2 (car l) (cadr l)))
+		(else (vsub2 (car l) (vadd-list (cdr l))))))
+
+(define-syntax mmul
+	(syntax-rules ()
+		((_ a ...)
+			(mmul-list (list a ...)))))
+
+(define (mmul-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (mmul2 (car l) (cadr l)))
+		(else (mmul2 (car l) (mmul-list (cdr l))))))
+
+(define-syntax madd
+	(syntax-rules ()
+		((_ a ...)
+			(madd-list (list a ...)))))
+
+(define (madd-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (madd2 (car l) (cadr l)))
+		(else (madd2 (car l) (madd-list (cdr l))))))
+		
+(define-syntax msub
+	(syntax-rules ()
+		((_ a ...)
+			(msub-list (list a ...)))))
+
+(define (msub-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (msub2 (car l) (cadr l)))
+		(else (msub2 (car l) (msub-list (cdr l))))))
+		
+(define-syntax mdiv
+	(syntax-rules ()
+		((_ a ...)
+			(mdiv-list (list a ...)))))
+
+(define (mdiv-list l)
+	(cond
+		((eq? (length l) 1) (car l))
+		((eq? (length l) 2) (mdiv2 (car l) (cadr l)))
+		(else (mdiv2 (car l) (mdiv-list (cdr l))))))
+		
+

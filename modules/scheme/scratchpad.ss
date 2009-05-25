@@ -14,14 +14,12 @@
 
 #lang scheme/base
 
-(require "fluxus-engine.ss"
-	     "fluxus-audio.ss"
-         "fluxus-osc.ss"
-		 fluxus-016/input
-		 fluxus-016/help
-		 fluxus-016/camera
-		 fluxus-016/building-blocks
-		 (only-in srfi/13 string-pad))
+(require "fluxus-modules.ss"
+		 "input.ss"
+		 "help.ss"
+		 "camera.ss"
+		 "building-blocks.ss"
+		 "tasks.ss")
 		 
 (provide 
  fluxus-auto-indent
@@ -32,10 +30,7 @@
  fluxus-input-release-callback
  fluxus-frame-callback
  override-frame-callback
- set-user-callback!
  every-frame
- clear-frame-hooks
- add-frame-hook
  clear
  start-framedump
  end-framedump
@@ -46,12 +41,7 @@
  )
 
 ;-------------------------------------------------
-; every frame stuff 
-
-(define user-callback '())
-
-(define (set-user-callback! s)
-  (set! user-callback s))  
+; every frame stuff   
 
 ;; StartFunctionDoc-en
 ;; every-frame callback-function
@@ -84,23 +74,7 @@
 (define-syntax every-frame
   (syntax-rules ()
     ((every-frame expr)
-     (set-user-callback! (lambda () expr)))))
-
-;---------------------------------------------------------------
-
-(define frame-hooks '())
-
-(define (clear-frame-hooks)
-	(set! frame-hooks '()))
-
-(define (add-frame-hook hook)
-	(set! frame-hooks (cons hook frame-hooks)))
-
-(define (run-frame-hooks)
-	(for-each
-		(lambda (hook)
-			(hook))
-		frame-hooks))
+	 (spawn-task (lambda () expr) 'every-frame-task))))
 
 ;---------------------------------------------------------------
 
@@ -131,7 +105,7 @@
 ;; EndFunctionDoc
 
 (define (clear)
-  (set! user-callback '())
+  (rm-task 'every-frame-task)
   (clear-engine)
   (light-diffuse 0 (vector 1 1 1))
   (unlock-camera))
@@ -190,12 +164,15 @@
 
 (define (end-framedump)
   (set! framedump-frame -1))
+   
+ (define (string-pad b)
+   (substring (number->string (+ b 100000)) 1 6))
 
 (define (framedump-update)
   (cond 
     ((>= framedump-frame 0)
      (let ((filename (string-append framedump-filename 
-                                    (string-pad (number->string framedump-frame) 5 #\0) 
+                                    (string-pad (number->string framedump-frame)) 
                                     "." framedump-type)))
        ;(display "saving frame: ")(display filename)(newline)
        (framedump filename)
@@ -338,10 +315,7 @@
     (set! camera-update s))
 		
 (define (do-render)
-     (when (not (null? user-callback))
-       (with-state
-        (user-callback)))
-	 (run-frame-hooks)
+	 (with-state (run-tasks))
      (fluxus-render))
 	 
 ;-------------------------------------------------
@@ -403,7 +377,8 @@
      (do-render)
      (when physics-debug (render-physics))
      (tick-physics)
-     (update-audio))
+     (update-audio)
+	 (update-input))
     (else
      (stereo-render)))
   (display (fluxus-error-log)))

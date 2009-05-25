@@ -1139,6 +1139,49 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// select-all screenxpos-number screenypos-number pixelssize-number
+// Returns: list of primitiveid-numbers
+// Description:
+// Looks in the region specified and returns all ids rendered there in a
+// list, or '() if none exist.
+// Example:
+// (display (select-all 10 10 2))(newline)
+// EndFunctionDoc
+
+Scheme_Object *select_all(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *vec = NULL;
+	Scheme_Object *tmp = NULL;
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, vec);
+	MZ_GC_VAR_IN_REG(1, argv);
+	MZ_GC_REG();
+
+	ArgCheck("select-all", "iii", argc, argv);
+	int x=IntFromScheme(argv[0]);
+	int y=IntFromScheme(argv[1]);
+	int s=IntFromScheme(argv[2]);
+
+	unsigned int *IDs;
+	int num = Engine::Get()->Renderer()->SelectAll(
+					Engine::Get()->GrabbedCamera(),
+					x, y, s, &IDs);
+
+	vec = scheme_make_vector(num, scheme_void);
+
+	for (int i = 0; i < num; i++)
+	{
+		tmp = scheme_make_integer_value(IDs[i]);
+		SCHEME_VEC_ELS(vec)[i] = tmp;
+	}
+
+    ret = scheme_vector_to_list(vec);
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
 // desiredfps fps-number
 // Returns: void
 // Description:
@@ -1534,8 +1577,69 @@ Scheme_Object *print_info(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// set-cursor image-name-symbol
+// Returns: void
+// Description:
+// Changes the mouse cursor.
+// Cursor image name symbols can consist of: 'right-arrow, 'left-arrow, 'info,
+// 'destroy, 'help, 'cycle, 'spray, 'wait, 'text, 'crosshair, 'up-down,
+// 'left-right, 'top-side, 'bottom-side, 'left-side, 'right-side,
+// 'top-left-corner, 'top-right-corner, 'bottom-right-corner,
+// 'bottom-left-corner, 'full-crosshair, 'none, 'inherit
+// The default cursor image symbol when the window is created is 'inherit.
+// Example:
+// (set-cursor 'crosshair)
+// EndFunctionDoc
+
+Scheme_Object *set_cursor(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("set-cursor", "S", argc, argv);
+	string cursym = SymbolName(argv[0]);
+	int cursor = GLUT_CURSOR_INHERIT;
+
+	string symbols[] = { "right-arrow", "left-arrow", "info", "destroy",
+						"help", "cycle", "spray",
+						"wait", "text", "crosshair", "up-down",
+						"left-right", "top-side", "bottom-side",
+						"left-side", "right-side", "top-left-corner",
+						"top-right-corner", "bottom-right-corner",
+						"bottom-left-corner", "full-crosshair",
+						"none", "inherit" };
+	int values[] = { GLUT_CURSOR_RIGHT_ARROW, GLUT_CURSOR_LEFT_ARROW,
+					 GLUT_CURSOR_INFO, GLUT_CURSOR_DESTROY, GLUT_CURSOR_HELP,
+					 GLUT_CURSOR_CYCLE, GLUT_CURSOR_SPRAY, GLUT_CURSOR_WAIT,
+					 GLUT_CURSOR_TEXT, GLUT_CURSOR_CROSSHAIR,
+					 GLUT_CURSOR_UP_DOWN, GLUT_CURSOR_LEFT_RIGHT,
+					 GLUT_CURSOR_TOP_SIDE, GLUT_CURSOR_BOTTOM_SIDE,
+					 GLUT_CURSOR_LEFT_SIDE, GLUT_CURSOR_RIGHT_SIDE,
+					 GLUT_CURSOR_TOP_LEFT_CORNER, GLUT_CURSOR_TOP_RIGHT_CORNER,
+					 GLUT_CURSOR_BOTTOM_RIGHT_CORNER, GLUT_CURSOR_BOTTOM_LEFT_CORNER,
+					 GLUT_CURSOR_FULL_CROSSHAIR, GLUT_CURSOR_NONE, GLUT_CURSOR_INHERIT };
+	bool found = false;
+
+	for (unsigned i = 0; i < sizeof(values)/sizeof(int); i++)
+	{
+		if (cursym == symbols[i])
+		{
+			cursor = values[i];
+			found = true;
+			break;
+		}
+	}
+
+	if (found)
+		glutSetCursor(cursor);
+	else
+		Trace::Stream<<"cursor image name is not recognised: "<<cursym<<endl;
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -1568,17 +1672,19 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
 	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
+	scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
 	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
- 	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
- 	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
- 	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
- 	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
- 	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
-  	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
-    scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
+	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
+	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
+	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
+	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
+	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
+	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
+	scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
 	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
 	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
 	scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
+	scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
 
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }

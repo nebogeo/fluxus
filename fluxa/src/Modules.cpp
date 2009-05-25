@@ -791,12 +791,13 @@ void Delay::Process(unsigned int BufSize, Sample &In, Sample &DelayCV, Sample &F
 
 void Delay::Process(unsigned int BufSize, Sample &In, Sample &Out)
 {
-	if (m_Delay==0) 
+	unsigned int delay=(unsigned int)(m_SampleRate*m_Delay);
+	
+	if (delay==0) 
 	{
 		return;
 	}
 
-	unsigned int delay=(unsigned int)(m_SampleRate*m_Delay);
 	if (delay>=(unsigned int)m_Buffer.GetLength()) delay=m_Buffer.GetLength()-1;
 	
 	for (unsigned int n=0; n<BufSize; n++)

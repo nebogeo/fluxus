@@ -1768,7 +1768,6 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 // multitexture 1 looks for "t1". You need to add these yourself using (pdata-add) or (pdata-copy). 
 // Multitexturing is useful when the textures contain alpha, as they can be overlayed, i.e. decals
 // placed on background textures.
-// Note: fluxus needs to be built using scons MULTITEXTURE=1 to enable this feature.
 // Example:
 // (clear)
 // (define p (build-torus 1 2 20 20))
@@ -1792,9 +1791,7 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 // adicionar estas você mesmo usando (pdata-add) ou
 // (pdata-copy). Multitexturas é útil quando a textura contém alpha,
 // já que elas podem ser sobrepostas, por exemplo adesivos colocados
-// em texturas de fundo.
-// Nota: Fluxus precisa ser compilado usando scons MULTITEXTURE=1 para
-// ativar essa capacidade. 
+// em texturas de fundo. 
 // Exemplo:
 // (define obj (build-sphere 10 10)) ; make a sphere 
 // (grab obj)

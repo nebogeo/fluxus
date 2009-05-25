@@ -3,12 +3,14 @@
 #
 # This is the main PLT module for the fluxus midi functions
 
-Import("env", "BinaryModulesLocation", "MZDYN")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-midi_ss.dylib"
 else:
 	Target = "fluxus-midi_ss.so"
+
+if static_modules: Target = "fluxus-midi_ss"
 
 Install = BinaryModulesLocation
 
@@ -24,13 +26,19 @@ if env['PLATFORM'] == 'posix':
 elif env['PLATFORM'] == 'darwin':
 	Libs = []
 	env.Append(CCFLAGS = ' -D__MACOSX_CORE__')
-	Frameworks = ['CoreMidi', 'CoreAudio', 'CoreFoundation', 'PLT_MzScheme']
+	Frameworks = ['CoreMIDI', 'CoreAudio', 'CoreFoundation', 'PLT_MrEd']
 
-env.SharedLibrary(source = Source, 
+if static_modules:
+	env.StaticLibrary(source = Source, 
+				  target = Target,
+				  FRAMEWORKS = Frameworks,
+				  LIBS = Libs)
+else:
+	env.SharedLibrary(source = Source, 
 				  target = Target,
 				  LIBS = Libs,
 				  FRAMEWORKS = Frameworks,
 				  SHLIBPREFIX = "")
 						 
-env.Install(Install, Target)
+if not static_modules: env.Install(Install, Target)
 

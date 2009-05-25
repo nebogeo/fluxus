@@ -7,8 +7,8 @@
 ;; EndSectionDoc
 #lang scheme/base
 
-(require "fluxus-engine.ss"
-         fluxus-016/building-blocks 
+(require "fluxus-modules.ss"
+         "building-blocks.ss"
          xml/xml 
          scheme/list)
 		 

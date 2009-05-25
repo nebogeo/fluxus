@@ -17,13 +17,9 @@
 #ifndef N_UTILS
 #define N_UTILS
 
-#ifndef __APPLE__
-#include <GL/gl.h> 
-#else
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
-#endif 
-#include <stdlib.h> 
+#include "OpenGL.h"
+
+#include <stdlib.h>
 
 GLubyte *GetScreenBuffer(int x, int y, unsigned int width, unsigned int height, int super=1);
 int ScreenCapTiff(const char *filename, const char *description, int x, int y, int width, int height, int compression, int super=1);

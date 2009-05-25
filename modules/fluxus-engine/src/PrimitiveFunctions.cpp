@@ -83,8 +83,8 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
-		MZ_GC_UNREG();
-		return 0;
+		MZ_GC_UNREG(); 
+		return scheme_void;
 	}
 	Prim->Resize(size);
 	MZ_GC_UNREG();
@@ -136,7 +136,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *Prim = new PolyPrimitive(type);
 	Prim->Resize(size);
@@ -173,7 +173,7 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-sphere: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeSphere(SphPrim, 1, x, y);
@@ -211,7 +211,7 @@ Scheme_Object *build_torus(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-torus: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *Prim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeTorus(Prim, FloatFromScheme(argv[0]), FloatFromScheme(argv[1]), x, y);
@@ -272,7 +272,7 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-plane: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakePlane(PlanePrim,x,y);
@@ -309,7 +309,7 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-cylinder: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PolyPrimitive *CylPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
     MakeCylinder(CylPrim, 1, 1, x, y);
@@ -356,7 +356,7 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-ribbon: size is less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	RibbonPrimitive *Prim = new RibbonPrimitive();
 	Prim->Resize(IntFromScheme(argv[0]));
@@ -600,7 +600,7 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs-sphere: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	NURBSPrimitive *SphPrim = new NURBSPrimitive;
     MakeNURBSSphere(SphPrim, 1, x, y);
@@ -636,7 +636,7 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-nurbs-plane: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	NURBSPrimitive *Prim = new NURBSPrimitive;
     MakeNURBSPlane(Prim, x, y);
@@ -684,7 +684,7 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-particles: size less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	ParticlePrimitive *Prim = new ParticlePrimitive;
 	for (int i=0; i<size; i++)
@@ -722,6 +722,40 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 {
 	LocatorPrimitive *Prim = new LocatorPrimitive();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+}
+
+// StartFunctionDoc-en
+// locator-bounding-radius
+// locator-bounding-radius size-number
+// Returns: void
+// Description:
+// Sets the bounding box radius for the locator
+// Example:
+// (define mylocator (build-locator))
+// (with-primitive mylocator
+//     (locator-bounding-radius 23.4))
+// EndFunctionDoc
+
+Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("locator-bounding-radius", "i", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a locator primitive
+		LocatorPrimitive *lp = dynamic_cast<LocatorPrimitive *>(Grabbed);
+		if (lp)
+		{
+			lp->SetBoundingBoxRadius(FloatFromScheme(argv[0]));
+			MZ_GC_UNREG();
+			return scheme_void;
+		}
+	}
+
+	Trace::Stream<<"locator-bounding-radius can only be called while a locator primitive is grabbed"<<endl;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -857,7 +891,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-pixels: resolution in x or y less than 1!"<<endl;
 		MZ_GC_UNREG();
-		return 0;
+		return scheme_void;
 	}
 	PixelPrimitive *Prim = new PixelPrimitive(x,y);
 	MZ_GC_UNREG();
@@ -1181,7 +1215,7 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"build-blobby: size less than 1!"<<endl;
 		MZ_GC_UNREG(); 
-		return 0;
+		return scheme_void;
 	}	
 	
 	dVector dim;
@@ -1317,10 +1351,19 @@ Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
-{    	
+{
 	DECL_ARGV();
 	ArgCheck("draw-instance", "i", argc, argv);
-    Engine::Get()->Renderer()->RenderPrimitive(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+	Primitive *p = Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (p)
+	{
+		Engine::Get()->Renderer()->RenderPrimitive(p);
+	}
+	else
+	{
+		Trace::Stream<<"draw-instance can only be called with an existing object id"<<endl;
+	}
+
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
@@ -2399,6 +2442,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-nurbs-plane", scheme_make_prim_w_arity(build_nurbs_plane, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
+	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
 	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
 	scheme_add_global("build-extruded-type", scheme_make_prim_w_arity(build_extruded_type, "build-extruded-type", 3, 3), env);

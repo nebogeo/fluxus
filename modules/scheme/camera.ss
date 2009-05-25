@@ -7,8 +7,9 @@
 ;; EndSectionDoc	
 #lang scheme/base
 
-(require "fluxus-engine.ss")
+(require "fluxus-modules.ss")
 (require "input.ss")
+(require "building-blocks.ss")
 (provide 
  input-camera
  set-camera-transform
@@ -132,9 +133,9 @@
 (define (update-camera)
   (set! camera-matrix
         (mmul (mtranslate camera-position)
-              (qtomatrix (qconjugate 
-                          (qmul camera-rot-now
-                                camera-rot-start)))))
+              (mtranspose (qtomatrix (qconjugate 
+                              (qmul camera-rot-now
+                                    camera-rot-start))))))
   (set-ortho-zoom (vector-ref camera-position 2)))
 
 ; set the initial camera matrix

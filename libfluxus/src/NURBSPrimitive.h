@@ -50,6 +50,7 @@ public:
 	void Init(int orderu, int orderv, int ucvs, int vcvs) { m_UOrder=orderu; m_VOrder=orderv; m_UCVCount=ucvs; m_VCVCount=vcvs; }
 	void AddCV(const dVector &CV) { m_CVVec->push_back(CV); }
 	void AddN(const dVector &N) { m_NVec->push_back(N); }
+	void AddColour(const dColour &c) { m_ColData->push_back(c); }
 	void AddTex(const dVector &ST) { m_STVec->push_back(ST); }
 	void AddUKnot(float k) { m_UKnotVec.push_back(k); }
 	void AddVKnot(float k) { m_VKnotVec.push_back(k); }
@@ -63,6 +64,7 @@ protected:
 	vector<dVector> *m_CVVec;
 	vector<dVector> *m_STVec;
 	vector<dVector> *m_NVec;
+	vector<dColour> *m_ColData;
 	vector<float> m_UKnotVec;
 	vector<float> m_VKnotVec;
 

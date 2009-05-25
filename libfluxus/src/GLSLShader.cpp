@@ -22,8 +22,7 @@
 using namespace std;
 using namespace Fluxus;
 
-bool GLSLShader::m_Enabled(true);
-
+bool GLSLShader::m_Enabled(false);
 
 GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fragment)
 {
@@ -116,6 +115,7 @@ unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
 unsigned int GLSLShaderPair::MakeShader(const string &filename, const string &source, unsigned int type)
 {
 	#ifdef GLSL
+	if (!GLSLShader::m_Enabled) return 0;
 	unsigned int shader = glCreateShader(type);
 	const char *t = source.c_str();
 	glShaderSource(shader, 1, &t, NULL);
@@ -151,6 +151,8 @@ m_Program(0),
 m_RefCount(1)
 {	
 	#ifdef GLSL
+	if (!m_Enabled) return;
+	
 	m_Program = glCreateProgram();
 	glAttachShader(m_Program, pair.GetVertexShader());
 	glAttachShader(m_Program, pair.GetFragmentShader());

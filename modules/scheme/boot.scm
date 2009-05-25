@@ -18,12 +18,13 @@
 ; this script loads all the modules and sets things up so the 
 ; fluxus application works without having to worry about setup
 
+
 ; setup where to find the library module collections
 (current-library-collection-paths 
 	(path-list-string->path-list 
          (string-append
 		   (or (getenv "PLTCOLLECTS") plt-collects-location)
-		   ":" 
+		   (if (eq? fluxus-platform 'win32) ";" ":")
 		   fluxus-collects-location)
          (current-library-collection-paths)))
 
@@ -86,6 +87,7 @@
 ;-------------------------------------------------
 ; execute the user config script, if it exists
 
-(define user-script (string-append (getenv "HOME") "/.fluxus.scm"))
-(when (file-exists? user-script)
-  (load user-script))
+(when (getenv "HOME")
+	(let ((user-script (string-append (getenv "HOME") "/.fluxus.scm")))
+		(when (file-exists? user-script)
+	  		(load user-script))))

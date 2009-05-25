@@ -6,7 +6,7 @@
 
 Import("env", "BinInstall")
 
-Target       = "fluxa-0.16"
+Target       = "fluxa"
 Install      = BinInstall
 Libs = Split("m sndfile jack lo")
 Frameworks = []

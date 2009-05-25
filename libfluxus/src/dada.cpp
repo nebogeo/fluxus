@@ -330,9 +330,9 @@ dMatrix dQuat::toMatrix() const
 	float xx = x*xs, xy = x*ys, xz = x*zs;
 	float yy = y*ys, yz = y*zs, zz = z*zs;
 	return 
-        dMatrix(1.0f - (yy + zz), xy + wz, xz - wy, 0,
-			   xy - wz, 1.0f - (xx + zz), yz + wx, 0,
-			   xz + wy, yz - wx, 1.0f - (xx + yy), 0, 
+        dMatrix(1.0f - (yy + zz), xy - wz, xz + wy, 0,
+			   xy + wz, 1.0f - (xx + zz), yz - wx, 0,
+			   xz - wy, yz + wx, 1.0f - (xx + yy), 0, 
                0, 0, 0, 1.0f);
 }
 

@@ -1,0 +1,5 @@
+The scripts here are used to generate the documentation from comments
+kept in the scheme and C++ sourcecode. You shouldn't need to run any of 
+these unless you are developing fluxus. 
+
+Otherwise, look at fluxus-documentation.pdf

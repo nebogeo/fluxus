@@ -201,6 +201,12 @@ void OBJPrimitiveIO::ReadIndices(vector<Face> &output)
 					if (itokens[1]!="") ind.Texture=(unsigned int)atof(itokens[1].c_str())-1;
 					f.Index.push_back(ind);
 				}
+				else if (itokens.size()==1)
+				{
+					Indices ind;
+					if (itokens[0]!="") ind.Position=(unsigned int)atof(itokens[0].c_str())-1;
+					f.Index.push_back(ind);
+				}
 				else
 				{
 					Trace::Stream<<"Wrong number of indices in .obj file ("<<itokens.size()<<")"<<endl;

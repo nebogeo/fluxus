@@ -18,6 +18,14 @@
 #include "Interpreter.h"
 #include "Repl.h"
 
+#ifdef STATIC_LINK
+#include "../modules/fluxus-engine/src/FluxusEngine.h"
+#include "../modules/fluxus-audio/src/FluxusAudio.h"
+#include "../modules/fluxus-osc/src/FluxusOSC.h"
+#include "../modules/fluxus-midi/src/FluxusMIDI.h"
+#endif
+
+// include the scheme bytecode, created by mzc in SConstruct
 #include "base.c"
 
 using namespace std;
@@ -29,6 +37,8 @@ static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
 									"(define fluxus-collects-location \"%s\") " \
 									"(define fluxus-version \"%d%d\") " \
 									"(define fluxus-data-location \"%s\") " \
+									"(define static-link \"%s\") "\
+									"(define fluxus-platform '\"%s\") "\
 									"(load (string-append fluxus-collects-location \"/fluxus-\" " \
 										"fluxus-version \"/boot.scm\")) ";
 
@@ -76,15 +86,66 @@ void Interpreter::Initialise()
     v = scheme_intern_symbol("scheme/base");
     scheme_namespace_require(v);
 
+	// figure out what we are running on
+	#ifdef WIN32
+	string platform = "win32";
+	#else
+	#ifdef __APPLE__
+	string platform = "apple";
+	#else
+	string platform = "linux";
+	#endif
+	#endif
+
+#ifdef STATIC_LINK
+	engine_scheme_reload(m_Scheme);
+	audio_scheme_reload(m_Scheme);
+	osc_scheme_reload(m_Scheme);
+	midi_scheme_reload(m_Scheme);
+#endif
+
+	string PLTCollects(PLT_COLLECTS_LOCATION);
+	string FluxusCollects(FLUXUS_COLLECTS_LOCATION);
+	string DataLocation(DATA_LOCATION);
+	string StaticMode("#f");
+
+#ifdef RELATIVE_COLLECTS
+	// need the cwd to hack the collects path to 'relative'
+	char cwd[1024];
+	
+	#ifdef __APPLE__
+		// needs implementing
+		#error 
+	#else
+	#ifdef WIN32
+		// needs implementing
+		#error
+	#else // LINUX
+		getcwd(cwd, 1024);
+	#endif
+	#endif
+	
+	PLTCollects=string(cwd)+string("/collects");	
+	FluxusCollects=PLTCollects;
+	DataLocation=cwd;
+#endif
+
+#ifdef STATIC_LINK
+	StaticMode="#t";
+#endif
+
 	// load the startup script
 	char startup[1024];
-	// insert the version number
+	
+	// insert the version number etc
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		PLT_COLLECTS_LOCATION,
-		FLUXUS_COLLECTS_LOCATION,
+		PLTCollects.c_str(),
+		FluxusCollects.c_str(),
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,
-		DATA_LOCATION);
+		DataLocation.c_str(),
+		StaticMode.c_str(),
+		platform.c_str());
 
 	Interpret(startup,NULL,true);
 
@@ -96,21 +157,24 @@ void Interpreter::SetRepl(Repl *s)
 	m_Repl=s; 
 }
 
-void fill_from_port(Scheme_Object* port, char *dest, long size)
+int fill_from_port(Scheme_Object* port, char *dest, long size)
 {
 	MZ_GC_DECL_REG(2);
-    MZ_GC_VAR_IN_REG(0, port);
-    MZ_GC_VAR_IN_REG(1, dest);
-    MZ_GC_REG();
-	
-	long pos=0;	
+	MZ_GC_VAR_IN_REG(0, port);
+	MZ_GC_VAR_IN_REG(1, dest);
+	MZ_GC_REG();
+
+	long pos=0;
 	while (scheme_char_ready(port) && pos<size)
 	{
 		dest[pos++]=scheme_getc(port);
 	}
 	dest[pos]=0;
-		
+
+	// check if there are more characters available
+	int r=scheme_char_ready(port);
 	MZ_GC_UNREG();
+	return r;
 }
 
 string Interpreter::SetupLanguage(const string &str)
@@ -120,36 +184,40 @@ string Interpreter::SetupLanguage(const string &str)
 }
 
 bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
-{	
+{
 	char msg[LOG_SIZE];
 	mz_jmp_buf * volatile save = NULL, fresh;
-	
+
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, msg);
-    MZ_GC_REG();
-		
+	MZ_GC_REG();
+
 	string code = SetupLanguage(str);
-	
+
 	save = scheme_current_thread->error_buf;
-    scheme_current_thread->error_buf = &fresh;
-	
-    if (scheme_setjmp(scheme_error_buf)) 
+	scheme_current_thread->error_buf = &fresh;
+
+	if (scheme_setjmp(scheme_error_buf))
 	{
 		scheme_current_thread->error_buf = save;
-		if (m_ErrReadPort!=NULL) 
+		if (m_ErrReadPort!=NULL)
 		{
-			fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
-			if (strlen(msg)>0) 
-			  {
-			    if (m_Repl==NULL) cerr<<msg<<endl;
-			    else m_Repl->Print(string(msg));
-			  }
+			int char_available;
+			do
+			{
+				char_available = fill_from_port(m_ErrReadPort, msg, LOG_SIZE);
+				if (strlen(msg)>0)
+				{
+					if (m_Repl==NULL) cerr<<msg<<endl;
+					else m_Repl->Print(string(msg));
+				}
+			} while (char_available);
 		}
 		if (abort) exit(-1);
 		MZ_GC_UNREG();
 		return false;
-    }  
-	else 
+	}
+	else
 	{
 		if (ret==NULL)
 		{
@@ -160,18 +228,22 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 			*ret = scheme_eval_string_all(code.c_str(), m_Scheme, 1);
 		}
 		scheme_current_thread->error_buf = save;
-    }
-		
+	}
+
 	if (m_OutReadPort!=NULL)
 	{
-		fill_from_port(m_OutReadPort, msg, LOG_SIZE);
-		if (strlen(msg)>0)
-		  {
-		    if (m_Repl==NULL) cerr<<msg<<endl;
-		    else m_Repl->Print(string(msg));
-		  }
-	}	
-	
+		int char_available;
+		do
+		{
+			char_available = fill_from_port(m_OutReadPort, msg, LOG_SIZE);
+			if (strlen(msg)>0)
+			{
+				if (m_Repl==NULL) cerr<<msg<<endl;
+				else m_Repl->Print(string(msg));
+			}
+		} while (char_available);
+	}
+
 	MZ_GC_UNREG();
 	return true;
 }

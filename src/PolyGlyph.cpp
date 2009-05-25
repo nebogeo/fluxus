@@ -95,11 +95,19 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))PolyGlyph::TessEnd);
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))PolyGlyph::TessError);
 #else
+#ifdef WIN32	
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessError);
+#else
 	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())PolyGlyph::TessBegin);
 	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())PolyGlyph::TessVertex);
 	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (void (*)())PolyGlyph::TessCombine);
 	gluTessCallback(t, GLU_TESS_END_DATA, (void (*)())PolyGlyph::TessEnd);
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (void (*)())PolyGlyph::TessError);
+#endif
 #endif
 
 	gluTessProperty(t, GLU_TESS_WINDING_RULE, GLU_TESS_WINDING_NONZERO);
@@ -137,32 +145,32 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 	gluDeleteTess(t);
 }
 
-void PolyGlyph::TessError( GLenum errCode, GlyphGeometry* geo)
+void __stdcall PolyGlyph::TessError( GLenum errCode, GlyphGeometry* geo)
 {
     geo->m_Error=errCode;
 }
 
 
-void PolyGlyph::TessVertex( void* data, GlyphGeometry* geo)
+void __stdcall PolyGlyph::TessVertex( void* data, GlyphGeometry* geo)
 {
 	double *ptr = (double*)data;
     geo->m_Meshes[geo->m_Meshes.size()-1].m_Data.push_back(GlyphGeometry::Vec3<float>(ptr[0],ptr[1],ptr[2]));
 }
 
 
-void PolyGlyph::TessCombine( double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
+void __stdcall PolyGlyph::TessCombine( double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
 {
    outData=vertex_data;
 }
 
 
-void PolyGlyph::TessBegin( GLenum type, GlyphGeometry* geo)
+void __stdcall PolyGlyph::TessBegin( GLenum type, GlyphGeometry* geo)
 {
 	geo->m_Meshes.push_back(GlyphGeometry::Mesh(type));
 }
 
 
-void PolyGlyph::TessEnd(GlyphGeometry* geo)
+void __stdcall PolyGlyph::TessEnd(GlyphGeometry* geo)
 {
 }
 
