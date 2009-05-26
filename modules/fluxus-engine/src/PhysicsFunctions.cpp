@@ -350,20 +350,20 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// remove primitiveid-number
+// physics-remove primitiveid-number
 // Returns: void
 // Description:
 // Remove the object from the physics system.
 // Example:
 // (define mycube (build-cube))
 // (active-box mycube)
-// (remove mycube)
+// (physics-remove mycube)
 // EndFunctionDoc
 
-Scheme_Object *remove(int argc, Scheme_Object **argv)
+Scheme_Object *physics_remove(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("remove", "i", argc, argv);
+	ArgCheck("physics-remove", "i", argc, argv);
 	int name = IntFromScheme(argv[0]);
 	Engine::Get()->Physics()->Free(name);
 	MZ_GC_UNREG();
@@ -1400,7 +1400,7 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("passive-box", scheme_make_prim_w_arity(passive_box, "passive-box", 1, 1), env);
 	scheme_add_global("passive-cylinder", scheme_make_prim_w_arity(passive_box, "passive-cylinder", 1, 1), env);
 	scheme_add_global("passive-sphere", scheme_make_prim_w_arity(passive_box, "passive-sphere", 1, 1), env);
-	scheme_add_global("remove", scheme_make_prim_w_arity(remove, "remove", 1, 1), env);
+	scheme_add_global("physics-remove", scheme_make_prim_w_arity(physics_remove, "physics-remove", 1, 1), env);
 	scheme_add_global("surface-params", scheme_make_prim_w_arity(surface_params, "surface-params", 4, 4), env);
 	scheme_add_global("build-balljoint", scheme_make_prim_w_arity(build_balljoint, "build-balljoint", 3, 3), env);
 	scheme_add_global("build-fixedjoint", scheme_make_prim_w_arity(build_fixedjoint, "build-fixedjoint", 1, 1), env);
