@@ -75,6 +75,8 @@ m_ShowFileDialog(false)
 	GLEditor::m_XPos=(int)scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-y-pos", &t);
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
+	Interpreter::Interpret("fluxus-scratchpad-hide-script", &t);
+	m_HideScript=(int)scheme_real_to_double(t);
 	MZ_GC_UNREG();
 
 	GLEditor::InitFont(s);
