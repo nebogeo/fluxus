@@ -14,8 +14,10 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#include "GLSLShader.h"
+#include <stdio.h>
 #include <iostream>
+
+#include "GLSLShader.h"
 #include "Trace.h"
 #include "SearchPaths.h"
 
@@ -52,9 +54,9 @@ bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsour
 	if (!GLSLShader::m_Enabled) return true;
 
 	m_VertexShader = MakeShader("Inline vertex shader source",vertexsource,GL_VERTEX_SHADER);
-	if (m_VertexShader==0) return false; 
+	if (m_VertexShader==0) return false;
 	m_FragmentShader = MakeShader("Inline fragment shader source",fragmentsource,GL_FRAGMENT_SHADER);
-	if (m_FragmentShader==0) return false; 
+	if (m_FragmentShader==0) return false;
 
 	#endif
 	return true;
@@ -66,21 +68,21 @@ bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfi
 	if (!GLSLShader::m_Enabled) return true;
 
 	m_VertexShader = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
-	if (m_VertexShader==0) return false; 
+	if (m_VertexShader==0) return false;
 	m_FragmentShader = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
-	if (m_FragmentShader==0) return false; 
+	if (m_FragmentShader==0) return false;
 
 	#endif
 	return true;
 }
-	
-	
+
+
 unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
 {
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled) return 0;
 	FILE* file = fopen(filename.c_str(), "r");
-	if (!file) 
+	if (!file)
 	{
 		Trace::Stream<<"Couldn't open shader ["<<filename<<"]"<<endl;
 		return 0;
@@ -102,7 +104,7 @@ unsigned int GLSLShaderPair::LoadShader(string filename, unsigned int type)
 	}
 	else
 	{
-		unsigned int shader = MakeShader(filename,code,type);		
+		unsigned int shader = MakeShader(filename,code,type);
 		delete[] code;
 		fclose(file);
 		return shader;
@@ -125,7 +127,7 @@ unsigned int GLSLShaderPair::MakeShader(const string &filename, const string &so
 	GLint status = GL_FALSE;
 	glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
 	if(status != GL_TRUE)
-	{	
+	{
 		GLsizei size = 0;
 		char log[1024];
 
@@ -149,10 +151,10 @@ unsigned int GLSLShaderPair::MakeShader(const string &filename, const string &so
 GLSLShader::GLSLShader(const GLSLShaderPair &pair) :
 m_Program(0),
 m_RefCount(1)
-{	
+{
 	#ifdef GLSL
 	if (!m_Enabled) return;
-	
+
 	m_Program = glCreateProgram();
 	glAttachShader(m_Program, pair.GetVertexShader());
 	glAttachShader(m_Program, pair.GetFragmentShader());
@@ -166,7 +168,7 @@ m_RefCount(1)
 		char log[1024];
 		glGetProgramInfoLog(m_Program, 1024, &size, log);
 		Trace::Stream<<log<<endl;
-	}	
+	}
 	else
 	{
 		m_IsValid = true;
@@ -189,19 +191,19 @@ void GLSLShader::Init()
 	#endif
 }
 
-void GLSLShader::Apply() 
-{ 
+void GLSLShader::Apply()
+{
 	#ifdef GLSL
 	if (!m_Enabled) return;
-	glUseProgram(m_Program); 
+	glUseProgram(m_Program);
 	#endif
 }
 
-void GLSLShader::Unapply() 
-{ 
+void GLSLShader::Unapply()
+{
 	#ifdef GLSL
 	if (!m_Enabled) return;
-	glUseProgram(0); 
+	glUseProgram(0);
 	#endif
 }
 

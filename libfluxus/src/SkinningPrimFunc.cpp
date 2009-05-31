@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <stdio.h>
 #include "SkinningPrimFunc.h"
 #include "Primitive.h"
 #include "SceneGraph.h"
@@ -37,14 +38,14 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	vector<dVector> *pref = prim.GetDataVec<dVector>("pref");
 	vector<dVector> *n = NULL;
 	vector<dVector> *nref = NULL;
-	
+
 	if (!pref)
 	{
 		///\todo sort out a proper error messaging thing
 		Trace::Stream<<"SkinningPrimFunc::Run: aborting: primitive needs a pref (copy of p)"<<endl;
 		return;
 	}
-	
+
 	if (skinnormals)
 	{
 		n = prim.GetDataVec<dVector>("n");
@@ -55,21 +56,21 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 			return;
 		}
 	}
-	
+
 	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
 	if (!root)
 	{
 		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node "<<rootid<<endl;
 		return;
 	}
-	
+
 	const SceneNode *bindposeroot = static_cast<const SceneNode *>(world.FindNode(bindposerootid));
 	if (!root)
 	{
 		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find bindopose skeleton root node "<<bindposerootid<<endl;
 		return;
 	}
-	
+
 	// get the nodes as flat lists
 	vector<const SceneNode*> skeleton;
 	world.GetNodes(root, skeleton);
@@ -82,15 +83,15 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 			skeleton.size()<<" vs "<<bindposeskeleton.size()<<endl;
 		return;
 	}
-	
+
 	// make a vector of all the transforms
 	vector<dMatrix> transforms;
 	for (unsigned int i=0; i<skeleton.size(); i++)
 	{
 		transforms.push_back(world.GetGlobalTransform(skeleton[i])*
-        					 world.GetGlobalTransform(bindposeskeleton[i]).inverse());
+							 world.GetGlobalTransform(bindposeskeleton[i]).inverse());
 	}
-	
+
 	// get pointers to all the weights
 	vector<vector<float>*> weights;
 	for (unsigned int bone=0; bone<skeleton.size(); bone++)
@@ -105,7 +106,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		}
 		weights.push_back(w);
 	}
-	
+
 	for (unsigned int i=0; i<prim.Size(); i++)
 	{
 		dMatrix mat;
@@ -114,12 +115,13 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		{
 			mat+=(transforms[bone]*(*weights[bone])[i]);
 		}
-		
+
 		(*p)[i]=mat.transform((*pref)[i]);
-		
+
 		if (skinnormals)
 		{
 			(*n)[i]=mat.transform_no_trans((*nref)[i]);
 		}
 	}
 }
+

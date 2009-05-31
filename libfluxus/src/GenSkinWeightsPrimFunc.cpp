@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <stdio.h>
 #include <float.h>
 #include "GenSkinWeightsPrimFunc.h"
 #include "Primitive.h"
@@ -38,22 +39,22 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	vector<TypedPData<float> *> weights;
 	int bone=0;
 	vector<pair<const SceneNode*,const SceneNode*> > skeleton;
-	
+
 	const SceneNode *root = static_cast<const SceneNode *>(world.FindNode(rootid));
 	if (!root)
 	{
 		Trace::Stream<<"GenSkinWeightsPrimFunc::Run: couldn't find skeleton root node"<<endl;
 		return;
 	}
-	
+
 	world.GetConnections(root, skeleton);
-		
+
 	// first pass, put inverse distances for each bone
 	for (vector<pair<const SceneNode*,const SceneNode*> >::iterator i=skeleton.begin();
 		 i!=skeleton.end(); i++)
 	{
 		assert(i->first && i->second);
-				
+
 		// make a skinweight pdata array
 		weights.push_back(new TypedPData<float>(prim.Size()));
 
@@ -67,17 +68,17 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 			if (d==0) weights[bone]->m_Data[n]=2;
 			else weights[bone]->m_Data[n]=(1/d);
 		}
-		
+
 		bone++;
-	}				
-	
+	}
+
 	weights.push_back(new TypedPData<float>(prim.Size()));
 	for (unsigned int n=0; n<prim.Size(); n++)
 	{
 		weights[bone]->m_Data[n]=0;
 	}
-	
-	// second pass, pow the weights to allow 
+
+	// second pass, pow the weights to allow
 	// us to control the creasing
 	for (unsigned int n=0; n<prim.Size(); n++)
 	{
@@ -86,7 +87,7 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 			weights[bone]->m_Data[n]=powf(weights[bone]->m_Data[n],sharpness);
 		}
 	}
-	
+
 	// third pass, normalise the weights
 	for (unsigned int n=0; n<prim.Size(); n++)
 	{
@@ -95,14 +96,14 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 		{
 			m+=weights[bone]->m_Data[n];
 		}
-		
+
 		for (unsigned int bone=0; bone<weights.size(); bone++)
 		{
 			weights[bone]->m_Data[n]/=m;
 		}
 	}
-	
-	
+
+
 	// finally, add the weights to the primitive
 	for (unsigned int bone=0; bone<weights.size(); bone++)
 	{
