@@ -25,6 +25,10 @@
 #include "../modules/fluxus-midi/src/FluxusMIDI.h"
 #endif
 
+#ifdef __APPLE_APP__
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 // include the scheme bytecode, created by mzc in SConstruct
 #include "base.c"
 
@@ -49,10 +53,10 @@ Scheme_Object *Interpreter::m_ErrReadPort=NULL;
 Scheme_Object *Interpreter::m_OutWritePort=NULL;
 Scheme_Object *Interpreter::m_ErrWritePort=NULL;
 std::string Interpreter::m_Language;
-	
+
 void Interpreter::Register()
 {
-	MZ_GC_DECL_REG(0);	
+	MZ_GC_DECL_REG(0);
     MZ_GC_REG();
 
 	MZ_REGISTER_STATIC(Interpreter::m_Scheme);
@@ -60,7 +64,7 @@ void Interpreter::Register()
 	MZ_REGISTER_STATIC(Interpreter::m_ErrReadPort);
 	MZ_REGISTER_STATIC(Interpreter::m_OutWritePort);
 	MZ_REGISTER_STATIC(Interpreter::m_ErrWritePort);
-	
+
     MZ_GC_UNREG();
 }
 
@@ -112,10 +116,16 @@ void Interpreter::Initialise()
 #ifdef RELATIVE_COLLECTS
 	// need the cwd to hack the collects path to 'relative'
 	char cwd[1024];
-	
+
 	#ifdef __APPLE__
-		// needs implementing
-		#error 
+        #ifdef __APPLE_APP__
+			CFURLRef url =
+				CFBundleCopyResourcesDirectoryURL(CFBundleGetMainBundle());
+			CFURLGetFileSystemRepresentation(url, true, (unsigned char *)cwd, 1024);
+			CFRelease(url);
+		#else
+			getcwd(cwd, 1024);
+		#endif
 	#else
 	#ifdef WIN32
 		// needs implementing
@@ -124,8 +134,8 @@ void Interpreter::Initialise()
 		getcwd(cwd, 1024);
 	#endif
 	#endif
-	
-	PLTCollects=string(cwd)+string("/collects");	
+
+	PLTCollects=string(cwd)+string("/collects");
 	FluxusCollects=PLTCollects;
 	DataLocation=cwd;
 #endif
@@ -136,7 +146,7 @@ void Interpreter::Initialise()
 
 	// load the startup script
 	char startup[1024];
-	
+
 	// insert the version number etc
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
 		PLTCollects.c_str(),
@@ -152,9 +162,9 @@ void Interpreter::Initialise()
     MZ_GC_UNREG();
 }
 
-void Interpreter::SetRepl(Repl *s) 
-{ 
-	m_Repl=s; 
+void Interpreter::SetRepl(Repl *s)
+{
+	m_Repl=s;
 }
 
 int fill_from_port(Scheme_Object* port, char *dest, long size)

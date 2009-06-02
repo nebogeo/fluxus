@@ -16,9 +16,13 @@ else:
 if static_modules: Target = "fluxus-engine_ss"
 
 Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
+Frameworks = []
+
 Install = BinaryModulesLocation
 if env['PLATFORM'] != 'darwin':
-	    Libs += Split("GL GLU glut")
+	Libs += Split("GL GLU glut")
+else:
+	Frameworks = Split("GLUT OpenGL PLT_MrEd")
 
 if env['PLATFORM'] == 'win32':
 	    Libs = Split("libmzsch3m_6mqxfs fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")
@@ -49,11 +53,14 @@ Source = Split("src/Engine.cpp \
 if static_modules:
 	env.StaticLibrary(source = Source, 
 				  target = Target,
-				  LIBS = Libs)
+				  LIBS = Libs,
+				  FRAMEWORKS = Frameworks)
 else:
 	env.SharedLibrary(source = Source, 
 				  target = Target, 
-		  		  LIBS = Libs,
-		  		  SHLIBPREFIX = "")
+				  LIBS = Libs,
+				  SHLIBPREFIX = "",
+				  FRAMEWORKS = Frameworks)
 						  
 if not static_modules: env.Install(Install, Target)
+

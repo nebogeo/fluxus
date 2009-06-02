@@ -194,8 +194,15 @@ elif env['PLATFORM'] == 'darwin':
         if not GetOption('app'):
             LibList += [["jack", "jack/jack.h"]]
 
-        env.Append(FRAMEWORKS = ['GLUT', 'OpenGL', 'CoreAudio' ,'PLT_MrEd'],
-                FRAMEWORKPATH = [PLTLib])
+        env.Append( FRAMEWORKPATH = [PLTLib])
+
+        if GetOption('app'):
+            env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
+            # FIXME: check if Jackmp is available when making an app
+            env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation PLT_MrEd Jackmp"))
+        else:
+            env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd"))
+
 
 ################################################################################
 # Make sure we have these libraries availible
@@ -389,9 +396,6 @@ Docs = ["docs/fluxus-documentation.pdf",
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from macos.osxbundle import *
         TOOL_BUNDLE(env)
-        # We add frameworks after configuration bit so that testing is faster.
-        # FIXME: check if Jackmp is available if making an app
-        env.Replace(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd Jackmp"))
         # add dynamic libs
         frameworks = [PLTLib + '/PLT_MrEd.framework',
                      '/Library/Frameworks/Jackmp.framework']
