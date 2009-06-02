@@ -14,6 +14,10 @@ if static_modules: Target = "fluxus-audio_ss"
 
 Install = BinaryModulesLocation
 Libs =  Split("jack fftw3 sndfile")
+Frameworks = []
+
+if env['PLATFORM'] == 'darwin':
+	Frameworks = Split("CoreAudio PLT_MrEd")
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
@@ -23,6 +27,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))
 	Libs.remove('jack')
 
+	Frameworks += ["Jackmp"]
 
 Source = Split("src/FluxusAudio.cpp \
 		src/AudioCollector.cpp \
@@ -32,11 +37,14 @@ Source = Split("src/FluxusAudio.cpp \
 if static_modules:
 	env.StaticLibrary(source = Source, 
 				  target = Target,
-				  LIBS = Libs)
+				  LIBS = Libs,
+				  FRAMEWORKS = Frameworks)
 else:
 	env.SharedLibrary(source = Source, 
 				  target = Target,
 				  LIBS = Libs,
-				  SHLIBPREFIX = "")
+				  SHLIBPREFIX = "",
+				  FRAMEWORKS = Frameworks)
 						  
 if not static_modules: env.Install(Install, Target)
+

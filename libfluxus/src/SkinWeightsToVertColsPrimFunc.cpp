@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <stdio.h>
 #include "SkinWeightsToVertColsPrimFunc.h"
 #include "Primitive.h"
 #include "SceneGraph.h"
@@ -36,21 +37,21 @@ void SkinWeightsToVertColsPrimFunc::Run(Primitive &prim, const SceneGraph &world
 	unsigned int size=0;
 	char wname[256];
 	char type=0;
-	
+
 	while(found)
 	{
 		snprintf(wname,256,"w%d",numbones);
 		found=prim.GetDataInfo(wname, type, size);
 		if (found) numbones++;
 	}
-	
+
 	// make some random colours
 	vector<dColour> colours;
 	for (unsigned int bone=0; bone<numbones; bone++)
 	{
 		colours.push_back(dColour(RandFloat(),RandFloat(),RandFloat()));
 	}
-	
+
 	// get pointers to all the weights
 	vector<vector<float>*> weights;
 	for (unsigned int bone=0; bone<numbones; bone++)
@@ -58,7 +59,7 @@ void SkinWeightsToVertColsPrimFunc::Run(Primitive &prim, const SceneGraph &world
 		snprintf(wname,256,"w%d",bone);
 		weights.push_back(prim.GetDataVec<float>(wname));
 	}
-	
+
 	for (unsigned int n=0; n<prim.Size(); n++)
 	{
 		dColour col;
@@ -69,5 +70,6 @@ void SkinWeightsToVertColsPrimFunc::Run(Primitive &prim, const SceneGraph &world
 		///\todo make sure c exists...
 		prim.SetData("c", n, col);
 	}
-	
+
 }
+

@@ -14,6 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <stdio.h>
+
 #include "OpenGL.h"
 
 #include "Renderer.h"
@@ -25,7 +27,7 @@
 //#define RENDER_BBOX
 
 using namespace Fluxus;
-	
+
 PolyPrimitive::PolyPrimitive(Type t) :
 m_IndexMode(false),
 m_Type(t)
@@ -34,7 +36,7 @@ m_Type(t)
 	AddData("n",new TypedPData<dVector>);
 	AddData("c",new TypedPData<dColour>);
 	AddData("t",new TypedPData<dVector>);
-	
+
 	// setup the direct access for speed
 	PDataDirty();
 }

@@ -14,20 +14,27 @@ if static_modules: Target = "fluxus-osc_ss"
 
 Install = BinaryModulesLocation
 Libs = Split("lo")
+Frameworks = []
 
 Source = Split("src/FluxusOSC.cpp \
 		src/OSCServer.cpp \
 		src/OSCCore.cpp") + \
 		[MZDYN]
 
+if env['PLATFORM'] == 'darwin':
+	Frameworks = ['PLT_MrEd']
+
 if static_modules:
 	env.StaticLibrary(source = Source, 
 				  target = Target,
-				  LIBS = Libs)
+				  LIBS = Libs,
+				  FRAMEWORKS = Frameworks)
 else:
 	env.SharedLibrary(source = Source, 
 				  target = Target,
 				  LIBS = Libs,
-				  SHLIBPREFIX = "")
+				  SHLIBPREFIX = "",
+				  FRAMEWORKS = Frameworks)
 						 
 if not static_modules: env.Install(Install, Target)
+
