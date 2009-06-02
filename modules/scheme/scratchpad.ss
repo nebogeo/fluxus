@@ -172,7 +172,7 @@
   (cond 
     ((>= framedump-frame 0)
      (let ((filename (string-append framedump-filename 
-                                    (string-pad (number->string framedump-frame)) 
+                                    (string-pad framedump-frame) 
                                     "." framedump-type)))
        ;(display "saving frame: ")(display filename)(newline)
        (framedump filename)

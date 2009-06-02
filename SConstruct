@@ -173,22 +173,11 @@ if env['PLATFORM'] == 'win32':
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
-        LibList += [["X11", "X11/Xlib.h"],
-                    ["GL", "GL/gl.h"],
+        LibList += [["GL", "GL/gl.h"],
                     ["GLU", "GL/glu.h"],
                     ["glut", "GL/glut.h"],
                     ["asound", "alsa/asoundlib.h"]]
 
-        env.Append(LIBPATH = ["/usr/X11R6/lib"])
-
-        # add the X11 libs on - needed if we are not building on xorg
-        if ARGUMENTS.get("X11",0):
-                LibList=[["Xi", "X11/Xlib.h"],
-                                 ["Xmu", "X11/Xlib.h"],
-                                 ["Xext", "X11/Xlib.h"],
-                                 ["Xt", "X11/Xlib.h"],
-                                 ["SM", "X11/Xlib.h"],
-                                 ["ICE", "X11/Xlib.h"]] + LibList;
 elif env['PLATFORM'] == 'darwin':
         # add jack as a library if not making an app
         if not GetOption('app'):
@@ -300,7 +289,7 @@ if not GetOption('clean') and static_modules:
 	
 		# now go through the rest of the libs, removing them from 
 		# the environment at the same time
-		for i in " X11 GLEW GLU glut asound m ode fftw3 mzscheme3m png tiff \
+		for i in " GLEW GLU glut asound m ode fftw3 mzscheme3m png tiff \
 					jpeg freetype sndfile lo z ".split():
 			app_env['LIBS'].remove(i)
 			linkcom+="-l"+i+" "
