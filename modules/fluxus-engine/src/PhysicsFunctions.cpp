@@ -350,6 +350,27 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// physics-remove primitiveid-number
+// Returns: void
+// Description:
+// Remove the object from the physics system.
+// Example:
+// (define mycube (build-cube))
+// (active-box mycube)
+// (physics-remove mycube)
+// EndFunctionDoc
+
+Scheme_Object *physics_remove(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("physics-remove", "i", argc, argv);
+	int name = IntFromScheme(argv[0]);
+	Engine::Get()->Physics()->Free(name);
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // surface-params slip1-number slip2-number softerp-number softcfm-number
 // Returns: void
 // Description:
@@ -1367,7 +1388,7 @@ Scheme_Object *has_collided(int argc, Scheme_Object **argv)
 }
 
 void PhysicsFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -1379,6 +1400,7 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("passive-box", scheme_make_prim_w_arity(passive_box, "passive-box", 1, 1), env);
 	scheme_add_global("passive-cylinder", scheme_make_prim_w_arity(passive_box, "passive-cylinder", 1, 1), env);
 	scheme_add_global("passive-sphere", scheme_make_prim_w_arity(passive_box, "passive-sphere", 1, 1), env);
+	scheme_add_global("physics-remove", scheme_make_prim_w_arity(physics_remove, "physics-remove", 1, 1), env);
 	scheme_add_global("surface-params", scheme_make_prim_w_arity(surface_params, "surface-params", 4, 4), env);
 	scheme_add_global("build-balljoint", scheme_make_prim_w_arity(build_balljoint, "build-balljoint", 3, 3), env);
 	scheme_add_global("build-fixedjoint", scheme_make_prim_w_arity(build_fixedjoint, "build-fixedjoint", 1, 1), env);
@@ -1395,5 +1417,5 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("kick", scheme_make_prim_w_arity(kick, "kick", 2, 2), env);
 	scheme_add_global("twist", scheme_make_prim_w_arity(twist, "twist", 2, 2), env);
 	scheme_add_global("has-collided", scheme_make_prim_w_arity(has_collided, "has-collided", 1, 1), env);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }

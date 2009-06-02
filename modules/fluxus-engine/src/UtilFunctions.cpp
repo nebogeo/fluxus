@@ -340,7 +340,7 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// framedump filename
+// tiled-framedump filename
 // Returns: void
 // Description:
 // For rendering images that are bigger than the screen, for printing or other similar stuff.

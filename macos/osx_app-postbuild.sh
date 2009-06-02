@@ -14,8 +14,8 @@ pipe.close()
 
 # copy plt collects path manually
 print 'copying required plt modules...'
-for m in ['compiler', 'config', 'defaults', 'ffi', 'frtime', \
-		  'lang', 'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
+for m in ['compiler', 'config', 'defaults', 'frtime', 'lang', \
+		  'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
 		  'stxclass', 'syntax', 'xml']:
 	print '\t', m
 	os.system('cp -r "%s" Fluxus.app/Contents/Resources/collects/%s' %
