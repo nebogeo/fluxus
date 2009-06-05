@@ -91,12 +91,12 @@ MacPorts (http://www.macports.org/).
 Put the bin directory of PLT Scheme and MacPorts to your path by adding
 the following line to the .bash_profile file in your home directory:
 
-PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.1.4/bin/
+PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.2/bin/
 
 Also add this line to .bash_profile, which is necessary for Fluxus to
 find the PLT frameworks:
 
-export DYLD_FRAMEWORK_PATH=/Applications/PLT\ Scheme\ v4.1.4/lib/
+export DYLD_FRAMEWORK_PATH=/Applications/PLT\ Scheme\ v4.2/lib/
 
 You might need to change the PLT Scheme version number according to
 the binary package you have installed.
@@ -110,7 +110,6 @@ To build and install, type:
 scons
 sudo scons install
 
-
 It is also possible to build an OSX application of Fluxus.
 The application is built using JackOSX (http://www.jackosx.com/) instead of
 MacPorts jack. Make sure to install it before building the application.
@@ -119,9 +118,6 @@ To build, type:
 
 scons --app
 ./macos/osx_app-postbuild.sh
-
-Please note that at the time of writing the application only works if it is
-copied to the /Applications folder.
 
 Building fluxus on Windows
 --------------------------

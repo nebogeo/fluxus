@@ -230,24 +230,24 @@ int run(Scheme_Env* se, int argc, char *argv[])
 	{
 		if (!strcmp(argv[arg],"-v"))
 		{
-			cerr<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
-			exit(1);
+			cout<<"fluxus version: "<<FLUXUS_MAJOR_VERSION<<"."<<FLUXUS_MINOR_VERSION<<endl;
+			exit(0);
 		}
 		else if (!strcmp(argv[arg],"--help") || !strcmp(argv[arg],"-h") || !strcmp(argv[arg],"-?"))
 		{
-			cerr<<"fluxus [options] [filename1] [filename2] ..."<<endl;
-			cerr<<"options:"<<endl;
-			cerr<<"-h : help"<<endl;
-			cerr<<"-v : version info"<<endl;
-			cerr<<"-r filename : record keypresses"<<endl;
-			cerr<<"-p filename : playback keypresses"<<endl;
-			cerr<<"-d time : set delta time between frames for keypress playback"<<endl;
-			cerr<<"-lang language : sets the PLT language to use (may not work)"<<endl;
-			cerr<<"-fs : startup in fullscreen mode"<<endl;
-			cerr<<"-hm : hide the mouse pointer on startup"<<endl;
-			cerr<<"-geom wxh : set window geometry, e.g. 640x480"<<endl;
-			cerr<<"-x : execute and hide script at startup"<<endl;
-			exit(1);
+			cout<<"fluxus [options] [filename1] [filename2] ..."<<endl;
+			cout<<"options:"<<endl;
+			cout<<"-h : help"<<endl;
+			cout<<"-v : version info"<<endl;
+			cout<<"-r filename : record keypresses"<<endl;
+			cout<<"-p filename : playback keypresses"<<endl;
+			cout<<"-d time : set delta time between frames for keypress playback"<<endl;
+			cout<<"-lang language : sets the PLT language to use (may not work)"<<endl;
+			cout<<"-fs : startup in fullscreen mode"<<endl;
+			cout<<"-hm : hide the mouse pointer on startup"<<endl;
+			cout<<"-geom wxh : set window geometry, e.g. 640x480"<<endl;
+			cout<<"-x : execute and hide script at startup"<<endl;
+			exit(0);
 		}
 		else if (!strcmp(argv[arg],"-r"))
 		{
