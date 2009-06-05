@@ -55,6 +55,7 @@
 (define fluxus-scratchpad-visible-columns 80)
 (define fluxus-scratchpad-x-pos 0)
 (define fluxus-scratchpad-y-pos 85000)
+(define fluxus-scratchpad-hide-script 0)
 
 ; setup the standard searchpaths
 (set-searchpaths (list

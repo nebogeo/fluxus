@@ -68,7 +68,8 @@ void Camera::DoCamera(Renderer * renderer)
         dMatrix worldmat = renderer->GetGlobalTransform(m_CameraAttached).inverse();
 		if (m_CameraLag!=0)
 		{
-			m_LockedMatrix.RigidBlend(worldmat,m_CameraLag);
+			//m_LockedMatrix.RigidBlend(worldmat,m_CameraLag);
+			m_LockedMatrix.blend(worldmat,m_CameraLag);
 		}
 		else
 		{
