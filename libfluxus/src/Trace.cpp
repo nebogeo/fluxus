@@ -24,3 +24,4 @@ string Trace::Get()
 	Stream.str("");
 	return ret;
 }
+

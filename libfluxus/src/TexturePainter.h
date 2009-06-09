@@ -33,31 +33,31 @@ namespace Fluxus
 class TextureState
 {
 	public:
-	
-	TextureState(): TexEnv(GL_MODULATE), Min(GL_LINEAR_MIPMAP_LINEAR), 
-	 Mag(GL_LINEAR_MIPMAP_LINEAR), WrapS(GL_REPEAT), WrapT(GL_REPEAT), WrapR(GL_REPEAT), 
-	 Priority(1), MinLOD(-1000), MaxLOD(1000) {}
-	
-	int TexEnv; 
-    int Min;
-    int Mag;
-    int WrapS;
-    int WrapT;
-	int WrapR;
-    dColour BorderColour; 
-    float Priority; 
-    dColour EnvColour; 
-	float MinLOD;
-	float MaxLOD;
+
+		TextureState(): TexEnv(GL_MODULATE), Min(GL_LINEAR_MIPMAP_LINEAR),
+			Mag(GL_LINEAR), WrapS(GL_REPEAT), WrapT(GL_REPEAT), WrapR(GL_REPEAT),
+			Priority(1), MinLOD(-1000), MaxLOD(1000) {}
+
+		int TexEnv;
+		int Min;
+		int Mag;
+		int WrapS;
+		int WrapT;
+		int WrapR;
+		dColour BorderColour;
+		float Priority;
+		dColour EnvColour;
+		float MinLOD;
+		float MaxLOD;
 };
 
 //////////////////////////////////////////////////////
 /// The texture painter is resposible for making
-/// textures - initialising, loading, generating them 
-/// from pdata for the pixel primitive, and uploading 
+/// textures - initialising, loading, generating them
+/// from pdata for the pixel primitive, and uploading
 /// them ready for use. The TexturePainter also contains
 /// a cache, so it knows which filenames map to which
-/// texture ID's - so it won't load and upload files 
+/// texture ID's - so it won't load and upload files
 /// which are already on the graphics card.
 class TexturePainter
 {
