@@ -53,11 +53,11 @@ public:
 
 //////////////////////////////////////////////////////
 /// The texture painter is resposible for making
-/// textures - initialising, loading, generating them 
-/// from pdata for the pixel primitive, and uploading 
+/// textures - initialising, loading, generating them
+/// from pdata for the pixel primitive, and uploading
 /// them ready for use. The TexturePainter also contains
 /// a cache, so it knows which filenames map to which
-/// texture ID's - so it won't load and upload files 
+/// texture ID's - so it won't load and upload files
 /// which are already on the graphics card.
 class TexturePainter
 {

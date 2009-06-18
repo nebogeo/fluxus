@@ -221,7 +221,6 @@ void PolyPrimitive::Render()
 
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
 	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
-
 }
 
 void PolyPrimitive::RecalculateNormals(bool smooth)

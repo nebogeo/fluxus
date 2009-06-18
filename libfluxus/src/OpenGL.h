@@ -1,3 +1,5 @@
+#ifndef __OPENGL_H__
+#define __OPENGL_H__
 
 #ifdef WIN32
 #define _STDCALL_SUPPORTED
@@ -19,3 +21,6 @@ extern "C" {
 #include <OpenGL/glext.h>
 #endif
 }
+
+#endif
+
