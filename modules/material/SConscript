@@ -64,6 +64,8 @@ Meshes =      ["meshes/bot.obj",
                "meshes/widget.obj",
                "meshes/octopus.obj"]
 
+Samples =      ["samples/sample.wav"]
+
 Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
 
 InstallShaders = DataInstall+"/material/shaders"
@@ -71,10 +73,12 @@ InstallTextures = DataInstall+"/material/textures"
 InstallTxtsInvaders = DataInstall+"/material/textures/invaders"
 InstallMeshes = DataInstall+"/material/meshes"
 InstallFonts = DataInstall+"/material/fonts"
+InstallSamples = DataInstall+"/material/samples"
 
 env.Install(InstallShaders, Shaders)
 env.Install(InstallTextures, Textures)
 env.Install(InstallTxtsInvaders, TxtsInvaders)
 env.Install(InstallMeshes, Meshes)
 env.Install(InstallFonts, Fonts)
+env.Install(InstallSamples, Samples)
 

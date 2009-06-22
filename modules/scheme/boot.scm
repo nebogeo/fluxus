@@ -63,7 +63,8 @@
                   (string-append fluxus-data-location "/material/textures/")
                   (string-append fluxus-data-location "/material/shaders/")
                   (string-append fluxus-data-location "/material/meshes/")
-				  (string-append fluxus-data-location "/material/fonts/")))
+				  (string-append fluxus-data-location "/material/fonts/")
+				  (string-append fluxus-data-location "/material/samples/")))
 
 ; this part is needed when resetting the interpreter - we need to feed back
 ; the current screen size from the application into the scheme code

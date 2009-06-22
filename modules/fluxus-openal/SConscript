@@ -1,0 +1,39 @@
+###############################################################
+# SConscript for fluxus-osc
+#
+# This is the main PLT module for the fluxus osc functions
+
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+
+if env['PLATFORM'] == 'darwin':
+	Target = "fluxus-openal_ss.dylib"
+else:
+	Target = "fluxus-openal_ss.so"
+
+if static_modules: Target = "fluxus-openal_ss"
+
+Install = BinaryModulesLocation
+Libs = Split("openal")
+Frameworks = []
+
+Source = Split("src/FluxAudio.cpp \
+		src/OpenALFunctions.cpp") + \
+		[MZDYN]
+
+if env['PLATFORM'] == 'darwin':
+	Frameworks = ['PLT_MrEd']
+
+if static_modules:
+	env.StaticLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs,
+				  FRAMEWORKS = Frameworks)
+else:
+	env.SharedLibrary(source = Source, 
+				  target = Target,
+				  LIBS = Libs,
+				  SHLIBPREFIX = "",
+				  FRAMEWORKS = Frameworks)
+						 
+if not static_modules: env.Install(Install, Target)
+
