@@ -995,21 +995,21 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 // set-camera
 // Returns: void
 // Description:
-// Sets the camera transform matrix. This is the low level interface used by set-camera-transform, 
+// Sets the camera transform matrix. This is the low level interface used by set-camera-transform,
 // which you should generally use instead.
 // Example:
-// (set-camera (mtranslate (vector 0 0 -10))) 
+// (set-camera (mtranslate (vector 0 0 -10)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// set-camera 
+// set-camera
 // Retorna: void
 // Descrição:
 // Ajusta a matriz de transformação da câmera. Esta é a interface de
 // baixo nível usada por set-camera-transform, a qual você devia usar
 // geralmente ao invés.
 // Exemplo:
-// (set-camera (mtranslate (vector 0 0 -10))) 
+// (set-camera (mtranslate (vector 0 0 -10)))
 // EndFunctionDoc
 
 Scheme_Object *set_camera(int argc, Scheme_Object **argv)
@@ -1019,7 +1019,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 	dMatrix m;
 	FloatsFromScheme(argv[0],m.arr(),16);
 	Engine::Get()->GetCamera()->SetMatrix(m);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -1047,12 +1047,32 @@ Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// set-projection-transform matrix-vector
+// Returns: void
+// Description:
+// Sets the projection matrix directly.
+// Example:
+// (set-projection-transform (vector 1 0 0 0 0 4/3 0 0 0 0 -1 -1 0 0 -2 -0))
+// EndFunctionDoc
+
+Scheme_Object *set_projection_transform(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("set-projection-transform", "m", argc, argv);
+	dMatrix m;
+	FloatsFromScheme(argv[0],m.arr(),16);
+	Engine::Get()->GetCamera()->SetProjection(m);
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // get-screen-size
 // Returns: size-vector
 // Description:
 // Returns a vector containing the current width and height of the window.
 // Example:
-// (get-screen-size) 
+// (get-screen-size)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1079,7 +1099,7 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Description:
 // Sets the window width and height.
 // Example:
-// (set-screen-size (vector 10 10)) ; small window time :) 
+// (set-screen-size (vector 10 10)) ; small window time :)
 // (set-screen-size (vector 720 576)) ; and back again!
 // EndFunctionDoc
 
@@ -1089,7 +1109,7 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta a altura e largura da janela.
 // Exemplo:
-// (set-screen-size (vector 10 10)) ; small window time :) 
+// (set-screen-size (vector 10 10)) ; small window time :)
 // (set-screen-size (vector 720 576)) ; and back again!
 // EndFunctionDoc
 
@@ -1102,7 +1122,7 @@ Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 	FloatsFromScheme(argv[0],v,2);
 	// hmmm, seems a bit wrong, but hey...
 	glutReshapeWindow((int)v[0],(int)v[1]);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -1110,14 +1130,14 @@ Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 // select screenxpos-number screenypos-number pixelssize-number
 // Returns: primitiveid-number
 // Description:
-// Looks in the region specified and returns the id of the closest primitive to the camera rendered 
-// there, or 0 if none exist.  
+// Looks in the region specified and returns the id of the closest primitive to the camera rendered
+// there, or 0 if none exist.
 // Example:
 // (display (select 10 10 2))(newline)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// select número-janelaposX número-janelaposY número-tamanho-pixel 
+// select número-janelaposX número-janelaposY número-tamanho-pixel
 // Retorna: número-id-primitiva
 // Descrição:
 // Olha na região específicada e retorna a id da primitiva mais
@@ -1133,9 +1153,9 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 	int x=IntFromScheme(argv[0]);
 	int y=IntFromScheme(argv[1]);
 	int s=IntFromScheme(argv[2]);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(
-		Engine::Get()->GrabbedCamera(),x,y,s));
+				Engine::Get()->GrabbedCamera(),x,y,s));
 }
 
 // StartFunctionDoc-en
@@ -1669,6 +1689,7 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
 	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
 	scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
+	scheme_add_global("set-projection-transform", scheme_make_prim_w_arity(set_projection_transform, "set-projection-transform", 1, 1), env);
 	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
 	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
 	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);

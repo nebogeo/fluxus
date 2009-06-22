@@ -1,7 +1,7 @@
 ###############################################################
-# SConscript for fluxus-osc
+# SConscript for fluxus-openal
 #
-# This is the main PLT module for the fluxus osc functions
+# This is the main PLT module for the fluxus openal functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
@@ -13,7 +13,9 @@ else:
 if static_modules: Target = "fluxus-openal_ss"
 
 Install = BinaryModulesLocation
-Libs = Split("openal")
+Libs = []
+if env['PLATFORM'] != 'darwin':
+	Libs = ['openal']
 Frameworks = []
 
 Source = Split("src/FluxAudio.cpp \
@@ -21,7 +23,7 @@ Source = Split("src/FluxAudio.cpp \
 		[MZDYN]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks = ['PLT_MrEd']
+	Frameworks = ['OpenAL', 'PLT_MrEd']
 
 if static_modules:
 	env.StaticLibrary(source = Source, 

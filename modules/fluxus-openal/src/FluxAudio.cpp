@@ -14,10 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.FluxAudioFluxAudio();
 
-#include <AL/al.h>
-#include <AL/alc.h>
-#include <AL/alext.h>
-//#include <AL/alut.h>
+
 #include <iostream>
 
 #include "FluxAudio.h"
@@ -36,11 +33,11 @@ m_Poly(MAX_POLY),
 m_NextSource(0)
 {
 	//alExt::Init();
-	
+
 	//int attrlist[] = { ALC_FREQUENCY, 22050, ALC_INVALID };
 
 	m_Device = alcOpenDevice( NULL );
-	if( m_Device == NULL ) 
+	if( m_Device == NULL )
 	{
 		cerr<<"Could not open al audio device"<<endl;
 		return;
@@ -246,3 +243,4 @@ void FluxAudio::SetHeadPos(dVector pos, dVector front)
 	alListenerfv(AL_ORIENTATION, front.arr() ); 
 	m_HeadPos=pos;
 }
+

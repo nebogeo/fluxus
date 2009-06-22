@@ -14,20 +14,30 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#ifndef FLUXAUDIO
+#define FLUXAUDIO
+
 #include <string>
 #include <map>
 #include <vector>
 #include <math.h>
+
+#ifdef __APPLE__
+
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
+//#include <OpenAL/alext.h>
+#else
+
 #include <AL/al.h>
 #include <AL/alc.h>
-#include <AL/alext.h>
+//#include <AL/alext.h>
+//#include <AL/alut.h>
+
+#endif
 
 using namespace std;
 
-#ifndef FLUXAUDIO
-#define FLUXAUDIO
-
-using namespace std;
 namespace fluxus
 {
 
@@ -37,26 +47,26 @@ public:
 	dVector() {}
 	dVector(float a, float b, float c) : x(a),y(b),z(c) {}
 	float x,y,z;
-	
+
 	float *arr() { return &x; };
-	
+
 	inline dVector operator-(const dVector &other)
 	{
 		return dVector(x-other.x,y-other.y,z-other.z);
 	}
-		
+
 	inline float dist(dVector const &rhs) const
 	{
-    	return sqrt((rhs.x-x)*(rhs.x-x)+
-                	(rhs.y-y)*(rhs.y-y)+
-                	(rhs.z-z)*(rhs.z-z));
+		return sqrt((rhs.x-x)*(rhs.x-x)+
+				(rhs.y-y)*(rhs.y-y)+
+				(rhs.z-z)*(rhs.z-z));
 	}
 
 	inline float mag()
 	{
-    	return dist(dVector(0,0,0));
+		return dist(dVector(0,0,0));
 	}
-	
+
 };
 
 class FluxAudio
@@ -70,26 +80,26 @@ public:
 	void SetPoly(int s) { m_Poly=s; }
 	void SetCullDist(float s) { m_CullDist=s; }
 	void Update();
-	
+
 	struct AcousticDesc
 	{
-		AcousticDesc() : 
-			 AttenScale(0.3),
-			 MaxDistance(0), 
-			 RefDistance(0), 
-			 Rolloff(0) {}
-			
+		AcousticDesc() :
+			AttenScale(0.3),
+			MaxDistance(0),
+			RefDistance(0),
+			Rolloff(0) {}
+
 		float AttenScale;
 		float MaxDistance;
 		float RefDistance;
 		float Rolloff;
 	};
-	
+
 	void SetAcoustics(const AcousticDesc &d);
 
 private:
 	short *LoadSample(const string &Filename, unsigned int &frames);
-	
+
 	struct Event
 	{
 		unsigned int Id;
@@ -97,15 +107,15 @@ private:
 		float Pitch;
 		float Gain;
 	};
-	
+
 	AcousticDesc m_Acoustics;
-	dVector 				 m_HeadPos;
-	float 					 m_CullDist;
+	dVector					 m_HeadPos;
+	float					 m_CullDist;
 	map<string,unsigned int> m_Loaded;
-	vector<Event> 			 m_EventVec;
-	unsigned int 			 m_Poly;
-	ALCcontext  			*m_ContextID;
-	ALCdevice  				*m_Device;
+	vector<Event>			 m_EventVec;
+	unsigned int			 m_Poly;
+	ALCcontext				*m_ContextID;
+	ALCdevice				*m_Device;
 	vector<unsigned int>     m_Sources;
 	int						 m_NextSource;
 };
@@ -114,3 +124,4 @@ private:
 }
 
 #endif
+
