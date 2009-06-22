@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #ifndef FLUX_CAMERA
 #define FLUX_CAMERA
 
@@ -35,19 +35,19 @@ public:
 	/////////////////////////////////////////////
 	///@name Renderer interface
 	///@{
-	
+
 	/// Whether the camera needs the renderer to
 	/// reinitialise itself - due to the camera
 	/// having changed
 	bool NeedsInit();
-	
+
 	/// Apply the projection matrix to the stack
 	void DoProjection();
-	
+
 	/// Apply the camera matrix to the stack
 	void DoCamera(Renderer * renderer);
 	///@}
-	
+
 	/////////////////////////////////////////////
 	///@name Accessors
 	///@{
@@ -55,6 +55,7 @@ public:
 	void SetMatrix(const dMatrix &m)         { m_Transform=m; }
 	dMatrix *GetLockedMatrix()               { return &m_LockedMatrix; }
 	dMatrix GetProjection();
+	void SetProjection(const dMatrix &m);
 	float GetTop() { return m_Top; }
 	float GetLeft() { return m_Left; }
 	float GetBottom() { return m_Bottom; }
@@ -62,23 +63,25 @@ public:
 	/// Lock the camera to this primitive's position
 	void LockCamera(int p);
 	void SetCameraLag(float s)               { m_CameraLag=s; }
-	void SetOrtho(bool s)                    { m_Ortho=s; m_Initialised=false; }
+	void SetOrtho(bool s)                    { m_Ortho=s; m_CustomProjection=false; m_Initialised=false; }
 	void SetOrthoZoom(float s)				 { m_OrthZoom=s; m_Initialised=false; }
-	void SetFrustum(float l, float r, float b, float t) { m_Left=l; m_Right=r; m_Bottom=b; m_Top=t; m_Initialised=false; }
+	void SetFrustum(float l, float r, float b, float t) { m_Left=l; m_Right=r; m_Bottom=b; m_Top=t; m_CustomProjection=false; m_Initialised=false; }
 	void SetClip(float f, float b)           { m_Front=f; m_Back=b; m_Initialised=false; }
 	void SetViewport(float x, float y, float w, float h)
 		{ m_ViewX=x; m_ViewY=y; m_ViewWidth=w; m_ViewHeight=h; }
-	float GetViewportX() 			 { return m_ViewX; }
-	float GetViewportY() 			 { return m_ViewY; }
-	float GetViewportWidth() 		 { return m_ViewWidth; }
-	float GetViewportHeight() 		 { return m_ViewHeight; }
+	float GetViewportX()			 { return m_ViewX; }
+	float GetViewportY()			 { return m_ViewY; }
+	float GetViewportWidth()		 { return m_ViewWidth; }
+	float GetViewportHeight()		 { return m_ViewHeight; }
 	///@}
 
 private:
 
 	bool m_Initialised;
 	dMatrix m_Transform;
- 	bool  m_Ortho;
+	dMatrix m_CustomProjectionMatrix;
+	bool m_Ortho;
+	bool m_CustomProjection;
 	int m_CameraAttached;
 	float m_CameraLag;
 	dMatrix  m_LockedMatrix;
@@ -90,3 +93,4 @@ private:
 }
 
 #endif
+
