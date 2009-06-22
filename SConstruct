@@ -160,16 +160,16 @@ LibList = [["m", "math.h"],
                 ["sndfile", "sndfile.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
-                ["GLEW", "GL/glew.h"],
-				["openal", "AL/al.h"]]
+                ["GLEW", "GL/glew.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
 			["freetype", "ft2build.h"],
-            ["glew32", "GL/glew.h"],
-            ["glut32", "GL/glut.h"],
-            ["glu32", "GL/glu.h"],
-            ["opengl32", "GL/gl.h"],
+			["glew32", "GL/glew.h"],
+			["glut32", "GL/glut.h"],
+			["glu32", "GL/glu.h"],
+			["opengl32", "GL/gl.h"],
+			["openal", "AL/al.h"],
 			["libmzsch3m_6mqxfs", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
@@ -177,7 +177,8 @@ if env['PLATFORM'] == 'posix':
         LibList += [["GL", "GL/gl.h"],
                     ["GLU", "GL/glu.h"],
                     ["glut", "GL/glut.h"],
-                    ["asound", "alsa/asoundlib.h"]]
+                    ["asound", "alsa/asoundlib.h"],
+                    ["openal", "AL/al.h"]]
 
 elif env['PLATFORM'] == 'darwin':
         # add jack as a library if not making an app
@@ -203,12 +204,16 @@ if not GetOption('clean'):
         print '--------------------------------------------------------'
         conf = Configure(env)
 
-        # FIXME: check mzscheme3m framework properly on osx
+        # check PLT and OpenAL frameworks on osx
         if env['PLATFORM'] == 'darwin':
                 if not conf.CheckHeader('scheme.h'):
                         print "ERROR: 'mzscheme3m' must be installed!"
                         Exit(1)
                 LibList = filter(lambda x: x[0] != 'mzscheme3m', LibList)
+                # OpenAL should be installed everywhere
+                if not conf.CheckHeader('OpenAL/al.h'):
+                        print "ERROR: 'OpenAL' must be installed!"
+                        Exit(1)
 
         # all libraries are required, and some of them require each other,
         # hence the order is important, and autoadd=1
