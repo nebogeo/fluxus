@@ -51,8 +51,8 @@ void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
 // Starts up the openal audio system
 // Example:
 // (oa-start)
-// (define mysample (oa-load-sample "sample.wav"))
-// (oa-play mysample (vector 0 0 0) 0.4 1)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
 Scheme_Object *start(int argc, Scheme_Object **argv)
@@ -67,8 +67,9 @@ Scheme_Object *start(int argc, Scheme_Object **argv)
 // Description:
 // Loads a sample and returns the id number, so it can be played.
 // Example:
+// (oa-start)
 // (define mysample (oa-load-sample "sample.wav"))
-// (oa-play mysample (vector 0 0 0) 0.4 1)
+// (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
 Scheme_Object *load_sample(int argc, Scheme_Object **argv)
@@ -116,8 +117,9 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 // Description:
 // Plays a sample. 
 // Example:
-// (define mysample (oa-load-sample "sample.wav"))
-// (oa-play mysample (vector 0 0 0) 0.4 1)
+// (oa-start)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
 Scheme_Object *play(int argc, Scheme_Object **argv)
@@ -149,9 +151,10 @@ Scheme_Object *play(int argc, Scheme_Object **argv)
 // Sets the head position, or listener position - which changes the panning and
 // perhaps filtering of the sounds to relate to world space position.
 // Example:
-// (define mysample (oa-load-sample "sample.wav"))
+// (oa-start)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
 // (oa-set-head-pos (vector -1 0 0) (vector 0 0 1))
-// (oa-play mysample (vector 0 0 0) 0.4 1)
+// (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
 Scheme_Object *set_head_pos(int argc, Scheme_Object **argv)
@@ -232,7 +235,7 @@ Scheme_Object *set_cull_dist(int argc, Scheme_Object **argv)
 // Description:
 // Sets some global acoustic parameters
 // Example:
-// (oa-set-cull-dist 1 1 1 1)
+// (oa-set-acoustics 1 1 1 1)
 // EndFunctionDoc
 
 Scheme_Object *set_acoustics(int argc, Scheme_Object **argv)

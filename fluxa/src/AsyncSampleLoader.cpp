@@ -215,22 +215,23 @@ void AsyncSampleLoader::LoadLoop()
 // so writing a quick dirty wav loader here 
 short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels)
 {
-	char id[4];
+	char id[5];
+	id[4]='\0';
 	fread(id,1,4,file);
-	if (!strcmp(id,"RIFF")) 
+	if (strcmp(id,"RIFF")!=0) 
 	{
 		cerr<<"WAV format error (RIFF): "<<id<<endl;
 		return NULL;
 	}
 	fread(&size,1,4,file);
 	fread(id,1,4,file);
-	if (!strcmp(id,"WAVE"))
+	if (strcmp(id,"WAVE")!=0)
 	{
 		cerr<<"WAV format error (WAVE): "<<id<<endl;
 		return NULL;
 	}
 	fread(id,1,4,file);
-	if (!strcmp(id,"fmt "))
+	if (strcmp(id,"fmt ")!=0)
 	{
 		cerr<<"WAV format error (fmt ): "<<id<<endl;
 		return NULL;
@@ -252,7 +253,7 @@ short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels)
 	}
 	fseek(file,datastart,SEEK_SET);		
 	fread(id,1,4,file);
-	if (!strcmp(id,"data"))
+	if (strcmp(id,"data")!=0)
 	{
 		cerr<<"WAV format error (data): "<<id<<endl;
 		return NULL;
