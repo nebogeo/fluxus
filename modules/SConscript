@@ -25,6 +25,7 @@ else:
 				"fluxus-audio", 
 				"fluxus-osc", 
 				"fluxus-midi", 
+				"fluxus-openal", 
 				"scheme",
 				"material"], 
 

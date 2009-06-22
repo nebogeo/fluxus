@@ -8,13 +8,15 @@
 (require "fluxus-engine.ss"
          "fluxus-audio.ss"
          "fluxus-osc.ss"
-         "fluxus-midi.ss")
+         "fluxus-midi.ss"
+		 "fluxus-openal.ss")
 		 	 
 (provide 
  (all-from-out "fluxus-engine.ss")
  (all-from-out "fluxus-audio.ss")
  (all-from-out "fluxus-osc.ss")
- (all-from-out "fluxus-midi.ss"))
+ (all-from-out "fluxus-midi.ss")
+ (all-from-out "fluxus-openal.ss"))
 
 #;(require 'fluxus-engine
          'fluxus-audio

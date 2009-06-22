@@ -20,10 +20,11 @@
 //#define DEBUG_CAMERA
 
 using namespace Fluxus;
-	
+
 Camera::Camera() :
 m_Initialised(false),
 m_Ortho(false),
+m_CustomProjection(false),
 m_CameraAttached(0),
 m_CameraLag(0),
 m_Left(-1),
@@ -48,8 +49,12 @@ Camera::~Camera()
 
 void Camera::DoProjection()
 {
-	if (m_Ortho) glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
-	else glFrustum(m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back);
+	if (m_CustomProjection)
+		glLoadMatrixf(m_CustomProjectionMatrix.arr());
+	else if (m_Ortho)
+		glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
+	else
+		glFrustum(m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back);
 	#ifdef DEBUG_CAMERA
 	cerr<<"camera:"<<this<<" frustum:"<<m_Left<<" "<<m_Right<<" "<<m_Bottom<<" "<<m_Top<<" "<<m_Front<<" "<<m_Back<<endl;
 	#endif
@@ -58,11 +63,11 @@ void Camera::DoProjection()
 void Camera::DoCamera(Renderer * renderer)
 {
 	glMultMatrixf(m_Transform.arr());
-	
+
 	#ifdef DEBUG_CAMERA
 	cerr<<"camera:"<<this<<" transform:"<<m_Transform<<endl;
 	#endif
-	
+
 	if (m_CameraAttached)
 	{
         dMatrix worldmat = renderer->GetGlobalTransform(m_CameraAttached).inverse();
@@ -76,7 +81,7 @@ void Camera::DoCamera(Renderer * renderer)
 			m_LockedMatrix=worldmat;
 		}
 
-		glMultMatrixf(m_LockedMatrix.arr());		
+		glMultMatrixf(m_LockedMatrix.arr());
 	}
 }
 
@@ -92,8 +97,15 @@ dMatrix Camera::GetProjection()
 	return Projection;
 }
 
-bool Camera::NeedsInit() 
-{ 
+void Camera::SetProjection(const dMatrix &m)
+{
+	m_CustomProjectionMatrix = m;
+	m_CustomProjection = true;
+	m_Initialised = false;
+}
+
+bool Camera::NeedsInit()
+{
 	if (m_Initialised)
 	{
 		return false;
@@ -102,5 +114,6 @@ bool Camera::NeedsInit()
 	{
 		m_Initialised=true;
 		return true;
-	} 
+	}
 }
+
