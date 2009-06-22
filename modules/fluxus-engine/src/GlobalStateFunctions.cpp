@@ -507,20 +507,20 @@ Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// frustum top-number bottom-number left-number right-number
+// frustum left-number right-number bottom-number top-number
 // Returns: void
 // Description:
-// Sets the camera frustum, and thus the aspect ratio of the frame. 
+// Sets the camera frustum, and thus the aspect ratio of the frame.
 // Example:
 // (frustum -1 1 -0.75 0.75) ; default settings
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// frustum número-topo número-baixo número-esquerda número-direita
+// frustum número-esquerda número-direita número-baixo número-topo
 // Retorna: void
 // Descrição:
 // Ajusta o frustum da camera, e portanto o quociente de aspecto do
-// frame. 
+// frame.
 // Exemplo:
 // (frustum -1 1 -0.75 0.75) ; definições padrão
 // EndFunctionDoc
@@ -528,13 +528,13 @@ Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 Scheme_Object *frustum(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
- 	ArgCheck("frustum", "ffff", argc, argv);
+	ArgCheck("frustum", "ffff", argc, argv);
 	Engine::Get()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
-												FloatFromScheme(argv[1]),
-									 		 	FloatFromScheme(argv[2]),
-												FloatFromScheme(argv[3]));
- 	MZ_GC_UNREG(); 
-    return scheme_void;
+											FloatFromScheme(argv[1]),
+											FloatFromScheme(argv[2]),
+											FloatFromScheme(argv[3]));
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
