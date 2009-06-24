@@ -14,8 +14,8 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.FluxAudioFluxAudio();
 
-
 #include <iostream>
+#include <cstring>
 
 #include "FluxAudio.h"
 
@@ -43,7 +43,7 @@ m_NextSource(0)
 		return;
 	}
 
-	// Initialize ALUT. 
+	// Initialize ALUT.
 	m_ContextID = alcCreateContext( m_Device, NULL );
 	if(m_ContextID == NULL)
 	{
@@ -67,7 +67,7 @@ m_NextSource(0)
 		unsigned int t=0;
 		alGenSources( 1, &t);
 		m_Sources.push_back(t);
-	}        
+	}
 }
 
 FluxAudio::~FluxAudio()
@@ -86,7 +86,7 @@ short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels)
 	char id[5];
 	id[4]='\0';
 	fread(id,1,4,file);
-	if (strcmp(id,"RIFF")!=0) 
+	if (strcmp(id,"RIFF")!=0)
 	{
 		cerr<<"WAV format error (RIFF): "<<id<<endl;
 		return NULL;
@@ -119,7 +119,7 @@ short *LoadWav(FILE *file, unsigned int &size, unsigned short &channels)
 		cerr<<"WAV data is not mono or stereo"<<endl;
 		return NULL;
 	}
-	fseek(file,datastart,SEEK_SET);		
+	fseek(file,datastart,SEEK_SET);
 	fread(id,1,4,file);
 	if (strcmp(id,"data")!=0)
 	{
@@ -139,14 +139,14 @@ int FluxAudio::Load(const string &Filename)
 	{
 		return i->second;
 	}
-		
+
 	ALsizei size,bits,freq,format;
 	ALboolean err;
 	static void *data = NULL;
 	unsigned int ID = 0;
 	alGenBuffers(1, &ID);
-	m_Loaded[Filename]=ID;	
-	
+	m_Loaded[Filename]=ID;
+
 	FILE* file = fopen (Filename.c_str(), "rb") ;
 	if (!file)
 	{
@@ -156,8 +156,8 @@ int FluxAudio::Load(const string &Filename)
 	{
 		unsigned short channels=0;
 		unsigned int usize=0;
-		data = (void*)LoadWav(file, usize, channels);	
-		
+		data = (void*)LoadWav(file, usize, channels);
+
 		if (channels==1) format=AL_FORMAT_MONO16;
 		else if (channels==2) format=AL_FORMAT_STEREO16;
 		else
@@ -170,19 +170,19 @@ int FluxAudio::Load(const string &Filename)
 		size=usize;
 
 		fclose(file);
-		
-		if(data == NULL) 
+
+		if(data == NULL)
 		{
 			cerr<<"Couldn't open "<<Filename<<endl;
 			return 0;
 		}
 
 		alBufferData(ID, format, data, size, freq);
-		if( alGetError() != AL_NO_ERROR ) 
+		if( alGetError() != AL_NO_ERROR )
 		{
 			cerr<<"Could not BufferData "<<Filename<<endl;
 			return 0;
-		}	
+		}
 	}
 	return ID;
 }
@@ -213,34 +213,34 @@ void FluxAudio::Update()
 	{
 		alSourceStop(m_Sources[m_NextSource]);
 		alSourcefv(m_Sources[m_NextSource], AL_POSITION, i->Pos.arr());
- 		alSourcei(m_Sources[m_NextSource], AL_BUFFER, i->Id);
+		alSourcei(m_Sources[m_NextSource], AL_BUFFER, i->Id);
 		alSourcef(m_Sources[m_NextSource], AL_PITCH, i->Pitch);
 		alSourcef(m_Sources[m_NextSource], AL_GAIN, i->Gain);
-		
+
 		//alSourcef(m_Sources[m_NextSource], AL_DISTANCE_SCALE, m_Acoustics.AttenScale);
 		alSourcef(m_Sources[m_NextSource], AL_MAX_DISTANCE, m_Acoustics.MaxDistance);
 		alSourcef(m_Sources[m_NextSource], AL_ROLLOFF_FACTOR, m_Acoustics.Rolloff);
 		alSourcef(m_Sources[m_NextSource], AL_REFERENCE_DISTANCE, m_Acoustics.RefDistance);
-		
+
 		//if (m_Acoustics.Reverb)
 		//{
 		//	alExt::ReverbScale(m_Sources[m_NextSource], m_Acoustics.ReverbScale);
-    	//	alExt::ReverbDelay(m_Sources[m_NextSource], m_Acoustics.ReverbDelay);
+		//	alExt::ReverbDelay(m_Sources[m_NextSource], m_Acoustics.ReverbDelay);
 		//}
-		
-		alSourcePlay(m_Sources[m_NextSource]); 	
-		
+
+		alSourcePlay(m_Sources[m_NextSource]);
+
 		m_NextSource++;
 		if (m_NextSource>=(int)m_Sources.size()) m_NextSource=0;
 	}
-	
+
 	m_EventVec.clear();
 }
 
 void FluxAudio::SetHeadPos(dVector pos, dVector front)
 {
 	alListenerfv(AL_POSITION, pos.arr() );
-	alListenerfv(AL_ORIENTATION, front.arr() ); 
+	alListenerfv(AL_ORIENTATION, front.arr() );
 	m_HeadPos=pos;
 }
 
