@@ -54,7 +54,8 @@ Source = Split("src/PData.cpp \
 		src/PolyEvaluator.cpp \
 		src/Noise.cpp \
 		src/SimplexNoise.cpp \
-		src/TiledRender.cpp"
+		src/TiledRender.cpp \
+		src/ImagePrimitive.cpp"
 		)
 				
 env.StaticLibrary(source = Source, target = Target)

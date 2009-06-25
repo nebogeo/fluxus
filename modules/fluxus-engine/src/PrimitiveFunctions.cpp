@@ -27,6 +27,7 @@
 #include "PixelPrimitive.h"
 #include "BlobbyPrimitive.h"
 #include "TypePrimitive.h"
+#include "ImagePrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
 #include "Evaluator.h"
@@ -83,7 +84,7 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return scheme_void;
 	}
 	Prim->Resize(size);
@@ -693,6 +694,48 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 	}
 	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
+}
+
+// StartFunctionDoc-en
+// build-image texture-number coordinate-vector size-vector
+// Returns: primitiveid-number
+// Description:
+// Builds an image, which is displayed on screen using 2D orthographic projection.
+// Coordinate defines the location of the image from the upper-left corner. Size
+// specifies the image display resolution in pixels.
+// Example:
+// (define img (build-image (load-texture "test.png") (vector 0 0) (get-screen-size)))
+// EndFunctionDoc
+
+Scheme_Object *build_image(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-image", "i??", argc, argv);
+	for (int i = 1; i <= 2; i++)
+	{
+		if (!SCHEME_VECTORP(argv[i]))
+		{
+			MZ_GC_UNREG();
+			scheme_wrong_type("build-image", "vector", i, argc, argv);
+		}
+		if (SCHEME_VEC_SIZE(argv[i]) != 2)
+		{
+			MZ_GC_UNREG();
+			scheme_wrong_type("build-image", "vector size 2", i, argc, argv);
+		}
+	}
+
+	float topleft[2], size[2];
+	FloatsFromScheme(argv[1], topleft, 2);
+	FloatsFromScheme(argv[2], size, 2);
+
+	ImagePrimitive *ImagePrim = new ImagePrimitive(Engine::Get()->Renderer(),
+				IntFromScheme(argv[0]),
+				topleft[0], topleft[1],
+				size[0], size[1]);
+	MZ_GC_UNREG();
+
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(ImagePrim));
 }
 
 // StartFunctionDoc-en
@@ -2441,6 +2484,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-nurbs-sphere", scheme_make_prim_w_arity(build_nurbs_sphere, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-nurbs-plane", scheme_make_prim_w_arity(build_nurbs_plane, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
+	scheme_add_global("build-image", scheme_make_prim_w_arity(build_image, "build-image", 3, 3), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
@@ -2481,3 +2525,4 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
 	MZ_GC_UNREG();
 }
+
