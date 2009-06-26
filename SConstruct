@@ -337,7 +337,8 @@ else:
 ################################################################################
 # documentation
 
-Docs = ["docs/fluxus-documentation.pdf",
+Docs = ["docs/fluxus-documentation-en.pdf",
+	"docs/fluxus-documentation-fr.pdf",
 	"examples/allprims.scm",
 	"examples/asteroids.scm",
 	"examples/bars.scm",
