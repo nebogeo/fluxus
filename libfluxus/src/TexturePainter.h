@@ -129,7 +129,7 @@ public:
 	/// Is multitexturing possible?
 	bool MultitexturingEnabled() { return m_MultitexturingEnabled; }
 	///@}
-	
+
 private:
 	//////////////////////////////////////////////////////
 	/// A texture descriptor

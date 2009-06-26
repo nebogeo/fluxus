@@ -27,6 +27,7 @@
 #include "PixelPrimitive.h"
 #include "BlobbyPrimitive.h"
 #include "TypePrimitive.h"
+#include "ImagePrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
 #include "Evaluator.h"
@@ -37,10 +38,10 @@ using namespace SchemeHelper;
 
 // StartSectionDoc-en
 // primitives
-// Primitives are objects that you can render. There isn't really much else in a fluxus scene, 
+// Primitives are objects that you can render. There isn't really much else in a fluxus scene,
 // except lights, a camera and lots of primitives.
-// Example: 
-// EndSectionDoc 
+// Example:
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // primitivas
@@ -71,7 +72,7 @@ Scheme_Object *build_cube(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *BoxPrim = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(BoxPrim);
-    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(BoxPrim));    
+    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(BoxPrim));
 }
 
 Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
@@ -80,14 +81,14 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	ArgCheck("build-nurbs", "i", argc, argv);
 	int size=IntFromScheme(argv[0]);
 	NURBSPrimitive *Prim = new NURBSPrimitive();
-	if (size<1) 
+	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
-		MZ_GC_UNREG(); 
+		MZ_GC_UNREG();
 		return scheme_void;
 	}
 	Prim->Resize(size);
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
 
@@ -414,12 +415,12 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 // (wire-colour (vector 0 0 1))
 // ; this font should be on the default fluxus path (as it's the editor font)
 // (define t (build-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!"))
-// 
+//
 // ; make a poly primitive from the type
 // (define p (with-state
 //     (translate (vector 0 4 0))
 //     (type->poly t)))
-// 
+//
 // ; set some texture coords on the poly prim and load a texture onto it
 // (with-primitive p
 //     (pdata-map!
@@ -696,11 +697,53 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-locator 
+// build-image texture-number coordinate-vector size-vector
 // Returns: primitiveid-number
 // Description:
-// A locator is an empty primitive, useful for parenting to (when you don't want to have the 
-// parent object visible). This primitive can only be visualised with (hint-origin) to display 
+// Builds an image, which is displayed on screen using 2D orthographic projection.
+// Coordinate defines the location of the image from the upper-left corner. Size
+// specifies the image display resolution in pixels.
+// Example:
+// (define img (build-image (load-texture "test.png") (vector 0 0) (get-screen-size)))
+// EndFunctionDoc
+
+Scheme_Object *build_image(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-image", "i??", argc, argv);
+	for (int i = 1; i <= 2; i++)
+	{
+		if (!SCHEME_VECTORP(argv[i]))
+		{
+			MZ_GC_UNREG();
+			scheme_wrong_type("build-image", "vector", i, argc, argv);
+		}
+		if (SCHEME_VEC_SIZE(argv[i]) != 2)
+		{
+			MZ_GC_UNREG();
+			scheme_wrong_type("build-image", "vector size 2", i, argc, argv);
+		}
+	}
+
+	float topleft[2], size[2];
+	FloatsFromScheme(argv[1], topleft, 2);
+	FloatsFromScheme(argv[2], size, 2);
+
+	ImagePrimitive *ImagePrim = new ImagePrimitive(Engine::Get()->Renderer(),
+				IntFromScheme(argv[0]),
+				topleft[0], topleft[1],
+				size[0], size[1]);
+	MZ_GC_UNREG();
+
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(ImagePrim));
+}
+
+// StartFunctionDoc-en
+// build-locator
+// Returns: primitiveid-number
+// Description:
+// A locator is an empty primitive, useful for parenting to (when you don't want to have the
+// parent object visible). This primitive can only be visualised with (hint-origin) to display
 // it's local transform origin.
 // Example:
 // (define mynewshape (build-locator))
@@ -2414,6 +2457,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-nurbs-sphere", scheme_make_prim_w_arity(build_nurbs_sphere, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-nurbs-plane", scheme_make_prim_w_arity(build_nurbs_plane, "build-nurbs-sphere", 2, 2), env);
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
+	scheme_add_global("build-image", scheme_make_prim_w_arity(build_image, "build-image", 3, 3), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 2), env);
@@ -2451,5 +2495,6 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
 	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
 	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }
+
