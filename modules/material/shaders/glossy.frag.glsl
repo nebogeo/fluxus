@@ -31,7 +31,7 @@ void main()
     vec3 h = normalize(l+v);
 
     float diffuse = dot(l,n);
-    float specular = smoothstep(0.72-w,0.72+w,pow(max(0.0,dot(n,h)),1/Roughness));
+    float specular = smoothstep(0.72-w,0.72+w,pow(max(0.0,dot(n,h)),1.0/Roughness));
     
     gl_FragColor = vec4(AmbientColour*AmbientIntensity + 
                         DiffuseColour*diffuse*DiffuseIntensity +

@@ -15,7 +15,8 @@
  set-camera-transform
  get-camera-transform
  reset-camera
- unlock-camera)
+ unlock-camera
+ set-camera-position)
 
 (define camera-locked #f)
 (define camera-matrix (mtranslate (vector 0 1 -10)))
@@ -63,6 +64,10 @@
 (define (set-camera-transform m)
   (set! camera-locked #t)
   (set! camera-matrix m))
+  
+(define (set-camera-position s)
+  (set! camera-position s)
+  (set! camera-matrix (mtranslate s)))
 
 ;; StartFunctionDoc-en
 ;; get-camera-transform 

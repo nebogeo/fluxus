@@ -37,7 +37,7 @@ void main()
                                   SpecularIntensity2,g);
 
     float diffuse = dot(l,n);
-    float specular = pow(dot(n,h),1/Roughness);
+    float specular = pow( max(dot(n,h),0.0),1.0/Roughness);
 
     gl_FragColor = vec4(AmbientColour*AmbientIntensity + 
                         DiffuseColour*diffuse*DiffuseIntensity +

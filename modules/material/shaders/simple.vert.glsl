@@ -11,7 +11,7 @@ void main()
      
      // add our sinewave distortion based on the transformed world
      // coordinates of the vertex
-     gl_Position += vec4(sin(gl_Position.y*6),0,0,1)*deformamount*0.5;
+     gl_Position += vec4(sin(gl_Position.y*6.0),0,0,1)*deformamount*0.5;
      
      // pass the colour through to the fragement shader
      fragcol=testcol;

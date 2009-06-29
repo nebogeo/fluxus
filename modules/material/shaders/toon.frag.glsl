@@ -25,9 +25,9 @@ void main()
 	
     float lambert = dot(l,n);
     vec4 colour = MidColour;
-    if (lambert>1-HighlightSize) colour = HighlightColour;
-    if (lambert<ShadowSize) colour = ShadowColour;
-    if (dot(n,v)<OutlineWidth) colour = vec4(0,0,0,1);
+    if (lambert > 1.0-HighlightSize) colour = HighlightColour;
+    if (lambert < ShadowSize) colour = ShadowColour;
+    if (dot(n,v) < OutlineWidth) colour = vec4(0,0,0,1);
 
     gl_FragColor = colour;
 }
