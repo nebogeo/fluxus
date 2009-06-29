@@ -16,5 +16,5 @@ varying vec3 L;
 void main()
 { 
     float lambert = dot(normalize(L),normalize(N));
-    gl_FragColor = vec4(Tint*1-acos(lambert)/WrapAngle,1.0);
+    gl_FragColor = vec4(Tint * 1.0-acos(lambert) / WrapAngle, 1.0);
 }

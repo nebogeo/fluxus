@@ -26,7 +26,7 @@ void main()
     vec3 h = normalize(l+v);
     
     float diffuse = dot(l,n);
-    float specular = pow(dot(n,h),32.0);
+    float specular = pow(max(dot(n,h), 0.0),32.0);
     
     vec3 cool = min(CoolColour+SurfaceColour,1.0);
     vec3 warm = min(WarmColour+SurfaceColour,1.0);
