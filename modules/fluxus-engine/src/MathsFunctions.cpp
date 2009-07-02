@@ -727,7 +727,7 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 // Description:
 // Returns the euler angles extracted from the matrix.
 // Example:
-// (qaxisangle (vector 0 1 0) 45)
+// (matrix->euler (mrotate (vector 15 0 0)))
 // EndFunctionDoc
 
 Scheme_Object *matrix_to_euler(int argc, Scheme_Object **argv)
