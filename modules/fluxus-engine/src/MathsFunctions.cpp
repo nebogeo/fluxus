@@ -722,14 +722,35 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// qaxisangle axis-vector angle-number
-// Returns: quaternion-vector
+// matrix->euler vector-matriz
+// Returns: vector
 // Description:
-// Returns the quaternion representing rotation of angle degrees about the specified axis. 
+// Returns the euler angles extracted from the matrix.
 // Example:
 // (qaxisangle (vector 0 1 0) 45)
 // EndFunctionDoc
-	
+
+Scheme_Object *matrix_to_euler(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("matrix->euler", "m", argc, argv);
+	dMatrix m;
+	FloatsFromScheme(argv[0], m.arr(), 16);
+	dVector angles;
+	m.extract_euler(angles.x, angles.y, angles.z);
+	MZ_GC_UNREG();
+	return FloatsToScheme(angles.arr(), 3);
+}
+
+// StartFunctionDoc-en
+// qaxisangle axis-vector angle-number
+// Returns: quaternion-vector
+// Description:
+// Returns the quaternion representing rotation of angle degrees about the specified axis.
+// Example:
+// (qaxisangle (vector 0 1 0) 45)
+// EndFunctionDoc
+
 // StartFunctionDoc-pt
 // qaxisangle vetor-eixo angulo
 // Retorna: vetor-quaternion
@@ -1072,6 +1093,7 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("mtranspose", scheme_make_prim_w_arity(mtranspose, "mtranspose", 1, 1), env);
 	scheme_add_global("minverse", scheme_make_prim_w_arity(minverse, "minverse", 1, 1), env);
 	scheme_add_global("maim", scheme_make_prim_w_arity(maim, "maim", 2, 2), env);
+	scheme_add_global("matrix->euler", scheme_make_prim_w_arity(matrix_to_euler, "matrix->euler", 1, 1), env);
 	scheme_add_global("qaxisangle", scheme_make_prim_w_arity(qaxisangle, "qaxisangle", 2, 2), env);
 	scheme_add_global("qmul", scheme_make_prim_w_arity(qmul, "qmul", 2, 2), env);
 	scheme_add_global("qnormalise", scheme_make_prim_w_arity(qnormalise, "qnormalise", 1, 1), env);
