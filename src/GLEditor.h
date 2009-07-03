@@ -50,6 +50,7 @@ public:
 	virtual void Render();
 	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	void Reshape(unsigned int w,unsigned int h);
+	void BlowupCursor();
 
 	string GetText();
 	string GetAllText() { return m_Text; }
@@ -60,6 +61,8 @@ public:
 	
 	float m_PosX,m_PosY;
 	float m_Scale;
+	float m_CursorMaxWidth;
+        float m_CursorMaxHeight;
 	
 	void StrokeCharacter(wchar_t c);
 	float StrokeWidth(wchar_t c);
@@ -138,6 +141,8 @@ protected:
 	timeval m_Time;
 	float m_Delta;
 	float m_Flash;
+	bool m_BlowupCursor;
+        float m_Blowup;
 	
 };
 
