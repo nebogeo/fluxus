@@ -15,7 +15,11 @@
 	poly-type
     poly-for-each-face
     poly-for-each-triangle
-    poly-for-each-tri-sample)
+    poly-for-each-tri-sample
+	build-extrusion
+	build-partial-extrusion
+	partial-extrude
+	build-circle-profile)
 
 
 ;; StartFunctionDoc-en
@@ -174,4 +178,222 @@
    (lambda (indices)
      (for ((x (in-range 0 samples-per-triangle)))
           (proc indices (vsquash (rndvec)))))))
+
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+; extrusion code
+
+(define (draw-profile index profile offset)
+    (cond ((not (null? profile))
+            (pdata-set! "p" index (vadd (car profile) offset))
+            (draw-profile (+ index 1) (cdr profile) offset))))
+
+(define (transform-profile profile m)
+    (cond
+        ((null? profile) '())
+        (else
+            (cons (vtransform (car profile) m) 
+                (transform-profile (cdr profile) m)))))
+
+; figures out the vector for rotation of the profile
+(define (path-vector first-segment path lv)
+    (let* ((v (if (null? (cdr path))        ; last segment?
+                    lv                      ; use the last vector used
+                    (vsub (cadr path) (car path)))) ; use the next point
+            (vd (if first-segment v          ; first segment?
+                    (vadd (vmul lv 0.5) ; blend with the last vector
+                        (vmul v 0.5)))))
+        vd))
+
+(define (extrude-segment index profile path width lv up size)
+    (cond ((not (null? path))
+            (let ((v (path-vector (zero? index) path lv)))                
+                (draw-profile index (transform-profile profile 
+                        (mmul
+                            (maim v up)
+                            (mrotate (vector 0 90 0))
+                            (mscale (vmul (vector (car width) (car width) (car width)) size))))
+                    (car path))
+                v))))
+
+(define (extrude index profile path width lv up)
+    (cond ((not (null? path))
+            (let ((v (extrude-segment index profile path width lv up 1)))
+                (extrude (+ index (length profile)) profile (cdr path) (cdr width) v up)))))
+
+(define (stitch-face index count profile-size in)
+    (cond 
+        ((eq? 1 count) 
+            (append in (list (+ (- index profile-size) 1) index (+ index profile-size) 
+                    (+ (- index profile-size) 1 profile-size))))
+        (else
+            (append 
+                (list (+ index 1) index
+                    (+ index profile-size) (+ index profile-size 1))
+                (stitch-face (+ index 1) (- count 1) profile-size in)))))
+
+(define (stitch-indices index profile-size path-size in)
+    (cond 
+        ((eq? 1 path-size) in)
+        (else
+            (append
+                (stitch-face index profile-size profile-size '())
+                (stitch-indices (+ index profile-size) 
+                    profile-size
+                    (- path-size 1)
+                    in)))))
+
+(define (build-tex-coords profile-size path-size vscale)
+    (pdata-index-map!
+        (lambda (i t)
+            (vector (* vscale (/ (quotient i profile-size) path-size))
+                (/ (modulo i profile-size) profile-size) 0))
+        "t"))
+
+;; StartFunctionDoc-en
+;; build-extrusion profile-list path-list width-list tex-vscale up
+;; Returns: primitive-id
+;; Description:
+;; Returns an indexed polygon primitive made by extruding the profile along path and scaling using values in width.
+;; The path and width lists need to be the same size. tex-vscale allows you to scale the texture coordinates along the 
+;; length of the extrusion. An up vector is needed for aiming the profile along the path.
+;; Example:  
+;; (clear)
+;; (build-extrusion 
+;;     (build-circle-profile 20 0.3)
+;;     (list
+;;         (vector 0 0 0)
+;;         (vector 0 1 2)
+;;         (vector 0 -1 4)
+;;         (vector 0 0 6))
+;;     (list 0 1 1 0) 1 (vector 0 1 0))
+;; EndFunctionDoc 
+
+(define (build-extrusion profile path width tex-vscale up)
+    (let ((p (build-polygons (* (length profile) (length path)) 'quad-list)))
+        (with-primitive p
+            (poly-set-index (stitch-indices 0 (length profile) (length path) '()))
+            (build-tex-coords (length profile) (length path) tex-vscale)
+            (extrude 0 profile path width (vector 0 0 0) up)
+            (recalc-normals 0))
+        p))
+
+;; StartFunctionDoc-en
+;; build-partial-extrusion profile-list path-list tex-vscale
+;; Returns: primitive-id
+;; Description:
+;; Builds a primitive ready to be used with partial-extrusion. 
+;; Use this is for animating growth along extrusions.
+;; Example:  
+;; (clear)
+;; 
+;; (define profile (build-circle-profile 10 0.3))
+;; (define path (build-list 20 (lambda (i) (vector (crndf) (crndf) i))))
+;; (define width (build-list 20 (lambda (_) 1)))
+;; 
+;; (hint-wire)
+;; (define p (build-partial-extrusion profile path 1))
+;;  
+;; (every-frame 
+;;     (with-primitive p
+;;         (partial-extrude (* (length path) 0.5 (+ (sin (time)) 1)) 
+;;             profile path width (vector 0 1 0) 0.1))) 
+;; EndFunctionDoc
+
+(define (build-partial-extrusion profile path tex-vscale)
+    (let ((p (build-polygons (* (length profile) (length path)) 'quad-list)))
+        (with-primitive p
+            (poly-set-index (stitch-indices 0 (length profile) (length path) '()))
+            (build-tex-coords (length profile) (length path) tex-vscale))
+        p))
+
+
+;; StartFunctionDoc-en
+;; partial-extrude profile-list t profile-list path-list width-list up grow-value
+;; Returns: primitive-id
+;; Description:
+;; Animates growth along extrusions. t is a value between 0 and the length of the path, 
+;; and controls how far along the extrusion to calculate. Grow value is a scale to control
+;; how much the profile is scaled to change it's width as it grows.
+;; Example:  
+;; (clear)
+;; 
+;; (define profile (build-circle-profile 10 0.3))
+;; (define path (build-list 20 (lambda (i) (vector (crndf) (crndf) i))))
+;; (define width (build-list 20 (lambda (_) 1)))
+;; 
+;; (hint-wire)
+;; (define p (build-partial-extrusion profile path 100))
+;;  
+;; (every-frame 
+;;     (with-primitive p
+;;         (partial-extrude (* (length path) 0.5 (+ (sin (time)) 1)) 
+;;             profile path width (vector 0 1 0) 0.1))) 
+;; EndFunctionDoc
+
+(define (partial-extrude t profile path width up grow)
+    (define (chop-front l n)
+        (cond ((null? l) l)
+            (else
+                (if (zero? n) (cons (car l) (chop-front (cdr l) n))
+                    (chop-front (cdr l) (- n 1))))))
+    
+    (define (collapse-front)
+        (let ((start (* (floor t) (length profile))))
+            (for ((i (in-range (+ start (* (length profile) 1)) (pdata-size))))
+                (pdata-set! "p" i (pdata-ref "p" start)))))
+    
+    (define (scale-front)
+        (when (> t 1)
+            (let* ((start (* (floor t) (length profile)))
+                    (from (list-ref path (- (inexact->exact (floor t)) 1)))
+                    (to (list-ref path (+ (inexact->exact (floor t)) 0))))
+                
+                (for ((i (in-range start (+ start (length profile)))))
+                    (pdata-set! "p" i (vmix to from (- t (floor t))))))))
+    
+    (define (_ t v g)
+        (cond 
+            ((< t 1) (recalc-normals 0) v)
+            (else
+                (let ((start (* (floor t) (length profile))))
+                    (_ (- t 1)
+                        (extrude-segment start profile
+                            (chop-front path (floor t))
+                            (chop-front width (floor t)) v up 
+                            (if (< g 1)
+                                (+ g (* (- t (floor t)) grow))
+                                g))
+                        (if (< g 1)
+                            (+ g grow)
+                            1))))))
+    (_ t (vector 0 0 0) 0)
+    (scale-front)
+    (collapse-front))
+
+;; StartFunctionDoc-en
+;; build-circle-profile num-points radius
+;; Returns: primitive-id
+;; Description:
+;; Returns a list of vectors describing a circle. 
+;; Useful for generating circles for the extrusion generator.
+;; Example:  
+;; (clear)
+;; (build-extrusion 
+;;     (build-circle-profile 20 0.3)
+;;     (list
+;;         (vector 0 0 0)
+;;         (vector 0 1 2)
+;;         (vector 0 -1 4)
+;;         (vector 0 0 6))
+;;     (list 0 1 1 0) 1 (vector 0 1 0))
+;; EndFunctionDoc 
+
+(define (build-circle-profile n r)
+    (define (_ n c l)
+        (cond ((zero? c) l)
+            (else
+                (let ((a (* (/ c n) (* 2 3.141))))                 
+                    (_ n (- c 1) 
+                        (cons (vmul (vector (sin a) (cos a) 0) r) l))))))
+    (_ n n '()))
 
