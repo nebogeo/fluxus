@@ -20,10 +20,12 @@
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset)
+ crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+ 	set-bpm-mult)
 
 (define time-offset 0.0) 
-(define sync-offset 0.01)
+(define sync-offset 0.0)
+(define bpm-mult 1)
 (define nm-searchpath "/home/dave/noiz/nm/")
 
 (define TERMINAL 0) (define SINE 1) (define SAW 2) (define TRI 3) (define SQU 4) 
@@ -610,11 +612,13 @@
 (define sync-tempo 0.5)
 (define sync-clock 0)
 (define bpb 4)
-(define global-offset 0)
 
 (define (set-global-offset s)
-	(set! global-offset s))
+	(set! sync-offset s))
 
+(define (set-bpm-mult s)
+	(set! bpm-mult s))
+	
 ; figures out the offset to the nearest tick    
 (define (calc-offset timenow synctime tick)
   (let ((p (/ (- synctime timenow) tick)))
@@ -629,12 +633,12 @@
 (define (go-flux)
   ; check for sync messages 
   (cond ((osc-msg "/sync")
-         (set! sync-tempo (* (/ 1 (osc 3)) 60))
+         (set! sync-tempo (* (/ 1 (* (osc 3) bpm-mult)) 60))
          (set! bpb (osc 2))
          (let* ((sync-time (+ sync-offset (timestamp->time (vector (osc 0) (osc 1)))))
                 (offset (calc-offset logical-time sync-time sync-tempo)))
            (printf "time offset: ~a~n" offset)
-           (set! logical-time (+ logical-time offset global-offset))
+           (set! logical-time (+ logical-time offset))
            (set! sync-clock 0))))
   
   (cond ((> (- (time-now) logical-time) 3)

@@ -135,12 +135,18 @@ void NURBSPrimitive::Render()
 		glColor4fv(m_State.WireColour.arr());
 		gluNurbsProperty(m_Surface, GLU_DISPLAY_MODE, GLU_OUTLINE_POLYGON);
 
+		/* FIXME: glPolygonMode is changed from the default GL_FILL to GL_LINE
+		 * after the gluNurbsSurface call (only tested on OSX),
+		 * see: https://savannah.nongnu.org/bugs/?26951
+		 */
+		glPushAttrib(GL_POLYGON_BIT); // save GL_POLYGON_MODE
 		gluBeginSurface(m_Surface);
 		gluNurbsSurface(m_Surface,m_UKnotVec.size(),&(*m_UKnotVec.begin()),m_VKnotVec.size(),&(*m_VKnotVec.begin()),
 						m_VCVCount*m_Stride,m_Stride,
 						m_CVVec->begin()->arr(),m_UOrder,m_VOrder,GL_MAP2_VERTEX_3);
-
 		gluEndSurface(m_Surface);
+		glPopAttrib(); // restore the original GL_POLYGON_MODE
+
 		glEnable(GL_LIGHTING);
 		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
 		{
@@ -176,7 +182,6 @@ void NURBSPrimitive::Render()
 	}
 
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
-
 }
 
 void NURBSPrimitive::RecalculateNormals(bool smooth)

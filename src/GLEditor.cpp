@@ -33,6 +33,9 @@ using namespace fluxus;
 #define FLASH_RATE 1
 #define HALF_FLASH_RATE (FLASH_RATE*0.5)
 
+// max time in secs for cursor to "blow up"
+#define BLOWUP_FLASHES 1.8
+
 // static so we share between workspaces
 string GLEditor::m_CopyBuffer;
 float GLEditor::m_TextWidth(1);
@@ -60,6 +63,8 @@ GLEditor::GLEditor():
 m_PosX(0),
 m_PosY(0),
 m_Scale(1),
+m_CursorMaxWidth(40.0f),
+m_CursorMaxHeight(40.0f),
 m_Position(0),
 m_HighlightStart(0),
 m_HighlightEnd(0),
@@ -82,7 +87,9 @@ m_BBMaxX(0),
 m_BBMaxY(0),
 m_Width(0),
 m_Height(0),
-m_Delta(0.0)
+m_Delta(0.0),
+m_BlowupCursor(false),
+m_Blowup(0.0f)
 { 
 	assert(m_PolyGlyph!=NULL);
 	
@@ -110,6 +117,8 @@ void GLEditor::Reset()
 	m_TextColourRed=1;
 	m_TextColourGreen=1;
 	m_TextColourBlue=1;
+	m_BlowupCursor=false;
+        m_Blowup=0.0f;
 }
 
 void GLEditor::Reshape(unsigned int w,unsigned int h)
@@ -117,6 +126,13 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 	m_Width=w;
 	m_Height=h;
 }
+
+void GLEditor::BlowupCursor()
+{
+        m_BlowupCursor=true;
+        m_Blowup=0.0f;
+}
+
 
 int GLEditor::GetCurrentLine()
 {
@@ -196,20 +212,44 @@ void GLEditor::DrawCharBlock()
 
 void GLEditor::DrawCursor()
 {	
-	m_Flash+=m_Delta;
-	if (m_Flash>FLASH_RATE) m_Flash=0;
-	
-	if (m_Flash>HALF_FLASH_RATE)
-	{
-		float half = m_CursorWidth/2.0f;
-		glBegin(GL_QUADS);
-		glVertex2f(half,0);				
-		glVertex2f(half,m_CharHeight);
-		glVertex2f(-half,m_CharHeight);
-		glVertex2f(-half,0);
-		glEnd();
-	}
-	
+	if (m_BlowupCursor)
+        {
+                // set this to zero when starting
+                m_Blowup +=m_Delta;
+                if (m_Blowup >= BLOWUP_FLASHES)
+                {
+                        m_BlowupCursor = false;
+                }
+                else
+                {
+                        float maxCW = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxWidth*m_CursorWidth*0.5f)+m_CursorWidth*0.5f;
+
+                        float maxCH = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxHeight*m_CharHeight)+m_CharHeight;
+                        glColor4f(0,1,0,0.7*m_Blowup/BLOWUP_FLASHES);
+                        glBegin(GL_QUADS);
+                        glVertex2f(maxCW,-0.5f*(maxCH-m_CharHeight));
+                        glVertex2f(maxCW,0.5f*(maxCH+m_CharHeight));
+                        glVertex2f(-maxCW,0.5f*(maxCH+m_CharHeight));
+                        glVertex2f(-maxCW,-0.5f*(maxCH-m_CharHeight));
+                        glEnd();
+                }
+        }
+        else
+        {
+                m_Flash+=m_Delta;
+                if (m_Flash>FLASH_RATE) m_Flash=0;
+
+                if (m_Flash>HALF_FLASH_RATE)
+                {
+                        float half = m_CursorWidth/2.0f;
+                        glBegin(GL_QUADS);
+                        glVertex2f(half,0);
+                        glVertex2f(half,m_CharHeight);
+                        glVertex2f(-half,m_CharHeight);
+                        glVertex2f(-half,0);
+                        glEnd();
+                }
+        }
 }
 
 void GLEditor::BBExpand(float x, float y)
@@ -598,6 +638,16 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				case GLEDITOR_RETURN: 
 					key='\n'; // fallthrough (replacement of newline)
 				default:
+					if (m_Selection)
+                                        {
+                                                m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+                                                if (m_Position>=m_HighlightEnd)
+                                                {
+                                                        m_Position-=m_HighlightEnd-m_HighlightStart;
+                                                }
+                                                m_Selection=false;
+                                        }
+
 					char temp[2];
 					temp[0]=(char)key;
 					temp[1]='\0';

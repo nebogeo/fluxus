@@ -134,6 +134,10 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 					m_ShowFileDialog=!m_ShowFileDialog;
 				}
 			break; // l
+			case 2: // b
+                                m_Editor[m_CurrentEditor]->BlowupCursor();
+                        break;
+
 			case 5: // e
 			{
 				if (m_CurrentEditor!=9)
