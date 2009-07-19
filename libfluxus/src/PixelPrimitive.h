@@ -33,7 +33,7 @@ namespace Fluxus
 class PixelPrimitive : public Primitive
 {
 public:
-	PixelPrimitive(unsigned int w, unsigned int h);
+	PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive = false);
 	PixelPrimitive(const PixelPrimitive &other);
 	virtual ~PixelPrimitive();
 
@@ -72,10 +72,12 @@ public:
 
 	void Bind();
 	void Unbind();
-	void ClearPixels(const dColour &c = dColour(1, 1, 1, 1));
 
 	Renderer *GetRenderer() { return m_Renderer; }
 	Physics *GetPhysics() { return m_Physics; }
+
+	/// Activate the renderer
+	void ActivateRenderer(bool active) { m_RendererActive = active; }
 
 protected:
 
@@ -105,6 +107,7 @@ protected:
 	bool m_ReadyForUpload;
 	bool m_ReadyForDownload;
 	bool m_FBOSupported;
+	bool m_RendererActive;
 };
 
 };

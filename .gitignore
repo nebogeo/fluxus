@@ -4,6 +4,7 @@ CVS
 /tags
 *~
 *.so
+*.dylib
 lib*.a
 /fluxus
 /fluxa/fluxa

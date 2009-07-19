@@ -22,7 +22,7 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
-//#define DEBUG_GL
+#define DEBUG_GL
 
 using namespace Fluxus;
 
@@ -69,12 +69,13 @@ static void check_fbo_errors(void)
 #endif
 
 
-PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h) :
+PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive /* = false */) :
 m_Texture(0),
 m_Width(w),
 m_Height(h),
 m_ReadyForUpload(false),
-m_ReadyForDownload(false)
+m_ReadyForDownload(false),
+m_RendererActive(RendererActive)
 {
 	m_FBOSupported = glewIsSupported("GL_EXT_framebuffer_object");
 	m_Renderer = new Renderer();
@@ -194,7 +195,8 @@ m_Points(other.m_Points),
 m_Width(other.m_Width),
 m_Height(other.m_Height),
 m_ReadyForUpload(other.m_ReadyForUpload),
-m_ReadyForDownload(other.m_ReadyForDownload)
+m_ReadyForDownload(other.m_ReadyForDownload),
+m_RendererActive(other.m_RendererActive)
 {
 	// FIXME: make this work with FBOs
 	PDataDirty();
@@ -214,6 +216,7 @@ PixelPrimitive::~PixelPrimitive()
 		if (m_DepthBuffer!=0) glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 	}
 
+	/* FIXME: segfaults */
 	//delete m_Renderer;
 }
 
@@ -286,15 +289,6 @@ void PixelPrimitive::Unbind()
 	//cout << "pix " << "unbound " << hex << this << endl;
 }
 
-void PixelPrimitive::ClearPixels(const dColour &c /* = dColour(1, 1, 1, 1) */)
-{
-	// clear pdata
-	for (unsigned i = 0; i < m_Width * m_Height; i++)
-	{
-		(*m_ColourData)[i] = dColour(c.r, c.g, c.b, c.a);
-	}
-}
-
 void PixelPrimitive::Render()
 {
 	// we need to do uploading while we have an active gl context
@@ -305,7 +299,7 @@ void PixelPrimitive::Render()
 	}
 
 	// render the pixel primitive scenegraph
-	if (m_FBOSupported)
+	if (m_FBOSupported && m_RendererActive)
 	{
 		glPushMatrix();
 		Bind();
@@ -415,7 +409,7 @@ void PixelPrimitive::UploadPData()
 		   gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
 		   */
 
-		glBindTexture(GL_TEXTURE_2D,m_Texture);
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 	}

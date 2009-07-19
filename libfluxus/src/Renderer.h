@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #ifndef N_RENDERER
 #define N_RENDERER
 
@@ -31,7 +31,7 @@
 
 // TODO: check this works for Apple's OpenGL
 #ifndef GL_POLYGON_OFFSET_EXT
-#define GL_POLYGON_OFFSET_EXT ((GLenum)0x8037) 
+#define GL_POLYGON_OFFSET_EXT ((GLenum)0x8037)
 #endif
 
 using namespace std;
