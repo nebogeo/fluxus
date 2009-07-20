@@ -8,7 +8,7 @@
         (lambda (n) (* n 0.01 (+ 1.5 (cos (* 0.5 n)))))))
 
 (define path (build-list 100
-        (lambda (n) (vmul (vector (sin (* 0.2 n)) 0 (cos (* 0.2 n))) (* 0.05 n)))))
+        (lambda (n) (vadd (vector 1 0 0) (vmul (vector (sin (* 0.2 n)) 0 (cos (* 0.2 n))) (* 0.05 n))))))
 
 (define p (with-state
         (wire-colour 0)

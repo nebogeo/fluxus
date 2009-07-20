@@ -175,7 +175,7 @@ int fill_from_port(Scheme_Object* port, char *dest, long size)
 	MZ_GC_REG();
 
 	long pos=0;
-	while (scheme_char_ready(port) && pos<size)
+	while (scheme_char_ready(port) && pos<size-1)
 	{
 		dest[pos++]=scheme_getc(port);
 	}
