@@ -49,6 +49,9 @@ public:
 	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 
+	/// Create a new FBO and release the old one if exists
+	void PixelPrimitive::ResizeFBO(int w, int h);
+
 	/// Upload the texture to the graphics card
 	void Upload();
 
@@ -99,7 +102,6 @@ protected:
 	unsigned int m_FBOHeight;
 	float m_FBOMaxS;
 	float m_FBOMaxT;
-	dColour m_BGColour;
 
 	Renderer *m_Renderer;
 	Physics *m_Physics;

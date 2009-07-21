@@ -1,5 +1,5 @@
 (clear)
-(define p (build-pixels 256 256))
+(define p (build-pixels 256 256 #t))
 
 (define q (with-pixels-renderer p
         (clear-colour (vector 1 1 1))

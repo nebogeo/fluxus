@@ -18,8 +18,10 @@
 #include <png.h>
 #include "PNGLoader.h"
 #include "Trace.h"
+#include <iostream>
 
 using namespace Fluxus;
+using namespace std;
 
 unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned int &h, PixelFormat &pf)
 {
@@ -42,24 +44,48 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		}
 
 		png_init_io(png_ptr, fp);
-		png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+		png_read_info(png_ptr, info_ptr);
+
+		unsigned long width=info_ptr->width;
+		unsigned long height=info_ptr->height;
+		int bit_depth=info_ptr->bit_depth; 
+		int colour_type=info_ptr->color_type;
+		png_bytep *row_pointers=new png_bytep[height];
+		unsigned int rb = png_get_rowbytes(png_ptr, info_ptr);
+		
+		for (unsigned long row=0; row<height; row++)
+		{
+			row_pointers[row] = new png_byte[rb];
+		}
+
+		// read the data into the row pointers
+		png_read_image(png_ptr, row_pointers);
 		fclose(fp);
 
-		ImageData = new unsigned char[png_ptr->rowbytes*png_ptr->height];
+		// make a new contiguous array to store the pixels
+		ImageData=new unsigned char[rb*height];
 		int p=0;
-		for (int row = png_ptr->height-1; row>=0; row--) // flip around to fit opengl
+		for (int row = height-1; row>=0; row--) // flip around to fit opengl
 		{
-			for (unsigned int i=0; i<png_ptr->rowbytes; i++)
+			for (unsigned int i=0; i<rb; i++)
 			{
-				ImageData[p]=(unsigned char)(info_ptr->row_pointers[row])[i];
+				ImageData[p]=(unsigned char)(row_pointers[row])[i];
 				p++;
 			}
 		}
 
-		w=png_ptr->width;
-		h=png_ptr->height;
+		// clear up the row_pointers
+		for (unsigned long row=0; row<height; row++)
+		{
+			delete[] row_pointers[row];
+		}
+		delete[] row_pointers;
+
+		// convert the format to fluxus texture format stuff
+		w=width;
+		h=height;
 		
-		switch (png_ptr->color_type)
+		switch (colour_type)
 		{
 			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
 			case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;

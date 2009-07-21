@@ -71,6 +71,8 @@ static void check_fbo_errors(void)
 
 PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive /* = false */) :
 m_Texture(0),
+m_DepthBuffer(0),
+m_FBO(0),
 m_Width(w),
 m_Height(h),
 m_ReadyForUpload(false),
@@ -99,87 +101,14 @@ m_RendererActive(RendererActive)
 	m_Points.push_back(dVector(1,1,0));
 	m_Points.push_back(dVector(0,1,0));
 
-	glGenTextures(1,(GLuint*)&m_Texture);
-
 	if (m_FBOSupported)
 	{
-		m_FBOWidth = 1 << (unsigned)ceil(log2(w));
-		m_FBOHeight = 1 << (unsigned)ceil(log2(h));
-
-		m_Renderer->SetResolution(m_FBOWidth,m_FBOHeight);
-
-		/* setup the framebuffer */
-		glGenFramebuffersEXT(1, (GLuint *)&m_FBO);
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, (GLuint)m_FBO);
-
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
-
-		/* set texture parameters */
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				m_State.TextureStates[0].Mag);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				m_State.TextureStates[0].Min);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				m_State.TextureStates[0].WrapS);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				m_State.TextureStates[0].WrapT);
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
-
-		/* create a texture of m_FBOWidth x m_FBOHeight size */
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
-				GL_RGBA, GL_FLOAT, NULL);
-		/* upload pdata to the top left corner of m_Width x m_Height size */
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-
-		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
-
-		/* create the depth buffer */
-		if (m_State.Hints & HINT_IGNORE_DEPTH)
-		{
-			m_DepthBuffer = 0;
-			//cout << " no depth" << endl;
-		}
-		else
-		{
-			glGenRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
-			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, (GLuint)m_DepthBuffer);
-			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
-					m_FBOWidth, m_FBOHeight);
-		}
-
-		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
-
-		/* attach the depth buffer to the fbo */
-		if (m_DepthBuffer!=0)
-			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
-					GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
-					(GLuint)m_DepthBuffer);
-#ifdef DEBUG_GL
-		check_fbo_errors();
-#endif
-
-		/* unbind the fbo */
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		m_FBOMaxS = (float)w / (float)m_FBOWidth;
-		m_FBOMaxT = (float)h / (float)m_FBOHeight;
-
-#ifdef DEBUG_GL
-		cout << "pix created " << dec << m_FBOWidth << "x" << m_FBOHeight << " (" << m_Width <<
-			"x" << m_Height << ") " << hex << this << endl;
-		cout << "\trenderer: " << hex << m_Renderer << endl;
-#endif
+		ResizeFBO(m_Width, m_Height);
 	}
 	else
 	{
+		glGenTextures(1, (GLuint*)&m_Texture);
+
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
@@ -231,8 +160,103 @@ void PixelPrimitive::PDataDirty()
 	m_ColourData=GetDataVec<dColour>("c");
 }
 
+void PixelPrimitive::ResizeFBO(int w, int h)
+{
+	if (m_FBOSupported)
+	{
+		if (m_Texture != 0)
+			glDeleteTextures(1,(GLuint*)&m_Texture);
+		if (m_FBO != 0)
+			glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
+		if (m_DepthBuffer!=0)
+			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+
+		glGenTextures(1, (GLuint*)&m_Texture);
+
+		m_FBOWidth = 1 << (unsigned)ceil(log2(w));
+		m_FBOHeight = 1 << (unsigned)ceil(log2(h));
+
+		m_Renderer->SetResolution(m_Width, m_Height);
+
+		/* setup the framebuffer */
+		glGenFramebuffersEXT(1, (GLuint *)&m_FBO);
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, (GLuint)m_FBO);
+
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
+
+		/* set texture parameters */
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				m_State.TextureStates[0].Mag);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				m_State.TextureStates[0].Min);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+				m_State.TextureStates[0].WrapS);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+				m_State.TextureStates[0].WrapT);
+		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+
+		/* create a texture of m_FBOWidth x m_FBOHeight size */
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
+				GL_RGBA, GL_FLOAT, NULL);
+		/* upload pdata to the top left corner of m_Width x m_Height size */
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
+				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+#ifdef DEBUG_GL
+		check_gl_errors("ResizeFBO glTexSubImage2D");
+#endif
+
+		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+				GL_COLOR_ATTACHMENT0_EXT,
+				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
+
+		/* create the depth buffer */
+		if (m_State.Hints & HINT_IGNORE_DEPTH)
+		{
+			m_DepthBuffer = 0;
+			//cout << " no depth" << endl;
+		}
+		else
+		{
+			glGenRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+			glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, (GLuint)m_DepthBuffer);
+			glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24,
+					m_FBOWidth, m_FBOHeight);
+		}
+
+		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
+		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+				GL_COLOR_ATTACHMENT0_EXT,
+				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
+
+		/* attach the depth buffer to the fbo */
+		if (m_DepthBuffer!=0)
+			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
+					GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
+					(GLuint)m_DepthBuffer);
+#ifdef DEBUG_GL
+		check_fbo_errors();
+#endif
+
+		/* unbind the fbo */
+		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		m_FBOMaxS = (float)w / (float)m_FBOWidth;
+		m_FBOMaxT = (float)h / (float)m_FBOHeight;
+
+#ifdef DEBUG_GL
+		cout << "pix created " << dec << m_FBOWidth << "x" << m_FBOHeight << " (" << m_Width <<
+			"x" << m_Height << ") " << hex << this << endl;
+		cout << "\trenderer: " << hex << m_Renderer << endl;
+#endif
+	}
+}
+
 void PixelPrimitive::Upload()
 {
+	cerr << "set readyforupload" << endl;
+	cerr << m_FBOSupported << endl;
 	m_ReadyForUpload = true;
 }
 
@@ -246,7 +270,19 @@ void PixelPrimitive::Load(const string &filename)
 	TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(GetDataRaw("c"));
 	if (data)
 	{
+		unsigned ow = m_Width;
+		unsigned oh = m_Height;
+
+		cerr << m_FBOSupported << endl;
 		TexturePainter::Get()->LoadPData(filename,m_Width,m_Height,*data);
+
+		cerr << m_FBOSupported << endl;
+		if ((ow != m_Width) || (oh != m_Height))
+		{
+		cerr << m_FBOSupported << endl;
+			ResizeFBO(m_Width, m_Height);
+		cerr << m_FBOSupported << endl;
+		}
 	}
 }
 
@@ -294,6 +330,7 @@ void PixelPrimitive::Render()
 	// we need to do uploading while we have an active gl context
 	if (m_ReadyForUpload)
 	{
+		cerr << "render " << m_FBOSupported << endl;
 		UploadPData();
 		m_ReadyForUpload=false;
 	}
@@ -389,26 +426,27 @@ void PixelPrimitive::ApplyTransform(bool ScaleRotOnly)
 
 void PixelPrimitive::UploadPData()
 {
+	cerr << "uploadpdata" << endl;
+	cerr << m_FBOSupported << endl;
 	if (m_FBOSupported)
 	{
+		cerr << "fbo supported" << endl;
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		check_gl_errors("upload pdata glbindtexture");
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+		cerr << "glTexSubImage " << hex << m_Texture << " " << dec << m_Width << "x" << m_Height << " " <<
+			hex << m_ColourData << endl;
+		check_gl_errors("upload pdata gltexsubimage");
 		glBindTexture(GL_TEXTURE_2D, 0);
-		//cout << "pix uploaded " << m_Texture << endl;
+		check_gl_errors("upload pdata glbindtexture 0");
+#ifdef DEBUG_GL
+		cerr << "pix uploaded " << m_Texture << endl;
+#endif
 	}
 	else
 	{
-		/*
-		   if (m_Texture!=0)
-		   {
-		   glDeleteTextures(1,(GLuint*)&m_Texture);
-		   }
-
-		   glBindTexture(GL_TEXTURE_2D,m_Texture);
-		   gluBuild2DMipmaps(GL_TEXTURE_2D,4,m_Width,m_Height,GL_RGBA,GL_FLOAT,&(*m_ColourData)[0]);
-		   */
-
+		cerr << "fbo is not supported" << endl;
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);

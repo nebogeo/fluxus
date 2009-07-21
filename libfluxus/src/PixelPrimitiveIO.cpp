@@ -31,7 +31,7 @@ PixelPrimitiveIO::~PixelPrimitiveIO()
 	
 Primitive *PixelPrimitiveIO::FormatRead(const string &filename)
 {
-	PixelPrimitive *pp = new PixelPrimitive(1,1);
+	PixelPrimitive *pp = new PixelPrimitive(1, 1);
 	pp->Load(filename);
 	pp->Upload();
 	return pp;
