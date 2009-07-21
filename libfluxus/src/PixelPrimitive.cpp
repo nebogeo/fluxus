@@ -22,7 +22,7 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
-#define DEBUG_GL
+//#define DEBUG_GL
 
 using namespace Fluxus;
 
@@ -125,11 +125,21 @@ m_Width(other.m_Width),
 m_Height(other.m_Height),
 m_ReadyForUpload(other.m_ReadyForUpload),
 m_ReadyForDownload(other.m_ReadyForDownload),
+m_FBOSupported(other.m_FBOSupported),
 m_RendererActive(other.m_RendererActive)
 {
-	// FIXME: make this work with FBOs
+	m_Renderer = new Renderer();
+	m_Physics = new Physics(m_Renderer);
+
 	PDataDirty();
-	glGenTextures(1,(GLuint*)&m_Texture);
+	if (m_FBOSupported)
+	{
+		ResizeFBO(m_Width, m_Height);
+	}
+	else
+	{
+		glGenTextures(1, (GLuint*)&m_Texture);
+	}
 }
 
 PixelPrimitive::~PixelPrimitive()
@@ -255,8 +265,6 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 
 void PixelPrimitive::Upload()
 {
-	cerr << "set readyforupload" << endl;
-	cerr << m_FBOSupported << endl;
 	m_ReadyForUpload = true;
 }
 
@@ -273,15 +281,11 @@ void PixelPrimitive::Load(const string &filename)
 		unsigned ow = m_Width;
 		unsigned oh = m_Height;
 
-		cerr << m_FBOSupported << endl;
 		TexturePainter::Get()->LoadPData(filename,m_Width,m_Height,*data);
 
-		cerr << m_FBOSupported << endl;
 		if ((ow != m_Width) || (oh != m_Height))
 		{
-		cerr << m_FBOSupported << endl;
 			ResizeFBO(m_Width, m_Height);
-		cerr << m_FBOSupported << endl;
 		}
 	}
 }
@@ -330,7 +334,6 @@ void PixelPrimitive::Render()
 	// we need to do uploading while we have an active gl context
 	if (m_ReadyForUpload)
 	{
-		cerr << "render " << m_FBOSupported << endl;
 		UploadPData();
 		m_ReadyForUpload=false;
 	}
@@ -426,27 +429,15 @@ void PixelPrimitive::ApplyTransform(bool ScaleRotOnly)
 
 void PixelPrimitive::UploadPData()
 {
-	cerr << "uploadpdata" << endl;
-	cerr << m_FBOSupported << endl;
 	if (m_FBOSupported)
 	{
-		cerr << "fbo supported" << endl;
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		check_gl_errors("upload pdata glbindtexture");
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-		cerr << "glTexSubImage " << hex << m_Texture << " " << dec << m_Width << "x" << m_Height << " " <<
-			hex << m_ColourData << endl;
-		check_gl_errors("upload pdata gltexsubimage");
 		glBindTexture(GL_TEXTURE_2D, 0);
-		check_gl_errors("upload pdata glbindtexture 0");
-#ifdef DEBUG_GL
-		cerr << "pix uploaded " << m_Texture << endl;
-#endif
 	}
 	else
 	{
-		cerr << "fbo is not supported" << endl;
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
