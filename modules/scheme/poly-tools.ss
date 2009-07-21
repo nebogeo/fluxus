@@ -353,7 +353,7 @@
     
     (define (_ t v g)
         (cond 
-            ((< t 1) (recalc-normals 0) v)
+            ((< t 0) (recalc-normals 0) v)
             (else
                 (let ((start (* (floor t) (length profile))))
                     (_ (- t 1)
