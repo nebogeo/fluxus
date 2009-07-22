@@ -86,37 +86,37 @@ void PolyPrimitive::AddVertex(const dVertex &Vert)
 	m_ConnectedVerts.clear();
 	m_GeometricNormals.clear();
 	m_UniqueEdges.clear();
-}	
+}
 
 void PolyPrimitive::Render()
 {
 	// some drivers crash if they don't get enough data for a primitive...
-	if (m_VertData->size()<3) return; 
+	if (m_VertData->size()<3) return;
 	if (m_IndexMode && m_IndexData.size()<3) return;
-	
+
 	int type=0;
 	switch (m_Type)
 	{
 		case TRISTRIP : type=GL_TRIANGLE_STRIP; break;
-		case QUADS : 
+		case QUADS :
 			// some drivers crash if they don't get enough data for a primitive...
 			if (m_IndexMode)
 			{
-				if (m_IndexData.size()<4) return; 
+				if (m_IndexData.size()<4) return;
 			}
 			else
 			{
-				if (m_VertData->size()<4) return; 
+				if (m_VertData->size()<4) return;
 			}
-			type=GL_QUADS; 	
+			type=GL_QUADS;
 		break;
 		case TRILIST : type=GL_TRIANGLES; break;
 		case TRIFAN : type=GL_TRIANGLE_FAN; break;
 		case POLYGON : type=GL_POLYGON; break;
 	}
-	
-	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);		
-	else glDisable(GL_LINE_SMOOTH);		
+
+	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
+	else glDisable(GL_LINE_SMOOTH);
 
 	if (m_State.Hints & HINT_NORMAL)
 	{
@@ -132,11 +132,19 @@ void PolyPrimitive::Render()
 		glEnable(GL_LIGHTING);
 	}
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
-		
+
 	glVertexPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_VertData->begin()->arr());
 	glNormalPointer(GL_FLOAT,sizeof(dVector),(void*)m_NormData->begin()->arr());
 	glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)m_TexData->begin()->arr());
-	
+
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	}
+
 	#ifndef DISABLE_MULTITEXTURE
 	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
@@ -145,14 +153,14 @@ void PolyPrimitive::Render()
 		{
 			if (m_State.Textures[n]!=0)
 			{
-				char name[3]; 
+				char name[3];
 				snprintf(name,3,"t%d",n);
 				TypedPData<dVector> *tex = dynamic_cast<TypedPData<dVector>*>(GetDataRaw(name));
 				glClientActiveTexture(GL_TEXTURE0+n);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				
+
 				if (tex!=NULL)
-				{	
+				{
 					glTexCoordPointer(3,GL_FLOAT,sizeof(dVector),(void*)tex->m_Data.begin()->arr());
 				}
 				else // default to using the normal vertex coordinates
@@ -162,9 +170,9 @@ void PolyPrimitive::Render()
 			}
 		}
 		glClientActiveTexture(GL_TEXTURE0);
-	}	
+	}
 	#endif
-	
+
 	if (m_State.Hints & HINT_VERTCOLS)
 	{
 		glEnableClientState(GL_COLOR_ARRAY);
@@ -174,7 +182,7 @@ void PolyPrimitive::Render()
 	{
 		glDisableClientState(GL_COLOR_ARRAY);
 	}
-	
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		if (m_IndexMode) glDrawElements(type,m_IndexData.size(),GL_UNSIGNED_INT,&(m_IndexData[0]));
@@ -220,7 +228,12 @@ void PolyPrimitive::Render()
 
 
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
-	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+	}
 }
 
 void PolyPrimitive::RecalculateNormals(bool smooth)

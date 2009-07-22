@@ -1726,6 +1726,24 @@ Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-sphere-map
+// Returns: void
+// Description:
+//
+// Sets the render hints to render objects as if they were perfecly reflective
+// for the current drawing state, or the current primitive.
+// Example:
+// FIXME
+// (hint-sphere-map)
+// EndFunctionDoc
+
+Scheme_Object *hint_sphere_map(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_SPHERE_MAP;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // texture textureid-number
 // Returns: void
 // Description: 
@@ -2520,6 +2538,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
     scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
     scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
+    scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);

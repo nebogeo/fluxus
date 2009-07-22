@@ -4,6 +4,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 
 * added render to texture support to pixel primitives,
   (with-pixels-renderer), (pixels-renderer-activate)
+* added sphere mapping, (hint-sphere-map)
 
 0.16
 
