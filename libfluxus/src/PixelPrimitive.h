@@ -50,7 +50,7 @@ public:
 	///@}
 
 	/// Create a new FBO and release the old one if exists
-	void PixelPrimitive::ResizeFBO(int w, int h);
+	void ResizeFBO(int w, int h);
 
 	/// Upload the texture to the graphics card
 	void Upload();
