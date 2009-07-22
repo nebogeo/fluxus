@@ -61,6 +61,14 @@ void RibbonPrimitive::Render()
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
 
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	}
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		dVector CameraDir(0,0,1);
@@ -74,7 +82,7 @@ void RibbonPrimitive::Render()
 			{
 				float tx = n/(float)m_VertData->size();
 				dVector line;
-				if (n==m_VertData->size()-1) 
+				if (n==m_VertData->size()-1)
 				{
 					line=(*m_VertData)[n]-(*m_VertData)[n-1];
 					tx=1.0f;
@@ -101,9 +109,9 @@ void RibbonPrimitive::Render()
 		    glColor4fv(m_State.Colour.arr());
 			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
-				float tx = n/(float)m_VertData->size();		
+				float tx = n/(float)m_VertData->size();
 				dVector line;
-				if (n==m_VertData->size()-1) 
+				if (n==m_VertData->size()-1)
 				{
 					line=(*m_VertData)[n]-(*m_VertData)[n-1];
 					tx=1.0f;
@@ -175,6 +183,11 @@ void RibbonPrimitive::Render()
 
 	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);
 	if (m_State.Hints & HINT_UNLIT) glEnable(GL_LIGHTING);
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
+	}
 }
 
 dBoundingBox RibbonPrimitive::GetBoundingBox(const dMatrix &space)

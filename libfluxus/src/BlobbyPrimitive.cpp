@@ -154,6 +154,14 @@ void BlobbyPrimitive::Render()
 		}
 	}
 
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glEnable(GL_TEXTURE_GEN_S);
+		glEnable(GL_TEXTURE_GEN_T);
+		glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+		glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP);
+	}
+
 	if (m_State.Hints & HINT_SOLID)
 	{
 		glBegin(GL_TRIANGLES);
@@ -181,6 +189,12 @@ void BlobbyPrimitive::Render()
 		{
 			glDisable(GL_LINE_STIPPLE);
 		}
+	}
+
+	if (m_State.Hints & HINT_SPHERE_MAP)
+	{
+		glDisable(GL_TEXTURE_GEN_S);
+		glDisable(GL_TEXTURE_GEN_T);
 	}
 }
 

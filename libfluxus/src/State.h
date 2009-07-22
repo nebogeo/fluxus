@@ -44,6 +44,7 @@ namespace Fluxus
 #define HINT_LAZY_PARENT    0x1000
 #define HINT_CULL_CCW       0x2000
 #define HINT_WIRE_STIPPLED  0x4002
+#define HINT_SPHERE_MAP		0x8000
 
 #define MAX_TEXTURES  8
 
