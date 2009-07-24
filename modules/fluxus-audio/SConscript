@@ -21,7 +21,7 @@ if env['PLATFORM'] == 'darwin':
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['fftw3', 'sndfile']:
+	for l in ['fftw3', 'sndfile', 'ogg', 'flac', 'vorbis', 'vorbisenc']:
 		if l in Libs:
 			Libs.remove(l)
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))
