@@ -208,6 +208,13 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 		/* create a texture of m_FBOWidth x m_FBOHeight size */
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
 				GL_RGBA, GL_FLOAT, NULL);
+
+		/* establish a mipmap chain for the texture */
+		glGenerateMipmapEXT(GL_TEXTURE_2D);
+#ifdef DEBUG_GL
+		check_gl_errors("ResizeFBO glGenerateMipmapEXT");
+#endif
+
 		/* upload pdata to the top left corner of m_Width x m_Height size */
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
@@ -323,7 +330,7 @@ void PixelPrimitive::Unbind()
 	// generate mipmaps
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_Texture);
-	if (m_FBOSupported) glGenerateMipmapEXT(GL_TEXTURE_2D);
+	glGenerateMipmapEXT(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	//cout << "pix " << "unbound " << hex << this << endl;
