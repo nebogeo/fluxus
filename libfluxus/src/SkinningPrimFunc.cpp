@@ -96,7 +96,7 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	vector<vector<float>*> weights;
 	for (unsigned int bone=0; bone<skeleton.size(); bone++)
 	{
-		char wname[235];
+		char wname[256];
 		snprintf(wname,256,"w%d",bone);
 		vector<float> *w = prim.GetDataVec<float>(wname);
 		if (w==NULL)
