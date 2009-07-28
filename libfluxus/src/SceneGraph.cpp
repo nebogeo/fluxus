@@ -32,10 +32,14 @@ SceneGraph::~SceneGraph()
 
 void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode)
 {
-	//RenderWalk((SceneNode*)m_Root,0);
-
 	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());
-
+	
+	// get the frustum planes for culling later on
+	dMatrix total;
+	glGetFloatv(GL_PROJECTION_MATRIX,total.arr());
+	total=total*m_TopTransform;
+	GetFrustumPlanes(m_FrustumPlanes, total, false);
+	
 	unsigned int cameracode = 1<<camera;
 
 	// render all the children of the root
@@ -80,8 +84,7 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 
 	node->Prim->ApplyState();
 
-	///\todo fix frustum culling
-	//if (!FrustumClip(node))
+	if (!(node->Prim->GetState()->Hints & HINT_FRUSTUM_CULL) || FrustumClip(node))
 	{
 		if (node->Prim->GetState()->Hints & HINT_DEPTH_SORT)
 		{
@@ -103,6 +106,7 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 			RenderWalk((SceneNode*)*i,depth,cameracode,shadowgen,rendermode);
 		}
 	}
+	
 	//node->Prim->UnapplyState();
 	glPopMatrix();
 
@@ -112,38 +116,65 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 	}
 }
 
-// this is working the wrong way - need to write proper
-// frustum culling by building planes from the camera
-// frustum and checking is any points are inside
+// from Fast Extraction of Viewing Frustum Planes from the World-View-Projection Matrix
+// by Gil Gribb and Klaus Hartmann, thanks to flipcode
+void SceneGraph::GetFrustumPlanes(dPlane *planes, dMatrix m, bool normalise)
+{
+  // Left clipping plane
+  planes[0].a = m.m[0][3] + m.m[0][0];
+  planes[0].b = m.m[1][3] + m.m[1][0];
+  planes[0].c = m.m[2][3] + m.m[2][0];
+  planes[0].d = m.m[3][3] + m.m[3][0];
+  // Right clipping nlape
+  planes[1].a = m.m[0][3] - m.m[0][0];
+  planes[1].b = m.m[1][3] - m.m[1][0];
+  planes[1].c = m.m[2][3] - m.m[2][0];
+  planes[1].d = m.m[3][3] - m.m[3][0];
+  // Top clipping pl nea
+  planes[2].a = m.m[0][3] - m.m[0][1];
+  planes[2].b = m.m[1][3] - m.m[1][1];
+  planes[2].c = m.m[2][3] - m.m[2][1];
+  planes[2].d = m.m[3][3] - m.m[3][1];
+  // Bottom clippingapl ne
+  planes[3].a = m.m[0][3] + m.m[0][1];
+  planes[3].b = m.m[1][3] + m.m[1][1];
+  planes[3].c = m.m[2][3] + m.m[2][1];
+  planes[3].d = m.m[3][3] + m.m[3][1];
+  // Near clipping peanl
+  planes[4].a = m.m[0][3] + m.m[0][2];
+  planes[4].b = m.m[1][3] + m.m[1][2];
+  planes[4].c = m.m[2][3] + m.m[2][2];
+  planes[4].d = m.m[3][3] + m.m[3][2];
+  // Far clipping pl nea
+  planes[5].a = m.m[0][3] - m.m[0][2];
+  planes[5].b = m.m[1][3] - m.m[1][2];
+  planes[5].c = m.m[2][3] - m.m[2][2];
+  planes[5].d = m.m[3][3] - m.m[3][2];
+  
+  // Normalize the plane equations, if requested
+  if (normalise)
+  {
+      planes[0].normalise();
+      planes[1].normalise();
+      planes[2].normalise();
+      planes[3].normalise();
+      planes[4].normalise();
+      planes[5].normalise();
+  }
+}
+
+
 bool SceneGraph::FrustumClip(SceneNode *node)
 {
 	// do the frustum clip
-	dBoundingBox box;
-	GetBoundingBox(node,box);
-	dMatrix mat,proj;
-	glGetFloatv(GL_MODELVIEW_MATRIX,mat.arr());
-	glGetFloatv(GL_PROJECTION_MATRIX,proj.arr());
-	mat=proj*mat;
-	char cs = 0xff;
-
-	dVector p = mat.transform_persp(box.min);
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(box.max);
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.min.x,box.min.y,box.max.z));
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.min.z));
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.min.x,box.max.y,box.max.z));
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.min.z));
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.max.x,box.min.y,box.max.z));
-	CohenSutherland(p,cs);
-	p=mat.transform_persp(dVector(box.max.x,box.max.y,box.min.z));
-	CohenSutherland(p,cs);
-
-	return cs!=0;
+  	for (int n=0; n<6; n++)
+	{	
+		if (!Intersect(m_FrustumPlanes[n], node, 0))
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 void SceneGraph::CohenSutherland(const dVector &p, char &cs)
@@ -265,10 +296,23 @@ void SceneGraph::Clear()
 	SceneNode *root = new SceneNode(NULL);
 	AddNode(0,root);
 }
+	
+void SceneGraph::RecalcAABB(SceneNode *node)
+{
+	node->m_GlobalAABB=node->Prim->GetBoundingBox(GetGlobalTransform(node));
+}
 
 bool SceneGraph::Intersect(const SceneNode *a, const SceneNode *b, float threshold)
 {
-	dBoundingBox otherbb = a->Prim->GetBoundingBox(GetGlobalTransform(a));
-	return b->Prim->GetBoundingBox(GetGlobalTransform(b)).inside(otherbb, threshold);
+	return b->m_GlobalAABB.inside(a->m_GlobalAABB, threshold);
 }
 
+bool SceneGraph::Intersect(const dVector &point, const SceneNode *node, float threshold)
+{
+	return node->m_GlobalAABB.inside(point,threshold);
+}
+
+bool SceneGraph::Intersect(const dPlane &plane, const SceneNode *node, float threshold)
+{
+	return node->m_GlobalAABB.inside(plane,threshold);
+}

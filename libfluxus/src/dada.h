@@ -24,7 +24,6 @@
 #include <cstring>
 #include <math.h>
 #include <iostream>
-#include <list>
 #include "Trace.h"
 
 using namespace std;
@@ -925,6 +924,30 @@ public:
 
 ostream &operator<<(ostream &os, dMatrix const &om);
 
+class dPlane
+{
+public:
+	float a;
+	float b;
+	float c;
+	float d;
+	
+	float pointdistance(const dVector &p) const
+	{
+	    return a*p.x + b*p.y + c*p.z + d;
+	}
+	
+	void normalise()
+	{	
+	    float mag;
+	    mag=sqrt(a * a + b * b + c * c);
+	    a=a/mag;
+	    b=b/mag;
+	    c=c/mag;
+	    d=d/mag;
+	}
+};
+
 class dBoundingBox
 {
 public:
@@ -933,11 +956,14 @@ public:
 	virtual ~dBoundingBox() {}
 	
 	bool empty() { return m_Empty; }
+	void getvertices(dVector *out) const;
 	void expand(dVector v);
 	void expand(dBoundingBox v);
 	void expandby(float a);
-	bool inside(dVector point, float threshold=0);
-	bool inside(dBoundingBox &other, float threshold=0);
+	bool inside(const dVector &point, float threshold=0) const;
+	bool inside(const dBoundingBox &other, float threshold=0) const;
+	bool inside(const dPlane &plane, float threshold=0) const;
+	
 	
 	dVector min;
 	dVector max;
@@ -945,6 +971,7 @@ public:
 private:
 	bool m_Empty;
 };
+
 
 class dQuat
 {

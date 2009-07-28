@@ -1,8 +1,5 @@
 (clear)
 
-; turn off mipmapping
-(texture-params 0 '(min linear mag linear))
-
 (define p (build-pixels 256 256 #t))
 
 (define q (with-pixels-renderer p

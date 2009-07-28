@@ -2238,11 +2238,13 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// line-intersect start-vec end-vec
+// geo/line-intersect start-vec end-vec
 // Returns: void
 // Description:
 // Returns a list of pdata values at each intersection point of 
-// the specified line.
+// the specified line. The line is in primitive local space, to 
+// check with a point in global space, you need to transform the 
+// point with the inverse of the primitive transform.
 // Example:
 // (clear)
 // (define s (with-state
@@ -2263,7 +2265,7 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 //                     (colour (vector 0 1 0))
 //                     (scale (vector 0.3 0.3 0.3))
 //                     (draw-sphere)))
-//         (line-intersect a b))))
+//         (geo/line-intersect a b))))
 // 
 // (every-frame
 //     (with-primitive l
@@ -2274,7 +2276,7 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 
 
 // StartFunctionDoc-pt
-// line-intersect número-id
+// geo/line-intersect número-id
 // Retorna: void
 // Descrição:
 // Roda uma função primitiva na primitiva atualmente pega.
@@ -2298,7 +2300,7 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 //                     (colour (vector 0 1 0))
 //                     (scale (vector 0.3 0.3 0.3))
 //                     (draw-sphere)))
-//         (line-intersect a b))))
+//         (geo/line-intersect a b))))
 // 
 // (every-frame
 //     (with-primitive l
@@ -2307,7 +2309,7 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 //         (check (pdata-ref "p" 0) (pdata-ref "p" 1))))
 // EndFunctionDoc
 
-Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
+Scheme_Object *geo_line_intersect(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *name = NULL;
 	Scheme_Object *value = NULL;
@@ -2323,7 +2325,7 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 	MZ_GC_VAR_IN_REG(4, l);
 	MZ_GC_VAR_IN_REG(5, pl);
 	MZ_GC_REG();
-	ArgCheck("line-intersect", "vv", argc, argv);
+	ArgCheck("geo/line-intersect", "vv", argc, argv);
 	
 	l = scheme_null;
 	
@@ -2366,7 +2368,25 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// bb-intersect prim thresh
+// recalc-bb
+// Returns: void
+// Description:
+// Example:
+// EndFunctionDoc
+
+Scheme_Object *recalc_bb(int argc, Scheme_Object **argv)
+{
+	if (Engine::Get()->Grabbed()) 
+	{
+		SceneNode *node=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		if (node) Engine::Get()->Renderer()->GetSceneGraph().RecalcAABB(node);
+	}
+	return scheme_void;
+}
+
+
+// StartFunctionDoc-en
+// bb/bb-intersect? prim thresh
 // Returns: void
 // Description:
 // Returns #t if the current primitive bounding box intersects with the supplied one, 
@@ -2386,14 +2406,14 @@ Scheme_Object *line_intersect(int argc, Scheme_Object **argv)
 //         (with-primitive b
 //             (translate (vector (* -0.1 (sin (time))) 0 0)))
 //         (with-primitive a
-//             (when (bb-intersect b 0)
+//             (when (bb/bb-intersect? b 0)
 //                 (colour (rndvec))))))
 // EndFunctionDoc
 
-Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
+Scheme_Object *bb_bb_intersect(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("bb-intersect", "if", argc, argv);
+	ArgCheck("bb-intersect?", "if", argc, argv);
 	if (Engine::Get()->Grabbed()) 
 	{
 		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
@@ -2401,6 +2421,59 @@ Scheme_Object *bb_intersect(int argc, Scheme_Object **argv)
 		if (a && b)
 		{			
 			if (Engine::Get()->Renderer()->GetSceneGraph().Intersect(a,b,FloatFromScheme(argv[1])))
+			{
+				MZ_GC_UNREG(); 
+				return scheme_true;
+			}
+		}
+	}
+ 	MZ_GC_UNREG(); 
+	return scheme_false;
+}
+
+// StartFunctionDoc-en
+// bb/point-intersect? point thresh
+// Returns: void
+// Description:
+// Returns #t if the current primitive bounding box intersects with point supplied, 
+// with an additional expanding threshold (so you can do check intersections with spheres). 
+// The point is in world space. You need to 
+// call (recalc-bb) before using this function, if the primitive has been moved or
+// had it's pdata changed.
+// Example:
+// (clear)
+// 
+// (define a (with-state
+//      (build-sphere 10 10)))
+// 
+// (define b (with-state
+//      (translate (vector 2 0 0))
+//      (build-sphere 10 10)))
+// 
+// (every-frame
+//     (begin
+//         (with-primitive b
+//             (translate (vector (* -0.1 (sin (time))) 0 0))
+//			   (recalc-bb))
+//         (with-primitive a
+//             ; check the centre point and give the radius, this sphere
+//             ; check is faster than a bb/bb one
+//             (when (bb/point-intersect? (vtransform (vector 0 0 0)
+//                     (with-primitive b (get-transform))) 1)
+//                 (colour (rndvec))))))
+// EndFunctionDoc
+
+Scheme_Object *bb_point_intersect(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("bb/point-intersect?", "vf", argc, argv);
+	if (Engine::Get()->Grabbed()) 
+	{
+		SceneNode *node=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		if (node)
+		{			
+			if (Engine::Get()->Renderer()->GetSceneGraph().Intersect
+				(VectorFromScheme(argv[0]),node,FloatFromScheme(argv[1])))
 			{
 				MZ_GC_UNREG(); 
 				return scheme_true;
@@ -2581,8 +2654,10 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("make-pfunc", scheme_make_prim_w_arity(make_pfunc, "make-pfunc", 1, 1), env);
 	scheme_add_global("pfunc-set!", scheme_make_prim_w_arity(pfunc_set, "pfunc-set!", 2, 2), env);
 	scheme_add_global("pfunc-run", scheme_make_prim_w_arity(pfunc_run, "pfunc-run", 1, 1), env);
-	scheme_add_global("line-intersect", scheme_make_prim_w_arity(line_intersect, "line-intersect", 2, 2), env);
-	scheme_add_global("bb-intersect", scheme_make_prim_w_arity(bb_intersect, "bb-intersect", 2, 2), env);
+	scheme_add_global("geo/line-intersect", scheme_make_prim_w_arity(geo_line_intersect, "geo/line-intersect", 2, 2), env);
+	scheme_add_global("recalc-bb", scheme_make_prim_w_arity(recalc_bb, "recalc-bb", 0, 0), env);
+	scheme_add_global("bb/bb-intersect?", scheme_make_prim_w_arity(bb_bb_intersect, "bb/bb-intersect?", 2, 2), env);
+	scheme_add_global("bb/point-intersect?", scheme_make_prim_w_arity(bb_point_intersect, "bb/point-intersect?", 2, 2), env);
 	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
 	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
 	MZ_GC_UNREG();

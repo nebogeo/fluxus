@@ -39,6 +39,7 @@ public:
 	SceneNode(Primitive *p) : Prim(p) {}
 	virtual ~SceneNode() { if (Prim) delete Prim; }
 	Primitive *Prim;
+	dBoundingBox m_GlobalAABB;
 };
 
 istream &operator>>(istream &s, SceneNode &o);
@@ -81,17 +82,24 @@ public:
 	void GetConnections(const Node *node,
 		vector<pair<const SceneNode*,const SceneNode*> > &connections) const;
 
+	void RecalcAABB(SceneNode *node);
+
+	///Bounding box intersections, for higher accuracy, see the evaluators
 	///\todo fix const correctness from here...
 	bool Intersect(const SceneNode *a, const SceneNode *b, float threshold);
+	bool Intersect(const dVector &point, const SceneNode *node, float threshold);
+	bool Intersect(const dPlane &plane, const SceneNode *node, float threshold);
 
 private:
 	void RenderWalk(SceneNode *node, int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
 	bool FrustumClip(SceneNode *node);
 	void CohenSutherland(const dVector &p, char &cs);
+	void GetFrustumPlanes(dPlane *planes, dMatrix m, bool normalise);
 
 	DepthSorter m_DepthSorter;
 	dMatrix m_TopTransform;
+	dPlane m_FrustumPlanes[6];
 };
 
 }

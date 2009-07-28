@@ -300,24 +300,51 @@ void dBoundingBox::expand(dBoundingBox v)
 	expand(v.max);
 }
 
+void dBoundingBox::getvertices(dVector *out) const
+{
+	out[0]=min;
+	out[1]=dVector(max.x,min.y,min.z);
+	out[2]=dVector(min.x,max.y,min.z);
+	out[3]=dVector(max.x,max.y,min.z);
+	out[4]=dVector(min.x,min.y,max.z);
+	out[5]=dVector(max.x,min.y,max.z);
+	out[6]=dVector(min.x,max.y,max.z);
+	out[7]=max;
+}
+
 void dBoundingBox::expandby(float a)
 {
 	max.x+=a; max.y+=a; max.z+=a;
 	min.x-=a; min.y-=a; min.z-=a; 
 }
 
-bool dBoundingBox::inside(dVector p, float threshold)
+bool dBoundingBox::inside(const dVector &p, float threshold) const
 { 
 	return (p.x>min.x-threshold && p.x<max.x+threshold &&
 			p.y>min.y-threshold && p.y<max.y+threshold &&
 			p.z>min.z-threshold && p.z<max.z+threshold);
 }
 
-bool dBoundingBox::inside(dBoundingBox &v, float threshold)
+bool dBoundingBox::inside(const dBoundingBox &v, float threshold) const
 {
 	return (v.max.x>min.x-threshold && v.min.x<max.x+threshold &&
 	        v.max.y>min.y-threshold && v.min.y<max.y+threshold &&
 	        v.max.z>min.z-threshold && v.min.z<max.z+threshold);	
+}
+	
+bool dBoundingBox::inside(const dPlane &plane, float threshold) const
+{
+	dVector points[8];
+	getvertices(points);
+	for (int i=0; i<8; i++)
+	{
+		if (plane.pointdistance(points[i]) > 0)
+		{
+			return true;
+		}
+	}
+	
+	return false;
 }	
 
 // conversions

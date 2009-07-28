@@ -1254,6 +1254,30 @@ Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-frustum-cull
+// Returns: void
+// Description: 
+// Sets the render hints to turn frustum culling on for the current drawing state, or the 
+// current primitive. Render hints change the way that primitives are rendered, but may have 
+// different effects - or no effect on certain primitive types, hence the name hint.
+// When using frustum culling, make sure you call (recalc-bb) on the primitive too.
+// Example:
+// (hint-frustum-cull) 
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// hint-frustum-cull
+// Retorna: void
+// Descrição:
+// EndFunctionDoc
+
+Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_FRUSTUM_CULL;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // line-pattern factor pattern
 // Returns: void
 // Description:
@@ -2539,6 +2563,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
     scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
     scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
+    scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);

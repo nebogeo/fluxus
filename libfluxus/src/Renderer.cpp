@@ -516,7 +516,9 @@ int Renderer::AddPrimitive(Primitive *Prim)
 {
 	Prim->SetState(GetState());
 	SceneNode *node = new SceneNode(Prim);
-	return m_World.AddNode(GetState()->Parent,node);
+	int ret=m_World.AddNode(GetState()->Parent,node);
+	m_World.RecalcAABB(node);
+	return ret;
 }
 
 Primitive *Renderer::GetPrimitive(int ID)

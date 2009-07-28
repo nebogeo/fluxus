@@ -25,6 +25,7 @@
 #define N_DEPTHSORTER
 
 #include "Primitive.h"
+#include <list>
 
 namespace Fluxus
 {

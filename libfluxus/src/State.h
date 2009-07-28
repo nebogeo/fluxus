@@ -28,23 +28,24 @@
 namespace Fluxus
 {
 
-#define HINT_NONE           0x0000
-#define HINT_SOLID          0x0001
-#define HINT_WIRE           0x0002
-#define HINT_NORMAL         0x0004
-#define HINT_POINTS         0x0008
-#define HINT_AALIAS         0x0010
-#define HINT_BOUND          0x0020
-#define HINT_UNLIT          0x0040
-#define HINT_VERTCOLS       0x0080
-#define HINT_ORIGIN         0x0100
-#define HINT_CAST_SHADOW    0x0200
-#define HINT_IGNORE_DEPTH   0x0400
-#define HINT_DEPTH_SORT     0x0800
-#define HINT_LAZY_PARENT    0x1000
-#define HINT_CULL_CCW       0x2000
-#define HINT_WIRE_STIPPLED  0x4002
-#define HINT_SPHERE_MAP		0x8000
+#define HINT_NONE           0x00000000
+#define HINT_SOLID          0x00000001
+#define HINT_WIRE           0x00000002
+#define HINT_NORMAL         0x00000004
+#define HINT_POINTS         0x00000008
+#define HINT_AALIAS         0x00000010
+#define HINT_BOUND          0x00000020
+#define HINT_UNLIT          0x00000040
+#define HINT_VERTCOLS       0x00000080
+#define HINT_ORIGIN         0x00000100
+#define HINT_CAST_SHADOW    0x00000200
+#define HINT_IGNORE_DEPTH   0x00000400
+#define HINT_DEPTH_SORT     0x00000800
+#define HINT_LAZY_PARENT    0x00001000
+#define HINT_CULL_CCW       0x00002000
+#define HINT_WIRE_STIPPLED  0x00004000
+#define HINT_SPHERE_MAP		0x00008000
+#define HINT_FRUSTUM_CULL	0x00010000
 
 #define MAX_TEXTURES  8
 
