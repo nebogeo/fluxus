@@ -124,6 +124,9 @@ void State::Apply()
 	if (Hints&HINT_CULL_CCW) glFrontFace(GL_CW);
 	else glFrontFace(GL_CCW);
 
+	if (Hints & HINT_NORMALIZE)
+		glEnable(GL_NORMALIZE);
+
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
 	if (Shader!=NULL)
@@ -135,14 +138,8 @@ void State::Apply()
 
 void State::Unapply()
 {
-	/*
-	if (Target != NULL)
-	{
-		cout << "state unbind target " << Target << endl;
-		Target->Unbind();
-	}
-	*/
-
+	if (Hints & HINT_NORMALIZE)
+		glDisable(GL_NORMALIZE);
 }
 
 void State::Spew()
