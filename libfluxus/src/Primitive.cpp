@@ -54,15 +54,15 @@ void Primitive::Prerender()
 		for (map<string,PData*>::iterator i=m_PData.begin(); i!=m_PData.end(); i++)
 		{
 			TypedPData<dVector> *data = dynamic_cast<TypedPData<dVector>*>(i->second);
-			if (data) m_State.Shader->SetVectorArray(i->first,data->m_Data);
+			if (data) m_State.Shader->SetVectorAttrib(i->first,data->m_Data);
 			else
 			{
 				TypedPData<dColour> *data = dynamic_cast<TypedPData<dColour>*>(i->second);
-				if (data) m_State.Shader->SetColourArray(i->first,data->m_Data);
+				if (data) m_State.Shader->SetColourAttrib(i->first,data->m_Data);
 				else
 				{
 					TypedPData<float> *data = dynamic_cast<TypedPData<float>*>(i->second);
-					if (data) m_State.Shader->SetFloatArray(i->first,data->m_Data);
+					if (data) m_State.Shader->SetFloatAttrib(i->first,data->m_Data);
 				}
 			}
 		}

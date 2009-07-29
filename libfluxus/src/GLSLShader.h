@@ -83,14 +83,18 @@ public:
 	void SetFloat(const string &name, float s);
 	void SetVector(const string &name, dVector s);
 	void SetColour(const string &name, dColour s);
+	void SetIntArray(const string &name, const vector<int> &s);
+	void SetFloatArray(const string &name, const vector<float> &s);
+	void SetVectorArray(const string &name, const vector<dVector> &s);
+	void SetColourArray(const string &name, const vector<dColour> &s);
 	///@}
 
 	/////////////////////////////////////////////
 	///@name Attribute variables
 	///@{
-	void SetFloatArray(const string &name, const vector<float> &s);
-	void SetVectorArray(const string &name, const vector<dVector> &s);
-	void SetColourArray(const string &name, const vector<dColour> &s);
+	void SetFloatAttrib(const string &name, const vector<float> &s);
+	void SetVectorAttrib(const string &name, const vector<dVector> &s);
+	void SetColourAttrib(const string &name, const vector<dColour> &s);
 	///@}
 
 	static bool m_Enabled;

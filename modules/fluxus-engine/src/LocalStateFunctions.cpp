@@ -2264,9 +2264,11 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *paramvec = NULL;
-	MZ_GC_DECL_REG(2);
+	Scheme_Object *listvec = NULL;
+	MZ_GC_DECL_REG(3);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_VAR_IN_REG(2, listvec);
 	MZ_GC_REG();
 			
    	ArgCheck("shader-set!", "l", argc, argv);
@@ -2318,9 +2320,89 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 						Trace::Stream<<"shader has found an argument vector of a strange size"<<endl;
 					}
 				}
+				else if (SCHEME_LISTP(SCHEME_VEC_ELS(paramvec)[n+1]))
+				{
+					listvec = scheme_list_to_vector(SCHEME_VEC_ELS(paramvec)[n+1]);
+					unsigned int sz = SCHEME_VEC_SIZE(listvec);
+					if (sz>0)
+					{					
+						if (SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[0]))
+						{
+							if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[0])) 
+							{
+								vector<int> array;
+								for (unsigned int i=0; i<sz; i++)
+								{
+									if (!SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[i])) 
+									{
+										Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+										break;
+									}
+									array.push_back(IntFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+								}
+								shader->SetIntArray(param,array);
+							}
+							else 
+							{
+								vector<float> array;
+								for (unsigned int i=0; i<sz; i++)
+								{
+									if (!SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[i])) 
+									{
+										Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+										break;
+									}
+									array.push_back(FloatFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+								}
+								shader->SetFloatArray(param,array);
+							}
+						}
+						else if (SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[0]))
+						{
+							if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 3)
+							{
+								vector<dVector> array;
+								for (unsigned int i=0; i<sz; i++)
+								{
+									if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
+										SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 3)
+									{
+										Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+										break;
+									}
+									dVector vec;
+									FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),3);
+									array.push_back(vec);
+								}
+								shader->SetVectorArray(param,array);							
+							}
+							else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 4)
+							{
+								vector<dColour> array;
+								for (unsigned int i=0; i<sz; i++)
+								{
+									if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
+										SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 4)
+									{
+										Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+										break;
+									}
+									dColour vec;
+									FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),4);
+									array.push_back(vec);
+								}
+								shader->SetColourArray(param,array);							
+							}
+							else
+							{	
+								Trace::Stream<<"shader has found a vector argument list of a strange size"<<endl;
+							}
+						}
+					}
+				}
 				else
 				{
-					Trace::Stream<<"shader has found an argument type it can't send, numbers and vectors only"<<endl;
+					Trace::Stream<<"shader has found an argument type it can't send, numbers and vectors, or lists of them only"<<endl;
 				}
 			}
 			else
