@@ -1256,13 +1256,13 @@ Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
 // StartFunctionDoc-en
 // hint-frustum-cull
 // Returns: void
-// Description: 
-// Sets the render hints to turn frustum culling on for the current drawing state, or the 
-// current primitive. Render hints change the way that primitives are rendered, but may have 
+// Description:
+// Sets the render hints to turn frustum culling on for the current drawing state, or the
+// current primitive. Render hints change the way that primitives are rendered, but may have
 // different effects - or no effect on certain primitive types, hence the name hint.
 // When using frustum culling, make sure you call (recalc-bb) on the primitive too.
 // Example:
-// (hint-frustum-cull) 
+// (hint-frustum-cull)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1274,6 +1274,34 @@ Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
 Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_FRUSTUM_CULL;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// hint-normalize
+// Returns: void
+// Description:
+// If the current state transform contains a scale transformation, transformed
+// normals might not be unit length, resulting in undesirable lighting problems.
+// (hint-normalize) makes all normals unit length after they are transformed. This
+// is required if the current state transform contains nonuniform scaling.
+// Example:
+// (clear)
+// (hint-normalize)
+// (build-cube)
+// ; non uniform scaling
+// (with-primitive (build-cube)
+//    (translate #(.5 0 0))
+//    (scale #(3 1 1))
+//    (translate #(.5 0 0)))
+// ; uniform scaling
+// (with-primitive (build-cube)
+//    (translate #(0 0 2))
+//    (scale 2))
+// EndFunctionDoc
+Scheme_Object *hint_normalize(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_NORMALIZE;
     return scheme_void;
 }
 
@@ -1757,8 +1785,12 @@ Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
 // Sets the render hints to render objects as if they were perfecly reflective
 // for the current drawing state, or the current primitive.
 // Example:
-// FIXME
+// (clear)
 // (hint-sphere-map)
+// (texture (load-texture "test.png"))
+// (define p (build-torus 1 2 20 20))
+// (every-frame (with-primitive p
+//                 (rotate #(.543 .59 .87))))
 // EndFunctionDoc
 
 Scheme_Object *hint_sphere_map(int argc, Scheme_Object **argv)
@@ -2564,6 +2596,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
     scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
     scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
+    scheme_add_global("hint-normalize",scheme_make_prim_w_arity(hint_normalize,"hint-normalize",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
