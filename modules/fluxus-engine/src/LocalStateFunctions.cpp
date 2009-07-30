@@ -1065,7 +1065,7 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 //                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha
 //                     'src-alpha-saturate))
 // 
-// (define dst-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+// (define dst-blend (vector 'zero 'one 'src-color 'one-minus-src-color 'src-alpha
 //                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha))
 // 
 // ; picks a random element
@@ -1109,7 +1109,7 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 //                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha
 //                     'src-alpha-saturate))
 // 
-// (define dst-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+// (define dst-blend (vector 'zero 'one 'src-color 'one-minus-src-color 'src-alpha
 //                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha))
 // 
 // ; picks a random element
@@ -1159,8 +1159,8 @@ Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 	
 	if (d=="zero") Engine::Get()->State()->DestinationBlend=GL_ZERO;
 	else if (d=="one") Engine::Get()->State()->DestinationBlend=GL_ONE;
-	else if (d=="dst-color") Engine::Get()->State()->DestinationBlend=GL_DST_COLOR;  
-	else if (d=="one-minus-dst-color") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (d=="src-color") Engine::Get()->State()->DestinationBlend=GL_SRC_COLOR;  
+	else if (d=="one-minus-src-color") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_COLOR;
 	else if (d=="src-alpha") Engine::Get()->State()->DestinationBlend=GL_SRC_ALPHA;		   
 	else if (d=="one-minus-src-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
 	else if (d=="dst-alpha") Engine::Get()->State()->DestinationBlend=GL_DST_ALPHA;
