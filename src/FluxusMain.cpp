@@ -194,22 +194,18 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		}
 		else if (special==GLUT_KEY_F10)
 		{
-			m_Editor[m_CurrentEditor]->m_TextColourAlpha-=0.05;
-			m_Editor[m_CurrentEditor]->m_CursorColourAlpha-=0.05;
-			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha<0)
+			m_Editor[m_CurrentEditor]->m_Alpha-=0.05;
+			if (m_Editor[m_CurrentEditor]->m_Alpha<0)
 			{
-				m_Editor[m_CurrentEditor]->m_TextColourAlpha=0;
-				m_Editor[m_CurrentEditor]->m_CursorColourAlpha=0;
+				m_Editor[m_CurrentEditor]->m_Alpha=0;
 			}
 		}
 		else if (special==GLUT_KEY_F11)
 		{
-			m_Editor[m_CurrentEditor]->m_TextColourAlpha+=0.05;
-			m_Editor[m_CurrentEditor]->m_CursorColourAlpha+=0.05;
-			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha>1)
+			m_Editor[m_CurrentEditor]->m_Alpha+=0.05;
+			if (m_Editor[m_CurrentEditor]->m_Alpha>1)
 			{
-				m_Editor[m_CurrentEditor]->m_TextColourAlpha=1;
-				m_Editor[m_CurrentEditor]->m_CursorColourAlpha=1;
+				m_Editor[m_CurrentEditor]->m_Alpha=1;
 			}
 		}
 		else if (special==GLUT_KEY_F4 && m_CurrentEditor<9)
