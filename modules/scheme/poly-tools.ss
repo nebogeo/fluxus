@@ -349,8 +349,9 @@
                     (to (list-ref path (+ (inexact->exact (floor t)) 0))))
                 
                 (for ((i (in-range start (+ start (length profile)))))
-                    (pdata-set! "p" i (vmix to from (- t (floor t))))))))
-    
+                         (pdata-set! "p" i (vmix (pdata-ref "p" i)
+                   		     (vmix to from (- t (floor t))) (- t (floor t))))))))
+
     (define (_ t v g)
         (cond 
             ((< t 0) (recalc-normals 0) v)

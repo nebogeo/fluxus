@@ -109,7 +109,7 @@
 							   (pdata-set! "c" 0 (vector 0 0 0))
                                (pdata-set! "c" 1 (vector 1 1 1)))))
            
-           (if (not (null? (line-intersect a b)))
+           (if (not (null? (geo/line-intersect a b)))
                (* r 0.95)
                r)))
        1
