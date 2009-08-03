@@ -74,6 +74,10 @@ public:
 	static float m_TextColourGreen;
 	static float m_TextColourBlue;
 	static float m_TextColourAlpha;
+	static float m_CursorColourRed;
+	static float m_CursorColourGreen;
+	static float m_CursorColourBlue;
+	static float m_CursorColourAlpha;
 	static bool m_DoAutoFocus;
 	static bool m_DebugAutoFocus;
 	static float m_AutoFocusWidth;

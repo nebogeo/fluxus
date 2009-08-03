@@ -77,6 +77,18 @@ m_ShowFileDialog(false)
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-hide-script", &t);
 	m_HideScript=(int)scheme_real_to_double(t);
+
+	float colour[]={0, 0, 0, 1};
+	Interpreter::Interpret("fluxus-scratchpad-cursor-colour", &t);
+	for (int n=0; n<min(4, SCHEME_VEC_SIZE(t)); n++)
+	{
+		colour[n]=scheme_real_to_double(SCHEME_VEC_ELS(t)[n]);
+	}
+	GLEditor::m_CursorColourRed=colour[0];
+	GLEditor::m_CursorColourGreen=colour[1];
+	GLEditor::m_CursorColourBlue=colour[2];
+	GLEditor::m_CursorColourAlpha=colour[3];
+
 	MZ_GC_UNREG();
 
 	GLEditor::InitFont(s);
@@ -183,17 +195,21 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 		else if (special==GLUT_KEY_F10)
 		{
 			m_Editor[m_CurrentEditor]->m_TextColourAlpha-=0.05;
+			m_Editor[m_CurrentEditor]->m_CursorColourAlpha-=0.05;
 			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha<0)
 			{
 				m_Editor[m_CurrentEditor]->m_TextColourAlpha=0;
+				m_Editor[m_CurrentEditor]->m_CursorColourAlpha=0;
 			}
 		}
 		else if (special==GLUT_KEY_F11)
 		{
 			m_Editor[m_CurrentEditor]->m_TextColourAlpha+=0.05;
+			m_Editor[m_CurrentEditor]->m_CursorColourAlpha+=0.05;
 			if (m_Editor[m_CurrentEditor]->m_TextColourAlpha>1)
 			{
 				m_Editor[m_CurrentEditor]->m_TextColourAlpha=1;
+				m_Editor[m_CurrentEditor]->m_CursorColourAlpha=1;
 			}
 		}
 		else if (special==GLUT_KEY_F4 && m_CurrentEditor<9)

@@ -43,6 +43,10 @@ float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
 float GLEditor::m_TextColourAlpha(1);
+float GLEditor::m_CursorColourRed(1);
+float GLEditor::m_CursorColourGreen(1);
+float GLEditor::m_CursorColourBlue(0);
+float GLEditor::m_CursorColourAlpha(0.5);
 bool GLEditor::m_DoAutoFocus(true);
 bool GLEditor::m_DebugAutoFocus(false);
 float GLEditor::m_AutoFocusWidth(70000.0f);
@@ -333,18 +337,18 @@ void GLEditor::Render()
 			width=m_CursorWidth;
 			m_LineCount++;
 		}
-		
+
 		if (m_Position==n) // draw cursor
-		{ 
+		{
 			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 			else m_LeftTextPosition=0;
-			
-			glColor4f(1,1,0,0.5*m_TextColourAlpha);
+
+			glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_CursorColourAlpha);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
 		}
-		
+
 		if ((int)n>=m_ParenthesesHighlight[0] &&
 		    (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
 		{ 
@@ -403,12 +407,12 @@ void GLEditor::Render()
 	{
 		if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 		else m_LeftTextPosition=0;
-		
-		glColor4f(1,1,0,0.5*m_TextColourAlpha);
+
+		glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_CursorColourAlpha);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
-	
+
 	if (m_DoAutoFocus)
 	{
 		m_PosY=m_PosY*(1-m_AutoFocusDrift*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*m_AutoFocusDrift*m_Delta;
