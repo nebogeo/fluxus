@@ -19,6 +19,8 @@
  with-state
  with-primitive
  with-pixels-renderer
+ with-ffgl
+ ffgl-set-parameter!
  pdata-map!
  pdata-index-map!
  pdata-fold
@@ -192,6 +194,40 @@
                                                   r)))
            ))
      ))))
+
+;; StartFunctionDoc-en
+;; with-ffgl ffgl-pluginid expression ...
+;; Returns: result of last expression
+;; Description:
+;; Allows you to work with the specified FFGL plugin.
+;; Example:
+;; EndFunctionDoc  
+
+(define-syntax with-ffgl
+  (syntax-rules ()
+    ((_ a b ...)
+     (begin
+       (ffgl-push a)
+       (let ((r (begin b ...)))
+         (ffgl-pop)
+         r)))))
+
+;; StartFunctionDoc-en
+;; ffgl-set-parameter! parameter-name-keyword parameter-value ...
+;; Returns: void
+;; Description:
+;; Sets ffgl plugin parameters.
+;; Example:
+;; EndFunctionDoc  
+
+(define ffgl-set-parameter!
+  (make-keyword-procedure
+	(lambda (kws kw-args)
+		(ffgl-set-parameter-list
+			(apply append
+				(for/list ([kw kws]
+						   [arg kw-args])
+					(list (string->symbol (keyword->string kw)) arg)))))))
 
 ;; StartFunctionDoc-en
 ;; pdata-map! procedure read/write-pdata-name read-pdata-name ...

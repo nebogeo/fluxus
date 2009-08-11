@@ -318,6 +318,13 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 						scheme_wrong_type(funcname.c_str(), "boolean", n, argc, argv);
 					}
 				break;
+				case 'k':
+					if (!SCHEME_KEYWORDP(argv[n]))
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "keyword", n, argc, argv);
+					}
+				break;
 
 				case '?':
 				break;

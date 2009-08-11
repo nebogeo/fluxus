@@ -57,9 +57,9 @@ class Primitive;
 class Renderer
 {
 public:
-	Renderer();
+	Renderer(bool main = false);
 	~Renderer();
-	
+
 	//////////////////////////////////////////////////////////////////////
 	///@name Rendering control 
 	///@{ 
@@ -118,15 +118,15 @@ public:
 
 	////////////////////////////////////////////////////////////////////////
 	///@name Scenegraph access
-	///@{ 
+	///@{
 	SceneGraph &GetSceneGraph()        { return m_World; }
 	///@}
-		
+
 	enum stereo_mode_t {noStereo, crystalEyes, colourStereo};
-	
+
 	////////////////////////////////////////////////////////////////////////
 	///@name Global state control
-	///@{ 
+	///@{
 	void DrawText(const string &Text);
 	void Reinitialise()                      { m_Initialised=false; }
 	void SetMotionBlur(bool s, float a=0.02) { m_MotionBlur=s; m_Fade=a; }
@@ -140,34 +140,35 @@ public:
 	void SetClearAccum(bool s)               { m_ClearAccum=s; }
 	void SetDesiredFPS(float s)              { m_Deadline=1/s; }
 	void SetFPSDisplay(bool s)               { m_FPSDisplay=s; }
-	void SetFog(const dColour &c, float d, float s, float e)    
+	void SetFog(const dColour &c, float d, float s, float e)
 		{ m_FogColour=c; m_FogDensity=d; m_FogStart=s; m_FogEnd=e; m_Initialised=false; }
 	void ShadowLight(unsigned int s)		 { m_ShadowLight=s; }
 	void DebugShadows(bool s)				 { m_ShadowVolumeGen.SetDebug(s); }
 	void ShadowLength(float s)				 { m_ShadowVolumeGen.SetLength(s); }
 	double GetTime()                         { return m_Time; }
 	double GetDelta()                        { return m_Delta; }
- 	bool SetStereoMode(stereo_mode_t mode);
- 	stereo_mode_t GetStereoMode(){ return m_StereoMode;}
+	bool SetStereoMode(stereo_mode_t mode);
+	stereo_mode_t GetStereoMode(){ return m_StereoMode;}
 	void PrintInfo();
 	///@}
-	
+
 	////////////////////////////////////////////////////////////////////////
-	///@name Thin interface to some hardware features 
-	///@{ 
+	///@name Thin interface to some hardware features
+	///@{
 	void SetColourMask(bool inred, bool ingreen, bool inblue, bool inalpha);
 	void Accum(int mode, float factor);
 	void DrawBuffer(GLenum mode);
 	void ReadBuffer(GLenum mode);
 	///@}
-	
-	
+
+
 private:
 	void PreRender(unsigned int CamIndex, bool PickMode=false);
 	void PostRender();
 	void RenderLights(bool camera);
 	void RenderStencilShadows(unsigned int CamIndex);
-	
+
+	bool  m_MainRenderer;
 	bool  m_Initialised;
 	bool  m_InitLights;
 	int   m_Width,m_Height;
@@ -179,37 +180,37 @@ private:
 	bool m_ClearFrame;
 	bool m_ClearZBuffer;
 	bool m_ClearAccum;
-	dColour m_FogColour; 
-	float m_FogDensity; 
-	float m_FogStart; 
+	dColour m_FogColour;
+	float m_FogDensity;
+	float m_FogStart;
 	float m_FogEnd;
 	unsigned int m_ShadowLight;
-	
+
     deque<State> m_StateStack;
     SceneGraph m_World;
 	vector<Light*> m_LightVec;
 	vector<Camera> m_CameraVec;
 	ImmediateMode m_ImmediateMode;
 	ShadowVolumeGen m_ShadowVolumeGen;
-		
+
 	// info for picking mode
 	struct SelectInfo
 	{
 		int x,y;
 		int size;
 	};
-	
+
 	SelectInfo m_SelectInfo;
 	stereo_mode_t m_StereoMode;
 	bool m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha;
-	
+
 	timeval m_LastTime;
 	float m_Deadline;
 	bool m_FPSDisplay;
 	double m_Time;
 	double m_Delta;
 };
-	
+
 };
 
 #endif

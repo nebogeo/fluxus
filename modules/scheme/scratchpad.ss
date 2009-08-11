@@ -107,6 +107,7 @@
 (define (clear)
   (rm-task 'every-frame-task)
   (clear-engine)
+  (ffgl-clear-instances)
   (light-diffuse 0 (vector 1 1 1))
   (unlock-camera))
 

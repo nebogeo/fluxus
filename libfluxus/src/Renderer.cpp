@@ -24,6 +24,7 @@
 #include "ShaderCache.h"
 #include "GLSLShader.h"
 #include "Trace.h"
+#include "FFGLManager.h"
 #include <sys/time.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -44,7 +45,7 @@ static float FPS;
 
 static const int MAXLIGHTS = 8;
 
-Renderer::Renderer() :
+Renderer::Renderer(bool main /* = false */) :
 m_Initialised(false),
 m_InitLights(false),
 m_Width(640),
@@ -56,9 +57,9 @@ m_Grabbed(NULL),
 m_ClearFrame(true),
 m_ClearZBuffer(true),
 m_ClearAccum(false),
-m_FogDensity(0), 
+m_FogDensity(0),
 m_FogStart(0),
-m_FogEnd(100),	
+m_FogEnd(100),
 m_ShadowLight(0),
 m_StereoMode(noStereo),
 m_MaskRed(true),
@@ -70,6 +71,8 @@ m_FPSDisplay(false),
 m_Time(0),
 m_Delta(0)
 {
+	m_MainRenderer = main;
+
 	Clear();
 
 	// stop valgrind complaining
@@ -79,8 +82,12 @@ m_Delta(0)
 
 Renderer::~Renderer()
 {
-	TexturePainter::Shutdown();
-	SearchPaths::Shutdown();
+	if (m_MainRenderer)
+	{
+		TexturePainter::Shutdown();
+		SearchPaths::Shutdown();
+		FFGLManager::Shutdown();
+	}
 }
 
 /////////////////////////////////////
@@ -104,10 +111,10 @@ void Renderer::Render()
 	///\todo collapse all these clears into one call with the bitfield
 	if (m_ClearFrame && !m_MotionBlur)
 	{
-		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);	
-		glClear(GL_COLOR_BUFFER_BIT);	
+		glClearColor(m_BGColour.r,m_BGColour.g,m_BGColour.b,m_BGColour.a);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
-	
+
 	if (m_ClearZBuffer)
 	{
 		glClear(GL_DEPTH_BUFFER_BIT);
@@ -123,10 +130,10 @@ void Renderer::Render()
 		// need to clear this even if we aren't using shadows
 		m_ShadowVolumeGen.Clear();
 
-		// if we are using multiple cameras, the renderer 
+		// if we are using multiple cameras, the renderer
 		// needs to be reinitialised for each one
 		if (m_CameraVec.size()>1) Reinitialise();
-		
+
 		if (m_ShadowLight!=0)
 		{
 			RenderStencilShadows(cam);
@@ -139,6 +146,11 @@ void Renderer::Render()
 			m_ImmediateMode.Clear();
 			PostRender();
 		}
+	}
+
+	if (m_MainRenderer)
+	{
+		FFGLManager::Get()->Render();
 	}
 
 	timeval ThisTime;

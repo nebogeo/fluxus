@@ -31,6 +31,7 @@
 #include "SchemeHelper.h"
 #include "Trace.h"
 #include "PixelPrimitive.h"
+#include "FFGLFunctions.h"
 
 using namespace SchemeHelper;
 
@@ -327,19 +328,20 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	MZ_GC_VAR_IN_REG(1, menv);
 
 	MZ_GC_REG();
-  	// add all the modules from this extension
+	// add all the modules from this extension
 	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-engine"), env);
-	
+
 	GlobalStateFunctions::AddGlobals(menv);
 	LocalStateFunctions::AddGlobals(menv);
-	MathsFunctions::AddGlobals(menv); 
+	MathsFunctions::AddGlobals(menv);
 	PrimitiveFunctions::AddGlobals(menv);
 	PDataFunctions::AddGlobals(menv);
 	UtilFunctions::AddGlobals(menv);
 	TurtleFunctions::AddGlobals(menv);
 	LightFunctions::AddGlobals(menv);
 	PhysicsFunctions::AddGlobals(menv);
-	
+	FFGLFunctions::AddGlobals(menv);
+
 	scheme_add_global("fluxus-init", scheme_make_prim_w_arity(fluxus_init, "fluxus-init", 0, 0), menv);
 	scheme_add_global("make-renderer", scheme_make_prim_w_arity(make_renderer, "make-renderer", 0, 0), menv);
 	scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
@@ -351,10 +353,10 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);
 	scheme_add_global("fluxus-error-log", scheme_make_prim_w_arity(fluxus_error_log, "fluxus-error-log", 0, 0), menv);
 
-	scheme_finish_primitive_module(menv);	
-	
+	scheme_finish_primitive_module(menv);
+
 	MZ_GC_UNREG();
-	
+
 	return scheme_void;
 }
 

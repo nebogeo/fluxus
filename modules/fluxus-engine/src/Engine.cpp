@@ -46,7 +46,7 @@ Engine::Engine()
 	StaticTorus = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeTorus(StaticTorus,0.5,1,12,12);
 
-	Fluxus::Renderer *renderer = new Fluxus::Renderer();
+	Fluxus::Renderer *renderer = new Fluxus::Renderer(true);
 	Fluxus::Physics *physics = new Fluxus::Physics(renderer);
 	PushRenderer(StackItem(renderer, physics));
 }
