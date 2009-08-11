@@ -26,14 +26,56 @@ using namespace Fluxus;
 
 // StartSectionDoc-en
 // ffgl
+// FreeFrame is a cross platform real-time video effects plugin system.
+// Fluxus supports FreeFrame 1.5 also known as FreeFrameGL or FFGL. FF CPU
+// software rendering plugins are not supported at the moment.
+// For more information visit http://www.freeframe.org
 // Example:
+// (clear)
+//
+// (define p (build-pixels 256 256 #t)) ; input pixelprimitive
+//
+// (translate (vector 1.1 0 0))
+// ; output pixelprimitive - rendering is not active
+// ; otherwise it would overwrite the plugin output
+// (define op (build-pixels 256 256))
+//
+// ; load the FFGLTile plugin from the FreeFrame SDK
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (for ([i (ffgl-get-info)]) ; print plugin information
+//        (printf "~a~n" i))
+//   (printf "~a~n" (ffgl-get-parameters)) ; parameter names as strings
+//   (ffgl-process op p)) ; set destination and source pixelprimitives
+//
+// (define (anim)
+//    ; set plugin parameters as keywords arguments
+//    (with-ffgl plugin
+//        (ffgl-set-parameter! #:tilex (/ (mouse-x) (vx (get-screen-size)))
+//                             #:tiley (/ (mouse-y) (vy (get-screen-size)))))
+//    ; render to the input pixelprimitive
+//    (with-pixels-renderer p
+//        (with-state
+//            (clear-colour #(0 1 0))
+//            (scale 5)
+//            (rotate (vector (* 50 (time)) -17 (* -35 (time))))
+//            (draw-cube))))
+//
+// (every-frame (anim))
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// ffgl-load
+// ffgl-load filename-string width-number height-number
 // Returns: plugininstance-number
 // Description:
+// Loads an FFGL plugin and returns a plugin instance. Plugin width and height
+// have to be the same as the resolution of the pixel primitive you are about to
+// process with the plugin.
 // Example:
+// (clear)
+// ; load the FFGLTile plugin from the FreeFrame SDK
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
 // EndFunctionDoc
 Scheme_Object *ffgl_load(int argc, Scheme_Object **argv)
 {
@@ -50,12 +92,6 @@ Scheme_Object *ffgl_load(int argc, Scheme_Object **argv)
 		return scheme_make_integer_value(ret);
 }
 
-// StartFunctionDoc-en
-// ffgl-push plugininstance-number
-// Returns: void
-// Description:
-// Example:
-// EndFunctionDoc
 Scheme_Object *ffgl_push(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
@@ -67,12 +103,6 @@ Scheme_Object *ffgl_push(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
-// StartFunctionDoc-en
-// ffgl-pop
-// Returns: void
-// Description:
-// Example:
-// EndFunctionDoc
 Scheme_Object *ffgl_pop(int argc, Scheme_Object **argv)
 {
 	FFGLManager::Get()->Pop();
@@ -81,9 +111,17 @@ Scheme_Object *ffgl_pop(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // ffgl-get-info
-// Returns: void
+// Returns: (list of plugin-version-number plugin-id-string plugin-name-string
+//					 plugin-type-symbol plugint-description-string plugin-about-string)
 // Description:
+// Returns plugin information.
 // Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (for ([i (ffgl-get-info)]) ; print plugin information
+//        (printf "~a~n" i)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 {
@@ -119,9 +157,15 @@ Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // ffgl-get-parameters
-// Returns: parameter-list
+// Returns: parameter-string-list
 // Description:
+// Returns the list of parameters.
 // Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "~a~n" (ffgl-get-parameters)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_parameters(int argc, Scheme_Object **argv)
 {
@@ -157,7 +201,13 @@ Scheme_Object *ffgl_get_parameters(int argc, Scheme_Object **argv)
 // ffgl-get-parameter-default parameter-name-symbol
 // Returns: default-parameter-value
 // Description:
+// Returns the default parameter value for the given parameter.
 // Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "tilex default: ~a~n" (ffgl-get-parameter-default 'tilex)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 {
@@ -199,9 +249,14 @@ Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // ffgl-get-parameter parameter-name-symbol
-// Returns: default-parameter-value
+// Returns: parameter-value
 // Description:
+// Returns the current value of the given parameter.
 // Example:
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "tilex default: ~a~n" (ffgl-get-parameter 'tilex)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 {
@@ -241,12 +296,6 @@ Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 	return ret;
 }
 
-// StartFunctionDoc-en
-// ffgl-set-parameter-list (list of parameter-name parameter-value)
-// Returns: void
-// Description:
-// Example:
-// EndFunctionDoc
 Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 {
 	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -309,7 +358,29 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 // ffgl-process output-pixelprimitiveid-number input-pixelprimitiveid-number
 // Returns: void
 // Description:
+// Sets output and input pixel primitives for the grabbed plugin.
+// The resolution of the pixel primitives has to be same as the resolution the
+// plugin is initialised.
 // Example:
+// (clear)
+//
+// (define p (build-pixels 256 256 #t))
+// (define op (build-pixels 256 256))
+//
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-process op p))
+//
+// (define (anim)
+//    (with-pixels-renderer p
+//        (with-state
+//            (clear-colour #(0 1 0))
+//            (scale 5)
+//            (rotate (vector (* 50 (time)) -17 (* -35 (time))))
+//            (draw-cube))))
+//
+// (every-frame (anim))
 // EndFunctionDoc
 Scheme_Object *ffgl_process(int argc, Scheme_Object **argv)
 {

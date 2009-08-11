@@ -201,7 +201,13 @@
 ;; Description:
 ;; Allows you to work with the specified FFGL plugin.
 ;; Example:
-;; EndFunctionDoc  
+;; (clear)
+;; (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+;;
+;; (with-ffgl plugin
+;;   (for ([i (ffgl-get-info)])
+;;        (printf "~a~n" i)))
+;; EndFunctionDoc
 
 (define-syntax with-ffgl
   (syntax-rules ()
@@ -218,7 +224,13 @@
 ;; Description:
 ;; Sets ffgl plugin parameters.
 ;; Example:
-;; EndFunctionDoc  
+;; (clear)
+;; (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+;;
+;; (with-ffgl plugin
+;;        (ffgl-set-parameter! #:tilex .5 #:tiley .2))
+;;
+;; EndFunctionDoc
 
 (define ffgl-set-parameter!
   (make-keyword-procedure
