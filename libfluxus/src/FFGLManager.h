@@ -90,14 +90,17 @@ private:
 class FFGLPluginInstance
 {
 public:
-	FFGLPluginInstance() : plugin(NULL), instance(0), pogl(NULL) {}
-	FFGLPluginInstance(FFGLPlugin *plugin, unsigned instance) : pogl(NULL)
+	FFGLPluginInstance() : plugin(NULL), instance(0), pogl(NULL), m_Active(true) {}
+	FFGLPluginInstance(FFGLPlugin *plugin, unsigned instance) : pogl(NULL),
+		m_Active(true)
 			{ this->plugin = plugin; this->instance = instance; }
 	~FFGLPluginInstance();
 
 	void Free();
 	void SetPixels(vector<PixelPrimitive *> &pixels);
 	void Render();
+	void Activate(bool a) { m_Active = a; }
+	bool Active() { return m_Active; }
 
 	FFGLPlugin *plugin;
 	unsigned instance;
@@ -105,6 +108,7 @@ public:
 private:
 	ProcessOpenGLStruct *pogl;
 	PixelPrimitive *output;
+	bool m_Active;
 };
 
 class FFGLManager

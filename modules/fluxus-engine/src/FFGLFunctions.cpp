@@ -296,6 +296,71 @@ Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 	return ret;
 }
 
+// StartFunctionDoc-en
+// ffgl-activate boolean
+// Returns: void
+// Description:
+// Activates, deactivates the plugin.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-activate #t))
+// EndFunctionDoc
+Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
+{
+	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
+	if (pi == NULL)
+	{
+		Trace::Stream << "ffgl-activate can only be called while an FFGL plugin is grabbed" << endl;
+		return scheme_void;
+	}
+
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	ArgCheck("ffgl-activate", "b", argc, argv);
+
+	pi->Activate(SCHEME_TRUEP(argv[0]));
+
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// ffgl-active?
+// Returns: boolean
+// Description:
+// Returns #t if the plugin is active, or #f otherwise.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (when (ffgl-active?)
+//		(display "plugin is active")))
+// EndFunctionDoc
+Scheme_Object *ffgl_active(int argc, Scheme_Object **argv)
+{
+	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
+	if (pi == NULL)
+	{
+		Trace::Stream << "ffgl-active? can only be called while an FFGL plugin is grabbed" << endl;
+		return scheme_void;
+	}
+
+	Scheme_Object *ret;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+
+	ret = pi->Active() ? scheme_true : scheme_false;
+
+	MZ_GC_UNREG();
+    return ret;
+}
 Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 {
 	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -469,6 +534,8 @@ void FFGLFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("ffgl-get-parameter-default", scheme_make_prim_w_arity(ffgl_get_parameter_default, "ffgl-get-parameter-default", 1, 1), env);
 	scheme_add_global("ffgl-get-parameter", scheme_make_prim_w_arity(ffgl_get_parameter, "ffgl-get-parameter", 1, 1), env);
 	scheme_add_global("ffgl-set-parameter-list", scheme_make_prim_w_arity(ffgl_set_parameter_list, "ffgl-set-parameter-list", 1, 1), env);
+	scheme_add_global("ffgl-activate", scheme_make_prim_w_arity(ffgl_activate, "ffgl-activate", 1, 1), env);
+	scheme_add_global("ffgl-active?", scheme_make_prim_w_arity(ffgl_active, "ffgl-active?", 0, 0), env);
 	scheme_add_global("ffgl-process", scheme_make_prim_w_arity(ffgl_process, "ffgl-process", 2, 2), env);
 	scheme_add_global("ffgl-clear-instances", scheme_make_prim_w_arity(ffgl_clear_instances, "ffgl-clear-instances", 0, 0), env);
 	scheme_add_global("ffgl-clear-cache", scheme_make_prim_w_arity(ffgl_clear_cache, "ffgl-clear-cache", 0, 0), env);

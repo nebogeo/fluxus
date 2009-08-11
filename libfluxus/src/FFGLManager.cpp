@@ -19,7 +19,6 @@
 		- clear up states after processopengl
 		- activate/deactivate
 		- mixer plugins
-		- fix help strings
 		- add example
 		- add extension guessing
 		- linux test
@@ -355,7 +354,7 @@ void FFGLPluginInstance::SetPixels(vector<PixelPrimitive *> &pixels)
 
 void FFGLPluginInstance::Render()
 {
-	if (pogl != NULL)
+	if ((pogl != NULL) && m_Active)
 	{
 		plugin->Render(output, instance, pogl);
 	}
