@@ -371,6 +371,7 @@ void PixelPrimitive::Render()
 		glVertex3fv(m_Points[3].arr());
 		glEnd();
 
+		glColor4fv(m_State.Colour.arr());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
