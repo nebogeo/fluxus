@@ -299,8 +299,8 @@ int FFGLPlugin::SetParameter(FFGLPluginInstance *pi, string &name, float value)
 
 void FFGLPlugin::Render(PixelPrimitive *output, unsigned instance, ProcessOpenGLStruct *pogl)
 {
-	glViewport(0, 0, output->GetWidth(), output->GetHeight());
 	output->Bind();
+	glViewport(0, 0, output->GetWidth(), output->GetHeight());
 	if (m_PlugMain(FF_PROCESSOPENGL, (unsigned)pogl,  instance).ivalue == FF_FAIL)
 	{
 		Trace::Stream << "FFGL plugin: ProcessOpenGL failed" << endl;
@@ -437,6 +437,11 @@ void FFGLManager::Render()
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity();
+
+	if (TexturePainter::Get()->MultitexturingEnabled())
+	{
+		glActiveTexture(GL_TEXTURE0);
+	}
 
 	glPushAttrib(GL_VIEWPORT_BIT);
 
