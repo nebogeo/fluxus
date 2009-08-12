@@ -17,8 +17,6 @@
 /*
 	TODO:
 		- clear up states after processopengl
-		- add example
-		- add extension guessing
 */
 
 #include <iostream>
@@ -36,9 +34,25 @@ FFGLPlugin::FFGLPlugin(const string &filename) :
 PluginDescription(""),
 PluginAbout("")
 {
+#ifdef __APPLE__
+	const string extension = ".dylib";
+#else
+#ifdef WIN32
+	const string extension = ".dll";
+#else // LINUX
+	const string extension = ".so"
+#endif
+#endif
+
 	string fullpath = SearchPaths::Get()->GetFullPath(filename);
 
 	m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW);
+	if (m_PluginHandle == NULL) /* trying to load with extension added */
+	{
+		fullpath = SearchPaths::Get()->GetFullPath(filename + extension);
+		m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW);
+	}
+
 	if (m_PluginHandle == NULL)
 	{
 		Trace::Stream << "FFGL plugin " << filename << ": " << dlerror() << endl;
