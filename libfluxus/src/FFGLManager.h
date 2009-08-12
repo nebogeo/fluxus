@@ -75,6 +75,8 @@ public:
 	int GetParameter(FFGLPluginInstance *pi, string &name, float *fvalue, const char **svalue);
 	int SetParameter(FFGLPluginInstance *pi, string &name, string &value);
 	int SetParameter(FFGLPluginInstance *pi, string &name, float value);
+	unsigned GetMinInputs() { return m_MinInputs; }
+	unsigned GetMaxInputs() { return m_MaxInputs; }
 
 private:
 
@@ -82,6 +84,8 @@ private:
 
 	void *m_PluginHandle;
     plugMainType *m_PlugMain;
+	unsigned m_MinInputs; /* minimum input frames */
+	unsigned m_MaxInputs; /* maximum input frames */
 
 	/* connects parameter name to id and count */
 	map<string, FFGLParameter> m_Parameters;

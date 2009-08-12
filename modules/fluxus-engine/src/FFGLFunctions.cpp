@@ -361,6 +361,7 @@ Scheme_Object *ffgl_active(int argc, Scheme_Object **argv)
 	MZ_GC_UNREG();
     return ret;
 }
+
 Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 {
 	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -420,7 +421,73 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// ffgl-process output-pixelprimitiveid-number input-pixelprimitiveid-number
+// ffgl-get-min-inputs
+// Returns: number
+// Description:
+// Returns the minimum number of input pixel primitives the plugin requires.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//		(printf "~a~n" (ffgl-get-min-inputs)))
+// EndFunctionDoc
+Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
+{
+	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
+	if (pi == NULL)
+	{
+		Trace::Stream << "ffgl-get-min-inputs can only be called while an FFGL plugin is grabbed" << endl;
+		return scheme_void;
+	}
+	FFGLPlugin *p = pi->plugin;
+
+	Scheme_Object *ret;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+
+	ret = scheme_make_integer(p->GetMinInputs());
+
+	MZ_GC_UNREG();
+    return ret;
+}
+
+// StartFunctionDoc-en
+// ffgl-get-max-inputs
+// Returns: number
+// Description:
+// Returns the maximum number of input pixel primitives the plugin accepts.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+//
+// (with-ffgl plugin
+//		(printf "~a~n" (ffgl-get-max-inputs)))
+// EndFunctionDoc
+Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
+{
+	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
+	if (pi == NULL)
+	{
+		Trace::Stream << "ffgl-get-max-inputs can only be called while an FFGL plugin is grabbed" << endl;
+		return scheme_void;
+	}
+	FFGLPlugin *p = pi->plugin;
+
+	Scheme_Object *ret;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+
+	ret = scheme_make_integer(p->GetMaxInputs());
+
+	MZ_GC_UNREG();
+    return ret;
+}
+
+// StartFunctionDoc-en
+// ffgl-process output-pixelprimitiveid-number input-pixelprimitiveid-number ...
 // Returns: void
 // Description:
 // Sets output and input pixel primitives for the grabbed plugin.
@@ -536,7 +603,9 @@ void FFGLFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("ffgl-set-parameter-list", scheme_make_prim_w_arity(ffgl_set_parameter_list, "ffgl-set-parameter-list", 1, 1), env);
 	scheme_add_global("ffgl-activate", scheme_make_prim_w_arity(ffgl_activate, "ffgl-activate", 1, 1), env);
 	scheme_add_global("ffgl-active?", scheme_make_prim_w_arity(ffgl_active, "ffgl-active?", 0, 0), env);
-	scheme_add_global("ffgl-process", scheme_make_prim_w_arity(ffgl_process, "ffgl-process", 2, 2), env);
+	scheme_add_global("ffgl-get-min-inputs", scheme_make_prim_w_arity(ffgl_get_min_inputs, "ffgl_get_min_inputs", 0, 0), env);
+	scheme_add_global("ffgl-get-max-inputs", scheme_make_prim_w_arity(ffgl_get_max_inputs, "ffgl_get_max_inputs", 0, 0), env);
+	scheme_add_global("ffgl-process", scheme_make_prim_w_arity(ffgl_process, "ffgl-process", 1, -1), env);
 	scheme_add_global("ffgl-clear-instances", scheme_make_prim_w_arity(ffgl_clear_instances, "ffgl-clear-instances", 0, 0), env);
 	scheme_add_global("ffgl-clear-cache", scheme_make_prim_w_arity(ffgl_clear_cache, "ffgl-clear-cache", 0, 0), env);
 	MZ_GC_UNREG();

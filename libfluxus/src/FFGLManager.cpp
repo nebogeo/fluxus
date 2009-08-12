@@ -17,11 +17,8 @@
 /*
 	TODO:
 		- clear up states after processopengl
-		- activate/deactivate
-		- mixer plugins
 		- add example
 		- add extension guessing
-		- linux test
 */
 
 #include <iostream>
@@ -63,7 +60,7 @@ PluginAbout("")
 	}
 	PlugInfoStruct *pis = r.PISvalue;
 
-	if ((m_PlugMain(FF_GETPLUGINCAPS, (DWORD)FF_CAP_PROCESSOPENGL, 0)).ivalue
+	if ((m_PlugMain(FF_GETPLUGINCAPS, (unsigned)FF_CAP_PROCESSOPENGL, 0)).ivalue
 			!= FF_SUPPORTED)
 	{
 		Trace::Stream << "FFGL plugin " << filename << ": no FFGL support" << endl;
@@ -99,6 +96,18 @@ PluginAbout("")
 		PluginAbout = peis->About;
 
 	ReadParameters();
+
+	m_MinInputs = m_PlugMain(FF_GETPLUGINCAPS, (unsigned)FF_CAP_MINIMUMINPUTFRAMES, 0).ivalue;
+	if (m_MinInputs == FF_UNSUPPORTED)
+	{
+		m_MinInputs = (PluginType == FFGL_SOURCE) ? 0 : 1;
+	}
+
+	m_MaxInputs = m_PlugMain(FF_GETPLUGINCAPS, (unsigned)FF_CAP_MAXIMUMINPUTFRAMES, 0).ivalue;
+	if (m_MaxInputs == FF_UNSUPPORTED)
+	{
+		m_MaxInputs = (PluginType == FFGL_SOURCE) ? 0 : 1;
+	}
 
 	if ((m_PlugMain(FF_INITIALISE, 0, 0)).ivalue == FF_FAIL)
 	{
@@ -332,6 +341,23 @@ void FFGLPluginInstance::SetPixels(vector<PixelPrimitive *> &pixels)
 	Free();
 
 	unsigned n = pixels.size() - 1;
+	unsigned mininputs = plugin->GetMinInputs();
+	unsigned maxinputs = plugin->GetMaxInputs();
+
+	if ((n < mininputs) || (n > maxinputs))
+	{
+		if (mininputs == maxinputs)
+		{
+			Trace::Stream << "FFGL plugin: expecting " << mininputs <<
+				" input pixel primitive(s), received " << n << " one(s)" << endl;
+		}
+		else
+		{
+			Trace::Stream << "FFGL plugin: expecting between " << mininputs << " and " <<
+				maxinputs << " input pixel primitive(s), received " << n << " one(s)" << endl;
+		}
+		return;
+	}
 	pogl = new ProcessOpenGLStruct;
 	pogl->numInputTextures = n;
 	pogl->inputTextures = new FFGLTextureStruct*[n];
