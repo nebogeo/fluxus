@@ -41,7 +41,7 @@ using namespace Fluxus;
 // (define op (build-pixels 256 256))
 //
 // ; load the FFGLTile plugin from the FreeFrame SDK
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (for ([i (ffgl-get-info)]) ; print plugin information
@@ -75,7 +75,7 @@ using namespace Fluxus;
 // Example:
 // (clear)
 // ; load the FFGLTile plugin from the FreeFrame SDK
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 // EndFunctionDoc
 Scheme_Object *ffgl_load(int argc, Scheme_Object **argv)
 {
@@ -112,12 +112,12 @@ Scheme_Object *ffgl_pop(int argc, Scheme_Object **argv)
 // StartFunctionDoc-en
 // ffgl-get-info
 // Returns: (list of plugin-version-number plugin-id-string plugin-name-string
-//					 plugin-type-symbol plugint-description-string plugin-about-string)
+//                   plugin-type-symbol plugint-description-string plugin-about-string)
 // Description:
 // Returns plugin information.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (for ([i (ffgl-get-info)]) ; print plugin information
@@ -162,7 +162,7 @@ Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 // Returns the list of parameters.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (printf "~a~n" (ffgl-get-parameters)))
@@ -204,7 +204,7 @@ Scheme_Object *ffgl_get_parameters(int argc, Scheme_Object **argv)
 // Returns the default parameter value for the given parameter.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (printf "tilex default: ~a~n" (ffgl-get-parameter-default 'tilex)))
@@ -253,7 +253,7 @@ Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 // Description:
 // Returns the current value of the given parameter.
 // Example:
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (printf "tilex default: ~a~n" (ffgl-get-parameter 'tilex)))
@@ -303,7 +303,7 @@ Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 // Activates, deactivates the plugin.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (ffgl-activate #t))
@@ -326,7 +326,7 @@ Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 	pi->Activate(SCHEME_TRUEP(argv[0]));
 
 	MZ_GC_UNREG();
-    return scheme_void;
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -336,7 +336,7 @@ Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 // Returns #t if the plugin is active, or #f otherwise.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (when (ffgl-active?)
@@ -359,7 +359,7 @@ Scheme_Object *ffgl_active(int argc, Scheme_Object **argv)
 	ret = pi->Active() ? scheme_true : scheme_false;
 
 	MZ_GC_UNREG();
-    return ret;
+	return ret;
 }
 
 Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
@@ -417,7 +417,7 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 	}
 
 	MZ_GC_UNREG();
-    return scheme_void;
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -427,7 +427,7 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 // Returns the minimum number of input pixel primitives the plugin requires.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (printf "~a~n" (ffgl-get-min-inputs)))
@@ -450,7 +450,7 @@ Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 	ret = scheme_make_integer(p->GetMinInputs());
 
 	MZ_GC_UNREG();
-    return ret;
+	return ret;
 }
 
 // StartFunctionDoc-en
@@ -460,7 +460,7 @@ Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 // Returns the maximum number of input pixel primitives the plugin accepts.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (printf "~a~n" (ffgl-get-max-inputs)))
@@ -483,7 +483,7 @@ Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 	ret = scheme_make_integer(p->GetMaxInputs());
 
 	MZ_GC_UNREG();
-    return ret;
+	return ret;
 }
 
 // StartFunctionDoc-en
@@ -493,7 +493,7 @@ Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 // Sets the time in seconds.
 // Example:
 // (clear)
-// (define plugin (ffgl-load "FFGLTime.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTime" 256 256))
 //
 // (with-ffgl plugin
 //   (ffgl-set-time! (time)))
@@ -518,7 +518,7 @@ Scheme_Object *ffgl_set_time(int argc, Scheme_Object **argv)
 	}
 
 	MZ_GC_UNREG();
-    return scheme_void;
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -534,7 +534,7 @@ Scheme_Object *ffgl_set_time(int argc, Scheme_Object **argv)
 // (define p (build-pixels 256 256 #t))
 // (define op (build-pixels 256 256))
 //
-// (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+// (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
 //   (ffgl-process op p))
