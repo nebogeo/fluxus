@@ -77,6 +77,7 @@ public:
 	int SetParameter(FFGLPluginInstance *pi, string &name, float value);
 	unsigned GetMinInputs() { return m_MinInputs; }
 	unsigned GetMaxInputs() { return m_MaxInputs; }
+	int SetTime(FFGLPluginInstance *pi, double time);
 
 private:
 
@@ -86,6 +87,7 @@ private:
     plugMainType *m_PlugMain;
 	unsigned m_MinInputs; /* minimum input frames */
 	unsigned m_MaxInputs; /* maximum input frames */
+	bool m_CapSetTime;
 
 	/* connects parameter name to id and count */
 	map<string, FFGLParameter> m_Parameters;

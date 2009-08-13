@@ -340,7 +340,7 @@ Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 //
 // (with-ffgl plugin
 //   (when (ffgl-active?)
-//		(display "plugin is active")))
+//     (display "plugin is active")))
 // EndFunctionDoc
 Scheme_Object *ffgl_active(int argc, Scheme_Object **argv)
 {
@@ -430,7 +430,7 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 // (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
 //
 // (with-ffgl plugin
-//		(printf "~a~n" (ffgl-get-min-inputs)))
+//   (printf "~a~n" (ffgl-get-min-inputs)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 {
@@ -463,7 +463,7 @@ Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 // (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
 //
 // (with-ffgl plugin
-//		(printf "~a~n" (ffgl-get-max-inputs)))
+//   (printf "~a~n" (ffgl-get-max-inputs)))
 // EndFunctionDoc
 Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 {
@@ -484,6 +484,41 @@ Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 
 	MZ_GC_UNREG();
     return ret;
+}
+
+// StartFunctionDoc-en
+// ffgl-set-time! time-number
+// Returns: void
+// Description:
+// Sets the time in seconds.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTime.dylib" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-set-time! (time)))
+// EndFunctionDoc
+Scheme_Object *ffgl_set_time(int argc, Scheme_Object **argv)
+{
+	FFGLPluginInstance *pi = FFGLManager::Get()->Current();
+	if (pi == NULL)
+	{
+		Trace::Stream << "ffgl-set-time! can only be called while an FFGL plugin is grabbed" << endl;
+		return scheme_void;
+	}
+	FFGLPlugin *p = pi->plugin;
+
+	DECL_ARGV();
+	ArgCheck("ffgl-set-time!", "f", argc, argv);
+
+	double time = DoubleFromScheme(argv[0]);
+	if (!(p->SetTime(pi, time)))
+	{
+		Trace::Stream << "ffgl-set-time!: cannot set time" << endl;
+	}
+
+	MZ_GC_UNREG();
+    return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -605,6 +640,7 @@ void FFGLFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("ffgl-active?", scheme_make_prim_w_arity(ffgl_active, "ffgl-active?", 0, 0), env);
 	scheme_add_global("ffgl-get-min-inputs", scheme_make_prim_w_arity(ffgl_get_min_inputs, "ffgl_get_min_inputs", 0, 0), env);
 	scheme_add_global("ffgl-get-max-inputs", scheme_make_prim_w_arity(ffgl_get_max_inputs, "ffgl_get_max_inputs", 0, 0), env);
+	scheme_add_global("ffgl-set-time!", scheme_make_prim_w_arity(ffgl_set_time, "ffgl_set_time!", 1, 1), env);
 	scheme_add_global("ffgl-process", scheme_make_prim_w_arity(ffgl_process, "ffgl-process", 1, -1), env);
 	scheme_add_global("ffgl-clear-instances", scheme_make_prim_w_arity(ffgl_clear_instances, "ffgl-clear-instances", 0, 0), env);
 	scheme_add_global("ffgl-clear-cache", scheme_make_prim_w_arity(ffgl_clear_cache, "ffgl-clear-cache", 0, 0), env);

@@ -33,6 +33,16 @@ float SchemeHelper::FloatFromScheme(Scheme_Object *ob)
 	return ret;
 }
 
+double SchemeHelper::DoubleFromScheme(Scheme_Object *ob)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ob);
+	MZ_GC_REG();
+	double ret=scheme_real_to_double(ob);
+	MZ_GC_UNREG();
+	return ret;
+}
+
 int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 {
 	MZ_GC_DECL_REG(1);

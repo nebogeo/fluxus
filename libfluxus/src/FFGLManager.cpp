@@ -32,7 +32,8 @@ using namespace Fluxus;
 
 FFGLPlugin::FFGLPlugin(const string &filename) :
 PluginDescription(""),
-PluginAbout("")
+PluginAbout(""),
+m_CapSetTime(false)
 {
 #ifdef __APPLE__
 	const string extension = ".dylib";
@@ -121,6 +122,11 @@ PluginAbout("")
 	if (m_MaxInputs == FF_UNSUPPORTED)
 	{
 		m_MaxInputs = (PluginType == FFGL_SOURCE) ? 0 : 1;
+	}
+
+	if (m_PlugMain(FF_GETPLUGINCAPS, (unsigned)FF_CAP_SETTIME, 0).ivalue == FF_SUPPORTED)
+	{
+		m_CapSetTime = true;
 	}
 
 	if ((m_PlugMain(FF_INITIALISE, 0, 0)).ivalue == FF_FAIL)
@@ -320,6 +326,20 @@ int FFGLPlugin::SetParameter(FFGLPluginInstance *pi, string &name, float value)
 	return 1;
 }
 
+int FFGLPlugin::SetTime(FFGLPluginInstance *pi, double time)
+{
+	if (!m_CapSetTime)
+		return 0;
+
+	plugMainUnion r;
+	r = m_PlugMain(FF_SETTIME, (unsigned)(&time), pi->instance);
+	if (r.ivalue == FF_FAIL)
+	{
+		return 0;
+	}
+
+	return 1;
+}
 void FFGLPlugin::Render(PixelPrimitive *output, unsigned instance, ProcessOpenGLStruct *pogl)
 {
 	output->Bind();
