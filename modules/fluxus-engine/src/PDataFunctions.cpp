@@ -322,8 +322,12 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 // Description:
 // Returns true if the pdata array exists on the primitive
 // Example:
-// (pdata-add "mydata" "v")
-// (pdata-exists? "mydata")
+// (with-primitive (build-cube)
+//   (when (pdata-exists? "p") 
+//     (display "we have positions!") (newline)))
+//   (pdata-add "myarray" "v")
+//   (when (pdata-exists? "myarray") 
+//     (display "we have myarray!") (newline))))
 // EndFunctionDoc
 
 Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
