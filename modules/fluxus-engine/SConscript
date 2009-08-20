@@ -47,7 +47,8 @@ Source = Split("src/Engine.cpp \
 		src/LightFunctions.cpp \
 		src/PhysicsFunctions.cpp \
 		src/TurtleBuilder.cpp \
-		src/PFuncContainer.cpp") + \
+		src/PFuncContainer.cpp \
+		src/FFGLFunctions.cpp") + \
 		[MZDYN]
 		
 if static_modules:

@@ -33,6 +33,16 @@ float SchemeHelper::FloatFromScheme(Scheme_Object *ob)
 	return ret;
 }
 
+double SchemeHelper::DoubleFromScheme(Scheme_Object *ob)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ob);
+	MZ_GC_REG();
+	double ret=scheme_real_to_double(ob);
+	MZ_GC_UNREG();
+	return ret;
+}
+
 int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 {
 	MZ_GC_DECL_REG(1);
@@ -316,6 +326,13 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "boolean", n, argc, argv);
+					}
+				break;
+				case 'k':
+					if (!SCHEME_KEYWORDP(argv[n]))
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "keyword", n, argc, argv);
 					}
 				break;
 

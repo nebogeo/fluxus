@@ -154,7 +154,7 @@ void GLFileDialog::RenderSaveAs()
 	for (unsigned int n=0; n<m_SaveAsInfoText.size(); n++)
 	{
 		float width=StrokeWidth(m_SaveAsInfoText[n]);
-		glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
+		glColor4f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue,m_Alpha*m_TextColourAlpha);
 		StrokeCharacter(m_SaveAsInfoText[n]);
 	}
 	glPopMatrix();
@@ -177,20 +177,20 @@ void GLFileDialog::RenderSaveAs()
 
 		if (m_Position==n) // draw cursor
 		{ 
-			glColor4f(1,1,0,0.5);
+			glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
 		}	
 
-		glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
+		glColor4f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue,m_Alpha*m_TextColourAlpha);
 		StrokeCharacter(m_Text[n]);
 	}
 
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
 	{
-		glColor4f(1,1,0,0.5);
+		glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
@@ -228,20 +228,21 @@ void GLFileDialog::RenderLoad()
 			}
 
 			if (count == m_CurrentFile)
-			{ 
-				glColor4f(0,1,0,0.5);
+			{
+				glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
 				DrawCharBlock();
 				glColor4f(0.7,0.7,0.7,1);
-			}	
+			}
 
-			if (isdir) glColor3f(1-m_TextColourRed+0.5,
+			if (isdir) glColor4f(1-m_TextColourRed+0.5,
 							     1-m_TextColourGreen+0.5,
-								 1-m_TextColourBlue+0.5);
-			else glColor3f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue);
+								 1-m_TextColourBlue+0.5,
+								 m_Alpha*(1-m_TextColourAlpha+0.5));
+			else glColor4f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue,m_Alpha*m_TextColourAlpha);
 			StrokeCharacter((*i)[n]);
 
 			n++;
-		}			
+		}
 
 		glPopMatrix();
 		glPushMatrix();
@@ -250,7 +251,7 @@ void GLFileDialog::RenderLoad()
 		//glRotatef((m_CurrentFile-(float)count-1)*15.0f,0,0,1);
 		// can't resist the foolishness...
 		count++;
-	}	
+	}
 	glPopMatrix();
 }
 

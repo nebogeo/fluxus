@@ -43,6 +43,11 @@ float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
 float GLEditor::m_TextColourBlue(1);
 float GLEditor::m_TextColourAlpha(1);
+float GLEditor::m_CursorColourRed(1);
+float GLEditor::m_CursorColourGreen(1);
+float GLEditor::m_CursorColourBlue(0);
+float GLEditor::m_CursorColourAlpha(0.5);
+float GLEditor::m_Alpha(1.0);
 bool GLEditor::m_DoAutoFocus(true);
 bool GLEditor::m_DebugAutoFocus(false);
 float GLEditor::m_AutoFocusWidth(70000.0f);
@@ -177,7 +182,7 @@ void GLEditor::SetText(const string& s)
 void GLEditor::StrokeCharacter(wchar_t c)
 {
 	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
-	                      m_TextColourBlue,m_TextColourAlpha);
+	                      m_TextColourBlue,m_TextColourAlpha*m_Alpha);
 }
 
 float GLEditor::StrokeWidth(wchar_t c)
@@ -333,29 +338,29 @@ void GLEditor::Render()
 			width=m_CursorWidth;
 			m_LineCount++;
 		}
-		
+
 		if (m_Position==n) // draw cursor
-		{ 
+		{
 			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 			else m_LeftTextPosition=0;
-			
-			glColor4f(1,1,0,0.5*m_TextColourAlpha);
+
+			glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
 			DrawCursor();
 			glColor4f(0.7,0.7,0.7,1);
 			drawncursor=true;
 		}
-		
+
 		if ((int)n>=m_ParenthesesHighlight[0] &&
 		    (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
 		{ 
-			glColor4f(0,0.5,1,0.5*m_TextColourAlpha);
+			glColor4f(0,0.5,1,0.5*m_Alpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}
 		
 		if (m_Selection && n>=m_HighlightStart && n<m_HighlightEnd)
 		{ 
-			glColor4f(0,1,0,0.5*m_TextColourAlpha);
+			glColor4f(0,1,0,0.5*m_Alpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}	
@@ -403,12 +408,12 @@ void GLEditor::Render()
 	{
 		if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
 		else m_LeftTextPosition=0;
-		
-		glColor4f(1,1,0,0.5*m_TextColourAlpha);
+
+		glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
 		DrawCursor();
 		glColor4f(0.7,0.7,0.7,1);
 	}
-	
+
 	if (m_DoAutoFocus)
 	{
 		m_PosY=m_PosY*(1-m_AutoFocusDrift*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*m_AutoFocusDrift*m_Delta;

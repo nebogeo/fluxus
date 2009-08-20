@@ -56,6 +56,7 @@
 (define fluxus-scratchpad-x-pos 0)
 (define fluxus-scratchpad-y-pos 85000)
 (define fluxus-scratchpad-hide-script 0)
+(define fluxus-scratchpad-cursor-colour (vector 1 1 0 .5))
 
 ; setup the standard searchpaths
 (set-searchpaths (list
@@ -64,7 +65,8 @@
                   (string-append fluxus-data-location "/material/shaders/")
                   (string-append fluxus-data-location "/material/meshes/")
 				  (string-append fluxus-data-location "/material/fonts/")
-				  (string-append fluxus-data-location "/material/samples/")))
+				  (string-append fluxus-data-location "/material/samples/")
+				  (string-append fluxus-data-location "/plugins/")))
 
 ; this part is needed when resetting the interpreter - we need to feed back
 ; the current screen size from the application into the scheme code

@@ -30,6 +30,7 @@ namespace SchemeHelper
 	// to rewrite everything...
 
 	float FloatFromScheme(Scheme_Object *ob);
+	double DoubleFromScheme(Scheme_Object *ob);
 	int IntFromScheme(Scheme_Object *ob);
 	void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size);
 	string StringFromScheme(Scheme_Object *ob);

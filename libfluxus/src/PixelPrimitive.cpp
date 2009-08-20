@@ -1,4 +1,5 @@
 // Copyright (C) 2005 Dave Griffiths
+// /* set default OpenGL state */
 //
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -155,8 +156,7 @@ PixelPrimitive::~PixelPrimitive()
 		if (m_DepthBuffer!=0) glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 	}
 
-	/* FIXME: segfaults */
-	//delete m_Renderer;
+	delete m_Renderer;
 }
 
 PixelPrimitive* PixelPrimitive::Clone() const
@@ -371,6 +371,7 @@ void PixelPrimitive::Render()
 		glVertex3fv(m_Points[3].arr());
 		glEnd();
 
+		glColor4fv(m_State.Colour.arr());
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);

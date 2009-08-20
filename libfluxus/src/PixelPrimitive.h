@@ -76,6 +76,15 @@ public:
 	void Bind();
 	void Unbind();
 
+	/// Get the FBO width
+	unsigned int GetFBOWidth() { return m_FBOWidth; }
+
+	/// Get the FBO height
+	unsigned int GetFBOHeight() { return m_FBOHeight; }
+
+	/// Get the FBO handle
+	unsigned int GetFBO() { return m_FBO; }
+
 	Renderer *GetRenderer() { return m_Renderer; }
 	Physics *GetPhysics() { return m_Physics; }
 
