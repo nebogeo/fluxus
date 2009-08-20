@@ -23,7 +23,7 @@ using namespace fluxus;
 
 static const float MIN_FREQ = 0.1;
 static const float MIN_GAIN = 0.1;
-static const int MAX_POLY = 256;
+static const int MAX_POLY = 10;
 
 /////////////////////////////////////////////////////////////////////////
 

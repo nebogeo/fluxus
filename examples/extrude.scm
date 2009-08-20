@@ -21,7 +21,7 @@
 (define (animate)
     (with-primitive p
         (partial-extrude 
-            (* (* 0.5 (+ 1 (sin (* 0.2 (time))))) (length path)) 
+            (* (* 0.5 (+ 1 (sin (* 1 (time))))) (+ (length path) 5)) 
             profile path width (vector 0 1 0) 0.05)))
 
 (every-frame (animate))

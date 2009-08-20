@@ -196,7 +196,7 @@
 
 ; figures out the vector for rotation of the profile
 (define (path-vector first-segment path lv)
-    (let* ((v (if (null? (cdr path))        ; last segment?
+    (let* ((v (if (or (null? path) (null? (cdr path)))  ; last segment?
                     lv                      ; use the last vector used
                     (vsub (cadr path) (car path)))) ; use the next point
             (vd (if first-segment v          ; first segment?
@@ -205,15 +205,16 @@
         vd))
 
 (define (extrude-segment index profile path width lv up size)
-    (cond ((not (null? path))
-            (let ((v (path-vector (zero? index) path lv)))                
+    (if (not (null? path))
+            (let ((v (path-vector (zero? index) path lv)))
                 (draw-profile index (transform-profile profile 
                         (mmul
                             (maim v up)
                             (mrotate (vector 0 90 0))
                             (mscale (vmul (vector (car width) (car width) (car width)) size))))
                     (car path))
-                v))))
+                v)
+		lv))
 
 (define (extrude index profile path width lv up)
     (cond ((not (null? path))
@@ -337,12 +338,12 @@
                 (if (zero? n) (cons (car l) (chop-front (cdr l) n))
                     (chop-front (cdr l) (- n 1))))))
     
-    (define (collapse-front)
+    (define (collapse-front t)
         (let ((start (* (floor t) (length profile))))
             (for ((i (in-range (+ start (* (length profile) 1)) (pdata-size))))
                 (pdata-set! "p" i (pdata-ref "p" start)))))
     
-    (define (scale-front)
+    (define (scale-front t)
         (when (> t 1)
             (let* ((start (* (floor t) (length profile)))
                     (from (list-ref path (- (inexact->exact (floor t)) 1)))
@@ -356,11 +357,12 @@
         (cond 
             ((< t 0) (recalc-normals 0) v)
             (else
-                (let ((start (* (floor t) (length profile))))
+                (let* ((tc (min t (- (length path) 1))) 
+					   (start (* (floor tc) (length profile))))
                     (_ (- t 1)
                         (extrude-segment start profile
-                            (chop-front path (floor t))
-                            (chop-front width (floor t)) v up 
+                            (chop-front path (floor tc))
+                            (chop-front width (floor tc)) v up 
                             (if (< g 1)
                                 (+ g (* (- t (floor t)) grow))
                                 g))
@@ -368,8 +370,8 @@
                             (+ g grow)
                             1))))))
     (_ t (vector 0 0 0) 0)
-    (scale-front)
-    (collapse-front))
+    (scale-front (min t (- (length path) 1)))
+    (collapse-front (min t (- (length path) 1))))
 
 ;; StartFunctionDoc-en
 ;; build-circle-profile num-points radius

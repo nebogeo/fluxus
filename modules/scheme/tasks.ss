@@ -130,6 +130,18 @@
 (define (spawn-timed-task time thunk)
 	(set! timed-task-list (cons (make-timed-task time thunk) timed-task-list)))
 
+(define (print-error e)
+	(printf "~a ~n" (exn-message e))
+    (when (exn? e) 
+      (printf "call stack:~n")
+      (for-each 
+        (lambda (c)
+          (printf "~a " (car c))
+		  (when (cdr c)
+		  	(printf "line ~a in ~a~n" (srcloc-line (cdr c)) (srcloc-source (cdr c)))))
+        (continuation-mark-set->context
+          (exn-continuation-marks e)))))
+		  
 (define (run-tasks)
         (for-each
          (lambda (task)
@@ -137,9 +149,10 @@
                    ;; handle errors by reporting and removing task in error
                    (let ([task-error
                           (lambda (e)
-                            (printf "Error in Task '~a - Task removed.~% Error: ~a ~%"
-                                    (car task) e)
-                            (rm-task (car task))
+                            (printf "Error in Task '~a - Task removed.~%"
+                                    (car task))
+                            (rm-task (car task))						
+							(print-error e)
                             (out #t))])
                      (call-with-exception-handler task-error
                                                   (lambda ()
@@ -158,7 +171,8 @@
                    ;; handle errors by reporting them
                    (let ([task-error
                           (lambda (e)
-                            (printf "Error in Timed Task: ~a ~%" e)
+                            (printf "Error in Timed Task: ~%")
+							(print-error e)
                             (out #t))])
                      (call-with-exception-handler task-error
                                                   (lambda ()
