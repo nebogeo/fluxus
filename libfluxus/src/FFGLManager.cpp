@@ -41,7 +41,7 @@ m_CapSetTime(false)
 #ifdef WIN32
 	const string extension = ".dll";
 #else // LINUX
-	const string extension = ".so"
+	const string extension = ".so";
 #endif
 #endif
 
