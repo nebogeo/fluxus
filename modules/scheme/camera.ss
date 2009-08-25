@@ -16,7 +16,8 @@
  get-camera-transform
  reset-camera
  unlock-camera
- set-camera-position)
+ set-camera-position
+ set-fov)
 
 (define camera-locked #f)
 (define camera-matrix (mtranslate (vector 0 1 -10)))
@@ -134,6 +135,19 @@
        (vector-set! last-mouse 0 x)
        (vector-set! last-mouse 1 y)
        (when (not camera-locked) (update-camera))))))
+
+(define (set-fov fovy near far)
+  ;; Specify vertical FOV in degrees and clip info to make sure it's consistent
+  (let* ([ymax (* near (tan (* (/ (* fovy 3.141592) 180) 0.5)))]
+         [ymin (- ymax)]
+         [scrsize (get-screen-size)]
+         [aspect (/ (vector-ref scrsize 0) (vector-ref scrsize 1))]     ;; width/height
+         )
+    ;(set! last-fovy fovy)       ;; remember so we can handle reshapes
+    ;(set! last-near near)
+    ;(set! last-far far)
+    (clip near far)
+    (frustum (* ymin aspect) (* ymax aspect) ymin ymax)))
 
 (define (update-camera)
   (set! camera-matrix

@@ -15,6 +15,7 @@
 
 #lang scheme/base
 (require "fluxus-modules.ss")
+(require "tasks.ss")
 (provide 
  with-state
  with-primitive
@@ -183,8 +184,8 @@
            ;; handle errors
            (let ([renderer-error
                    (lambda (e)
-                     (printf "Error in with-pixels-renderer '~a - render target restored.~% Error: ~a ~%"
-                            a e)
+                     (printf "Error in with-pixels-renderer '~a - render target restored.~%" a)
+					 (print-error e)
                      (renderer-ungrab)
                      (out #t))])
                  (call-with-exception-handler renderer-error

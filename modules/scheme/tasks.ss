@@ -33,7 +33,7 @@
 #lang scheme/base
 (require "time.ss")
 
-(provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now)
+(provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now print-error)
 
 (define task-list '())  ; alist of tasks - maintained in sorted order
 (define timed-task-list '()) ; a separate list of timed tasks
