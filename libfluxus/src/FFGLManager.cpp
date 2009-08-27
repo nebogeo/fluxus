@@ -60,7 +60,7 @@ m_CapSetTime(false)
 		throw Error();
 	}
 
-	m_PlugMain = (plugMainType *)(unsigned)dlsym(m_PluginHandle, "plugMain");
+	m_PlugMain = (plugMainType *)(unsigned long)dlsym(m_PluginHandle, "plugMain");
 	if (m_PlugMain == NULL)
 	{
 		Trace::Stream << "FFGL plugin " << filename << ": " << dlerror() << endl;
@@ -204,7 +204,7 @@ unsigned FFGLPlugin::Instantiate(int width, int height)
 	vps.width = width;
 	vps.height = height;
 
-	unsigned instance = m_PlugMain(FF_INSTANTIATEGL, (unsigned)(&vps), 0).ivalue;
+	unsigned instance = m_PlugMain(FF_INSTANTIATEGL, (unsigned long)(&vps), 0).ivalue;
 	if (instance == FF_FAIL)
 	{
 		Trace::Stream << "FFGL plugin: instantiate failed" << endl;
@@ -290,7 +290,7 @@ int FFGLPlugin::SetParameter(FFGLPluginInstance *pi, string &name, string &value
 	sps.index = p.id;
 	sps.svalue = (char *)value.c_str();
 	plugMainUnion r;
-	r = m_PlugMain(FF_SETPARAMETER, (unsigned)(&sps), pi->instance);
+	r = m_PlugMain(FF_SETPARAMETER, (unsigned long)(&sps), pi->instance);
 	if (r.ivalue == FF_FAIL)
 	{
 		return 0;
@@ -317,7 +317,7 @@ int FFGLPlugin::SetParameter(FFGLPluginInstance *pi, string &name, float value)
 	sps.index = p.id;
 	sps.fvalue = value;
 	plugMainUnion r;
-	r = m_PlugMain(FF_SETPARAMETER, (unsigned)(&sps), pi->instance);
+	r = m_PlugMain(FF_SETPARAMETER, (unsigned long)(&sps), pi->instance);
 	if (r.ivalue == FF_FAIL)
 	{
 		return 0;
@@ -332,7 +332,7 @@ int FFGLPlugin::SetTime(FFGLPluginInstance *pi, double time)
 		return 0;
 
 	plugMainUnion r;
-	r = m_PlugMain(FF_SETTIME, (unsigned)(&time), pi->instance);
+	r = m_PlugMain(FF_SETTIME, (unsigned long)(&time), pi->instance);
 	if (r.ivalue == FF_FAIL)
 	{
 		return 0;
@@ -344,7 +344,7 @@ void FFGLPlugin::Render(PixelPrimitive *output, unsigned instance, ProcessOpenGL
 {
 	output->Bind();
 	glViewport(0, 0, output->GetWidth(), output->GetHeight());
-	if (m_PlugMain(FF_PROCESSOPENGL, (unsigned)pogl,  instance).ivalue == FF_FAIL)
+	if (m_PlugMain(FF_PROCESSOPENGL, (unsigned long)pogl,  instance).ivalue == FF_FAIL)
 	{
 		Trace::Stream << "FFGL plugin: ProcessOpenGL failed" << endl;
 	}
