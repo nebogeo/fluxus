@@ -29,8 +29,11 @@ PolyGlyph::~PolyGlyph()
 	FT_Done_FreeType(m_Library);
 }
 
-void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a)
+void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a,
+		float dx /* = 0 */, float dy /* = 0 */)
 {
+	glPushMatrix();
+	glTranslatef(dx, dy, 0);
 	map<wchar_t,int>::iterator i = m_Cache.find(ch);
 	if (i!=m_Cache.end())
 	{
@@ -65,6 +68,8 @@ void PolyGlyph::Render(wchar_t ch, float r, float g, float b, float a)
 		glColor4f(r, g, b, a);
 		glCallList(glList);
 	}
+	glPopMatrix();
+	glTranslatef(m_Slot->metrics.horiAdvance,0,0);
 }
 
 float PolyGlyph::CharacterWidth(wchar_t ch)

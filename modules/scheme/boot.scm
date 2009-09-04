@@ -58,6 +58,17 @@
 (define fluxus-scratchpad-hide-script 0)
 (define fluxus-scratchpad-cursor-colour (vector 1 1 0 .5))
 
+; initial parameterso of scratchpad effects
+(define fluxus-scratchpad-effect-jiggle-size 0)
+(define fluxus-scratchpad-effect-wave-wavelength 1.0)
+(define fluxus-scratchpad-effect-wave-size 0)
+(define fluxus-scratchpad-effect-wave-speed 1.0)
+(define fluxus-scratchpad-effect-ripple-size 0)
+(define fluxus-scratchpad-effect-ripple-center-x 0)
+(define fluxus-scratchpad-effect-ripple-center-y 0)
+(define fluxus-scratchpad-effect-ripple-wavelength 1.0)
+(define fluxus-scratchpad-effect-ripple-speed 1.0)
+
 ; setup the standard searchpaths
 (set-searchpaths (list
                   "./"
