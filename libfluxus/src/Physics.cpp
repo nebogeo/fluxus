@@ -494,7 +494,7 @@ void Physics::Kick(int ID, dVector v)
 		Trace::Stream<<"Physics::Kick : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
+
 	if (i->second->Type==ACTIVE)
 	{
 		const dReal *cv = dBodyGetLinearVel(i->second->Body);
@@ -510,12 +510,33 @@ void Physics::Twist(int ID, dVector v)
 		Trace::Stream<<"Physics::Twist : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
+
 	if (i->second->Type==ACTIVE)
 	{
 		const dReal *cv = dBodyGetAngularVel(i->second->Body);
 		dBodySetAngularVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
 	}
+}
+
+dVector Physics::GetPosition(int ID)
+{
+    map<int,Object*>::iterator i = m_ObjectMap.find(ID);
+	if (i==m_ObjectMap.end())
+	{
+		Trace::Stream<<"Physics::GetPosition : Object ["<<ID<<"] doesn't exist"<<endl;
+		return dVector(0, 0, 0);
+	}
+
+	const dReal *pos;
+	if (i->second->Type==ACTIVE)
+	{
+		pos = dBodyGetPosition(i->second->Body);
+	}
+	else
+	{
+		pos = dGeomGetPosition(i->second->Bound);
+	}
+	return dVector(pos[0], pos[1], pos[2]);
 }
 
 void Physics::NearCallback(void *data, dGeomID o1, dGeomID o2)
