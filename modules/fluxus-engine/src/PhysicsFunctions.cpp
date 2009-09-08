@@ -1326,35 +1326,6 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// get-pos primitiveid-number
-// Returns: position-vector
-// Description:
-// Gets the position of the object.
-// Example:
-// (clear)
-// (ground-plane #(0 1 0) 0)
-// (collisions 1)
-// (define p (build-cube))
-// (active-box p)
-// (kick p #(0 10 0))
-// (twist p (vmul (crndvec) 3))
-// (every-frame (with-state
-//     (translate (get-pos p))
-//     (scale 1.5)
-//     (colour #(1 0 0 .5))
-//     (draw-sphere)))
-
-Scheme_Object *get_pos(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
-    ArgCheck("get-pos", "i", argc, argv);
-    int obj = IntFromScheme(argv[0]);
-	dVector pos = Engine::Get()->Physics()->GetPosition(obj);
-	MZ_GC_UNREG();
-	return FloatsToScheme(pos.arr(), 3);
-}
-
-// StartFunctionDoc-en
 // has-collided primitiveid-number
 // Returns: void
 // Description:
@@ -1445,7 +1416,6 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("gravity", scheme_make_prim_w_arity(gravity, "gravity", 1, 1), env);
 	scheme_add_global("kick", scheme_make_prim_w_arity(kick, "kick", 2, 2), env);
 	scheme_add_global("twist", scheme_make_prim_w_arity(twist, "twist", 2, 2), env);
-	scheme_add_global("get-pos", scheme_make_prim_w_arity(get_pos, "get-pos", 1, 1), env);
 	scheme_add_global("has-collided", scheme_make_prim_w_arity(has_collided, "has-collided", 1, 1), env);
 	MZ_GC_UNREG();
 }

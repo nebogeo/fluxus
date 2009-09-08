@@ -51,7 +51,7 @@ public:
 	void MakeActive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	void MakePassive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	///@}
-
+	
     void Free(int ID);
     void Clear();
 	///\todo Remove the dependancy on the renderer (use primitive 
@@ -65,8 +65,7 @@ public:
 	void SetGravity(const dVector &g);
 	void SetGlobalSurfaceParams(float slip1, float slip2, float softerp, float softcfm) 
 		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
-	dVector GetPosition(int ID);
-
+		
 	/////////////////////////////////
 	///@name Joints
 	///@{
