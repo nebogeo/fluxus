@@ -46,7 +46,7 @@ class GLEditor
 public:
 	GLEditor();
 	virtual ~GLEditor();
-
+	
 	virtual void Render();
 	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	void Reshape(unsigned int w,unsigned int h);
@@ -55,21 +55,20 @@ public:
 	string GetText();
 	string GetAllText() { return m_Text; }
 	string GetSExpr();
-
+	
 	void SetText(const string& s);
 	void Reset();
-
+	
 	float m_PosX,m_PosY;
 	float m_Scale;
 	float m_CursorMaxWidth;
-	float m_CursorMaxHeight;
-
-	void StrokeCharacter(wchar_t c, float dx = 0, float dy = 0);
+        float m_CursorMaxHeight;
+	
+	void StrokeCharacter(wchar_t c);
 	float StrokeWidth(wchar_t c);
-
+	
 	static void InitFont(const string &ttf);
-	static void GetEffectParameters();
-
+	
 	static float m_TextWidth;
 	static float m_TextColourRed;
 	static float m_TextColourGreen;
@@ -94,19 +93,6 @@ public:
 	static float m_XPos;
 	static float m_YPos;
 
-	static bool m_DoEffects;
-	static float m_EffectJiggleSize;
-	static float m_EffectWaveSize;
-	static float m_EffectWaveWavelength;
-	static float m_EffectWaveSpeed;
-	static float m_EffectWaveTimer;
-	static float m_EffectRippleSize;
-	static float m_EffectRippleCenterX;
-	static float m_EffectRippleCenterY;
-	static float m_EffectRippleWavelength;
-	static float m_EffectRippleSpeed;
-	static float m_EffectRippleTimer;
-
 protected:
 
 	void DrawCharBlock();
@@ -121,13 +107,13 @@ protected:
 	void ParseParentheses();
 	void ParseOpenParentheses(int pos, int type);
 	void ParseCloseParentheses(int pos, int type);
-
+	
 	int GetCurrentLine();
 	void SetCurrentLine(int line);
-
+	
 	void BBExpand(float x, float y);
 	void BBClear() { m_BBMinX=m_BBMinY=m_BBMaxX=m_BBMaxY=0; }
-
+	
 	string m_Text;
 	static string m_CopyBuffer;
 	unsigned int m_Position;
@@ -147,22 +133,22 @@ protected:
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;
 	unsigned int m_LineCount;
-
+	
 	float m_BBMinX;
 	float m_BBMinY;
 	float m_BBMaxX;
 	float m_BBMaxY;
-
+	
 	int m_Width;
 	int m_Height;
-
+	
 	static PolyGlyph *m_PolyGlyph;
-	static timeval m_Time;
+	timeval m_Time;
 	float m_Delta;
 	float m_Flash;
 	bool m_BlowupCursor;
-	float m_Blowup;
-
+        float m_Blowup;
+	
 };
 
 } // namespace fluxus

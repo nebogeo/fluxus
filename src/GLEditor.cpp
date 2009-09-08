@@ -22,12 +22,8 @@
 #include <iostream>
 #include <vector>
 #include <sys/time.h>
-#include <stdlib.h>
-#include <math.h>
-
 #include "GLEditor.h"
 #include "PolyGlyph.h"
-#include "Interpreter.h"
 #include "assert.h"
 
 #define EDITOR_TEST
@@ -66,21 +62,7 @@ unsigned int GLEditor::m_VisibleColumns(60);
 float GLEditor::m_XPos(60000);
 float GLEditor::m_YPos(0);
 
-bool GLEditor::m_DoEffects(false);
-float GLEditor::m_EffectJiggleSize(0.0);
-float GLEditor::m_EffectWaveSize(0.0);
-float GLEditor::m_EffectWaveWavelength(1.0);
-float GLEditor::m_EffectWaveSpeed(1.0);
-float GLEditor::m_EffectWaveTimer(0.0);
-float GLEditor::m_EffectRippleSize(0.0);
-float GLEditor::m_EffectRippleCenterX(0.0);
-float GLEditor::m_EffectRippleCenterY(0.0);
-float GLEditor::m_EffectRippleWavelength(1.0);
-float GLEditor::m_EffectRippleSpeed(1.0);
-float GLEditor::m_EffectRippleTimer(0.0);
-
 PolyGlyph* GLEditor::m_PolyGlyph = NULL;
-timeval GLEditor::m_Time;
 
 GLEditor::GLEditor():
 m_PosX(0),
@@ -113,14 +95,14 @@ m_Height(0),
 m_Delta(0.0),
 m_BlowupCursor(false),
 m_Blowup(0.0f)
-{
+{ 
 	assert(m_PolyGlyph!=NULL);
-
+	
 	m_CharWidth=StrokeWidth('#')+1;
 	m_CharHeight=m_PolyGlyph->CharacterHeight('#');
 	m_CursorWidth=m_CharWidth/3.0f;
 	m_Time.tv_sec=0;
-	m_Time.tv_usec=0;
+	m_Time.tv_usec=0;	
 }
 
 void GLEditor::InitFont(const string &ttf)
@@ -128,7 +110,7 @@ void GLEditor::InitFont(const string &ttf)
 	m_PolyGlyph = new PolyGlyph(ttf);
 }
 
-GLEditor::~GLEditor()
+GLEditor::~GLEditor() 
 {
 }
 
@@ -141,7 +123,7 @@ void GLEditor::Reset()
 	m_TextColourGreen=1;
 	m_TextColourBlue=1;
 	m_BlowupCursor=false;
-	m_Blowup=0.0f;
+        m_Blowup=0.0f;
 }
 
 void GLEditor::Reshape(unsigned int w,unsigned int h)
@@ -152,8 +134,8 @@ void GLEditor::Reshape(unsigned int w,unsigned int h)
 
 void GLEditor::BlowupCursor()
 {
-	m_BlowupCursor=true;
-	m_Blowup=0.0f;
+        m_BlowupCursor=true;
+        m_Blowup=0.0f;
 }
 
 
@@ -181,27 +163,26 @@ void GLEditor::SetCurrentLine(int line)
 	m_Position=LineStart(m_Position);
 }
 
-void GLEditor::SetText(const string& s)
-{
+void GLEditor::SetText(const string& s) 
+{ 
 	if (m_Text!="")
 	{
 		m_Position=LineStart(m_Position);
 		int line = GetCurrentLine();
-		m_Text=s;
+		m_Text=s; 
 		SetCurrentLine(line);
 	}
 	else
 	{
-		m_Text=s;
+		m_Text=s; 
 	}
-	ProcessTabs();
+	ProcessTabs();  
 }
 
-void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
+void GLEditor::StrokeCharacter(wchar_t c)
 {
 	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
-	                      m_TextColourBlue,m_TextColourAlpha*m_Alpha,
-						  dx, dy);
+	                      m_TextColourBlue,m_TextColourAlpha*m_Alpha);
 }
 
 float GLEditor::StrokeWidth(wchar_t c)
@@ -209,13 +190,13 @@ float GLEditor::StrokeWidth(wchar_t c)
 	return m_PolyGlyph->CharacterWidth(c);
 }
 
-string GLEditor::GetText()
+string GLEditor::GetText() 
 {
 	if (m_Selection) return m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 	return m_Text;
 }
 
-string GLEditor::GetSExpr()
+string GLEditor::GetSExpr() 
 {
 	if (m_ParenthesesHighlight[0]<m_ParenthesesHighlight[1])
 	{
@@ -235,45 +216,45 @@ void GLEditor::DrawCharBlock()
 }
 
 void GLEditor::DrawCursor()
-{
+{	
 	if (m_BlowupCursor)
-	{
-		// set this to zero when starting
-		m_Blowup +=m_Delta;
-		if (m_Blowup >= BLOWUP_FLASHES)
-		{
-			m_BlowupCursor = false;
-		}
-		else
-		{
-			float maxCW = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxWidth*m_CursorWidth*0.5f)+m_CursorWidth*0.5f;
+        {
+                // set this to zero when starting
+                m_Blowup +=m_Delta;
+                if (m_Blowup >= BLOWUP_FLASHES)
+                {
+                        m_BlowupCursor = false;
+                }
+                else
+                {
+                        float maxCW = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxWidth*m_CursorWidth*0.5f)+m_CursorWidth*0.5f;
 
-			float maxCH = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxHeight*m_CharHeight)+m_CharHeight;
-			glColor4f(0,1,0,0.7*m_Blowup/BLOWUP_FLASHES);
-			glBegin(GL_QUADS);
-			glVertex2f(maxCW,-0.5f*(maxCH-m_CharHeight));
-			glVertex2f(maxCW,0.5f*(maxCH+m_CharHeight));
-			glVertex2f(-maxCW,0.5f*(maxCH+m_CharHeight));
-			glVertex2f(-maxCW,-0.5f*(maxCH-m_CharHeight));
-			glEnd();
-		}
-	}
-	else
-	{
-		m_Flash+=m_Delta;
-		if (m_Flash>FLASH_RATE) m_Flash=0;
+                        float maxCH = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxHeight*m_CharHeight)+m_CharHeight;
+                        glColor4f(0,1,0,0.7*m_Blowup/BLOWUP_FLASHES);
+                        glBegin(GL_QUADS);
+                        glVertex2f(maxCW,-0.5f*(maxCH-m_CharHeight));
+                        glVertex2f(maxCW,0.5f*(maxCH+m_CharHeight));
+                        glVertex2f(-maxCW,0.5f*(maxCH+m_CharHeight));
+                        glVertex2f(-maxCW,-0.5f*(maxCH-m_CharHeight));
+                        glEnd();
+                }
+        }
+        else
+        {
+                m_Flash+=m_Delta;
+                if (m_Flash>FLASH_RATE) m_Flash=0;
 
-		if (m_Flash>HALF_FLASH_RATE)
-		{
-			float half = m_CursorWidth/2.0f;
-			glBegin(GL_QUADS);
-			glVertex2f(half,0);
-			glVertex2f(half,m_CharHeight);
-			glVertex2f(-half,m_CharHeight);
-			glVertex2f(-half,0);
-			glEnd();
-		}
-	}
+                if (m_Flash>HALF_FLASH_RATE)
+                {
+                        float half = m_CursorWidth/2.0f;
+                        glBegin(GL_QUADS);
+                        glVertex2f(half,0);
+                        glVertex2f(half,m_CharHeight);
+                        glVertex2f(-half,m_CharHeight);
+                        glVertex2f(-half,0);
+                        glEnd();
+                }
+        }
 }
 
 void GLEditor::BBExpand(float x, float y)
@@ -284,59 +265,25 @@ void GLEditor::BBExpand(float x, float y)
 	if (y>m_BBMaxY) m_BBMaxY=y;
 }
 
-void GLEditor::GetEffectParameters()
-{
-	Scheme_Object *t;
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, t);
-	MZ_GC_REG();
-	Interpreter::Interpret("fluxus-scratchpad-effect-jiggle-size", &t);
-	m_EffectJiggleSize = scheme_real_to_double(t);
-
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-size", &t);
-	m_EffectWaveSize = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-wavelength", &t);
-	m_EffectWaveWavelength = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-speed", &t);
-	m_EffectWaveSpeed = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-size", &t);
-	m_EffectRippleSize = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-center-x", &t);
-	m_EffectRippleCenterX = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-center-y", &t);
-	m_EffectRippleCenterY = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-wavelength", &t);
-	m_EffectRippleWavelength = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-speed", &t);
-	m_EffectRippleSpeed = scheme_real_to_double(t);
-
-	MZ_GC_UNREG();
-}
-
 void GLEditor::Render()
 {
-	if (m_DoEffects)
-	{
-		GetEffectParameters();
-	}
-
     glViewport(0,0,m_Width,m_Height);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
 	glOrtho(-50,50,-37.5,37.5,0,10);
-
+	
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_TEXTURE_2D);
-
+	
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);	
 	glPolygonMode(GL_FRONT,GL_FILL);
-
+	
 	glLoadIdentity();
-
+	
 	if (m_DebugAutoFocus)
 	{
 		glColor3f(1,1,1);
@@ -350,7 +297,7 @@ void GLEditor::Render()
 		glColor3f(0,1,0);
 		glPushMatrix();
 		glTranslatef(-45,0,0);
-		glScalef(0.001f,0.001f,1);
+		glScalef(0.001f,0.001f,1); 
 		glBegin(GL_LINE_LOOP);
 		glVertex3f(0,-m_AutoFocusHeight/2.0f,0);
 		glVertex3f(m_AutoFocusWidth,-m_AutoFocusHeight/2.0f,0);
@@ -361,32 +308,32 @@ void GLEditor::Render()
 	}
 
 	glTranslatef(-48,0,0);
-	glScalef(0.001f*m_Scale,0.001f*m_Scale,1);
-
+	glScalef(0.001f*m_Scale,0.001f*m_Scale,1); 
+	
 	glTranslatef(m_PosX,m_PosY,0);
-
+	
 	glPushMatrix();
-
+	
 	m_ParenthesesHighlight[0]=-1;
 	m_ParenthesesHighlight[1]=-1;
-
+	
 	ParseParentheses();
-
+	
 	unsigned int xcount=0;
 	float xpos=0;
 	float ypos=0;
 	float width;
 	bool drawncursor=false;
 	BBClear();
-
+	
 	unsigned int n=m_TopTextPosition;
 	m_LineCount=0;
-
+	
 	while (n<m_Text.size() && m_LineCount<m_VisibleLines)
 	{
 		width=m_CharWidth; //\todo fix bounding box with non-mono fonts
-
-		if (m_Text[n]=='\n')
+		
+		if (m_Text[n]=='\n') 
 		{
 			width=m_CursorWidth;
 			m_LineCount++;
@@ -405,19 +352,19 @@ void GLEditor::Render()
 
 		if ((int)n>=m_ParenthesesHighlight[0] &&
 		    (int)n<=m_ParenthesesHighlight[1]) // draw parentheses highlight
-		{
+		{ 
 			glColor4f(0,0.5,1,0.5*m_Alpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
 		}
-
+		
 		if (m_Selection && n>=m_HighlightStart && n<m_HighlightEnd)
-		{
+		{ 
 			glColor4f(0,1,0,0.5*m_Alpha);
 			DrawCharBlock();
 			glColor4f(0.7,0.7,0.7,1);
-		}
-
+		}	
+		
 		if(m_Text[n]=='\n')
 		{
 			glPopMatrix();
@@ -432,47 +379,16 @@ void GLEditor::Render()
 		{
 			if (xcount>=m_LeftTextPosition)
 			{
-				float dx = 0;
-				float dy = 0;
-
-				if (m_DoEffects)
-				{
-					// current letter coordinate transformed to viewport
-					float xp = -48 + 0.001f * m_Scale * (xpos + m_PosX);
-					float yp = 0.001f * m_Scale * (ypos + m_PosY);
-					/* jiggle */
-					float jdx = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-					float jdy = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-					dx += m_EffectJiggleSize * jdx;
-					dy += m_EffectJiggleSize * jdy;
-
-					/* wave */
-					dy += m_EffectWaveSize * 10000 * sin(m_EffectWaveTimer +
-							.1 * m_EffectWaveWavelength * xp);
-
-					/* ripple */
-					// center coordinate transformed to viewport
-					float cx = -50.0 + 100.0 * m_EffectRippleCenterX / m_Width;
-					float cy = 37.5 - 75.0 * m_EffectRippleCenterY / m_Height;
-					float rdx = xp - cx;
-					float rdy = yp - cy;
-
-					float d = m_EffectRippleSize * 200 * sin(m_EffectRippleTimer +
-							.5 * m_EffectRippleWavelength * sqrt(rdx * rdx + rdy * rdy));
-					dx += d * rdx;
-					dy += d * rdy;
-				}
-
 				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8 - this really needs to be done properly
 				{
 					wchar_t dst[1];
 					mbstowcs(dst,&(m_Text[n]),1);
-					StrokeCharacter(dst[0], dx, dy);
+					StrokeCharacter(dst[0]);
 					n++;
 				}
 				else
 				{
-					StrokeCharacter(m_Text[n], dx, dy);
+					StrokeCharacter(m_Text[n]);
 				}
 				BBExpand(xpos,ypos);
 				BBExpand(xpos+m_CharWidth,ypos+m_CharHeight);
@@ -480,13 +396,13 @@ void GLEditor::Render()
 			}
 			xcount++;
 		}
-
+		
 		n++;
 	}
-
+	
 	if (m_LineCount>=m_VisibleLines-1) m_BottomTextPosition=n;
 	else m_BottomTextPosition=m_Text.size()+1;
-
+	
 	// draw cursor if we have no text, or if we're at the end of the buffer
 	if (!drawncursor)
 	{
@@ -501,20 +417,16 @@ void GLEditor::Render()
 	if (m_DoAutoFocus)
 	{
 		m_PosY=m_PosY*(1-m_AutoFocusDrift*m_Delta) - (m_BBMinY+(m_BBMaxY-m_BBMinY)/2)*m_AutoFocusDrift*m_Delta;
-
+	
 		float boxwidth=(m_BBMaxX-m_BBMinX)*m_Scale;
 		float boxheight=(m_BBMaxY-m_BBMinY)*m_Scale;
 
-		if (boxwidth > m_AutoFocusWidth+m_AutoFocusError)
-			m_Scale*=1-m_AutoFocusScaleDrift*m_Delta;
-		else if (boxwidth < m_AutoFocusWidth-m_AutoFocusError &&
-				 boxheight < m_AutoFocusHeight-m_AutoFocusError)
-				m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
-		else if (boxheight > m_AutoFocusHeight+m_AutoFocusError)
-				m_Scale*=1-m_AutoFocusScaleDrift*m_Delta;
-		else if (boxheight < m_AutoFocusHeight-m_AutoFocusError &&
-				 boxwidth < m_AutoFocusWidth-m_AutoFocusError)
-				m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
+		if (boxwidth > m_AutoFocusWidth+m_AutoFocusError) m_Scale*=1-m_AutoFocusScaleDrift*m_Delta; 
+		else if (boxwidth < m_AutoFocusWidth-m_AutoFocusError && 
+				 boxheight < m_AutoFocusHeight-m_AutoFocusError) m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
+		else if (boxheight > m_AutoFocusHeight+m_AutoFocusError) m_Scale*=1-m_AutoFocusScaleDrift*m_Delta; 
+		else if (boxheight < m_AutoFocusHeight-m_AutoFocusError && 
+		    	 boxwidth < m_AutoFocusWidth-m_AutoFocusError) m_Scale*=1+m_AutoFocusScaleDrift*m_Delta;
 	}
 	else
 	{
@@ -522,12 +434,12 @@ void GLEditor::Render()
 		m_PosX=m_XPos;
 		m_PosY=m_YPos;
 	}
-
+	
 	if (m_Scale>m_AutoFocusMaxScale) m_Scale=m_AutoFocusMaxScale; // clamp
 	if (m_Scale<m_AutoFocusMinScale) m_Scale=m_AutoFocusMinScale; // clamp
-
+	
 	glPopMatrix();
-
+	
 	if (m_DebugAutoFocus)
 	{
 		glColor3f(1,0,0);
@@ -538,39 +450,32 @@ void GLEditor::Render()
 		glVertex3f(m_BBMinX,m_BBMaxY,0);
 		glEnd();
 	}
-
+	
 	glPopMatrix();
-
+		
 	glEnable(GL_LIGHTING);
 	glEnable(GL_DEPTH_TEST);
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-
+	
 	timeval ThisTime;
 	// stop valgrind complaining
 	ThisTime.tv_sec=0;
 	ThisTime.tv_usec=0;
-
+	
 	gettimeofday(&ThisTime,NULL);
 	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
 			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
 	m_Time=ThisTime;
-
-	if (m_DoEffects)
-	{
-		m_EffectWaveTimer += m_Delta * m_EffectWaveSpeed;
-		m_EffectRippleTimer += m_Delta * m_EffectRippleSpeed;
-	}
-
 	if (m_Delta>100.0f) m_Delta=0.000001f;
 }
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
-{
+{	
 	unsigned int startpos=m_Position;
-
+	
 	if (special!=0)
 	{
 		switch(special)
@@ -772,16 +677,16 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		m_ShiftState=true;
 		m_Selection=true;
 	}
-
+	
 	if (key==0 && special!=GLUT_KEY_F5 && m_ShiftState && !mod&GLUT_ACTIVE_SHIFT)
-	{
-		m_ShiftState=false;
+	{ 
+		m_ShiftState=false;	
 		m_Selection=false;
 	}
-
-	if (m_ShiftState)
+	
+	if (m_ShiftState) 
 	{
-		if (m_Position<m_HighlightStart) m_HighlightStart=m_Position;
+		if (m_Position<m_HighlightStart) m_HighlightStart=m_Position;	
 		else m_HighlightEnd=m_Position;
 	}
 	
