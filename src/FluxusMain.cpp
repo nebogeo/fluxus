@@ -114,7 +114,7 @@ FluxusMain::~FluxusMain()
 	}
 }
 
-void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y, int mod) 
+void FluxusMain::Handle(unsigned char key, int button, int special, int state, int x, int y, int mod)
 {
 	if (mod&GLUT_ACTIVE_CTRL)
 	{
@@ -188,9 +188,13 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		if (special==GLUT_KEY_F9)
 		{
+			/*
 			m_Editor[m_CurrentEditor]->m_TextColourRed=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
 			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
+			*/
+			m_Editor[m_CurrentEditor]->m_DoEffects =
+				!m_Editor[m_CurrentEditor]->m_DoEffects;
 		}
 		else if (special==GLUT_KEY_F10)
 		{
