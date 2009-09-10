@@ -88,7 +88,7 @@ protected:
 	FT_Face       m_Face;
 	FT_GlyphSlot  m_Slot;
 
-#ifndef WIN32 
+#ifndef WIN32
 #define __stdcall
 #endif
 
@@ -98,8 +98,11 @@ protected:
 	static void __stdcall TessBegin(GLenum type, GlyphGeometry* geo);
 	static void __stdcall TessEnd(GlyphGeometry* geo);
 
-};
 
+	static uint8_t const m_Trailing[256];
+	static uint32_t const m_Offsets[6];
+	uint32_t utf8_to_utf32(char const *s, size_t *bytes);
+};
 
 };
 

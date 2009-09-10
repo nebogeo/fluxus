@@ -76,14 +76,61 @@ void TypePrimitive::Clear()
 	m_GlyphVec.clear();
 }
 
+uint8_t const TypePrimitive::m_Trailing[256] =
+{
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+};
+
+uint32_t const TypePrimitive::m_Offsets[6] =
+{
+    0x00000000UL, 0x00003080UL, 0x000E2080UL,
+    0x03C82080UL, 0xFA082080UL, 0x82082080UL
+};
+
+uint32_t TypePrimitive::utf8_to_utf32(char const *s, size_t *bytes)
+{
+    int todo = m_Trailing[(int)(unsigned char)*s];
+    int i = 0;
+    uint32_t ret = 0;
+
+    for (;;)
+    {
+        if (!*s)
+        {
+            if(bytes)
+                *bytes = 0;
+            return 0;
+        }
+
+        ret += ((uint32_t)(unsigned char)*s++) << (6 * (todo - i));
+
+        if (todo == i++)
+        {
+            if(bytes)
+                *bytes = i;
+            return ret - m_Offsets[todo];
+        }
+    }
+}
+
 void TypePrimitive::SetText(const string &s)
 {
 	Clear();
 
-	for (unsigned int n=0; n<s.size(); n++)
+	for (unsigned int n=0; n<s.size();)
 	{
+		size_t offset;
+		uint32_t ch = utf8_to_utf32(s.c_str() + n, &offset);
+		n += offset;
 		FT_Error error;
-		error = FT_Load_Char(m_Face, s[n], FT_LOAD_DEFAULT);
+		error = FT_Load_Char(m_Face, ch, FT_LOAD_DEFAULT);
 		if (error) return;
 
 		int glList = glGenLists(2);
@@ -98,10 +145,13 @@ void TypePrimitive::SetTextExtruded(const string &s, float depth)
 {
 	Clear();
 
-	for (unsigned int n=0; n<s.size(); n++)
+	for (unsigned int n=0; n<s.size();)
 	{
+		size_t offset;
+		uint32_t ch = utf8_to_utf32(s.c_str() + n, &offset);
+		n += offset;
 		FT_Error error;
-		error = FT_Load_Char(m_Face, s[n], FT_LOAD_DEFAULT);
+		error = FT_Load_Char(m_Face, ch, FT_LOAD_DEFAULT);
 		if (error) return;
 
 		int glList = glGenLists(2);
