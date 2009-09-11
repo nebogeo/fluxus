@@ -1205,11 +1205,11 @@ Scheme_Object *set_mass(int argc, Scheme_Object **argv)
 Scheme_Object *gravity(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-   	ArgCheck("gravity", "v", argc, argv);
+	ArgCheck("gravity", "v", argc, argv);
 	float vec[3];
 	FloatsFromScheme(argv[0],vec,3);
 	Engine::Get()->Physics()->SetGravity(dVector(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -1222,14 +1222,14 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 // (clear)
 // (collisions 1)
 // (set-max-physical 20)
-// (gravity (vector 0 0 0)) 
-// 
+// (gravity (vector 0 0 0))
+//
 // (every-frame
 //     (when (> (rndf) 0.92)
 //         (with-state
 //             (scale (rndvec))
 //             (colour (rndvec))
-//             (let ((ob (build-cube)))    
+//             (let ((ob (build-cube)))
 //                 (active-box ob)
 //                 (kick ob (vmul (srndvec) 3))
 //                 (twist ob (vmul (srndvec) 2))))))
@@ -1244,14 +1244,14 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 // (clear)
 // (collisions 1)
 // (set-max-physical 20)
-// (gravity (vector 0 0 0)) 
-// 
+// (gravity (vector 0 0 0))
+//
 // (every-frame
 //     (when (> (rndf) 0.92)
 //         (with-state
 //             (scale (rndvec))
 //             (colour (rndvec))
-//             (let ((ob (build-cube)))    
+//             (let ((ob (build-cube)))
 //                 (active-box ob)
 //                 (kick ob (vmul (srndvec) 3))
 //                 (twist ob (vmul (srndvec) 2))))))
@@ -1260,12 +1260,12 @@ Scheme_Object *gravity(int argc, Scheme_Object **argv)
 Scheme_Object *kick(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-    ArgCheck("kick", "iv", argc, argv);
-    int obj=IntFromScheme(argv[0]);
-    float vec[3];
-    FloatsFromScheme(argv[1],vec,3);
+	ArgCheck("kick", "iv", argc, argv);
+	int obj=IntFromScheme(argv[0]);
+	float vec[3];
+	FloatsFromScheme(argv[1],vec,3);
 	Engine::Get()->Physics()->Kick(obj,dVector(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -1278,14 +1278,14 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 // (clear)
 // (collisions 1)
 // (set-max-physical 20)
-// (gravity (vector 0 0 0)) 
-// 
+// (gravity (vector 0 0 0))
+//
 // (every-frame
 //     (when (> (rndf) 0.92)
 //         (with-state
 //             (scale (rndvec))
 //             (colour (rndvec))
-//             (let ((ob (build-cube)))    
+//             (let ((ob (build-cube)))
 //                 (active-box ob)
 //                 (kick ob (vmul (srndvec) 3))
 //                 (twist ob (vmul (srndvec) 2))))))
@@ -1300,14 +1300,14 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 // (clear)
 // (collisions 1)
 // (set-max-physical 20)
-// (gravity (vector 0 0 0)) 
-// 
+// (gravity (vector 0 0 0))
+//
 // (every-frame
 //     (when (> (rndf) 0.92)
 //         (with-state
 //             (scale (rndvec))
 //             (colour (rndvec))
-//             (let ((ob (build-cube)))    
+//             (let ((ob (build-cube)))
 //                 (active-box ob)
 //                 (kick ob (vmul (srndvec) 3))
 //                 (twist ob (vmul (srndvec) 2))))))
@@ -1316,12 +1316,94 @@ Scheme_Object *kick(int argc, Scheme_Object **argv)
 Scheme_Object *twist(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-    ArgCheck("twist", "iv", argc, argv);
-    int obj=IntFromScheme(argv[0]);
-    float vec[3];
-    FloatsFromScheme(argv[1],vec,3);
+	ArgCheck("twist", "iv", argc, argv);
+	int obj=IntFromScheme(argv[0]);
+	float vec[3];
+	FloatsFromScheme(argv[1],vec,3);
 	Engine::Get()->Physics()->Twist(obj,dVector(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// add-force primitiveid-number force-vector
+// Returns: void
+// Description:
+// Add force to body.
+// Example:
+// (clear)
+// (collisions 1)
+// (for ([i (in-range 15)])
+//    (let* ([p (vmul (srndvec) 15)]
+//           [c (with-state
+//                    (translate p)
+//                    (build-cube))])
+//        (active-box c)
+//        (set-gravity-mode c #f)
+//        (add-force c (vmul p -10))))
+// EndFunctionDoc
+
+Scheme_Object *add_force(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("add-force", "iv", argc, argv);
+	int obj=IntFromScheme(argv[0]);
+	float vec[3];
+	FloatsFromScheme(argv[1],vec,3);
+	Engine::Get()->Physics()->AddForce(obj,dVector(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// add-torque primitiveid-number torque-vector
+// Returns: void
+// Description:
+// Add torque to body.
+// Example:
+// (clear)
+// (define c (build-cube))
+// (active-box c)
+// (add-torque c #(10 0 0))
+// EndFunctionDoc
+
+Scheme_Object *add_torque(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("add-torque", "iv", argc, argv);
+	int obj=IntFromScheme(argv[0]);
+	float vec[3];
+	FloatsFromScheme(argv[1],vec,3);
+	Engine::Get()->Physics()->AddTorque(obj,dVector(vec[0],vec[1],vec[2]));
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// set-gravity-mode primitiveid-number mode-boolean
+// Returns: void
+// Description:
+// Set whether the body is influenced by the world's gravity or not.
+// Example:
+// (clear)
+// (collisions 1)
+// (define a (with-state
+//               (translate (vector -.95 5 0))
+//               (build-cube)))
+// (define b (build-cube))
+// (active-box a)
+// (active-box b)
+// (set-gravity-mode b #f)
+// EndFunctionDoc
+
+Scheme_Object *set_gravity_mode(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("set-gravity-mode", "ib", argc, argv);
+	int obj = IntFromScheme(argv[0]);
+	bool mode = BoolFromScheme(argv[1]);
+	Engine::Get()->Physics()->SetGravityMode(obj, mode);
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -1416,6 +1498,9 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("gravity", scheme_make_prim_w_arity(gravity, "gravity", 1, 1), env);
 	scheme_add_global("kick", scheme_make_prim_w_arity(kick, "kick", 2, 2), env);
 	scheme_add_global("twist", scheme_make_prim_w_arity(twist, "twist", 2, 2), env);
+	scheme_add_global("add-force", scheme_make_prim_w_arity(add_force, "add-force", 2, 2), env);
+	scheme_add_global("add-torque", scheme_make_prim_w_arity(add_torque, "add-torque", 2, 2), env);
+	scheme_add_global("set-gravity-mode", scheme_make_prim_w_arity(set_gravity_mode, "set-gravity-mode", 2, 2), env);
 	scheme_add_global("has-collided", scheme_make_prim_w_arity(has_collided, "has-collided", 1, 1), env);
 	MZ_GC_UNREG();
 }

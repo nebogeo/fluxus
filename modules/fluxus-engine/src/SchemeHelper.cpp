@@ -53,6 +53,16 @@ int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 	return ret;
 }
 
+bool SchemeHelper::BoolFromScheme(Scheme_Object *ob)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ob);
+	MZ_GC_REG();
+	bool ret=SCHEME_TRUEP(ob);
+	MZ_GC_UNREG();
+	return ret;
+}
+
 string SchemeHelper::StringFromScheme(Scheme_Object *ob)
 {
 	char *ret=NULL;

@@ -51,21 +51,24 @@ public:
 	void MakeActive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	void MakePassive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	///@}
-	
+
     void Free(int ID);
     void Clear();
-	///\todo Remove the dependancy on the renderer (use primitive 
+	///\todo Remove the dependancy on the renderer (use primitive
 	///pointers directly etc???)
     void RegisterRenderer(Renderer* s) { m_Renderer=s; }
     void GroundPlane(dVector ori, float off);
     void Kick(int ID, dVector v);
     void Twist(int ID, dVector v);
+	void AddForce(int ID, dVector v);
+	void AddTorque(int ID, dVector v);
+	void SetGravityMode(int ID, bool mode);
     void SetMass(int ID, float mass);
 	void SetCollisions(bool s) { m_Collisions=s; }
 	void SetGravity(const dVector &g);
 	void SetGlobalSurfaceParams(float slip1, float slip2, float softerp, float softcfm) 
 		{ m_Slip1=slip1; m_Slip2=slip2; m_SoftErp=softerp; m_SoftCfm=softcfm; }
-		
+
 	/////////////////////////////////
 	///@name Joints
 	///@{

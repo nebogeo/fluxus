@@ -494,7 +494,7 @@ void Physics::Kick(int ID, dVector v)
 		Trace::Stream<<"Physics::Kick : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
+
 	if (i->second->Type==ACTIVE)
 	{
 		const dReal *cv = dBodyGetLinearVel(i->second->Body);
@@ -510,11 +510,56 @@ void Physics::Twist(int ID, dVector v)
 		Trace::Stream<<"Physics::Twist : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
+
 	if (i->second->Type==ACTIVE)
 	{
 		const dReal *cv = dBodyGetAngularVel(i->second->Body);
 		dBodySetAngularVel(i->second->Body,cv[0]+v.x,cv[1]+v.y,cv[2]+v.z);
+	}
+}
+
+void Physics::AddForce(int ID, dVector v)
+{
+    map<int,Object*>::iterator i = m_ObjectMap.find(ID);
+	if (i==m_ObjectMap.end())
+	{
+		Trace::Stream<<"Physics::AddForce : Object ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+
+	if (i->second->Type==ACTIVE)
+	{
+		dBodyAddForce(i->second->Body,v.x, v.y, v.z);
+	}
+}
+
+void Physics::AddTorque(int ID, dVector v)
+{
+    map<int,Object*>::iterator i = m_ObjectMap.find(ID);
+	if (i==m_ObjectMap.end())
+	{
+		Trace::Stream<<"Physics::AddTorque : Object ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+
+	if (i->second->Type==ACTIVE)
+	{
+		dBodyAddTorque(i->second->Body,v.x, v.y, v.z);
+	}
+}
+
+void Physics::SetGravityMode(int ID, bool mode)
+{
+    map<int,Object*>::iterator i = m_ObjectMap.find(ID);
+	if (i==m_ObjectMap.end())
+	{
+		Trace::Stream<<"Physics::SetGravityMode : Object ["<<ID<<"] doesn't exist"<<endl;
+		return;
+	}
+
+	if (i->second->Type==ACTIVE)
+	{
+		dBodySetGravityMode(i->second->Body, mode ? 1 : 0);
 	}
 }
 

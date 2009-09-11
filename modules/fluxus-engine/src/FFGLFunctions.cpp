@@ -323,7 +323,7 @@ Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 
 	ArgCheck("ffgl-activate", "b", argc, argv);
 
-	pi->Activate(SCHEME_TRUEP(argv[0]));
+	pi->Activate(BoolFromScheme(argv[0]));
 
 	MZ_GC_UNREG();
 	return scheme_void;

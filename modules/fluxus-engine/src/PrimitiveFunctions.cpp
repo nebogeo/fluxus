@@ -946,7 +946,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 	else
 	{
 		ArgCheck("build-pixels", "iib", argc, argv);
-		rend=SCHEME_TRUEP(argv[2]);
+		rend=BoolFromScheme(argv[2]);
 	}
 	int x=IntFromScheme(argv[0]);
 	int y=IntFromScheme(argv[1]);
@@ -1216,7 +1216,7 @@ Scheme_Object *pixels_renderer_activate(int argc, Scheme_Object **argv)
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
 		if (pp)
 		{
-			pp->ActivateRenderer(SCHEME_TRUEP(argv[0]));
+			pp->ActivateRenderer(BoolFromScheme(argv[0]));
 			MZ_GC_UNREG();
 		    return scheme_void;
 		}
