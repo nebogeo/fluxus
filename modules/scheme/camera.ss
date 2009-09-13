@@ -63,7 +63,7 @@
 ;; EndFunctionDoc
 
 (define (set-camera-transform m)
-  (set! camera-locked #t)
+  ;(set! camera-locked #t)
   (set! camera-matrix m))
   
 (define (set-camera-position s)

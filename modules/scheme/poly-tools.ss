@@ -11,6 +11,7 @@
 (require "building-blocks.ss")
 (require "maths.ss")
 (require "randomness.ss")
+(require "shapes.ss")
 (provide 
 	poly-type
     poly-for-each-face
@@ -19,7 +20,7 @@
 	build-extrusion
 	build-partial-extrusion
 	partial-extrude
-	build-circle-profile)
+	build-disk)
 
 
 ;; StartFunctionDoc-en
@@ -260,7 +261,7 @@
 ;; Example:  
 ;; (clear)
 ;; (build-extrusion 
-;;     (build-circle-profile 20 0.3)
+;;     (build-circle-points 20 0.3)
 ;;     (list
 ;;         (vector 0 0 0)
 ;;         (vector 0 1 2)
@@ -287,7 +288,7 @@
 ;; Example:  
 ;; (clear)
 ;; 
-;; (define profile (build-circle-profile 10 0.3))
+;; (define profile (build-circle-points 10 0.3))
 ;; (define path (build-list 20 (lambda (i) (vector (crndf) (crndf) i))))
 ;; (define width (build-list 20 (lambda (_) 1)))
 ;; 
@@ -318,7 +319,7 @@
 ;; Example:  
 ;; (clear)
 ;; 
-;; (define profile (build-circle-profile 10 0.3))
+;; (define profile (build-circle-points 10 0.3))
 ;; (define path (build-list 20 (lambda (i) (vector (crndf) (crndf) i))))
 ;; (define width (build-list 20 (lambda (_) 1)))
 ;; 
@@ -374,29 +375,31 @@
     (collapse-front (min t (- (length path) 1))))
 
 ;; StartFunctionDoc-en
-;; build-circle-profile num-points radius
+;; build-disk num-points
 ;; Returns: primitive-id
 ;; Description:
-;; Returns a list of vectors describing a circle. 
-;; Useful for generating circles for the extrusion generator.
+;; Builds a disk shaped poly primitive
 ;; Example:  
 ;; (clear)
-;; (build-extrusion 
-;;     (build-circle-profile 20 0.3)
-;;     (list
-;;         (vector 0 0 0)
-;;         (vector 0 1 2)
-;;         (vector 0 -1 4)
-;;         (vector 0 0 6))
-;;     (list 0 1 1 0) 1 (vector 0 1 0))
+;; (build-disk 10)
 ;; EndFunctionDoc 
 
-(define (build-circle-profile n r)
-    (define (_ n c l)
-        (cond ((zero? c) l)
-            (else
-                (let ((a (* (/ c n) (* 2 3.141))))                 
-                    (_ n (- c 1) 
-                        (cons (vmul (vector (sin a) (cos a) 0) r) l))))))
-    (_ n n '()))
-
+(define (build-disk n)
+  (let ((p (build-polygons n 'polygon))
+        (points (reverse (build-circle-points n 1))))
+  	(with-primitive p
+	  (pdata-index-map!
+	    (lambda (i p)
+		  (list-ref points i))
+		"p")
+	   (pdata-map! ; set the texture coordinate to be planar
+	   		(lambda (t p)
+				(vadd p (vector 0.5 0.5 0)))
+		"t" "p")
+		(pdata-map!
+			(lambda (n)
+			  (vector 0 0 1))
+			"n"))
+	p))
+	
+	

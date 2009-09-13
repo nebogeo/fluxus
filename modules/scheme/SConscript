@@ -27,7 +27,9 @@ Scripts    = ["boot.scm",
 			  "poly-tools.ss",
 			  "pixels-tools.ss",
 			  "maths.ss",
-			  "testing.ss" ]
+			  "testing.ss",
+			  "planetarium.ss",
+			  "shapes.ss" ]
 
 Install        = CollectsInstall
 

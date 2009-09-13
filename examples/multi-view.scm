@@ -40,5 +40,7 @@
         (load-primitive "widget.obj")))
 
 (every-frame
+    (with-state
+        (draw-cube)
     (with-primitive p
-        (rotate (vector 0 1 0))))
+        (rotate (vector 0 1 0)))))

@@ -143,10 +143,11 @@ void Renderer::Render()
 			PreRender(cam);
 			m_World.Render(&m_ShadowVolumeGen,cam);
 			m_ImmediateMode.Render(cam);
-			m_ImmediateMode.Clear();
 			PostRender();
 		}
 	}
+	
+	m_ImmediateMode.Clear();
 
 	if (m_MainRenderer)
 	{

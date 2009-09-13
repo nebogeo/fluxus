@@ -37,7 +37,8 @@ m_OrthZoom(1.0f),
 m_ViewX(0),
 m_ViewY(0),
 m_ViewWidth(1),
-m_ViewHeight(1)
+m_ViewHeight(1),
+m_FirstAttach(true)
 {
 	// default camera position
 	m_Transform.translate(0,0,-10);
@@ -71,7 +72,7 @@ void Camera::DoCamera(Renderer * renderer)
 	if (m_CameraAttached)
 	{
         dMatrix worldmat = renderer->GetGlobalTransform(m_CameraAttached).inverse();
-		if (m_CameraLag!=0)
+		if (!m_FirstAttach && m_CameraLag!=0)
 		{
 			//m_LockedMatrix.RigidBlend(worldmat,m_CameraLag);
 			m_LockedMatrix.blend(worldmat,m_CameraLag);
@@ -80,7 +81,7 @@ void Camera::DoCamera(Renderer * renderer)
 		{
 			m_LockedMatrix=worldmat;
 		}
-
+		m_FirstAttach=false;
 		glMultMatrixf(m_LockedMatrix.arr());
 	}
 }
@@ -88,6 +89,7 @@ void Camera::DoCamera(Renderer * renderer)
 void Camera::LockCamera(int p)
 {
      m_CameraAttached=p;
+	 m_FirstAttach=true;
 }
 
 dMatrix Camera::GetProjection()

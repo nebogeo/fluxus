@@ -21,7 +21,7 @@
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
  crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
- 	set-bpm-mult)
+ 	set-bpm-mult logical-time set-on-sync)
 
 (define time-offset 0.0) 
 (define sync-offset 0.0)
@@ -612,6 +612,10 @@
 (define sync-tempo 0.5)
 (define sync-clock 0)
 (define bpb 4)
+(define on-sync #f)
+
+(define (set-on-sync s)
+  (set! on-sync s))
 
 (define (set-global-offset s)
 	(set! sync-offset s))
@@ -639,7 +643,8 @@
                 (offset (calc-offset logical-time sync-time sync-tempo)))
            (printf "time offset: ~a~n" offset)
            (set! logical-time (+ logical-time offset))
-           (set! sync-clock 0))))
+           (set! sync-clock 0)
+		   (when on-sync (on-sync)))))
   
   (cond ((> (- (time-now) logical-time) 3)
          (set! logical-time (time-now))))

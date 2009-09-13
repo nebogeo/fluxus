@@ -88,6 +88,7 @@ private:
 	float m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back;
 	float m_OrthZoom;
 	float m_ViewX,m_ViewY,m_ViewWidth,m_ViewHeight;
+	bool m_FirstAttach;
 };
 
 }
