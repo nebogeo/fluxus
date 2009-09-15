@@ -96,16 +96,23 @@ public:
 
 	static bool m_DoEffects;
 	static float m_EffectJiggleSize;
+
 	static float m_EffectWaveSize;
 	static float m_EffectWaveWavelength;
 	static float m_EffectWaveSpeed;
 	static float m_EffectWaveTimer;
+
 	static float m_EffectRippleSize;
 	static float m_EffectRippleCenterX;
 	static float m_EffectRippleCenterY;
 	static float m_EffectRippleWavelength;
 	static float m_EffectRippleSpeed;
 	static float m_EffectRippleTimer;
+
+	static float m_EffectSwirlSize;
+	static float m_EffectSwirlCenterX;
+	static float m_EffectSwirlCenterY;
+	static float m_EffectSwirlRotation;
 
 protected:
 
