@@ -348,11 +348,17 @@ void PixelPrimitive::Render()
 	// render the pixel primitive scenegraph
 	if (m_FBOSupported && m_RendererActive)
 	{
+		glMatrixMode (GL_PROJECTION);
+		glPushMatrix();
+		glMatrixMode (GL_MODELVIEW);
 		glPushMatrix();
 		Bind();
 		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
+		glMatrixMode (GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode (GL_MODELVIEW);
 		glPopMatrix();
 	}
 

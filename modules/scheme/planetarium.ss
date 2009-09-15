@@ -12,19 +12,21 @@
 
 (define target #f)
 (define cameras '())
-
+(define angle 180)
 (define target-size 2048)
 
 (define (dome-set-camera-transform m)
     (cond ((> (length cameras) 1)
+	(let ((width (/ 1 (length cameras))))
     (for-each
       (lambda (camera)
             (current-camera camera)
-            (set-fov 90 0.1 1000)
-            (viewport (* camera 0.25) 0 0.25 1)
+            (set-fov (/ angle (length cameras)) 0.1 1000)
+			; distribute the cameras to render along the texture width
+            (viewport (* camera width) 0 width 1) 
             (set-camera (mmul (mtranslate (vector 0 0 0)) 
-            (mrotate (vector 0 (* (- camera 1) 90) 0)) m)))
-     cameras))
+            (mrotate (vector 0 (* (- camera 1) (/ angle (length cameras))) 0)) m)))
+     cameras)))
 	 (else
 	   (set-camera m))))
 
@@ -49,7 +51,9 @@
             (camera-lag s))
      cameras))
 
-(define (dome-build num-cameras thunk)
+(define (dome-build num-cameras a size thunk)
+	(set! angle a)
+	(set! target-size size)
     (set! target (with-state
       (translate (vector -20 0 0))
       (build-pixels target-size target-size #t)))
@@ -58,16 +62,9 @@
         	(set! cameras (append (build-list 2 (lambda (_) (build-camera))) (list 0)))
 			(set! cameras (list 0)))
         (dome-set-camera-transform (mident))
-        (thunk)
-        #;(with-state
-            (scale 1000)
-            (hint-unlit)
-            (backfacecull 0)
-            (colour 1)
-            (texture (load-texture "textures/grid.png"))
-            (build-sphere 20 20)))
+        (thunk))
     (let ((p (with-state
-            (texture-params 0 '(min linear mag linear))
+            (texture-params 0 '(min linear mag linear)) ; fix for dave's laptop
             (texture (pixels->texture target))
             (hint-unlit)
             (scale -10)
@@ -75,7 +72,9 @@
 		(with-primitive p
 			(pdata-map! 
 				(lambda (t)
-					(vector (vx t) (- (vy t)) 0))
+					; rearrange the texture coords so we squash the texture into
+					; the correct angle range of the sphere s coordinates
+					(vector (min (* (- 1 (vx t)) (/ 360 angle)) 1)  (vy t) 0))
 				"t"))
 			p))
 

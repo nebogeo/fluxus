@@ -51,11 +51,17 @@ Camera::~Camera()
 void Camera::DoProjection()
 {
 	if (m_CustomProjection)
+	{
 		glLoadMatrixf(m_CustomProjectionMatrix.arr());
+	}
 	else if (m_Ortho)
+	{
 		glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
+	}
 	else
+	{
 		glFrustum(m_Left,m_Right,m_Bottom,m_Top,m_Front,m_Back);
+	}
 	#ifdef DEBUG_CAMERA
 	cerr<<"camera:"<<this<<" frustum:"<<m_Left<<" "<<m_Right<<" "<<m_Bottom<<" "<<m_Top<<" "<<m_Front<<" "<<m_Back<<endl;
 	#endif
