@@ -4,24 +4,24 @@
 ; it under the terms of the GNU General Public License as published by
 ; the Free Software Foundation; either version 2 of the License, or
 ; (at your option) any later version.
-; 
+;
 ; This program is distributed in the hope that it will be useful,
 ; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ; GNU General Public License for more details.
-;  
+;
 ; You should have received a copy of the GNU General Public License
 ; along with this program; if not, write to the Free Software
 ; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ; this is the startup script for the fluxus scratchpad
-; this script loads all the modules and sets things up so the 
+; this script loads all the modules and sets things up so the
 ; fluxus application works without having to worry about setup
 
 
 ; setup where to find the library module collections
-(current-library-collection-paths 
-	(path-list-string->path-list 
+(current-library-collection-paths
+	(path-list-string->path-list
          (string-append
 		   (or (getenv "PLTCOLLECTS") plt-collects-location)
 		   (if (eq? fluxus-platform 'win32) ";" ":")
@@ -60,14 +60,21 @@
 
 ; initial parameterso of scratchpad effects
 (define fluxus-scratchpad-effect-jiggle-size 0)
+
 (define fluxus-scratchpad-effect-wave-wavelength 1.0)
 (define fluxus-scratchpad-effect-wave-size 0)
 (define fluxus-scratchpad-effect-wave-speed 1.0)
+
 (define fluxus-scratchpad-effect-ripple-size 0)
 (define fluxus-scratchpad-effect-ripple-center-x 0)
 (define fluxus-scratchpad-effect-ripple-center-y 0)
 (define fluxus-scratchpad-effect-ripple-wavelength 1.0)
 (define fluxus-scratchpad-effect-ripple-speed 1.0)
+
+(define fluxus-scratchpad-effect-swirl-size 0)
+(define fluxus-scratchpad-effect-swirl-center-x 0)
+(define fluxus-scratchpad-effect-swirl-center-y 0)
+(define fluxus-scratchpad-effect-swirl-rotation 1.0)
 
 ; setup the standard searchpaths
 (set-searchpaths (list
@@ -106,3 +113,4 @@
 	(let ((user-script (string-append (getenv "HOME") "/.fluxus.scm")))
 		(when (file-exists? user-script)
 	  		(load user-script))))
+

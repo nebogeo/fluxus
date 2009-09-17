@@ -24,6 +24,7 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 
 #include "GLEditor.h"
 #include "PolyGlyph.h"
@@ -68,16 +69,23 @@ float GLEditor::m_YPos(0);
 
 bool GLEditor::m_DoEffects(false);
 float GLEditor::m_EffectJiggleSize(0.0);
+
 float GLEditor::m_EffectWaveSize(0.0);
 float GLEditor::m_EffectWaveWavelength(1.0);
 float GLEditor::m_EffectWaveSpeed(1.0);
 float GLEditor::m_EffectWaveTimer(0.0);
+
 float GLEditor::m_EffectRippleSize(0.0);
 float GLEditor::m_EffectRippleCenterX(0.0);
 float GLEditor::m_EffectRippleCenterY(0.0);
 float GLEditor::m_EffectRippleWavelength(1.0);
 float GLEditor::m_EffectRippleSpeed(1.0);
 float GLEditor::m_EffectRippleTimer(0.0);
+
+float GLEditor::m_EffectSwirlSize(0.0);
+float GLEditor::m_EffectSwirlCenterX(0.0);
+float GLEditor::m_EffectSwirlCenterY(0.0);
+float GLEditor::m_EffectSwirlRotation(1.0);
 
 PolyGlyph* GLEditor::m_PolyGlyph = NULL;
 timeval GLEditor::m_Time;
@@ -299,6 +307,7 @@ void GLEditor::GetEffectParameters()
 	m_EffectWaveWavelength = scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-effect-wave-speed", &t);
 	m_EffectWaveSpeed = scheme_real_to_double(t);
+
 	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-size", &t);
 	m_EffectRippleSize = scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-center-x", &t);
@@ -309,6 +318,15 @@ void GLEditor::GetEffectParameters()
 	m_EffectRippleWavelength = scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-speed", &t);
 	m_EffectRippleSpeed = scheme_real_to_double(t);
+
+	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-size", &t);
+	m_EffectSwirlSize = scheme_real_to_double(t);
+	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-center-x", &t);
+	m_EffectSwirlCenterX = scheme_real_to_double(t);
+	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-center-y", &t);
+	m_EffectSwirlCenterY = scheme_real_to_double(t);
+	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-rotation", &t);
+	m_EffectSwirlRotation = scheme_real_to_double(t);
 
 	MZ_GC_UNREG();
 }
@@ -328,6 +346,7 @@ void GLEditor::Render()
 
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_TEXTURE_2D);
+
 
 	glPushMatrix();
 	glDisable(GL_LIGHTING);
@@ -441,26 +460,51 @@ void GLEditor::Render()
 					float xp = -48 + 0.001f * m_Scale * (xpos + m_PosX);
 					float yp = 0.001f * m_Scale * (ypos + m_PosY);
 					/* jiggle */
-					float jdx = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-					float jdy = 10000 * ((float)rand() / (float)RAND_MAX - .5);
-					dx += m_EffectJiggleSize * jdx;
-					dy += m_EffectJiggleSize * jdy;
+					if (fabs(m_EffectJiggleSize) > FLT_EPSILON)
+					{
+						float jdx = 10000 * ((float)rand() / (float)RAND_MAX - .5);
+						float jdy = 10000 * ((float)rand() / (float)RAND_MAX - .5);
+						dx += m_EffectJiggleSize * jdx;
+						dy += m_EffectJiggleSize * jdy;
+					}
 
 					/* wave */
-					dy += m_EffectWaveSize * 10000 * sin(m_EffectWaveTimer +
-							.1 * m_EffectWaveWavelength * xp);
+					if (fabs(m_EffectWaveSize) > FLT_EPSILON)
+					{
+						dy += m_EffectWaveSize * 10000 * sin(m_EffectWaveTimer +
+								.1 * m_EffectWaveWavelength * xp);
+					}
 
 					/* ripple */
-					// center coordinate transformed to viewport
-					float cx = -50.0 + 100.0 * m_EffectRippleCenterX / m_Width;
-					float cy = 37.5 - 75.0 * m_EffectRippleCenterY / m_Height;
-					float rdx = xp - cx;
-					float rdy = yp - cy;
+					if (fabs(m_EffectRippleSize) > FLT_EPSILON)
+					{
+						// center coordinate transformed to viewport
+						float cx = -50.0 + 100.0 * m_EffectRippleCenterX / m_Width;
+						float cy = 37.5 - 75.0 * m_EffectRippleCenterY / m_Height;
+						float rdx = xp - cx;
+						float rdy = yp - cy;
 
-					float d = m_EffectRippleSize * 200 * sin(m_EffectRippleTimer +
-							.5 * m_EffectRippleWavelength * sqrt(rdx * rdx + rdy * rdy));
-					dx += d * rdx;
-					dy += d * rdy;
+						float d = m_EffectRippleSize * 200 * sin(m_EffectRippleTimer -
+								.5 * m_EffectRippleWavelength * sqrt(rdx * rdx + rdy * rdy));
+						dx += d * rdx;
+						dy += d * rdy;
+					}
+
+					/* swirl */
+					if (fabs(m_EffectSwirlSize) > FLT_EPSILON)
+					{
+						float sx = -50.0 + 100.0 * m_EffectSwirlCenterX / m_Width;
+						float sy = 37.5 - 75.0 * m_EffectSwirlCenterY / m_Height;
+						float sdx = xp - sx;
+						float sdy = yp - sy;
+						float a = m_EffectSwirlRotation * exp( - (sdx * sdx + sdy * sdy) /
+										(m_EffectSwirlSize * m_EffectSwirlSize));
+						float u =  sdx * cos(a) - sdy * sin(a);
+						float v =  sdx * sin(a) + sdy * cos(a);
+
+						dx += (sx + u + 48) / (m_Scale * 0.001f)  - xpos - m_PosX;
+						dy += (sy + v) / (m_Scale * 0.001f)  - ypos - m_PosY;
+					}
 				}
 
 				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8 - this really needs to be done properly
