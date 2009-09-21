@@ -3,12 +3,14 @@
 
 (require fluxus-016/fluxus)
 (provide 
+  dome-pixels
   dome-set-camera-transform 
   dome-set-fov
   dome-lock-camera 
   dome-build 
-  dome-every-frame
-  dome-camera-lag)
+  dome-pixels
+  dome-camera-lag
+  dome-setup-main-camera)
 
 ;; StartSectionDoc-en
 ;; extras
@@ -21,6 +23,18 @@
 (define angle 180)
 (define target-size 2048)
 
+;; StartFunctionDoc-en
+;; dome-set-camera-transform m
+;; Returns: primitive-id
+;; Description:
+;; Get the render target pixels primitive, so you can set the scene
+;; up and animate things 'inside' the dome using (with-pixels-renderer)
+;; Example:
+;; EndFunctionDoc
+
+(define (dome-pixels)
+	target)
+	
 ;; StartFunctionDoc-en
 ;; dome-set-camera-transform m
 ;; Returns: primitive-id
@@ -101,7 +115,7 @@
 ;; Example:
 ;; EndFunctionDoc
 
-(define (dome-build num-cameras a size thunk)
+(define (dome-build num-cameras a size)
 	(set! angle a)
 	(set! target-size size)
     (set! target (with-state
@@ -111,8 +125,7 @@
 		(if (eq? num-cameras 3)
         	(set! cameras (append (build-list 2 (lambda (_) (build-camera))) (list 0)))
 			(set! cameras (list 0)))
-        (dome-set-camera-transform (mident))
-        (thunk))
+        (dome-set-camera-transform (mident)))
     (let ((p (with-state
             (texture-params 0 '(min linear mag linear)) ; fix for dave's laptop
             (texture (pixels->texture target))
@@ -129,16 +142,28 @@
 			p))
 
 ;; StartFunctionDoc-en
-;; dome-every-frame thunk
+;; dome-setup-main-camera
 ;; Returns: primitive-id
 ;; Description:
-;; Runs the thunk in the dome's internal pixel-primitive renderer - for updating your scene.
-;; (should replace with a with-dome)
+;; Sets up the view of the dome geometry to fit (currently) 
+;; the plymouth immersive vision theatre - this should be useful as 
+;; an example for other locations.
 ;; Example:
 ;; EndFunctionDoc
 
-(define (dome-every-frame thunk)
-    (spawn-task 
-      (lambda () (with-pixels-renderer target
-         (thunk)))
-       'dome))
+(define (dome-setup-main-camera)
+	(ortho)
+    ;(let ((sm 0.5))
+    ;    (set-screen-size (vector (* 1400 sm) (* sm 1050))))
+    (set-camera-update #f) ; turn off the mouse interactive camera
+    (set-camera-position (vector 0 0 -7.5)) ; sets ortho-zoom
+    (set-camera (mmul 
+			; the sphere has to sit at the bottom of the view, 
+			; fill the width and have the top 1/4 chopped off
+            (mtranslate (vector 0 2.55 -7.5)) 
+			; rotate to face the right way, and tilt
+            (mrotate (vector -25 90 0)))) ; not sure if the -25 tilt angle is correct
+    (set-ortho-zoom -7.5)
+    
+    (let ((aspect (/ (vx (get-screen-size)) (vy (get-screen-size)))))
+        (frustum (* -1 aspect) (* 1 aspect) -1 1)))
