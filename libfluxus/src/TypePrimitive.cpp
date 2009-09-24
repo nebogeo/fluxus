@@ -234,8 +234,8 @@ void TypePrimitive::RenderGeometry(const GlyphGeometry &geo)
 			glDisable(GL_LINE_STIPPLE);
 		}
 	}
-	
-	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);		
+
+	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);
 }
 
 void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo, float depth, bool winding)
@@ -250,12 +250,12 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (*)(...))TypePrimitive::TessEnd);
 	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (*)(...))TypePrimitive::TessError);
 #else
-#ifdef WIN32	
-	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessBegin);
-	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessVertex);
-	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessCombine);
-	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessEnd);
-	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (__stdcall *)())PolyGlyph::TessError);
+#ifdef WIN32
+	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (GLvoid (__stdcall *)())TypePrimitive::TessBegin);
+	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (GLvoid (__stdcall *)())TypePrimitive::TessVertex);
+	gluTessCallback(t, GLU_TESS_COMBINE_DATA, (GLvoid (__stdcall *)())TypePrimitive::TessCombine);
+	gluTessCallback(t, GLU_TESS_END_DATA, (GLvoid (__stdcall *)())TypePrimitive::TessEnd);
+	gluTessCallback(t, GLU_TESS_ERROR_DATA, (GLvoid (__stdcall *)())TypePrimitive::TessError);
 #else
 	gluTessCallback(t, GLU_TESS_BEGIN_DATA, (void (*)())TypePrimitive::TessBegin);
 	gluTessCallback(t, GLU_TESS_VERTEX_DATA, (void (*)())TypePrimitive::TessVertex);
