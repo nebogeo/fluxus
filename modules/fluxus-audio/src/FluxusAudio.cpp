@@ -187,10 +187,11 @@ Scheme_Object *get_audio(int argc, Scheme_Object **argv)
 		/* TODO: make it work with (process) */
 		int size = Audio->GetAudioBufferLength();
 		float *src = Audio->GetAudioBuffer();
+		float gain = Audio->GetGain();
 		ret = scheme_make_vector(size, scheme_void);
 		for (int n = 0; n < size; n++)
 		{
-			tmp = scheme_make_double(src[n]);
+			tmp = scheme_make_double(gain * src[n]);
 			SCHEME_VEC_ELS(ret)[n] = tmp;
 		}
 	}
