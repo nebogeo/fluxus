@@ -12,7 +12,12 @@
 (provide 
 	vmix
 	vclamp
-	vsquash)
+	vsquash
+	hermite
+	vlerp
+	hermite-tangent
+	vlerp-tangent
+	lerp)
 
 ;; StartFunctionDoc-en
 ;; vmix a b t
@@ -57,3 +62,46 @@
 (define (vsquash v)
 	(let ((t (+ (vx v) (vy v) (vz v))))
 		(vector (/ (vx v) t) (/ (vy v) t) (/ (vz v) t))))
+
+
+; slow implementation of hermite curves for animation
+(define (hermite p1 p2 t1 t2 s)
+    ; the bernstein polynomials
+    (define (h1 s)
+        (+ (- (* 2 (expt s 3))
+                (* 3 (expt s 2))) 1))
+    
+    (define (h2 s)
+        (+ (* -2 (expt s 3))
+            (* 3 (expt s 2))))
+    
+    (define (h3 s)
+        (+ (- (expt s 3) (* 2 (expt s 2))) s))
+    
+    (define (h4 s)
+        (- (expt s 3) (expt s 2)))
+    
+    (vadd
+        (vadd 
+            (vmul p1 (h1 s))
+            (vmul p2 (h2 s)))
+        (vadd
+            (vmul t1 (h3 s))
+            (vmul t2 (h4 s)))))
+
+; slow, stupid version for getting the tangent - not in the mood for
+; maths today to see how you derive it directly, must be pretty simple
+(define (hermite-tangent p1 p2 t1 t2 t)
+    (let ((p (hermite p1 p2 t1 t2 t)))
+        (list p (vsub (hermite p1 p2 t1 t2 (- t 0.01)) p))))
+
+(define (vlerp p1 p2 t)
+    (vadd (vmul p1 (- 1 t)) (vmul p2 t)))
+
+(define (vlerp-tangent p1 p2 t)
+    (let ((p (vlerp t p1 p2)))
+        (list p (vsub (vlerp (- t 0.01) p1 p2) p))))
+
+(define (lerp p1 p2 t)
+    (+ (* p1 t) (* p2 (- 1 t))))
+
