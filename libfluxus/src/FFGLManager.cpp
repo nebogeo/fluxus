@@ -47,11 +47,17 @@ m_CapSetTime(false)
 
 	string fullpath = SearchPaths::Get()->GetFullPath(filename);
 
-	m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW);
+	/*
+	 * RTLD_LOCAL tells the loader to use local symbols within this module to
+	 * resolve symbols, otherwise the symbols would be resolved globally which
+	 * causes mixing of static variables if the plugins were developed using
+	 * the same framework
+	 */
+	m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW | RTLD_LOCAL);
 	if (m_PluginHandle == NULL) /* trying to load with extension added */
 	{
 		fullpath = SearchPaths::Get()->GetFullPath(filename + extension);
-		m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW);
+		m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW | RTLD_LOCAL);
 	}
 
 	if (m_PluginHandle == NULL)

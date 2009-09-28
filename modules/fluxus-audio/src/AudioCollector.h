@@ -51,9 +51,10 @@ class AudioCollector
 public:
 	AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
 	~AudioCollector();
-	
+
 	float *GetFFT();
 	float *GetAudioBuffer() { return m_AudioBuffer; }
+	int GetAudioBufferLength() { return m_BufferLength; }
     float GetHarmonic(int h);
     bool  IsConnected();
     void  SetGain(float s) { m_Gain=s; }

@@ -176,6 +176,7 @@ Scheme_Object *ffgl_get_parameters(int argc, Scheme_Object **argv)
 		return scheme_void;
 	}
 	FFGLPlugin *p = pi->plugin;
+
 	map<string, FFGLParameter> parameters = p->GetParameters();
 
 	int n = parameters.size();
