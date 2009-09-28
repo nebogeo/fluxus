@@ -26,6 +26,7 @@ using namespace fluxus;
 
 string Repl::m_Banner = string("Welcome to fluxus.\nType (help) for info.\n");
 string Repl::m_Prompt = string("fluxus> ");
+unsigned int Repl::MAX_LINE_LENGTH = 80;
 
 Repl::Repl() : 
 m_InsertPos(0), 
@@ -37,10 +38,13 @@ m_HistoryNavStarted(false)
 }
 
 // FIXME: wrap long lines
+// how? break before a "(" I would say -Evan
+
 void Repl::Print(string what)
 {
 	unsigned int l = what.length();
-
+	//if (l > MAX_LINE_LENGTH)
+		
 	m_Text.insert(m_InsertPos, what);
 
 	m_Position += l;
@@ -81,6 +85,15 @@ void Repl::Print(Scheme_Object *obj)
 void Repl::Handle(int button, int key, int special, int state, 
 		  int x, int y, int mod)
 {
+	
+	if (mod&GLUT_ACTIVE_CTRL && state)
+	{
+		switch(key)
+		{
+			case 3: HistoryClear(); break;
+		}
+	}
+	
 	if (key!=0) {
 		if ((m_Position <= m_PromptPos && key == GLEDITOR_BACKSPACE) ||
 			(m_Position < m_PromptPos && key == GLEDITOR_DELETE) ||
@@ -93,7 +106,7 @@ void Repl::Handle(int button, int key, int special, int state,
 		if (m_Position < m_PromptPos && key != GLEDITOR_COPY) 
 			m_Position = m_Text.length();
 	}
-
+	
 	if (special != 0) {
 		if (m_Position >= m_PromptPos) {
 			switch(special)
@@ -124,6 +137,15 @@ void Repl::Handle(int button, int key, int special, int state,
 
     GLEditor::Handle(button, key, special, state, x, y, mod);
 }
+
+void Repl::HistoryClear()
+{
+	m_HistoryNavStarted=false;
+	m_History.clear();
+	m_HistoryIter = m_History.end();
+	m_HistoryPresent = m_Text.substr(m_PromptPos);
+}
+
 
 void Repl::HistoryPrev()
 {

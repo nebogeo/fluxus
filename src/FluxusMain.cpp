@@ -118,6 +118,9 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 {
 	if (mod&GLUT_ACTIVE_CTRL)
 	{
+		//for testing
+//		cout << "KEY:" << key << " / " << state << endl;
+		
 		// pretty sure this is going to have to change...
 		switch(key)
 		{
@@ -147,7 +150,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				}
 			break; // l
 			case 2: // b
-                                m_Editor[m_CurrentEditor]->BlowupCursor();
+						m_Editor[m_CurrentEditor]->BlowupCursor();
                         break;
 
 			case 5: // e

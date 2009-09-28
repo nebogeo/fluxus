@@ -205,6 +205,16 @@ void GLEditor::SetText(const string& s)
 	ProcessTabs();
 }
 
+void GLEditor::ClearAllText()
+{
+	m_Text="";
+	m_Position=0;
+	m_PosX=m_PosY=0;
+	SetCurrentLine(0);
+	m_ShiftState=false;
+	m_Selection=false;
+}
+
 void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
 {
 	m_PolyGlyph->Render(c,m_TextColourRed,m_TextColourGreen,
@@ -702,8 +712,13 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		
 	if (mod&GLUT_ACTIVE_CTRL)
 	{	
+		//for testing key values
+		//cout <<"EDITOR RECEIVED KEY:" << key << "/" << state << endl;
+		
 		switch (key)
 		{
+			case 17: ClearAllText(); break;
+			
 			case GLEDITOR_CUT: // cut
 				if (m_Selection) 
 				{
