@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <string>
 #ifndef __APPLE__
 #include <GL/glut.h>
 #else
@@ -42,18 +43,64 @@ m_HistoryNavStarted(false)
 
 void Repl::Print(string what)
 {
-	unsigned int l = what.length();
-	//if (l > MAX_LINE_LENGTH)
+	int l = what.length();
+	
+	int slop = l;
+	int end = slop;
+	int start = 0;
+	
+	string to_print;
+
+	
+	
+	do {
+		// want lesser of l and MAX_LENGTH
+		end = std::min(slop, (int)MAX_LINE_LENGTH);
 		
-	m_Text.insert(m_InsertPos, what);
+		// look at index end+1, if it is not a space, we are in the middle of a word
+		// so go back until we hit a " " or we are at the beginning of the line,
+		// in which case we print the whole line regardless
+/*
+		if (end < l && what.at(end) != ' ')
+		{
+			bool spaceNotFound = true;
+			int i=end;
+			
+			while (spaceNotFound)
+			{
+				i--;
+				
+				cout<< "i:" << i << " /*" << what.at(i) << "*" << endl; 
+				
+				if (what.at(i) == ' ') spaceNotFound = false;
+				
+				else if (i == 0)
+				{
+					i=end-1;
+					spaceNotFound = false;
+				}
+			}
+			end = i;
+		}
+*/		
+		//cout << "slop: " << slop << endl;
+		to_print = what.substr(start,end)+"\n";
+		
+		m_Text.insert(m_InsertPos, to_print);
+		
+		m_Position += end;
+		m_PromptPos += end;
+		m_InsertPos += end;
 
-	m_Position += l;
-	m_PromptPos += l;
-	m_InsertPos += l;
-
+		slop -= end;
+		start += end;
+		
+		cout << to_print;
+		
+	}
+	while (slop > 0);
+	
 	EnsureCursorVisible();
-
-	cout << what;
 }
 
 void Repl::PrintPrompt()
@@ -142,6 +189,7 @@ void Repl::HistoryClear()
 {
 	m_HistoryNavStarted=false;
 	m_History.clear();
+	m_InsertPos = 0;
 	m_HistoryIter = m_History.end();
 	m_HistoryPresent = m_Text.substr(m_PromptPos);
 }
