@@ -415,12 +415,6 @@ void GLEditor::Render()
 	{
 		width=m_CharWidth; //\todo fix bounding box with non-mono fonts
 
-		if (m_Text[n]=='\n')
-		{
-			width=m_CursorWidth;
-			m_LineCount++;
-		}
-
 		if (m_Position==n) // draw cursor
 		{
 			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
@@ -456,6 +450,7 @@ void GLEditor::Render()
 			xcount=0;
 			ypos-=m_CharHeight;
 			glTranslatef(0,ypos,0);
+			m_LineCount++;
 		}
 		else
 		{

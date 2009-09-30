@@ -50,47 +50,38 @@ void Repl::Print(string what)
 	int start = 0;
 	
 	string to_print;
-
-	
 	
 	do {
 		// want lesser of l and MAX_LENGTH
 		end = std::min(slop, (int)MAX_LINE_LENGTH);
 		
+		int i=end;
+		
 		// look at index end+1, if it is not a space, we are in the middle of a word
 		// so go back until we hit a " " or we are at the beginning of the line,
 		// in which case we print the whole line regardless
-/*
-		if (end < l && what.at(end) != ' ')
+
+		if (slop > (int)MAX_LINE_LENGTH)
 		{
-			bool spaceNotFound = true;
-			int i=end;
-			
-			while (spaceNotFound)
+			while ( (i > 0) && (what.at(start+i) != ' ') )
 			{
 				i--;
-				
-				cout<< "i:" << i << " /*" << what.at(i) << "*" << endl; 
-				
-				if (what.at(i) == ' ') spaceNotFound = false;
-				
-				else if (i == 0)
-				{
-					i=end-1;
-					spaceNotFound = false;
-				}
+				//cout<< "i:" << i << " /*" << what.at(start+i) << "*" << endl; 
 			}
-			end = i;
+		
+			if (i > 0)
+			{
+				end=i;
+			}
 		}
-*/		
-		//cout << "slop: " << slop << endl;
+		
 		to_print = what.substr(start,end)+"\n";
 		
 		m_Text.insert(m_InsertPos, to_print);
 		
-		m_Position += end;
-		m_PromptPos += end;
-		m_InsertPos += end;
+		m_Position += to_print.length();
+		m_PromptPos += to_print.length();
+		m_InsertPos += to_print.length();
 
 		slop -= end;
 		start += end;
@@ -105,7 +96,6 @@ void Repl::Print(string what)
 
 void Repl::PrintPrompt()
 {
-	unsigned int where = m_Text.length();
 	m_InsertPos = m_Text.length();
 	if (m_Text[m_InsertPos-1]!='\n') {
 		m_Text += '\n';
