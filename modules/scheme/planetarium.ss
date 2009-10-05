@@ -153,8 +153,8 @@
 
 (define (dome-setup-main-camera)
 	(ortho)
-    ;(let ((sm 0.5))
-    ;    (set-screen-size (vector (* 1400 sm) (* sm 1050))))
+    (let ((sm 0.5))
+        (set-screen-size (vector (* 1400 sm) (* sm 1050))))
     (set-camera-update #f) ; turn off the mouse interactive camera
     (set-camera-position (vector 0 0 -7.5)) ; sets ortho-zoom
     (set-camera (mmul 

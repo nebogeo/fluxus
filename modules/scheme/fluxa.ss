@@ -21,7 +21,7 @@
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
  crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
- 	set-bpm-mult logical-time set-on-sync)
+ 	set-bpm-mult logical-time inter pick)
 
 (define time-offset 0.0) 
 (define sync-offset 0.0)
@@ -684,6 +684,15 @@
 
 ;(define thr (thread go))
 
+;~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+; experimental things
 
+(define (inter l c)
+  (define (_ l c cc a)
+    (cond ((eq? c cc) a)
+          (else
+           (_ l c (+ cc 1) (+ a (pick l cc))))))
+  (_ l c 0 0))
 
-
+(define (pick l c)
+	(list-ref l (modulo c (length l))))
