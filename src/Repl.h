@@ -39,6 +39,7 @@ public:
 protected:
 	static string m_Prompt;
 	static string m_Banner;
+	static unsigned int MAX_LINE_LENGTH;
 	
 	unsigned int m_PromptPos;
 	unsigned int m_InsertPos;
@@ -47,6 +48,7 @@ protected:
 	void PrintPrompt();
 	void HistoryPrev();
 	void HistoryNext();
+	void HistoryClear();
 	void HistoryShow(string what);
 	void EnsureCursorVisible();
 

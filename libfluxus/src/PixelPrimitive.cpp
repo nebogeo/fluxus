@@ -383,6 +383,11 @@ void PixelPrimitive::Render()
 		glEnable(GL_TEXTURE_2D);
 	}
 
+	if (m_State.Hints & HINT_NOBLEND)
+	{
+		glDisable(GL_BLEND);
+	}
+
 	float s = m_FBOSupported ? m_FBOMaxS : 1;
 	float t = m_FBOSupported ? m_FBOMaxT : 1;
 
@@ -403,6 +408,11 @@ void PixelPrimitive::Render()
 	glEnd();
 	glEnable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
+
+	if (m_State.Hints & HINT_NOBLEND)
+	{
+		glEnable(GL_BLEND);
+	}
 
 	if (m_ReadyForDownload)
 	{

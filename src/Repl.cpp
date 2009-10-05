@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
+#include <string>
 #ifndef __APPLE__
 #include <GL/glut.h>
 #else
@@ -26,6 +27,7 @@ using namespace fluxus;
 
 string Repl::m_Banner = string("Welcome to fluxus.\nType (help) for info.\n");
 string Repl::m_Prompt = string("fluxus> ");
+unsigned int Repl::MAX_LINE_LENGTH = 80;
 
 Repl::Repl() : 
 m_InsertPos(0), 
@@ -37,24 +39,63 @@ m_HistoryNavStarted(false)
 }
 
 // FIXME: wrap long lines
+// how? break before a "(" I would say -Evan
+
 void Repl::Print(string what)
 {
-	unsigned int l = what.length();
+	int l = what.length();
+	
+	int slop = l;
+	int end = slop;
+	int start = 0;
+	
+	string to_print;
+	
+	do {
+		// want lesser of l and MAX_LENGTH
+		end = std::min(slop, (int)MAX_LINE_LENGTH);
+		
+		int i=end;
+		
+		// look at index end+1, if it is not a space, we are in the middle of a word
+		// so go back until we hit a " " or we are at the beginning of the line,
+		// in which case we print the whole line regardless
 
-	m_Text.insert(m_InsertPos, what);
+		if (slop > (int)MAX_LINE_LENGTH)
+		{
+			while ( (i > 0) && (what.at(start+i) != ' ') )
+			{
+				i--;
+				//cout<< "i:" << i << " /*" << what.at(start+i) << "*" << endl; 
+			}
+		
+			if (i > 0)
+			{
+				end=i;
+			}
+		}
+		
+		to_print = what.substr(start,end)+"\n";
+		
+		m_Text.insert(m_InsertPos, to_print);
+		
+		m_Position += to_print.length();
+		m_PromptPos += to_print.length();
+		m_InsertPos += to_print.length();
 
-	m_Position += l;
-	m_PromptPos += l;
-	m_InsertPos += l;
-
+		slop -= end;
+		start += end;
+		
+		cout << to_print;
+		
+	}
+	while (slop > 0);
+	
 	EnsureCursorVisible();
-
-	cout << what;
 }
 
 void Repl::PrintPrompt()
 {
-	unsigned int where = m_Text.length();
 	m_InsertPos = m_Text.length();
 	if (m_Text[m_InsertPos-1]!='\n') {
 		m_Text += '\n';
@@ -81,6 +122,15 @@ void Repl::Print(Scheme_Object *obj)
 void Repl::Handle(int button, int key, int special, int state, 
 		  int x, int y, int mod)
 {
+	
+	if (mod&GLUT_ACTIVE_CTRL && state)
+	{
+		switch(key)
+		{
+			case 3: HistoryClear(); break;
+		}
+	}
+	
 	if (key!=0) {
 		if ((m_Position <= m_PromptPos && key == GLEDITOR_BACKSPACE) ||
 			(m_Position < m_PromptPos && key == GLEDITOR_DELETE) ||
@@ -93,7 +143,7 @@ void Repl::Handle(int button, int key, int special, int state,
 		if (m_Position < m_PromptPos && key != GLEDITOR_COPY) 
 			m_Position = m_Text.length();
 	}
-
+	
 	if (special != 0) {
 		if (m_Position >= m_PromptPos) {
 			switch(special)
@@ -124,6 +174,16 @@ void Repl::Handle(int button, int key, int special, int state,
 
     GLEditor::Handle(button, key, special, state, x, y, mod);
 }
+
+void Repl::HistoryClear()
+{
+	m_HistoryNavStarted=false;
+	m_History.clear();
+	m_InsertPos = 0;
+	m_HistoryIter = m_History.end();
+	m_HistoryPresent = m_Text.substr(m_PromptPos);
+}
+
 
 void Repl::HistoryPrev()
 {
