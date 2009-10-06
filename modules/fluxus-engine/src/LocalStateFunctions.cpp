@@ -1322,6 +1322,21 @@ Scheme_Object *hint_noblend(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// hint-nozwrite
+// Returns: void
+// Description:
+// Disables z writes. Useful for sometimes hacking transparency.
+// Example:
+// (clear)
+// (hint-noblend)
+// EndFunctionDoc
+Scheme_Object *hint_nozwrite(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->State()->Hints|=HINT_NOZWRITE;
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // line-pattern factor pattern
 // Returns: void
 // Description:
@@ -2696,6 +2711,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
     scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
     scheme_add_global("hint-normalize",scheme_make_prim_w_arity(hint_normalize,"hint-normalize",0,0), env);
     scheme_add_global("hint-noblend",scheme_make_prim_w_arity(hint_noblend,"hint-noblend",0,0), env);
+    scheme_add_global("hint-nozwrite",scheme_make_prim_w_arity(hint_nozwrite,"hint-nozwrite",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
 	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
