@@ -142,7 +142,7 @@ int FluxAudio::Load(const string &Filename)
 
 	ALsizei size,bits,freq,format;
 	ALboolean err;
-	static void *data = NULL;
+	short *data = NULL;
 	unsigned int ID = 0;
 	alGenBuffers(1, &ID);
 	m_Loaded[Filename]=ID;
@@ -156,7 +156,7 @@ int FluxAudio::Load(const string &Filename)
 	{
 		unsigned short channels=0;
 		unsigned int usize=0;
-		data = (void*)LoadWav(file, usize, channels);
+		data = LoadWav(file, usize, channels);
 
 		if (channels==1) format=AL_FORMAT_MONO16;
 		else if (channels==2) format=AL_FORMAT_STEREO16;
@@ -178,6 +178,8 @@ int FluxAudio::Load(const string &Filename)
 		}
 
 		alBufferData(ID, format, data, size, freq);
+		delete data;
+		
 		if( alGetError() != AL_NO_ERROR )
 		{
 			cerr<<"Could not BufferData "<<Filename<<endl;
