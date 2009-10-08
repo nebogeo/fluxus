@@ -1313,7 +1313,24 @@ Scheme_Object *hint_normalize(int argc, Scheme_Object **argv)
 // a pixelprimitive.
 // Example:
 // (clear)
+// (hint-wire)
+// (scale #(9.8 8 1))
+// (translate #(-1 -.5 0))
+// (define p0 (build-pixels 512 512 #t))
+// (with-pixels-renderer p0
+//    (hint-ignore-depth)
+//    (with-primitive (build-particles 2048)
+//        (pdata-map! (lambda (p) (vmul (crndvec) 2)) "p")
+//        (pdata-map! (lambda (c) #(1 .5)) "c")))
+//
 // (hint-noblend)
+// (translate #(1 0 0))
+// (define p1 (build-pixels 512 512 #t))
+// (with-pixels-renderer p1
+//    (hint-ignore-depth)
+//    (with-primitive (build-particles 2048)
+//        (pdata-map! (lambda (p) (vmul (crndvec) 2)) "p")
+//        (pdata-map! (lambda (c) #(1 .5)) "c")))
 // EndFunctionDoc
 Scheme_Object *hint_noblend(int argc, Scheme_Object **argv)
 {
