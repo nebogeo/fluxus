@@ -33,7 +33,7 @@ public:
 	virtual void Handle(int button, int key, int special, int state, 
 			    int x, int y, int mod);
 	
-	void Print(string what);
+	void Print(const string &what);
 	void Print(Scheme_Object *obj);
 
 protected:

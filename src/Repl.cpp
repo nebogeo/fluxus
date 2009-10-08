@@ -41,7 +41,7 @@ m_HistoryNavStarted(false)
 // FIXME: wrap long lines
 // how? break before a "(" I would say -Evan
 
-void Repl::Print(string what)
+void Repl::Print(const string &what)
 {
 	int l = what.length();
 	
@@ -75,8 +75,10 @@ void Repl::Print(string what)
 			}
 		}
 		
-		to_print = what.substr(start,end)+"\n";
+		to_print = what.substr(start,end);
 		
+		if (slop > (int)MAX_LINE_LENGTH) to_print+="\n";
+	
 		m_Text.insert(m_InsertPos, to_print);
 		
 		m_Position += to_print.length();
