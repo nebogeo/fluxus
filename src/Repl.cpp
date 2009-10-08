@@ -32,7 +32,8 @@ unsigned int Repl::MAX_LINE_LENGTH = 80;
 Repl::Repl() : 
 m_InsertPos(0), 
 m_History(), 
-m_HistoryNavStarted(false)
+m_HistoryNavStarted(false),
+m_LinePos(0)
 {
 	Print(m_Banner);
 	PrintPrompt();
@@ -41,7 +42,7 @@ m_HistoryNavStarted(false)
 // FIXME: wrap long lines
 // how? break before a "(" I would say -Evan
 
-void Repl::Print(string what)
+void Repl::Print(const string &what)
 {
 	int l = what.length();
 	
@@ -51,45 +52,25 @@ void Repl::Print(string what)
 	
 	string to_print;
 	
-	do {
-		// want lesser of l and MAX_LENGTH
-		end = std::min(slop, (int)MAX_LINE_LENGTH);
-		
-		int i=end;
-		
-		// look at index end+1, if it is not a space, we are in the middle of a word
-		// so go back until we hit a " " or we are at the beginning of the line,
-		// in which case we print the whole line regardless
-
-		if (slop > (int)MAX_LINE_LENGTH)
+	for (string::const_iterator i=what.begin(); i!=what.end(); ++i)
+	{
+		m_LinePos++;
+		if (*i=='\n') m_LinePos=0;
+		if (m_LinePos>=MAX_LINE_LENGTH)
 		{
-			while ( (i > 0) && (what.at(start+i) != ' ') )
-			{
-				i--;
-				//cout<< "i:" << i << " /*" << what.at(start+i) << "*" << endl; 
-			}
-		
-			if (i > 0)
-			{
-				end=i;
-			}
+			to_print+="\n";
+			m_LinePos=0;
 		}
-		
-		to_print = what.substr(start,end)+"\n";
-		
-		m_Text.insert(m_InsertPos, to_print);
-		
-		m_Position += to_print.length();
-		m_PromptPos += to_print.length();
-		m_InsertPos += to_print.length();
-
-		slop -= end;
-		start += end;
-		
-		cout << to_print;
-		
+		to_print+=*i;
 	}
-	while (slop > 0);
+	
+	m_Text.insert(m_InsertPos, to_print);
+		
+	m_Position += to_print.length();
+	m_PromptPos += to_print.length();
+	m_InsertPos += to_print.length();
+	
+	cout << to_print;
 	
 	EnsureCursorVisible();
 }

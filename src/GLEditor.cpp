@@ -118,7 +118,8 @@ m_BBMaxX(0),
 m_BBMaxY(0),
 m_Width(0),
 m_Height(0),
-m_Delta(0.0),
+m_Delta(0.0f),
+m_Flash(0.0f),
 m_BlowupCursor(false),
 m_Blowup(0.0f)
 {

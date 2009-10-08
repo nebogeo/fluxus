@@ -46,6 +46,13 @@ GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fr
 
 GLSLShaderPair::~GLSLShaderPair()
 {
+	#ifdef GLSL
+	if (!GLSLShader::m_Enabled)
+	{
+		if (m_VertexShader!=NULL) glDeleteShader(m_VertexShader);
+		if (m_FragmentShader!=NULL) glDeleteShader(m_FragmentShader);
+	}
+	#endif
 }
 
 bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsource)

@@ -162,6 +162,12 @@ void Interpreter::Initialise()
     MZ_GC_UNREG();
 }
 
+void Interpreter::Shutdown()
+{
+	delete m_Repl;
+}
+
+
 void Interpreter::SetRepl(Repl *s)
 {
 	m_Repl=s;

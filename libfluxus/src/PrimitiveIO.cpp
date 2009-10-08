@@ -27,7 +27,8 @@ PrimitiveIO::PrimitiveIO()
 }
 
 PrimitiveIO::~PrimitiveIO()
-{
+{	
+	ClearGeometryCache();
 }
 	
 Primitive *PrimitiveIO::Read(const string &filename, bool cache)

@@ -48,6 +48,7 @@ namespace Fluxus
 #define HINT_FRUSTUM_CULL   0x00010000
 #define HINT_NORMALIZE      0x00020000
 #define HINT_NOBLEND        0x00040000
+#define HINT_NOZWRITE       0x00080000
 
 #define MAX_TEXTURES  8
 

@@ -21,13 +21,18 @@
 #include "TurtleBuilder.h"
 #include "PFuncContainer.h"
 
+#ifndef FLUXUS_EENGINE
+#define FLUXUS_EENGINE
+
 class Engine
 {
 public:
+	Engine();
+	~Engine();
+	
 	static Engine *Get() 
 	{
-		if (!m_Engine) m_Engine=new Engine;
-		return m_Engine;
+		return &m_Engine;
 	}
 	
 	class StackItem
@@ -77,14 +82,14 @@ public:
 	Fluxus::State *State();
 
 private:
-	Engine();
-	~Engine();
+	
+	static Engine m_Engine;
 	
 	StackItem *StackTop();
-	
-	static Engine *m_Engine;
-	
+		
 	deque<StackItem> m_RendererStack;
 	Fluxus::TurtleBuilder m_Turtle;
 	Fluxus::PFuncContainer m_PFuncContainer;
 };
+
+#endif
