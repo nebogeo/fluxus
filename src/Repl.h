@@ -57,6 +57,7 @@ protected:
 	deque<string>::iterator m_HistoryIter;
 	bool 					m_HistoryNavStarted;
 	string 					m_HistoryPresent;
+	unsigned int			m_LinePos;
 };
 
 }
