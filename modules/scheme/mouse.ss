@@ -12,9 +12,9 @@
 
 (provide 
  get-line-from-xy
- get-line-from-mouse
- mouse-pos
  world-pos
+ mouse-pos
+ mouse-pos-z
  2dvec->angle)
 
 
@@ -37,31 +37,6 @@
 
 
 ;; StartFunctionDoc-en
-;; get-line-from-mouse
-;; Returns: list of 2 vectors (start position, end position)
-;; Description:
-;; Gets a line representing a segment of the projection of the mouse into 3D space.
-;; Example:  
-;; EndFunctionDoc 
-
-(define (get-line-from-mouse)
-   (get-line-from-xy (mouse-x mouse-y 10)))
-
-
-;; StartFunctionDoc-en
-;; mouse-pos
-;; Returns: vector
-;; Description:
-;; Gets the mouse position in 3D world space.
-;; Example:  
-;; EndFunctionDoc 
-
-; we'll just use the end of the projection line here
-(define (mouse-pos)
-    (cadr (get-line-from-mouse)))
-
-
-;; StartFunctionDoc-en
 ;; world-pos
 ;; Returns: vector
 ;; Description:
@@ -76,6 +51,32 @@
 
 
 ;; StartFunctionDoc-en
+;; mouse-pos
+;; Returns: vector
+;; Description:
+;; Gets the mouse position in 3D world space.
+;; Example:  
+;; EndFunctionDoc 
+
+; we'll just use the end of the projection line here
+(define (mouse-pos)
+    (world-pos (mouse-x) (mouse-y) 10))
+
+
+;; StartFunctionDoc-en
+;; mouse-pos-z
+;; Returns: vector
+;; Description:
+;; Gets the mouse position in 3D world space at depth z.
+;; Example:  
+;; EndFunctionDoc 
+
+; we'll just use the end of the projection line here
+(define (mouse-pos-z z)
+    (world-pos (mouse-x) (mouse-y) z))
+
+
+;; StartFunctionDoc-en
 ;; 2dvec->angle x y
 ;; Returns: float
 ;; Description:
@@ -84,8 +85,8 @@
 ;; EndFunctionDoc 
 
 (define (2dvec->angle x y)
-    (let ((q (/ 3.141 2)))
-        (when (zero? y) (set! y 0.0001))
+    (let ((q (/ 3.1415 2)))
+        (when (zero? y) (set! y 0.0000001))
         (cond 
             [(>= y 0)
                 (fmod (* (+ q q q (- q (atan (/ x y)))) 57.2957795) 360)]
