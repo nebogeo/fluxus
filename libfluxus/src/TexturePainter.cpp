@@ -28,6 +28,11 @@ TexturePainter *TexturePainter::m_Singleton=NULL;
 TexturePainter::TexturePainter() :
 m_MultitexturingEnabled(true)
 {
+	if (glewInit() != GLEW_OK)
+	{
+		cerr << "ERROR Unable to check OpenGL extensions" << endl;
+	}
+
 	#ifndef DISABLE_MULTITEXTURING
 	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL) || (glClientActiveTexture == NULL))
 	{
