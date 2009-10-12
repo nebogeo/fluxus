@@ -330,7 +330,7 @@ if env['PLATFORM'] == 'win32':
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 else:
-	SConscript(dirs = Split("libfluxus modules fluxa"),
+	SConscript(dirs = Split("libfluxus modules fluxa addons"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 

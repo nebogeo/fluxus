@@ -1,0 +1,21 @@
+fluxus-video - video texture module for fluxus
+(C) 2009 Gabor Papp, http://mndl.hu/
+
+Video module based on the video code of openFrameworks
+(http://www.openframeworks.cc/).
+
+Building and installing instructions
+------------------------------------
+
+Fluxus-video requires scons and GStreamer on Linux and Quicktime on OSX.
+
+Before building on Linux make sure to install gstreamer-devel-0.10,
+gstreamer-plugins-base-devel-0.10, gstreamer-plugins-good-devel, and
+gstreamer-plugins-bad-devel.
+
+To build, go to the fluxus-video folder and type:
+scons
+
+To install type:
+sudo scons install
+

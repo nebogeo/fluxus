@@ -49,8 +49,8 @@ GLSLShaderPair::~GLSLShaderPair()
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled)
 	{
-		if (m_VertexShader!=NULL) glDeleteShader(m_VertexShader);
-		if (m_FragmentShader!=NULL) glDeleteShader(m_FragmentShader);
+		if (m_VertexShader!=0) glDeleteShader(m_VertexShader);
+		if (m_FragmentShader!=0) glDeleteShader(m_FragmentShader);
 	}
 	#endif
 }
