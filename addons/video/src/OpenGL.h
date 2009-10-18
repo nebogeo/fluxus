@@ -9,15 +9,21 @@
 extern "C" {
 
 #ifndef __APPLE__
+
+#define GL_GLEXT_PROTOTYPES /* required on linux to get glGenerateMipmapEXT from glext.h */
+
 #include <GL/glut.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glext.h>
+
 #else
+
 #include <GLUT/glut.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
+
 #endif
 }
 

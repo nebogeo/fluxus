@@ -38,23 +38,23 @@ elif env['PLATFORM'] == 'posix':
 if env['PLATFORM'] == 'darwin':
 	Frameworks += ['PLT_MrEd']
 
-print 'Checking requirements for', Target, '...'
-
 # check installed libraries
 if not GetOption('clean'):
-        conf = Configure(env)
-        for (lib, headers) in LibList:
-                if not conf.CheckHeader(headers):
-                        print "ERROR: '%s' must be installed!" % (lib)
-                        Requirements = False
+	print 'Checking requirements for', Target, '...'
+	conf = Configure(env)
+	for (lib, headers) in LibList:
+		if not conf.CheckHeader(headers):
+			print "ERROR: '%s' must be installed!" % (lib)
+			Requirements = False
 
-        env = conf.Finish()
+	env = conf.Finish()
 
-        # ... but we shouldn't forget to add them to LIBS manually
-        Libs += [rec[0] for rec in LibList]
+	# ... but we shouldn't forget to add them to LIBS manually
+	Libs += [rec[0] for rec in LibList]
 
 if Requirements:
-	print Target, 'requirements... yes'
+	if not GetOption('clean'):
+		print Target, 'requirements... yes'
 	output = env.SharedLibrary(source = Source, 
 					  target = Target,
 					  LIBS = Libs,
@@ -64,6 +64,6 @@ if Requirements:
 	if not static_modules:
 		env.Install(BinaryModulesLocation, output)
 else:
-	print Target, 'requirements... NO'
-
+	if not GetOption('clean'):
+		print Target, 'requirements... NO'
 
