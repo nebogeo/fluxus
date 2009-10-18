@@ -231,7 +231,7 @@ ofVideoPlayer::ofVideoPlayer (){
 		}
 		if(!plugin_registered){
 			gst_plugin_register_static(GST_VERSION_MAJOR, GST_VERSION_MINOR,
-						"appsink", "Element application sink",
+						"appsink", const_cast<gchar *>("Element application sink"),
 						appsink_plugin_init, "0.1", "LGPL", "ofVideoPlayer", "openFrameworks",
 						"http://openframeworks.cc/");
 			plugin_registered=true;

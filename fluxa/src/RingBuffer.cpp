@@ -111,7 +111,7 @@ unsigned int RingBuffer::WriteSpace()
 	unsigned int read = m_ReadPos;
 	unsigned int write = m_WritePos;
 	
-	if (write > read) return (read - write + m_Size) & m_SizeMask - 1;
+	if (write > read) return (read - write + m_Size) & (m_SizeMask - 1);
 	if (write < read) return (read - write) - 1;
 	return m_Size - 1;
 }

@@ -162,11 +162,11 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 		Trace::Stream<<"Error, unknown pixel format"<<endl;
 		fclose (f);
 		png_destroy_write_struct (&ppng, NULL);
-		return;		
+		return;
 	}
 
-	atext[0].key = "title";
-	atext[0].text = "made with fluxus";
+	atext[0].key = const_cast<char *>("title");
+	atext[0].text = const_cast<char *>("made with fluxus");
 	atext[0].compression = PNG_TEXT_COMPRESSION_NONE;
 	#ifdef PNG_iTXt_SUPPORTED
 	text_ptr[0].lang = NULL;
