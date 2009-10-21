@@ -30,6 +30,9 @@ SceneGraph::~SceneGraph()
 {
 }
 
+static int numrendered=0;
+static int highwater=0;
+
 void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode)
 {
 	glGetFloatv(GL_MODELVIEW_MATRIX,m_TopTransform.arr());
@@ -42,6 +45,8 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode re
 	
 	unsigned int cameracode = 1<<camera;
 
+	m_NumRendered=0;
+
 	// render all the children of the root
 	for (vector<Node*>::iterator i=m_Root->Children.begin(); i!=m_Root->Children.end(); ++i)
 	{
@@ -51,6 +56,8 @@ void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode re
 	// now render the depth sorted primitives:
 	m_DepthSorter.Render();
 	m_DepthSorter.Clear();
+	
+	if (m_NumRendered>m_HighWater) m_HighWater=m_NumRendered;
 }
 
 void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode)
@@ -82,6 +89,7 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 		glLoadMatrixf(m_TopTransform.arr());
 	}
 
+
 	node->Prim->ApplyState();
 
 	if (!(node->Prim->GetState()->Hints & HINT_FRUSTUM_CULL) || FrustumClip(node))
@@ -99,6 +107,7 @@ void SceneGraph::RenderWalk(SceneNode *node,  int depth, unsigned int cameracode
 			glPopName();
 		}
 
+		m_NumRendered++;
 		depth++;
 
 		for (vector<Node*>::iterator i=node->Children.begin(); i!=node->Children.end(); ++i)

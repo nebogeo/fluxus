@@ -55,9 +55,6 @@ void RibbonPrimitive::Render()
 {
 	if (m_VertData->size()<2) return;
 
-	dMatrix ModelView;
-	glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
-
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 	if (m_State.Hints & HINT_AALIAS) glEnable(GL_LINE_SMOOTH);
 
@@ -71,10 +68,6 @@ void RibbonPrimitive::Render()
 
 	if (m_State.Hints & HINT_SOLID)
 	{
-		dVector CameraDir(0,0,1);
-		CameraDir=ModelView.inverse().transform_no_trans(CameraDir);
-		CameraDir.normalise();
-
 		glBegin(GL_TRIANGLE_STRIP);
 		if (m_State.Hints & HINT_VERTCOLS)
 		{
@@ -88,7 +81,7 @@ void RibbonPrimitive::Render()
 					tx=1.0f;
 				}
 				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
-				dVector up=line.cross(CameraDir);
+				dVector up=line.cross(m_SceneInfo.m_CameraVec);
 				up.normalise();
 
 				dVector topnorm=up;
@@ -117,7 +110,7 @@ void RibbonPrimitive::Render()
 					tx=1.0f;
 				}
 				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
-				dVector up=line.cross(CameraDir);
+				dVector up=line.cross(m_SceneInfo.m_CameraVec);
 				up.normalise();
 
 				dVector topnorm=up;

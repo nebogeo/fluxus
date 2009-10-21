@@ -18,6 +18,8 @@
 
 using namespace Fluxus;
 
+Primitive::SceneInfo Primitive::m_SceneInfo;
+
 Primitive::Primitive() :
 m_IsPhysical(false),
 m_Visibility(0xffffffff),

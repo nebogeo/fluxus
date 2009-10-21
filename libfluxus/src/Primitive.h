@@ -79,6 +79,17 @@ public:
 	void Selectable(bool s)			{ m_Selectable=s; }
 	///@}
 
+	// Information which the renderer can pass to primitives,
+	// are used a lot and don't need to recalculated repeatedly
+	class SceneInfo
+	{
+	public:
+		dVector m_CameraVec;
+		dVector m_CameraUp;
+	};
+	
+	static SceneInfo m_SceneInfo;
+
 protected:
 	State m_State;
 
