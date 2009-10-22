@@ -148,6 +148,12 @@ void PolyGlyph::BuildGeometry(const FT_GlyphSlot glyph, GlyphGeometry &geo)
 
 	gluTessEndPolygon(t);
 	gluDeleteTess(t);
+	
+	for (vector<double*>::iterator i=geo.m_CombinedVerts.begin(); i!=geo.m_CombinedVerts.end(); ++i)
+	{
+		delete[] *i;
+	}
+	geo.m_CombinedVerts.clear();
 }
 
 void __stdcall PolyGlyph::TessError( GLenum errCode, GlyphGeometry* geo)
@@ -165,7 +171,12 @@ void __stdcall PolyGlyph::TessVertex( void* data, GlyphGeometry* geo)
 
 void __stdcall PolyGlyph::TessCombine( double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
 {
-   outData=vertex_data;
+	double *out = new double[3];
+	out[0]=coords[0];
+	out[1]=coords[1];
+	out[2]=coords[2];
+	geo->m_CombinedVerts.push_back(out);
+	*outData=out;
 }
 
 
