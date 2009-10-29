@@ -16,6 +16,7 @@
 
 #include <iostream>
 #include <cstring>
+#include <cstdio>
 
 #include "FluxAudio.h"
 
