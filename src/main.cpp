@@ -189,6 +189,9 @@ int run(Scheme_Env* se, int argc, char *argv[])
 	srand(time(NULL));
 
 	unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
+#ifdef MULTISAMPLE
+	flags |= GLUT_MULTISAMPLE;
+#endif
 #ifdef ACCUM_BUFFER
 	flags|=GLUT_ACCUM;
 #endif

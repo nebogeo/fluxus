@@ -105,6 +105,9 @@ if ARGUMENTS.get("STEREODEFAULT","0")=="1":
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
         env.Append(CCFLAGS=' -DACCUM_BUFFER')
 
+if ARGUMENTS.get("MULTISAMPLE","0")=="1":
+        env.Append(CCFLAGS=' -DMULTISAMPLE')
+
 if ARGUMENTS.get("MULTITEXTURING","1")=="0":
         env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
 
