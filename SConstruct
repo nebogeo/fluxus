@@ -426,7 +426,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                                    ['modules/fluxus-osc/fluxus-osc_ss.dylib',
                                                        'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-osc_ss.dylib'],
 												   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib']],
+													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib'],
+												   ['addons/video/fluxus-video_ss.dylib',
+													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-video_ss.dylib']],
                                         typecode='APPL',
                                         icon_file='macos/fluxus.icns'))
         # build dmg
