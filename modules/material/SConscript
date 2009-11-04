@@ -36,7 +36,8 @@ Textures =   ["textures/gradient.png",
               "textures/test.png",
               "textures/track.png",
               "textures/transp.png",
-              "textures/lights.png"]
+              "textures/lights.png",
+			  "textures/splat.png"]
 
 TxtsInvaders = ["textures/invaders/barricade.png",
 			  "textures/invaders/invader00.png",
