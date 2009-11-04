@@ -83,9 +83,10 @@ void ParticlePrimitive::Render()
 
 	if (m_State.Hints & HINT_SOLID)
 	{
-		dVector across=m_SceneInfo.m_CameraUp.cross(m_SceneInfo.m_CameraVec);
+		dVector cameradir=GetLocalCameraDir();
+		dVector across=GetLocalCameraUp().cross(cameradir);
 		across.normalise();
-		dVector down=across.cross(m_SceneInfo.m_CameraVec);
+		dVector down=across.cross(cameradir);
 		down.normalise();
 		
 		if (m_State.Hints & HINT_DEPTH_SORT)

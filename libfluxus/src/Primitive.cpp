@@ -136,4 +136,19 @@ void Primitive::RenderBoundingBox()
 	glEnd();
 	glEnable(GL_LIGHTING);
 }
+	
+void Primitive::SetSceneInfo(const dVector &dir, const dVector &up) 
+{ 
+	m_SceneInfo.m_CameraVec=dir; 
+	m_SceneInfo.m_CameraUp=up; 
+}
+			
+dVector Primitive::GetLocalCameraDir()
+{
+	return m_State.Transform.inverse().transform_no_trans(m_SceneInfo.m_CameraVec);
+}
 
+dVector Primitive::GetLocalCameraUp()
+{
+	return m_State.Transform.inverse().transform_no_trans(m_SceneInfo.m_CameraUp);
+}

@@ -20,7 +20,9 @@
 
 using namespace Fluxus;
 
-SceneGraph::SceneGraph()
+SceneGraph::SceneGraph() :
+m_NumRendered(0),
+m_HighWater(0)
 {
 	// need to reset to having a root node present
 	Clear();
@@ -29,9 +31,6 @@ SceneGraph::SceneGraph()
 SceneGraph::~SceneGraph()
 {
 }
-
-static int numrendered=0;
-static int highwater=0;
 
 void SceneGraph::Render(ShadowVolumeGen *shadowgen, unsigned int camera, Mode rendermode)
 {

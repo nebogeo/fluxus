@@ -81,7 +81,7 @@ void RibbonPrimitive::Render()
 					tx=1.0f;
 				}
 				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
-				dVector up=line.cross(m_SceneInfo.m_CameraVec);
+				dVector up=line.cross(GetLocalCameraDir());
 				up.normalise();
 
 				dVector topnorm=up;
@@ -110,7 +110,7 @@ void RibbonPrimitive::Render()
 					tx=1.0f;
 				}
 				else line=(*m_VertData)[n+1]-(*m_VertData)[n];
-				dVector up=line.cross(m_SceneInfo.m_CameraVec);
+				dVector up=line.cross(GetLocalCameraDir());
 				up.normalise();
 
 				dVector topnorm=up;

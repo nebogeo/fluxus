@@ -352,10 +352,14 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	// set the scene info so all primitives can read it (taken from ribbon prim)
 	dMatrix ModelView;
 	glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
-	Primitive::m_SceneInfo.m_CameraVec=ModelView.inverse().transform_no_trans(dVector(0,0,1));
-	Primitive::m_SceneInfo.m_CameraVec.normalise();
-	Primitive::m_SceneInfo.m_CameraUp=ModelView.transform_no_trans(dVector(0,1,0));
-	Primitive::m_SceneInfo.m_CameraUp.normalise();
+	
+	Primitive::SetSceneInfo(ModelView.inverse().transform_no_trans(dVector(0,0,1)),
+							ModelView.transform_no_trans(dVector(0,1,0)));
+	
+	//Primitive::m_SceneInfo.m_CameraVec=ModelView.inverse().transform_no_trans(dVector(0,0,1));
+	//Primitive::m_SceneInfo.m_CameraVec.normalise();
+	//Primitive::m_SceneInfo.m_CameraUp=ModelView.transform_no_trans(dVector(0,1,0));
+	//Primitive::m_SceneInfo.m_CameraUp.normalise();
 	
 	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);
 }

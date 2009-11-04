@@ -79,6 +79,8 @@ public:
 	void Selectable(bool s)			{ m_Selectable=s; }
 	///@}
 
+	static void SetSceneInfo(const dVector &dir, const dVector &up);
+									
 	// Information which the renderer can pass to primitives,
 	// are used a lot and don't need to recalculated repeatedly
 	class SceneInfo
@@ -88,12 +90,17 @@ public:
 		dVector m_CameraUp;
 	};
 	
+	
 	static SceneInfo m_SceneInfo;
-
+	
 protected:
 	State m_State;
 
+	dVector GetLocalCameraDir();
+	dVector GetLocalCameraUp();
+
 private:
+
 
 	///\todo: make these into an enum/bitfield?
 	bool  m_IsPhysical;
