@@ -34,7 +34,7 @@ class FFGLParameter
 {
 public:
 	FFGLParameter() : id(-1), type('\0') {}
-	FFGLParameter(int id, char &type, ParameterDefaultValue &defvalue)
+	FFGLParameter(int id, char type, ParameterDefaultValue &defvalue)
 		{ this->id = id; this->type = type; this->defvalue = defvalue; }
 
 	int id;
