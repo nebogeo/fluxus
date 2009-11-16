@@ -5,6 +5,8 @@
 	#include "ofV4LUtils.h"
 #endif
 
+using namespace std;
+
 //--------------------------------------------------------------------
 ofVideoGrabber::ofVideoGrabber(){
 
