@@ -12,18 +12,13 @@
 	#include <ApplicationServices/ApplicationServices.h>
 #endif
 
-#ifdef __APPLE__
-	#define OF_VIDEO_CAPTURE_QUICKTIME
-#endif
+//#include "ofConstants.h"
 
 #ifdef __linux__
 	#define OF_VIDEO_PLAYER_GSTREAMER
 #else
 	#define OF_VIDEO_PLAYER_QUICKTIME
 #endif
-
-//#include "ofConstants.h"
-
 
 #ifdef OF_VIDEO_PLAYER_GSTREAMER
 	#include <gst/gst.h>

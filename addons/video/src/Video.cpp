@@ -51,16 +51,22 @@ static int check_gl_errors(const char *call)
 
 #endif
 
-Video::Video(string name) :
+VideoTexture::VideoTexture() :
 	texture_id(0)
+{}
+
+VideoTexture::~VideoTexture()
 {
-	player.loadMovie(name);
+	if (texture_id != 0)
+	{
+		glDeleteTextures(1, &texture_id);
+	}
+}
 
-	video_width = player.getWidth();
-	video_height = player.getHeight();
-
-	tex_width = 1 << (unsigned)ceil(log2(video_width));
-	tex_height = 1 << (unsigned)ceil(log2(video_height));
+void VideoTexture::gen_texture()
+{
+	tex_width = 1 << (unsigned)ceil(log2(width));
+	tex_height = 1 << (unsigned)ceil(log2(height));
 
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &texture_id);
@@ -78,32 +84,12 @@ Video::Video(string name) :
 	glDisable(GL_TEXTURE_2D);
 }
 
-Video::~Video()
+void VideoTexture::upload(unsigned char *pixels)
 {
-	player.closeMovie();
-
-	if (texture_id != 0)
-	{
-		glDeleteTextures(1, &texture_id);
-	}
-
-}
-
-void Video::update()
-{
-	player.update();
-
-	if (!player.isFrameNew())
-	{
-		return;
-	}
-
-	unsigned char *pixels = player.getPixels();
-
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture_id);
 
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, video_width, video_height,
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
 			GL_RGB, GL_UNSIGNED_BYTE, pixels);
 	CHECK_GL_ERRORS("update: glTexImage2d");
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
@@ -117,17 +103,79 @@ void Video::update()
  * Returns video texture coordinates
  * \return 2x3 floats (top-left, bottom-right)
  **/
-float *Video::video_tcoords()
+float *VideoTexture::get_tcoords()
 {
 	static float t[6];
 
 	t[0] = 0.0;
 	t[1] = 0.0;
 	t[2] = 0.0;
-	t[3] = (float)(video_width - 1)/(float)tex_width;
-	t[4] = (float)(video_height - 1)/(float)tex_height;
+	t[3] = (float)(width - 1)/(float)tex_width;
+	t[4] = (float)(height - 1)/(float)tex_height;
 	t[5] = 0.0;
 
 	return t;
+}
+
+
+Video::Video(string name)
+{
+	player.loadMovie(name);
+
+	width = player.getWidth();
+	height = player.getHeight();
+
+	gen_texture();
+}
+
+Video::~Video()
+{
+	player.closeMovie();
+}
+
+void Video::update()
+{
+	player.update();
+
+	if (!player.isFrameNew())
+	{
+		return;
+	}
+
+	unsigned char *pixels = player.getPixels();
+
+	upload(pixels);
+}
+
+
+Camera::Camera(unsigned device_id, int w, int h)
+{
+	camera.setDeviceID(device_id);
+	camera.initGrabber(w, h, false);
+	// TODO: handle not successful initialization
+	width = camera.getWidth();
+	height = camera.getHeight();
+
+	gen_texture();
+}
+
+Camera::~Camera()
+{
+	cerr << "device closed" << endl;
+	camera.close();
+}
+
+void Camera::update()
+{
+	camera.update();
+
+	if (!camera.isFrameNew())
+	{
+		return;
+	}
+
+	unsigned char *pixels = camera.getPixels();
+
+	upload(pixels);
 }
 

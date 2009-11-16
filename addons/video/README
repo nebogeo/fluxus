@@ -1,4 +1,4 @@
-fluxus-video - video texture module for fluxus
+fluxus-video - video texture and capture module for fluxus
 (C) 2009 Gabor Papp, http://mndl.hu/
 
 Video module based on the video code of openFrameworks
@@ -7,15 +7,14 @@ Video module based on the video code of openFrameworks
 Building and installing instructions
 ------------------------------------
 
-Fluxus-video requires scons and GStreamer on Linux and Quicktime on OSX.
+Fluxus-video requires scons and GStreamer, unicap, ffmpeg on Linux and
+Quicktime on OSX.
 
 Before building on Linux make sure to install gstreamer-devel-0.10,
 gstreamer-plugins-base-devel-0.10, gstreamer-plugins-good-devel, and
-gstreamer-plugins-bad-devel.
+gstreamer-plugins-bad-devel, unicap-devel, ffmpeg-devel
 
-To build, go to the fluxus-video folder and type:
-scons
-
-To install type:
-sudo scons install
+To build and install just type 'scons' and 'sudo scons install' in the main
+fluxus directory and if every package requirements are met the video module is
+built and installed.
 

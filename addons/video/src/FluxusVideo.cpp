@@ -23,7 +23,11 @@
 
 using namespace std;
 
-map<int, Video *> Videos;
+static map<int, Video *> Videos; // texture handle cache
+static map<string, Video *> VideoFilenames; // video filename cache
+
+static map<int, Camera *> Cameras;
+static map<unsigned, Camera *> CameraDevices; // device id cache
 
 Scheme_Object *clear(int argc, Scheme_Object **argv)
 {
@@ -32,8 +36,36 @@ Scheme_Object *clear(int argc, Scheme_Object **argv)
 		delete i->second;
 	}
 	Videos.clear();
+	VideoFilenames.clear();
 
 	return scheme_void;
+}
+
+Video *find_video(string func, Scheme_Object *sid)
+{
+	unsigned id = (unsigned)scheme_real_to_double(sid);
+	map<int, Video *>::iterator i = Videos.find(id);
+	if (i != Videos.end())
+		return i->second;
+	else
+	{
+		cerr << func << ": video " << id << " not found." << endl;
+		return NULL;
+	}
+}
+
+Camera *find_camera(string func, Scheme_Object *sid, int noerr = 0)
+{
+	unsigned id = (unsigned)scheme_real_to_double(sid);
+	map<int, Camera *>::iterator i = Cameras.find(id);
+	if (i != Cameras.end())
+		return i->second;
+	else
+	{
+		if (!noerr)
+			cerr << func << ": camera " << id << " not found." << endl;
+		return NULL;
+	}
 }
 
 Scheme_Object *load(int argc, Scheme_Object **argv)
@@ -48,26 +80,22 @@ Scheme_Object *load(int argc, Scheme_Object **argv)
 		scheme_wrong_type("video-load", "string", 0, argc, argv);
 
 	filename = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),
-			SCHEME_CHAR_STRLEN_VAL(argv[0]), NULL, 0);
+					SCHEME_CHAR_STRLEN_VAL(argv[0]), NULL, 0);
 
-	Video *v = new Video(filename);
-	Videos[v->get_texture_id()] = v;
+	Video *v;
+
+	map<string, Video *>::iterator i = VideoFilenames.find(filename);
+	if (i != VideoFilenames.end())
+		v = i->second;
+	else
+	{
+		v = new Video(filename);
+		Videos[v->get_texture_id()] = v;
+		VideoFilenames[filename] = v;
+	}
 
 	MZ_GC_UNREG();
 	return scheme_make_integer_value(v->get_texture_id());
-}
-
-Video *find_video(string func, Scheme_Object *sid)
-{
-	unsigned id = (unsigned)scheme_real_to_double(sid);
-	map<int, Video *>::iterator i = Videos.find(id);
-	if (i != Videos.end())
-		return i->second;
-	else
-	{
-		cerr << func << ": video " << id << " not found." << endl;
-		return NULL;
-	}
 }
 
 Scheme_Object *scheme_vector(float v0, float v1, float v2)
@@ -102,7 +130,7 @@ Scheme_Object *video_tcoords(int argc, Scheme_Object **argv)
 		Scheme_Object **coord_list = (Scheme_Object **)scheme_malloc(4 *
 				sizeof(Scheme_Object *));
 
-		float *coords  = v->video_tcoords();
+		float *coords  = v->get_tcoords();
 
 		coord_list[0] = scheme_vector(coords[0], coords[4], coords[2]);
 		coord_list[1] = scheme_vector(coords[3], coords[4], coords[5]);
@@ -187,6 +215,105 @@ Scheme_Object *seek(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+Scheme_Object *camera_list_devices(int argc, Scheme_Object **argv)
+{
+	ofVideoGrabber camera;
+	camera.listDevices();
+
+	return scheme_void;
+}
+
+Scheme_Object *camera_clear_cache(int argc, Scheme_Object **argv)
+{
+	for (map<int, Camera *>::iterator i = Cameras.begin(); i != Cameras.end(); ++i)
+	{
+		delete i->second;
+	}
+	Cameras.clear();
+	CameraDevices.clear();
+
+	return scheme_void;
+}
+
+Scheme_Object *camera_init(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	for (int i = 0; i < 3; i++)
+	{
+		if (!SCHEME_NUMBERP(argv[i]))
+			scheme_wrong_type("camera-init", "number", i, argc, argv);
+	}
+	unsigned id = (unsigned)scheme_real_to_double(argv[0]);
+	int w = (int)scheme_real_to_double(argv[1]);
+	int h = (int)scheme_real_to_double(argv[2]);
+
+	Camera *g;
+
+	map<unsigned, Camera *>::iterator i = CameraDevices.find(id);
+	if (i != CameraDevices.end())
+		g = i->second;
+	else
+	{
+		g = new Camera(id, w, h);
+		Cameras[g->get_texture_id()] = g;
+		CameraDevices[id] = g;
+	}
+
+	MZ_GC_UNREG();
+	return scheme_make_integer_value(g->get_texture_id());
+}
+
+Scheme_Object *camera_update(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("camera-update", "number", 0, argc, argv);
+
+	Camera *g = find_camera("camera-update", argv[0]);
+	if (g != NULL)
+		g->update();
+
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+Scheme_Object *camera_tcoords(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("camera-tcoords", "number", 0, argc, argv);
+
+	Camera *g = find_camera("camera-tcoords", argv[0]);
+	if (g != NULL)
+	{
+		Scheme_Object **coord_list = (Scheme_Object **)scheme_malloc(4 *
+				sizeof(Scheme_Object *));
+
+		float *coords  = g->get_tcoords();
+
+		coord_list[0] = scheme_vector(coords[0], coords[4], coords[2]);
+		coord_list[1] = scheme_vector(coords[3], coords[4], coords[5]);
+		coord_list[2] = scheme_vector(coords[3], coords[1], coords[5]);
+		coord_list[3] = scheme_vector(coords[0], coords[1], coords[2]);
+
+		ret = scheme_build_list(4, coord_list);
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
 	Scheme_Env *menv = NULL;
@@ -206,6 +333,13 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("video-play", scheme_make_prim_w_arity(play, "video-play", 1, 1), menv);
 	scheme_add_global("video-stop", scheme_make_prim_w_arity(stop, "video-stop", 1, 1), menv);
 	scheme_add_global("video-seek", scheme_make_prim_w_arity(seek, "video-seek", 2, 2), menv);
+
+	scheme_add_global("camera-clear-cache", scheme_make_prim_w_arity(camera_clear_cache, "camera-clear-cache", 0, 0), menv);
+	scheme_add_global("camera-list-devices", scheme_make_prim_w_arity(camera_list_devices, "camera_list_devices", 0, 0), menv);
+	scheme_add_global("camera-init", scheme_make_prim_w_arity(camera_init, "camera-init", 3, 3), menv);
+	scheme_add_global("camera-update", scheme_make_prim_w_arity(camera_update, "camera-update", 1, 1), menv);
+	scheme_add_global("camera-tcoords",
+			scheme_make_prim_w_arity(camera_tcoords, "camera-tcoords", 1, 1), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();

@@ -20,21 +20,38 @@
 #include <string>
 
 #include "ofVideoPlayer.h"
+#include "ofVideoGrabber.h"
 
-class Video
+class VideoTexture
+{
+	public:
+			VideoTexture();
+			virtual ~VideoTexture();
+
+			float* get_tcoords();
+
+			unsigned get_texture_id()
+			{
+				return texture_id;
+			}
+
+	protected:
+			void gen_texture();
+			void upload(unsigned char *pixels);
+
+			int width, height; // pixel buffer resolution of video or camera image
+			int tex_width, tex_height; // texture resolution (power of 2)
+
+			unsigned texture_id;
+};
+
+class Video: public VideoTexture
 {
 	public:
 			Video(std::string name);
 			~Video();
 
 			void update();
-
-			float* video_tcoords();
-
-			unsigned get_texture_id()
-			{
-				return texture_id;
-			}
 
 			void play()
 			{
@@ -52,13 +69,19 @@ class Video
 			}
 
 	private:
-			int video_width, video_height;
-
-			int tex_width, tex_height; // texture resolution (power of 2)
-
-			unsigned texture_id;
-
 			ofVideoPlayer player;
+};
+
+class Camera: public VideoTexture
+{
+	public:
+			Camera(unsigned device_id, int w, int h);
+			~Camera();
+
+			void update();
+
+	private:
+			ofVideoGrabber camera;
 };
 
 #endif

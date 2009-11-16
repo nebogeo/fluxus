@@ -10,10 +10,13 @@ Target = 'fluxus-video_ss'
 Source = ['src/Video.cpp',
 		'src/FluxusVideo.cpp',
 		'src/ofVideoPlayer.cpp',
+		'src/ofVideoGrabber.cpp',
 		MZDYN]
 
 if env['PLATFORM'] == 'darwin':
 	Source += ['src/ofQtUtils.cpp']
+elif env['PLATFORM'] == 'posix':
+	Source += ['src/ofUCUtils.cpp']
 
 # libs to check for
 LibList = []
@@ -23,13 +26,16 @@ Frameworks = []
 
 Requirements = True
 
+env.Replace(LIBS = [])
+
 if env['PLATFORM'] == 'darwin':
 	Frameworks += ['Carbon', 'QuickTime', 'OpenGL', 'AppKit', 'Foundation']
 
 elif env['PLATFORM'] == 'posix':
-	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0']:
+	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0', 'libunicap',
+			'libavformat', 'libswscale']:
 		try:
-			env.MergeFlags('!pkg-config --cflags --libs  %s' % pkg)
+			env.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
 		except:
 			print "ERROR: '%s' must be installed!" % pkg
 			Requirements = False
@@ -48,16 +54,16 @@ if not GetOption('clean'):
 			Requirements = False
 
 	env = conf.Finish()
-
 	# ... but we shouldn't forget to add them to LIBS manually
 	Libs += [rec[0] for rec in LibList]
+
+env.Append(LIBS = Libs)
 
 if Requirements:
 	if not GetOption('clean'):
 		print Target, 'requirements... yes'
 	output = env.SharedLibrary(source = Source, 
 					  target = Target,
-					  LIBS = Libs,
 					  FRAMEWORKS = Frameworks,
 					  SHLIBPREFIX = '')
 
