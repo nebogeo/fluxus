@@ -35,6 +35,16 @@ class VideoTexture
 				return texture_id;
 			}
 
+			int get_width()
+			{
+				return width;
+			}
+
+			int get_height()
+			{
+				return height;
+			}
+
 	protected:
 			void gen_texture();
 			void upload(unsigned char *pixels);
@@ -79,6 +89,8 @@ class Camera: public VideoTexture
 			~Camera();
 
 			void update();
+
+			void *get_pixels();
 
 	private:
 			ofVideoGrabber camera;

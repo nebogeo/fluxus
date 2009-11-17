@@ -233,6 +233,7 @@ Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 	if (!(p->GetDefaultValue(pname, &f, &str)))
 	{
 		Trace::Stream << "ffgl-get-parameter-default: cannot find parameter " << pname << endl;
+		MZ_GC_UNREG();
 		return scheme_void;
 	}
 	if (str == NULL)
@@ -282,6 +283,7 @@ Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 	if (!(p->GetParameter(pi, pname, &f, &str)))
 	{
 		Trace::Stream << "ffgl-get-parameter: cannot find parameter " << pname << endl;
+		MZ_GC_UNREG();
 		return scheme_void;
 	}
 	if (str == NULL)

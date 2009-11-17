@@ -179,3 +179,8 @@ void Camera::update()
 	upload(pixels);
 }
 
+void *Camera::get_pixels()
+{
+	return (void *)camera.getPixels();
+}
+
