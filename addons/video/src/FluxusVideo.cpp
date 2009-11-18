@@ -29,8 +29,20 @@ using namespace std;
 // in OSX or GStreamer in Linux, and offers various controls to play or
 // control the properties of the movie.
 // The module also provides access to live cameras.
-//
 // Example:
+// (clear)
+// (video-clear-cache)
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// (let ([p (build-plane)]
+//      [tcoords (video-tcoords vt)])
+//    (with-primitive p
+//        (texture vt)
+//        (pdata-index-map!
+//            (lambda (i t)
+//                (list-ref tcoords (remainder i 4)))
+//            "t")))
+// (every-frame (video-update vt))
 // EndSectionDoc
 
 static map<int, Video *> Videos; // texture handle cache
@@ -38,6 +50,17 @@ static map<string, Video *> VideoFilenames; // video filename cache
 
 static map<int, Camera *> Cameras;
 static map<unsigned, Camera *> CameraDevices; // device id cache
+
+// StartFunctionDoc-en
+// video-clear-cache
+// Returns: void
+// Description:
+// The video loading is memory cached, so repeatedly calling (video-load)
+// will not cause the file to be loaded again. (video-clear-cache) clears
+// the video cache, meaning the videos will be reloaded from disk.
+// Example:
+// (video-clear-cache)
+// EndFunctionDoc
 
 Scheme_Object *video_clear_cache(int argc, Scheme_Object **argv)
 {
@@ -63,6 +86,18 @@ static Video *find_video(string func, Scheme_Object *sid)
 		return NULL;
 	}
 }
+
+// StartFunctionDoc-en
+// video-load filename-string
+// Returns: videoid-number
+// Description:
+// Loads a movie file. The video loading is memory cached, so repeatedly
+// calling this will not cause the file to be loaded again. The cache can
+// be cleared with (video-clear-cache). Returns a video-id that can be
+// used directly in (texture) calls, and in other video functions.
+// Example:
+// (define movie (video-load "/path/to/movie"))
+// EndFunctionDoc
 
 Scheme_Object *video_load(int argc, Scheme_Object **argv)
 {
@@ -94,7 +129,7 @@ Scheme_Object *video_load(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(v->get_texture_id());
 }
 
-Scheme_Object *scheme_vector(float v0, float v1, float v2)
+static Scheme_Object *scheme_vector(float v0, float v1, float v2)
 {
     Scheme_Object *ret = NULL;
     Scheme_Object *tmp = NULL;
@@ -110,6 +145,27 @@ Scheme_Object *scheme_vector(float v0, float v1, float v2)
     MZ_GC_UNREG();
     return ret;
 }
+
+// StartFunctionDoc-en
+// video-tcoords videoid-number
+// Returns: list-of-texture-coordinates
+// Description:
+// Returns the texture coordinates of the video texture. This is necessary,
+// because video images are usually rectangular non-power-of-two textures, while
+// fluxus uses GL_TEXTURE_2D power-of-two textures.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// (let ([p (build-plane)]
+//      [tcoords (video-tcoords vt)])
+//    (with-primitive p
+//        (texture vt)
+//        (pdata-index-map!
+//            (lambda (i t)
+//                (list-ref tcoords (remainder i 4)))
+//            "t")))
+// (every-frame (video-update vt))
+// EndFunctionDoc
 
 Scheme_Object *video_tcoords(int argc, Scheme_Object **argv)
 {
@@ -144,7 +200,26 @@ Scheme_Object *video_tcoords(int argc, Scheme_Object **argv)
 	return ret;
 }
 
-Scheme_Object *update(int argc, Scheme_Object **argv)
+// StartFunctionDoc-en
+// video-update videoid-number
+// Returns: void
+// Description:
+// Updates the movie player, so that the movie can play.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// (let ([p (build-plane)]
+//      [tcoords (video-tcoords vt)])
+//    (with-primitive p
+//        (texture vt)
+//        (pdata-index-map!
+//            (lambda (i t)
+//                (list-ref tcoords (remainder i 4)))
+//            "t")))
+// (every-frame (video-update vt))
+// EndFunctionDoc
+
+Scheme_Object *video_update(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
@@ -160,7 +235,17 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-Scheme_Object *play(int argc, Scheme_Object **argv)
+// StartFunctionDoc-en
+// video-play videoid-number
+// Returns: void
+// Description:
+// Plays the movie.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// EndFunctionDoc
+
+Scheme_Object *video_play(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
@@ -176,7 +261,17 @@ Scheme_Object *play(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-Scheme_Object *stop(int argc, Scheme_Object **argv)
+// StartFunctionDoc-en
+// video-stop videoid-number
+// Returns: void
+// Description:
+// Stops the movie.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// EndFunctionDoc
+
+Scheme_Object *video_stop(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
@@ -192,7 +287,19 @@ Scheme_Object *stop(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
-Scheme_Object *seek(int argc, Scheme_Object **argv)
+// StartFunctionDoc-en
+// video-seek videoid-number position-number
+// Returns: void
+// Description:
+// Sets the position of the playhead to a given percentage through the
+// movie. Position is between 0 and 1.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-play vt)
+// (video-seek vt 0.5)
+// EndFunctionDoc
+
+Scheme_Object *video_seek(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
@@ -210,8 +317,6 @@ Scheme_Object *seek(int argc, Scheme_Object **argv)
 	MZ_GC_UNREG();
     return scheme_void;
 }
-
-
 
 static Camera *find_camera(string func, Scheme_Object *sid, int noerr = 0)
 {
@@ -316,7 +421,7 @@ Scheme_Object *camera_init(int argc, Scheme_Object **argv)
 // camera-update cameraid-number
 // Returns: void
 // Description:
-// This function should be called regularly to get new data from the camara.
+// This function should be called regularly to get new data from the camera.
 // Example:
 // (define cam (camera-init 0 320 240))
 // (texture cam)
@@ -453,7 +558,8 @@ Scheme_Object *camera_height(int argc, Scheme_Object **argv)
 // Returns: cpointer:imgptr
 // Description:
 // Returns a tagged cpointer to the camera image pixel buffer to be passed to
-// other modules.
+// other modules. The data is stored as RGB in an array of width*height*3
+// size.
 // Example:
 // (define cam (camera-init 0 320 240))
 // (camera-imgptr cam)
@@ -496,11 +602,11 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("video-clear-cache", scheme_make_prim_w_arity(video_clear_cache, "video-clear-cache", 0, 0), menv);
 	scheme_add_global("video-load", scheme_make_prim_w_arity(video_load, "video-load", 1, 1), menv);
-	scheme_add_global("video-update", scheme_make_prim_w_arity(update, "video-update", 1, 1), menv);
+	scheme_add_global("video-update", scheme_make_prim_w_arity(video_update, "video-update", 1, 1), menv);
 	scheme_add_global("video-tcoords", scheme_make_prim_w_arity(video_tcoords, "video-tcoords", 1, 1), menv);
-	scheme_add_global("video-play", scheme_make_prim_w_arity(play, "video-play", 1, 1), menv);
-	scheme_add_global("video-stop", scheme_make_prim_w_arity(stop, "video-stop", 1, 1), menv);
-	scheme_add_global("video-seek", scheme_make_prim_w_arity(seek, "video-seek", 2, 2), menv);
+	scheme_add_global("video-play", scheme_make_prim_w_arity(video_play, "video-play", 1, 1), menv);
+	scheme_add_global("video-stop", scheme_make_prim_w_arity(video_stop, "video-stop", 1, 1), menv);
+	scheme_add_global("video-seek", scheme_make_prim_w_arity(video_seek, "video-seek", 2, 2), menv);
 
 	scheme_add_global("camera-clear-cache", scheme_make_prim_w_arity(camera_clear_cache, "camera-clear-cache", 0, 0), menv);
 	scheme_add_global("camera-list-devices", scheme_make_prim_w_arity(camera_list_devices, "camera_list_devices", 0, 0), menv);
