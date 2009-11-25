@@ -147,6 +147,10 @@ void Video::update()
 	upload(pixels);
 }
 
+void *Video::get_pixels()
+{
+	return (void *)player.getPixels();
+}
 
 Camera::Camera(unsigned device_id, int w, int h)
 {

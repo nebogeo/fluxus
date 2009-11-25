@@ -78,6 +78,8 @@ class Video: public VideoTexture
 				player.setPosition(pos);
 			}
 
+			void *get_pixels();
+
 	private:
 			ofVideoPlayer player;
 };

@@ -317,6 +317,95 @@ Scheme_Object *video_seek(int argc, Scheme_Object **argv)
 	MZ_GC_UNREG();
     return scheme_void;
 }
+// StartFunctionDoc-en
+// video-width videoid-number
+// Returns: width-number
+// Description:
+// Returns the width of the video zero if the video id is invalid.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-width vt)
+// EndFunctionDoc
+
+Scheme_Object *video_width(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("video-width", "number", 0, argc, argv);
+
+	Video *v = find_video("video-width", argv[0]);
+	int w = 0;
+	if (v != NULL)
+		w = v->get_width();
+
+	MZ_GC_UNREG();
+    return scheme_make_integer_value(w);
+}
+
+// StartFunctionDoc-en
+// video-height videoid-number
+// Returns: height-number
+// Description:
+// Returns the height of the video or zero if the video id is invalid.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-height vt)
+// EndFunctionDoc
+
+Scheme_Object *video_height(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("video-heigth", "number", 0, argc, argv);
+
+	Video *v = find_video("video-height", argv[0]);
+	int h = 0;
+	if (v != NULL)
+		h = v->get_height();
+
+	MZ_GC_UNREG();
+    return scheme_make_integer_value(h);
+}
+
+// StartFunctionDoc-en
+// video-imgptr videoid-number
+// Returns: cpointer:imgptr
+// Description:
+// Returns a tagged cpointer to the video pixel buffer to be passed to
+// other modules. The data is stored as RGB in an array of width*height*3
+// size.
+// Example:
+// (define vt (video-load "/path/to/movie"))
+// (video-imgptr vt)
+// EndFunctionDoc
+
+Scheme_Object *video_imgptr(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("video-imgptr", "number", 0, argc, argv);
+
+	Video *v = find_video("video-imgptr", argv[0]);
+	if (v == NULL)
+	{
+		MZ_GC_UNREG();
+		return scheme_void;
+	}
+
+	ret = scheme_make_cptr(v->get_pixels(), scheme_make_utf8_string("imgptr"));
+
+	MZ_GC_UNREG();
+    return ret;
+}
 
 static Camera *find_camera(string func, Scheme_Object *sid, int noerr = 0)
 {
@@ -607,6 +696,9 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("video-play", scheme_make_prim_w_arity(video_play, "video-play", 1, 1), menv);
 	scheme_add_global("video-stop", scheme_make_prim_w_arity(video_stop, "video-stop", 1, 1), menv);
 	scheme_add_global("video-seek", scheme_make_prim_w_arity(video_seek, "video-seek", 2, 2), menv);
+	scheme_add_global("video-width", scheme_make_prim_w_arity(video_width, "video-width", 1, 1), menv);
+	scheme_add_global("video-height", scheme_make_prim_w_arity(video_height, "video-height", 1, 1), menv);
+	scheme_add_global("video-imgptr", scheme_make_prim_w_arity(video_imgptr, "video-imgptr", 1, 1), menv);
 
 	scheme_add_global("camera-clear-cache", scheme_make_prim_w_arity(camera_clear_cache, "camera-clear-cache", 0, 0), menv);
 	scheme_add_global("camera-list-devices", scheme_make_prim_w_arity(camera_list_devices, "camera_list_devices", 0, 0), menv);
