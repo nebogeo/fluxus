@@ -49,10 +49,16 @@ protected:
 	virtual void PDataDirty();
 
 private:
+	void Realloc();
 
 	vector<dVector> *m_VertData;
 	vector<dColour> *m_ColData;
 	vector<float> *m_WidthData;
+
+	vector<dVector> *m_Vertices;
+	vector<dVector> *m_Normals;
+	vector<dColour> *m_VertCols;
+	vector<dVector> *m_TexCoords;
 };
 
 }

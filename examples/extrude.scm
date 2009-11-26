@@ -1,8 +1,10 @@
 ; an example of the fluxus extrusion tool
 
+(require fluxus-016/shapes)
+
 (clear)
 (clear-colour 0.5)
-(define profile (build-circle-profile 12 0.5))
+(define profile (build-circle-points 12 0.5))
 
 (define width (build-list 100
         (lambda (n) (* n 0.01 (+ 1.5 (cos (* 0.5 n)))))))

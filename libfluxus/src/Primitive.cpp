@@ -18,6 +18,8 @@
 
 using namespace Fluxus;
 
+Primitive::SceneInfo Primitive::m_SceneInfo;
+
 Primitive::Primitive() :
 m_IsPhysical(false),
 m_Visibility(0xffffffff),
@@ -72,7 +74,6 @@ void Primitive::Prerender()
 
 void Primitive::RenderAxes()
 {
-	glLineWidth(1);
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 		glColor3f(1,0,0);
@@ -105,7 +106,6 @@ void Primitive::RenderBoundingBox()
 	dMatrix m;
 	dBoundingBox b = GetBoundingBox(m);
 	glDisable(GL_LIGHTING);
-	glLineWidth(1);
 	glBegin(GL_LINES);
 	glVertex3f(b.min.x,b.min.y,b.min.z);
 	glVertex3f(b.max.x,b.min.y,b.min.z);
@@ -134,4 +134,19 @@ void Primitive::RenderBoundingBox()
 	glEnd();
 	glEnable(GL_LIGHTING);
 }
+	
+void Primitive::SetSceneInfo(const dVector &dir, const dVector &up) 
+{ 
+	m_SceneInfo.m_CameraVec=dir; 
+	m_SceneInfo.m_CameraUp=up; 
+}
+			
+dVector Primitive::GetLocalCameraDir()
+{
+	return m_State.Transform.inverse().transform_no_trans(m_SceneInfo.m_CameraVec);
+}
 
+dVector Primitive::GetLocalCameraUp()
+{
+	return m_State.Transform.inverse().transform_no_trans(m_SceneInfo.m_CameraUp);
+}

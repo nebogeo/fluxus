@@ -127,6 +127,9 @@ void State::Apply()
 	if (Hints & HINT_NORMALIZE)
 		glEnable(GL_NORMALIZE);
 
+	if (Hints & HINT_NOZWRITE)
+		glDepthMask(false);
+
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
 	if (Shader!=NULL)
@@ -140,6 +143,8 @@ void State::Unapply()
 {
 	if (Hints & HINT_NORMALIZE)
 		glDisable(GL_NORMALIZE);
+	if (Hints & HINT_NOZWRITE)
+		glDepthMask(true);
 }
 
 void State::Spew()

@@ -118,7 +118,8 @@ m_BBMaxX(0),
 m_BBMaxY(0),
 m_Width(0),
 m_Height(0),
-m_Delta(0.0),
+m_Delta(0.0f),
+m_Flash(0.0f),
 m_BlowupCursor(false),
 m_Blowup(0.0f)
 {
@@ -203,6 +204,16 @@ void GLEditor::SetText(const string& s)
 		m_Text=s;
 	}
 	ProcessTabs();
+}
+
+void GLEditor::ClearAllText()
+{
+	m_Text="";
+	m_Position=0;
+	m_PosX=m_PosY=0;
+	SetCurrentLine(0);
+	m_ShiftState=false;
+	m_Selection=false;
 }
 
 void GLEditor::StrokeCharacter(wchar_t c, float dx, float dy)
@@ -405,12 +416,6 @@ void GLEditor::Render()
 	{
 		width=m_CharWidth; //\todo fix bounding box with non-mono fonts
 
-		if (m_Text[n]=='\n')
-		{
-			width=m_CursorWidth;
-			m_LineCount++;
-		}
-
 		if (m_Position==n) // draw cursor
 		{
 			if (xcount>m_VisibleColumns) m_LeftTextPosition=xcount-m_VisibleColumns;
@@ -446,6 +451,7 @@ void GLEditor::Render()
 			xcount=0;
 			ypos-=m_CharHeight;
 			glTranslatef(0,ypos,0);
+			m_LineCount++;
 		}
 		else
 		{
@@ -702,8 +708,13 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		
 	if (mod&GLUT_ACTIVE_CTRL)
 	{	
+		//for testing key values
+		//cout <<"EDITOR RECEIVED KEY:" << key << "/" << state << endl;
+		
 		switch (key)
 		{
+			case 17: ClearAllText(); break;
+			
 			case GLEDITOR_CUT: // cut
 				if (m_Selection) 
 				{

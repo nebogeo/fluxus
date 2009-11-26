@@ -28,6 +28,7 @@
 #include "BlobbyPrimitive.h"
 #include "TypePrimitive.h"
 #include "ImagePrimitive.h"
+#include "VoxelPrimitive.h"
 #include "PrimitiveIO.h"
 #include "SearchPaths.h"
 #include "Evaluator.h"
@@ -738,6 +739,164 @@ Scheme_Object *build_image(int argc, Scheme_Object **argv)
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(ImagePrim));
 }
 
+Scheme_Object *build_voxels(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-voxels", "iii", argc, argv);
+
+	VoxelPrimitive *VoxPrim = new VoxelPrimitive(IntFromScheme(argv[0]),
+												IntFromScheme(argv[0]),
+												IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(VoxPrim));
+}
+
+Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
+{		
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->CalcGradient();
+		    return scheme_void;
+		}
+	}
+	
+	Trace::Stream<<"voxels-calc-gradient can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("voxels-sphere-influence", "vvf", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			dVector pos;
+			FloatsFromScheme(argv[0],pos.arr(),3);
+			dColour col;
+			FloatsFromScheme(argv[1],col.arr(),3);
+			pp->SphereInfluence(pos,col,FloatFromScheme(argv[2]));
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	MZ_GC_UNREG();
+	
+	Trace::Stream<<"voxels-sphere-influence can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("voxels-sphere-solid", "vvf", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			dVector pos;
+			FloatsFromScheme(argv[0],pos.arr(),3);
+			dColour col;
+			FloatsFromScheme(argv[1],col.arr(),3);
+			pp->SphereSolid(pos,col,FloatFromScheme(argv[2]));
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	MZ_GC_UNREG();
+	
+	Trace::Stream<<"voxels-sphere-solid can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("voxels-box-solid", "vvv", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			dVector top;
+			FloatsFromScheme(argv[0],top.arr(),3);
+			dVector bot;
+			FloatsFromScheme(argv[1],bot.arr(),3);
+			dColour col;
+			FloatsFromScheme(argv[2],col.arr(),3);
+			pp->BoxSolid(top,bot,col);
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	MZ_GC_UNREG();
+	
+	Trace::Stream<<"voxels-box-solid can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("voxels-threshold", "f", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->Threshold(FloatFromScheme(argv[0]));
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	MZ_GC_UNREG();
+	
+	Trace::Stream<<"voxels-threshold can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
+
+Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
+{		
+	DECL_ARGV();
+	ArgCheck("voxels-point-light", "vv", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+		// only if this is a pixel primitive
+		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			dVector pos;
+			FloatsFromScheme(argv[0],pos.arr(),3);
+			dColour col;
+			FloatsFromScheme(argv[1],col.arr(),3);
+			pp->PointLight(pos,col);
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+	MZ_GC_UNREG();
+	
+	Trace::Stream<<"voxels-point-light can only be called while a voxels primitive is grabbed"<<endl;
+    return scheme_void;
+}
 // StartFunctionDoc-en
 // build-locator
 // Returns: primitiveid-number
@@ -2620,6 +2779,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-particles", scheme_make_prim_w_arity(build_particles, "build-particles", 1, 1), env);
 	scheme_add_global("build-image", scheme_make_prim_w_arity(build_image, "build-image", 3, 3), env);
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
+	scheme_add_global("build-voxels", scheme_make_prim_w_arity(build_voxels, "build-voxels", 3, 3), env);
 	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
 	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 3), env);
 	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
@@ -2634,6 +2794,12 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
 	scheme_add_global("pixels-renderer-activate", scheme_make_prim_w_arity(pixels_renderer_activate, "pixels-renderer-activate", 1, 1), env);
+	scheme_add_global("voxels-calc-gradient", scheme_make_prim_w_arity(voxels_calc_gradient, "voxels-calc-gradient", 0, 0), env);
+	scheme_add_global("voxels-sphere-influence", scheme_make_prim_w_arity(voxels_sphere_influence, "voxels-sphere-influence", 3, 3), env);
+	scheme_add_global("voxels-sphere-solid", scheme_make_prim_w_arity(voxels_sphere_solid, "voxels-sphere-solid", 3, 3), env);
+	scheme_add_global("voxels-box-solid", scheme_make_prim_w_arity(voxels_box_solid, "voxels-box-solid", 3, 3), env);
+	scheme_add_global("voxels-threshold", scheme_make_prim_w_arity(voxels_threshold, "voxels-threshold", 1, 1), env);
+	scheme_add_global("voxels-point-light", scheme_make_prim_w_arity(voxels_point_light, "voxels-point-light", 2, 2), env);
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);

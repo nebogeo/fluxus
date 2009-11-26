@@ -6,7 +6,7 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules
 
-import os, sys
+import os, sys, commands
 
 MajorVersion = "0"
 MinorVersion = "16"
@@ -104,6 +104,9 @@ if ARGUMENTS.get("STEREODEFAULT","0")=="1":
 
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
         env.Append(CCFLAGS=' -DACCUM_BUFFER')
+
+if ARGUMENTS.get("MULTISAMPLE","0")=="1":
+        env.Append(CCFLAGS=' -DMULTISAMPLE')
 
 if ARGUMENTS.get("MULTITEXTURING","1")=="0":
         env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
@@ -249,7 +252,7 @@ Install = BinInstall
 if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
-		os.system("mzc --c-mods src/base.c \
+		mzc_status, mzc_text = commands.getstatusoutput("mzc --c-mods src/base.c \
 			++lib scheme/base  \
 			++lib scheme/base/lang/reader  \
 			++lib xml/xml \
@@ -260,7 +263,12 @@ if not GetOption('clean'):
 			++lib config  \
 			++lib stxclass")
 	else:
-		os.system("mzc --c-mods src/base.c ++lib scheme/base")
+		mzc_status, mzc_text = commands.getstatusoutput("mzc --c-mods src/base.c ++lib scheme/base")
+
+	if mzc_status != 0:
+		print "ERROR: Failed to run command 'mzc':\n\t%s" % mzc_text
+		Exit(1)
+
 
 Source = ["src/GLEditor.cpp",
                 "src/GLFileDialog.cpp",
@@ -330,7 +338,7 @@ if env['PLATFORM'] == 'win32':
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 else:
-	SConscript(dirs = Split("libfluxus modules fluxa"),
+	SConscript(dirs = Split("libfluxus modules fluxa addons"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
 
 
@@ -418,7 +426,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                                    ['modules/fluxus-osc/fluxus-osc_ss.dylib',
                                                        'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-osc_ss.dylib'],
 												   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib']],
+													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib'],
+												   ['addons/video/fluxus-video_ss.dylib',
+													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-video_ss.dylib']],
                                         typecode='APPL',
                                         icon_file='macos/fluxus.icns'))
         # build dmg

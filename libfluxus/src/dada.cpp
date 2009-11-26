@@ -50,7 +50,7 @@ void Fluxus::InitDada()
 
 void Fluxus::dSinCos(float a, float &s, float &c)
 {
-	int Index=(int)rint(a*SINCOS_LOOKUP)&SINCOS_TABLESIZE-1;
+	int Index=(int)rint(a*SINCOS_LOOKUP)&(SINCOS_TABLESIZE-1);
 	s=SinTab[Index];
 	c=CosTab[Index];	
 }

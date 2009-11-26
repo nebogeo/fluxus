@@ -669,7 +669,7 @@ void FormantFilter::Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, 
 
 		for (int v=0; v<5; v++)
 		{
-			res= (float) (coeff[v][0]*(in*0.1f) +
+			res= (float) (coeff[v][0]*in +
 					  coeff[v][1]*memory[v][0] +  
 					  coeff[v][2]*memory[v][1] +
 					  coeff[v][3]*memory[v][2] +

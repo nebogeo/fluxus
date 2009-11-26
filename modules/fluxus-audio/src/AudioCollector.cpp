@@ -163,49 +163,49 @@ float *AudioCollector::GetFFT()
 		pthread_mutex_lock(m_Mutex);
 		memcpy((void*)m_AudioBuffer,(void*)m_Buffer,m_BufferLength*sizeof(float));
 		pthread_mutex_unlock(m_Mutex);
-		
+
 		m_FFT.Impulse2Freq(m_AudioBuffer,m_FFTBuffer);
 	}
-	
-	
+
+
 	for (int n=0; n<NUM_BARS; n++)
 	{
 		float Value = 0;
-	 	for (int i=XRanges[n]; i<XRanges[n+1]; i++)
-	 	{			
+		for (int i=XRanges[n]; i<XRanges[n+1]; i++)
+		{
 			Value += m_FFTBuffer[i];
 		}
 		Value*=Value;
 		Value*=m_Gain*0.025;
 		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1/m_SmoothingBias))/2.0f;
 	}
-	
+
 	/*for (int n=1; n<NUM_BARS-1; n++)
 	{
 		m_FFTOutput[n]=(m_FFTOutput[n-1]+m_FFTOutput[n]+m_FFTOutput[n+1])/3.0f;
 	} */
-	
+
 	return m_FFTOutput;
 }
-    
+
 void AudioCollector::Process(const string &filename)
 {
 	if (m_Processing) return;
-	
+
 	SF_INFO info;
 	info.format=0;
-	
+
 	SNDFILE* file = sf_open (filename.c_str(), SFM_READ, &info) ;
 	if (!file)
 	{
 		cerr<<"Error opening ["<<filename<<"] : "<<sf_strerror(file)<<endl;
 		return;
 	}
-	
+
 	m_ProcessBuffer = new float[info.frames];
 	memset((void*)m_ProcessBuffer,0,info.frames*sizeof(float));
 	m_ProcessLength=info.frames;
-	
+
 	// mix down to mono if need be
 	if (info.channels>1)
 	{
@@ -222,10 +222,10 @@ void AudioCollector::Process(const string &filename)
 	}
 	else
 	{
-		sf_readf_float(file, m_ProcessBuffer, info.frames);	
+		sf_readf_float(file, m_ProcessBuffer, info.frames);
 	}
 	sf_close(file);
-	
+
 	m_Processing=true;
 	m_ProcessPos=0;
 }

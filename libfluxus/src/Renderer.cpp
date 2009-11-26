@@ -349,6 +349,13 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 	Cam.DoCamera(this);
 	RenderLights(false); // world space
 	
+	// set the scene info so all primitives can read it (taken from ribbon prim)
+	dMatrix ModelView;
+	glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
+	dMatrix InvModelView=ModelView.inverse();
+	Primitive::SetSceneInfo(InvModelView.transform_no_trans(dVector(0,0,1)),
+							InvModelView.transform_no_trans(dVector(0,1,0)));
+		
 	glColorMask(m_MaskRed,m_MaskGreen,m_MaskBlue,m_MaskAlpha);
 }
 
@@ -722,4 +729,6 @@ void Renderer::PrintInfo()
 	ShaderCache::Dump();	
 	Trace::Stream<<"Scenegraph:"<<endl;
 	m_World.Dump();	
+	Trace::Stream<<"NumRendered:"<<m_World.GetNumRendered()<<endl;
+	Trace::Stream<<"HighWater:"<<m_World.GetHighWater()<<endl;
 }

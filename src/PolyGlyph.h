@@ -47,6 +47,7 @@ public:
 
 	GLenum m_Error;
 	vector<Mesh> m_Meshes;
+	vector<double*> m_CombinedVerts;
 };
 
 class PolyGlyph

@@ -54,11 +54,19 @@ m_CapSetTime(false)
 	 * the same framework
 	 */
 	m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW | RTLD_LOCAL);
-	if (m_PluginHandle == NULL) /* trying to load with extension added */
+	if (m_PluginHandle == NULL) /* try to load with extension added */
 	{
 		fullpath = SearchPaths::Get()->GetFullPath(filename + extension);
 		m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW | RTLD_LOCAL);
 	}
+
+#ifdef __APPLE__
+	if (m_PluginHandle == NULL) /* try to load as bundle on OSX */
+	{
+		fullpath = SearchPaths::Get()->GetFullPath(filename + ".bundle/Contents/MacOS/" + filename);
+		m_PluginHandle = dlopen(fullpath.c_str(), RTLD_NOW | RTLD_LOCAL);
+	}
+#endif
 
 	if (m_PluginHandle == NULL)
 	{
@@ -67,6 +75,7 @@ m_CapSetTime(false)
 	}
 
 	m_PlugMain = (plugMainType *)(unsigned long)dlsym(m_PluginHandle, "plugMain");
+
 	if (m_PlugMain == NULL)
 	{
 		Trace::Stream << "FFGL plugin " << filename << ": " << dlerror() << endl;
@@ -89,7 +98,7 @@ m_CapSetTime(false)
 	}
 
 	float api_version = pis->APIMajorVersion + pis->APIMinorVersion/1000.0;
-	if (api_version < 1.0) // should be 1.5, but SDK plugins have wrong version info
+	if (api_version < 1.0) /* should be 1.5, but SDK plugins have wrong version info */
 	{
 		Trace::Stream << "FFGL plugin " << filename << ": old api version ("
 			<< api_version << ")" << endl;

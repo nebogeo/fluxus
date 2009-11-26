@@ -188,14 +188,29 @@ public:
 
 		inline float mag()
 		{
-    		return dist(dVector(0,0,0));
+   			return sqrt(x*x+y*y+z*z);
+		}
+
+		inline float magsq()
+		{
+   			return x*x+y*y+z*z;
 		}
 	
 		inline bool feq(const dVector &other, float epsilon=0.001)
 		{
 			return (fabs(x-other.x)<epsilon && fabs(y-other.y)<epsilon && fabs(z-other.z)<epsilon);
 		}
+		
+		inline bool operator<(dVector rhs)
+		{
+			return x<rhs.x && y<rhs.y && z<rhs.z;
+		}
 
+		inline bool operator>(dVector rhs)
+		{
+			return x>rhs.x && y>rhs.y && z>rhs.z;
+		}
+		
 		inline void homog() { if (w && w!=1.0) { x/=w; y/=w; z/=w; w=1; } }
 		inline dVector &normalise() { *this/=mag(); return *this; }
 		void get_rot(float m[16],dVector up); // legacy func 
@@ -321,6 +336,26 @@ public:
 			return *this;
 		}
 
+		inline float mag()
+		{
+		    return sqrt(r*r+g*g+b*b);
+		}
+
+		inline float magsq()
+		{
+		    return r*r+g*g+b*b;
+		}
+	
+		inline bool operator<(dColour rhs)
+		{
+			return r<rhs.r && g<rhs.g && b<rhs.b;
+		}
+
+		inline bool operator>(dColour rhs)
+		{
+			return r>rhs.r && g>rhs.g && b>rhs.b;
+		}
+		
 		inline void clamp()
 		{
 			if (r<0) r=0; if (g<0) g=0; if (b<0) b=0; if (a<0) a=0;

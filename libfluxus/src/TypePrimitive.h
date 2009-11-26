@@ -75,6 +75,7 @@ protected:
 		dVector	m_Normal;
 		GLenum m_Error;
 		vector<Mesh> m_Meshes;
+		vector<double *> m_CombinedData;
 	};
 
 	void Clear();
@@ -88,16 +89,16 @@ protected:
 	FT_Face       m_Face;
 	FT_GlyphSlot  m_Slot;
 
+
 #ifndef WIN32
 #define __stdcall
 #endif
 
 	static void __stdcall TessError(GLenum errCode, GlyphGeometry* geo);
 	static void __stdcall TessVertex(void* data, GlyphGeometry* geo);
-	static void __stdcall TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);
+	static void __stdcall TessCombine(double coords[3], void *vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo);
 	static void __stdcall TessBegin(GLenum type, GlyphGeometry* geo);
 	static void __stdcall TessEnd(GlyphGeometry* geo);
-
 
 	static uint8_t const m_Trailing[256];
 	static uint32_t const m_Offsets[6];

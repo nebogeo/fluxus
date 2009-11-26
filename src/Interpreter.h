@@ -31,6 +31,7 @@ class Interpreter
 public:	
 	static void Register();
 	static void Initialise();
+	static void Shutdown();
 	static void SetRepl(Repl *s);
 	static bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
 	static void SetLanguage(const std::string &lang) { m_Language=lang; }

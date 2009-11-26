@@ -32,7 +32,7 @@ public:
     FFT(int length);
     ~FFT();
 	void Impulse2Freq(float *imp, float *out);
-private:	
+private:
 #ifndef __FFTWFLOAT__
 	fftw_plan m_Plan;
 	unsigned int m_FFTLength;
@@ -51,12 +51,14 @@ class AudioCollector
 public:
 	AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
 	~AudioCollector();
-	
+
 	float *GetFFT();
 	float *GetAudioBuffer() { return m_AudioBuffer; }
+	int GetAudioBufferLength() { return m_BufferLength; }
     float GetHarmonic(int h);
     bool  IsConnected();
     void  SetGain(float s) { m_Gain=s; }
+    float  GetGain() { return m_Gain; }
     void  SetSmoothingBias(float s) { if (s<2 && s>0) m_SmoothingBias=s; }
     void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
@@ -80,9 +82,9 @@ private:
 	float *m_FFTOutput;
 	int    m_FFTBuffers;
 	int    m_InputPort;
-	
+
 	float *m_JackBuffer;
-	
+
 	int    m_Dspfd;
 	short *m_OSSBuffer;
 	float  m_OneOverSHRT_MAX;
@@ -93,3 +95,4 @@ private:
 };
 
 #endif
+

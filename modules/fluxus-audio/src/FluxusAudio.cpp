@@ -139,17 +139,69 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1); 
-	MZ_GC_VAR_IN_REG(0, argv); 
-	MZ_GC_REG();	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("gh", "number", 0, argc, argv);
 	if (Audio!=NULL)
-	{	
-		MZ_GC_UNREG(); 
-    	return scheme_make_double(Audio->GetHarmonic((int)scheme_real_to_double(argv[0])));
+	{
+		MZ_GC_UNREG();
+		return scheme_make_double(Audio->GetHarmonic((int)scheme_real_to_double(argv[0])));
 	}
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_make_double(0);
+}
+
+// StartFunctionDoc-en
+// ga
+// Returns: audio-buffer-vector
+// Description:
+// Returns the current contents of the audio buffer.
+// Example:
+// (clear)
+// (define p (build-ribbon 128))
+// (with-primitive p
+//    (hint-unlit)
+//    (pdata-map! (lambda (w) .1) "w"))
+//
+// (every-frame
+//    (let ([a (ga)])
+//        (with-primitive p
+//            (pdata-index-map!
+//                (lambda (i p)
+//                    (vector (* .25 (- i (/ (pdata-size) 2))) (* 10 (vector-ref a i)) 0))
+//                "p"))))
+// EndFunctionDoc
+
+Scheme_Object *get_audio(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	Scheme_Object *tmp = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_VAR_IN_REG(1, tmp);
+	MZ_GC_REG();
+
+	if (Audio != NULL)
+	{
+		/* TODO: make it work with (process) */
+		int size = Audio->GetAudioBufferLength();
+		float *src = Audio->GetAudioBuffer();
+		float gain = Audio->GetGain();
+		ret = scheme_make_vector(size, scheme_void);
+		for (int n = 0; n < size; n++)
+		{
+			tmp = scheme_make_double(gain * src[n]);
+			SCHEME_VEC_ELS(ret)[n] = tmp;
+		}
+	}
+	else
+	{
+		ret = scheme_make_vector(0, scheme_void);
+	}
+
+	MZ_GC_UNREG();
+	return ret;
 }
 
 // StartFunctionDoc-en
@@ -286,7 +338,7 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 {
 	if (Audio!=NULL)
-	{	
+	{
 		Audio->GetFFT();
 	}
     return scheme_void;
@@ -310,14 +362,15 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("start-audio", scheme_make_prim_w_arity(start_audio, "start-audio", 3, 3), menv);
 	scheme_add_global("gh", scheme_make_prim_w_arity(get_harmonic, "gh", 1, 1), menv);
+	scheme_add_global("ga", scheme_make_prim_w_arity(get_audio, "ga", 0, 0), menv);
 	scheme_add_global("gain", scheme_make_prim_w_arity(gain, "gain", 1, 1), menv);
 	scheme_add_global("process", scheme_make_prim_w_arity(process, "process", 1, 1), menv);
 	scheme_add_global("smoothing-bias", scheme_make_prim_w_arity(smoothing_bias, "smoothing-bias", 1, 1), menv);
 	scheme_add_global("update-audio", scheme_make_prim_w_arity(update_audio, "update-audio", 0, 0), menv);
 
-	scheme_finish_primitive_module(menv);	
- 	MZ_GC_UNREG(); 
-	
+	scheme_finish_primitive_module(menv);
+	MZ_GC_UNREG();
+
 	return scheme_void;
 }
 

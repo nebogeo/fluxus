@@ -83,19 +83,10 @@ void ParticlePrimitive::Render()
 
 	if (m_State.Hints & HINT_SOLID)
 	{
-		dMatrix ModelView;
-		glGetFloatv(GL_MODELVIEW_MATRIX,ModelView.arr());
-		ModelView = ModelView.inverse();
-
-		dVector CameraDir(0,0,1);
-		CameraDir=ModelView.transform_no_trans(CameraDir);
-		CameraDir.normalise();
-
-		dVector up(0,1,0);
-		up = ModelView.transform_no_trans(up);
-		dVector across=up.cross(CameraDir);
+		dVector cameradir=GetLocalCameraDir();
+		dVector across=GetLocalCameraUp().cross(cameradir);
 		across.normalise();
-		dVector down=across.cross(CameraDir);
+		dVector down=across.cross(cameradir);
 		down.normalise();
 		
 		if (m_State.Hints & HINT_DEPTH_SORT)

@@ -12,13 +12,13 @@ pipe = os.popen('dirname "`which mzscheme`"')
 PLTPrefix = pipe.read()[:-5]
 pipe.close()
 
-# copy plt collects path manually
+# copy plt collects path manually preserving original dates
 print 'copying required plt modules...'
 for m in ['compiler', 'config', 'defaults', 'frtime', 'lang', \
 		  'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
 		  'stxclass', 'syntax', 'xml']:
 	print '\t', m
-	os.system('cp -r "%s" Fluxus.app/Contents/Resources/collects/%s' %
+	os.system('cp -pr "%s" Fluxus.app/Contents/Resources/collects/%s' %
 		(PLTPrefix + '/collects/' + m, m))
 
 # scheme modules don't get installed for some reason

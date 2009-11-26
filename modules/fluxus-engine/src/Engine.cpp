@@ -21,14 +21,14 @@
 
 using namespace Fluxus;
 
-Engine *Engine::m_Engine=NULL;
+Engine Engine::m_Engine;
 
 PolyPrimitive*  Engine::StaticCube=NULL;
 PolyPrimitive*  Engine::StaticPlane=NULL;
 PolyPrimitive*  Engine::StaticSphere=NULL;
 PolyPrimitive*  Engine::StaticCylinder=NULL;
 PolyPrimitive*  Engine::StaticTorus=NULL;
-
+	
 Engine::Engine() 
 {
 	StaticCube = new PolyPrimitive(PolyPrimitive::QUADS);
@@ -49,6 +49,22 @@ Engine::Engine()
 	Fluxus::Renderer *renderer = new Fluxus::Renderer(true);
 	Fluxus::Physics *physics = new Fluxus::Physics(renderer);
 	PushRenderer(StackItem(renderer, physics));
+}
+
+Engine::~Engine() 
+{
+	for (deque<StackItem>::iterator i=m_RendererStack.begin(); 
+	 i!=m_RendererStack.end(); ++i)
+	{
+		delete i->m_Renderer;
+		delete i->m_Physics;
+	}
+	
+	delete StaticCube;
+	delete StaticPlane;
+	delete StaticSphere;
+	delete StaticCylinder;
+	delete StaticTorus;
 }
 
 bool Engine::PushRenderer(const StackItem &si)

@@ -309,10 +309,18 @@ void TypePrimitive::BuildGeometry(const FT_GlyphSlot &glyph, GlyphGeometry &geo,
 
 	gluTessEndPolygon(t);
 	gluDeleteTess(t);
+	
+	// mop up the combined verts
+	for (vector<double *>::iterator i=geo.m_CombinedData.begin(); i!=geo.m_CombinedData.end(); i++)
+	{
+		delete[] *i;
+	}
+	geo.m_CombinedData.clear();
 }
 
 void __stdcall TypePrimitive::TessError(GLenum errCode, GlyphGeometry* geo)
 {
+	cerr<<"error "<<gluErrorString(errCode)<<endl;
     geo->m_Error=errCode;
 }
 
@@ -327,15 +335,18 @@ void __stdcall TypePrimitive::TessVertex(void* data, GlyphGeometry* geo)
 
 void __stdcall TypePrimitive::TessCombine(double coords[3], void* vertex_data[4], float weight[4], void** outData, GlyphGeometry* geo)
 {
-   outData=vertex_data;
+	double *data=new double[3];
+	data[0]=coords[0];
+	data[1]=coords[1];
+	data[2]=coords[2];
+	geo->m_CombinedData.push_back(data);
+	*outData=data;
 }
-
 
 void __stdcall TypePrimitive::TessBegin(GLenum type, GlyphGeometry* geo)
 {
 	geo->m_Meshes.push_back(GlyphGeometry::Mesh(type));
 }
-
 
 void __stdcall TypePrimitive::TessEnd(GlyphGeometry* geo)
 {

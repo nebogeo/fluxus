@@ -1,0 +1,75 @@
+###############################################################
+# SConscript for fluxus-video
+#
+import os, sys
+
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+
+Target = 'fluxus-video_ss'
+
+Source = ['src/Video.cpp',
+		'src/FluxusVideo.cpp',
+		'src/ofVideoPlayer.cpp',
+		'src/ofVideoGrabber.cpp',
+		MZDYN]
+
+if env['PLATFORM'] == 'darwin':
+	Source += ['src/ofQtUtils.cpp']
+elif env['PLATFORM'] == 'posix':
+	Source += ['src/ofUCUtils.cpp']
+
+# libs to check for
+LibList = []
+Libs = []
+
+Frameworks = []
+
+Requirements = True
+
+env.Replace(LIBS = [])
+
+if env['PLATFORM'] == 'darwin':
+	Frameworks += ['Carbon', 'QuickTime', 'OpenGL', 'AppKit', 'Foundation']
+
+elif env['PLATFORM'] == 'posix':
+	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0', 'libunicap',
+			'libavformat', 'libswscale']:
+		try:
+			env.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
+		except:
+			print "ERROR: '%s' must be installed!" % pkg
+			Requirements = False
+	LibList += [['gstapp-0.10', 'gst/app/gstappsink.h']]
+
+if env['PLATFORM'] == 'darwin':
+	Frameworks += ['PLT_MrEd']
+
+# check installed libraries
+if not GetOption('clean'):
+	print 'Checking requirements for', Target, '...'
+	conf = Configure(env)
+	for (lib, headers) in LibList:
+		if not conf.CheckHeader(headers):
+			print "ERROR: '%s' must be installed!" % (lib)
+			Requirements = False
+
+	env = conf.Finish()
+	# ... but we shouldn't forget to add them to LIBS manually
+	Libs += [rec[0] for rec in LibList]
+
+env.Append(LIBS = Libs)
+
+if Requirements:
+	if not GetOption('clean'):
+		print Target, 'requirements... yes'
+	output = env.SharedLibrary(source = Source, 
+					  target = Target,
+					  FRAMEWORKS = Frameworks,
+					  SHLIBPREFIX = '')
+
+	if not static_modules:
+		env.Install(BinaryModulesLocation, output)
+else:
+	if not GetOption('clean'):
+		print Target, 'requirements... NO'
+
