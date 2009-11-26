@@ -120,11 +120,11 @@ void VoxelPrimitive::Threshold(float value)
 	{
 		if ((*m_ColData)[i].mag()<value)
 		{
-			(*m_ColData)[i]=dColour(0,0,0);
+			(*m_ColData)[i]=dColour(0,0,0,0);
 		}
 		else
 		{
-			(*m_ColData)[i]=dColour(1,1,1);
+			(*m_ColData)[i]=dColour(1,1,1,1);
 		}
 	}
 }
@@ -157,9 +157,7 @@ void VoxelPrimitive::Render()
 		glBegin(GL_QUADS);
 		for (unsigned int n=0; n<m_ColData->size(); n++)
 		{
-			if ((*m_ColData)[n].r>0.001 ||
-  				(*m_ColData)[n].g>0.001 ||
-				(*m_ColData)[n].b>0.001)
+			if ((*m_ColData)[n].a>0.001)
 			{		
 				dVector p(n%m_Width,n/m_Width%m_Height,n/(m_Width*m_Height));
 				p/=m_Width;

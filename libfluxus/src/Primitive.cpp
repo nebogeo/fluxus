@@ -74,7 +74,6 @@ void Primitive::Prerender()
 
 void Primitive::RenderAxes()
 {
-	glLineWidth(1);
 	glDisable(GL_LIGHTING);
 	glBegin(GL_LINES);
 		glColor3f(1,0,0);
@@ -107,7 +106,6 @@ void Primitive::RenderBoundingBox()
 	dMatrix m;
 	dBoundingBox b = GetBoundingBox(m);
 	glDisable(GL_LIGHTING);
-	glLineWidth(1);
 	glBegin(GL_LINES);
 	glVertex3f(b.min.x,b.min.y,b.min.z);
 	glVertex3f(b.max.x,b.min.y,b.min.z);
