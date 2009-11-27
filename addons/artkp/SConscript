@@ -1,0 +1,44 @@
+###############################################################
+# SConscript for fluxus-artkp
+
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+
+menv = env.Clone()
+
+Target = 'fluxus-artkp_ss'
+
+Source = ['src/FluxusARTKP.cpp',
+		'src/ARTracker.cpp',
+		'src/SchemeHelper.cpp',
+		MZDYN]
+
+Source += ['ARToolKitPlus/src/MemoryManager.cpp',
+		'ARToolKitPlus/src/librpp/rpp.cpp',
+		'ARToolKitPlus/src/librpp/rpp_quintic.cpp',
+		'ARToolKitPlus/src/librpp/rpp_vecmat.cpp',
+		'ARToolKitPlus/src/librpp/rpp_svd.cpp',
+		'ARToolKitPlus/src/librpp/librpp.cpp',
+		'ARToolKitPlus/src/extra/Profiler.cpp']
+
+IncludePaths = ['ARToolKitPlus/include']
+
+menv.Append(CPPPATH = IncludePaths)
+
+Libs = []
+LibPaths = []
+Frameworks = []
+
+menv.Replace(LIBS = Libs)
+menv.Replace(LIBPATH = LibPaths)
+
+if menv['PLATFORM'] == 'darwin':
+	Frameworks += ['PLT_MrEd', 'OpenGL']
+
+output = menv.SharedLibrary(source = Source, 
+				  target = Target,
+				  FRAMEWORKS = Frameworks,
+				  SHLIBPREFIX = '')
+
+if not static_modules:
+	menv.Install(BinaryModulesLocation, output)
+

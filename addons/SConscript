@@ -1,4 +1,4 @@
-# -*- mode: python -*-
+#-*- mode: python -*-
 ###############################################################
 # Top level SConscript for the fluxus additional modules
 #
@@ -14,6 +14,6 @@ file.close()
 
 BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
-SConscript(dirs = env.Split("video"),
+SConscript(dirs = env.Split("video artkp"),
 		exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
 

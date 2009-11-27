@@ -1,0 +1,12 @@
+fluxus-artkp - augmented reality module for fluxus
+(C) 2009 Gabor Papp, http://mndl.hu/
+
+Based on the ARToolKitPlus library
+(http://studierstube.icg.tu-graz.ac.at/handheld_ar/artoolkitplus.php).
+
+Building and installing instructions
+------------------------------------
+
+Fluxus-artkp does not have any dependencies, although the module works with
+video or camera images coming from the fluxus-video module.
+
