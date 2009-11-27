@@ -34,14 +34,14 @@ m_Height(h)
 
 	PDataDirty();
 
-	m_Points.push_back(dVector(0, 0, 0));
 	m_Points.push_back(dVector(0, 1, 0));
 	m_Points.push_back(dVector(1, 1, 0));
 	m_Points.push_back(dVector(1, 0, 0));
+	m_Points.push_back(dVector(0, 0, 0));
 
-	m_TexData->push_back(dVector(0, 1, 0));
-	m_TexData->push_back(dVector(0, 0, 0));
 	m_TexData->push_back(dVector(1, 0, 0));
+	m_TexData->push_back(dVector(0, 0, 0));
+	m_TexData->push_back(dVector(0, 1, 0));
 	m_TexData->push_back(dVector(1, 1, 0));
 }
 
@@ -93,6 +93,7 @@ void ImagePrimitive::Render()
 
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 
 	glPushMatrix();
 	glLoadIdentity();
@@ -114,6 +115,8 @@ void ImagePrimitive::Render()
 	glDisable(GL_TEXTURE_2D);
     if (!(m_State.Hints & HINT_IGNORE_DEPTH))
 		glEnable(GL_DEPTH_TEST);
+	if (m_State.Cull)
+		glEnable(GL_CULL_FACE);
 
 	glPopMatrix();
 	// set perspective back
