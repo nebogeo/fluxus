@@ -45,6 +45,8 @@
 
 
 #include <vector>
+#include <cstring>
+
 #include "assert.h"
 
 #include "rpp.h"

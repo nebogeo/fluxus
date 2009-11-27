@@ -414,7 +414,7 @@ int BCH::decode_bch(int *recd)
  * them, only detect them. We output the information bits uncorrected.
  */
 {
-	int i, j, u, q, t2, count = 0, syn_error = 0;
+	int i, j, u = 0, q, t2, count = 0, syn_error = 0;
 	bool too_many_errors = false;
 	//int elp[BCH_MAX_LUT][BCH_MAX_LUT], d[BCH_MAX_LUT], l[BCH_MAX_LUT], u_lu[BCH_MAX_LUT], s[BCH_MAX_LUT];
 	//int root[BCH_MAX_SQ], loc[BCH_MAX_SQ], reg[BCH_MAX_SQ];
