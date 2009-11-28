@@ -633,7 +633,7 @@ protected:
 
 	ARToolKitPlus::Logger	*logger;
 
-	int						screenWidth, screenHeight;
+	static int				screenWidth, screenHeight;
 	int						thresh;
 
 	ARParam					cparam;

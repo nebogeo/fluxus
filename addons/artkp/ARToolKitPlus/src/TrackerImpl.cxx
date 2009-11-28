@@ -50,8 +50,10 @@
 
 namespace ARToolKitPlus {
 
+AR_TEMPL_FUNC int AR_TEMPL_TRACKER::screenWidth;
+AR_TEMPL_FUNC int AR_TEMPL_TRACKER::screenHeight;
 
-AR_TEMPL_FUNC 
+AR_TEMPL_FUNC
 AR_TEMPL_TRACKER::TrackerImpl()
 {
 	int i;
@@ -250,7 +252,7 @@ AR_TEMPL_TRACKER::checkImageBuffer()
 	// (usually this image buffer should only be built once - unless we change camera resolution)
 	//
 
-	int newSize = screenWidth*screenHeight;
+	int newSize = AR_TEMPL_TRACKER::screenWidth * AR_TEMPL_TRACKER::screenHeight;
 
 	if(newSize==l_imageL_size)
 		return;
@@ -320,7 +322,7 @@ AR_TEMPL_TRACKER::setCamera(Camera* nCamera)
 
 	if(arCamera)
 	{
-		arCamera->changeFrameSize(screenWidth,screenHeight);
+		arCamera->changeFrameSize(AR_TEMPL_TRACKER::screenWidth, AR_TEMPL_TRACKER::screenHeight);
 		arInitCparam(arCamera);
 		arCamera->logSettings(logger);
 
@@ -468,8 +470,8 @@ AR_TEMPL_TRACKER::calcCameraMatrix(const char* nCamParamFile, int nWidth, int nH
 AR_TEMPL_FUNC void
 AR_TEMPL_TRACKER::changeCameraSize(int nWidth, int nHeight)
 {
-	screenWidth = nWidth;
-	screenHeight = nHeight;
+	AR_TEMPL_TRACKER::screenWidth = nWidth;
+	AR_TEMPL_TRACKER::screenHeight = nHeight;
 
 	arCamera->changeFrameSize(nWidth,nHeight);
 	arInitCparam(arCamera);
