@@ -296,7 +296,7 @@ void ofUCUtils::set_format(int w, int h) {
 			avpicture_alloc(dst,PIX_FMT_RGB24,d_width,d_height);
 
 			toRGB_convert_ctx = sws_getContext(
-							format.size.width, format.size.height, src_pix_fmt,
+							format.size.width, format.size.height, static_cast<PixelFormat>(src_pix_fmt),
 							d_width, d_height, PIX_FMT_RGB24,
 							VIDEOGRABBER_RESIZE_FLAGS, NULL, NULL, NULL);
 
