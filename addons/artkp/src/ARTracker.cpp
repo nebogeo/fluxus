@@ -62,7 +62,7 @@ bool ARTracker::init(std::string &cam_param_file, int width, int height)
 		return false;
 	}
 
-	tracker->setPatternWidth(80);
+	tracker->setPatternWidth(patt_width);
 	tracker->setBorderWidth(0.250);
 	tracker->setUndistortionMode(ARToolKitPlus::UNDIST_STD);
 

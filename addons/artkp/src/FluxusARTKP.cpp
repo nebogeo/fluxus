@@ -146,6 +146,59 @@ Scheme_Object *ar_auto_threshold(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// ar-set-pattern-width width-number
+// Returns: void
+// Description:
+// Example:
+// (ar-set-pattern-width 40)
+// EndFunctionDoc
+
+Scheme_Object *ar_set_pattern_width(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("ar-set-pattern-width", "f", argc, argv);
+
+	if (tracker != NULL)
+	{
+		tracker->set_pattern_width(FloatFromScheme(argv[0]));
+	}
+	else
+	{
+		cerr << "ar-set-pattern-width: tracker is not initialized." << endl;
+	}
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// ar-activate-vignetting-compensation activate-bool
+// Returns: void
+// Description:
+// Activates the compensation of brightness falloff in the corners of the
+// camera image.
+// Example:
+// (ar-activate-vignetting-compensation #t)
+// EndFunctionDoc
+
+Scheme_Object *ar_activate_vignetting_compensation(int argc, Scheme_Object **argv)
+{
+    DECL_ARGV();
+    ArgCheck("ar-activate-vignetting-compensation", "b", argc, argv);
+    if (tracker != NULL)
+    {
+		tracker->activate_vignetting_compensation(BoolFromScheme(argv[0]));
+    }
+	else
+	{
+		cerr << "ar-activate-vignetting-compensation: tracker is not initialized." << endl;
+	}
+
+    MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // ar-detect buffer-imgptr
 // Returns: number
 // Description:
@@ -361,6 +414,10 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(ar_auto_threshold, "ar-auto-threshold", 1, 1), menv);
 	scheme_add_global("ar-detect",
 			scheme_make_prim_w_arity(ar_detect, "ar-detect", 1, 1), menv);
+	scheme_add_global("ar-set-pattern-width",
+			scheme_make_prim_w_arity(ar_set_pattern_width, "ar-set-pattern-width", 1, 1), menv);
+	scheme_add_global("ar-activate-vignetting-compensation",
+			scheme_make_prim_w_arity(ar_activate_vignetting_compensation, "ar-activate-vignetting-compensation", 1, 1), menv);
 	scheme_add_global("ar-get-projection-matrix",
 			scheme_make_prim_w_arity(ar_get_projection_matrix, "ar-get-projection-matrix", 0, 0), menv);
 	scheme_add_global("ar-get-modelview-matrix",

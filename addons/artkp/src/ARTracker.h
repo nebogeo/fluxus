@@ -53,6 +53,17 @@ class ARTracker
 			tracker->activateAutoThreshold(e);
 		}
 
+		void set_pattern_width(float w)
+		{
+			patt_width = w;
+			tracker->setPatternWidth(patt_width);
+		}
+
+		void activate_vignetting_compensation(bool e)
+		{
+			tracker->activateVignettingCompensation(e);
+		}
+
 		int detect(const unsigned char *img);
 		const ARFloat *get_projection_matrix();
 		const ARFloat *get_modelview_matrix(int i);
