@@ -23,7 +23,7 @@ build-stamp: configure-stamp
 	dh_testdir
 	export PATH=$(PATH):/usr/local/bin
 	echo $(PATH)
-	scons Prefix=/usr PLTPrefix=/usr STATIC_MODULES=1
+	scons Prefix=/usr PLTPrefix=/usr
 	touch build-stamp
 
 clean:
@@ -32,7 +32,7 @@ clean:
 	rm -f config.log
 	rm -f build-stamp configure-stamp
 	# Add here commands to clean up after the build process.
-	scons -c Prefix=/usr PLTPrefix=/usr STATIC_MODULES=1
+	scons -c Prefix=/usr PLTPrefix=/usr
 	rm -rf .sconf_temp/
 	rm -f .sconsign src/.sconsign libfluxus/src/.sconsign libfluxphysics/src/.sconsign
 	rm -f .sconsign.dblite
@@ -47,7 +47,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/fluxus.
-	scons Prefix=/usr PLTPrefix=/usr DESTDIR=debian/fluxus STATIC_MODULES=1 install
+	scons Prefix=/usr PLTPrefix=/usr DESTDIR=debian/fluxus install
 
 # Build architecture-independent files here.
 binary-indep: build install
