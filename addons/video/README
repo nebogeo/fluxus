@@ -12,7 +12,10 @@ Quicktime on OSX.
 
 Before building on Linux make sure to install gstreamer-devel-0.10,
 gstreamer-plugins-base-devel-0.10, gstreamer-plugins-good-devel, and
-gstreamer-plugins-bad-devel, unicap-devel, ffmpeg-devel
+gstreamer-plugins-bad-devel, unicap-devel, ffmpeg-devel on fedora or
+libunicap-dev, libgstreamer-0.10-dev, libgstreamer-plugins-base0.10-dev,
+libavformat-dev, libswscale-dev, libavcodec-dev, libavutil-dev on ubuntu.
+
 
 To build and install just type 'scons' and 'sudo scons install' in the main
 fluxus directory and if every package requirements are met the video module is
