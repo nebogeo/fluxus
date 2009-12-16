@@ -44,7 +44,7 @@ bool EventRecorder::Get(list<RecorderMessage> &events)
 			{
 				events.push_back(*i);
 				found=true;
-			}		
+			}
 		}
 	}
 	return found;
@@ -72,6 +72,9 @@ void EventRecorder::ResetClock()
 
 void EventRecorder::UpdateClock()
 {
+	if (m_Mode == PAUSE)
+		return;
+
 	double Delta=m_Delta;
 	if (Delta==0)
 	{
@@ -86,12 +89,26 @@ void EventRecorder::UpdateClock()
 
 	m_LastTimeSeconds=m_TimeSeconds;
 	if (Delta>0 && Delta<1000) m_TimeSeconds+=Delta;
-	
+
 	if (m_Mode==RECORD && m_TimeSeconds>m_NextSave)
 	{
 		Save();
 		m_NextSave=m_TimeSeconds+10;
-	}	
+	}
+}
+
+void EventRecorder::PauseToggle()
+{
+	if (m_Mode == PLAYBACK)
+	{
+		m_Mode = PAUSE;
+	}
+	else
+	if (m_Mode == PAUSE)
+	{
+		gettimeofday(&m_LastTime,NULL);
+		m_Mode = PLAYBACK;
+	}
 }
 
 void EventRecorder::Save()
@@ -107,8 +124,8 @@ void EventRecorder::Save()
 			os<<i->Name<<" "<<i->Time<<" "<<i->Data<<" "<<i->Mod<<" "<<i->Button<<" "<<i->State<<endl;
 		}
 
-		os.close();	
-	}	
+		os.close();
+	}
 }
 
 void EventRecorder::Load()

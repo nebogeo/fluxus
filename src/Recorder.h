@@ -26,9 +26,9 @@ class RecorderMessage
 {
 public:
 	RecorderMessage() : Time(0) {}
-	RecorderMessage(const string &n, int d, int m) : 
+	RecorderMessage(const string &n, int d, int m) :
 		Name(n), Time(0), Data(d), Mod(m), Button(0), State(0) {}
-	RecorderMessage(const string &n, int d, int m, int b, int s) : 
+	RecorderMessage(const string &n, int d, int m, int b, int s) :
 		Name(n), Time(0), Data(d), Mod(m), Button(b), State(s) {}
 
 	string Name;
@@ -44,27 +44,28 @@ class EventRecorder
 public:
 	EventRecorder();
 	~EventRecorder();
-	
-	enum Mode{OFF,RECORD,PLAYBACK};
+
+	enum Mode{OFF,RECORD,PLAYBACK,PAUSE};
 
 	void SetMode(Mode mode) { m_Mode=mode; }
 	Mode GetMode() { return m_Mode; }
-	
+
 	bool Get(list<RecorderMessage> &events);
 	void Record(RecorderMessage event);
 
 	void Reset();
 	void ResetClock();
 	void UpdateClock();
+	void PauseToggle();
 	void SetDelta(float s) { m_Delta=s; }
-	
+
 	void SetFilename(const string &filename) { m_Filename=filename; }
-	
+
 	void Save();
 	void Load();
-	
+
 private:
-	
+
 	Mode m_Mode;
 	timeval m_LastTime;
 	double m_LastTimeSeconds;
@@ -72,7 +73,7 @@ private:
 	double m_NextSave;
 	string m_Filename;
 	float m_Delta;
-	
+
 	list<RecorderMessage> m_EventList;
 };
 

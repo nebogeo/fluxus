@@ -55,7 +55,8 @@ void KeyboardCallback(unsigned char key,int x, int y)
 {
 	int mod=modifiers;
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
-	app->Handle(key, -1, -1, -1, x, y, mod);
+	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
+		app->Handle(key, -1, -1, -1, x, y, mod);
 	char code[256];
 	if (key > 0) { // key is 0 on ctrl+2
 		snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
@@ -78,7 +79,10 @@ void SpecialKeyboardCallback(int key,int x, int y)
 {
 	int mod=modifiers;
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
-	app->Handle(0, -1, key, -1, x, y, mod);
+	if (key == GLUT_KEY_F12)
+		recorder->PauseToggle();
+	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
+		app->Handle(0, -1, key, -1, x, y, mod);
 	char code[256];
 	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
 	Interpreter::Interpret(code);
@@ -136,15 +140,21 @@ void DoRecorder()
 			if (i->Name=="keydown")
 			{
 				modifiers=i->Mod;
-				KeyboardCallback(i->Data,0,0);
+				KeyboardCallback(i->Data, -1, -1);
 			}
-			else if (i->Name=="keyup") KeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="keyup")
+			{
+				KeyboardUpCallback(i->Data, 0, 0);
+			}
 			else if (i->Name=="specialkeydown")
 			{
 				modifiers=i->Mod;
-				SpecialKeyboardCallback(i->Data,0,0);
+				SpecialKeyboardCallback(i->Data, -1, -1);
 			}
-			else if (i->Name=="specialkeyup") SpecialKeyboardUpCallback(i->Data,0,0);
+			else if (i->Name=="specialkeyup")
+			{
+				SpecialKeyboardUpCallback(i->Data, 0, 0);
+			}
 			else if (i->Name=="mouse") MouseCallback(i->Button,i->State,i->Data,i->Mod);
 			else if (i->Name=="motion") MotionCallback(i->Data,i->Mod);
 			else if (i->Name=="passivemotion") PassiveMotionCallback(i->Data,i->Mod);

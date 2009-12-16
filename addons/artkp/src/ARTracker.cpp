@@ -40,7 +40,7 @@ ARTracker::~ARTracker()
 bool ARTracker::init(std::string &cam_param_file, int width, int height)
 {
 	float clip_near = 1.0;
-	float clip_far = 1000.0;
+	float clip_far = 5000.0;
 
 	if (tracker != NULL)
 	{

@@ -125,9 +125,10 @@
 ;; F5 : (or ctrl-e) Execute the selected text, or all if none is selected.
 ;; F6 : Completely resets the interpreter, then executes the selected text, 
 ;;      or all if none is selected.
-;; F9 : Randomise the text colour (aka the panic button)
+;; F9 : Toggles scratchpad effects.
 ;; F10 : Decreases the text opacity
 ;; F11 : Increases the text opacity
+;; F12 : Pauses keypress file playback.
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
