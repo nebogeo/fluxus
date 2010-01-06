@@ -336,7 +336,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 		}
 		else
 		{
-			if (currentEditor<fluxus::NUM_EDITORS)
+			if (currentEditor<fluxus::NUM_EDITORS-1)
 			{
 				app->SetCurrentEditor(currentEditor); // flip it out of the repl
 				app->LoadScript(argv[arg]);
@@ -360,5 +360,4 @@ int main(int argc, char *argv[])
 {
 	return scheme_main_setup(1, run, argc, argv);
 }
-
 

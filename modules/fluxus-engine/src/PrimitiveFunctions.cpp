@@ -1848,9 +1848,11 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 		if (pp)
 		{
 			l = scheme_null;
-			for (unsigned int n=0; n<pp->GetIndex().size(); n++)
+			
+			for (int n=(int)pp->GetIndex().size(); n>=0; n--)
 			{
-				l=scheme_make_pair(scheme_make_double(pp->GetIndex()[n]),l);
+				cerr<<n<<endl;
+				l=scheme_make_pair(scheme_make_integer(pp->GetIndex()[n]),l);
 			}
 			MZ_GC_UNREG(); 
 		    return l;

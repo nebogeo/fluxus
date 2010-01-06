@@ -94,8 +94,20 @@ void Repl::Print(Scheme_Object *obj)
 	long length=0;
 	if (obj)
 	{
-		char *str = scheme_display_to_string(obj, &length);
-		Print(str);
+		if (obj == scheme_multiple_values)
+		{
+			for (int i=0; i<scheme_multiple_count; i++)
+			{
+				char *str = scheme_display_to_string(scheme_multiple_array[i], &length);
+				Print(str);
+				if (i!=scheme_multiple_count-1) Print("\n");
+			}
+		}
+		else
+		{
+			char *str = scheme_display_to_string(obj, &length);
+			Print(str);
+		}
 	}
 	MZ_GC_UNREG();	
 }
