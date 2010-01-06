@@ -125,6 +125,14 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	static_modules=1
 	env.Append(CCFLAGS=' -DSTATIC_LINK')
 
+ode_double_precision=0
+if sys.platform == 'darwin':
+	ode_double_precision=1
+if ARGUMENTS.get("ODE_DOUBLE","0")=="1":
+	ode_double_precision=1
+if ode_double_precision:
+	env.Append(CCFLAGS=' -DdDOUBLE')
+
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTLib + "/mzdyn.o"
@@ -187,8 +195,7 @@ elif env['PLATFORM'] == 'darwin':
         # add jack as a library if not making an app
         if not GetOption('app'):
             LibList += [["jack", "jack/jack.h"]]
-	env.Append(CCFLAGS = ' -DdDOUBLE')
-        env.Append( FRAMEWORKPATH = [PLTLib])
+        env.Append(FRAMEWORKPATH = [PLTLib])
 
         if GetOption('app'):
             env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
