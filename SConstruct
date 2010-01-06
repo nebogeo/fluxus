@@ -187,7 +187,7 @@ elif env['PLATFORM'] == 'darwin':
         # add jack as a library if not making an app
         if not GetOption('app'):
             LibList += [["jack", "jack/jack.h"]]
-
+	env.Append(CCFLAGS = ' -DdDOUBLE')
         env.Append( FRAMEWORKPATH = [PLTLib])
 
         if GetOption('app'):
