@@ -1819,48 +1819,47 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// poly-indices 
+// poly-indices
 // Returns: void
 // Description:
-// Gets the vertex indices from this primitive
-// primitive.
+// Gets the vertex indices from this primitive.
 // Example:
 // (define p (build-cube))
-// 
+//
 // (with-primitive p
 //     (poly-convert-to-indexed)
 //     (display (poly-indices))(newline))
 // EndFunctionDoc
 
 Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
-{	
+{
 	Scheme_Object *l = NULL;
 	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_VAR_IN_REG(1, l);
 	MZ_GC_REG();
-	
+
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
-		// only if this is a pixel primitive
+		// only if this is a poly primitive
 		PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Grabbed);
 		if (pp)
 		{
 			l = scheme_null;
-			
-			for (int n=(int)pp->GetIndex().size(); n>=0; n--)
+
+			for (int n=(int)pp->GetIndex().size()-1; n>=0; n--)
 			{
 				cerr<<n<<endl;
 				l=scheme_make_pair(scheme_make_integer(pp->GetIndex()[n]),l);
 			}
-			MZ_GC_UNREG(); 
+			MZ_GC_UNREG();
 		    return l;
 		}
 	}
-	
+
 	Trace::Stream<<"poly-indices can only be called while a polyprimitive is grabbed"<<endl;
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
