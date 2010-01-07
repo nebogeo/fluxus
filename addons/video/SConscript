@@ -19,7 +19,7 @@ elif env['PLATFORM'] == 'posix':
 	Source += ['src/ofUCUtils.cpp']
 
 # libs to check for
-LibList = []
+LibList = [["GLEW", "GL/glew.h"]]
 Libs = []
 
 Frameworks = []
@@ -58,6 +58,12 @@ if not GetOption('clean'):
 	Libs += [rec[0] for rec in LibList]
 
 env.Append(LIBS = Libs)
+
+# replace libs with static libs if building an osx app
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
+	for l in ['GLEW']:
+		env['LIBS'].remove(l)
+		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
 if Requirements:
 	if not GetOption('clean'):

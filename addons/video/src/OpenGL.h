@@ -7,10 +7,9 @@
 #endif
 
 extern "C" {
+#include "GL/glew.h"
 
 #ifndef __APPLE__
-
-#define GL_GLEXT_PROTOTYPES /* required on linux to get glGenerateMipmapEXT from glext.h */
 
 #include <GL/glut.h>
 #include <GL/gl.h>
