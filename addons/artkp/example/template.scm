@@ -1,5 +1,5 @@
 ;; fluxus-artkp example
-;; detecting simple id-based markers
+;; detecting template based markers
 
 (require fluxus-016/fluxus-video)
 (require fluxus-016/fluxus-artkp)
@@ -12,8 +12,12 @@
 ; camera-init to the id
 (define cam (camera-init 0 640 480))
 
-; init the ar system with the camera resolution and the camera parameter file
-(ar-init (camera-width cam) (camera-height cam) "data/camera_para.dat")
+; init the ar system with the camera resolution, the camera parameter file
+; with template based marker detection
+(ar-init (camera-width cam) (camera-height cam) "data/camera_para.dat" 'template)
+
+; load the pattern
+(define hiro (ar-load-pattern "data/hiro.patt"))
 
 ; enable automatic threshold calculation to adapt to different lighting conditions
 (ar-auto-threshold #t)

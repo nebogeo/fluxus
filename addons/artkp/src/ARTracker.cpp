@@ -37,7 +37,7 @@ ARTracker::~ARTracker()
 	}
 }
 
-bool ARTracker::init(std::string &cam_param_file, int width, int height)
+bool ARTracker::init(std::string &cam_param_file, int width, int height, ARToolKitPlus::MARKER_MODE mode)
 {
 	float clip_near = 1.0;
 	float clip_far = 5000.0;
@@ -48,13 +48,20 @@ bool ARTracker::init(std::string &cam_param_file, int width, int height)
 		delete tracker;
 	}
 
-	/* create a tracker that does:
-	 *  - 6x6 sized marker images
-	 *  - samples at a maximum of 6x6
+
+	/* - template based markers need 16x16 samples
+	 * - id based ones need 6, 12 or 18
+	 * create a tracker that does:
+	 *  - size x size sized marker images
+	 *  - samples at a maximum of size x size
 	 *  - works with rgb images
-	 *  - can load a maximum of 16 patterns
-	 *  - can detect a maximum of 16 patterns in one image */
-	tracker = new ARToolKitPlus::TrackerSingleMarkerImpl<6, 6, 6, 16, 16>(width, height);
+	 *  - can load a maximum of 32 patterns
+	 *  - can detect a maximum of 32 patterns in one image
+	 */
+	if (mode == ARToolKitPlus::MARKER_TEMPLATE)
+		tracker = new ARToolKitPlus::TrackerSingleMarkerImpl<16, 16, 16, 32, 32>(width, height);
+	else
+		tracker = new ARToolKitPlus::TrackerSingleMarkerImpl<12, 12, 12, 32, 32>(width, height);
 	tracker->setLogger(&logger);
 	tracker->setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_RGB);
 	if (!tracker->init(cam_param_file.c_str(), clip_near, clip_far))
@@ -63,15 +70,16 @@ bool ARTracker::init(std::string &cam_param_file, int width, int height)
 	}
 
 	tracker->setPatternWidth(patt_width);
-	tracker->setBorderWidth(0.250);
+	if (mode == ARToolKitPlus::MARKER_ID_BCH)
+		tracker->setBorderWidth(0.125);
+	else
+		tracker->setBorderWidth(0.250);
 	tracker->setUndistortionMode(ARToolKitPlus::UNDIST_STD);
 
 	/* RPP is more robust than ARToolKit's standard pose estimator */
 	tracker->setPoseEstimator(ARToolKitPlus::POSE_ESTIMATOR_RPP);
 
-	/* switch to simple ID based markers
-	 * use the tool in tools/IdPatGen to generate markers */
-	tracker->setMarkerMode(ARToolKitPlus::MARKER_ID_SIMPLE);
+	tracker->setMarkerMode(mode);
 
 	return true;
 }

@@ -36,7 +36,8 @@ class ARTracker
 		ARTracker();
 		~ARTracker();
 
-		bool init(std::string &cam_param_file, int width, int height);
+		bool init(std::string &cam_param_file, int width, int height,
+				ARToolKitPlus::MARKER_MODE mode);
 
 		void set_threshold(int t)
 		{
@@ -62,6 +63,11 @@ class ARTracker
 		void activate_vignetting_compensation(bool e)
 		{
 			tracker->activateVignettingCompensation(e);
+		}
+
+		int load_pattern(const char *filename)
+		{
+			return tracker->addPattern(filename);
 		}
 
 		int detect(const unsigned char *img);
