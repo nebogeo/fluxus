@@ -1658,6 +1658,23 @@ Scheme_Object *set_cursor(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// set-full-screen
+// Returns: void
+// Description:
+// Requests that the current fluxus window be made full screen.
+// Example:
+// (set-full-screen)
+// EndFunctionDoc
+
+Scheme_Object *set_full_screen(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	glutFullScreen();
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {
 	MZ_GC_DECL_REG(1);
@@ -1706,6 +1723,8 @@ void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
 	scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
 	scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
+	scheme_add_global("set-full-screen", scheme_make_prim_w_arity(set_full_screen, "set-full-screen", 0, 0), env);
 
 	MZ_GC_UNREG();
 }
+
