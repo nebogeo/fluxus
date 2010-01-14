@@ -39,10 +39,10 @@ m_Height(h)
 	m_Points.push_back(dVector(1, 0, 0));
 	m_Points.push_back(dVector(0, 0, 0));
 
-	m_TexData->push_back(dVector(1, 0, 0));
 	m_TexData->push_back(dVector(0, 0, 0));
-	m_TexData->push_back(dVector(0, 1, 0));
+	m_TexData->push_back(dVector(1, 0, 0));
 	m_TexData->push_back(dVector(1, 1, 0));
+	m_TexData->push_back(dVector(0, 1, 0));
 }
 
 ImagePrimitive::ImagePrimitive(const ImagePrimitive &other) :
