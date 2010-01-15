@@ -1041,7 +1041,7 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed)
 	{
-		PrimitiveIO::Write(SearchPaths::Get()->GetFullPath(filename),Grabbed);
+		PrimitiveIO::Write(filename,Grabbed);
 	}
 	MZ_GC_UNREG();
     return scheme_void;
