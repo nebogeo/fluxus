@@ -14,8 +14,7 @@
             (hint-cast-shadow)
             (scale 10)
             (translate (vmul (vector (crndf) 0 (crndf)) 2))
-            (rotate (vector 90 0 (* 360 (rndf))))
-            (poly-convert-to-indexed))
+            (rotate (vector 90 0 (* 360 (rndf)))))
         (passive-mesh m) ))
 
 (define (new-bot x)
@@ -23,8 +22,7 @@
         (with-primitive m
             (hint-cast-shadow)
             (translate (vmul (vector (- x 5) 4 0) 2))
-            (recalc-normals 0)
-            (poly-convert-to-indexed))
+            (recalc-normals 0))
         (active-mesh m)))
 
 (gravity (vector 0 -1 0))
