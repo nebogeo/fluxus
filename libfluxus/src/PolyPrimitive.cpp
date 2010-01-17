@@ -275,7 +275,7 @@ void PolyPrimitive::RecalculateNormals(bool smooth)
 			}
 		}
 		
-		if (smooth)
+		if (smooth && !m_IndexMode)
 		{
 			// smooth the normals
 			TypedPData<dVector> *newnorms = new TypedPData<dVector>;
