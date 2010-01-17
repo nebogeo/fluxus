@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #include <cstdlib>
 #include <cstdio>
 #include "assert.h"
@@ -22,7 +22,7 @@
 #include "Trace.h"
 
 using namespace Fluxus;
-	
+
 OBJPrimitiveIO::OBJPrimitiveIO()
 {
 }
@@ -35,7 +35,7 @@ OBJPrimitiveIO::~OBJPrimitiveIO()
 	m_Normal.clear();
 	m_Faces.clear();
 }
-	
+
 Primitive *OBJPrimitiveIO::FormatRead(const string &filename)
 {
 	FILE *file = fopen(filename.c_str(),"r");
@@ -44,11 +44,11 @@ Primitive *OBJPrimitiveIO::FormatRead(const string &filename)
 		Trace::Stream<<"Cannot open .obj file: "<<filename<<endl;
 		return NULL;
 	}
-	
+
 	fseek(file,0,SEEK_END);
 	m_DataSize = ftell(file);
 	rewind(file);
-	
+
 	m_Data = new char[m_DataSize+1];
 	if (m_DataSize!=fread(m_Data,1,m_DataSize,file))
 	{
@@ -56,67 +56,63 @@ Primitive *OBJPrimitiveIO::FormatRead(const string &filename)
 		fclose(file);
 		return NULL;
 	}
-  	fclose(file);
+	fclose(file);
 	m_Data[m_DataSize]='\0';
-    
-	// get all the data we need
-  	ReadVectors("v",m_Position);
-  	ReadVectors("vt",m_Texture);
-  	ReadVectors("vn",m_Normal);
-	ReadIndices(m_Faces);
-	
+
+	ReadOBJ(m_Position, m_Texture, m_Normal, m_Faces);
+
 	// now get rid of the text
 	delete[] m_Data;
-	
+
 	// shuffle stuff around so we only have one set of indices
 	vector<Indices> unique=RemoveDuplicateIndices();
 	ReorderData(unique);
 	UnifyIndices(unique);
-	
+
 	if (m_Faces.empty()) return NULL;
-	
+
 	return MakePrimitive();
 }
 
 Primitive *OBJPrimitiveIO::MakePrimitive()
 {
 	// stick all the data in a primitive
-	
+
 	// what type?
 	PolyPrimitive::Type type;
 	switch (m_Faces[0].Index.size())
 	{
 		case 3: type=PolyPrimitive::TRILIST; break;
 		case 4: type=PolyPrimitive::QUADS; break;
-		default: 
+		default:
 		{
 			Trace::Stream<<"obj file needs to contain triangles or quads"<<endl;
 			return NULL;
 		}
 	}
-	
+
 	PolyPrimitive *prim = new PolyPrimitive(type);
 	prim->Resize(m_Position.size());
-	
+
 	TypedPData<dVector> *pos = new TypedPData<dVector>(m_Position);
 	prim->SetDataRaw("p", pos);
-	
+
 	if (!m_Texture.empty())
 	{
 		assert(m_Texture.size()==m_Position.size());
 		TypedPData<dVector> *tex = new TypedPData<dVector>(m_Texture);
 		prim->SetDataRaw("t", tex);
 	}
-	
+
 	if (!m_Normal.empty())
-	{	
+	{
 		assert(m_Normal.size()==m_Position.size());
 		TypedPData<dVector> *nrm = new TypedPData<dVector>(m_Normal);
 		prim->SetDataRaw("n", nrm);
 	}
 
 	prim->GetIndex()=m_Indices;
-	prim->SetIndexMode(true); 
+	prim->SetIndexMode(true);
 	return prim;
 }
 
@@ -130,15 +126,15 @@ unsigned int OBJPrimitiveIO::TokeniseLine(unsigned int pos, vector<string> &outp
 		if (c==' ' && *temp.rbegin()!="") temp.push_back("");
 		else temp.rbegin()->push_back(c);
 		c=m_Data[++pos];
-	}		
-	
+	}
+
 	// get rid of whitespace
 	output.clear();
 	for(vector<string>::iterator i=temp.begin(); i!=temp.end(); ++i)
 	{
 		if (*i!="")	output.push_back(*i);
 	}
-	
+
 	return pos+1;
 }
 
@@ -152,35 +148,46 @@ void OBJPrimitiveIO::TokeniseIndices(const string &str, vector<string> &output)
 		char c=str[pos++];
 		if (c==' ' || c=='/') output.push_back("");
 		else output.rbegin()->push_back(c);
-	}			
-}
-
-void OBJPrimitiveIO::ReadVectors(const string &code, std::vector<dVector> &output)
-{
-	unsigned int pos=0;
-	output.clear();
-	while (pos<m_DataSize)
-	{
-		vector<string> tokens;
-		pos = TokeniseLine(pos, tokens);
-		if (tokens.size()==4 && tokens[0]==code)
-		{
-			output.push_back(dVector(atof(tokens[1].c_str()),
-			                         atof(tokens[2].c_str()),
-									 atof(tokens[3].c_str())));
-		}
 	}
 }
 
-void OBJPrimitiveIO::ReadIndices(vector<Face> &output)
+void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
+		std::vector<dVector> &textures,
+		std::vector<dVector> &normals,
+		std::vector<Face> &faces)
 {
 	unsigned int pos=0;
-	output.clear();
+	positions.clear();
+	textures.clear();
+	normals.clear();
+	faces.clear();
+
 	while (pos<m_DataSize)
 	{
 		vector<string> tokens;
 		pos = TokeniseLine(pos, tokens);
-		if (!tokens.empty() && tokens[0]=="f")
+		if (tokens.empty())
+			continue;
+
+		if ((tokens[0] == "v") && (tokens.size() == 4))
+		{
+			positions.push_back(dVector(atof(tokens[1].c_str()),
+									 atof(tokens[2].c_str()),
+									 atof(tokens[3].c_str())));
+		}
+		else if ((tokens[0] == "vt") && (tokens.size() == 4))
+		{
+			textures.push_back(dVector(atof(tokens[1].c_str()),
+									 atof(tokens[2].c_str()),
+									 atof(tokens[3].c_str())));
+		}
+		else if ((tokens[0] == "vn") && (tokens.size() == 4))
+		{
+			normals.push_back(dVector(atof(tokens[1].c_str()),
+									 atof(tokens[2].c_str()),
+									 atof(tokens[3].c_str())));
+		}
+		else if (tokens[0] == "f")
 		{
 			Face f;
 			for(unsigned int i=1; i<tokens.size(); i++)
@@ -213,7 +220,7 @@ void OBJPrimitiveIO::ReadIndices(vector<Face> &output)
 					Trace::Stream<<"Wrong number of indices in .obj file ("<<itokens.size()<<")"<<endl;
 				}
 			}
-			output.push_back(f);
+			faces.push_back(f);
 		}
 	}
 }
@@ -221,23 +228,22 @@ void OBJPrimitiveIO::ReadIndices(vector<Face> &output)
 vector<OBJPrimitiveIO::Indices> OBJPrimitiveIO::RemoveDuplicateIndices()
 {
 	vector<Indices> ret;
-	for (vector<Face>::const_iterator fi=m_Faces.begin();
+	for (vector<Face>::iterator fi=m_Faces.begin();
 		fi!=m_Faces.end(); ++fi)
 	{
-		for (vector<Indices>::const_iterator ii=fi->Index.begin();
+		for (vector<Indices>::iterator ii=fi->Index.begin();
 			ii!=fi->Index.end(); ++ii)
 		{
-			bool exists=false;
-			for (vector<Indices>::iterator ri=ret.begin();
-				ri!=ret.end(); ++ri)
-			{	
-				if (*ri==*ii) 
-				{
-					exists=true;
-					break;
-				}
+			vector<Indices>::iterator result = find(ret.begin(), ret.end(), *ii);
+			if (result == ret.end())
+			{
+				ii->UnifiedIndex = ret.size();
+				ret.push_back(*ii);
 			}
-			if (!exists) ret.push_back(*ii);
+			else
+			{
+				ii->UnifiedIndex = result - ret.begin();
+			}
 		}
 	}
 	return ret;
@@ -248,7 +254,7 @@ void OBJPrimitiveIO::ReorderData(const vector<OBJPrimitiveIO::Indices> &unique)
 	vector<dVector> NewPosition;
 	vector<dVector> NewTexture;
 	vector<dVector> NewNormal;
-	
+
 	for (vector<Indices>::const_iterator i=unique.begin();
 		i!=unique.end(); ++i)
 	{
@@ -271,14 +277,7 @@ void OBJPrimitiveIO::UnifyIndices(const vector<Indices> &unique)
 		for (vector<Indices>::const_iterator ii=fi->Index.begin();
 			ii!=fi->Index.end(); ++ii)
 		{
-			unsigned int index=0;
-			for (vector<Indices>::const_iterator ri=unique.begin();
-				ri!=unique.end(); ++ri)
-			{	
-				if (*ri==*ii) break;				
-				index++;
-			}
-			m_Indices.push_back((unsigned int)index);
+			m_Indices.push_back(ii->UnifiedIndex);
 		}
 	}
 }
