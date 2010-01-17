@@ -267,7 +267,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 			if (pp!=NULL)
 			{
 				dTriMeshDataID TriMeshData=dGeomTriMeshDataCreate();
-				if (pp->GetType()==PolyPrimitive::TRILIST and pp->IsIndexed())
+				if (pp->GetType()==PolyPrimitive::TRILIST && pp->IsIndexed())
 				{
 					float *verts = (float*)(&((*pp->GetDataVec<dVector>("p"))[0]));
 					float *normals = (float*)(&((*pp->GetDataVec<dVector>("n"))[0]));
@@ -415,7 +415,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 			if (pp!=NULL)
 			{
 				dTriMeshDataID TriMeshData=dGeomTriMeshDataCreate();
-				if (pp->GetType()==PolyPrimitive::TRILIST and pp->IsIndexed())
+				if (pp->GetType()==PolyPrimitive::TRILIST && pp->IsIndexed())
 				{
 					float *verts = (float*)(&((*pp->GetDataVec<dVector>("p"))[0]));
 					float *normals = (float*)(&((*pp->GetDataVec<dVector>("n"))[0]));
@@ -431,11 +431,13 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 				else
 				{
 					Trace::Stream<<"Physics::MakePassive : PolyPrimitive ["<<ID<<"] needs to be an indexed triangle list"<<endl;
+					return;
 				}
 			}
 			else
 			{
 				Trace::Stream<<"Physics::MakePassive : Object ["<<ID<<"] is not a polyprimitive, and mesh specified"<<endl;
+				return;
 			}
 
 		} break;

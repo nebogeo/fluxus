@@ -206,7 +206,7 @@ Scheme_Object *active_cylinder(int argc, Scheme_Object **argv)
 // (define mycube (build-cube))
 // (active-sphere mycube)
 // EndFunctionDoc
-
+  
 // StartFunctionDoc-pt
 // active-sphere número-id-primitiva
 // Retorna: void

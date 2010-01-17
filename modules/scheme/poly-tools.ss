@@ -165,7 +165,7 @@
 						   (list-ref indices (+ i 1))))))
          (else
           (error "poly-for-each-triangle: faces with less than 3 verts!")))))))
-
+		  
 ;; StartFunctionDoc-en
 ;; pdata-for-each-tri-sample proc samples-per-triangle
 ;; Returns: void
