@@ -33,7 +33,7 @@ public:
    	Physics(Renderer *r);
 	virtual ~Physics();
 	
-	enum BoundingType {BOX,CYLINDER,SPHERE};
+	enum BoundingType {BOX,CYLINDER,SPHERE,MESH};
 	enum ObjectType {ACTIVE,PASSIVE};
 	
 	/// Run the simulation for one frame

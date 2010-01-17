@@ -233,6 +233,30 @@ Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// active-mesh primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using the mesh as the collision volume. 
+// This function only works on indexed, triangle-list poly primitives. As an active object, it 
+// will be transformed by ode. Note: rotations only work correctly if 
+// you specify your transforms scale first, then rotate (translate doesn't matter) 
+// basically, ode can't deal with shearing transforms. 
+// Example:
+// (define myshape (load-primitive "bot.obj"))
+// (active-mesh myshape)
+// EndFunctionDoc
+
+Scheme_Object *active_mesh(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+ 	ArgCheck("active-mesh", "i", argc, argv);
+	int name=IntFromScheme(argv[0]);	
+	Engine::Get()->Physics()->MakeActive(name,1.0f,Physics::MESH);
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // passive-box primitiveid-number
 // Returns: void
 // Description:
@@ -345,6 +369,30 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
  	ArgCheck("passive-sphere", "i", argc, argv);
 	int name=IntFromScheme(argv[0]);	
 	Engine::Get()->Physics()->MakePassive(name,1.0f,Physics::SPHERE);
+	MZ_GC_UNREG(); 
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// passive-mesh primitiveid-number
+// Returns: void
+// Description:
+// Enable the object to be acted upon by the physics system, using a the mesh as the collision 
+// volume. This function only works on indexed, triangle-list poly primitives. As a passive object, 
+// active objects will collide with it, but it will not be transformed. 
+// Note: rotations only work correctly if you specify your transforms scale first, then 
+// rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
+// Example:
+// (define myshape (load-primitive "bot.obj"))
+// (passive-mesh myshape)
+// EndFunctionDoc
+
+Scheme_Object *passive_mesh(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+ 	ArgCheck("passive-mesh", "i", argc, argv);
+	int name=IntFromScheme(argv[0]);	
+	Engine::Get()->Physics()->MakePassive(name,1.0f,Physics::MESH);
 	MZ_GC_UNREG(); 
 	return scheme_void;
 }
@@ -1479,9 +1527,11 @@ void PhysicsFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("active-box", scheme_make_prim_w_arity(active_box, "active-box", 1, 1), env);
 	scheme_add_global("active-cylinder", scheme_make_prim_w_arity(active_box, "active-cylinder", 1, 1), env);
 	scheme_add_global("active-sphere", scheme_make_prim_w_arity(active_box, "active-sphere", 1, 1), env);
+	scheme_add_global("active-mesh", scheme_make_prim_w_arity(active_mesh, "active-mesh", 1, 1), env);
 	scheme_add_global("passive-box", scheme_make_prim_w_arity(passive_box, "passive-box", 1, 1), env);
 	scheme_add_global("passive-cylinder", scheme_make_prim_w_arity(passive_box, "passive-cylinder", 1, 1), env);
 	scheme_add_global("passive-sphere", scheme_make_prim_w_arity(passive_box, "passive-sphere", 1, 1), env);
+	scheme_add_global("passive-mesh", scheme_make_prim_w_arity(passive_mesh, "passive-mesh", 1, 1), env);
 	scheme_add_global("physics-remove", scheme_make_prim_w_arity(physics_remove, "physics-remove", 1, 1), env);
 	scheme_add_global("surface-params", scheme_make_prim_w_arity(surface_params, "surface-params", 4, 4), env);
 	scheme_add_global("build-balljoint", scheme_make_prim_w_arity(build_balljoint, "build-balljoint", 3, 3), env);

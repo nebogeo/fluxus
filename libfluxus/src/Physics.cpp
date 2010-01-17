@@ -259,7 +259,43 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 			dMassAdjust(&m,Mass);
  			dBodySetMass(Ob->Body,&m);
  			Ob->Bound = dCreateCylinder(m_Space,Radius,Height);	
-        }
+        } break;
+		case MESH:
+		{
+			
+			PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Ob->Prim);
+			if (pp!=NULL)
+			{
+				dTriMeshDataID TriMeshData=dGeomTriMeshDataCreate();
+				if (pp->GetType()==PolyPrimitive::TRILIST and pp->IsIndexed())
+				{
+					float *verts = (float*)(&((*pp->GetDataVec<dVector>("p"))[0]));
+					float *normals = (float*)(&((*pp->GetDataVec<dVector>("n"))[0]));
+					unsigned int *idx = (unsigned int *)(&(pp->GetIndex()[0]));
+				
+					dGeomTriMeshDataBuildSingle1(TriMeshData, (void*)verts,
+                    	   sizeof(dVector), pp->Size(),
+                    	   (void*)idx, pp->GetIndex().size(),
+                    	   sizeof(unsigned int)*3, (void*)normals);
+
+					dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+					dVector BoxSize=Box.max-Box.min;
+					dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
+					dMassAdjust(&m,Mass);
+ 					dBodySetMass(Ob->Body,&m);
+					Ob->Bound = dCreateTriMesh(m_Space,TriMeshData,NULL,NULL,NULL);
+				}
+				else
+				{
+					Trace::Stream<<"Physics::MakeActive : PolyPrimitive ["<<ID<<"] needs to be an indexed triangle list"<<endl;
+				}
+			}
+			else
+			{
+				Trace::Stream<<"Physics::MakeActive : Object ["<<ID<<"] is not a polyprimitive, and mesh specified"<<endl;
+			}
+
+		} break;
  	}
 	
 	// set rotation into ode body
@@ -372,7 +408,37 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
  			Ob->Bound = dCreateCylinder(m_Space,Radius,Height);	
-        }
+        } break;
+		case MESH:
+		{
+			PolyPrimitive *pp = dynamic_cast<PolyPrimitive *>(Ob->Prim);
+			if (pp!=NULL)
+			{
+				dTriMeshDataID TriMeshData=dGeomTriMeshDataCreate();
+				if (pp->GetType()==PolyPrimitive::TRILIST and pp->IsIndexed())
+				{
+					float *verts = (float*)(&((*pp->GetDataVec<dVector>("p"))[0]));
+					float *normals = (float*)(&((*pp->GetDataVec<dVector>("n"))[0]));
+					unsigned int *idx = (unsigned int *)(&(pp->GetIndex()[0]));
+				
+					dGeomTriMeshDataBuildSingle1(TriMeshData, (void*)verts,
+                    	   sizeof(dVector), pp->Size(),
+                    	   (void*)idx, pp->GetIndex().size(),
+                    	   sizeof(unsigned int)*3, (void*)normals);
+
+					Ob->Bound = dCreateTriMesh(m_Space,TriMeshData,NULL,NULL,NULL);
+				}
+				else
+				{
+					Trace::Stream<<"Physics::MakePassive : PolyPrimitive ["<<ID<<"] needs to be an indexed triangle list"<<endl;
+				}
+			}
+			else
+			{
+				Trace::Stream<<"Physics::MakePassive : Object ["<<ID<<"] is not a polyprimitive, and mesh specified"<<endl;
+			}
+
+		} break;
  	}
 	
   	// set rotation into ode body

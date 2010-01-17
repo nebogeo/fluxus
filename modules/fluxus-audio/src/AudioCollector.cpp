@@ -174,6 +174,7 @@ float *AudioCollector::GetFFT()
 		for (int i=XRanges[n]; i<XRanges[n+1]; i++)
 		{
 			Value += m_FFTBuffer[i];
+			if (i>m_BufferLength) cerr<<"whoops"<<endl;
 		}
 		Value*=Value;
 		Value*=m_Gain*0.025;
