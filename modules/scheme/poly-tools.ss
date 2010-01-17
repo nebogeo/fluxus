@@ -17,6 +17,7 @@
     poly-for-each-face
     poly-for-each-triangle
     poly-for-each-tri-sample
+	poly-build-triangulate
 	build-extrusion
 	build-partial-extrusion
 	partial-extrude
@@ -166,6 +167,45 @@
          (else
           (error "poly-for-each-triangle: faces with less than 3 verts!")))))))
 		  
+;; StartFunctionDoc-en
+;; poly-build-triangulate primitive-id 
+;; Returns: primitive-id
+;; Description:
+;; A new poly primitive of type triangle-list representing the supplied poly primitive.
+;; Example:  
+;; (define triangulated-plane (poly-build-triangulate (build-seg-plane 20 20)))
+;; EndFunctionDoc 
+		  
+(define (poly-build-triangulate id)
+  (with-primitive id
+    (let ((triangles '()))
+      (poly-for-each-triangle 
+	    (lambda (indices)
+	      (set! triangles (cons 
+		     (map
+			   (lambda (name)
+			   	  (list 
+				    name
+				    (pdata-ref name (list-ref indices 0))
+				    (pdata-ref name (list-ref indices 1))
+				    (pdata-ref name (list-ref indices 2))))
+			 (pdata-names)) triangles))))
+	(set! triangles (reverse triangles))
+	(let ((r (build-polygons (* (length triangles) 3) 'triangle-list))
+	      (pos 0))	
+      (with-primitive r  
+		(for-each
+		  (lambda (triangle)
+	    	(for-each 
+			  (lambda (type)
+		    	(pdata-set! (car type) (* pos 3) (list-ref type 1))
+		    	(pdata-set! (car type) (+ (* pos 3) 1) (list-ref type 2))
+		    	(pdata-set! (car type) (+ (* pos 3) 2) (list-ref type 3)))
+			  triangle)
+			 (set! pos (+ pos 1)))
+		  triangles) r)))))
+		  
+
 ;; StartFunctionDoc-en
 ;; pdata-for-each-tri-sample proc samples-per-triangle
 ;; Returns: void

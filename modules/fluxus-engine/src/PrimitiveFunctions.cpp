@@ -1850,7 +1850,6 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 
 			for (int n=(int)pp->GetIndex().size()-1; n>=0; n--)
 			{
-				cerr<<n<<endl;
 				l=scheme_make_pair(scheme_make_integer(pp->GetIndex()[n]),l);
 			}
 			MZ_GC_UNREG();

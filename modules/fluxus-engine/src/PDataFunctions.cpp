@@ -352,6 +352,45 @@ Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// pdata-names 
+// Returns: void
+// Description:
+// Returns a list of the names of the pdata arrays for this primitive.
+// Example:
+// (with-primitive (build-cube)
+//     (display (pdata-names)) (newline))
+// EndFunctionDoc
+
+Scheme_Object *pdata_names(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *l = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, l);
+	MZ_GC_REG();
+
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{		
+		vector<string> names;
+		Grabbed->GetDataNames(names);	
+		l = scheme_null;
+		
+		for(vector<string>::iterator i=names.begin(); i!=names.end(); ++i)
+		{
+			l=scheme_make_pair(scheme_make_utf8_string(i->c_str()),l);
+		}
+		
+		MZ_GC_UNREG();
+		return l;
+	}
+
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+
+
+// StartFunctionDoc-en
 // pdata-op funcname-string pdataname-string operator
 // Returns: void
 // Description:
@@ -699,6 +738,7 @@ void PDataFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pdata-set!", scheme_make_prim_w_arity(pdata_set, "pdata-set!", 3, 3), env);
 	scheme_add_global("pdata-add", scheme_make_prim_w_arity(pdata_add, "pdata-add", 2, 2), env);
 	scheme_add_global("pdata-exists?", scheme_make_prim_w_arity(pdata_exists, "pdata-exists?", 1, 1), env);
+	scheme_add_global("pdata-names", scheme_make_prim_w_arity(pdata_names, "pdata-names", 0, 0), env);
 	scheme_add_global("pdata-op", scheme_make_prim_w_arity(pdata_op, "pdata-op", 3, 3), env);
 	scheme_add_global("pdata-copy", scheme_make_prim_w_arity(pdata_copy, "pdata-copy", 2, 2), env);
 	scheme_add_global("pdata-size", scheme_make_prim_w_arity(pdata_size, "pdata-size", 0, 0), env);
