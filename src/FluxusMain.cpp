@@ -76,7 +76,7 @@ m_ShowFileDialog(false)
 	Interpreter::Interpret("fluxus-scratchpad-y-pos", &t);
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
 	Interpreter::Interpret("fluxus-scratchpad-hide-script", &t);
-	m_HideScript=(int)scheme_real_to_double(t);
+	m_HideScript=SCHEME_TRUEP(t);
 
 	float colour[]={0, 0, 0, 1};
 	Interpreter::Interpret("fluxus-scratchpad-cursor-colour", &t);
@@ -398,10 +398,12 @@ void FluxusMain::Pretty()
   	MZ_GC_UNREG();
 }
 
-void FluxusMain::HideCursor() 
+void FluxusMain::HideCursor()
 {
-	m_ShowCursor=!m_ShowCursor; 
-	if (m_ShowCursor) glutSetCursor(GLUT_CURSOR_INHERIT); 
-	else glutSetCursor(GLUT_CURSOR_NONE); 
+	m_ShowCursor=!m_ShowCursor;
+	if (m_ShowCursor)
+		glutSetCursor(GLUT_CURSOR_INHERIT);
+	else
+		glutSetCursor(GLUT_CURSOR_NONE);
 }
 

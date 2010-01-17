@@ -55,7 +55,7 @@
 (define fluxus-scratchpad-visible-columns 80)
 (define fluxus-scratchpad-x-pos 0)
 (define fluxus-scratchpad-y-pos 85000)
-(define fluxus-scratchpad-hide-script 0)
+(define fluxus-scratchpad-hide-script #f)
 (define fluxus-scratchpad-cursor-colour (vector 1 1 0 .5))
 
 ; initial parameterso of scratchpad effects

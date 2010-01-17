@@ -49,6 +49,7 @@ class VideoTexture
 			void gen_texture();
 			void upload(unsigned char *pixels);
 
+			bool mipmapping_enabled;
 			int width, height; // pixel buffer resolution of video or camera image
 			int tex_width, tex_height; // texture resolution (power of 2)
 

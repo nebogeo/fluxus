@@ -34,11 +34,18 @@ static ARTracker *tracker = NULL;
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// ar-init width-number height-number filename-string
+// ar-init width-number height-number filename-string [marker-mode-symbol]
 // Returns: void
 // Description:
 // Initializes the AR single marker tracker with the camera resolution and
 // camera parameter file.
+// The forth optional paremeter sets the type of markers to be detected.
+// The marker mode can be 'template, 'id or 'bch.
+// Template markers are the classic marker type used in ARToolKit. Id-based
+// markers directly encode the marker id in the image. Simple markers use
+// 3-times redundancy to increase robustness, while BCH markers use an
+// advanced CRC algorithm to detect and repair marker damages.
+// The default mode is 'id.
 // Example:
 // (define cam (camera-init 0 320 240))
 // (ar-init (camera-width cam) (camera-height cam) "data/camera-para.dat")
@@ -48,7 +55,11 @@ Scheme_Object *ar_init(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 
-	ArgCheck("ar-init", "iis", argc, argv);
+	if (argc == 3)
+		ArgCheck("ar-init", "iis", argc, argv);
+	else
+		ArgCheck("ar-init", "iisS", argc, argv);
+
 	int width = IntFromScheme(argv[0]);
 	int height = IntFromScheme(argv[1]);
 	string filename = StringFromScheme(argv[2]);
@@ -56,7 +67,39 @@ Scheme_Object *ar_init(int argc, Scheme_Object **argv)
 	{
 		tracker = new ARTracker();
 	}
-	tracker->init(filename, width, height);
+
+	if (tracker != NULL)
+	{
+		ARToolKitPlus::MARKER_MODE mode = ARToolKitPlus::MARKER_ID_SIMPLE;
+
+		if (argc == 4)
+		{
+			string mode_name = SymbolName(argv[3]);
+			if (mode_name == "template")
+			{
+				mode = ARToolKitPlus::MARKER_TEMPLATE;
+			}
+			else
+			if (mode_name == "id")
+			{
+				mode = ARToolKitPlus::MARKER_ID_SIMPLE;
+			}
+			else
+			if (mode_name == "bch")
+			{
+				mode = ARToolKitPlus::MARKER_ID_BCH;
+			}
+			else
+			{
+				cerr << "unknown marker mode." << endl;
+				MZ_GC_UNREG();
+				return scheme_void;
+			}
+		}
+
+		tracker->init(filename, width, height, mode);
+	}
+
 	MZ_GC_UNREG();
 	return scheme_void;
 }
@@ -393,6 +436,45 @@ Scheme_Object *ar_get_confidence(int argc, Scheme_Object **argv)
 	return scheme_make_double(cf);
 }
 
+// StartFunctionDoc-en
+// ar-load-pattern filename-string
+// Returns: id-number
+// Description:
+// Adds a pattern to the tracker, returns the pattern id.
+// Example:
+// (define hiro (ar-load-pattern "hiro.patt"))
+// EndFunctionDoc
+
+Scheme_Object *ar_load_pattern(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+
+	ArgCheck("ar-load-pattern", "s", argc, argv);
+
+	ret = scheme_void;
+
+	if (tracker != NULL)
+	{
+		string filename = StringFromScheme(argv[0]);
+
+		int pattern_id = tracker->load_pattern(filename.c_str());
+
+		if (pattern_id != -1)
+			ret = scheme_make_integer_value(pattern_id);
+	}
+	else
+	{
+		cerr << "ar-load-pattern: tracker is not initialized." << endl;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
 Scheme_Object *scheme_reload(Scheme_Env *env)
 {
 	Scheme_Env *menv = NULL;
@@ -405,7 +487,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	menv = scheme_primitive_module(scheme_intern_symbol("fluxus-artkp"), env);
 
 	scheme_add_global("ar-init",
-			scheme_make_prim_w_arity(ar_init, "ar-init", 3, 3), menv);
+			scheme_make_prim_w_arity(ar_init, "ar-init", 3, 4), menv);
 	scheme_add_global("ar-set-threshold",
 			scheme_make_prim_w_arity(ar_set_threshold, "ar-set-threshold", 1, 1), menv);
 	scheme_add_global("ar-get-threshold",
@@ -426,6 +508,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(ar_get_id, "ar-get-id", 1, 1), menv);
 	scheme_add_global("ar-get-confidence",
 			scheme_make_prim_w_arity(ar_get_confidence, "ar-get-confidence", 1, 1), menv);
+	scheme_add_global("ar-load-pattern",
+			scheme_make_prim_w_arity(ar_load_pattern, "ar-load-pattern", 1, 1), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();

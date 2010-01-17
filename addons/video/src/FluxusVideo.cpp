@@ -170,8 +170,10 @@ static Scheme_Object *scheme_vector(float v0, float v1, float v2)
 Scheme_Object *video_tcoords(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
-	MZ_GC_DECL_REG(1);
+	Scheme_Object **coord_list = NULL;
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, coord_list);
 	MZ_GC_REG();
 	if (!SCHEME_NUMBERP(argv[0]))
 		scheme_wrong_type("video-tcoords", "number", 0, argc, argv);
@@ -179,7 +181,7 @@ Scheme_Object *video_tcoords(int argc, Scheme_Object **argv)
 	Video *v = find_video("video-tcoords", argv[0]);
 	if (v != NULL)
 	{
-		Scheme_Object **coord_list = (Scheme_Object **)scheme_malloc(4 *
+		coord_list = (Scheme_Object **)scheme_malloc(4 *
 				sizeof(Scheme_Object *));
 
 		float *coords  = v->get_tcoords();
@@ -558,8 +560,10 @@ Scheme_Object *camera_update(int argc, Scheme_Object **argv)
 Scheme_Object *camera_tcoords(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
-	MZ_GC_DECL_REG(1);
+	Scheme_Object **coord_list = NULL;
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, coord_list);
 	MZ_GC_REG();
 	if (!SCHEME_NUMBERP(argv[0]))
 		scheme_wrong_type("camera-tcoords", "number", 0, argc, argv);
@@ -567,7 +571,7 @@ Scheme_Object *camera_tcoords(int argc, Scheme_Object **argv)
 	Camera *g = find_camera("camera-tcoords", argv[0]);
 	if (g != NULL)
 	{
-		Scheme_Object **coord_list = (Scheme_Object **)scheme_malloc(4 *
+		coord_list = (Scheme_Object **)scheme_malloc(4 *
 				sizeof(Scheme_Object *));
 
 		float *coords  = g->get_tcoords();

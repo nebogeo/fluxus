@@ -53,7 +53,14 @@ static int check_gl_errors(const char *call)
 
 VideoTexture::VideoTexture() :
 	texture_id(0)
-{}
+{
+	if (glewInit() != GLEW_OK)
+	{
+		cerr << "ERROR Unable to check OpenGL extensions" << endl;
+	}
+
+	mipmapping_enabled = (glGenerateMipmapEXT != NULL);
+}
 
 VideoTexture::~VideoTexture()
 {
@@ -77,8 +84,15 @@ void VideoTexture::gen_texture()
 			GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	CHECK_GL_ERRORS("glTexImage2d");
 
-	glGenerateMipmapEXT(GL_TEXTURE_2D);
-	CHECK_GL_ERRORS("glGenerateMipmapEXT");
+	if (mipmapping_enabled)
+	{
+		glGenerateMipmapEXT(GL_TEXTURE_2D);
+		CHECK_GL_ERRORS("glGenerateMipmapEXT");
+	}
+	else
+	{
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
@@ -92,8 +106,12 @@ void VideoTexture::upload(unsigned char *pixels)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
 			GL_RGB, GL_UNSIGNED_BYTE, pixels);
 	CHECK_GL_ERRORS("update: glTexImage2d");
-	glGenerateMipmapEXT(GL_TEXTURE_2D);
-	CHECK_GL_ERRORS("update: glGenerateMipmapEXT");
+
+	if (mipmapping_enabled)
+	{
+		glGenerateMipmapEXT(GL_TEXTURE_2D);
+		CHECK_GL_ERRORS("update: glGenerateMipmapEXT");
+	}
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);

@@ -13,10 +13,10 @@ PLTPrefix = pipe.read()[:-5]
 pipe.close()
 
 # copy plt collects path manually preserving original dates
-print 'copying required plt modules...'
+print 'copying required plt 4.2.3 modules...'
 for m in ['compiler', 'config', 'defaults', 'frtime', 'lang', \
 		  'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
-		  'stxclass', 'syntax', 'xml']:
+		  'syntax', 'unstable', 'xml']:
 	print '\t', m
 	os.system('cp -pr "%s" Fluxus.app/Contents/Resources/collects/%s' %
 		(PLTPrefix + '/collects/' + m, m))
