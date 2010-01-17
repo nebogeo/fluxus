@@ -78,6 +78,8 @@ private:
 	vector<dVector> m_Texture;
 	vector<dVector> m_Normal;
 	vector<unsigned int> m_Indices;
+
+	bool m_UnifiedIndices;
 };
 
 }

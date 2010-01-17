@@ -59,15 +59,33 @@ Primitive *OBJPrimitiveIO::FormatRead(const string &filename)
 	fclose(file);
 	m_Data[m_DataSize]='\0';
 
+	m_UnifiedIndices = true;
 	ReadOBJ(m_Position, m_Texture, m_Normal, m_Faces);
 
 	// now get rid of the text
 	delete[] m_Data;
 
-	// shuffle stuff around so we only have one set of indices
-	vector<Indices> unique=RemoveDuplicateIndices();
-	ReorderData(unique);
-	UnifyIndices(unique);
+	// skip processing if all the indices are the same per vertex
+	if (m_UnifiedIndices)
+	{
+		m_Indices.clear();
+		for (vector<Face>::const_iterator fi=m_Faces.begin();
+				fi!=m_Faces.end(); ++fi)
+		{
+			for (vector<Indices>::const_iterator ii=fi->Index.begin();
+					ii!=fi->Index.end(); ++ii)
+			{
+				m_Indices.push_back(ii->Position);
+			}
+		}
+	}
+	else
+	{
+		// shuffle stuff around so we only have one set of indices
+		vector<Indices> unique=RemoveDuplicateIndices();
+		ReorderData(unique);
+		UnifyIndices(unique);
+	}
 
 	if (m_Faces.empty()) return NULL;
 
@@ -201,6 +219,13 @@ void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
 					if (itokens[1]!="") ind.Texture=(unsigned int)atof(itokens[1].c_str())-1;
 					if (itokens[2]!="") ind.Normal=(unsigned int)atof(itokens[2].c_str())-1;
 					f.Index.push_back(ind);
+
+					if ((ind.Position != ind.Texture) ||
+						(ind.Position != ind.Normal) ||
+						(ind.Texture != ind.Normal))
+					{
+						m_UnifiedIndices = false;
+					}
 				}
 				else if (itokens.size()==2)
 				{
@@ -208,6 +233,11 @@ void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
 					if (itokens[0]!="") ind.Position=(unsigned int)atof(itokens[0].c_str())-1;
 					if (itokens[1]!="") ind.Texture=(unsigned int)atof(itokens[1].c_str())-1;
 					f.Index.push_back(ind);
+
+					if (ind.Position != ind.Texture)
+					{
+						m_UnifiedIndices = false;
+					}
 				}
 				else if (itokens.size()==1)
 				{
