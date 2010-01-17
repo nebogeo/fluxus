@@ -220,7 +220,28 @@ void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
 					Trace::Stream<<"Wrong number of indices in .obj file ("<<itokens.size()<<")"<<endl;
 				}
 			}
-			faces.push_back(f);
+
+			// subdivide polygons to triangles
+			if (f.Index.size() > 3)
+			{
+				Face tri;
+				for (unsigned i = 0; i < 3; i++)
+				{
+					tri.Index.push_back(f.Index[i]);
+				}
+				faces.push_back(tri);
+
+				for (unsigned i = 3; i < f.Index.size(); i++)
+				{
+					tri.Index.erase(tri.Index.begin() + 1);
+					tri.Index.push_back(f.Index[i]);
+					faces.push_back(tri);
+				}
+			}
+			else
+			{
+				faces.push_back(f);
+			}
 		}
 	}
 }
