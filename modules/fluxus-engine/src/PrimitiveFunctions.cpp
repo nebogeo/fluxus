@@ -2499,7 +2499,9 @@ Scheme_Object *geo_line_intersect(int argc, Scheme_Object **argv)
 			for (vector<Evaluator::Point>::iterator i=points.begin(); i!=points.end(); ++i)
 			{
 				pl = scheme_null;
-				
+                // jam the parametric position on the ray to the end of the list
+                // (so as not to break compatibility :/)
+				pl = scheme_make_pair(scheme_make_double(i->m_T),pl);
 				for (vector<Evaluator::Blend*>::iterator b=i->m_Blends.begin(); b!=i->m_Blends.end(); ++b)
 				{
 					name = scheme_make_utf8_string((*b)->m_Name.c_str());

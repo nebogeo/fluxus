@@ -64,12 +64,14 @@ bool PolyEvaluator::IntersectTriStrip(const dVector &start, const dVector &end, 
 		unsigned int i2=i-1;
 		unsigned int i3=i++;
 		
-		if (IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
-											m_Prim->GetData<dVector>("p",i2),
-											m_Prim->GetData<dVector>("p",i3),bary))
+        float t = IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
+                                        m_Prim->GetData<dVector>("p",i2),
+                                        m_Prim->GetData<dVector>("p",i3),bary);
+
+		if (t>0)
 		{
-			points.push_back(InterpolatePData(bary,i1,i2,i3));
-			found=true;
+          points.push_back(InterpolatePData(t,bary,i1,i2,i3));
+          found=true;
 		}
 	}
 
@@ -86,22 +88,28 @@ bool PolyEvaluator::IntersectQuads(const dVector &start, const dVector &end, vec
 		unsigned int i1=i++;
 		unsigned int i2=i++;
 		unsigned int i4=i++;
-		unsigned int i3=i++;
+   		unsigned int i3=i++;
 		
-		if (IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
+		float t = IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
 										m_Prim->GetData<dVector>("p",i2),
-										m_Prim->GetData<dVector>("p",i3),bary))
+										m_Prim->GetData<dVector>("p",i3),bary);
+        if (t>0)
 		{
-			points.push_back(InterpolatePData(bary,i1,i2,i3));
-			found=true;
+          points.push_back(InterpolatePData(t,bary,i1,i2,i3));
+          found=true;
 		}
-		else if (IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i2),
-									 		 	 m_Prim->GetData<dVector>("p",i3),
-												 m_Prim->GetData<dVector>("p",i4),bary))
-		{
-			points.push_back(InterpolatePData(bary,i2,i3,i4));
-			found=true;
-		}
+		else 
+        { 
+          t = IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i2),
+                                    m_Prim->GetData<dVector>("p",i3),
+                                    m_Prim->GetData<dVector>("p",i4),bary);
+          if (t>0)
+          {
+            points.push_back(InterpolatePData(t,bary,i2,i3,i4));
+            found=true;
+          }
+        }
+   
 	}
 
 	return found;
@@ -118,12 +126,13 @@ bool PolyEvaluator::IntersectTriList(const dVector &start, const dVector &end, v
 		unsigned int i2=i++;
 		unsigned int i3=i++;
 		
-		if (IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
-											m_Prim->GetData<dVector>("p",i2),
-											m_Prim->GetData<dVector>("p",i3),bary))
+		float t = IntersectLineTriangle(start,end,m_Prim->GetData<dVector>("p",i1),
+                                        m_Prim->GetData<dVector>("p",i2),
+                                        m_Prim->GetData<dVector>("p",i3),bary);
+        if (t>0)
 		{
-			points.push_back(InterpolatePData(bary,i1,i2,i3));
-			found=true;
+          points.push_back(InterpolatePData(t,bary,i1,i2,i3));
+          found=true;
 		}
 	}
 
@@ -143,9 +152,10 @@ bool PolyEvaluator::IntersectPolygon(const dVector &start, const dVector &end, v
 ////////////////////////////////////////////////
 
 // todo - extend to arbitrary numbers of elements, and put in Evaluator
-Evaluator::Point PolyEvaluator::InterpolatePData(dVector bary, unsigned int i1, unsigned int i2, unsigned int i3)
+Evaluator::Point PolyEvaluator::InterpolatePData(float t, dVector bary, unsigned int i1, unsigned int i2, unsigned int i3)
 {
 	Evaluator::Point point;
+    point.m_T = t;
 	vector<string> names;
 	m_Prim->GetDataNames(names);
 

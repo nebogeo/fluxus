@@ -28,7 +28,7 @@ namespace Fluxus
 
 float PointLineDist(const dVector &p, const dVector &start, const dVector &end);
 
-bool IntersectLineTriangle(const dVector &start, const dVector &end, 
+float IntersectLineTriangle(const dVector &start, const dVector &end, 
 	const dVector &a, const dVector &b, const dVector &c, 
 	dVector &bary);
 

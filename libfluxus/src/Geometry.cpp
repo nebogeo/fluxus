@@ -46,7 +46,8 @@ float Fluxus::PointLineDist(const dVector &p, const dVector &start, const dVecto
     return p.dist(intersection);
 }
 
-bool Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end, 
+// returns the parametric distance along the line, or -1 for no intersection
+float Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end, 
 	const dVector &ta, const dVector &tb, const dVector &tc, 
 	dVector &bary)
 {
@@ -54,7 +55,7 @@ bool Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end,
     dVector v = tb-tc;
     dVector n = v.cross(u);
 
-    if (n.mag()==0) return false;
+    if (n.mag()==0) return -1;
     
     dVector ray = end-start;
     dVector w0 = start-tc;
@@ -62,12 +63,12 @@ bool Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end,
     float b = n.dot(ray);
 
     // if b is small, ray is parallel
-    if (b==0) return false;
+    if (b==0) return -1;
     //     if a==0 then the ray is in the plane
 
     float r = a/b;
-    if (r<0) return false;
-    if (r>1) return false;
+    if (r<0) return -1;
+    if (r>1) return -1;
     dVector I = start+(ray*r);
     float uu = u.dot(u);
     float uv = u.dot(v);
@@ -78,11 +79,11 @@ bool Fluxus::IntersectLineTriangle(const dVector &start, const dVector &end,
     float D = uv*uv - uu*vv;
 
     bary.x=(uv*wv - vv*wu)/D;
-    if (bary.x<0 || bary.x>1.0) return false;
+    if (bary.x<0 || bary.x>1.0) return -1;
     bary.y=(uv*wu - uu*wv)/D;
-    if (bary.y<0 || bary.y>1.0) return false;
+    if (bary.y<0 || bary.y>1.0) return -1;
     bary.z=1-(bary.x+bary.y);
-	if (bary.z<0 || bary.z>1.0) return false;
-    return true;
+	if (bary.z<0 || bary.z>1.0) return -1;
+    return r;
 }
 

@@ -48,7 +48,7 @@ private:
 	bool IntersectTriFan(const dVector &start, const dVector &end, vector<Point> &points);
 	bool IntersectPolygon(const dVector &start, const dVector &end, vector<Point> &points);
 
-	Point InterpolatePData(dVector bary, unsigned int i1, unsigned int i2, unsigned int i3);
+  Point InterpolatePData(float t, dVector bary, unsigned int i1, unsigned int i2, unsigned int i3);
 
 };
 

@@ -54,7 +54,8 @@ public:
 	class Point
 	{
 	public:
-		vector<Blend*> m_Blends;
+      float m_T; // the distance along the orginating ray
+      vector<Blend*> m_Blends;
 	};
 	
 	virtual bool IntersectLine(const dVector &start, const dVector &end,  vector<Point> &points)=0;
