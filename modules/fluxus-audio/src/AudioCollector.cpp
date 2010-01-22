@@ -147,6 +147,7 @@ float *AudioCollector::GetFFT()
 		if (m_ProcessPos+m_BufferLength<m_ProcessLength)
 		{
 			m_FFT.Impulse2Freq(m_ProcessBuffer+m_ProcessPos,m_FFTBuffer);
+			memcpy((void*)m_AudioBuffer,(void*)(m_ProcessBuffer+m_ProcessPos),m_BufferLength*sizeof(float));
 			m_ProcessPos+=m_BufferLength;
 		}
 		else
@@ -191,6 +192,7 @@ float *AudioCollector::GetFFT()
 
 	return m_FFTOutput;
 }
+
 
 void AudioCollector::Process(const string &filename)
 {
