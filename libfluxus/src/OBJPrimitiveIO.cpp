@@ -16,6 +16,8 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <algorithm>
+
 #include "assert.h"
 #include "PolyPrimitive.h"
 #include "OBJPrimitiveIO.h"
