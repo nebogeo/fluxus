@@ -59,13 +59,6 @@ public:
 	/// (needs to be an empty triangle list) 
 	void ConvertToPoly(PolyPrimitive &poly, float isolevel=1.0f);
 	
-protected:
-	class Triangle 
-	{
-	public:
-		dVector p[3];
-	};
-
 	class Cell 
 	{
 	public:
@@ -73,6 +66,12 @@ protected:
 		float val[8];
 		dColour col[8];
 	};
+
+	vector<Cell> &GetVoxels() { return m_Voxels; }
+	
+    void LockVoxels() { m_LockVoxels=true; }
+
+protected:
 	
 	void Draw(float isolevel, bool calcnormals, bool colour);
 	void Interpolate(dVertex &vert, float isolevel, int cell, int a, int b);
@@ -86,6 +85,8 @@ protected:
 	vector<dColour> *m_ColData;
 	
 	vector<Cell> m_Voxels;
+
+    bool m_LockVoxels;
 };
 
 };

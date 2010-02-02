@@ -10,5 +10,5 @@
             (draw-cube))
         (bars (- c 1)))))
 
-(start-audio "alsa_pcm:capture_1" 1024 44100)
+(start-audio "alsa_pcm:capture_1" 512 44100)
 (every-frame (bars 16))

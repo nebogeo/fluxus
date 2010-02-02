@@ -22,6 +22,8 @@
 namespace Fluxus
 {
 
+class BlobbyPrimitive;
+
 //////////////////////////////////////////////////////
 class VoxelPrimitive : public Primitive
 {
@@ -44,12 +46,16 @@ public:
 	///////////////////////////////////////////////////
 	///@name Voxel operations
 	///@{
+	unsigned int GetWidth() { return m_Width; }
+	unsigned int GetHeight() { return m_Height; }
+	unsigned int GetDepth() { return m_Depth; }
 	void SphereInfluence(const dVector &pos, const dColour &col, float pow);
 	void SphereSolid(const dVector &pos, const dColour &col, float radius);
 	void BoxSolid(const dVector &topleft, const dVector &botright, const dColour &col);
 	void Threshold(float value);
 	void CalcGradient();
 	void PointLight(dVector lightpos, dColour col);
+	BlobbyPrimitive *ConvertToBlobby();
 	///@}
 	
 protected:

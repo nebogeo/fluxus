@@ -21,7 +21,8 @@
 
 using namespace Fluxus;
 	
-BlobbyPrimitive::BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size) 
+BlobbyPrimitive::BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size) :
+    m_LockVoxels(false)
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("c",new TypedPData<dColour>);
@@ -137,22 +138,26 @@ float BlobbyPrimitive::SampleCol(const dVector &pos, dColour &col)
 
 void BlobbyPrimitive::Render()
 {
-	for (unsigned int i=0; i<m_Voxels.size(); i++)
-	{
-		for (int c=0; c<8; c++)
-		{
-			dVector pos = m_Voxels[i].p[c];
 
-			if (m_State.Hints & HINT_VERTCOLS)
-			{
-				m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
-			}
-			else
-			{
-				m_Voxels[i].val[c]=Sample(pos);
-			}
-		}
-	}
+    if (!m_LockVoxels)
+    {
+        for (unsigned int i=0; i<m_Voxels.size(); i++)
+        {
+            for (int c=0; c<8; c++)
+            {
+                dVector pos = m_Voxels[i].p[c];
+                
+                if (m_State.Hints & HINT_VERTCOLS)
+                {
+                    m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
+                }
+                else
+                {
+                    m_Voxels[i].val[c]=Sample(pos);
+                }
+            }
+        }
+    }
 
 	if (m_State.Hints & HINT_SPHERE_MAP)
 	{
@@ -331,27 +336,30 @@ void BlobbyPrimitive::Draw(float isolevel, bool calcnormals, bool colour)
 // generate a poly mesh
 void BlobbyPrimitive::ConvertToPoly(PolyPrimitive &poly, float isolevel)
 {
-	// evaluate the field
-	for (unsigned int i=0; i<m_Voxels.size(); i++)
-	{
-		for (int c=0; c<8; c++)
-		{
-			dVector pos = m_Voxels[i].p[c];
-			
-			if (m_State.Hints & HINT_VERTCOLS)
-			{
-				m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
-			}
-			else
-			{
-				m_Voxels[i].val[c]=Sample(pos);
-			}	
-		}
+    if (!m_LockVoxels)
+    {
+        // evaluate the field
+        for (unsigned int i=0; i<m_Voxels.size(); i++)
+        {
+            for (int c=0; c<8; c++)
+            {
+                dVector pos = m_Voxels[i].p[c];
+                
+                if (m_State.Hints & HINT_VERTCOLS)
+                {
+                    m_Voxels[i].val[c]=SampleCol(pos,m_Voxels[i].col[c]);
+                }
+                else
+                {
+                    m_Voxels[i].val[c]=Sample(pos);
+                }	
+            }
+        }
 	}
-	
-   int i;
-   int cubeindex;
-   dVertex vertlist[12];
+
+    int i;
+    int cubeindex;
+    dVertex vertlist[12];
 
 	for (unsigned int cell=0; cell<m_Voxels.size(); cell++)
 	{ 
