@@ -12,7 +12,8 @@
  init-help
  help
  set-help-locale!
- get-helpmap)
+ get-helpmap
+ apropos)
 
 (define helpmap-all-locales '())
 (define helpmap '())
@@ -129,7 +130,9 @@
          (newline))
         (else
          (if (null? (cdr l))
-             "Function not found"
+             (let ((r (apropos funcname))) 
+               (if (null? r) "Function not found"
+                   r))
              (inner-help (cdr l)))))))
   (cond 
     ((null? helpmap)
@@ -223,4 +226,9 @@
        (close-input-port file)
        (set-help-locale! "en"))))) ; default to english... 
 
-
+(define (apropos s)
+   (let* ([apropos-list (map symbol->string (namespace-mapped-symbols))]
+     [apropos-regex (lambda (s)
+           (let ((al (filter (lambda (l) (regexp-match s l)) apropos-list)))
+             al))])
+   (apropos-regex (string-append ".*" s ".*"))))

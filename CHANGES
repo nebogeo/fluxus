@@ -7,6 +7,36 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * added sphere mapping, (hint-sphere-map)
 * added FreeFrame GL support
 * added scratchpad effects (jiggle, wave, ripple, swirl)
+* anti-aliasing works on the type primitive
+* windows support
+* multitexturing crash fix on nvidia
+* objects removable from physics 
+* shader fixes for nvidia
+* OpenAL support for 3D sample playback
+* French translation of manual
+* (build-image) for 2D overlays
+* AR module
+* overtyping and cursor blowup (ctrl-b) in scratchpad
+* extrusion modelling functions
+* (hint-frustum-cull) added
+* (bb/point-intersect?) added
+* (hint-normalize)
+* array arguments for GLSL shaders
+* full stack trace with scheme errors
+* (pdata-exists?)
+* (set-gravity-mode) (add-force) (add-torque)
+* planetarium rendering/dome projection
+* (ga) - gets audio buffer directly
+* clear screen (ctrl-q)
+* (hint-noblend)
+* (hint-nozwrite)
+* video module(!)
+* new voxel primitive
+* big fft fix
+* obj import optimisations
+* obj import, supports all face types (and triangulates them) 
+* (active-mesh) and (passive-mesh) for mesh based physics collisions 
+* (voxel->blobby) 
 
 0.16
 

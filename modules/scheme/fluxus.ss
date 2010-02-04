@@ -11,6 +11,7 @@
 		 "randomness.ss"
 		 "poly-tools.ss"
 		 "pixels-tools.ss"
+         "voxels-tools.ss"
 		 "scratchpad.ss"
 		 "maths.ss"
 		 "testing.ss"
@@ -25,7 +26,8 @@
  (all-from-out "collada-import.ss")
  (all-from-out "randomness.ss")  
  (all-from-out "poly-tools.ss")  
- (all-from-out "pixels-tools.ss")  
+ (all-from-out "pixels-tools.ss")
+ (all-from-out "voxels-tools.ss")  
  (all-from-out "scratchpad.ss")
  (all-from-out "maths.ss")
  (all-from-out "testing.ss")

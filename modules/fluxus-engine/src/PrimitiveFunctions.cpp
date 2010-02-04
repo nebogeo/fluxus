@@ -3040,6 +3040,45 @@ Scheme_Object *get_parent(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// get-bb
+// Returns: bounding-box
+// Description:
+// Gets the bounding box this primitive in object space. A bounding box is 
+// returned as a list of two vectors, the minimum (closest to the origin) 
+// and maximum (furthest) corner.
+// Example:
+// (with-primitive (build-sphere 10 10)
+//     (scale (vector 3 1 0.3))
+//     (rotate (vector 30 25 45))
+//     (apply-transform)
+//     (display (get-bb))(newline))
+// EndFunctionDoc
+
+Scheme_Object *get_bb(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *l = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, l);
+	MZ_GC_REG();
+
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+        dMatrix space;
+        space.init();
+        dBoundingBox bb = Grabbed->GetBoundingBox(space);
+        l = scheme_null;
+		l=scheme_make_pair(FloatsToScheme(bb.min.arr(),3),l);
+		l=scheme_make_pair(FloatsToScheme(bb.max.arr(),3),l);
+		MZ_GC_UNREG();		
+		return l;
+	}
+	Trace::Stream<<"get-bb: no primitive current"<<endl;
+    MZ_GC_UNREG();
+	return scheme_void;
+}
+
 void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 {
 	MZ_GC_DECL_REG(1);
@@ -3112,6 +3151,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("bb/point-intersect?", scheme_make_prim_w_arity(bb_point_intersect, "bb/point-intersect?", 2, 2), env);
 	scheme_add_global("get-children", scheme_make_prim_w_arity(get_children, "get-children", 0, 0), env);
 	scheme_add_global("get-parent", scheme_make_prim_w_arity(get_parent, "get-parent", 0, 0), env);
+	scheme_add_global("get-bb", scheme_make_prim_w_arity(get_bb, "get-bb", 0, 0), env);
 	MZ_GC_UNREG();
 }
 

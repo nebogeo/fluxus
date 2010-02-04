@@ -15,7 +15,9 @@
 	pixels-blend-circle
 	pixels-dodge
 	pixels-burn
-	pixels-clear)
+	pixels-clear
+    pixels-index
+    pixels-texcoord)
 		
 ;; StartFunctionDoc-en
 ;; pixels-circle pos radius colour
@@ -127,3 +129,31 @@
             col)
         "c"))
 
+;; StartFunctionDoc-en
+;; pixels-index position-vector
+;; Returns: index-number
+;; Description:
+;; Returns the pdata index for the given texture coordinate
+;; Example:  
+;; (with-primitive (build-pixels 10 10)
+;;     (display (voxels-index (vector 0.5 0.5 0)))(newline))
+;; EndFunctionDoc 
+
+(define (pixels-index v)
+  (+ (inexact->exact (floor (* (vx v) (pixels-width))))
+     (* (inexact->exact (floor (* (vy v) (pixels-width)))) (pixels-height))))
+
+;; StartFunctionDoc-en
+;; pixels-texcoord index
+;; Returns: position-vector
+;; Description:
+;; Returns the texture coordinate for the given pdata index
+;; Example:  
+;; (with-primitive (build-pixels 10 10)
+;;     (display (pixels-texcoord 25))(newline))
+;; EndFunctionDoc
+
+(define (pixels-texcoord i)
+    (vector (/ (modulo i (pixels-width)) (pixels-width))
+            (/ (quotient i (pixels-width)) (pixels-width))
+            0))
