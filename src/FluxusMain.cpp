@@ -352,22 +352,24 @@ void FluxusMain::SaveBackupScript()
 	}
 }
 
-void FluxusMain::SaveScript() 
-{ 
-	if (m_SaveName[m_CurrentEditor]=="") 
-	{	
+void FluxusMain::SaveScript()
+{
+	if (m_SaveName[m_CurrentEditor]=="")
+	{
 		m_SaveName[m_CurrentEditor]="temp.scm";
 	}
-	
+
 	FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
 	if (file)
-	{	
-		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
+	{
+		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);
 		fclose(file);
+		cerr<<"Saved ["<<m_SaveName[m_CurrentEditor]<<"]"<<endl;
 	}
-	
-	cerr<<"Saved ["<<m_SaveName[m_CurrentEditor]<<"]"<<endl;
-	
+	else
+	{
+		cerr<<"Could not save file ["<<m_SaveName[m_CurrentEditor]<<"]"<<endl;
+	}
 }
 
 string Escape(const string &str)
