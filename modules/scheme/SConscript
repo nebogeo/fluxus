@@ -30,7 +30,8 @@ Scripts    = ["boot.scm",
 			  "maths.ss",
 			  "testing.ss",
 			  "planetarium.ss",
-			  "shapes.ss" ]
+			  "shapes.ss",
+              "ffgl.ss" ]
 
 Install        = CollectsInstall
 

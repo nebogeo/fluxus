@@ -13,8 +13,8 @@
   dome-setup-main-camera)
 
 ;; StartSectionDoc-en
-;; extras
-;; Extra bolt on stuff
+;; planetarium
+;; Planetarium rendering code
 ;; Example:
 ;; EndSectionDoc 
 

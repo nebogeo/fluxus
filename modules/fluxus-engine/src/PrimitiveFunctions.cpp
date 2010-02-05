@@ -819,7 +819,7 @@ Scheme_Object *voxels_width(int argc, Scheme_Object **argv)
 		}
 	}
 
-	Trace::Stream<<"voxels-width can only be called on a pixelprimitive"<<endl;
+	Trace::Stream<<"voxels-width can only be called on a voxelsprimitive"<<endl;
 	MZ_GC_UNREG();
     return scheme_void;
 }
@@ -849,7 +849,7 @@ Scheme_Object *voxels_height(int argc, Scheme_Object **argv)
 		}
 	}
 
-	Trace::Stream<<"voxels-height can only be called on a pixelprimitive"<<endl;
+	Trace::Stream<<"voxels-height can only be called on a voxelsprimitive"<<endl;
 	MZ_GC_UNREG();
     return scheme_void;
 }
@@ -1456,8 +1456,32 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 // Description:
 // Downloads the texture data from the GPU to the PData array.
 // Example:
+// (clear)
+// 
+// (define p (build-pixels 256 256 #t))
+// 
+// (define q (with-pixels-renderer p
+//         (clear-colour (vector 1 1 1))
+//         (scale 3)
+//         (colour (vector 0 0 1))
+//         (build-torus 0.2 2 10 20)))
+// 
+// (define i (with-state
+//         (translate (vector 0.5 0.5 0))
+//         (scale 0.2)
+//         (build-cube)))
+// 
+// (every-frame
+//     (begin
+//     (with-primitive p 
+//         (pixels-download)
+//         ; paint the cube with the colour of the pixel underneath it
+//         (let ((c (pdata-ref "c" (pixels-index (vector 0.5 0.5 0)))))
+//             (with-primitive i (colour c))))
+//     (with-pixels-renderer p
+//         (with-primitive q
+//             (rotate (vector 1 0.2 0))))))
 // EndFunctionDoc
-
 Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
 {
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -1475,8 +1499,6 @@ Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
 	Trace::Stream<<"pixels-download can only be called while a pixelprimitive is grabbed"<<endl;
     return scheme_void;
 }
-
-// TODO:document
 
 Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 {
@@ -2812,7 +2834,16 @@ Scheme_Object *geo_line_intersect(int argc, Scheme_Object **argv)
 // recalc-bb
 // Returns: void
 // Description:
+// This call regenerates the primitives bounding box. 
+// As this call can be expensive, it's up to you when to call it - only if the pdata 
+// has changed and just before operations that use the bounding box 
+// (such as bb/bb-intersect) is the fastest policy.
 // Example:
+// (define myprim (build-cube))
+// (with-primitive myprim
+//   (hint-box)
+//   (pdata-set! "p" 0 (vector -10 0 0))
+//   (recalc-bb))
 // EndFunctionDoc
 
 Scheme_Object *recalc_bb(int argc, Scheme_Object **argv)

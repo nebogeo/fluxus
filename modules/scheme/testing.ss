@@ -41,8 +41,12 @@
             (when (not (or 
                 (string=? "high-level-scratchpad-docs" (car i))
                 (string=? "frisbee" (car i))
+                (string=? "artkp" (car i))
+                (string=? "video" (car i))
+                (string=? "ffgl" (car i))
                 (string=? "fluxa" (car i))
                 (string=? "renderer" (car i))
+                (string=? "planetarium" (car i))
                 (string=? "testing-functions" (car i)) ; would be silly now, wouldn't it...
                     ))
                 (test-functions (cdr i) log)))
@@ -55,20 +59,22 @@
 (define (unit-test name code log)
     (clear)
 	(printf "testing: ~a~n" name)
-    (when do-log
-		(fprintf log "--------------------~n")
-    	(fprintf log "~a~n" name)
-    	(fprintf log "~a~n" code))
 	
 	(cond 
 		((string=? code "")
 			(set! errors (+ errors 1))
 			(set! error-list (cons name error-list)))
 		(else
-			(eval-string code (lambda (s) 
-				(when do-log (fprintf log "~a~n" s))
-					(set! errors (+ errors 1))
-					(set! error-list (cons name error-list))))))
+			(eval-string 
+             code 
+             (lambda (s) 
+               (when do-log
+                     (fprintf log "--------------------~n")
+                     (fprintf log "~a~n" name)
+                     (fprintf log "~a~n" code)
+                     (fprintf log "~a~n" s))
+               (set! errors (+ errors 1))
+               (set! error-list (cons name error-list))))))
     (sleep 0.1)
     )
 

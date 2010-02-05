@@ -15,7 +15,9 @@
 		 "scratchpad.ss"
 		 "maths.ss"
 		 "testing.ss"
-		 "tasks.ss")
+		 "tasks.ss"
+         "shapes.ss"
+         "ffgl.ss")
 		 
 (provide 
  (all-from-out "fluxus-modules.ss")
@@ -31,4 +33,6 @@
  (all-from-out "scratchpad.ss")
  (all-from-out "maths.ss")
  (all-from-out "testing.ss")
- (all-from-out "tasks.ss"))
+ (all-from-out "tasks.ss")
+ (all-from-out "shapes.ss")
+ (all-from-out "ffgl.ss"))

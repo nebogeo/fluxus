@@ -324,10 +324,10 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 // Example:
 // (with-primitive (build-cube)
 //   (when (pdata-exists? "p") 
-//     (display "we have positions!") (newline)))
+//     (display "we have positions!") (newline))
 //   (pdata-add "myarray" "v")
 //   (when (pdata-exists? "myarray") 
-//     (display "we have myarray!") (newline))))
+//     (display "we have myarray!") (newline)))
 // EndFunctionDoc
 
 Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)

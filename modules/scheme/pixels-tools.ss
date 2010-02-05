@@ -53,16 +53,16 @@
 ;; EndFunctionDoc  
 
 (define (pixels-blend-circle pos radius colour)
-	(let ((radius (* radius radius)))
+  (let ((radius (* radius radius)))
     (pdata-index-map!
-        (lambda (i c)
-            (let* ((p (vector (modulo i (pixels-width)) 
-                              (quotient i (pixels-height)) 0))
-                  (d (vdist-sq p pos)))
-                (if (< d radius)
-                    (vmix c colour (/ d radius))
-                    c)))
-        "c")))
+     (lambda (i c)
+       (let* ((p (vector (modulo i (pixels-width)) 
+                         (quotient i (pixels-height)) 0))
+              (d (vdist-sq p pos)))
+         (if (< d radius)
+             (vmix c colour (/ d radius))
+             c)))
+     "c")))
 
 ;; StartFunctionDoc-en
 ;; pixels-dodge pos radius strength
@@ -136,7 +136,7 @@
 ;; Returns the pdata index for the given texture coordinate
 ;; Example:  
 ;; (with-primitive (build-pixels 10 10)
-;;     (display (voxels-index (vector 0.5 0.5 0)))(newline))
+;;     (display (pixels-index (vector 0.5 0.5 0)))(newline))
 ;; EndFunctionDoc 
 
 (define (pixels-index v)

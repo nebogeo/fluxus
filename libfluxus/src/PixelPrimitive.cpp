@@ -480,6 +480,7 @@ void PixelPrimitive::DownloadPData()
 			(*m_ColourData)[i].g=data[i*3+1]/255.0f;
 			(*m_ColourData)[i].b=data[i*3+2]/255.0f;
 		}
+        free(data);
 		Unbind();
 	}
 }
