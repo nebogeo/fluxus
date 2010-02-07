@@ -44,12 +44,42 @@ MIDIListener *midilistener = NULL;
 // (every-frame (midi-test))
 // EndSectionDoc
 
+// StartSectionDoc-pt
+// midi
+// MIDI é Interface Digital de Intrumentos Musicais, e permite
+// instrumentos musicais eletronicos, computadores, e outros
+// equipamentos comunicar, controlar e sincronizar entre si. Fluxus
+// pode receber controles e mensagens de notas MIDI.
+// Example:
+// (display (midi-info))(newline)
+//
+// (midi-init 1)
+//
+// (define (midi-test)
+//     (with-state
+//         (scale (vector (+ 1 (midi-ccn 0 1))
+//                        (+ 1 (midi-ccn 0 2))
+//                        (+ 1 (midi-ccn 0 3))))
+//         (draw-cube)))
+//
+// (every-frame (midi-test))
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // midi-info
 // Returns: a list of (midi-port-number . midi-port-name-string) pairs
 // Description:
 // Returns information about the available MIDI input ports.
 // Example:
+// (midi-info)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// midi-info
+// Retorna: uma lista de (numero-porta-mide . string-nome-porta-midi) pares.
+// Descrição:
+// Retorna informação sobre portas de entrada MIDI disponíveis.
+// Exemplo:
 // (midi-info)
 // EndFunctionDoc
 
@@ -98,6 +128,15 @@ Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 // (midi-init 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// midi-init número-porta
+// Retorna: void
+// Descrição:
+// Abre a porta de entrada MIDI especificada.
+// Exemplo:
+// (midi-init 1)
+// EndFunctionDoc
+
 Scheme_Object *midi_init(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
@@ -128,6 +167,15 @@ Scheme_Object *midi_init(int argc, Scheme_Object **argv)
 // Description:
 // Returns the controller value.
 // Example:
+// (midi-cc 0 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// midi-cc número-canal número-controle
+// Retorna: número-valor-controle
+// Descrição:
+// Retorna o valor do controle
+// Exemplo:
 // (midi-cc 0 1)
 // EndFunctionDoc
 
@@ -170,6 +218,15 @@ Scheme_Object *midi_cc(int argc, Scheme_Object **argv)
 // (midi-ccn 0 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// midi-ccn número-canal número-controle
+// Retorna: número-valor-controle
+// Descrição:
+// Retorna o valor normalisado do controle no intervalo (0, 1).
+// Exemplo:
+// (midi-ccn 0 1)
+// EndFunctionDoc
+
 Scheme_Object *midi_ccn(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -209,6 +266,16 @@ Scheme_Object *midi_ccn(int argc, Scheme_Object **argv)
 // (midi-note)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// midi-note
+// Retorna: #(símbolo-ligado-desligado canal nota velocidade) ou #f
+// Descrição:
+// Retorna o próximo evento da fila de eventos de nota MIDI ou #f se a
+// fila está vazia.
+// Exemplo:
+// (midi-note)
+// EndFunctionDoc
+
 Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -245,6 +312,16 @@ Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 // Returns the name, and event type, and parameter bytes of the last MIDI
 // event as a string for debugging purposes.
 // Example:
+// (display (midi-peek))(newline)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// midi-peek
+// Retorna: string-msg
+// Descrição:
+// Retorna o nome, tipo de evento e os bytes parâmetros do último
+// evento de MIDI como uma string para propósitos de debugging.
+// Exemplo:
 // (display (midi-peek))(newline)
 // EndFunctionDoc
 

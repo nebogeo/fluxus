@@ -89,6 +89,15 @@
 ;; (when (key-pressed "q") (display "q pressed!"))
 ;; EndFunctionDoc	
 
+;; StartFunctionDoc-pt
+;; key-pressed string-tecla
+;; Retorna: booleano
+;; Descrição:
+;; Retorna verdadeiro se a tecla especificada está apertada agora.
+;; Exemplo:
+;; (when (key-pressed "q") (display "q pressed!"))
+;; EndFunctionDoc
+
 (define (key-pressed s)
   (set-contains (car (string->list s)) keys))
 
@@ -98,6 +107,15 @@
 ;; Description:
 ;; Returns a list of keys pressed down
 ;; Example:
+;; (display (keys-down))(newline)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; keys-down
+;; Retorna: lista-teclas
+;; Descrição:
+;; Retorna uma lista das teclas pressionadas.
+;; Exemplo:
 ;; (display (keys-down))(newline)
 ;; EndFunctionDoc
 
@@ -119,6 +137,22 @@
 ;; (when (key-special-pressed 103) (display "down cursor pressed"))
 ;; EndFunctionDoc	
 
+;; StartFunctionDoc-pt
+;; key-special-pressed número-tecla
+;; Retorna: booleano
+;; Descrição:
+;; Retorna verdadeiro se a tecla especial especificada foi
+;; pressionada. Teclas especiais são aquelas que não mapeiam para
+;; valores ascii. A forma mais fácil de descubrir o que elas são é
+;; imprimir o valor do resultado de key-special-pressed enquanto
+;; segurando a tecla que você está procurando.
+;; Exemplo:
+;; (when (key-special-pressed 100) (display "left cursor pressed"))
+;; (when (key-special-pressed 102) (display "right cursor pressed"))
+;; (when (key-special-pressed 101) (display "up cursor pressed"))
+;; (when (key-special-pressed 103) (display "down cursor pressed"))
+;; EndFunctionDoc
+
 (define (key-special-pressed k)
   (set-contains k special-keys))
 
@@ -130,6 +164,15 @@
 ;; Example:
 ;; (display (keys-special-down))
 ;; EndFunctionDoc	
+
+;; StartFunctionDoc-pt
+;; keys-special-down
+;; Retorna: lista-teclas
+;; Descrição:
+;; Retorna uma lista de teclas especiais pressionadas.
+;; Exemplo:
+;; (display (keys-special-down))
+;; EndFunctionDoc
 
 (define (keys-special-down)
   special-keys)
@@ -143,6 +186,15 @@
 ;; (when (key-pressed-this-frame "q") (display "q pressed!"))
 ;; EndFunctionDoc	
 
+;; StartFunctionDoc-pt
+;; key-pressed-this-frame string-tecla
+;; Retorna: booleano
+;; Descrição:
+;; Retorna verdadeiro se a tecla especificada foi pressionada neste quadro.
+;; Exemplo:
+;; (when (key-pressed-this-frame "q") (display "q pressed!"))
+;; EndFunctionDoc
+
 (define (key-pressed-this-frame s)
   (set-contains (car (string->list s)) keys-this-frame))
 
@@ -154,6 +206,15 @@
 ;; Example:
 ;; (when (key-special-pressed-this-frame "q") (display "q pressed!"))
 ;; EndFunctionDoc	
+
+;; StartFunctionDoc-pt
+;; key-special-pressed-this-frame string-tecla
+;; Retorna: booleano
+;; Descrição:
+;; Retorna verdadeiro se a tecla especial foi pressionada neste quadro.
+;; Exemplo:
+;; (when (key-special-pressed-this-frame "q") (display "q pressed!"))
+;; EndFunctionDoc
 
 (define (key-special-pressed-this-frame s)
   (set-contains s special-keys-this-frame))
@@ -167,6 +228,15 @@
 ;; (display (mouse-x))
 ;; EndFunctionDoc	
 
+;; StartFunctionDoc-pt
+;; mouse-x
+;; Retorna: número-coord
+;; Descrição:
+;; Retorna a posição no eixo x do mouse.
+;; Exemplo:
+;; (display (mouse-x))
+;; EndFunctionDoc
+
 (define (mouse-x)
   (vector-ref mouse 0))
 
@@ -179,17 +249,36 @@
 ;; (display (mouse-y))
 ;; EndFunctionDoc	
 
+;; StartFunctionDoc-pt
+;; mouse-y
+;; Retorna: número-coord
+;; Descrição:
+;; Retorna a posição y do mouse
+;; Exemplo:
+;; (display (mouse-y))
+;; EndFunctionDoc
+
 (define (mouse-y)
   (vector-ref mouse 1))
 
 ;; StartFunctionDoc-en
-;; mouse-button
+;; mouse-button button-number
 ;; Returns: boolean
 ;; Description:
 ;; Returns true if the specifed mouse button is pressed
 ;; Example:
 ;; (display (mouse-button 1))
 ;; EndFunctionDoc	
+
+;; StartFunctionDoc-pt
+;; mouse-button número-botão
+;; Retorna: booleano
+;; Descrição:
+;; Retorna verdadeiro se o botão do mouse especificado foi
+;; pressionado.
+;; Exemplo:
+;; (display (mouse-button 1))
+;; EndFunctionDoc
 
 (define (mouse-button n)
   (eq? n (vector-ref mouse 2)))
@@ -201,6 +290,16 @@
 ;; Returns 1 if the mouse wheel was moved in one direction in the last frame
 ;; or -1 if it was turned the other way, otherwise returns 0.
 ;; Example:
+;; (display (mouse-wheel))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; mouse-wheel
+;; Retorna: booleano
+;; Descrição:
+;; Retorna 1 se a rodinha do mouse foi movida em uma direção no último
+;; quadro ou -1 se na direção contrária, ou então retorna 0.
+;; Exemplo:
 ;; (display (mouse-wheel))
 ;; EndFunctionDoc
 
@@ -217,6 +316,17 @@
 ;; (colour (vector 1 0 0)) ; paints objects the mouse is over red
 ;; (ungrab)
 ;; EndFunctionDoc	
+
+;; StartFunctionDoc-pt
+;; mouse-over
+;; Retorna: número-primitivaid
+;; Descrição:
+;; Retorna o objeto que o mouse está em cima no momento.
+;; Exemplo:
+;; (grab (mouse-over))
+;; (colour (vector 1 0 0)) ; paints objects the mouse is over red
+;; (ungrab)
+;; EndFunctionDoc
 
 (define (mouse-over)
   (select (vector-ref mouse 0) (vector-ref mouse 1) 3))

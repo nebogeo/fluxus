@@ -35,7 +35,7 @@ using namespace Fluxus;
 
 // StartSectionDoc-pt
 // funcoes-uteis
-// Funções práticas para fazer a sua vida mais fácil.
+// FunÃ§Ãµes prÃ¡ticas para deixar a sua vida mais fÃ¡cil.
 // Exemplo:
 // EndSectionDoc
 
@@ -55,7 +55,7 @@ using namespace Fluxus;
 // StartFunctionDoc-pt
 // time
 // Retorna: numero do tempo(transcorrido, passado)
-// DescriÃ§Ã£o:
+// Descriï¾ƒï½§ï¾ƒï½£o:
 // Retorna o numero de segundos (+ fracao) desde meia noite do dia 1 de janeiro de 1970.
 // Essa e a forma mais simples de animacao para seus scripts
 // Exemplo:
@@ -113,9 +113,9 @@ Scheme_Object *delta(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-pt
 // flxrnd
-// Retorna: número randômico
+// Retorna: nÃºmero randÃ´mico
 // DescriÃ§Ã£o:
-// Retorna um número randômico entre 0 e 1.
+// Retorna um nÃºmero randÃ´mico entre 0 e 1.
 // Exemplo:
 // (define (animate)
 //     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
@@ -142,16 +142,16 @@ Scheme_Object *flxrnd(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// flxseed número da semente
+// flxseed nÃºmero da semente
 // Retorna: void
 // DescriÃ§Ã£o:
-// Alimenta o gerador de número randômico de forma que nós consigamos a mesma sequência.
+// Alimenta o gerador de nÃºmero randÃ´mico de forma que nÃ³s consigamos a mesma sequÃªncia.
 // Exemplo:
 // (define (animate)
 //     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
 //     (draw-cube))
 // (flxseed 10) 
-// (every-frame (animate)) ; a mesma sequência de cores será gerada
+// (every-frame (animate)) ; a mesma sequÃªncia de cores serÃ¡ gerada
 // EndFunctionDoc
 
 Scheme_Object *flxseed(int argc, Scheme_Object **argv)
@@ -174,11 +174,11 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// set-searchpaths lista de diretórios
+// set-searchpaths lista de diretÃ³rios
 // Retorna: void
 // DescriÃ§Ã£o:
-// Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
-// como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
+// Arranja um lista de diretÃ³rios de busca para procurar por arquivos relacionado ao fluxus,
+// como texturas, shaders etc. Os diretÃ³rios serâˆšo procurados em ordem a cada vez.
 // Exemplo:
 // (set-searchpaths (append (get-searchpaths) (list "/path/to/my/textures/" "/path/to/my/other/textures/")))
 // EndFunctionDoc
@@ -220,11 +220,11 @@ Scheme_Object *set_searchpaths(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// get-searchpaths lista de diretórios
+// get-searchpaths lista de diretÃ³rios
 // Retorna: void
 // DescriÃ§Ã£o:
-// Arranja um lista de diretórios de busca para procurar por arquivos relacionado ao fluxus,
-// como texturas, shaders etc. Os diretórios serão procurados em ordem a cada vez.
+// Arranja um lista de diretÃ³rios de busca para procurar por arquivos relacionado ao fluxus,
+// como texturas, shaders etc. Os diretÃ³rios serÃ£o procurados em ordem a cada vez.
 // Exemplo:
 // (display (get-searchpaths))(newline)
 // EndFunctionDoc
@@ -268,8 +268,8 @@ Scheme_Object *get_searchpaths(int argc, Scheme_Object **argv)
 // fullpath string do nome do arquivo
 // Retorna: fullpath-string
 // DescriÃ§Ã£o:
-// Busca os diretórios de procura para o arquivo especificado e retorna a primeira 
-// localização que encontra.
+// Busca os diretÃ³rios de procura para o arquivo especificado e retorna a primeira 
+// localizaÃ§Ã£o que encontra.
 // Exemplo:
 // (fullpath "myfile")
 // EndFunctionDoc
@@ -298,9 +298,9 @@ Scheme_Object *fullpath(int argc, Scheme_Object **argv)
 // framedump nome-do-arquivo
 // Retorna: void
 // DescriÃ§Ã£o:
-// Salva o buffer OpenGL da frente no disco. Lê a extensão do arquivo pra decidir qual
-// qual formato será usado pra salvar, "tif", "jpg" ou "ppm" são suportados. Esta é a 
-// forma de frame dumping de baixo nivel, use start-framedump e end-framedump ao invés.
+// Salva o buffer OpenGL da frente no disco. LÃª a extensÃ£o do arquivo pra decidir qual
+// qual formato serÃ¡ usado pra salvar, "tif", "jpg" ou "ppm" sÃ£o suportados. Esta Ã© a 
+// forma de frame dumping de baixo nivel, use start-framedump e end-framedump ao invÃ©s.
 // Exemplo:
 // (framedump "picture.jpg")
 // EndFunctionDoc
@@ -348,6 +348,19 @@ Scheme_Object *framedump(int argc, Scheme_Object **argv)
 // together into the image to save. Reads the filename extension to 
 // decide on the format used for saving, "tif", "jpg" or "ppm" are supported. 
 // Example:
+// (tiled-framedump "picture.jpg" 3000 2000)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// tiled-framedump nome-do-arquivo
+// Retorna: void
+// DescriÃ§Ã£o:
+// Para renderizar imagens que sÃ£o maiores que a tela, para imprimir
+// ou outras coisas similares. Este comando usar um mÃ©todo de
+// renderizaÃ§Ã£o divididos para renderizar bits de imagens e juntÃ¡-los
+// na imagem a ser salva. LÃª as extenÃ§Ãµes de nomes de arquivo para
+// decidir o formato a ser salvo, "tif", "jpg" ou "ppm" sÃ£o suportados.
+// Exemplo:
 // (tiled-framedump "picture.jpg" 3000 2000)
 // EndFunctionDoc
 

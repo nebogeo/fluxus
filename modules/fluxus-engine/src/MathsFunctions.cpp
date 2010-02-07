@@ -218,7 +218,6 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 // Description:
 // Returns the normalised form of the vector (length=1)
 // Example:
-// (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -227,7 +226,6 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna a forma normalisada do vetor (length=1)
 // Exemplo:
-// (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
 // EndFunctionDoc
 
 Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
@@ -300,6 +298,15 @@ Scheme_Object *vmag(int argc, Scheme_Object **argv)
 // Description:
 // Returns the reflection of one vector against another.
 // Example:
+// (vreflect (vector 0 1 1) (vector 1 0 1))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// vreflect vetor vetor
+// Retorna: vetor-resultante
+// Descrição:
+// Retorna a reflexão de um vetor em relação ao outro.
+// Exemplo:
 // (vreflect (vector 0 1 1) (vector 1 0 1))
 // EndFunctionDoc
 
@@ -730,6 +737,15 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 // (matrix->euler (mrotate (vector 15 0 0)))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// matrix->euler matriz-vetor
+// Retorna: vetor
+// Descrição:
+// Retorna os angulos euler extraidos da matriz.
+// Exemplo:
+// (matrix->euler (mrotate (vector 15 0 0)))
+// EndFunctionDoc
+
 Scheme_Object *matrix_to_euler(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -892,6 +908,15 @@ Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 // (fmod 14.4 10)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// fmod numero-numerador numero-denominador
+// Retorna: numero-real
+// Descrição:
+// Retorna o resto em ponto-flutuante de numerador/denominador.
+// Exemplo:
+// (fmod 14.4 10)
+// EndFunctionDoc
+
 Scheme_Object *fmod(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -907,6 +932,26 @@ Scheme_Object *fmod(int argc, Scheme_Object **argv)
 // Description:
 // Returns 1D/2D/3D/4D Simplex Noise in the range -1->1 depending on the number of parameters.
 // Example:
+// (snoise 1.0 2.0) ; 2D noise
+// (snoise 6.1 2.4 .5 1.3) ; 4D noise
+// 
+// ; example on a pixel prim
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (snoise (* 0.1 (modulo i (pixels-width)))
+//                     (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// snoise numero-real
+// Retorna: numero-real
+// Descrição:
+// Retorna Simplex Noise 1D/2D/3D/4D no intervalo -1->1 dependendo do número de parâmetros.
+// Exemplo:
 // (snoise 1.0 2.0) ; 2D noise
 // (snoise 6.1 2.4 .5 1.3) ; 4D noise
 // 
@@ -980,6 +1025,26 @@ Scheme_Object *snoise(int argc, Scheme_Object **argv)
 //     (pixels-upload))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// noise numero-real
+// Retorna: numero-real
+// Descrição:
+// Retorna o valor do Noise Perlin nas coordenadas especificadas.
+// Exemplo:
+// (noise 1.0 2.0) ; 2D noise
+// (noise 6.1 2.4 .5) ; 3D noise
+//
+// ; example on a pixel prim
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (noise (* 0.1 (modulo i (pixels-width)))
+//                    (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
+// EndFunctionDoc
+
 Scheme_Object *noise(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1021,6 +1086,15 @@ Scheme_Object *noise(int argc, Scheme_Object **argv)
 // (noise-seed 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// noise-seed numero-unsigned
+// Retorna: void
+// Descrição:
+// Ajusta o valor da semente para o noise.
+// Exemplo:
+// (noise-seed 1)
+// EndFunctionDoc
+
 Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1036,6 +1110,16 @@ Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
 // Description:
 // Adjusts the character and level of detail produced by the Perlin noise function.
 // Example:
+// (noise-detail 4) ; noise with 4 octaves
+// (noise-detail 4 .5) ; noise with 4 octaves and .5 falloff
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// noise-detail numeros-oitavos numeros-queda
+// Retorna: void
+// Descrição:
+// Ajusta o caráter e nível de detalhe produzido pelo função noise Perlin.
+// Exemplo:
 // (noise-detail 4) ; noise with 4 octaves
 // (noise-detail 4 .5) ; noise with 4 octaves and .5 falloff
 // EndFunctionDoc

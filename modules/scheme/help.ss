@@ -65,7 +65,8 @@
 ;; help function-string
 ;; Returns: void
 ;; Description:
-;; Displays help information on a fluxus function. For running in the repl mainly.
+;; Displays help information on a fluxus function, or a list with
+;; available functions matching regexp. For running in the repl mainly.
 ;; Example:
 ;; (help "pop") 
 ;; EndFunctionDoc    
@@ -74,8 +75,8 @@
 ;; help string-função
 ;; Retorna: void
 ;; Descrição:
-;; Mostra informação de ajuda numa função do fluxus. Para rodar no
-;; repl principalmente.
+;; Mostra informação de ajuda numa função do fluxus, ou uma lista de
+;; funções que casam com a regexp. Para rodar no repl principalmente.
 ;; Exemplo:
 ;; (help "pop")
 ;; EndFunctionDoc

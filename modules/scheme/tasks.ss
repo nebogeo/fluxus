@@ -26,7 +26,7 @@
 
 ;; StartSectionDoc-pt
 ;; scratchpad
-;; O scratchpad é o editor fluxus e a janela gl.
+;; Funções disponíveis como parte do scratchpad fluxus.
 ;; Exemplo:
 ;; EndSectionDoc
 

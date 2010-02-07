@@ -31,6 +31,12 @@ FluxAudio *Audio = NULL;
 // Example:
 // EndSectionDoc 
 
+// StartSectionDoc-pt
+// openal
+// Openal é uma biblioteca de audio multi-plataforma feita para ser
+// usada junto com aplicativos 3D.
+// EndSectionDoc
+
 void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
 {
 	MZ_GC_DECL_REG(1);
@@ -55,6 +61,17 @@ void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
 // (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// oa-start
+// Retorna: void
+// Descrição:
+// Inicia o sistema de áudio openal
+// Exemplo:
+// (oa-start)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
+// EndFunctionDoc
+
 Scheme_Object *start(int argc, Scheme_Object **argv)
 {
 	if (Audio==NULL) Audio = new FluxAudio;
@@ -63,10 +80,22 @@ Scheme_Object *start(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // oa-load-sample 
-// Returns: void
+// Returns: sampleid-number
 // Description:
 // Loads a sample and returns the id number, so it can be played.
 // Example:
+// (oa-start)
+// (define mysample (oa-load-sample "sample.wav"))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// oa-load-sample
+// Retorna: número-sampleid
+// Descrição:
+// Carrega uma amostra e retorna o número id, de forma que possa ser
+// tocada.
+// Exemplo:
 // (oa-start)
 // (define mysample (oa-load-sample "sample.wav"))
 // (oa-play mysample (vector 0 0 0) 1 0.2)
@@ -102,6 +131,15 @@ Scheme_Object *load_sample(int argc, Scheme_Object **argv)
 // (oa-update)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// oa-update
+// Retorna: void
+// Descrição:
+// Mantém o código openal rodando, é chamado pelo código every-frame.
+// Exemplo:
+// (oa-update)
+// EndFunctionDoc
+
 Scheme_Object *update(int argc, Scheme_Object **argv)
 {
 	if (Audio!=NULL)
@@ -117,6 +155,17 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 // Description:
 // Plays a sample. 
 // Example:
+// (oa-start)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// oa-play sampleid posição pitch gain
+// Retorna: void
+// Descrição:
+// Toca uma amostra.
+// Exemplo:
 // (oa-start)
 // (define mysample (oa-load-sample (fullpath "sample.wav")))
 // (oa-play mysample (vector 0 0 0) 1 0.2)
@@ -157,6 +206,20 @@ Scheme_Object *play(int argc, Scheme_Object **argv)
 // (oa-play mysample (vector 0 0 0) 1 0.2)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// oa-set-head-pos pos dir
+// Retorna: void
+// Descrição:
+// Ajusta a posição da cabeça, ou posição do ouvinte - que muda o
+// panning e talvez a filtragem dos soms em relação a posição espacial
+// no mundo.
+// Exemplo:
+// (oa-start)
+// (define mysample (oa-load-sample (fullpath "sample.wav")))
+// (oa-set-head-pos (vector -1 0 0) (vector 0 0 1))
+// (oa-play mysample (vector 0 0 0) 1 0.2)
+// EndFunctionDoc
+
 Scheme_Object *set_head_pos(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(2); 
@@ -188,6 +251,16 @@ Scheme_Object *set_head_pos(int argc, Scheme_Object **argv)
 // (oa-set-poly 256)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// oa-set-poly contagem-polifônica
+// Retorna: void
+// Descrição:
+// Ajusta o número de amostras que podem ser tocadas de uma
+// vez. Padrão é 256.
+// Exemplo:
+// (oa-set-poly 256)
+// EndFunctionDoc
+
 Scheme_Object *set_poly(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -213,6 +286,15 @@ Scheme_Object *set_poly(int argc, Scheme_Object **argv)
 // (oa-set-cull-dist 1000)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// oa-set-cull-dist distancia
+// Retorna: void
+// Descrição:
+// Ajusta a distancia à qual o som vai deixar de tocar.
+// Exemplo:
+// (oa-set-cull-dist 1000)
+// EndFunctionDoc
+
 Scheme_Object *set_cull_dist(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -235,6 +317,15 @@ Scheme_Object *set_cull_dist(int argc, Scheme_Object **argv)
 // Description:
 // Sets some global acoustic parameters
 // Example:
+// (oa-set-acoustics 1 1 1 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// oa-set-acoustics escala-atenuação distancia-max distancia-ref rolloff
+// Retorna: void
+// Descrição:
+// Ajusta alguns parametros globais de acústica.
+// Exemplo:
 // (oa-set-acoustics 1 1 1 1)
 // EndFunctionDoc
 

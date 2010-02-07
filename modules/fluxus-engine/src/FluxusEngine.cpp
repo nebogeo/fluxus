@@ -37,28 +37,28 @@ using namespace SchemeHelper;
 
 // StartSectionDoc-en
 // renderer
-// These commands are the low level renderer controls. You shouldn't need to 
-// deal with these unless you are being wily, or implementing a fluxus 
+// These commands are the low level renderer controls. You shouldn't need to
+// deal with these unless you are being wily, or implementing a fluxus
 // renderer outside of the scratchpad interface.
 // Example:
-// EndSectionDoc 
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // renderer
 // Estes comandos são os controladores de baixo nível do
 // renderizador. Você não deveria usá-los a menos que esteja
 // implementando um renderizador do fluxus fora da interface
-// scratchpad. 
+// scratchpad.
 // Exemplo:
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// make-renderer 
+// make-renderer
 // Returns: rendererid-number
 // Description:
 // Makes a new scenegraph renderer.
 // Example:
-// (make-renderer) 
+// (make-renderer)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -67,14 +67,14 @@ using namespace SchemeHelper;
 // Descrição:
 // Faz um novo renderizador de gráfico da cena [scenegraph]
 // Exemplo:
-// (make-renderer) 
+// (make-renderer)
 // EndFunctionDoc
 
 // base plt bindings & register all other bindings from here
 
 Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 {
-	return scheme_make_integer_value(0);//Engine::Get()->MakeRenderer());
+  return scheme_make_integer_value(0);//Engine::Get()->MakeRenderer());
 }
 
 // StartFunctionDoc-en
@@ -83,7 +83,7 @@ Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 // Description:
 // Make this renderer the current context for commands.
 // Example:
-// (renderer-grab renderer) 
+// (renderer-grab renderer)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -92,28 +92,28 @@ Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 // Descrição:
 // Faz este renderizador o atual contexto para comandos.
 // Exemplo:
-// (renderer-grab renderer) 
+// (renderer-grab renderer)
 // EndFunctionDoc
 
 Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("renderer-grab", "integer", 0, argc, argv);
-	
-	Fluxus::PixelPrimitive * p = dynamic_cast<Fluxus::PixelPrimitive*>
-		(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
-	if (p)
-	{
-		Engine::Get()->PushRenderer(Engine::StackItem(p->GetRenderer(), p->GetPhysics()));
-	}
-	else
-	{		
-		Trace::Stream<<"renderer_grab: needs a pixelsprimitive"<<endl;
-	}
-	
-	
-	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  if (!SCHEME_INTP(argv[0])) scheme_wrong_type("renderer-grab", "integer", 0, argc, argv);
+
+  Fluxus::PixelPrimitive * p = dynamic_cast<Fluxus::PixelPrimitive*>
+    (Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
+  if (p)
+  {
+    Engine::Get()->PushRenderer(Engine::StackItem(p->GetRenderer(), p->GetPhysics()));
+  }
+  else
+  {
+    Trace::Stream<<"renderer_grab: needs a pixelsprimitive"<<endl;
+  }
+
+
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -122,7 +122,7 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 // Description:
 // Pop the renderer context stack.
 // Example:
-// (renderer-grab renderer) 
+// (renderer-grab renderer)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -131,13 +131,13 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 // Descrição:
 // Pop o contexto da pilha do renderizador.
 // Exemplo:
-// (renderer-grab renderer) 
+// (renderer-grab renderer)
 // EndFunctionDoc
 
 Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->PopRenderer();
-	return scheme_void;
+  Engine::Get()->PopRenderer();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -146,7 +146,7 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 // Description:
 // Clears the backbuffer, and renders everything
 // Example:
-// (fluxus-render) 
+// (fluxus-render)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -160,8 +160,8 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 
 Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Render();
-	return scheme_void;
+  Engine::Get()->Render();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -170,7 +170,7 @@ Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 // Description:
 // Update the physics system.
 // Example:
-// (tick-physics) 
+// (tick-physics)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -179,13 +179,13 @@ Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 // Descrição:
 // Atualiza o sistema de física.
 // Exemplo:
-// (tick-physics) 
+// (tick-physics)
 // EndFunctionDoc
 
 Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Physics()->Tick();
-	return scheme_void;
+  Engine::Get()->Physics()->Tick();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -195,22 +195,23 @@ Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 // Render the physics system (for helper graphics). This is the low level
 // command - use set-physics-debug instead.
 // Example:
-// (render-physics) 
+// (render-physics)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
 // render-physics
 // Retorna: void
 // Descrição:
-// Renderiza o sistema de física (para gráficos ajudantes).
+// Renderiza o sistema de física (para gráficos ajudantes). Este é o
+// comando de baixo nível - use set-physics-debug ao invés.
 // Exemplo:
 // (render-physics)
 // EndFunctionDoc
 
 Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Physics()->Render();
-	return scheme_void;
+  Engine::Get()->Physics()->Render();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -219,7 +220,7 @@ Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 // Description:
 // Deletes all the renderers and makes a new default one.
 // Example:
-// (reset-renderers) 
+// (reset-renderers)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -233,8 +234,8 @@ Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 
 Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 {
-	//Engine::Get()->ResetRenderers();
-	return scheme_void;
+  //Engine::Get()->ResetRenderers();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -243,35 +244,35 @@ Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 // Description:
 // Calls reshape on the current renderer
 // Example:
-// (reshape 100 100) 
+// (reshape 100 100)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
 // reshape número-largura número-altura
 // Retorna: void
 // Descrição:
-// Chama reshapa no render atual.
+// Chama reshape no render atual.
 // Exemplo:
-// (reshape 100 100) 
+// (reshape 100 100)
 // EndFunctionDoc
 
 Scheme_Object *reshape(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("reshape", "integer", 0, argc, argv);
-	if (!SCHEME_INTP(argv[1])) scheme_wrong_type("reshape", "integer", 1, argc, argv);
-	Engine::Get()->Renderer()->SetResolution(IntFromScheme(argv[0]),IntFromScheme(argv[1]));
-	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  if (!SCHEME_INTP(argv[0])) scheme_wrong_type("reshape", "integer", 0, argc, argv);
+  if (!SCHEME_INTP(argv[1])) scheme_wrong_type("reshape", "integer", 1, argc, argv);
+  Engine::Get()->Renderer()->SetResolution(IntFromScheme(argv[0]),IntFromScheme(argv[1]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
-// fluxus-init 
+// fluxus-init
 // Returns: void
 // Description:
 // Inits the whole rendering system, only needs calling once.
 // Example:
-// (fluxus-init) 
+// (fluxus-init)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -286,18 +287,18 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 {
 /*cerr<<"fluxus_init"<<endl;
-	#ifdef GLSL
-	if(glewInit() != GLEW_OK)
-	{
-		Trace::Stream << "ERROR Unable to check OpenGL extensions" << endl;
-	}
+  #ifdef GLSL
+  if(glewInit() != GLEW_OK)
+  {
+    Trace::Stream << "ERROR Unable to check OpenGL extensions" << endl;
+  }
 
-	Fluxus::GLSLShader::Init();
-	#endif
-	
-	//Engine::Get()->Reinitialise();
+  Fluxus::GLSLShader::Init();
+  #endif
+
+  //Engine::Get()->Reinitialise();
 */
-	return scheme_void;
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -309,9 +310,18 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 // (display (fluxus-error-log))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// fluxus-error-log
+// Retorna: void
+// Descrição:
+// Retorna uma string contendo informação sobre o erro no último frame.
+// Exemplo:
+// (display (fluxus-error-log))
+// EndFunctionDoc
+
 Scheme_Object *fluxus_error_log(int argc, Scheme_Object **argv)
 {
-	return scheme_make_utf8_string(Trace::Get().c_str());
+  return scheme_make_utf8_string(Trace::Get().c_str());
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -322,52 +332,52 @@ Scheme_Object *engine_scheme_reload(Scheme_Env *env)
 Scheme_Object *scheme_reload(Scheme_Env *env)
 #endif
 {
-	Scheme_Env *menv = NULL;
-	MZ_GC_DECL_REG(2);
-	MZ_GC_VAR_IN_REG(0, env);
-	MZ_GC_VAR_IN_REG(1, menv);
+  Scheme_Env *menv = NULL;
+  MZ_GC_DECL_REG(2);
+  MZ_GC_VAR_IN_REG(0, env);
+  MZ_GC_VAR_IN_REG(1, menv);
 
-	MZ_GC_REG();
-	// add all the modules from this extension
-	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-engine"), env);
+  MZ_GC_REG();
+  // add all the modules from this extension
+  menv=scheme_primitive_module(scheme_intern_symbol("fluxus-engine"), env);
 
-	GlobalStateFunctions::AddGlobals(menv);
-	LocalStateFunctions::AddGlobals(menv);
-	MathsFunctions::AddGlobals(menv);
-	PrimitiveFunctions::AddGlobals(menv);
-	PDataFunctions::AddGlobals(menv);
-	UtilFunctions::AddGlobals(menv);
-	TurtleFunctions::AddGlobals(menv);
-	LightFunctions::AddGlobals(menv);
-	PhysicsFunctions::AddGlobals(menv);
-	FFGLFunctions::AddGlobals(menv);
+  GlobalStateFunctions::AddGlobals(menv);
+  LocalStateFunctions::AddGlobals(menv);
+  MathsFunctions::AddGlobals(menv);
+  PrimitiveFunctions::AddGlobals(menv);
+  PDataFunctions::AddGlobals(menv);
+  UtilFunctions::AddGlobals(menv);
+  TurtleFunctions::AddGlobals(menv);
+  LightFunctions::AddGlobals(menv);
+  PhysicsFunctions::AddGlobals(menv);
+  FFGLFunctions::AddGlobals(menv);
 
-	scheme_add_global("fluxus-init", scheme_make_prim_w_arity(fluxus_init, "fluxus-init", 0, 0), menv);
-	scheme_add_global("make-renderer", scheme_make_prim_w_arity(make_renderer, "make-renderer", 0, 0), menv);
-	scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
-	scheme_add_global("renderer-grab", scheme_make_prim_w_arity(renderer_grab, "renderer-grab", 1, 1), menv);
-	scheme_add_global("renderer-ungrab", scheme_make_prim_w_arity(renderer_ungrab, "renderer-ungrab", 0, 0), menv);
-	scheme_add_global("fluxus-render", scheme_make_prim_w_arity(fluxus_render, "fluxus-render", 0, 0), menv);
-	scheme_add_global("tick-physics", scheme_make_prim_w_arity(tick_physics, "tick-physics", 0, 0), menv);
-	scheme_add_global("render-physics", scheme_make_prim_w_arity(render_physics, "render-physics", 0, 0), menv);
-	scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);
-	scheme_add_global("fluxus-error-log", scheme_make_prim_w_arity(fluxus_error_log, "fluxus-error-log", 0, 0), menv);
+  scheme_add_global("fluxus-init", scheme_make_prim_w_arity(fluxus_init, "fluxus-init", 0, 0), menv);
+  scheme_add_global("make-renderer", scheme_make_prim_w_arity(make_renderer, "make-renderer", 0, 0), menv);
+  scheme_add_global("reset-renderers", scheme_make_prim_w_arity(reset_renderers, "reset-renderers", 0, 0), menv);
+  scheme_add_global("renderer-grab", scheme_make_prim_w_arity(renderer_grab, "renderer-grab", 1, 1), menv);
+  scheme_add_global("renderer-ungrab", scheme_make_prim_w_arity(renderer_ungrab, "renderer-ungrab", 0, 0), menv);
+  scheme_add_global("fluxus-render", scheme_make_prim_w_arity(fluxus_render, "fluxus-render", 0, 0), menv);
+  scheme_add_global("tick-physics", scheme_make_prim_w_arity(tick_physics, "tick-physics", 0, 0), menv);
+  scheme_add_global("render-physics", scheme_make_prim_w_arity(render_physics, "render-physics", 0, 0), menv);
+  scheme_add_global("reshape", scheme_make_prim_w_arity(reshape, "reshape", 2, 2), menv);
+  scheme_add_global("fluxus-error-log", scheme_make_prim_w_arity(fluxus_error_log, "fluxus-error-log", 0, 0), menv);
 
-	scheme_finish_primitive_module(menv);
+  scheme_finish_primitive_module(menv);
 
-	MZ_GC_UNREG();
+  MZ_GC_UNREG();
 
-	return scheme_void;
+  return scheme_void;
 }
 
 #ifndef STATIC_LINK
 Scheme_Object *scheme_initialize(Scheme_Env *env)
 {
-	return scheme_reload(env);
+  return scheme_reload(env);
 }
 
 Scheme_Object *scheme_module_name()
 {
-	return scheme_intern_symbol("fluxus-engine");
+  return scheme_intern_symbol("fluxus-engine");
 }
 #endif

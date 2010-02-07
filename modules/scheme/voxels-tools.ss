@@ -6,6 +6,12 @@
 ;; Example:
 ;; EndSectionDoc 
 
+;; StartSeciontDoc-pt
+;; voxels-utils
+;; Comandos fluxus de alto nível escritos em scheme.
+;; Exemplo:
+;; EndFunctionDoc
+
 #lang scheme/base
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
@@ -24,6 +30,16 @@
 ;;     (display (voxels-index (vector 5 5 5)))(newline))
 ;; EndFunctionDoc 
 
+;; StartFunctionDoc-pt
+;; voxel-index vetor-posição
+;; Retorna: número-index
+;; Descrição:
+;; Retorna o índice pdata para a posição voxel.
+;; Exemplo:
+;; (with-primitive (build-voxels 10 10 10)
+;;     (display (voxels-index (vector 5 5 5)))(newline))
+;; EndFunctionDoc
+
 (define (voxels-index v)
     (+ (vx v) (* (vy v) (voxels-width)) (* (vz v) (voxels-width) (voxels-height))))
 
@@ -33,6 +49,16 @@
 ;; Description:
 ;; Returns the voxel position for the given pdata index
 ;; Example:  
+;; (with-primitive (build-voxels 10 10 10)
+;;     (display (voxels-pos 200))(newline))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; voxels-pos indice
+;; Retorna: vetor-posição
+;; Descrição:
+;; Retorna a posição voxel para o índice pdata dado.
+;; Exemplo:
 ;; (with-primitive (build-voxels 10 10 10)
 ;;     (display (voxels-pos 200))(newline))
 ;; EndFunctionDoc

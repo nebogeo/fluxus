@@ -6,11 +6,21 @@
 ;; programming language available as part of PLT Scheme. It's completely separate to the main fluxus
 ;; commands, and represents a different way of creating games or other behavoural systems.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
+
+;; StartSectionDoc-pt
+;; frisbee
+;; Frisbee é uma game engine escrita para FrTime de alto nível, uma
+;; linguagem de programação funcionalmente reativa disponível como
+;; parte de PLT Scheme. É completamente separada dos comandos
+;; principais do fluxus, e representa uma forma diferente de criar
+;; jogos e outros sistemas com comportamento.
+;; Exemplo:
+;; EndFunctionDoc
 
 (module frisbee (lib "frtime-lang-only.ss" "frtime")
 
-(require 
+(require
  (lib "kw.ss")    ; todo:
  (lib "match.ss") ; change to new versions
  scheme/class
@@ -20,14 +30,14 @@
  frtime/lang-ext
  (all-except frtime/frp-core undefined?)
  ; import the procedures we want lifted
- (lifted "fluxus.ss" 
- 		 vadd2 vsub2 vmul vdiv vtransform vtransform-rot
+ (lifted "fluxus.ss"
+     vadd2 vsub2 vmul vdiv vtransform vtransform-rot
          vnormalise vdot vreflect vdist vmag vcross madd2 msub2 mdiv2 mmul2 mident mtranslate
          mrotate mscale mtranspose minverse maim qaxisangle qmul qnormalise qtomatrix qconjugate
          set-camera rndvec crndvec srndvec rndf crndf hsrndvec grndf grndvec)
  (prefix flx- "fluxus.ss"))
 
-(provide 
+(provide
  (all-defined)
  (all-from (lib "frtime-lang-only.ss" "frtime")))
 
@@ -50,6 +60,16 @@
 ;; (vec3 1 2 3)
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-pt
+;; vec3 x y z
+;; Retorna: vetor-resultante
+;; Descrição:
+;; Cria um novo vetor usável dentro de frisbee - use isso ao invés de
+;; (vector).
+;; Exemplo:
+;; (vec3 1 2 3)
+;; EndFunctionDoc
+
 (define (vec3 x y z)
   (lift #f vector x y z))
 
@@ -62,8 +82,17 @@
 ;; (vec3-x (vec3 1 2 3))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-pt
+;; vec3-x v
+;; Retorna: número-resultado
+;; Descrição:
+;; Retorna o componente x do vetor frisbee.
+;; Exemplo:
+;; (vec3-x (vec3 1 2 3))
+;; EndFunctionDoc
+
 (define (vec3-x v)
-  (lift #t vector-ref v 0)) 
+  (lift #t vector-ref v 0))
 
 ;; StartFunctionDoc-en
 ;; vec3-y v
@@ -74,8 +103,16 @@
 ;; (vec3-y (vec3 1 2 3))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-pt
+;; vec3-y v
+;; Retorna: número-resultado
+;; Descrição:
+;; Retorna o componente y do vetor frisbee.
+;; Exemplo:
+;; (vec3-y (vec3 1 2 3))
+;; EndFunctionDoc
 (define (vec3-y v)
-  (lift #t vector-ref v 1)) 
+  (lift #t vector-ref v 1))
 
 ;; StartFunctionDoc-en
 ;; vec3-z v
@@ -86,8 +123,17 @@
 ;; (vec3-z (vec3 1 2 3))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-pt
+;; vec3-z v
+;; Retorna: número-resultado
+;; Descrição:
+;; Retorna o componente z do vetor frisbee.
+;; Exemplo:
+;; (vec3-z (vec3 1 2 3))
+;; EndFunctionDoc
+
 (define (vec3-z v)
-  (lift #t vector-ref v 2)) 
+  (lift #t vector-ref v 2))
 
 ;; StartFunctionDoc-en
 ;; vec3-integral v
@@ -95,6 +141,15 @@
 ;; Description:
 ;; Returns the integral of the frisbee vector in respect to time
 ;; Example:
+;; (vec3-integral (vec3 0 0.01 0))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; vec3-integral v
+;; Retorna: vetor-resultado
+;; Descrição:
+;; Retorna a integral do vetor frisbee em relação ao tempo.
+;; Exemplo:
 ;; (vec3-integral (vec3 0 0.01 0))
 ;; EndFunctionDoc
 
@@ -108,41 +163,32 @@
 (define mouse-middle (event-receiver))
 (define mouse-right (event-receiver))
 (define keyboard (event-receiver))
-(define fluxus-pulse (event-receiver)) 
+(define fluxus-pulse (event-receiver))
 
 ;; standard behaviours
 
-(define clock 
-  (hold 
-   (map-e 
-    (lambda (e) 
-      (current-milliseconds)) 
+(define clock
+  (hold
+   (map-e
+    (lambda (e)
+      (current-milliseconds))
     fluxus-pulse)))
 
 (define mouse-x
-  (hold 
-   (map-e 
-    (lambda (e) 
-      (vector-ref mouse 0)) 
+  (hold
+   (map-e
+    (lambda (e)
+      (vector-ref mouse 0))
     fluxus-pulse)))
 
 (define mouse-y
-  (hold 
-   (map-e 
-    (lambda (e) 
-      (vector-ref mouse 1)) 
+  (hold
+   (map-e
+    (lambda (e)
+      (vector-ref mouse 1))
     fluxus-pulse)))
 
 ; reusable frtime constructs and utils
-
-;; StartFunctionDoc-en
-;; scene collide-b
-;; Returns: void
-;; Description:
-;; Sets the frisbee scene up. The list can contain primitive structures, or more lists.
-;; Example:
-;; (scene (list (cube)))
-;; EndFunctionDoc
 
 (define (collide-b proc init pos-a pos-b radius )
   (hold
@@ -153,28 +199,28 @@
    init))
 
 (define (key-control-b inc-key dec-key step)
-  (integral 
-   (hold 
-    (map-e 
-     (lambda (key) 
+  (integral
+   (hold
+    (map-e
+     (lambda (key)
        (if (equal? key dec-key) (- step)
            (if (equal? key inc-key) step)))
      keyboard) 0)))
 
 (define (key-press-b key on off)
-  (hold 
+  (hold
    (map-e
     (lambda (e)
       (if (eq? e key) on off))
     keyboard) 0))
 
 (define (key-time-e key)
-  (map-e 
+  (map-e
    (lambda (_)
      (value-now clock))
-   (filter-e 
-    (lambda (k) 
-      (eq? k key)) 
+   (filter-e
+    (lambda (k)
+      (eq? k key))
     keyboard)))
 
 (define (metro tick)
@@ -182,7 +228,7 @@
     (when-e (> (modulo (floor milliseconds) tick) (/ tick 2)))))
 
 (define (truncate-list lst count)
-  (cond 
+  (cond
     ((zero? count) '())
     ((null? lst) '())
     (else (cons (car lst) (truncate-list (cdr lst) (- count 1))))))
@@ -191,16 +237,16 @@
   (foldl
    (lambda (ob collided)
      (if (object-struct? ob)
-         (if (< (vdist (object-struct-translate ob) pos) radius) 
-             #t                  
+         (if (< (vdist (object-struct-translate ob) pos) radius)
+             #t
              collided)
          collided))
    #f
    with))
 
 (define (factory proc event max-size)
-  (collect-b 
-   event '() 
+  (collect-b
+   event '()
    (lambda (e lst)
      (cons (proc e) (truncate-list lst max-size)))))
 
@@ -211,12 +257,12 @@
            (zloop (- z 1)
                   (let yloop ((y h) (l l))
                     (cond ((zero? y) l)
-                          (else 
+                          (else
                            (yloop (- y 1)
                                   (let xloop ((x w) (l l))
                                     (cond ((zero? x) l)
                                           (else
-                                           (xloop (- x 1) (cons (vec3 x y z) l))))))))))))))  
+                                           (xloop (- x 1) (cons (vec3 x y z) l))))))))))))))
 
 
 ;---------------------------------------------------------------
@@ -234,14 +280,23 @@
 ;; (scene (list (cube)))
 ;; EndFunctionDoc
 
-(define (scene s) 
+;; StartFunctionDoc-pt
+;; scene lista-cena
+;; Retorna: void
+;; Descrição:
+;; Prepara a cena frisbee. A lista pode conter primitivas, ou mais listas.
+;; Exemplo:
+;; (scene (list (cube)))
+;; EndFunctionDoc
+
+(define (scene s)
   (set! scene-list s))
 
 ;---------------------------------------------------------------
 ; the model object
 (define-struct object-struct (shape colour translate scale rotate matrix hints camera-lock texture))
 
-(define/kw (object #:key 
+(define/kw (object #:key
                    (shape 'cube)
                    (colour (vector 1 1 1))
                    (translate (vector 0 0 0))
@@ -271,7 +326,7 @@
 
 (define-struct particles-struct (colour translate scale rotate matrix texture rate speed spread reverse))
 
-(define/kw (particles #:key 
+(define/kw (particles #:key
                       (colour (vector 1 1 1))
                       (translate (vector 0 0 0))
                       (scale (vector 0.1 0.1 0.1))
@@ -281,7 +336,7 @@
                       (rate 1)
                       (speed 0.1)
                       (spread 360)
-                      (reverse #f))    
+                      (reverse #f))
   (make-particles-struct colour translate scale rotate matrix texture rate speed spread reverse))
 
 (define max-particle-systems 10)
@@ -302,7 +357,7 @@
                          (lambda (vel)
                            (vector 0 0 0))
                          "vel"))
-    (set! particle-systems 
+    (set! particle-systems
           (cons pp particle-systems))))
 
 (define (animate-particles)
@@ -315,13 +370,13 @@
 (define (launch-particles num pos spread speed colour scale)
   (cond ((not (zero? num))
          (let ((spread (if (< spread 10) 10 spread)) ; stop rndcone going into infinite loop
-               (vel (flx-vtransform-rot (flx-vmul (rndcone (- 1 (* 2 (/ spread 360)))) speed) 
+               (vel (flx-vtransform-rot (flx-vmul (rndcone (- 1 (* 2 (/ spread 360)))) speed)
                                         (flx-get-transform))))
            (flx-with-primitive (car particle-systems)
                                (flx-pdata-set! "p" cur-particle pos)
                                (flx-pdata-set! "c" cur-particle colour)
                                (flx-pdata-set! "s" cur-particle scale)
-                               (flx-pdata-set! "vel" cur-particle vel) 
+                               (flx-pdata-set! "vel" cur-particle vel)
                                (set! cur-particle (modulo (+ cur-particle 1) (flx-pdata-size)))))
          (launch-particles (- num 1) pos spread speed colour scale))))
 
@@ -337,28 +392,28 @@
 
 (define (vector-now v)
   (let ((v (value-now v)))
-    (if (void? v) 
+    (if (void? v)
         (vector 0 0 0)
-        (vector (value-now (vector-ref v 0)) 
+        (vector (value-now (vector-ref v 0))
                 (value-now (vector-ref v 1))
                 (value-now (vector-ref v 2))))))
 
 (define (matrix-now v)
   (let ((v (value-now v)))
-    (if (void? v) 
+    (if (void? v)
         (flx-mident)
         v)))
 
 
-; render the scene list          
+; render the scene list
 (define (render-scene-list scene-list)
-  
+
   (define (set-state colour translate scale rotate matrix hints texture)
     (flx-colour (vector-now colour))
     (flx-translate (vector-now translate))
-    (flx-rotate (vector-now rotate))                             
-    (flx-concat (matrix-now matrix)) 
-    (flx-scale (vector-now scale))    
+    (flx-rotate (vector-now rotate))
+    (flx-concat (matrix-now matrix))
+    (flx-scale (vector-now scale))
     (if (not (string=? texture ""))
         (flx-texture (flx-load-texture texture)))
     (for-each
@@ -369,19 +424,19 @@
          ((unlit) (flx-hint-unlit))
          (else (printf "error, unknown hint :~a ~n" hint))))
      (value-now hints)))
-  
+
   (for-each
-   (lambda (v)       
+   (lambda (v)
      (match (value-now v)
        [($ object-struct shape colour translate scale rotate matrix hints camera-lock texture)
         (flx-with-state
          (set-state colour translate scale rotate matrix hints texture)
-         (if camera-lock (flx-set-camera 
+         (if camera-lock (flx-set-camera
                           (flx-mmul (flx-get-transform)
                                     (flx-mmul
                                      (flx-mtranslate (vec3 0 0 -10))
                                      (flx-mrotate (vec3 90 0 0))))))
-         (cond 
+         (cond
            ((string? shape) (flx-draw-instance (get-model shape)))
            (else
             (case shape
@@ -390,21 +445,21 @@
               ((torus) (flx-draw-torus))
               ((plane) (flx-draw-plane))
               (else (printf "render-scene-list: unknown object shape: ~a~n" shape))))))]
-       
+
        [($ particles-struct colour translate scale rotate matrix texture rate speed spread reverse)
         (flx-with-state
          (flx-translate (vector-now translate))
-         (flx-rotate (vector-now rotate))                             
-         (flx-concat (matrix-now matrix)) 
-         (launch-particles rate 
+         (flx-rotate (vector-now rotate))
+         (flx-concat (matrix-now matrix))
+         (launch-particles rate
                            (flx-vtransform (vec3 0 0 0) (flx-get-transform))
                            (value-now spread)
                            (value-now speed)
                            (vector-now colour)
                            (vector-now scale)))]
-       
+
        [(? undefined?) (void)]
-       [(? list?)          
+       [(? list?)
         (render-scene-list (value-now v))]
        [(? void?) (void)]))
    (value-now scene-list)))
