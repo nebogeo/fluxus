@@ -54,10 +54,11 @@
 ;; vsquash a
 ;; Returns: void
 ;; Description:
-;; Clamp the vector so the elements are all between 0 and 1
+;; Normalise the vector so all the elements are between 0 and 1 but 
+;; maintain the same ratio between them.
 ;; Example:  
 ;; ; make a valid colour from any old vector
-;; (colour (vclamp (vector 2 400 -123)))
+;; (colour (vsquash (vector 2 400 -123)))
 ;; EndFunctionDoc 
 
 (define (vsquash v)
