@@ -275,7 +275,7 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 // pdata-add nome-string string-tipo
 // Retorna: void
 // Descrição:
-// Adiciona um novo usuario de disposição ao pdata. Tipo é um dos
+// Adiciona uma nova array de pdata do usuario. Tipo é um dos
 // sequintes "v":vector, "c":colour, "f":float ou "m":matrix.
 // Exemplo:
 // (pdata-add "mydata" "v")
@@ -330,6 +330,20 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 //     (display "we have myarray!") (newline)))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// pdata-exists? string-nome
+// Retorna: void
+// Descrição:
+// Retorna verdadeiro se a array pdata existe na primitiva.
+// Exemplo:
+// (with-primitive (build-cube)
+//   (when (pdata-exists? "p") 
+//     (display "we have positions!") (newline)))
+//   (pdata-add "myarray" "v")
+//   (when (pdata-exists? "myarray") 
+//     (display "we have myarray!") (newline))))
+// EndFunctionDoc
+
 Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -351,12 +365,29 @@ Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
 	return scheme_false;
 }
 
+// TODO: add more type descriptions down here
 // StartFunctionDoc-en
 // pdata-names 
 // Returns: void
 // Description:
 // Returns a list of the names of the pdata arrays for this primitive.
+// t -> texture
+// p -> position
+// c -> color
 // Example:
+// (with-primitive (build-cube)
+//     (display (pdata-names)) (newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// pdata-names
+// Retorna: void
+// Descrição:
+// Retorna uma lista com nomes das arrays de pdata para esta primitiva
+// t -> texture
+// p -> position
+// c -> color
+// Exemplo:
 // (with-primitive (build-cube)
 //     (display (pdata-names)) (newline))
 // EndFunctionDoc
@@ -438,6 +469,7 @@ Scheme_Object *pdata_names(int argc, Scheme_Object **argv)
 // (every-frame (with-primitive p
 //     (pdata-op "+" "p" "vel"))) 
 // EndFunctionDoc
+
 // StartFunctionDoc-pt
 // pdata-op string-nomefunc string-nomepdata operador
 // Retorna: void
@@ -668,7 +700,7 @@ Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 // Retorna: número-contador
 // Descrição:
 // Retorna o tamanho das arrays pdata (elas precisam ser todas a
-// mesma). Isto é principal para iterar através das arrays.
+// mesma). Isto é principalmente para iterar através das arrays.
 // Exemplo:
 // (define (mashup n)
 //     (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd))) ; randomise the vertex position
@@ -706,7 +738,7 @@ Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// recalc-normals número-macioounão
+// recalc-normals número-macio-ou-não
 // Retorna: void
 // Descrição:
 // Para primitivas poligonais apenas. Olha a posição dos vértices e

@@ -27,9 +27,9 @@ using namespace Fluxus;
 // StartSectionDoc-en
 // global-state
 // Global state is really anything that controls the renderer globally, so it affects all primitives
-// or controls the renderer directly - ie camera control or full screen effects like blurring.  
+// or controls the renderer directly - ie camera control or full screen effects like blurring.
 // Example:
-// EndSectionDoc 
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // estado-global
@@ -41,10 +41,10 @@ using namespace Fluxus;
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// clear-engine 
+// clear-engine
 // Returns: void
 // Description:
-// Clears the renderer, and physics system. This command should not be called directly, use clear 
+// Clears the renderer, and physics system. This command should not be called directly, use clear
 // instead, as this clears a few other things, and calls clear-engine itself.
 // Example:
 // (clear-engine) ; woo hoo!
@@ -63,13 +63,13 @@ using namespace Fluxus;
 
 Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->Clear();
-	Engine::Get()->Physics()->Clear();
-	Engine::Get()->Renderer()->ClearLights();
-	Engine::Get()->ClearGrabStack();
-	Engine::Get()->Renderer()->UnGrab();
-	Engine::Get()->GetPFuncContainer()->Clear();
-	return scheme_void;
+  Engine::Get()->Renderer()->Clear();
+  Engine::Get()->Physics()->Clear();
+  Engine::Get()->Renderer()->ClearLights();
+  Engine::Get()->ClearGrabStack();
+  Engine::Get()->Renderer()->UnGrab();
+  Engine::Get()->GetPFuncContainer()->Clear();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -95,12 +95,12 @@ Scheme_Object *clear_engine(int argc, Scheme_Object **argv)
 
 Scheme_Object *blur(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("blur", "f", argc, argv);
-	float blur=FloatFromScheme(argv[0]);	
-	if (!blur) Engine::Get()->Renderer()->SetMotionBlur(false);
+  DECL_ARGV();
+  ArgCheck("blur", "f", argc, argv);
+  float blur=FloatFromScheme(argv[0]);
+  if (!blur) Engine::Get()->Renderer()->SetMotionBlur(false);
     else Engine::Get()->Renderer()->SetMotionBlur(true, blur);
-	MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -108,7 +108,7 @@ Scheme_Object *blur(int argc, Scheme_Object **argv)
 // fog fogcolour-vector amount-number begin-number end-number
 // Returns: void
 // Description:
-// Sets the fogging parameters to give a visual depth cue (aerial perspective in painter's jargon). 
+// Sets the fogging parameters to give a visual depth cue (aerial perspective in painter's jargon).
 // This can obscure the on screen editing, so keep the amount small.
 // Example:
 // (clear-colour (vector 0 0 1))   ; looks nice if the background matches
@@ -129,13 +129,13 @@ Scheme_Object *blur(int argc, Scheme_Object **argv)
 
 Scheme_Object *fog(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("fog", "cfff", argc, argv);
-	Engine::Get()->Renderer()->SetFog(ColourFromScheme(argv[0]),
-		FloatFromScheme(argv[1]),
-		FloatFromScheme(argv[2]),
-		FloatFromScheme(argv[3]));
-	MZ_GC_UNREG();
+  DECL_ARGV();
+  ArgCheck("fog", "cfff", argc, argv);
+  Engine::Get()->Renderer()->SetFog(ColourFromScheme(argv[0]),
+    FloatFromScheme(argv[1]),
+    FloatFromScheme(argv[2]),
+    FloatFromScheme(argv[3]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -152,18 +152,18 @@ Scheme_Object *fog(int argc, Scheme_Object **argv)
 // show-axis número-mostrar
 // Retorna: void
 // Descrição:
-// Mostra os eixos de origem do espaço usado; 
+// Mostra os eixos de origem do espaço usado;
 // Exemplo:
 // (show-axis 1)
 // EndFunctionDoc
 
 Scheme_Object *show_axis(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
- 	ArgCheck("show-axis", "i", argc, argv);
+  DECL_ARGV();
+  ArgCheck("show-axis", "i", argc, argv);
     Engine::Get()->Renderer()->ShowAxis(IntFromScheme(argv[0]));
     //Fluxus->ShowLocators(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -188,10 +188,10 @@ Scheme_Object *show_axis(int argc, Scheme_Object **argv)
 
 Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 {
- 	DECL_ARGV();
-	ArgCheck("show-fps", "i", argc, argv);
+  DECL_ARGV();
+  ArgCheck("show-fps", "i", argc, argv);
     Engine::Get()->Renderer()->SetFPSDisplay(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -200,12 +200,12 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Locks the camera transform onto the specified primitive's transform. It's like parenting the camera
-// to the object. This is the easiest way to procedurally drive the camera. Use an id number of 0 to 
+// to the object. This is the easiest way to procedurally drive the camera. Use an id number of 0 to
 // unlock the camera.
 // Example:
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
-// 
+//
 // (with-state ; make a background cube so we can tell what's happening
 //     (hint-wire)
 //     (hint-unlit)
@@ -213,15 +213,15 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 //     (colour (vector 0.5 0.5 0.5))
 //     (scale (vector -20 -10 -10))
 //     (build-cube))
-// 
+//
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
-// 
+//
 // (define (animate)
 //     (with-primitive obj
 //         (identity)
 //         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
-// 
+//
 // (every-frame (animate))
 // EndFunctionDoc
 
@@ -236,7 +236,7 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 // Exemplo:
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
-// 
+//
 // (with-state ; make a background cube so we can tell what's happening
 //     (hint-wire)
 //     (hint-unlit)
@@ -244,24 +244,24 @@ Scheme_Object *show_fps(int argc, Scheme_Object **argv)
 //     (colour (vector 0.5 0.5 0.5))
 //     (scale (vector -20 -10 -10))
 //     (build-cube))
-// 
+//
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
-// 
+//
 // (define (animate)
 //     (with-primitive obj
 //         (identity)
 //         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
-// 
+//
 // (every-frame (animate))
 // EndFunctionDoc
 
 Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
- 	ArgCheck("lock-camera", "i", argc, argv);
+  DECL_ARGV();
+  ArgCheck("lock-camera", "i", argc, argv);
     Engine::Get()->GetCamera()->LockCamera( IntFromScheme(argv[0]) );
-	MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -274,7 +274,7 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 // Example:
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
-// 
+//
 // (with-state ; make a background cube so we can tell what's happening
 //     (hint-wire)
 //     (hint-unlit)
@@ -282,15 +282,15 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 //     (colour (vector 0.5 0.5 0.5))
 //     (scale (vector -20 -10 -10))
 //     (build-cube))
-// 
+//
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
-// 
+//
 // (define (animate)
 //     (with-primitive obj
 //         (identity)
 //         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
-// 
+//
 // (every-frame (animate))
 // EndFunctionDoc
 
@@ -304,7 +304,7 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 // Exemplo:
 // (clear)
 // (define obj (build-cube)) ; make a cube for the camera to lock to
-// 
+//
 // (with-state ; make a background cube so we can tell what's happening
 //     (hint-wire)
 //     (hint-unlit)
@@ -312,24 +312,24 @@ Scheme_Object *lock_camera(int argc, Scheme_Object **argv)
 //     (colour (vector 0.5 0.5 0.5))
 //     (scale (vector -20 -10 -10))
 //     (build-cube))
-// 
+//
 // (lock-camera obj) ; lock the camera to our first cube
 // (camera-lag 0.1)  ; set the lag amount, this will smooth out the cube jittery movement
-// 
+//
 // (define (animate)
 //     (with-primitive obj
 //         (identity)
 //         (translate (vector (fmod (time) 5) 0 0)))) ; make a jittery movement
-// 
+//
 // (every-frame (animate))
 // EndFunctionDoc
 
 Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
- 	ArgCheck("camera-lag", "f", argc, argv);
+  DECL_ARGV();
+  ArgCheck("camera-lag", "f", argc, argv);
     Engine::Get()->GetCamera()->SetCameraLag(FloatFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -339,27 +339,27 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // Description:
 // Loads a texture from disk, converts it to a texture, and returns the id number. The texture loading
 // is memory cached, so repeatedly calling this will not cause it to load again. The cache can be cleared
-// with clear-texture-cache. The png may be RGB or RGBA to use alpha transparency. To get more control how your 
+// with clear-texture-cache. The png may be RGB or RGBA to use alpha transparency. To get more control how your
 // texture is created you can use a list of parameters. See the example for more explanation. Use id for
 // adding more texture data to existing textures as mipmap levels, or cube map faces.
-// Note: if turning mipmapping off and only specifing one texture it should be set to mip level 0, and you'll 
+// Note: if turning mipmapping off and only specifing one texture it should be set to mip level 0, and you'll
 // need to turn the min and mag filter settings to linear or nearest (see texture-params).
-// 
+//
 // Example:
 // ; simple usage:
 // (texture (load-texture "mytexture.png"))
 // (build-cube) ; the cube will be texture mapped with the image
-// 
+//
 // ; complex usages:
-// 
+//
 // ; the options list can contain the following keys and values:
 // ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
-// ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y 
+// ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y
 // ;         cube-map-negative-y cube-map-positive-z cube-map-negative-z]
 // ; generate-mipmaps : exact integer, 0 or 1
 // ; mip-level : exact integer
 // ; border : exact integer
-// 
+//
 // ; setup an environment cube map
 // (define t (load-texture "cube-left.png" (list 'type 'cube-map-positive-x)))
 // (load-texture "cube-right.png" (list 'id t 'type 'cube-map-negative-x))
@@ -376,15 +376,12 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // (load-texture "m1.png" (list 'id t2 'generate-mipmaps 0 'mip-level 1))
 // (load-texture "m2.png" (list 'id t2 'generate-mipmaps 0 'mip-level 2))
 // (load-texture "m3.png" (list 'id t2 'generate-mipmaps 0 'mip-level 3))
-
-
 // (texture (load-texture "mytexture.png"
-//				(list
-//					'generate-mipmaps 0  ; turn mipmapping off
-//      		    'border 2)))          ; add a border to the texture
-// 
+//        (list
+//          'generate-mipmaps 0  ; turn mipmapping off
+//              'border 2)))          ; add a border to the texture
+//
 // (build-cube) ; the cube will be texture mapped with the image
-
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -398,92 +395,126 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // enquanto o script estiver rodando. O png pode ser RGB ou RGBA para
 // usar transparência alpha.
 // Exemplo:
+// ; simple usage:
 // (texture (load-texture "mytexture.png"))
-// (build-cube) ; o cubo vai ser mapeado com a textura da imagem
+// (build-cube) ; the cube will be texture mapped with the image
+//
+// ; complex usages:
+//
+// ; the options list can contain the following keys and values:
+// ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
+// ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y
+// ;         cube-map-negative-y cube-map-positive-z cube-map-negative-z]
+// ; generate-mipmaps : exact integer, 0 or 1
+// ; mip-level : exact integer
+// ; border : exact integer
+//
+// ; setup an environment cube map
+// (define t (load-texture "cube-left.png" (list 'type 'cube-map-positive-x)))
+// (load-texture "cube-right.png" (list 'id t 'type 'cube-map-negative-x))
+// (load-texture "cube-top.png" (list 'id t 'type 'cube-map-positive-y))
+// (load-texture "cube-bottom.png" (list 'id t 'type 'cube-map-negative-y))
+// (load-texture "cube-front.png" (list 'id t 'type 'cube-map-positive-z))
+// (load-texture "cube-back.png" (list 'id t 'type 'cube-map-negative-z))
+// (texture t)
+//
+// ; setup a mipmapped texture with our own images
+// ; you need as many levels as it takes you to get to 1X1 pixels from your
+// ; level 0 texture size
+// (define t2 (load-texture "m0.png" (list 'generate-mipmaps 0 'mip-level 0)))
+// (load-texture "m1.png" (list 'id t2 'generate-mipmaps 0 'mip-level 1))
+// (load-texture "m2.png" (list 'id t2 'generate-mipmaps 0 'mip-level 2))
+// (load-texture "m3.png" (list 'id t2 'generate-mipmaps 0 'mip-level 3))
+// (texture (load-texture "mytexture.png"
+//        (list
+//          'generate-mipmaps 0  ; turn mipmapping off
+//              'border 2)))          ; add a border to the texture
+//
+// (build-cube) ; the cube will be texture mapped with the image
 // EndFunctionDoc
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 {
-	Scheme_Object *paramvec = NULL;
-	MZ_GC_DECL_REG(2);
-	MZ_GC_VAR_IN_REG(0, argv);
-	MZ_GC_VAR_IN_REG(1, paramvec);
-	MZ_GC_REG();	
-	
-	if (argc==2) ArgCheck("load-texture", "sl", argc, argv);
-	else ArgCheck("load-texture", "s", argc, argv);
-	
-	TexturePainter::CreateParams createparams;
-	
-	if (argc==2)
-	{
-		paramvec = scheme_list_to_vector(argv[1]);
+  Scheme_Object *paramvec = NULL;
+  MZ_GC_DECL_REG(2);
+  MZ_GC_VAR_IN_REG(0, argv);
+  MZ_GC_VAR_IN_REG(1, paramvec);
+  MZ_GC_REG();
 
-		for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
-		{
-			if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
-			{
-				// get the parameter name
-				string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
-				if (param=="id") 
-				{
-					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
-				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-					{	
-						createparams.ID = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-					}
-				}
-				else if (param=="type") 
-				{
-					if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
-					{	
-						string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
-						if (type=="texture-2d") createparams.Type = GL_TEXTURE_2D;			
-						else if (type=="cube-map-positive-x") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-						else if (type=="cube-map-negative-x") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-						else if (type=="cube-map-positive-y") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-						else if (type=="cube-map-negative-y") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-						else if (type=="cube-map-positive-z") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-						else if (type=="cube-map-negative-z") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-						else Trace::Stream<<"load-texture: unknown parameter for "<<param<<": "<<type<<endl;
-					}
-				}
-				else if (param=="generate-mipmaps") 
-				{
-					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
-				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-					{	
-						createparams.GenerateMipmaps = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-					}
-				}
-				else if (param=="mip-level") 
-				{
-					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
-				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-					{	
-						createparams.MipLevel = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-					}
-				}
-				else if (param=="border") 
-				{
-					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) && 
-				    	SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-					{	
-						createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-					}
-				}
-				else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;
-			}						
-		}
-	}
-	
-	int ret=Engine::Get()->Renderer()->GetTexturePainter()->LoadTexture(StringFromScheme(argv[0]),createparams);	
- 	MZ_GC_UNREG(); 
+  if (argc==2) ArgCheck("load-texture", "sl", argc, argv);
+  else ArgCheck("load-texture", "s", argc, argv);
+
+  TexturePainter::CreateParams createparams;
+
+  if (argc==2)
+  {
+    paramvec = scheme_list_to_vector(argv[1]);
+
+    for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
+    {
+      if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
+      {
+        // get the parameter name
+        string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
+        if (param=="id")
+        {
+          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            createparams.ID = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+          }
+        }
+        else if (param=="type")
+        {
+          if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+            if (type=="texture-2d") createparams.Type = GL_TEXTURE_2D;
+            else if (type=="cube-map-positive-x") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+            else if (type=="cube-map-negative-x") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+            else if (type=="cube-map-positive-y") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+            else if (type=="cube-map-negative-y") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+            else if (type=="cube-map-positive-z") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+            else if (type=="cube-map-negative-z") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+            else Trace::Stream<<"load-texture: unknown parameter for "<<param<<": "<<type<<endl;
+          }
+        }
+        else if (param=="generate-mipmaps")
+        {
+          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            createparams.GenerateMipmaps = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+          }
+        }
+        else if (param=="mip-level")
+        {
+          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            createparams.MipLevel = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+          }
+        }
+        else if (param=="border")
+        {
+          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+          }
+        }
+        else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;
+      }
+    }
+  }
+
+  int ret=Engine::Get()->Renderer()->GetTexturePainter()->LoadTexture(StringFromScheme(argv[0]),createparams);
+  MZ_GC_UNREG();
     return scheme_make_integer_value(ret);
 }
 
 // StartFunctionDoc-en
-// clear-texture-cache 
+// clear-texture-cache
 // Returns: void
 // Description:
 // Clears the texture cache, meaning changed textures on disk are reloaded.
@@ -492,7 +523,7 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// clear-texture-cache 
+// clear-texture-cache
 // Retorna: void
 // Descrição:
 // Clears the texture cache, meaning changed textures on disk are reloaded.
@@ -502,7 +533,7 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->GetTexturePainter()->ClearCache();	
+  Engine::Get()->Renderer()->GetTexturePainter()->ClearCache();
     return scheme_void;
 }
 
@@ -527,21 +558,21 @@ Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 
 Scheme_Object *frustum(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("frustum", "ffff", argc, argv);
-	Engine::Get()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
-											FloatFromScheme(argv[1]),
-											FloatFromScheme(argv[2]),
-											FloatFromScheme(argv[3]));
-	MZ_GC_UNREG();
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("frustum", "ffff", argc, argv);
+  Engine::Get()->GetCamera()->SetFrustum(FloatFromScheme(argv[0]),
+                      FloatFromScheme(argv[1]),
+                      FloatFromScheme(argv[2]),
+                      FloatFromScheme(argv[3]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
 // clip front-number back-number
 // Returns: void
 // Description:
-// Sets the front & back clipping planes for the camera frustum, and thus the viewing angle. 
+// Sets the front & back clipping planes for the camera frustum, and thus the viewing angle.
 // Change the front clipping distance to alter the perspective from telephoto to fisheye.
 // Example:
 // (clip 1 10000) ; default settings
@@ -560,11 +591,11 @@ Scheme_Object *frustum(int argc, Scheme_Object **argv)
 
 Scheme_Object *clip(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("clip", "ff", argc, argv);
-	Engine::Get()->GetCamera()->SetClip(FloatFromScheme(argv[0]),
-										FloatFromScheme(argv[1]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("clip", "ff", argc, argv);
+  Engine::Get()->GetCamera()->SetClip(FloatFromScheme(argv[0]),
+                    FloatFromScheme(argv[1]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -574,7 +605,7 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 // Description:
 // Sets orthographic projection - i.e. no perspective.
 // Example:
-// (ortho) 
+// (ortho)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -588,7 +619,7 @@ Scheme_Object *clip(int argc, Scheme_Object **argv)
 
 Scheme_Object *ortho(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->GetCamera()->SetOrtho(true);
+  Engine::Get()->GetCamera()->SetOrtho(true);
     return scheme_void;
 }
 
@@ -598,7 +629,7 @@ Scheme_Object *ortho(int argc, Scheme_Object **argv)
 // Description:
 // Sets perspective projection (the default) after ortho has been set.
 // Example:
-// (persp) 
+// (persp)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -606,14 +637,14 @@ Scheme_Object *ortho(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Ajusta a projeção como perspectiva (o padrão) depois que ortho foi
-// acionada. 
+// acionada.
 // Exemplo:
 // (persp)
 // EndFunctionDoc
 
 Scheme_Object *persp(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->GetCamera()->SetOrtho(false);
+  Engine::Get()->GetCamera()->SetOrtho(false);
     return scheme_void;
 }
 
@@ -621,9 +652,9 @@ Scheme_Object *persp(int argc, Scheme_Object **argv)
 // set-ortho-zoom amount-number
 // Returns: void
 // Description:
-// Sets the zoom level for the orthographic projection. 
+// Sets the zoom level for the orthographic projection.
 // Example:
-// (set-ortho-zoom 2) 
+// (set-ortho-zoom 2)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -637,10 +668,10 @@ Scheme_Object *persp(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("set-ortho-zoom", "f", argc, argv);
-	Engine::Get()->GetCamera()->SetOrthoZoom(FloatFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("set-ortho-zoom", "f", argc, argv);
+  Engine::Get()->GetCamera()->SetOrthoZoom(FloatFromScheme(argv[0]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -650,7 +681,7 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 // Description:
 // Sets the colour we clear the renderer with, this forms the background colour for the scene.
 // Example:
-// (clear-colour (vector 1 0 0)) ; RED!!! 
+// (clear-colour (vector 1 0 0)) ; RED!!!
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -660,15 +691,15 @@ Scheme_Object *set_ortho_zoom(int argc, Scheme_Object **argv)
 // Ajusta a cor que vai limpar o renderizador, isto forma a cor do
 // fundo da cena.
 // Exemplo:
-// (clear-colour (vector 1 0 0)) ; RED!!! 
+// (clear-colour (vector 1 0 0)) ; RED!!!
 // EndFunctionDoc
 
 Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("clear-colour", "c", argc, argv);
+  DECL_ARGV();
+  ArgCheck("clear-colour", "c", argc, argv);
     Engine::Get()->Renderer()->SetBGColour(ColourFromScheme(argv[0]));
-	MZ_GC_UNREG();
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -676,10 +707,10 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // clear-frame setting-number
 // Returns: void
 // Description:
-// Sets the frame clearing on or off. 
+// Sets the frame clearing on or off.
 // Example:
-// (clear-frame 0) 
-// (clear-frame 1)  
+// (clear-frame 0)
+// (clear-frame 1)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -689,15 +720,15 @@ Scheme_Object *clear_colour(int argc, Scheme_Object **argv)
 // ajusta a limpeza do frame, desligado ou ligado.
 // Exemplo:
 // (clear-frame 0)
-// (clear-frame 1)  
+// (clear-frame 1)
 // EndFunctionDoc
 
 Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 {
- 	DECL_ARGV();
-	ArgCheck("clear-frame", "i", argc, argv);
-	Engine::Get()->Renderer()->SetClearFrame(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("clear-frame", "i", argc, argv);
+  Engine::Get()->Renderer()->SetClearFrame(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -705,9 +736,9 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 // clear-zbuffer setting-number
 // Returns: void
 // Description:
-// Sets the zbuffer clearing on or off. 
+// Sets the zbuffer clearing on or off.
 // Example:
-// (clear-zbuffer 0) 
+// (clear-zbuffer 0)
 // (clear-zbuffer 1)
 // EndFunctionDoc
 
@@ -723,10 +754,10 @@ Scheme_Object *clear_frame(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 {
- 	DECL_ARGV();
-	ArgCheck("clear-zbuffer", "i", argc, argv);
-	Engine::Get()->Renderer()->SetClearZBuffer(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("clear-zbuffer", "i", argc, argv);
+  Engine::Get()->Renderer()->SetClearZBuffer(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -734,9 +765,9 @@ Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 // clear-accum setting-number
 // Returns: void
 // Description:
-// Sets the accumulation buffer clearing on or off. 
+// Sets the accumulation buffer clearing on or off.
 // Example:
-// (clear-accum 1) 
+// (clear-accum 1)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -750,10 +781,10 @@ Scheme_Object *clear_zbuffer(int argc, Scheme_Object **argv)
 
 Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 {
- 	DECL_ARGV();
-	ArgCheck("clear-accum", "i", argc, argv);
-	Engine::Get()->Renderer()->SetClearAccum(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("clear-accum", "i", argc, argv);
+  Engine::Get()->Renderer()->SetClearAccum(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -765,31 +796,31 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 // Example:
 // (clear)
 // (viewport 0 0.5 0.5 0.5)
-// 
+//
 // (define cam2 (build-camera))
 // (current-camera cam2)
 // (viewport 0.5 0 0.5 1)
-// 
+//
 // (define cam3 (build-camera))
 // (current-camera cam3)
 // (set-camera (mmul (mtranslate (vector 0 0 -5))
 //         (mrotate (vector 0 45 0))))
 // (viewport 0 0 0.5 0.5)
-// 
+//
 // ; render a primitive in one view only
 // (define t (with-state
 //     (translate (vector 3 0 0))
 //     (scale 0.3)
 //     (colour (vector 1 0 0))
 //     (build-torus 1 2 10 10)))
-// 
+//
 // (with-primitive t
 //     (hide 1) ; hide in all
 //     (camera-hide 0)) ; unhide in current camera
-// 
-// 
+//
+//
 // (current-camera 0)
-// 
+//
 // (define c (with-state
 //         (hint-cull-ccw)
 //         (hint-unlit)
@@ -797,13 +828,65 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 //         (line-width 2)
 //         (colour (vector 0.4 0.3 0.2))
 //         (wire-colour (vector 0 0 0))
-//         (scale 10)    
+//         (scale 10)
 //         (build-cube)))
-// 
+//
 // (define p (with-state
 //         (scale 3)
 //         (load-primitive "widget.obj")))
-// 
+//
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// build_camera
+// Retorna: numeroid-camera
+// Descrição:
+// adiciona uma nova camera/view retorna sua id
+// Exemplo:
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+//
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+//
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+//
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+//
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+//
+//
+// (current-camera 0)
+//
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)
+//         (build-cube)))
+//
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+//
 // (every-frame
 //     (with-primitive p
 //         (rotate (vector 0 1 0))))
@@ -811,8 +894,8 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 
 Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 {
-	Camera cam;
-	return scheme_make_double(Engine::Get()->Renderer()->AddCamera(cam));
+  Camera cam;
+  return scheme_make_double(Engine::Get()->Renderer()->AddCamera(cam));
 }
 
 // StartFunctionDoc-en
@@ -823,31 +906,31 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 // Example:
 // (clear)
 // (viewport 0 0.5 0.5 0.5)
-// 
+//
 // (define cam2 (build-camera))
 // (current-camera cam2)
 // (viewport 0.5 0 0.5 1)
-// 
+//
 // (define cam3 (build-camera))
 // (current-camera cam3)
 // (set-camera (mmul (mtranslate (vector 0 0 -5))
 //         (mrotate (vector 0 45 0))))
 // (viewport 0 0 0.5 0.5)
-// 
+//
 // ; render a primitive in one view only
 // (define t (with-state
 //     (translate (vector 3 0 0))
 //     (scale 0.3)
 //     (colour (vector 1 0 0))
 //     (build-torus 1 2 10 10)))
-// 
+//
 // (with-primitive t
 //     (hide 1) ; hide in all
 //     (camera-hide 0)) ; unhide in current camera
-// 
-// 
+//
+//
 // (current-camera 0)
-// 
+//
 // (define c (with-state
 //         (hint-cull-ccw)
 //         (hint-unlit)
@@ -855,13 +938,65 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 //         (line-width 2)
 //         (colour (vector 0.4 0.3 0.2))
 //         (wire-colour (vector 0 0 0))
-//         (scale 10)    
+//         (scale 10)
 //         (build-cube)))
-// 
+//
 // (define p (with-state
 //         (scale 3)
 //         (load-primitive "widget.obj")))
-// 
+//
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// current_camera numero-cameraid
+// Retorna: void
+// Descrição:
+// Ajusta a camera atual para usar
+// Exemplo:
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+//
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+//
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+//
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+//
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+//
+//
+// (current-camera 0)
+//
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)
+//         (build-cube)))
+//
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+//
 // (every-frame
 //     (with-primitive p
 //         (rotate (vector 0 1 0))))
@@ -869,47 +1004,47 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("current-camera", "i", argc, argv);	
-	Engine::Get()->GrabCamera(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("current-camera", "i", argc, argv);
+  Engine::Get()->GrabCamera(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
 // StartFunctionDoc-en
-// viewport x-number y-number width-number height-number 
+// viewport x-number y-number width-number height-number
 // Returns: void
 // Description:
 // Sets the viewport on the current camera. This is the area of the window the camera renders to,
-// where 0,0 is the bottom left and 1,1 is the top right. 
+// where 0,0 is the bottom left and 1,1 is the top right.
 // Example:
 // (clear)
 // (viewport 0 0.5 0.5 0.5)
-// 
+//
 // (define cam2 (build-camera))
 // (current-camera cam2)
 // (viewport 0.5 0 0.5 1)
-// 
+//
 // (define cam3 (build-camera))
 // (current-camera cam3)
 // (set-camera (mmul (mtranslate (vector 0 0 -5))
 //         (mrotate (vector 0 45 0))))
 // (viewport 0 0 0.5 0.5)
-// 
+//
 // ; render a primitive in one view only
 // (define t (with-state
 //     (translate (vector 3 0 0))
 //     (scale 0.3)
 //     (colour (vector 1 0 0))
 //     (build-torus 1 2 10 10)))
-// 
+//
 // (with-primitive t
 //     (hide 1) ; hide in all
 //     (camera-hide 0)) ; unhide in current camera
-// 
-// 
+//
+//
 // (current-camera 0)
-// 
+//
 // (define c (with-state
 //         (hint-cull-ccw)
 //         (hint-unlit)
@@ -917,13 +1052,67 @@ Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 //         (line-width 2)
 //         (colour (vector 0.4 0.3 0.2))
 //         (wire-colour (vector 0 0 0))
-//         (scale 10)    
+//         (scale 10)
 //         (build-cube)))
-// 
+//
 // (define p (with-state
 //         (scale 3)
 //         (load-primitive "widget.obj")))
-// 
+//
+// (every-frame
+//     (with-primitive p
+//         (rotate (vector 0 1 0))))
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// viewport numero-x numero-y numero-largura numero-altura
+// Retorna: void
+// Descrição:
+// Ajusta a viewport na câmera atual. Esta é a altura da janela que a
+// câmera renderiza, aonde 0,0 é a ponta inferior esquerda e 1,1 é a
+// ponta superior direita.
+// Exemplo:
+// (clear)
+// (viewport 0 0.5 0.5 0.5)
+//
+// (define cam2 (build-camera))
+// (current-camera cam2)
+// (viewport 0.5 0 0.5 1)
+//
+// (define cam3 (build-camera))
+// (current-camera cam3)
+// (set-camera (mmul (mtranslate (vector 0 0 -5))
+//         (mrotate (vector 0 45 0))))
+// (viewport 0 0 0.5 0.5)
+//
+// ; render a primitive in one view only
+// (define t (with-state
+//     (translate (vector 3 0 0))
+//     (scale 0.3)
+//     (colour (vector 1 0 0))
+//     (build-torus 1 2 10 10)))
+//
+// (with-primitive t
+//     (hide 1) ; hide in all
+//     (camera-hide 0)) ; unhide in current camera
+//
+//
+// (current-camera 0)
+//
+// (define c (with-state
+//         (hint-cull-ccw)
+//         (hint-unlit)
+//         (hint-wire)
+//         (line-width 2)
+//         (colour (vector 0.4 0.3 0.2))
+//         (wire-colour (vector 0 0 0))
+//         (scale 10)
+//         (build-cube)))
+//
+// (define p (with-state
+//         (scale 3)
+//         (load-primitive "widget.obj")))
+//
 // (every-frame
 //     (with-primitive p
 //         (rotate (vector 0 1 0))))
@@ -931,14 +1120,14 @@ Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *viewport(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("viewport", "iiii", argc, argv);	
-	Engine::Get()->GetCamera()->SetViewport(
-		FloatFromScheme(argv[0]),
-		FloatFromScheme(argv[1]),
-		FloatFromScheme(argv[2]),
-		FloatFromScheme(argv[3]));
- 	MZ_GC_UNREG(); 
+  DECL_ARGV();
+  ArgCheck("viewport", "iiii", argc, argv);
+  Engine::Get()->GetCamera()->SetViewport(
+    FloatFromScheme(argv[0]),
+    FloatFromScheme(argv[1]),
+    FloatFromScheme(argv[2]),
+    FloatFromScheme(argv[3]));
+  MZ_GC_UNREG();
     return scheme_void;
 }
 
@@ -946,10 +1135,10 @@ Scheme_Object *viewport(int argc, Scheme_Object **argv)
 // get-camera
 // Returns: matrix-vector
 // Description:
-// Gets the current camera transform matrix. This is the low level function, 
+// Gets the current camera transform matrix. This is the low level function,
 // use get-camera-transform instead.
 // Example:
-// (get-camera) 
+// (get-camera)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -964,7 +1153,7 @@ Scheme_Object *viewport(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->GetCamera()->GetMatrix()->inverse().arr(),16);
+  return FloatsToScheme(Engine::Get()->GetCamera()->GetMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -973,7 +1162,7 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 // Description:
 // Gets the current camera lock transform matrix. Takes the lag into account
 // Example:
-// (get-locked-matrix) 
+// (get-locked-matrix)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -988,7 +1177,7 @@ Scheme_Object *get_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->GetCamera()->GetLockedMatrix()->inverse().arr(),16);
+  return FloatsToScheme(Engine::Get()->GetCamera()->GetLockedMatrix()->inverse().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -1014,13 +1203,13 @@ Scheme_Object *get_locked_matrix(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("set-camera", "m", argc, argv);
-	dMatrix m;
-	FloatsFromScheme(argv[0],m.arr(),16);
-	Engine::Get()->GetCamera()->SetMatrix(m);
-	MZ_GC_UNREG();
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("set-camera", "m", argc, argv);
+  dMatrix m;
+  FloatsFromScheme(argv[0],m.arr(),16);
+  Engine::Get()->GetCamera()->SetMatrix(m);
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1029,7 +1218,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 // Description:
 // Gets the current projection matrix.
 // Example:
-// (get-projection-transform) 
+// (get-projection-transform)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1043,7 +1232,7 @@ Scheme_Object *set_camera(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 {
-	return FloatsToScheme(Engine::Get()->GetCamera()->GetProjection().arr(),16);
+  return FloatsToScheme(Engine::Get()->GetCamera()->GetProjection().arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -1055,15 +1244,24 @@ Scheme_Object *get_projection_transform(int argc, Scheme_Object **argv)
 // (set-projection-transform (vector 1 0 0 0 0 4/3 0 0 0 0 -1 -1 0 0 -2 -0))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-projection-transform vetor-matriz
+// Retorna: void
+// Descrição:
+// Ajusta a matriz de projeção diretamente.
+// Exemplo:
+// (set-projection-transform (vector 1 0 0 0 0 4/3 0 0 0 0 -1 -1 0 0 -2 -0))
+// EndFunctionDoc
+
 Scheme_Object *set_projection_transform(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("set-projection-transform", "m", argc, argv);
-	dMatrix m;
-	FloatsFromScheme(argv[0],m.arr(),16);
-	Engine::Get()->GetCamera()->SetProjection(m);
-	MZ_GC_UNREG();
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("set-projection-transform", "m", argc, argv);
+  dMatrix m;
+  FloatsFromScheme(argv[0],m.arr(),16);
+  Engine::Get()->GetCamera()->SetProjection(m);
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1086,11 +1284,11 @@ Scheme_Object *set_projection_transform(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 {
-	float res[2];
-	int x=0,y=0;
-	Engine::Get()->Renderer()->GetResolution(x,y);
-	res[0]=x; res[1]=y;
-	return FloatsToScheme(res,2);
+  float res[2];
+  int x=0,y=0;
+  Engine::Get()->Renderer()->GetResolution(x,y);
+  res[0]=x; res[1]=y;
+  return FloatsToScheme(res,2);
 }
 
 // StartFunctionDoc-en
@@ -1115,15 +1313,15 @@ Scheme_Object *get_screen_size(int argc, Scheme_Object **argv)
 
 Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("set-screen-size", "vector", 0, argc, argv);
-	if (SCHEME_VEC_SIZE(argv[0])!=2) scheme_wrong_type("set-screen-size", "vector size 2", 0, argc, argv);
-	float v[2];
-	FloatsFromScheme(argv[0],v,2);
-	// hmmm, seems a bit wrong, but hey...
-	glutReshapeWindow((int)v[0],(int)v[1]);
-	MZ_GC_UNREG();
-	return scheme_void;
+  DECL_ARGV();
+  if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("set-screen-size", "vector", 0, argc, argv);
+  if (SCHEME_VEC_SIZE(argv[0])!=2) scheme_wrong_type("set-screen-size", "vector size 2", 0, argc, argv);
+  float v[2];
+  FloatsFromScheme(argv[0],v,2);
+  // hmmm, seems a bit wrong, but hey...
+  glutReshapeWindow((int)v[0],(int)v[1]);
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1148,14 +1346,14 @@ Scheme_Object *set_screen_size(int argc, Scheme_Object **argv)
 
 Scheme_Object *select(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("select", "iii", argc, argv);
-	int x=IntFromScheme(argv[0]);
-	int y=IntFromScheme(argv[1]);
-	int s=IntFromScheme(argv[2]);
-	MZ_GC_UNREG();
-	return scheme_make_integer_value(Engine::Get()->Renderer()->Select(
-				Engine::Get()->GrabbedCamera(),x,y,s));
+  DECL_ARGV();
+  ArgCheck("select", "iii", argc, argv);
+  int x=IntFromScheme(argv[0]);
+  int y=IntFromScheme(argv[1]);
+  int s=IntFromScheme(argv[2]);
+  MZ_GC_UNREG();
+  return scheme_make_integer_value(Engine::Get()->Renderer()->Select(
+        Engine::Get()->GrabbedCamera(),x,y,s));
 }
 
 // StartFunctionDoc-en
@@ -1168,37 +1366,47 @@ Scheme_Object *select(int argc, Scheme_Object **argv)
 // (display (select-all 10 10 2))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// select-all numero-telax numero-telay numero-tamanhopixel
+// Retorna: lista de numeros-primitivaid
+// Descrição:
+// Procura na região especificada e retorna todas ids renderizadas lá
+// em uma lista, ou '() se não existe nenhuma.
+// Exemplo:
+// (display (select-all 10 10 2))(newline)
+// EndFunctionDoc
+
 Scheme_Object *select_all(int argc, Scheme_Object **argv)
 {
-	Scheme_Object *vec = NULL;
-	Scheme_Object *tmp = NULL;
-	Scheme_Object *ret = NULL;
-	MZ_GC_DECL_REG(2);
-	MZ_GC_VAR_IN_REG(0, vec);
-	MZ_GC_VAR_IN_REG(1, argv);
-	MZ_GC_REG();
+  Scheme_Object *vec = NULL;
+  Scheme_Object *tmp = NULL;
+  Scheme_Object *ret = NULL;
+  MZ_GC_DECL_REG(2);
+  MZ_GC_VAR_IN_REG(0, vec);
+  MZ_GC_VAR_IN_REG(1, argv);
+  MZ_GC_REG();
 
-	ArgCheck("select-all", "iii", argc, argv);
-	int x=IntFromScheme(argv[0]);
-	int y=IntFromScheme(argv[1]);
-	int s=IntFromScheme(argv[2]);
+  ArgCheck("select-all", "iii", argc, argv);
+  int x=IntFromScheme(argv[0]);
+  int y=IntFromScheme(argv[1]);
+  int s=IntFromScheme(argv[2]);
 
-	unsigned int *IDs;
-	int num = Engine::Get()->Renderer()->SelectAll(
-					Engine::Get()->GrabbedCamera(),
-					x, y, s, &IDs);
+  unsigned int *IDs;
+  int num = Engine::Get()->Renderer()->SelectAll(
+          Engine::Get()->GrabbedCamera(),
+          x, y, s, &IDs);
 
-	vec = scheme_make_vector(num, scheme_void);
+  vec = scheme_make_vector(num, scheme_void);
 
-	for (int i = 0; i < num; i++)
-	{
-		tmp = scheme_make_integer_value(IDs[i]);
-		SCHEME_VEC_ELS(vec)[i] = tmp;
-	}
+  for (int i = 0; i < num; i++)
+  {
+    tmp = scheme_make_integer_value(IDs[i]);
+    SCHEME_VEC_ELS(vec)[i] = tmp;
+  }
 
     ret = scheme_vector_to_list(vec);
-	MZ_GC_UNREG();
-	return ret;
+  MZ_GC_UNREG();
+  return ret;
 }
 
 // StartFunctionDoc-en
@@ -1206,10 +1414,10 @@ Scheme_Object *select_all(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Throttles the renderer so as to not take 100% cpu. This gives an upper limit on the fps rate, which
-// doesn't quite match the given number, but I'm working on it...  
+// doesn't quite match the given number, but I'm working on it...
 // Example:
 // (desiredfps 100000) ; makes fluxus render as fast as it can, and take 100% cpu.
-// EndFunctionDoc 
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // desiredfps número-fps
@@ -1225,11 +1433,11 @@ Scheme_Object *select_all(int argc, Scheme_Object **argv)
 
 Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("desiredfps", "f", argc, argv);
-	Engine::Get()->Renderer()->SetDesiredFPS(scheme_real_to_double(argv[0]));
- 	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("desiredfps", "f", argc, argv);
+  Engine::Get()->Renderer()->SetDesiredFPS(scheme_real_to_double(argv[0]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1255,34 +1463,34 @@ Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
 Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  ArgCheck("draw-buffer", "S", argc, argv);   
+  ArgCheck("draw-buffer", "S", argc, argv);
 
   if(IsSymbol(argv[0], "back"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK);
+    Engine::Get()->Renderer()->DrawBuffer(GL_BACK);
   else if(IsSymbol(argv[0],"back-right"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_RIGHT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_BACK_RIGHT);
   else if(IsSymbol(argv[0],"back-left"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_BACK_LEFT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_BACK_LEFT);
   else if(IsSymbol(argv[0], "front"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_FRONT);
   else if(IsSymbol(argv[0], "front-right"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_RIGHT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_RIGHT);
   else if(IsSymbol(argv[0], "front-left"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_LEFT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_LEFT);
   else if(IsSymbol(argv[0], "right"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_RIGHT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_RIGHT);
   else if(IsSymbol(argv[0], "left"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_LEFT);
+    Engine::Get()->Renderer()->DrawBuffer(GL_LEFT);
   else if(IsSymbol(argv[0], "front-and-back"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_AND_BACK);
+    Engine::Get()->Renderer()->DrawBuffer(GL_FRONT_AND_BACK);
   else if(IsSymbol(argv[0], "none"))
-	  Engine::Get()->Renderer()->DrawBuffer(GL_NONE);
+    Engine::Get()->Renderer()->DrawBuffer(GL_NONE);
   else {
-	  //XXX should indicate an error
+    //XXX should indicate an error
   }
 
-  MZ_GC_UNREG(); 
-	return scheme_void;
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1306,34 +1514,34 @@ Scheme_Object *draw_buffer(int argc, Scheme_Object **argv)
 Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  ArgCheck("read-buffer", "S", argc, argv);   
+  ArgCheck("read-buffer", "S", argc, argv);
 
   if(IsSymbol(argv[0], "back"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK);
+    Engine::Get()->Renderer()->ReadBuffer(GL_BACK);
   else if(IsSymbol(argv[0], "back-right"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_RIGHT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_BACK_RIGHT);
   else if(IsSymbol(argv[0], "back-left"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_BACK_LEFT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_BACK_LEFT);
   else if(IsSymbol(argv[0], "front"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_FRONT);
   else if(IsSymbol(argv[0], "front-right"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_RIGHT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_RIGHT);
   else if(IsSymbol(argv[0], "front-left"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_LEFT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_LEFT);
   else if(IsSymbol(argv[0], "right"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_RIGHT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_RIGHT);
   else if(IsSymbol(argv[0], "left"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_LEFT);
+    Engine::Get()->Renderer()->ReadBuffer(GL_LEFT);
   else if(IsSymbol(argv[0], "front-and-back"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_AND_BACK);
+    Engine::Get()->Renderer()->ReadBuffer(GL_FRONT_AND_BACK);
   else if(IsSymbol(argv[0], "none"))
-	  Engine::Get()->Renderer()->ReadBuffer(GL_NONE);
+    Engine::Get()->Renderer()->ReadBuffer(GL_NONE);
   else {
-	  //XXX should indicate an error
+    //XXX should indicate an error
   }
 
-  MZ_GC_UNREG(); 
-	return scheme_void;
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1352,7 +1560,7 @@ Scheme_Object *read_buffer(int argc, Scheme_Object **argv)
 // set-stereo-mode modo
 // Retorna: bool
 // Descrição:
-// seleciona qual modo estéreo a usar, atualmente somente 
+// seleciona qual modo estéreo a usar, atualmente somente
 // 'cristal-eyes e 'no-stereo são suportados o retorno indica se a
 // operação foi bem sucedida ou não 'crystal-eyes vai retornar falso
 // se você não tem uma janela estéreo.
@@ -1364,23 +1572,23 @@ Scheme_Object *set_stereo_mode(int argc, Scheme_Object **argv)
 {
   bool success;
   DECL_ARGV();
-  ArgCheck("set-stereo-mode", "S", argc, argv);   
+  ArgCheck("set-stereo-mode", "S", argc, argv);
   if(IsSymbol(argv[0], "crystal-eyes"))
-	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::crystalEyes);  
+    success = Engine::Get()->Renderer()->SetStereoMode(Renderer::crystalEyes);
   else if(IsSymbol(argv[0], "colour"))
-	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::colourStereo); 
+    success = Engine::Get()->Renderer()->SetStereoMode(Renderer::colourStereo);
   else if(IsSymbol(argv[0], "no-stereo"))
-	  success = Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo); 
+    success = Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo);
   else {
-	  Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo);   
-	  success = false;
+    Engine::Get()->Renderer()->SetStereoMode(Renderer::noStereo);
+    success = false;
   }
-  MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
 
   if(success)
-	  return scheme_true;
+    return scheme_true;
   else
-	  return scheme_false;
+    return scheme_false;
 }
 
 Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
@@ -1388,17 +1596,17 @@ Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
   Renderer::stereo_mode_t mode;
   DECL_ARGV();
   mode = Engine::Get()->Renderer()->GetStereoMode();
-  MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
 
   switch(mode){
-		case Renderer::noStereo:
-			return scheme_intern_symbol("no-stereo");
-		case Renderer::crystalEyes:
-			return scheme_intern_symbol("crystal-eyes");
-		case Renderer::colourStereo:
-			return scheme_intern_symbol("colour");	  
-		default:
-			return scheme_intern_symbol("no_stereo");
+    case Renderer::noStereo:
+      return scheme_intern_symbol("no-stereo");
+    case Renderer::crystalEyes:
+      return scheme_intern_symbol("crystal-eyes");
+    case Renderer::colourStereo:
+      return scheme_intern_symbol("colour");
+    default:
+      return scheme_intern_symbol("no_stereo");
   }
 }
 
@@ -1407,7 +1615,7 @@ Scheme_Object *get_stereo_mode(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // sets the colour mask
-// give it a quat of booleans which correspond to the 
+// give it a quat of booleans which correspond to the
 // red, green, blue and alpha channels respectively
 // after this operation you'll only see those colour which you
 // set to true (this is useful for stereo with red-blue glasses)
@@ -1432,14 +1640,14 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 {
   bool rgba[4];
   DECL_ARGV();
-  ArgCheck("set-colour-mask", "q", argc, argv);   
+  ArgCheck("set-colour-mask", "q", argc, argv);
   for(unsigned int n = 0; n < 4; n++){
-	  if(!SCHEME_BOOLP(SCHEME_VEC_ELS(argv[0])[n]))
-		  scheme_wrong_type("set-colour-mask", "quat of booleans", 0, argc, argv);
-	  rgba[n] = SCHEME_TRUEP(SCHEME_VEC_ELS(argv[0])[n]) ? true : false;
+    if(!SCHEME_BOOLP(SCHEME_VEC_ELS(argv[0])[n]))
+      scheme_wrong_type("set-colour-mask", "quat of booleans", 0, argc, argv);
+    rgba[n] = SCHEME_TRUEP(SCHEME_VEC_ELS(argv[0])[n]) ? true : false;
   }
   Engine::Get()->Renderer()->SetColourMask(rgba[0],rgba[1],rgba[2],rgba[3]);
-  MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
 
   return scheme_void;
 }
@@ -1451,8 +1659,8 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 // Sets the light to use for generating shadows, set to 0 to disable shadow
 // rendering.
 // Example:
-// (shadow-light 1) 
-// EndFunctionDoc 
+// (shadow-light 1)
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // shadow-light número-ajuste
@@ -1466,11 +1674,11 @@ Scheme_Object *set_colour_mask(int argc, Scheme_Object **argv)
 
 Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("shadow-light", "i", argc, argv);
-	Engine::Get()->Renderer()->ShadowLight(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("shadow-light", "i", argc, argv);
+  Engine::Get()->Renderer()->ShadowLight(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1480,8 +1688,8 @@ Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 // Sets the length of the shadow volume
 // rendering.
 // Example:
-// (shadow-length 10) 
-// EndFunctionDoc 
+// (shadow-length 10)
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // shadow-length número-ajuste
@@ -1494,11 +1702,11 @@ Scheme_Object *shadow_light(int argc, Scheme_Object **argv)
 
 Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("shadow-length", "f", argc, argv);
-	Engine::Get()->Renderer()->ShadowLength(FloatFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("shadow-length", "f", argc, argv);
+  Engine::Get()->Renderer()->ShadowLength(FloatFromScheme(argv[0]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1508,8 +1716,8 @@ Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
 // Turns on debug rendering of the shadow volume
 // rendering.
 // Example:
-// (shadow-debug 1) 
-// EndFunctionDoc 
+// (shadow-debug 1)
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // shadow-debug número-ajuste
@@ -1522,11 +1730,11 @@ Scheme_Object *shadow_length(int argc, Scheme_Object **argv)
 
 Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("shadow-debug", "i", argc, argv);
-	Engine::Get()->Renderer()->DebugShadows(IntFromScheme(argv[0]));
- 	MZ_GC_UNREG(); 
-	return scheme_void;
+  DECL_ARGV();
+  ArgCheck("shadow-debug", "i", argc, argv);
+  Engine::Get()->Renderer()->DebugShadows(IntFromScheme(argv[0]));
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1536,8 +1744,8 @@ Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 // Controls the accumulation buffer (just calls glAccum under the hood).
 // Possible symbols are: accum load return add mult
 // Example:
-// (accum 'add 1) 
-// EndFunctionDoc 
+// (accum 'add 1)
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // accum simbolo-modo número-valor
@@ -1553,48 +1761,49 @@ Scheme_Object *shadow_debug(int argc, Scheme_Object **argv)
 Scheme_Object *accum(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  ArgCheck("accum", "Sf", argc, argv);   
+  ArgCheck("accum", "Sf", argc, argv);
 
   if(SAME_OBJ(argv[0], scheme_intern_symbol("accum")))
-	  Engine::Get()->Renderer()->Accum(GL_ACCUM,FloatFromScheme(argv[1]));
+    Engine::Get()->Renderer()->Accum(GL_ACCUM,FloatFromScheme(argv[1]));
   else if(SAME_OBJ(argv[0], scheme_intern_symbol("load")))
-	  Engine::Get()->Renderer()->Accum(GL_LOAD,FloatFromScheme(argv[1]));
+    Engine::Get()->Renderer()->Accum(GL_LOAD,FloatFromScheme(argv[1]));
   else if(SAME_OBJ(argv[0], scheme_intern_symbol("return")))
-	  Engine::Get()->Renderer()->Accum(GL_RETURN,FloatFromScheme(argv[1]));
+    Engine::Get()->Renderer()->Accum(GL_RETURN,FloatFromScheme(argv[1]));
   else if(SAME_OBJ(argv[0], scheme_intern_symbol("add")))
-	  Engine::Get()->Renderer()->Accum(GL_ADD,FloatFromScheme(argv[1]));
+    Engine::Get()->Renderer()->Accum(GL_ADD,FloatFromScheme(argv[1]));
   else if(SAME_OBJ(argv[0], scheme_intern_symbol("mult")))
-	  Engine::Get()->Renderer()->Accum(GL_MULT,FloatFromScheme(argv[1]));
+    Engine::Get()->Renderer()->Accum(GL_MULT,FloatFromScheme(argv[1]));
   else {
-	  //XXX should indicate an error
+    //XXX should indicate an error
   }
 
-  MZ_GC_UNREG(); 
+  MZ_GC_UNREG();
   return scheme_void;
 }
 
 
 // StartFunctionDoc-en
-// print-info 
+// print-info
 // Returns: void
 // Description:
 // Prints out a load of renderer information
 // Example:
-// (print-info) 
-// EndFunctionDoc 
+// (print-info)
+// EndFunctionDoc
 
 // StartFunctionDoc-pt
 // print-info
 // Retorna: void
 // Descrição:
+// Imprime uma porção de informaçao do renderizador.
 // Exemplo:
-// (print-info) 
+// (print-info)
 // EndFunctionDoc
 
 Scheme_Object *print_info(int argc, Scheme_Object **argv)
 {
-	Engine::Get()->Renderer()->PrintInfo();
-	return scheme_void;
+  Engine::Get()->Renderer()->PrintInfo();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1612,50 +1821,65 @@ Scheme_Object *print_info(int argc, Scheme_Object **argv)
 // (set-cursor 'crosshair)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-cursor simbolo-nome-imagem
+// Retorna: void
+// Descrição:
+// Troca o cursor do mouse.
+// Simbolos da imagem do cursor consistem em: 'right-arrow, 'left-arrow, 'info,
+// 'destroy, 'help, 'cycle, 'spray, 'wait, 'text, 'crosshair, 'up-down,
+// 'left-right, 'top-side, 'bottom-side, 'left-side, 'right-side,
+// 'top-left-corner, 'top-right-corner, 'bottom-right-corner,
+// 'bottom-left-corner, 'full-crosshair, 'none, 'inherit
+// O cursor padrão quando a janela é criada é 'inherit.
+// Exemplo:
+// (set-cursor 'crosshair)
+// EndFunctionDoc
+
 Scheme_Object *set_cursor(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	ArgCheck("set-cursor", "S", argc, argv);
-	string cursym = SymbolName(argv[0]);
-	int cursor = GLUT_CURSOR_INHERIT;
+  DECL_ARGV();
+  ArgCheck("set-cursor", "S", argc, argv);
+  string cursym = SymbolName(argv[0]);
+  int cursor = GLUT_CURSOR_INHERIT;
 
-	string symbols[] = { "right-arrow", "left-arrow", "info", "destroy",
-						"help", "cycle", "spray",
-						"wait", "text", "crosshair", "up-down",
-						"left-right", "top-side", "bottom-side",
-						"left-side", "right-side", "top-left-corner",
-						"top-right-corner", "bottom-right-corner",
-						"bottom-left-corner", "full-crosshair",
-						"none", "inherit" };
-	int values[] = { GLUT_CURSOR_RIGHT_ARROW, GLUT_CURSOR_LEFT_ARROW,
-					 GLUT_CURSOR_INFO, GLUT_CURSOR_DESTROY, GLUT_CURSOR_HELP,
-					 GLUT_CURSOR_CYCLE, GLUT_CURSOR_SPRAY, GLUT_CURSOR_WAIT,
-					 GLUT_CURSOR_TEXT, GLUT_CURSOR_CROSSHAIR,
-					 GLUT_CURSOR_UP_DOWN, GLUT_CURSOR_LEFT_RIGHT,
-					 GLUT_CURSOR_TOP_SIDE, GLUT_CURSOR_BOTTOM_SIDE,
-					 GLUT_CURSOR_LEFT_SIDE, GLUT_CURSOR_RIGHT_SIDE,
-					 GLUT_CURSOR_TOP_LEFT_CORNER, GLUT_CURSOR_TOP_RIGHT_CORNER,
-					 GLUT_CURSOR_BOTTOM_RIGHT_CORNER, GLUT_CURSOR_BOTTOM_LEFT_CORNER,
-					 GLUT_CURSOR_FULL_CROSSHAIR, GLUT_CURSOR_NONE, GLUT_CURSOR_INHERIT };
-	bool found = false;
+  string symbols[] = { "right-arrow", "left-arrow", "info", "destroy",
+            "help", "cycle", "spray",
+            "wait", "text", "crosshair", "up-down",
+            "left-right", "top-side", "bottom-side",
+            "left-side", "right-side", "top-left-corner",
+            "top-right-corner", "bottom-right-corner",
+            "bottom-left-corner", "full-crosshair",
+            "none", "inherit" };
+  int values[] = { GLUT_CURSOR_RIGHT_ARROW, GLUT_CURSOR_LEFT_ARROW,
+           GLUT_CURSOR_INFO, GLUT_CURSOR_DESTROY, GLUT_CURSOR_HELP,
+           GLUT_CURSOR_CYCLE, GLUT_CURSOR_SPRAY, GLUT_CURSOR_WAIT,
+           GLUT_CURSOR_TEXT, GLUT_CURSOR_CROSSHAIR,
+           GLUT_CURSOR_UP_DOWN, GLUT_CURSOR_LEFT_RIGHT,
+           GLUT_CURSOR_TOP_SIDE, GLUT_CURSOR_BOTTOM_SIDE,
+           GLUT_CURSOR_LEFT_SIDE, GLUT_CURSOR_RIGHT_SIDE,
+           GLUT_CURSOR_TOP_LEFT_CORNER, GLUT_CURSOR_TOP_RIGHT_CORNER,
+           GLUT_CURSOR_BOTTOM_RIGHT_CORNER, GLUT_CURSOR_BOTTOM_LEFT_CORNER,
+           GLUT_CURSOR_FULL_CROSSHAIR, GLUT_CURSOR_NONE, GLUT_CURSOR_INHERIT };
+  bool found = false;
 
-	for (unsigned i = 0; i < sizeof(values)/sizeof(int); i++)
-	{
-		if (cursym == symbols[i])
-		{
-			cursor = values[i];
-			found = true;
-			break;
-		}
-	}
+  for (unsigned i = 0; i < sizeof(values)/sizeof(int); i++)
+  {
+    if (cursym == symbols[i])
+    {
+      cursor = values[i];
+      found = true;
+      break;
+    }
+  }
 
-	if (found)
-		glutSetCursor(cursor);
-	else
-		Trace::Stream<<"cursor image name is not recognised: "<<cursym<<endl;
+  if (found)
+    glutSetCursor(cursor);
+  else
+    Trace::Stream<<"cursor image name is not recognised: "<<cursym<<endl;
 
-	MZ_GC_UNREG();
-	return scheme_void;
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1667,64 +1891,73 @@ Scheme_Object *set_cursor(int argc, Scheme_Object **argv)
 // (set-full-screen)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// set-full-screen
+// Retorna: void
+// Descrição:
+// Pede que a janela atual do fluxus fique tela cheia.
+// Exemplo:
+// (set-full-screen)
+// EndFunctionDoc
+
 Scheme_Object *set_full_screen(int argc, Scheme_Object **argv)
 {
-	DECL_ARGV();
-	glutFullScreen();
-	MZ_GC_UNREG();
-	return scheme_void;
+  DECL_ARGV();
+  glutFullScreen();
+  MZ_GC_UNREG();
+  return scheme_void;
 }
 
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {
-	MZ_GC_DECL_REG(1);
-	MZ_GC_VAR_IN_REG(0, env);
-	MZ_GC_REG();
+  MZ_GC_DECL_REG(1);
+  MZ_GC_VAR_IN_REG(0, env);
+  MZ_GC_REG();
 
-	scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
-	scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
-	scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
-	scheme_add_global("show-axis", scheme_make_prim_w_arity(show_axis, "show-axis", 1, 1), env);
-	scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
-	scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
-	scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
-	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
-	scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
-	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 4, 4), env);
-	scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
-	scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
-	scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);
-	scheme_add_global("set-ortho-zoom", scheme_make_prim_w_arity(set_ortho_zoom, "set-ortho-zoom", 1, 1), env);
-	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
-	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
-	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
-	scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
-	scheme_add_global("build-camera", scheme_make_prim_w_arity(build_camera, "build-camera", 0, 0), env);
-	scheme_add_global("current-camera", scheme_make_prim_w_arity(current_camera, "current-camera", 1, 1), env);
-	scheme_add_global("viewport", scheme_make_prim_w_arity(viewport, "viewport", 4, 4), env);
-	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
-	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
-	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
-	scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
-	scheme_add_global("set-projection-transform", scheme_make_prim_w_arity(set_projection_transform, "set-projection-transform", 1, 1), env);
-	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
-	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
-	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
-	scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
-	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
-	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
-	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
-	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
-	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
-	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
-	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
-	scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
-	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
-	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
-	scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
-	scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
-	scheme_add_global("set-full-screen", scheme_make_prim_w_arity(set_full_screen, "set-full-screen", 0, 0), env);
+  scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
+  scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
+  scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
+  scheme_add_global("show-axis", scheme_make_prim_w_arity(show_axis, "show-axis", 1, 1), env);
+  scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
+  scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
+  scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
+  scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
+  scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
+  scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 4, 4), env);
+  scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
+  scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
+  scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);
+  scheme_add_global("set-ortho-zoom", scheme_make_prim_w_arity(set_ortho_zoom, "set-ortho-zoom", 1, 1), env);
+  scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
+  scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
+  scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
+  scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
+  scheme_add_global("build-camera", scheme_make_prim_w_arity(build_camera, "build-camera", 0, 0), env);
+  scheme_add_global("current-camera", scheme_make_prim_w_arity(current_camera, "current-camera", 1, 1), env);
+  scheme_add_global("viewport", scheme_make_prim_w_arity(viewport, "viewport", 4, 4), env);
+  scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
+  scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
+  scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
+  scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
+  scheme_add_global("set-projection-transform", scheme_make_prim_w_arity(set_projection_transform, "set-projection-transform", 1, 1), env);
+  scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
+  scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
+  scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
+  scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
+  scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
+  scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
+  scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
+  scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
+  scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
+  scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
+  scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
+  scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
+  scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
+  scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
+  scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
+  scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
+  scheme_add_global("set-full-screen", scheme_make_prim_w_arity(set_full_screen, "set-full-screen", 0, 0), env);
 
-	MZ_GC_UNREG();
+  MZ_GC_UNREG();
 }
 

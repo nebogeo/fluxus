@@ -173,6 +173,27 @@ Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 //                "p"))))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// ga
+// Retorna: vetor-buffer-audio
+// Descrição:
+// Retorna o conteúdo do buffer de audio atual.
+// Exemplo:
+// (clear)
+// (define p (build-ribbon 128))
+// (with-primitive p
+//    (hint-unlit)
+//    (pdata-map! (lambda (w) .1) "w"))
+//
+// (every-frame
+//    (let ([a (ga)])
+//        (with-primitive p
+//            (pdata-index-map!
+//                (lambda (i p)
+//                    (vector (* .25 (- i (/ (pdata-size) 2))) (* 10 (vector-ref a i)) 0))
+//                "p"))))
+// EndFunctionDoc
+
 Scheme_Object *get_audio(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;

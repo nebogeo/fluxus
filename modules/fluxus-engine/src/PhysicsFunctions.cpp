@@ -246,6 +246,22 @@ Scheme_Object *active_sphere(int argc, Scheme_Object **argv)
 // (active-mesh myshape)
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// active-mesh número-primitivaid
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja afetado pelo sistema de física, usando a
+// malha como volume de colisão. Esta função funciona apenas em
+// primitivas, lista de triangulos indexadas. Como um objeto ativo,
+// ela vai ser transformada por ode. Nota: rotações só funcionam
+// corretamente se você especificar suas transformações de escala
+// antes, depois rotacionar (translação não importa), basicamente ode
+// não consegue lidar com cisalhamento de transformações.
+// Exemplo:
+// (define myshape (load-primitive "bot.obj"))
+// (active-mesh myshape)
+// EndFunctionDoc
+
 Scheme_Object *active_mesh(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -377,12 +393,30 @@ Scheme_Object *passive_sphere(int argc, Scheme_Object **argv)
 // passive-mesh primitiveid-number
 // Returns: void
 // Description:
-// Enable the object to be acted upon by the physics system, using a the mesh as the collision 
+// Enable the object to be acted upon by the physics system, using the mesh as the collision 
 // volume. This function only works on indexed, triangle-list poly primitives. As a passive object, 
 // active objects will collide with it, but it will not be transformed. 
 // Note: rotations only work correctly if you specify your transforms scale first, then 
 // rotate (translate doesn't matter) basically, ode can't deal with shearing transforms. 
 // Example:
+// (define myshape (load-primitive "bot.obj"))
+// (passive-mesh myshape)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// passive-mesh numero-primitivaid
+// Retorna: void
+// Descrição:
+// Permite que o objeto seja atuado no sistema de física, usando a
+// malha como o volume de colisão. Esta função funciona apenas em
+// primitivas, lista-de-triangulos indexados. Como um objeto passivo,
+// objetos ativos podem colidir com ela, mas ela não vai sofrer
+// transformação.
+// Nota: rotações só funcionam corretamente se você especificar suas
+// transformaçoes de escala primeiro, depois rotacionar (translação
+// não importa) basicamente, ode não pode lidar com transformações
+// cortadas. 
+// Exemplo:
 // (define myshape (load-primitive "bot.obj"))
 // (passive-mesh myshape)
 // EndFunctionDoc
@@ -403,6 +437,17 @@ Scheme_Object *passive_mesh(int argc, Scheme_Object **argv)
 // Description:
 // Remove the object from the physics system.
 // Example:
+// (define mycube (build-cube))
+// (active-box mycube)
+// (physics-remove mycube)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// physics-remove numero-primitivaid
+// Retorna: void
+// Descrição:
+// Remove o objeto do sistema de física.
+// Exemplo:
 // (define mycube (build-cube))
 // (active-box mycube)
 // (physics-remove mycube)
@@ -1074,6 +1119,40 @@ Scheme_Object *joint_angle(int argc, Scheme_Object **argv)
 // (define (animate)
 //     (joint-slide j (* 5 (sin (time)))))
 // EndFunctionDoc
+
+// StartFunctionDoc-pt
+// joint-slide numero-jointid força
+// Retorna: void
+// Descrição:
+// Aplica a força dada na direção do slide. Isto é, aplica uma força
+// de magnitude força, na direçao do eixo do slide, ao corpo1, e com a
+// mesma magnitude mas direção contrária ao corpo2.
+// Exemplo:
+// (clear)
+// (ground-plane (vector 0 1 0) -1)
+// (collisions 1)
+// 
+// (define shape1 (with-state 
+//         (translate (vector -1 0 0))
+//         (build-cube)))
+// (active-box shape1)
+// 
+// (define shape2 (with-state 
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// (active-box shape2)
+// 
+// (define j (build-sliderjoint shape1 shape2 (vector 1 0 0)))
+// (joint-param j "FMax" 20)
+// (joint-param j "LoStop" -1)
+// (joint-param j "HiStop" 1)
+// 
+// (set-physics-debug #t)
+// 
+// (define (animate)
+//     (joint-slide j (* 5 (sin (time)))))
+// EndFunctionDoc
+
 Scheme_Object *joint_slide(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1391,6 +1470,24 @@ Scheme_Object *twist(int argc, Scheme_Object **argv)
 //        (add-force c (vmul p -10))))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// add-force número-primitivaid vetor-força
+// Retorna: void
+// Descrição:
+// Adiciona força ao corpo
+// Exemplo:
+// (clear)
+// (collisions 1)
+// (for ([i (in-range 15)])
+//    (let* ([p (vmul (srndvec) 15)]
+//           [c (with-state
+//                    (translate p)
+//                    (build-cube))])
+//        (active-box c)
+//        (set-gravity-mode c #f)
+//        (add-force c (vmul p -10))))
+// EndFunctionDoc
+
 Scheme_Object *add_force(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1415,6 +1512,18 @@ Scheme_Object *add_force(int argc, Scheme_Object **argv)
 // (add-torque c #(10 0 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-pt
+// add-torque número-primitivaid vetor-torque
+// Retorna: void
+// Descrição:
+// Adiciona torque ao corpo
+// Exemplo:
+// (clear)
+// (define c (build-cube))
+// (active-box c)
+// (add-torque c #(10 0 0))
+// EndFunctionDoc
+
 Scheme_Object *add_torque(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1433,6 +1542,23 @@ Scheme_Object *add_torque(int argc, Scheme_Object **argv)
 // Description:
 // Set whether the body is influenced by the world's gravity or not.
 // Example:
+// (clear)
+// (collisions 1)
+// (define a (with-state
+//               (translate (vector -.95 5 0))
+//               (build-cube)))
+// (define b (build-cube))
+// (active-box a)
+// (active-box b)
+// (set-gravity-mode b #f)
+// EndFunctionDoc
+
+// StartFunctionDoc-pt
+// set-gravity-mode número-primitivaid modo-booleano
+// Retorna: void
+// Descrição:
+// Ajusta se o corpo é influenciado pela gravidade do mundo ou não.
+// Exemplo:
 // (clear)
 // (collisions 1)
 // (define a (with-state

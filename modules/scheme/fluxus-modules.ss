@@ -2,7 +2,7 @@
 
 #lang scheme/base
 
-; for the moment, comment the top require/proved out and uncomment the 
+; for the moment, comment the top require/provide out and uncomment the 
 ; lower when installing a static build of the fluxus modules
 
 (require "fluxus-engine.ss"

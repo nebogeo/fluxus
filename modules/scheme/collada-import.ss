@@ -9,9 +9,9 @@
 
 (require "fluxus-modules.ss"
          "building-blocks.ss"
-         xml/xml 
+         xml/xml
          scheme/list)
-		 
+
 (provide collada-import)
 
 ;; this module is concerned with parsing the xml scene description,
@@ -34,17 +34,17 @@
   (define (loop x out)
     (cond
       ((null? x) out)
-      ((not (string? (car x)))                 
-       (loop (cdr x) 
-             (cons (list 
+      ((not (string? (car x)))
+       (loop (cdr x)
+             (cons (list
                     (subelement-name (car x))
-                    (subelement-attributes (car x))                                       
+                    (subelement-attributes (car x))
                     (element-list (subelement (car x)))
                     (if (and (not (null? (subelement (car x))))
                              (string? (car (subelement (car x)))))
                         (subelement (car x))
                         '()))
-                   out)))  
+                   out)))
       (else
        (loop (cdr x) out))))
   (loop x '()))
@@ -101,15 +101,15 @@
 ;; get the value of the name in some metadata
 (define (get-attribute x name)
   (define (get x name)
-    (cond 
+    (cond
       ((null? x) (error "fluxus-collada-import: couldn't find attribute called " name))
       ((eq? (car (car x)) name)
        (car (cdr (car x))))
-      (else 
+      (else
        (get (cdr x) name))))
   (get (get-attributes x) name))
 
-;; look for elements with name 
+;; look for elements with name
 (define (match-elements x name)
   (define (loop x out)
     (cond
@@ -139,7 +139,7 @@
 
 ;; use a list of element names to drill down like a path
 (define (get-element-from-path x path)
-  (cond 
+  (cond
     ((null? path) x)
     (else
      (get-element-from-path (find-element x (car path)) (cdr path)))))
@@ -159,7 +159,7 @@
 ;; of position/normal/tex coord etc indices
 (define (group-indices indices stride)
   (define (loop indices size count current group)
-    (cond 
+    (cond
       ((null? indices) (cons (reverse current) group))
       ((eq? count size) (loop (cdr indices) size 1 (list (car indices)) (cons (reverse current) group)))
       (else (loop (cdr indices) size (+ count 1) (cons (car indices) current) group))))
@@ -185,23 +185,23 @@
 ;; reorder vertex data to fit with the new indices (duplicates where required)
 (define (reorder-vertex-data indices data)
   (define (loop vertex-data n dst)
-    (cond 
+    (cond
       ((null? vertex-data) dst)
       (else
        (let ((vertex-data-list (car (cdr (car vertex-data)))))
-         (loop (cdr vertex-data) (+ n 1) 
+         (loop (cdr vertex-data) (+ n 1)
                (cons (cons (car (car vertex-data)) ; stick the fluxus name back on
                            (list
                             (map
                              (lambda (subindices)
                                (let ((data-index (list-ref subindices n))) ; the actual index for this data type
-                                 (cond 
+                                 (cond
                                    ((>= data-index (length vertex-data-list))
-                                    ;; todo, occasionally tripping up here, not sure why 
+                                    ;; todo, occasionally tripping up here, not sure why
                                     ;; (e.g. window in collada complex moon buggy example)
                                     (printf "index too large: ~a from ~a~n" data-index subindices)
                                     (list-ref (car (cdr (car vertex-data))) 0))
-                                   (else                                     
+                                   (else
                                     (list-ref vertex-data-list data-index))))) ; (need to get the list from ("p" positions) etc)
                              indices)))
                      dst))))))
@@ -241,18 +241,18 @@
        (splitter (cdr sl) '() (cons (string->number (list->string cur)) out)))
       (else
        (splitter (cdr sl) (cons (car sl) cur) out))))
-  (splitter (reverse (string->list s)) '() '())) 
+  (splitter (reverse (string->list s)) '() '()))
 
 ;; returns a float list of data items from an element
-(define (floats x) 
+(define (floats x)
   (split (car (get-data x))))
 
 ;; convert float array string directly into a list of vectors
-(define (get-formatted-floats x stride)     
+(define (get-formatted-floats x stride)
   (define (format-floats floats stride)
     (define (format l cur count out)
       (cond
-        ((null? l) (cons (list->vector (reverse cur)) out))         
+        ((null? l) (cons (list->vector (reverse cur)) out))
         ((eq? count stride)
          (format (cdr l) (list (car l)) 1 (cons (list->vector (reverse cur)) out)))
         (else
@@ -263,16 +263,16 @@
 ;; build a list of all the sources mapping names to formatted vector lists
 (define (parse-sources x)
   (define (parse x out)
-    (cond 
+    (cond
       ((null? x) out)
       ((eq? (get-name (car x)) 'source)
-       (parse (cdr x) 
-              (cons (list (get-attribute (car x) 'id) 
-                          (get-formatted-floats (car x) 
-                                                (string->number (get-attribute  ; get the stride so we can format 
+       (parse (cdr x)
+              (cons (list (get-attribute (car x) 'id)
+                          (get-formatted-floats (car x)
+                                                (string->number (get-attribute  ; get the stride so we can format
                                                                  (find-element  ; the data into vectors of the correct size
-                                                                  (find-element (car x) 'technique_common) 
-                                                                  'accessor) 
+                                                                  (find-element (car x) 'technique_common)
+                                                                  'accessor)
                                                                  'stride))))
                     out)))
       (else
@@ -292,11 +292,11 @@
 ;; if they can be found using the semantic list
 (define (assemble-data x semantic-list fluxus-names sources)
   (define (loop semantic-list fluxus-names data)
-    (cond 
+    (cond
       ((null? semantic-list) data)
       (else
        (let ((elements (match-elements-attr x 'input 'semantic (car semantic-list))))
-         (cond 
+         (cond
            ((not (null? elements))
             (let* ((vertex-data (find-source sources (get-attribute (car elements) 'source))))
               (loop (cdr semantic-list) (cdr fluxus-names) (cons (list (car fluxus-names) vertex-data) data))))
@@ -311,10 +311,10 @@
 ;; vertex data looks something like '((1 2 3 4) ((p (#(0 0 0) #(0 0 0) ...)) (n (#(0 0 0) #(0 0 0) ...)))
 ;;                                     indices      points data                 normals data
 ;; and contains everything needed to describe a primitive (other than it's type)
-(define (parse-vertex-data x vertex-id sources)        
+(define (parse-vertex-data x vertex-id sources)
   (let* ((indices (floats (find-element x 'p)))
-         (positions (find-source sources vertex-id)))      
-    (cons indices 
+         (positions (find-source sources vertex-id)))
+    (cons indices
           (list (cons (list "p" positions) (assemble-data x (list "NORMAL" "TEXCOORD") (list "n" "t") sources))))))
 
 ;; get indices out of vertex data
@@ -331,7 +331,7 @@
                 (vertex-data-get-indices vdb))
         (vertex-data-get-data vda)))
 ;; don't seem to need to append vertex data as well as indices, not sure what would
-;; be expected to happen regarding the indexing if the source changed across a 
+;; be expected to happen regarding the indexing if the source changed across a
 ;; triangles element...
 #| (list
            (map
@@ -348,23 +348,23 @@
 (define (build topology vertex-data)
   (define (vec2->vec3 v)
     (vector (vector-ref v 0) (vector-ref v 1) 0))
-  
+
   (define (set-list n l name)
     (cond
       ((null? l) 0)
       (else
        (if (eq? (vector-length (car l)) 2)
-           (pdata-set! name n (vec2->vec3 (car l)))                     
+           (pdata-set! name n (vec2->vec3 (car l)))
            (pdata-set! name n (car l)))
        (set-list (+ n 1) (cdr l) name))))
-  
+
   (define (loop data)
-    (cond 
+    (cond
       ((null? data) 0)
       (else
        (set-list 0 (car (cdr (car data))) (car (car data)))
        (loop (cdr data)))))
-  
+
   (if (null? vertex-data) 0
       (let* ((indices (car vertex-data))
              (data (car (cdr vertex-data)))
@@ -378,8 +378,8 @@
 ;; build a mesh from vertex data
 (define (parse-mesh x)
   ; only deal with triangles at the moment
-  (build 'triangle-list 
-         (unify-vertex-data 
+  (build 'triangle-list
+         (unify-vertex-data
           ;; need to loop over all the triangle elements here, as there may be more than one
           ;; (for different materials) and they all need to be joined up
           (foldl
@@ -388,8 +388,8 @@
                  (parse-vertex-data
                   triangle-element
                   (get-attribute (find-element (find-element x 'vertices) 'input) 'source)
-                  (parse-sources (get-elements x)))           
-                 (join-vertex-data vd 
+                  (parse-sources (get-elements x)))
+                 (join-vertex-data vd
                                    (parse-vertex-data
                                     triangle-element
                                     (get-attribute (find-element (find-element x 'vertices) 'input) 'source)
@@ -399,7 +399,7 @@
 
 ;; look for meshes we can import
 (define (parse-geometry x)
-  (cond 
+  (cond
     ((element-exists? x 'mesh) ; only cope with mesh
      (parse-mesh (find-element x 'mesh)))
     (else
@@ -429,11 +429,11 @@
 
 ;; get the URL from this element
 (define (get-geometry-url x)
-  (cond 
-    ((element-exists? x 'instance_geometry)   
+  (cond
+    ((element-exists? x 'instance_geometry)
      (get-attribute (find-element x 'instance_geometry) 'url))
-    (else 
-     #f))) 
+    (else
+     #f)))
 
 ;; find translate, with a sensible default if it doesn't exist
 (define (get-translate x)
@@ -493,20 +493,32 @@
       (parse-nodes scene geometries)))
    (get-elements (find-element-temp x 'library_visual_scenes))))
 
-;; parse the scene, instancing the geometry 
+;; parse the scene, instancing the geometry
 (define (parse x)
   (parse-scenes x (parse-geometries x)))
 
 ;; StartFunctionDoc-en
 ;; collada-import filename-string
-;; Returns: void 
+;; Returns: void
 ;; Description:
-;; Loads a collada scene file and returns a scene description list. Files need to 
+;; Loads a collada scene file and returns a scene description list. Files need to
 ;; contain triangulated model data - this is usually an option on the export.
 ;; Note: this is slow for heavy models
 ;; Example:
 ;; ;(collada-import "test.dae")
-;; EndFunctionDoc			
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; collada-import string-nome-do-arquivo
+;; Retorna: void
+;; Descrição:
+;; Carrega uma cena collada e retorna uma lista com a descrição da
+;; cena. Arquivo precisam conter dados de modelos triangulados - isto
+;; é usualmente uma opção na exportação.
+;; Nota: isto é lento para modelos pesados.
+;; Exemplo:
+;; ;(collada-import "test.dae")
+;; EndFunctionDoc
 
 ;; toplevel load
 (define (collada-import filename)
