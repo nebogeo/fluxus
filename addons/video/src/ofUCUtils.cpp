@@ -20,7 +20,6 @@ extern "C"
 #include <libswscale/swscale.h>
 }
 
-
 #define FOURCC(a,b,c,d) (unsigned int)((((unsigned int)a))+(((unsigned int)b)<<8)+(((unsigned int)c)<<16)+(((unsigned int)d)<<24))
 
 typedef struct PixelFormatTag {
@@ -61,7 +60,9 @@ static const PixelFormatTag pixelFormatTags[] = {
     { PIX_FMT_YUV411P, 	FOURCC('4', '1', '1', 'P') },
     { PIX_FMT_NV12,    	FOURCC('N', 'V', '1', '2') },
     { PIX_FMT_NV21,    	FOURCC('N', 'V', '2', '1') },
+#ifdef PIX_FMT_YUV422
     { PIX_FMT_YUV422,  	FOURCC('Y', 'Y', 'U', 'V') },
+#endif
     { PIX_FMT_RGB32_1, 	FOURCC('R', 'G', 'B', '1') },	// is this correct?
     { PIX_FMT_RGB555,  	FOURCC('R', 'G', 'B', 'O') },
     { PIX_FMT_RGB565,  	FOURCC('R', 'G', 'B', 'P') },
@@ -291,7 +292,7 @@ void ofUCUtils::set_format(int w, int h) {
 		if(src_pix_fmt!=PIX_FMT_RGB24 || !exactMatch){
 			doConversion = true;
 			src=new AVPicture;
-			avpicture_alloc(src,src_pix_fmt,format.size.width,format.size.height);
+			avpicture_alloc(src,static_cast<PixelFormat>(src_pix_fmt),format.size.width,format.size.height);
 			dst=new AVPicture;
 			avpicture_alloc(dst,PIX_FMT_RGB24,d_width,d_height);
 
@@ -384,7 +385,7 @@ void ofUCUtils::new_frame (unicap_data_buffer_t * buffer)
 		return;
 
 	if(doConversion){
-		avpicture_fill(src,buffer->data,src_pix_fmt,format.size.width,format.size.height);
+		avpicture_fill(src,buffer->data,static_cast<PixelFormat>(src_pix_fmt),format.size.width,format.size.height);
 
 		if(sws_scale(toRGB_convert_ctx,
 			src->data, src->linesize, 0, buffer->format.size.height,
