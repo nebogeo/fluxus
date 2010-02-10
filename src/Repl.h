@@ -33,12 +33,12 @@ public:
 	virtual void Handle(int button, int key, int special, int state, 
 			    int x, int y, int mod);
 	
-	void Print(const string &what);
+	void Print(const wstring &what);
 	void Print(Scheme_Object *obj);
 
 protected:
-	static string m_Prompt;
-	static string m_Banner;
+	static wstring m_Prompt;
+	static wstring m_Banner;
 	static unsigned int MAX_LINE_LENGTH;
 	
 	unsigned int m_PromptPos;
@@ -49,14 +49,14 @@ protected:
 	void HistoryPrev();
 	void HistoryNext();
 	void HistoryClear();
-	void HistoryShow(string what);
+	void HistoryShow(wstring what);
 	void EnsureCursorVisible();
 
 	// line history
-	deque<string> 			m_History;
-	deque<string>::iterator m_HistoryIter;
+	deque<wstring> 			m_History;
+	deque<wstring>::iterator m_HistoryIter;
 	bool 					m_HistoryNavStarted;
-	string 					m_HistoryPresent;
+	wstring 					m_HistoryPresent;
 	unsigned int			m_LinePos;
 };
 

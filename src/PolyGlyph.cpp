@@ -1,20 +1,21 @@
 #include "PolyGlyph.h"
 #include "assert.h"
 #include <iostream>
+#include "Unicode.h"
 
 #ifdef __APPLE__
 #include <AvailabilityMacros.h>
 #endif
 
-PolyGlyph::PolyGlyph(const string &ttffilename)
+PolyGlyph::PolyGlyph(const wstring &ttffilename)
 {
 	FT_Error error;
 	error = FT_Init_FreeType(&m_Library);
-	error = FT_New_Face(m_Library, ttffilename.c_str(), 0, &m_Face);
+	error = FT_New_Face(m_Library, wstring_to_string(ttffilename).c_str(), 0, &m_Face);
 
 	if (error)
 	{
-		cerr<<"PolyGlyph::PolyGlyph: could not load font: "<<ttffilename<<endl;
+		wcerr<<L"PolyGlyph::PolyGlyph: could not load font: "<<ttffilename<<endl;
 		assert(0);
 	}
 

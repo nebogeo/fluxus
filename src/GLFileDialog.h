@@ -36,8 +36,8 @@ public:
 	virtual void Render();
 	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
 	
-	string GetOutput() { return m_Output; }
-	void Clear() { m_Output=""; }
+	wstring GetOutput() { return m_Output; }
+	void Clear() { m_Output=L""; }
 	void SetSaveAsMode(bool s) { m_SaveAs=s; }
 	bool GetSaveAsMode() { return m_SaveAs; }
 	
@@ -51,11 +51,11 @@ protected:
 	void ReadPath();
 
 	unsigned int m_CurrentFile;
-	vector<string> m_Filenames;
+	vector<wstring> m_Filenames;
 	set<int> m_Directories;
-	string m_Path;
-	string m_Output;
-	string m_SaveAsInfoText;
+	wstring m_Path;
+	wstring m_Output;
+	wstring m_SaveAsInfoText;
 	
 	bool m_SaveAs;
 };

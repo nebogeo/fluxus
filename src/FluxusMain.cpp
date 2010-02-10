@@ -15,6 +15,8 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "FluxusMain.h"
+#include "Unicode.h"
+
 #ifndef __APPLE__
 #include <GL/glut.h>
 #else
@@ -47,39 +49,39 @@ m_ShowFileDialog(false)
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_VAR_IN_REG(1, t);
 	MZ_GC_REG();
-	Interpreter::Interpret("fluxus-scratchpad-font", &txt);
+	Interpreter::Interpret(L"fluxus-scratchpad-font", &txt);
 	char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
-	Interpreter::Interpret("fluxus-scratchpad-do-autofocus", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-do-autofocus", &t);
 	GLEditor::m_DoAutoFocus=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-debug-autofocus", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-debug-autofocus", &t);
 	GLEditor::m_DebugAutoFocus=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-width", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-width", &t);
 	GLEditor::m_AutoFocusWidth=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-height", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-height", &t);
 	GLEditor::m_AutoFocusHeight=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-error", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-error", &t);
 	GLEditor::m_AutoFocusError=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-drift", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-drift", &t);
 	GLEditor::m_AutoFocusDrift=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-scale-drift", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-scale-drift", &t);
 	GLEditor::m_AutoFocusScaleDrift=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-min-scale", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-min-scale", &t);
 	GLEditor::m_AutoFocusMinScale=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-autofocus-max-scale", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-autofocus-max-scale", &t);
 	GLEditor::m_AutoFocusMaxScale=scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-visible-lines", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-visible-lines", &t);
 	GLEditor::m_VisibleLines=(int)scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-visible-columns", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-visible-columns", &t);
 	GLEditor::m_VisibleColumns=(int)scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-x-pos", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-x-pos", &t);
 	GLEditor::m_XPos=(int)scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-y-pos", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-y-pos", &t);
 	GLEditor::m_YPos=(int)scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-hide-script", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-hide-script", &t);
 	m_HideScript=SCHEME_TRUEP(t);
 
 	float colour[]={0, 0, 0, 1};
-	Interpreter::Interpret("fluxus-scratchpad-cursor-colour", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-cursor-colour", &t);
 	for (int n=0; n<min(4, SCHEME_VEC_SIZE(t)); n++)
 	{
 		colour[n]=scheme_real_to_double(SCHEME_VEC_ELS(t)[n]);
@@ -91,7 +93,7 @@ m_ShowFileDialog(false)
 
 	MZ_GC_UNREG();
 
-	GLEditor::InitFont(s);
+	GLEditor::InitFont(string_to_wstring(string(s)));
 	m_FileDialog = new GLFileDialog;
 
 	for(int i=0; i<9; i++)
@@ -239,7 +241,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 			}
 
 			m_FileDialog->Handle(button,key,special,state,x,y,mod);
-			if (m_FileDialog->GetOutput()!="")
+			if (m_FileDialog->GetOutput()!=L"")
 			{
 				if (m_FileDialog->GetSaveAsMode())
 				{
@@ -279,9 +281,9 @@ void FluxusMain::Render()
 	else if (!m_HideScript) m_Editor[m_CurrentEditor]->Render();
 }
 
-void FluxusMain::LoadScript(const string &Filename)
+void FluxusMain::LoadScript(const wstring &Filename)
 {
-	FILE *file=fopen(Filename.c_str(),"r");
+	FILE *file=fopen(wstring_to_string(Filename).c_str(),"r");
 	if (file)
 	{
 		fseek(file,0,SEEK_END);
@@ -291,14 +293,14 @@ void FluxusMain::LoadScript(const string &Filename)
 		if (size==0)
 		{
 			fclose(file);
-			cerr<<"empty file: "<<Filename<<endl;
+			wcerr<<L"empty file: "<<Filename<<endl;
 			return;
 		}
 
 		if (size<0)
 		{
 			fclose(file);
-			cerr<<"error loading file: "<<Filename<<" size: "<<size<<"??"<<endl;
+			wcerr<<L"error loading file: "<<Filename<<L" size: "<<size<<L"??"<<endl;
 			return;
 		}
 
@@ -309,15 +311,15 @@ void FluxusMain::LoadScript(const string &Filename)
 			{
 				delete[] buffer;
 				fclose(file);
-				cerr<<"read error: "<<Filename<<endl;
+				wcerr<<L"read error: "<<Filename<<endl;
 				return;
 			}
 			buffer[size]='\0';
-			m_Editor[m_CurrentEditor]->SetText(buffer);
+			m_Editor[m_CurrentEditor]->SetText(string_to_wstring(string(buffer)));
 		}
 		else
 		{
-			cerr<<"couldn't allocate buffer for load"<<endl;
+			wcerr<<L"couldn't allocate buffer for load"<<endl;
 		}
 
 		delete[] buffer;
@@ -325,7 +327,7 @@ void FluxusMain::LoadScript(const string &Filename)
 	}
 	else
 	{
-		cerr<<"couldn't load: "<<Filename<<endl;
+		wcerr<<L"couldn't load: "<<Filename<<endl;
 	}
 
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
@@ -339,46 +341,50 @@ void FluxusMain::Execute()
 
 void FluxusMain::SaveBackupScript() 
 { 
-	if (m_SaveName[m_CurrentEditor]=="") 
+	if (m_SaveName[m_CurrentEditor]==L"") 
 	{	
-		m_SaveName[m_CurrentEditor]="temp.scm";
+		m_SaveName[m_CurrentEditor]=L"temp.scm";
 	}
 	
-	FILE *file=fopen((m_SaveName[m_CurrentEditor]+string("~")).c_str(),"w");
+	FILE *file=fopen(wstring_to_string(m_SaveName[m_CurrentEditor]+wstring(L"~")).c_str(),"w");
 	if (file)
 	{	
-		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
+		fwrite(wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText()).c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
 		fclose(file);
 	}
 }
 
 void FluxusMain::SaveScript()
 {
-	if (m_SaveName[m_CurrentEditor]=="")
+	if (m_SaveName[m_CurrentEditor]==L"")
 	{
-		m_SaveName[m_CurrentEditor]="temp.scm";
+		m_SaveName[m_CurrentEditor]=L"temp.scm";
 	}
 
-	FILE *file=fopen(m_SaveName[m_CurrentEditor].c_str(),"w");
+	FILE *file=fopen(wstring_to_string(m_SaveName[m_CurrentEditor]).c_str(),"w");
 	if (file)
 	{
-		fwrite(m_Editor[m_CurrentEditor]->GetAllText().c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);
+        wcerr<<m_Editor[m_CurrentEditor]->GetAllText()<<endl;
+        string out = wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText());
+        cerr<<out<<endl;
+
+		fwrite(out.c_str(),1,out.size(),file);
 		fclose(file);
-		cerr<<"Saved ["<<m_SaveName[m_CurrentEditor]<<"]"<<endl;
+		wcerr<<L"Saved ["<<m_SaveName[m_CurrentEditor]<<L"]"<<endl;
 	}
 	else
 	{
-		cerr<<"Could not save file ["<<m_SaveName[m_CurrentEditor]<<"]"<<endl;
+		wcerr<<L"Could not save file ["<<m_SaveName[m_CurrentEditor]<<L"]"<<endl;
 	}
 }
 
-string Escape(const string &str)
+wstring Escape(const wstring &str)
 {
-	string out;
+	wstring out;
 	for(unsigned int i=0; i<str.size(); i++)
 	{
-		if (str[i]=='\"') out+="\\\"";
-		else if (str[i]=='\\') out+="\\\\";
+		if (str[i]==L'\"') out+=L"\\\"";
+		else if (str[i]==L'\\') out+=L"\\\\";
 		else out+=str[i];
 	}
 	return out;
@@ -390,12 +396,12 @@ void FluxusMain::Pretty()
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, txt);
 	MZ_GC_REG();	
-	string command(string("(fluxus-auto-indent \"")+Escape(m_Editor[m_CurrentEditor]->GetAllText())+string("\")"));
+	wstring command(wstring(L"(fluxus-auto-indent \"")+Escape(m_Editor[m_CurrentEditor]->GetAllText())+wstring(L"\")"));
 	Interpreter::Interpret(command, &txt);
 	if (txt!=NULL)
 	{
 		char *s=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(txt),SCHEME_CHAR_STRLEN_VAL(txt),NULL,0);
-		m_Editor[m_CurrentEditor]->SetText(s);	
+		m_Editor[m_CurrentEditor]->SetText(string_to_wstring(string(s)));	
 	}
   	MZ_GC_UNREG();
 }

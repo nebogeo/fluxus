@@ -22,11 +22,12 @@
 #include <GLUT/glut.h>
 #endif
 #include "Repl.h"
+#include "Unicode.h"
 
 using namespace fluxus;
 
-string Repl::m_Banner = string("Welcome to fluxus.\nType (help) for info.\n");
-string Repl::m_Prompt = string("fluxus> ");
+wstring Repl::m_Banner = wstring(L"Welcome to fluxus.\nType (help) for info.\n");
+wstring Repl::m_Prompt = wstring(L"fluxus> ");
 unsigned int Repl::MAX_LINE_LENGTH = 80;
 
 Repl::Repl() : 
@@ -42,7 +43,7 @@ m_LinePos(0)
 // FIXME: wrap long lines
 // how? break before a "(" I would say -Evan
 
-void Repl::Print(const string &what)
+void Repl::Print(const wstring &what)
 {
 	int l = what.length();
 	
@@ -50,15 +51,15 @@ void Repl::Print(const string &what)
 	int end = slop;
 	int start = 0;
 	
-	string to_print;
+	wstring to_print;
 	
-	for (string::const_iterator i=what.begin(); i!=what.end(); ++i)
+	for (wstring::const_iterator i=what.begin(); i!=what.end(); ++i)
 	{
 		m_LinePos++;
-		if (*i=='\n') m_LinePos=0;
+		if (*i==L'\n') m_LinePos=0;
 		if (m_LinePos>=MAX_LINE_LENGTH)
 		{
-			to_print+="\n";
+			to_print+=L"\n";
 			m_LinePos=0;
 		}
 		to_print+=*i;
@@ -70,16 +71,15 @@ void Repl::Print(const string &what)
 	m_PromptPos += to_print.length();
 	m_InsertPos += to_print.length();
 	
-	cout << to_print;
-	
+	wcout << to_print;	
 	EnsureCursorVisible();
 }
 
 void Repl::PrintPrompt()
 {
 	m_InsertPos = m_Text.length();
-	if (m_Text[m_InsertPos-1]!='\n') {
-		m_Text += '\n';
+	if (m_Text[m_InsertPos-1]!=L'\n') {
+		m_Text += L'\n';
 		m_InsertPos++;
 	}
 	m_Text += m_Prompt;
@@ -99,14 +99,14 @@ void Repl::Print(Scheme_Object *obj)
 			for (int i=0; i<scheme_multiple_count; i++)
 			{
 				char *str = scheme_display_to_string(scheme_multiple_array[i], &length);
-				Print(str);
-				if (i!=scheme_multiple_count-1) Print("\n");
+				Print(string_to_wstring(string(str)));
+				if (i!=scheme_multiple_count-1) Print(L"\n");
 			}
 		}
 		else
 		{
-			char *str = scheme_display_to_string(obj, &length);
-			Print(str);
+			char *str = scheme_display_to_string(obj, &length);            
+			Print(string_to_wstring(string(str)));
 		}
 	}
 	MZ_GC_UNREG();	
@@ -205,18 +205,18 @@ void Repl::HistoryNext()
 		m_HistoryPresent : *m_HistoryIter);
 }
 
-void Repl::HistoryShow(string what)
+void Repl::HistoryShow(wstring what)
 {
 	m_Text.resize(m_PromptPos,0);
 	m_Text += what;
 	m_Position = m_Text.length();
 }
 
-// FIXME: skip parens in strings and comments
-bool Balanced(string s)
+// FIXME: skip parens in wstrings and comments
+bool Balanced(wstring s)
 {
 	int balance = 0;
-	for (string::iterator i = s.begin(); i != s.end(); i++) {
+	for (wstring::iterator i = s.begin(); i != s.end(); i++) {
 		switch(*i) {
 			case '(':
 				balance++;
@@ -232,10 +232,10 @@ bool Balanced(string s)
 	return balance==0;
 }
 
-inline bool Empty(string s) {
-        const string ws=" \t\n\r";
-	for (string::iterator i = s.begin(); i != s.end(); i++) {
-                if (ws.find(*i) == string::npos) {
+inline bool Empty(wstring s) {
+    const wstring ws=L" \t\n\r";
+	for (wstring::iterator i = s.begin(); i != s.end(); i++) {
+                if (ws.find(*i) == wstring::npos) {
                         return false;
                 }
         }
@@ -252,9 +252,9 @@ bool Repl::TryEval()
 	
 	if (m_PromptPos<m_Text.size())
 	{
-		string defun = m_Text.substr(m_PromptPos);
+		wstring defun = m_Text.substr(m_PromptPos);
 
-		if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=string::npos)*/)
+		if (!Balanced(defun)/* || (m_Text.substr(m_Position).find(')')!=wstring::npos)*/)
 		{
 			MZ_GC_UNREG();
 			return true;
@@ -262,11 +262,11 @@ bool Repl::TryEval()
 		
 		if (!Empty(defun)) {
 			m_InsertPos = m_Text.length();
-			Print("\n");
+			Print(L"\n");
 
 			Interpreter::Interpret(defun,&out);
 
-			if (defun[defun.length()-1] == '\n')
+			if (defun[defun.length()-1] == L'\n')
         			defun.resize(defun.length()-1,0); 
 			m_History.push_back(defun);
 			m_HistoryNavStarted = false;
@@ -274,7 +274,7 @@ bool Repl::TryEval()
 			if (out != NULL && out != scheme_void) 
 			{
         		Print(out);
-        		Print("\n");
+        		Print(L"\n");
 			}
 		}
 	}
@@ -291,10 +291,10 @@ void Repl::EnsureCursorVisible()
         unsigned int curVisLine = 0;
         // use m_VisibleLines, m_TopTextPosition;
         for (i = m_Position; i>m_TopTextPosition; i--) 
-                if (m_Text[i] == '\n') 
+                if (m_Text[i] == L'\n') 
                         curVisLine++;
         while (curVisLine >= m_VisibleLines)
-                if (m_Text[m_TopTextPosition++] == '\n')
+                if (m_Text[m_TopTextPosition++] == L'\n')
                         curVisLine--;				
 }
 

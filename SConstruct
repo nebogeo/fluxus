@@ -278,13 +278,14 @@ if not GetOption('clean'):
 
 
 Source = ["src/GLEditor.cpp",
-                "src/GLFileDialog.cpp",
-                "src/Interpreter.cpp",
-                "src/Repl.cpp",
-                "src/Recorder.cpp",
-                "src/FluxusMain.cpp",
-                "src/PolyGlyph.cpp",
-                "src/main.cpp"]
+          "src/GLFileDialog.cpp",
+          "src/Interpreter.cpp",
+          "src/Repl.cpp",
+          "src/Recorder.cpp",
+          "src/FluxusMain.cpp",
+          "src/PolyGlyph.cpp",
+          "src/Unicode.cpp",
+          "src/main.cpp"]
 
 app_env = env.Clone()
 

@@ -19,6 +19,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <string>
+#include "Unicode.h"
 
 #include "GL/glew.h"
 
@@ -34,7 +35,7 @@
 
 using namespace std;
 
-static const string ENGINE_CALLBACK="(fluxus-frame-callback)";
+static const wstring ENGINE_CALLBACK=L"(fluxus-frame-callback)";
 static const string RESHAPE_CALLBACK="fluxus-reshape-callback";
 static const string INPUT_CALLBACK="fluxus-input-callback";
 static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
@@ -46,8 +47,8 @@ int modifiers = 0;
 void ReshapeCallback(int width, int height)
 {
 	app->Reshape(width,height);
-	char code[256];
-	snprintf(code,256,"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
 	Interpreter::Interpret(code);
 }
 
@@ -57,9 +58,9 @@ void KeyboardCallback(unsigned char key,int x, int y)
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
 		app->Handle(key, -1, -1, -1, x, y, mod);
-	char code[256];
+	wchar_t code[256];
 	if (key > 0) { // key is 0 on ctrl+2
-		snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
 		Interpreter::Interpret(code);
 	}
 	recorder->Record(RecorderMessage("keydown",key,mod));
@@ -67,9 +68,9 @@ void KeyboardCallback(unsigned char key,int x, int y)
 
 void KeyboardUpCallback(unsigned char key,int x, int y)
 {
-	char code[256];
+	wchar_t code[256];
 	if (key > 0) { // key is 0 on ctrl+2
-		snprintf(code,256,"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
 		Interpreter::Interpret(code);
 	}
 	recorder->Record(RecorderMessage("keyup",key,0));
@@ -83,8 +84,8 @@ void SpecialKeyboardCallback(int key,int x, int y)
 		recorder->PauseToggle();
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
 		app->Handle(0, -1, key, -1, x, y, mod);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeydown",key,mod));
 }
@@ -92,8 +93,8 @@ void SpecialKeyboardCallback(int key,int x, int y)
 void SpecialKeyboardUpCallback(int key,int x, int y)
 {
 	//app->Handle( 0, 0, key, 1, x, y);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeyup",key,0));
 }
@@ -101,8 +102,8 @@ void SpecialKeyboardUpCallback(int key,int x, int y)
 void MouseCallback(int button, int state, int x, int y)
 {
 	app->Handle(0, button, -1, state, x, y, 0);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("mouse",x,y,button,state));
 }
@@ -110,8 +111,8 @@ void MouseCallback(int button, int state, int x, int y)
 void MotionCallback(int x, int y)
 {
 	app->Handle(0, -1, -1, -1, x, y, 0);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("motion",x,y));
 }
@@ -119,8 +120,8 @@ void MotionCallback(int x, int y)
 void PassiveMotionCallback(int x, int y)
 {
 	app->Handle(0, -1, -1, -1, x, y, 0);
-	char code[256];
-	snprintf(code,256,"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	wchar_t code[256];
+	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("passivemotion",x,y));
 }
@@ -166,8 +167,8 @@ void DoRecorder()
 
 void DisplayCallback()
 {
-	string fragment = app->GetScriptFragment();
-	if (fragment!="")
+	wstring fragment = app->GetScriptFragment();
+	if (fragment!=L"")
 	{
 		Interpreter::Interpret(fragment);
 	}
@@ -293,7 +294,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 		{
 			if (arg+1 < argc)
 			{
-				Interpreter::SetLanguage(argv[arg+1]);
+				Interpreter::SetLanguage(string_to_wstring(string(argv[arg+1])));
 				arg++;
 			}
 		}
@@ -339,7 +340,7 @@ int run(Scheme_Env* se, int argc, char *argv[])
 			if (currentEditor<fluxus::NUM_EDITORS-1)
 			{
 				app->SetCurrentEditor(currentEditor); // flip it out of the repl
-				app->LoadScript(argv[arg]);
+				app->LoadScript(string_to_wstring(string(argv[arg])));
 				if (exe && currentEditor==0)
 				{
 					app->Execute();

@@ -53,7 +53,7 @@ public:
 class PolyGlyph
 {
 public:
-	PolyGlyph(const string &ttffile);
+	PolyGlyph(const wstring &ttffile);
 	~PolyGlyph();
 
 	void Render(wchar_t ch, float r, float g, float b, float a, float dx = 0, float dy = 0);

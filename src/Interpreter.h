@@ -20,6 +20,7 @@
 #include <deque>
 #include <string>
 #include <scheme.h>
+#include "Unicode.h"
 
 namespace fluxus 
 {
@@ -33,11 +34,11 @@ public:
 	static void Initialise();
 	static void Shutdown();
 	static void SetRepl(Repl *s);
-	static bool Interpret(const std::string &code, Scheme_Object **ret=NULL, bool abort=false);
-	static void SetLanguage(const std::string &lang) { m_Language=lang; }
+	static bool Interpret(const std::wstring &code, Scheme_Object **ret=NULL, bool abort=false);
+	static void SetLanguage(const std::wstring &lang) { m_Language=lang; }
 	
 private:
-	static std::string SetupLanguage(const std::string &str);
+	static std::wstring SetupLanguage(const std::wstring &str);
 
 	static Scheme_Env *m_Scheme;
 	static Repl *m_Repl;
@@ -45,7 +46,7 @@ private:
 	static Scheme_Object *m_ErrReadPort;
 	static Scheme_Object *m_OutWritePort;
 	static Scheme_Object *m_ErrWritePort;
-	static std::string m_Language;
+	static std::wstring m_Language;
 };
 
 }

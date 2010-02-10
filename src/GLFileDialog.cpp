@@ -24,6 +24,7 @@
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "GLFileDialog.h"
+#include "Unicode.h"
 
 using namespace fluxus;
 
@@ -31,9 +32,9 @@ GLFileDialog::GLFileDialog() :
 m_CurrentFile(0),
 m_SaveAs(true)
 { 
-	m_Path="";
-	m_SaveAsInfoText="Save as (esc to exit)";
-	m_Text="";
+	m_Path=L"";
+	m_SaveAsInfoText=L"Save as (esc to exit)";
+	m_Text=L"";
 	ReadPath();
 }
 
@@ -49,7 +50,7 @@ void GLFileDialog::ReadPath()
 	
 	// all this seems horribly linux specific...
 	glob_t g;
-
+    
 #ifndef WIN32	
 
 // NOTE: the following snippet is from dirscan.c in ldglite, 
@@ -59,12 +60,12 @@ void GLFileDialog::ReadPath()
 // Some BSD systems do NOT have the GNU implementation of glob,
 // so we must do the GLOB_PERIOD work by hand to get the ".." dir.
 #define GLOB_PERIOD GLOB_APPEND
-glob(".", 0, 0, &g);
-glob("..", GLOB_PERIOD, 0, &g);
+    glob(".", 0, 0, &g);
+    glob("..", GLOB_PERIOD, 0, &g);
 #endif
 
-
-	glob(string(m_Path+"*").c_str(),GLOB_PERIOD,NULL,&g);
+    string temp = wstring_to_string(m_Path+L"*");
+	glob(temp.c_str(),GLOB_PERIOD,NULL,&g);
 	
 	for (unsigned int n=0; n<g.gl_pathc; n++)
 	{
@@ -78,7 +79,7 @@ glob("..", GLOB_PERIOD, 0, &g);
 			path=path.substr(path.find_last_of("/")+1,path.size());
 		}
 		
-		m_Filenames.push_back(path);
+		m_Filenames.push_back(string_to_wstring(path));
 	}
 	
 	globfree (&g);
@@ -207,7 +208,7 @@ void GLFileDialog::RenderLoad()
 				lineheight*(float)m_Filenames.size();
 
 	unsigned int count=0;
-	for (vector<string>::iterator i=m_Filenames.begin(); i!=m_Filenames.end(); i++)
+	for (vector<wstring>::iterator i=m_Filenames.begin(); i!=m_Filenames.end(); i++)
 	{
 		unsigned int n=0;
 		m_LineCount=0;
@@ -306,10 +307,9 @@ void GLFileDialog::HandleSaveAs(int button, int key, int special, int state, int
 			{
 				if (key!=-1 && !(mod&GLUT_ACTIVE_CTRL))
 				{
-					char temp[2];
+					string temp(" ");
 					temp[0]=(char)key;
-					temp[1]='\0';
-					m_Text.insert(m_Position,string(temp));
+					m_Text.insert(m_Position,string_to_wstring(temp));
 					m_Position++;
 				}
 			}
@@ -351,7 +351,7 @@ void GLFileDialog::HandleLoad(int button, int key, int special, int state, int x
 				if(m_Directories.find(m_CurrentFile)!=m_Directories.end())
 				{
 					m_Path+=m_Filenames[m_CurrentFile];
-					m_Path+="/";
+					m_Path+=L"/";
 					ReadPath();
 				}
 				else

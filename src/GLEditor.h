@@ -52,12 +52,12 @@ public:
 	void Reshape(unsigned int w,unsigned int h);
 	void BlowupCursor();
 
-	string GetText();
-	string GetAllText() { return m_Text; }
-	string GetSExpr();
+	wstring GetText();
+	wstring GetAllText() { return m_Text; }
+	wstring GetSExpr();
 	void ClearAllText();
 
-	void SetText(const string& s);
+	void SetText(const wstring& s);
 	void Reset();
 
 	float m_PosX,m_PosY;
@@ -68,7 +68,7 @@ public:
 	void StrokeCharacter(wchar_t c, float dx = 0, float dy = 0);
 	float StrokeWidth(wchar_t c);
 
-	static void InitFont(const string &ttf);
+	static void InitFont(const wstring &ttf);
 	static void GetEffectParameters();
 
 	static float m_TextWidth;
@@ -136,8 +136,8 @@ protected:
 	void BBExpand(float x, float y);
 	void BBClear() { m_BBMinX=m_BBMinY=m_BBMaxX=m_BBMaxY=0; }
 
-	string m_Text;
-	static string m_CopyBuffer;
+	wstring m_Text;
+	static wstring m_CopyBuffer;
 	unsigned int m_Position;
 	unsigned int m_HighlightStart;
 	unsigned int m_HighlightEnd;
@@ -149,8 +149,8 @@ protected:
 	float m_CharWidth;
 	float m_CharHeight;
 	int m_ParenthesesHighlight[2];
-	string m_OpenChars;
-	string m_CloseChars;
+	wstring m_OpenChars;
+	wstring m_CloseChars;
 	unsigned int m_LeftTextPosition;
 	unsigned int m_TopTextPosition;
 	unsigned int m_BottomTextPosition;

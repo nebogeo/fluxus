@@ -17,6 +17,7 @@
 #include <iostream>
 #include "Interpreter.h"
 #include "Repl.h"
+#include "Unicode.h"
 
 #ifdef STATIC_LINK
 #include "../modules/fluxus-engine/src/FluxusEngine.h"
@@ -38,13 +39,13 @@ using namespace fluxus;
 static const int LOG_SIZE=256;
 
 static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
-									"(define fluxus-collects-location \"%s\") " \
-									"(define fluxus-version \"%d%d\") " \
-									"(define fluxus-data-location \"%s\") " \
-									"(define static-link \"%s\") "\
-									"(define fluxus-platform '\"%s\") "\
-									"(load (string-append fluxus-collects-location \"/fluxus-\" " \
-										"fluxus-version \"/boot.scm\")) ";
+								"(define fluxus-collects-location \"%s\") " \
+								"(define fluxus-version \"%d%d\") " \
+								"(define fluxus-data-location \"%s\") " \
+								"(define static-link \"%s\") "\
+								"(define fluxus-platform '\"%s\") "\
+								"(load (string-append fluxus-collects-location \"/fluxus-\" " \
+                                      "fluxus-version \"/boot.scm\")) ";
 
 Scheme_Env *Interpreter::m_Scheme=NULL;
 Repl *Interpreter::m_Repl=NULL;
@@ -52,7 +53,7 @@ Scheme_Object *Interpreter::m_OutReadPort=NULL;
 Scheme_Object *Interpreter::m_ErrReadPort=NULL;
 Scheme_Object *Interpreter::m_OutWritePort=NULL;
 Scheme_Object *Interpreter::m_ErrWritePort=NULL;
-std::string Interpreter::m_Language;
+std::wstring Interpreter::m_Language;
 
 void Interpreter::Register()
 {
@@ -135,7 +136,7 @@ void Interpreter::Initialise()
 	#endif
 	#endif
 
-	PLTCollects=string(cwd)+string("/collects");
+	PLTCollects=wstring(cwd)+string("/collects");
 	FluxusCollects=PLTCollects;
 	DataLocation=cwd;
 #endif
@@ -157,7 +158,7 @@ void Interpreter::Initialise()
 		StaticMode.c_str(),
 		platform.c_str());
 
-	Interpret(startup,NULL,true);
+	Interpret(string_to_wstring(startup),NULL,true);
 
     MZ_GC_UNREG();
 }
@@ -183,7 +184,7 @@ int fill_from_port(Scheme_Object* port, char *dest, long size)
 	long pos=0;
 	while (scheme_char_ready(port) && pos<size-1)
 	{
-		dest[pos++]=scheme_getc(port);
+		dest[pos++]=scheme_get_byte(port);
 	}
 	dest[pos]=0;
 
@@ -193,13 +194,13 @@ int fill_from_port(Scheme_Object* port, char *dest, long size)
 	return r;
 }
 
-string Interpreter::SetupLanguage(const string &str)
+wstring Interpreter::SetupLanguage(const wstring &str)
 {
 	if (m_Language.empty()) return str;
-	return "(module foo "+m_Language+" "+str+") (require foo)";
+	return L"(module foo "+m_Language+L" "+str+L") (require foo)";
 }
 
-bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
+bool Interpreter::Interpret(const wstring &str, Scheme_Object **ret, bool abort)
 {
 	char msg[LOG_SIZE];
 	mz_jmp_buf * volatile save = NULL, fresh;
@@ -208,7 +209,7 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 	MZ_GC_VAR_IN_REG(0, msg);
 	MZ_GC_REG();
 
-	string code = SetupLanguage(str);
+	wstring code = SetupLanguage(str);
 
 	save = scheme_current_thread->error_buf;
 	scheme_current_thread->error_buf = &fresh;
@@ -225,7 +226,7 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 				if (strlen(msg)>0)
 				{
 					if (m_Repl==NULL) cerr<<msg<<endl;
-					else m_Repl->Print(string(msg));
+					else m_Repl->Print(string_to_wstring(string(msg)));
 				}
 			} while (char_available);
 		}
@@ -237,11 +238,11 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 	{
 		if (ret==NULL)
 		{
-			scheme_eval_string_all(code.c_str(), m_Scheme, 1);
+			scheme_eval_string_all(wstring_to_string(code).c_str(), m_Scheme, 1);
 		}
 		else
 		{
-			*ret = scheme_eval_string_all(code.c_str(), m_Scheme, 1);
+			*ret = scheme_eval_string_all(wstring_to_string(code).c_str(), m_Scheme, 1);
 		}
 		scheme_current_thread->error_buf = save;
 	}
@@ -255,7 +256,7 @@ bool Interpreter::Interpret(const string &str, Scheme_Object **ret, bool abort)
 			if (strlen(msg)>0)
 			{
 				if (m_Repl==NULL) cerr<<msg<<endl;
-				else m_Repl->Print(string(msg));
+				else m_Repl->Print(string_to_wstring(string(msg)));
 			}
 		} while (char_available);
 	}

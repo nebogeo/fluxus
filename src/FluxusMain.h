@@ -43,9 +43,9 @@ public:
 
 	bool KeyPressed(char b);
 
-    string GetScriptFragment() { string temp=m_Script; m_Script=""; return temp; }
-    void LoadScript(const string &Filename);
-    void SetSaveName(const string &s) { m_SaveName[m_CurrentEditor]=s; }
+    wstring GetScriptFragment() { wstring temp=m_Script; m_Script=L""; return temp; }
+    void LoadScript(const wstring &Filename);
+    void SetSaveName(const wstring &s) { m_SaveName[m_CurrentEditor]=s; }
     void SaveScript();
     void SaveBackupScript();
 	void HideScript() { m_HideScript=!m_HideScript; }
@@ -65,12 +65,12 @@ private:
 
 	GLEditor *m_Editor[NUM_EDITORS];
 	int m_CurrentEditor;
-	string m_SaveName[NUM_EDITORS];
+	wstring m_SaveName[NUM_EDITORS];
 	GLFileDialog *m_FileDialog;
 
 	int m_Width;
 	int m_Height;
-	string m_Script;
+	wstring m_Script;
 	bool m_HideScript;
 	bool m_ShowCursor;
 	bool m_ShowFileDialog;

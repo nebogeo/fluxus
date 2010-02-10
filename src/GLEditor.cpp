@@ -30,6 +30,7 @@
 #include "PolyGlyph.h"
 #include "Interpreter.h"
 #include "assert.h"
+#include "Unicode.h"
 
 #define EDITOR_TEST
 
@@ -42,7 +43,7 @@ using namespace fluxus;
 #define BLOWUP_FLASHES 1.8
 
 // static so we share between workspaces
-string GLEditor::m_CopyBuffer;
+wstring GLEditor::m_CopyBuffer;
 float GLEditor::m_TextWidth(1);
 float GLEditor::m_TextColourRed(1);
 float GLEditor::m_TextColourGreen(1);
@@ -106,8 +107,8 @@ m_CtrlState(false),
 m_CursorWidth(0),
 m_CharWidth(0),
 m_CharHeight(0),
-m_OpenChars("([<{"),
-m_CloseChars(")]>}"),
+m_OpenChars(L"([<{"),
+m_CloseChars(L")]>}"),
 m_LeftTextPosition(0),
 m_TopTextPosition(0),
 m_BottomTextPosition(0),
@@ -132,7 +133,7 @@ m_Blowup(0.0f)
 	m_Time.tv_usec=0;
 }
 
-void GLEditor::InitFont(const string &ttf)
+void GLEditor::InitFont(const wstring &ttf)
 {
 	m_PolyGlyph = new PolyGlyph(ttf);
 }
@@ -190,9 +191,9 @@ void GLEditor::SetCurrentLine(int line)
 	m_Position=LineStart(m_Position);
 }
 
-void GLEditor::SetText(const string& s)
+void GLEditor::SetText(const wstring& s)
 {
-	if (m_Text!="")
+	if (m_Text!=L"")
 	{
 		m_Position=LineStart(m_Position);
 		int line = GetCurrentLine();
@@ -208,7 +209,7 @@ void GLEditor::SetText(const string& s)
 
 void GLEditor::ClearAllText()
 {
-	m_Text="";
+	m_Text=L"";
 	m_Position=0;
 	m_PosX=m_PosY=0;
 	SetCurrentLine(0);
@@ -228,19 +229,19 @@ float GLEditor::StrokeWidth(wchar_t c)
 	return m_PolyGlyph->CharacterWidth(c);
 }
 
-string GLEditor::GetText()
+wstring GLEditor::GetText()
 {
 	if (m_Selection) return m_Text.substr(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
 	return m_Text;
 }
 
-string GLEditor::GetSExpr()
+wstring GLEditor::GetSExpr()
 {
 	if (m_ParenthesesHighlight[0]<m_ParenthesesHighlight[1])
 	{
 		return m_Text.substr(m_ParenthesesHighlight[0],m_ParenthesesHighlight[1]+1-m_ParenthesesHighlight[0]);
 	}
-	return "";
+	return L"";
 }
 
 void GLEditor::DrawCharBlock()
@@ -309,34 +310,34 @@ void GLEditor::GetEffectParameters()
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, t);
 	MZ_GC_REG();
-	Interpreter::Interpret("fluxus-scratchpad-effect-jiggle-size", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-jiggle-size", &t);
 	m_EffectJiggleSize = scheme_real_to_double(t);
 
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-size", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-wave-size", &t);
 	m_EffectWaveSize = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-wavelength", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-wave-wavelength", &t);
 	m_EffectWaveWavelength = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-wave-speed", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-wave-speed", &t);
 	m_EffectWaveSpeed = scheme_real_to_double(t);
 
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-size", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-ripple-size", &t);
 	m_EffectRippleSize = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-center-x", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-ripple-center-x", &t);
 	m_EffectRippleCenterX = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-center-y", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-ripple-center-y", &t);
 	m_EffectRippleCenterY = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-wavelength", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-ripple-wavelength", &t);
 	m_EffectRippleWavelength = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-ripple-speed", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-ripple-speed", &t);
 	m_EffectRippleSpeed = scheme_real_to_double(t);
 
-	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-size", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-swirl-size", &t);
 	m_EffectSwirlSize = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-center-x", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-swirl-center-x", &t);
 	m_EffectSwirlCenterX = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-center-y", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-swirl-center-y", &t);
 	m_EffectSwirlCenterY = scheme_real_to_double(t);
-	Interpreter::Interpret("fluxus-scratchpad-effect-swirl-rotation", &t);
+	Interpreter::Interpret(L"fluxus-scratchpad-effect-swirl-rotation", &t);
 	m_EffectSwirlRotation = scheme_real_to_double(t);
 
 	MZ_GC_UNREG();
@@ -513,14 +514,14 @@ void GLEditor::Render()
 					}
 				}
 
-				if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8 - this really needs to be done properly
+				/*if ((m_Text[n] & 0xC0) == 0xC0) // two byte utf8 - this really needs to be done properly
 				{
 					wchar_t dst[1];
 					mbstowcs(dst,&(m_Text[n]),1);
 					StrokeCharacter(dst[0], dx, dy);
 					n++;
 				}
-				else
+				else*/
 				{
 					StrokeCharacter(m_Text[n], dx, dy);
 				}
@@ -777,7 +778,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				break;
 				case GLEDITOR_TAB: // tab
 				{
-					m_Text.insert(m_Position,"    ");
+					m_Text.insert(m_Position,L"    ");
 					m_Position+=4;
 				}
 				break;
@@ -794,19 +795,24 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 					key='\n'; // fallthrough (replacement of newline)
 				default:
 					if (m_Selection)
-                                        {
-                                                m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
-                                                if (m_Position>=m_HighlightEnd)
-                                                {
-                                                        m_Position-=m_HighlightEnd-m_HighlightStart;
-                                                }
-                                                m_Selection=false;
-                                        }
+                    {
+                        m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
+                        if (m_Position>=m_HighlightEnd)
+                        {
+                            m_Position-=m_HighlightEnd-m_HighlightStart;
+                        }
+                        m_Selection=false;
+                    }
 
-					char temp[2];
-					temp[0]=(char)key;
-					temp[1]='\0';
-					m_Text.insert(m_Position,string(temp));
+                    string temp(" ");
+                    temp[0]=key;
+                    m_Text.insert(m_Position,string_to_wstring(temp));
+
+					//char temp[2];
+					//temp[0]=(char)key;
+					//temp[1]='\0';
+					//m_Text.insert(m_Position,wstring(temp));
+                    //m_Text.insert(m_Position,key);
 					m_Position++;
 					if (key=='\n' && m_Position>=m_BottomTextPosition && m_LineCount+1>=m_VisibleLines) 
 					{
@@ -851,12 +857,12 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 
 void GLEditor::ProcessTabs()
 {
-	size_t pos=m_Text.find("\t",0);
-	while (pos!=string::npos)
+	size_t pos=m_Text.find(L"\t",0);
+	while (pos!=wstring::npos)
 	{
 		m_Text.erase(pos,1);
-		m_Text.insert(pos,"    ");
-		pos=m_Text.find("\t",pos);
+		m_Text.insert(pos,L"    ");
+		pos=m_Text.find(L"\t",pos);
 	}
 }
 	
@@ -868,8 +874,8 @@ int GLEditor::OffsetToCurrentLineStart()
 
 int GLEditor::NextLineLength(int pos)
 {
-	size_t nextlinestart=m_Text.find("\n",m_Position);
-	if (nextlinestart!=string::npos)
+	size_t nextlinestart=m_Text.find(L"\n",m_Position);
+	if (nextlinestart!=wstring::npos)
 	{	
 		return LineLength(nextlinestart+1);
 	}
@@ -879,9 +885,9 @@ int GLEditor::NextLineLength(int pos)
 
 int GLEditor::PreviousLineLength(int pos)
 {
-	size_t previouslineend=string::npos;
-	if (pos>0) previouslineend=m_Text.rfind("\n",pos-1);
-	if (previouslineend!=string::npos)
+	size_t previouslineend=wstring::npos;
+	if (pos>0) previouslineend=m_Text.rfind(L"\n",pos-1);
+	if (previouslineend!=wstring::npos)
 	{	
 		return LineLength(previouslineend);
 	}
@@ -897,16 +903,16 @@ int GLEditor::LineLength(int pos)
 
 unsigned int GLEditor::LineStart(int pos)
 {
-	unsigned int linestart=string::npos;
+	unsigned int linestart=wstring::npos;
 
 	if (pos>0) 
 	{
 		// take one off if we're over a newline
-		if (m_Text[pos]=='\n') linestart=m_Text.rfind("\n",pos-1);
-		else linestart=m_Text.rfind("\n",pos);
+		if (m_Text[pos]==L'\n') linestart=m_Text.rfind(L"\n",pos-1);
+		else linestart=m_Text.rfind(L"\n",pos);
 	}
 	
-	if (linestart!=string::npos) linestart++; // move the start off the newline
+	if (linestart!=wstring::npos) linestart++; // move the start off the newline
 	else linestart=0; // if are on the first line, set the start to 0
 	
 	return linestart;
@@ -915,8 +921,8 @@ unsigned int GLEditor::LineStart(int pos)
 unsigned int GLEditor::LineEnd(int pos)
 {
 	if (m_Text.empty()) return 0;
-	size_t end = m_Text.find("\n",pos);
-	if (end==string::npos) end=m_Text.size()-1;
+	size_t end = m_Text.find(L"\n",pos);
+	if (end==wstring::npos) end=m_Text.size()-1;
 	return end;
 }
 
@@ -924,7 +930,7 @@ void GLEditor::ParseParentheses()
 {
 	// parse the parentheses
 	int type=0;
-	for (string::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
+	for (wstring::iterator i=m_OpenChars.begin(); i!=m_OpenChars.end(); i++)
 	{
 		if (m_Text[m_Position]==*i) ParseOpenParentheses(m_Position,type);
 		type++;
@@ -933,7 +939,7 @@ void GLEditor::ParseParentheses()
 	if (m_Position > 0) 
 	{
 		type=0;	
-		for (string::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
+		for (wstring::iterator i=m_CloseChars.begin(); i!=m_CloseChars.end(); i++)
 		{
 			if (m_Text[m_Position-1]==*i) 
 				ParseCloseParentheses(m_Position-1,type);
