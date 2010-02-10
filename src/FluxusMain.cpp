@@ -349,7 +349,8 @@ void FluxusMain::SaveBackupScript()
 	FILE *file=fopen(wstring_to_string(m_SaveName[m_CurrentEditor]+wstring(L"~")).c_str(),"w");
 	if (file)
 	{	
-		fwrite(wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText()).c_str(),1,m_Editor[m_CurrentEditor]->GetAllText().size(),file);	
+        string out = wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText());
+		fwrite(out.c_str(),1,out.size(),file);	
 		fclose(file);
 	}
 }
@@ -364,10 +365,7 @@ void FluxusMain::SaveScript()
 	FILE *file=fopen(wstring_to_string(m_SaveName[m_CurrentEditor]).c_str(),"w");
 	if (file)
 	{
-        wcerr<<m_Editor[m_CurrentEditor]->GetAllText()<<endl;
         string out = wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText());
-        cerr<<out<<endl;
-
 		fwrite(out.c_str(),1,out.size(),file);
 		fclose(file);
 		wcerr<<L"Saved ["<<m_SaveName[m_CurrentEditor]<<L"]"<<endl;
