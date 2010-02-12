@@ -114,7 +114,7 @@
 ;; Description:
 ;; Creates a sine wave generator node
 ;; Example:
-;; (play-now (mul (sine 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sine 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -123,7 +123,7 @@
 ;; Descrição:
 ;; Cria um nó gerador de onda sinusoidal.
 ;; Exemplo:
-;; (play-now (mul (sine 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sine 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (sine a)
@@ -135,7 +135,7 @@
 ;; Description:
 ;; Creates a saw wave generator node
 ;; Example:
-;; (play-now (mul (saw 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (saw 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -144,7 +144,7 @@
 ;; Descrição:
 ;; Cria um nó gerador de onda serrada.
 ;; Exemplo:
-;; (play-now (mul (saw 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (saw 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (saw a)
@@ -156,7 +156,7 @@
 ;; Description:
 ;; Creates a triangle wave generator node
 ;; Example:
-;; (play-now (mul (tri 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (tri 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -165,7 +165,7 @@
 ;; Descrição:
 ;; Cria um gerador de onda triangular
 ;; Exemplo:
-;; (play-now (mul (tri 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (tri 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (tri a)
@@ -177,7 +177,7 @@
 ;; Description:
 ;; Creates a square wave generator node
 ;; Example:
-;; (play-now (mul (squ 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (squ 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -186,7 +186,7 @@
 ;; Descrição:
 ;; Cria um gerador de onda quadrada.
 ;; Exemplo:
-;; (play-now (mul (squ 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (squ 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (squ a)
@@ -198,7 +198,7 @@
 ;; Description:
 ;; Creates a white noise generator node
 ;; Example:
-;; (play-now (mul (white 5) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (white 5) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -207,7 +207,7 @@
 ;; Descrição:
 ;; Cria um gerador de noise white.
 ;; Exemplo:
-;; (play-now (mul (white 5) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (white 5) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (white a)
@@ -219,7 +219,7 @@
 ;; Description:
 ;; Creates a pink noise generator node
 ;; Example:
-;; (play-now (mul (pink 5) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (pink 5) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -228,7 +228,7 @@
 ;; Descrição:
 ;; Cria um gerador de pink white.
 ;; Exemplo:
-;; (play-now (mul (pink 5) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (pink 5) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (pink a)
@@ -240,7 +240,7 @@
 ;; Description:
 ;; Maths node - adds two signals together
 ;; Example:
-;; (play-now (mul (add (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (add (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -249,7 +249,7 @@
 ;; Descrição:
 ;; Nó matemático - adiciona dois sinais.
 ;; Exemplo:
-;; (play-now (mul (add (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (add (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (add a b)
@@ -261,7 +261,7 @@
 ;; Description:
 ;; Maths node - subtracts two signals
 ;; Example:
-;; (play-now (mul (sub (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sub (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -270,7 +270,7 @@
 ;; Descrição:
 ;; Nó matemático - subtrai dois sinais.
 ;; Exemplo:
-;; (play-now (mul (sub (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sub (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (sub a b)
@@ -282,7 +282,7 @@
 ;; Description:
 ;; Maths node - multiplies two signals
 ;; Example:
-;; (play-now (mul (mul (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mul (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -291,7 +291,7 @@
 ;; Descrição:
 ;; Nó matemático - multiplica dois sinais.
 ;; Exemplo:
-;; (play-now (mul (mul (sine 440) (sine 220)) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mul (sine 440) (sine 220)) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (mul a b)
@@ -303,7 +303,7 @@
 ;; Description:
 ;; Maths node - divides two signals
 ;; Example:
-;; (play-now (mul (div (sine 440) 2) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (div (sine 440) 2) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -312,7 +312,7 @@
 ;; Descrição:
 ;; Nó matemático - divide dois sinais.
 ;; Exemplo:
-;; (play-now (mul (div (sine 440) 2) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (div (sine 440) 2) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (div a b)
@@ -345,7 +345,7 @@
 ;; Description:
 ;; Creates an envelope generator node
 ;; Example:
-;; (play-now (mul (sine 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sine 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -354,7 +354,7 @@
 ;; Descrição:
 ;; Cria um nó gerador de envelope.
 ;; Exemplo:
-;; (play-now (mul (sine 440) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (sine 440) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (adsr a d s r)
@@ -366,7 +366,7 @@
 ;; Description:
 ;; Creates an low pass moog filter node
 ;; Example:
-;; (play-now (mul (mooglp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mooglp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -375,7 +375,7 @@
 ;; Descrição:
 ;; Cria um nó filtro low pass moog
 ;; Exemplo:
-;; (play-now (mul (mooglp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mooglp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (mooglp in cutoff resonance)
@@ -387,7 +387,7 @@
 ;; Description:
 ;; Creates an band pass moog filter node
 ;; Example:
-;; (play-now (mul (moogbp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (moogbp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -396,7 +396,7 @@
 ;; Descrição:
 ;; Cria um nó filtro band pass moog.
 ;; Exemplo:
-;; (play-now (mul (moogbp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (moogbp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (moogbp in cutoff resonance)
@@ -408,7 +408,7 @@
 ;; Description:
 ;; Creates an high pass moog filter node
 ;; Example:
-;; (play-now (mul (mooghp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mooghp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -417,7 +417,7 @@
 ;; Descrição:
 ;; Cria um filtro high pass moog.
 ;; Exemplo:
-;; (play-now (mul (mooghp (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (mooghp (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (mooghp in cutoff resonance)
@@ -429,7 +429,7 @@
 ;; Description:
 ;; Creates a formant filter node
 ;; Example:
-;; (play-now (mul (formant (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (formant (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
@@ -438,7 +438,7 @@
 ;; Descrição:
 ;; Cria um nó filtro formant
 ;; Exemplo:
-;; (play-now (mul (formant (squ 440) 0.1 0.4) (asdr 0.1 0.1 0 0)))
+;; (play-now (mul (formant (squ 440) 0.1 0.4) (adsr 0.1 0.1 0 0)))
 ;; EndFunctionDoc
 
 (define (formant in cutoff resonance)
