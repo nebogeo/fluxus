@@ -522,7 +522,7 @@ void GLEditor::Render()
 					n++;
 				}
 				else*/
-				{
+				{                    
 					StrokeCharacter(m_Text[n], dx, dy);
 				}
 				BBExpand(xpos,ypos);
@@ -802,17 +802,28 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
                             m_Position-=m_HighlightEnd-m_HighlightStart;
                         }
                         m_Selection=false;
-                    }
+                    }                                       
 
-                    string temp(" ");
-                    temp[0]=key;
-                    m_Text.insert(m_Position,string_to_wstring(temp));
+                    if (key<0x80)
+                    {
+                        string temp(" ");
+                        temp[0]=key;
+                        m_Text.insert(m_Position,string_to_wstring(temp));
+                    }
+                    else
+                    {
+                        wchar_t k[2];
+                        memset(&k,0,sizeof(wchar_t)*2);
+                        k[0]=key;
+                        m_Text.insert(m_Position,wstring(k));
+                    }
 
 					//char temp[2];
 					//temp[0]=(char)key;
 					//temp[1]='\0';
 					//m_Text.insert(m_Position,wstring(temp));
                     //m_Text.insert(m_Position,key);
+
 					m_Position++;
 					if (key=='\n' && m_Position>=m_BottomTextPosition && m_LineCount+1>=m_VisibleLines) 
 					{

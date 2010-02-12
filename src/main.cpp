@@ -52,14 +52,26 @@ void ReshapeCallback(int width, int height)
 	Interpreter::Interpret(code);
 }
 
+void print_bin(unsigned char v)
+{
+    for (int i=0; i<8; i++)
+    {
+        if (v>>i&0x01) cerr<<"1";
+        else cerr<<"0";
+    }
+    cerr<<endl;
+}
+
 void KeyboardCallback(unsigned char key,int x, int y)
 {
+    // cerr<<(unsigned int)key<<endl;
 	int mod=modifiers;
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
 		app->Handle(key, -1, -1, -1, x, y, mod);
 	wchar_t code[256];
-	if (key > 0) { // key is 0 on ctrl+2
+	if (key > 0 && key<0x80)  
+    { // key is 0 on ctrl+2 and ignore extended ascii for the time being
 		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
 		Interpreter::Interpret(code);
 	}
@@ -69,7 +81,8 @@ void KeyboardCallback(unsigned char key,int x, int y)
 void KeyboardUpCallback(unsigned char key,int x, int y)
 {
 	wchar_t code[256];
-	if (key > 0) { // key is 0 on ctrl+2
+	if (key > 0 && key<0x80) 
+    { // key is 0 on ctrl+2
 		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
 		Interpreter::Interpret(code);
 	}
