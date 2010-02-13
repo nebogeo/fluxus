@@ -1,7 +1,7 @@
 ; missile command - requires glsl support
 ; click mouse to lauch missiles
 
-(require fluxus-016/fluxa)
+(require fluxus-017/fluxa)
 
 ; use this to create livecoded abstract machinima,
 ; by hacking it in live performances...

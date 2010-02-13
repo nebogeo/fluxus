@@ -1,8 +1,8 @@
 ;; fluxus-artkp example
 ;; detecting simple id-based markers
 
-(require fluxus-016/fluxus-video)
-(require fluxus-016/fluxus-artkp)
+(require fluxus-017/fluxus-video)
+(require fluxus-017/fluxus-artkp)
 
 (clear)
 (camera-clear-cache)

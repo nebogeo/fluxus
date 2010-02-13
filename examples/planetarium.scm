@@ -1,7 +1,7 @@
 ; The test script I used for projection at the Plymouth 
 ; University Immersive Vision Theatre
 
-(require fluxus-016/planetarium)
+(require fluxus-017/planetarium)
 
 (clear)
 
