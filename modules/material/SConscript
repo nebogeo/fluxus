@@ -67,7 +67,8 @@ Meshes =      ["meshes/bot.obj",
 
 Samples =      ["samples/sample.wav"]
 
-Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf"]
+Fonts =      ["fonts/Bitstream-Vera-Sans-Mono.ttf",
+			  "fonts/DejaVuSansMono.ttf"]
 
 InstallShaders = DataInstall+"/material/shaders"
 InstallTextures = DataInstall+"/material/textures"

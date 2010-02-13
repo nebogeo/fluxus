@@ -39,7 +39,7 @@
 
 ; set the font for the scratchpad
 (define fluxus-scratchpad-font
-  (string-append fluxus-data-location "/material/fonts/Bitstream-Vera-Sans-Mono.ttf"))
+  (string-append fluxus-data-location "/material/fonts/DejaVuSansMono.ttf"))
 
 ; the scratchpad autofocus settings
 (define fluxus-scratchpad-do-autofocus 1)
