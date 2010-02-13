@@ -195,11 +195,20 @@ void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
 									 atof(tokens[2].c_str()),
 									 atof(tokens[3].c_str())));
 		}
-		else if ((tokens[0] == "vt") && (tokens.size() == 4))
+		else if (tokens[0] == "vt")
 		{
-			textures.push_back(dVector(atof(tokens[1].c_str()),
-									 atof(tokens[2].c_str()),
-									 atof(tokens[3].c_str())));
+			if (tokens.size() == 4)
+			{
+				textures.push_back(dVector(atof(tokens[1].c_str()),
+										 atof(tokens[2].c_str()),
+										 atof(tokens[3].c_str())));
+			}
+			else if (tokens.size() == 3)
+			{
+				textures.push_back(dVector(atof(tokens[1].c_str()),
+										 atof(tokens[2].c_str()),
+										 0));
+			}
 		}
 		else if ((tokens[0] == "vn") && (tokens.size() == 4))
 		{
