@@ -122,7 +122,8 @@ m_Height(0),
 m_Delta(0.0f),
 m_Flash(0.0f),
 m_BlowupCursor(false),
-m_Blowup(0.0f)
+m_Blowup(0.0f),
+m_FirstUTF8Byte(0)
 {
 	assert(m_PolyGlyph!=NULL);
 
@@ -620,6 +621,12 @@ void GLEditor::Render()
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
 {
+    if (key>0x80)
+    {
+        m_FirstUTF8Byte=key;
+        return;
+    }
+
 	unsigned int startpos=m_Position;
 
 	if (special!=0)
@@ -804,18 +811,29 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
                         m_Selection=false;
                     }                                       
 
-                    if (key<0x80)
+                    if (m_FirstUTF8Byte)
                     {
-                        string temp(" ");
-                        temp[0]=key;
+                        string temp("  ");
+                        temp[0]=m_FirstUTF8Byte;
+                        temp[1]=key;
                         m_Text.insert(m_Position,string_to_wstring(temp));
+                        m_FirstUTF8Byte=0;
                     }
                     else
                     {
-                        wchar_t k[2];
-                        memset(&k,0,sizeof(wchar_t)*2);
-                        k[0]=key;
-                        m_Text.insert(m_Position,wstring(k));
+                        if (key<0x80)
+                        {
+                            string temp(" ");
+                            temp[0]=key;
+                            m_Text.insert(m_Position,string_to_wstring(temp));
+                        }
+                        else
+                        {
+                            wchar_t k[2];
+                            memset(&k,0,sizeof(wchar_t)*2);
+                            k[0]=key;
+                            m_Text.insert(m_Position,wstring(k));
+                        }
                     }
 
 					//char temp[2];

@@ -170,6 +170,7 @@ protected:
 	float m_Flash;
 	bool m_BlowupCursor;
 	float m_Blowup;
+    char m_FirstUTF8Byte;
 
 };
 
