@@ -1,7 +1,7 @@
 #lang scheme
 ; planetarium.ss
 
-(require fluxus-016/fluxus)
+(require fluxus)
 (provide 
   dome-pixels
   dome-set-camera-transform 

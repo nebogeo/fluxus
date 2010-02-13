@@ -9,7 +9,7 @@
 import os, sys, commands
 
 MajorVersion = "0"
-MinorVersion = "16"
+MinorVersion = "17"
 FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
 Target = "fluxus"

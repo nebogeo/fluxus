@@ -994,7 +994,7 @@ Scheme_Object *build_amotorjoint(int argc, Scheme_Object **argv)
 //         (build-cube)))
 // (active-box shape2)
 // 
-// (define j (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 1 0 0)))
+// (define j (build-hinge2joint shape1 shape2 (vector 0 0 0) (vector 1 0 0) (vector 0 1 0)))
 // (joint-param j "Vel2" 0.1)
 // (joint-param j "FMax2" 0.2)
 // (joint-param j "LoStop" -0.75)

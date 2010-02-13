@@ -8,7 +8,7 @@
 ;; used together to create more complicated sounds. It uses an experimental and fairly brutal method of graph node
 ;; garbage collection which gives it certain non-deterministic qualities. It's also been battle tested in
 ;; many a live performance. The fluxa server needs to be run and connected to jack in order for you to hear
-;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-016/fluxa).
+;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-017/fluxa).
 ;; Example:
 ;; EndSectionDoc
 #lang scheme/base
