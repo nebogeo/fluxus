@@ -64,7 +64,14 @@ void print_bin(unsigned char v)
 
 void KeyboardCallback(unsigned char key,int x, int y)
 {
-    // cerr<<(unsigned int)key<<endl;
+    // multibyte characters seem broken on linux?
+    #ifndef __APPLE__
+    if (key>0x80)
+    {
+        return;
+    }
+    #endif
+
 	int mod=modifiers;
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))

@@ -621,6 +621,7 @@ void GLEditor::Render()
 
 void GLEditor::Handle(int button, int key, int special, int state, int x, int y, int mod)
 {
+    // build a two byte character - todo: what happens if it's 3 or 4 bytes?
     if (key>0x80 && m_FirstUTF8Byte==0)
     {
         m_FirstUTF8Byte=key;
