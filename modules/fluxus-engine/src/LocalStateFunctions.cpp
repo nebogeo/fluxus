@@ -79,10 +79,10 @@ using namespace Fluxus;
 
 Scheme_Object *push(int argc, Scheme_Object **argv)
 {
-  // record the push on the grabstack too - this means we can combine them
-  Engine::Get()->PushGrab(0);
-    Engine::Get()->Renderer()->PushState();
-    return scheme_void;
+	// record the push on the grabstack too - this means we can combine them
+	Engine::Get()->PushGrab(0);
+	Engine::Get()->Renderer()->PushState();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -121,9 +121,9 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 
 Scheme_Object *pop(int argc, Scheme_Object **argv)
 {
-  Engine::Get()->PopGrab();
-    Engine::Get()->Renderer()->PopState();
-    return scheme_void;
+	Engine::Get()->PopGrab();
+	Engine::Get()->Renderer()->PopState();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -162,11 +162,11 @@ Scheme_Object *pop(int argc, Scheme_Object **argv)
 
 Scheme_Object *grab(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("grab", "i", argc, argv);
-  Engine::Get()->PushGrab(IntFromScheme(argv[0]));
-  MZ_GC_UNREG();
-  return scheme_void;
+	DECL_ARGV();
+	ArgCheck("grab", "i", argc, argv);
+	Engine::Get()->PushGrab(IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -200,8 +200,8 @@ Scheme_Object *grab(int argc, Scheme_Object **argv)
 
 Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 {
-  Engine::Get()->PopGrab();
-  return scheme_void;
+	Engine::Get()->PopGrab();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -231,21 +231,21 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 
 Scheme_Object *apply(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  if (argc==1)
-  {
-    ArgCheck("apply-transform", "i", argc, argv);
-    Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
-  }
-  else
-  {
-    if (Engine::Get()->Grabbed())
-    {
-      Engine::Get()->Grabbed()->ApplyTransform();
-    }
-  }
-  MZ_GC_UNREG();
-  return scheme_void;
+	DECL_ARGV();
+	if (argc==1)
+	{
+		ArgCheck("apply-transform", "i", argc, argv);
+		Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]))->ApplyTransform();
+	}
+	else
+	{
+		if (Engine::Get()->Grabbed())
+		{
+			Engine::Get()->Grabbed()->ApplyTransform();
+		}
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -271,11 +271,11 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 
 Scheme_Object *opacity(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("opacity", "f", argc, argv);
-    Engine::Get()->State()->Opacity=FloatFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("opacity", "f", argc, argv);
+	Engine::Get()->State()->Opacity=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -308,15 +308,15 @@ Scheme_Object *opacity(int argc, Scheme_Object **argv)
 // (build-cube) ; makes a half transparent wireframe cube
 // EndFunctionDoc
 
-
 Scheme_Object *wire_opacity(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("wire-opacity", "f", argc, argv);
-    Engine::Get()->State()->WireOpacity=FloatFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("wire-opacity", "f", argc, argv);
+	Engine::Get()->State()->WireOpacity=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
+
 // StartFunctionDoc-en
 // shinyness value
 // Returns: void
@@ -344,11 +344,11 @@ Scheme_Object *wire_opacity(int argc, Scheme_Object **argv)
 
 Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("shinyness", "f", argc, argv);
-    Engine::Get()->State()->Shinyness=FloatFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("shinyness", "f", argc, argv);
+	Engine::Get()->State()->Shinyness=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -373,12 +373,12 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 
 Scheme_Object *colour(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("colour", "c", argc, argv);
-  dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
-  Engine::Get()->State()->Colour=c;
-  MZ_GC_UNREG();
-  return scheme_void;
+	DECL_ARGV();
+	ArgCheck("colour", "c", argc, argv);
+	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+	Engine::Get()->State()->Colour=c;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -417,16 +417,16 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
 
 Scheme_Object *colour_mode(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("colour-mode", "S", argc, argv);
-  string mode=SymbolName(argv[0]);
+	DECL_ARGV();
+	ArgCheck("colour-mode", "S", argc, argv);
+	string mode=SymbolName(argv[0]);
 
-  if (mode=="rgb") Engine::Get()->State()->ColourMode=MODE_RGB;
-  else if (mode=="hsv") Engine::Get()->State()->ColourMode=MODE_HSV;
-  else Trace::Stream<<"colour mode not recognised: "<<mode<<endl;
+	if (mode=="rgb") Engine::Get()->State()->ColourMode=MODE_RGB;
+	else if (mode=="hsv") Engine::Get()->State()->ColourMode=MODE_HSV;
+	else Trace::Stream<<"colour mode not recognised: "<<mode<<endl;
 
-  MZ_GC_UNREG();
-  return scheme_void;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -449,15 +449,15 @@ Scheme_Object *colour_mode(int argc, Scheme_Object **argv)
 
 Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("rgb->hsv", "v", argc, argv);
-  float rgb[4], hsv[4];
-  int vec_size = SCHEME_VEC_SIZE(argv[0]);
-  FloatsFromScheme(argv[0], rgb, vec_size);
-  dColour::RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
-  hsv[3] = rgb[3];
-  MZ_GC_UNREG();
-  return FloatsToScheme(hsv, vec_size);
+	DECL_ARGV();
+	ArgCheck("rgb->hsv", "v", argc, argv);
+	float rgb[4], hsv[4];
+	int vec_size = SCHEME_VEC_SIZE(argv[0]);
+	FloatsFromScheme(argv[0], rgb, vec_size);
+	dColour::RGBtoHSV(rgb[0], rgb[1], rgb[2], hsv);
+	hsv[3] = rgb[3];
+	MZ_GC_UNREG();
+	return FloatsToScheme(hsv, vec_size);
 }
 
 // StartFunctionDoc-en
@@ -492,15 +492,15 @@ Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
 
 Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("hsv->rgb", "v", argc, argv);
-  float hsv[4], rgb[4];
-  int vec_size = SCHEME_VEC_SIZE(argv[0]);
-  FloatsFromScheme(argv[0], hsv, vec_size);
-  dColour::HSVtoRGB(hsv[0], hsv[1], hsv[2], rgb);
-  rgb[3] = hsv[3];
-  MZ_GC_UNREG();
-  return FloatsToScheme(rgb, vec_size);
+	DECL_ARGV();
+	ArgCheck("hsv->rgb", "v", argc, argv);
+	float hsv[4], rgb[4];
+	int vec_size = SCHEME_VEC_SIZE(argv[0]);
+	FloatsFromScheme(argv[0], hsv, vec_size);
+	dColour::HSVtoRGB(hsv[0], hsv[1], hsv[2], rgb);
+	rgb[3] = hsv[3];
+	MZ_GC_UNREG();
+	return FloatsToScheme(rgb, vec_size);
 }
 
 // StartFunctionDoc-en
@@ -530,12 +530,34 @@ Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 
 Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("wire-colour", "c", argc, argv);
-  dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
-  Engine::Get()->State()->WireColour=c;
-  MZ_GC_UNREG();
-  return scheme_void;
+	DECL_ARGV();
+	ArgCheck("wire-colour", "c", argc, argv);
+	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+	Engine::Get()->State()->WireColour=c;
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// normals-colour colour-vector
+// Returns: void
+// Description:
+// Sets the normals frame colour of the current drawing state, or the current
+// primitive. Visible with (hint-normal) on most primitives.
+// Example:
+// (normals-colour (vector 1 1 0)) ; set yellow as current normals colour
+// (hint-normal)
+// (define mycube (build-cube)) ; makes a cube with yellow wireframe
+// EndFunctionDoc
+
+Scheme_Object *normals_colour(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("normals-colour", "c", argc, argv);
+	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
+	Engine::Get()->State()->NormalsColour=c;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -562,11 +584,11 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 
 Scheme_Object *specular(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("specular", "c", argc, argv);
-    Engine::Get()->State()->Specular=ColourFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("specular", "c", argc, argv);
+	Engine::Get()->State()->Specular=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -593,11 +615,11 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
 
 Scheme_Object *ambient(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("ambient", "c", argc, argv);
-    Engine::Get()->State()->Ambient=ColourFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("ambient", "c", argc, argv);
+	Engine::Get()->State()->Ambient=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -624,11 +646,11 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
 
 Scheme_Object *emissive(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("emissive", "c", argc, argv);
-    Engine::Get()->State()->Emissive=ColourFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("emissive", "c", argc, argv);
+	Engine::Get()->State()->Emissive=ColourFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -663,8 +685,8 @@ Scheme_Object *emissive(int argc, Scheme_Object **argv)
 
 Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
 {
-    Engine::Get()->State()->Transform.init();
-    return scheme_void;
+	Engine::Get()->State()->Transform.init();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -692,13 +714,13 @@ Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
 
 Scheme_Object *concat(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("concat", "m", argc, argv);
-  dMatrix m;
-  FloatsFromScheme(argv[0],m.arr(),16);
-    Engine::Get()->State()->Transform*=m;
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("concat", "m", argc, argv);
+	dMatrix m;
+	FloatsFromScheme(argv[0],m.arr(),16);
+	Engine::Get()->State()->Transform*=m;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2940,71 +2962,72 @@ Scheme_Object *texture_params(int argc, Scheme_Object **argv)
 
 void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 {
-  MZ_GC_DECL_REG(1);
-  MZ_GC_VAR_IN_REG(0, env);
-  MZ_GC_REG();
-  // renderstate operations
-  scheme_add_global("push",scheme_make_prim_w_arity(push,"push",0,0), env);
-  scheme_add_global("pop",scheme_make_prim_w_arity(pop,"pop",0,0), env);
-  scheme_add_global("grab",scheme_make_prim_w_arity(grab,"grab",1,1), env);
-    scheme_add_global("ungrab",scheme_make_prim_w_arity(ungrab,"ungrab",0,0), env);
-    scheme_add_global("print-scene-graph",scheme_make_prim_w_arity(print_scene_graph,"print-scene-graph",0,0), env);
-  scheme_add_global("apply-transform",scheme_make_prim_w_arity(apply,"apply",0,1), env);
-  scheme_add_global("identity",scheme_make_prim_w_arity(flux_identity,"identity",0,0), env);
-  scheme_add_global("concat",scheme_make_prim_w_arity(concat,"concat",1,1), env);
-    scheme_add_global("translate",scheme_make_prim_w_arity(translate,"translate",1,1), env);
-    scheme_add_global("rotate",scheme_make_prim_w_arity(rotate,"rotate",1,1), env);
-    scheme_add_global("scale",scheme_make_prim_w_arity(scale,"scale",1,1), env);
-  scheme_add_global("get-transform", scheme_make_prim_w_arity(get_transform, "get-transform", 0, 0), env);
-  scheme_add_global("get-global-transform", scheme_make_prim_w_arity(get_global_transform, "get-global-transform", 0, 0), env);
-    scheme_add_global("colour",scheme_make_prim_w_arity(colour,"colour",1,1), env);
-    scheme_add_global("rgb->hsv",scheme_make_prim_w_arity(rgbtohsv,"rgb->hsv",1,1), env);
-    scheme_add_global("hsv->rgb",scheme_make_prim_w_arity(hsvtorgb,"hsv->rgb",1,1), env);
-    scheme_add_global("colour-mode",scheme_make_prim_w_arity(colour_mode,"colour-mode",1,1), env);
-    scheme_add_global("wire-colour",scheme_make_prim_w_arity(wire_colour,"wire-colour",1,1), env);
-    scheme_add_global("opacity",scheme_make_prim_w_arity(opacity,"opacity",1,1), env);
-    scheme_add_global("wire-opacity",scheme_make_prim_w_arity(wire_opacity,"wire-opacity",1,1), env);
-    scheme_add_global("specular",scheme_make_prim_w_arity(specular,"specular",1,1), env);
-    scheme_add_global("ambient",scheme_make_prim_w_arity(ambient,"ambient",1,1), env);
-    scheme_add_global("emissive",scheme_make_prim_w_arity(emissive,"emissive",1,1), env);
-  scheme_add_global("shinyness",scheme_make_prim_w_arity(shinyness,"shinyness",1,1), env);
-  scheme_add_global("texture",scheme_make_prim_w_arity(texture,"texture",1,1), env);
-  scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
-    scheme_add_global("hint-solid",scheme_make_prim_w_arity(hint_solid,"hint-solid",0,0), env);
-    scheme_add_global("hint-wire",scheme_make_prim_w_arity(hint_wire,"hint-wire",0,0), env);
-    scheme_add_global("hint-wire-stippled",scheme_make_prim_w_arity(hint_wire_stippled,"hint-wire-stippled",0,0), env);
-    scheme_add_global("hint-normal",scheme_make_prim_w_arity(hint_normal,"hint-normal",0,0), env);
-    scheme_add_global("hint-points",scheme_make_prim_w_arity(hint_points,"hint-points",0,0), env);
-    scheme_add_global("hint-anti-alias",scheme_make_prim_w_arity(hint_anti_alias,"hint-anti-alias",0,0), env);
-    scheme_add_global("hint-none",scheme_make_prim_w_arity(hint_none,"hint-none",0,0), env);
-    scheme_add_global("hint-unlit",scheme_make_prim_w_arity(hint_unlit,"hint-unlit",0,0), env);
-    scheme_add_global("hint-vertcols",scheme_make_prim_w_arity(hint_vertcols,"hint-vertcols",0,0), env);
-    scheme_add_global("hint-box",scheme_make_prim_w_arity(hint_box,"hint-box",0,0), env);
-    scheme_add_global("hint-origin",scheme_make_prim_w_arity(hint_origin,"hint-origin",0,0), env);
-    scheme_add_global("hint-cast-shadow",scheme_make_prim_w_arity(hint_cast_shadow,"hint-cast-shadow",0,0), env);
-    scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
-    scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
-    scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
-    scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
-    scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
-    scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
-    scheme_add_global("hint-normalize",scheme_make_prim_w_arity(hint_normalize,"hint-normalize",0,0), env);
-    scheme_add_global("hint-noblend",scheme_make_prim_w_arity(hint_noblend,"hint-noblend",0,0), env);
-    scheme_add_global("hint-nozwrite",scheme_make_prim_w_arity(hint_nozwrite,"hint-nozwrite",0,0), env);
-  scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
-  scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
-  scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
-  scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
-    scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
-    scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
-  scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
-  scheme_add_global("camera-hide",scheme_make_prim_w_arity(camera_hide,"camera-hide",1,1), env);
-  scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
-  scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
-  scheme_add_global("shader-source",scheme_make_prim_w_arity(shader_source,"shader-source",2,2), env);
-  scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
-  scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
-  scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
-  scheme_add_global("backfacecull",scheme_make_prim_w_arity(backfacecull,"backfacecull",1,1), env);
-  MZ_GC_UNREG();
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
+	// renderstate operations
+	scheme_add_global("push",scheme_make_prim_w_arity(push,"push",0,0), env);
+	scheme_add_global("pop",scheme_make_prim_w_arity(pop,"pop",0,0), env);
+	scheme_add_global("grab",scheme_make_prim_w_arity(grab,"grab",1,1), env);
+	scheme_add_global("ungrab",scheme_make_prim_w_arity(ungrab,"ungrab",0,0), env);
+	scheme_add_global("print-scene-graph",scheme_make_prim_w_arity(print_scene_graph,"print-scene-graph",0,0), env);
+	scheme_add_global("apply-transform",scheme_make_prim_w_arity(apply,"apply",0,1), env);
+	scheme_add_global("identity",scheme_make_prim_w_arity(flux_identity,"identity",0,0), env);
+	scheme_add_global("concat",scheme_make_prim_w_arity(concat,"concat",1,1), env);
+	scheme_add_global("translate",scheme_make_prim_w_arity(translate,"translate",1,1), env);
+	scheme_add_global("rotate",scheme_make_prim_w_arity(rotate,"rotate",1,1), env);
+	scheme_add_global("scale",scheme_make_prim_w_arity(scale,"scale",1,1), env);
+	scheme_add_global("get-transform", scheme_make_prim_w_arity(get_transform, "get-transform", 0, 0), env);
+	scheme_add_global("get-global-transform", scheme_make_prim_w_arity(get_global_transform, "get-global-transform", 0, 0), env);
+	scheme_add_global("colour",scheme_make_prim_w_arity(colour,"colour",1,1), env);
+	scheme_add_global("rgb->hsv",scheme_make_prim_w_arity(rgbtohsv,"rgb->hsv",1,1), env);
+	scheme_add_global("hsv->rgb",scheme_make_prim_w_arity(hsvtorgb,"hsv->rgb",1,1), env);
+	scheme_add_global("colour-mode",scheme_make_prim_w_arity(colour_mode,"colour-mode",1,1), env);
+	scheme_add_global("wire-colour",scheme_make_prim_w_arity(wire_colour,"wire-colour",1,1), env);
+	scheme_add_global("normals-colour",scheme_make_prim_w_arity(normals_colour,"normals-colour",1,1), env);
+	scheme_add_global("opacity",scheme_make_prim_w_arity(opacity,"opacity",1,1), env);
+	scheme_add_global("wire-opacity",scheme_make_prim_w_arity(wire_opacity,"wire-opacity",1,1), env);
+	scheme_add_global("specular",scheme_make_prim_w_arity(specular,"specular",1,1), env);
+	scheme_add_global("ambient",scheme_make_prim_w_arity(ambient,"ambient",1,1), env);
+	scheme_add_global("emissive",scheme_make_prim_w_arity(emissive,"emissive",1,1), env);
+	scheme_add_global("shinyness",scheme_make_prim_w_arity(shinyness,"shinyness",1,1), env);
+	scheme_add_global("texture",scheme_make_prim_w_arity(texture,"texture",1,1), env);
+	scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
+	scheme_add_global("hint-solid",scheme_make_prim_w_arity(hint_solid,"hint-solid",0,0), env);
+	scheme_add_global("hint-wire",scheme_make_prim_w_arity(hint_wire,"hint-wire",0,0), env);
+	scheme_add_global("hint-wire-stippled",scheme_make_prim_w_arity(hint_wire_stippled,"hint-wire-stippled",0,0), env);
+	scheme_add_global("hint-normal",scheme_make_prim_w_arity(hint_normal,"hint-normal",0,0), env);
+	scheme_add_global("hint-points",scheme_make_prim_w_arity(hint_points,"hint-points",0,0), env);
+	scheme_add_global("hint-anti-alias",scheme_make_prim_w_arity(hint_anti_alias,"hint-anti-alias",0,0), env);
+	scheme_add_global("hint-none",scheme_make_prim_w_arity(hint_none,"hint-none",0,0), env);
+	scheme_add_global("hint-unlit",scheme_make_prim_w_arity(hint_unlit,"hint-unlit",0,0), env);
+	scheme_add_global("hint-vertcols",scheme_make_prim_w_arity(hint_vertcols,"hint-vertcols",0,0), env);
+	scheme_add_global("hint-box",scheme_make_prim_w_arity(hint_box,"hint-box",0,0), env);
+	scheme_add_global("hint-origin",scheme_make_prim_w_arity(hint_origin,"hint-origin",0,0), env);
+	scheme_add_global("hint-cast-shadow",scheme_make_prim_w_arity(hint_cast_shadow,"hint-cast-shadow",0,0), env);
+	scheme_add_global("hint-ignore-depth",scheme_make_prim_w_arity(hint_ignore_depth,"hint-ignore-depth",0,0), env);
+	scheme_add_global("hint-depth-sort",scheme_make_prim_w_arity(hint_depth_sort,"hint-depth-sort",0,0), env);
+	scheme_add_global("hint-lazy-parent",scheme_make_prim_w_arity(hint_lazy_parent,"hint-lazy-parent",0,0), env);
+	scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
+	scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
+	scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
+	scheme_add_global("hint-normalize",scheme_make_prim_w_arity(hint_normalize,"hint-normalize",0,0), env);
+	scheme_add_global("hint-noblend",scheme_make_prim_w_arity(hint_noblend,"hint-noblend",0,0), env);
+	scheme_add_global("hint-nozwrite",scheme_make_prim_w_arity(hint_nozwrite,"hint-nozwrite",0,0), env);
+	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);
+	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
+	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
+	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
+	scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
+	scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
+	scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
+	scheme_add_global("camera-hide",scheme_make_prim_w_arity(camera_hide,"camera-hide",1,1), env);
+	scheme_add_global("selectable",scheme_make_prim_w_arity(selectable,"selectable",1,1), env);
+	scheme_add_global("shader",scheme_make_prim_w_arity(shader,"shader",2,2), env);
+	scheme_add_global("shader-source",scheme_make_prim_w_arity(shader_source,"shader-source",2,2), env);
+	scheme_add_global("clear-shader-cache",scheme_make_prim_w_arity(clear_shader_cache,"clear-shader-cache",0,0), env);
+	scheme_add_global("shader-set!",scheme_make_prim_w_arity(shader_set,"shader-set!",1,1), env);
+	scheme_add_global("texture-params",scheme_make_prim_w_arity(texture_params,"texture-params",2,2), env);
+	scheme_add_global("backfacecull",scheme_make_prim_w_arity(backfacecull,"backfacecull",1,1), env);
+	MZ_GC_UNREG();
 }

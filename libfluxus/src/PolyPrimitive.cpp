@@ -120,7 +120,7 @@ void PolyPrimitive::Render()
 
 	if (m_State.Hints & HINT_NORMAL)
 	{
-		glColor3f(1,0,0);
+		glColor4fv(m_State.NormalsColour.arr());
 		glDisable(GL_LIGHTING);
 		glBegin(GL_LINES);
 		for (unsigned int i=0; i<m_VertData->size(); i++)
