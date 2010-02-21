@@ -539,23 +539,23 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// normals-colour colour-vector
+// normal-colour colour-vector
 // Returns: void
 // Description:
 // Sets the normals frame colour of the current drawing state, or the current
 // primitive. Visible with (hint-normal) on most primitives.
 // Example:
-// (normals-colour (vector 1 1 0)) ; set yellow as current normals colour
+// (normal-colour (vector 1 1 0)) ; set yellow as current normals colour
 // (hint-normal)
 // (define mycube (build-cube)) ; makes a cube with yellow wireframe
 // EndFunctionDoc
 
-Scheme_Object *normals_colour(int argc, Scheme_Object **argv)
+Scheme_Object *normal_colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("normals-colour", "c", argc, argv);
+	ArgCheck("normal-colour", "c", argc, argv);
 	dColour c=ColourFromScheme(argv[0], Engine::Get()->State()->ColourMode);
-	Engine::Get()->State()->NormalsColour=c;
+	Engine::Get()->State()->NormalColour=c;
 	MZ_GC_UNREG();
 	return scheme_void;
 }
@@ -2984,7 +2984,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("hsv->rgb",scheme_make_prim_w_arity(hsvtorgb,"hsv->rgb",1,1), env);
 	scheme_add_global("colour-mode",scheme_make_prim_w_arity(colour_mode,"colour-mode",1,1), env);
 	scheme_add_global("wire-colour",scheme_make_prim_w_arity(wire_colour,"wire-colour",1,1), env);
-	scheme_add_global("normals-colour",scheme_make_prim_w_arity(normals_colour,"normals-colour",1,1), env);
+	scheme_add_global("normal-colour",scheme_make_prim_w_arity(normal_colour,"normal-colour",1,1), env);
 	scheme_add_global("opacity",scheme_make_prim_w_arity(opacity,"opacity",1,1), env);
 	scheme_add_global("wire-opacity",scheme_make_prim_w_arity(wire_opacity,"wire-opacity",1,1), env);
 	scheme_add_global("specular",scheme_make_prim_w_arity(specular,"specular",1,1), env);

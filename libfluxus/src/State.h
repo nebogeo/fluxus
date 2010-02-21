@@ -90,7 +90,7 @@ public:
 	int SourceBlend;
 	int DestinationBlend;
 	dColour WireColour;
-    dColour NormalsColour;
+    dColour NormalColour;
 	float WireOpacity;
 	COLOUR_MODE ColourMode;
 	dMatrix Transform;
