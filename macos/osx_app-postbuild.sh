@@ -2,7 +2,7 @@
 import os, re
 
 MajorVersion = "0"
-MinorVersion = "16"
+MinorVersion = "17"
 FluxusVersion = MajorVersion+MinorVersion
 
 FluxusBundleDir = 'Fluxus.app'

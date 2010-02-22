@@ -15,6 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include <iostream>
+
 #include "Interpreter.h"
 #include "Repl.h"
 #include "Unicode.h"
@@ -136,7 +137,7 @@ void Interpreter::Initialise()
 	#endif
 	#endif
 
-	PLTCollects=wstring(cwd)+string("/collects");
+	PLTCollects=string(cwd)+string("/collects");
 	FluxusCollects=PLTCollects;
 	DataLocation=cwd;
 #endif
