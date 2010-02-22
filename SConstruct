@@ -77,6 +77,8 @@ IncludePaths = [
 ################################################################################
 # Make the "one" environment for building and installing
 
+paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconversion -Wredundant-decls -Wunreachable-code -Winline -Wlarger-than-256'
+
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
 
