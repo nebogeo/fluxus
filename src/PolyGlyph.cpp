@@ -15,7 +15,7 @@ PolyGlyph::PolyGlyph(const wstring &ttffilename)
 
 	if (error)
 	{
-		wcerr<<L"PolyGlyph::PolyGlyph: could not load font: "<<ttffilename<<endl;
+  	        cerr<<"PolyGlyph::PolyGlyph: could not load font: "<<wstring_to_string(ttffilename)<<endl;
 		assert(0);
 	}
 

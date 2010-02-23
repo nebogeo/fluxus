@@ -293,14 +293,22 @@ void FluxusMain::LoadScript(const wstring &Filename)
 		if (size==0)
 		{
 			fclose(file);
+#ifndef WIN32 // the mingw compiler is broken in regard to unicode
 			wcerr<<L"empty file: "<<Filename<<endl;
+#else
+			cerr<<"empty file: "<<wstring_to_string(Filename)<<endl;
+#endif
 			return;
 		}
 
 		if (size<0)
 		{
-			fclose(file);
+		  fclose(file);
+#ifndef WIN32
 			wcerr<<L"error loading file: "<<Filename<<L" size: "<<size<<L"??"<<endl;
+#else
+			cerr<<"error loading file: "<<wstring_to_string(Filename)<<" size: "<<size<<"??"<<endl;
+#endif
 			return;
 		}
 
@@ -311,7 +319,11 @@ void FluxusMain::LoadScript(const wstring &Filename)
 			{
 				delete[] buffer;
 				fclose(file);
+#ifndef WIN32
 				wcerr<<L"read error: "<<Filename<<endl;
+#else
+				cerr<<"read error: "<<wstring_to_string(Filename)<<endl;
+#endif
 				return;
 			}
 			buffer[size]='\0';
@@ -319,7 +331,7 @@ void FluxusMain::LoadScript(const wstring &Filename)
 		}
 		else
 		{
-			wcerr<<L"couldn't allocate buffer for load"<<endl;
+			cerr<<"couldn't allocate buffer for load"<<endl;
 		}
 
 		delete[] buffer;
@@ -327,7 +339,11 @@ void FluxusMain::LoadScript(const wstring &Filename)
 	}
 	else
 	{
+#ifndef WIN32
 		wcerr<<L"couldn't load: "<<Filename<<endl;
+#else
+		cerr<<"couldn't load: "<<wstring_to_string(Filename)<<endl;
+#endif
 	}
 
 	m_SaveName[m_CurrentEditor]=Filename; // just a precaution
@@ -368,11 +384,19 @@ void FluxusMain::SaveScript()
         string out = wstring_to_string(m_Editor[m_CurrentEditor]->GetAllText());
 		fwrite(out.c_str(),1,out.size(),file);
 		fclose(file);
+#ifndef WIN32 // the mingw compiler doesn't really do much unicode stuff
 		wcerr<<L"Saved ["<<m_SaveName[m_CurrentEditor]<<L"]"<<endl;
+#else
+		cerr<<"Saved ["<<wstring_to_string(m_SaveName[m_CurrentEditor])<<"]"<<endl;		
+#endif
 	}
 	else
 	{
+#ifndef WIN32
 		wcerr<<L"Could not save file ["<<m_SaveName[m_CurrentEditor]<<L"]"<<endl;
+#else
+		cerr<<L"Could not save file ["<<wstring_to_string(m_SaveName[m_CurrentEditor])<<L"]"<<endl;
+#endif
 	}
 }
 

@@ -20,6 +20,7 @@
 
 
 ; setup where to find the library module collections
+
 (current-library-collection-paths
 	(path-list-string->path-list
          (string-append

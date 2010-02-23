@@ -110,8 +110,8 @@ if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
 if ARGUMENTS.get("MULTISAMPLE","0")=="1":
         env.Append(CCFLAGS=' -DMULTISAMPLE')
 
-if ARGUMENTS.get("MULTITEXTURING","1")=="0":
-        env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURING')
+if ARGUMENTS.get("MULTITEXTURE","1")=="0":
+        env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURE')
 
 if ARGUMENTS.get("RELATIVE_COLLECTS","0")=="1":
 	env.Append(CCFLAGS=' -DRELATIVE_COLLECTS')
@@ -182,7 +182,7 @@ if env['PLATFORM'] == 'win32':
 			["glut32", "GL/glut.h"],
 			["glu32", "GL/glu.h"],
 			["opengl32", "GL/gl.h"],
-			["openal", "AL/al.h"],
+#			["openal", "AL/al.h"],
 			["libmzsch3m_6mqxfs", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
@@ -261,7 +261,8 @@ Install = BinInstall
 if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
-		mzc_status, mzc_text = commands.getstatusoutput("mzc --c-mods src/base.c \
+		# using popen as it's crossplatform 
+		mzc_status = os.popen("mzc --c-mods src/base.c \
 			++lib scheme/base  \
 			++lib scheme/base/lang/reader  \
 			++lib xml/xml \
@@ -270,12 +271,12 @@ if not GetOption('clean'):
 			++lib mzlib/string \
 			++lib setup   \
 			++lib config  \
-			++lib stxclass")
+			++lib stxclass").close()
 	else:
-		mzc_status, mzc_text = commands.getstatusoutput("mzc --c-mods src/base.c ++lib scheme/base")
+		mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
 
-	if mzc_status != 0:
-		print "ERROR: Failed to run command 'mzc':\n\t%s" % mzc_text
+	if mzc_status != None:
+		print "ERROR: Failed to run command 'mzc'"
 		Exit(1)
 
 
@@ -329,7 +330,11 @@ if not GetOption('clean') and static_modules:
 		app_env.Append(LINKCOM = linkcom + ' -lFLAC -logg -Wl,-Bdynamic')
 	else:
 		# statically link in mzscheme only
-		app_env['LIBS'].remove('mzscheme3m')
+		if env['PLATFORM'] == 'win32':
+			app_env['LIBS'].remove('libmzsch3m_6mqxfs')
+		else:
+			app_env['LIBS'].remove('mzscheme3m')
+
 		app_env.Append(LINKCOM = ' -Wl,-Bstatic -lmzscheme3m -Wl,-Bdynamic')
 		
 		# have to add the libs needed by the fluxus modules here

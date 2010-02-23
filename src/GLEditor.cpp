@@ -21,7 +21,11 @@
 #endif
 #include <iostream>
 #include <vector>
+
+#ifndef WIN32
 #include <sys/time.h>
+#endif
+
 #include <stdlib.h>
 #include <math.h>
 #include <float.h>
@@ -89,7 +93,9 @@ float GLEditor::m_EffectSwirlCenterY(0.0);
 float GLEditor::m_EffectSwirlRotation(1.0);
 
 PolyGlyph* GLEditor::m_PolyGlyph = NULL;
+#ifndef WIN32
 timeval GLEditor::m_Time;
+#endif
 
 GLEditor::GLEditor():
 m_PosX(0),
@@ -130,8 +136,10 @@ m_FirstUTF8Byte(0)
 	m_CharWidth=StrokeWidth('#')+1;
 	m_CharHeight=m_PolyGlyph->CharacterHeight('#');
 	m_CursorWidth=m_CharWidth/3.0f;
+#ifndef WIN32
 	m_Time.tv_sec=0;
 	m_Time.tv_usec=0;
+#endif
 }
 
 void GLEditor::InitFont(const wstring &ttf)
@@ -600,6 +608,7 @@ void GLEditor::Render()
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 
+#ifndef WIN32
 	timeval ThisTime;
 	// stop valgrind complaining
 	ThisTime.tv_sec=0;
@@ -609,6 +618,9 @@ void GLEditor::Render()
 	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
 			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
 	m_Time=ThisTime;
+#else
+	m_Delta=0.02;
+#endif
 
 	if (m_DoEffects)
 	{

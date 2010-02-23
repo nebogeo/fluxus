@@ -21,7 +21,9 @@
 
 #include <iostream>
 #include <string.h>
+#ifndef WIN32
 #include <dlfcn.h>
+#endif
 
 #include "OpenGL.h"
 #include "SearchPaths.h"
@@ -35,6 +37,8 @@ PluginDescription(""),
 PluginAbout(""),
 m_CapSetTime(false)
 {
+#ifndef WIN32 // can't use dlopen
+
 #ifdef __APPLE__
 	const string extension = ".dylib";
 #else
@@ -149,16 +153,19 @@ m_CapSetTime(false)
 		Trace::Stream << "FFGL plugin " << filename << ": plugin init failed" << endl;
 		throw Error();
 	}
+#endif
 }
 
 FFGLPlugin::~FFGLPlugin()
 {
+#ifndef WIN32
 	m_Parameters.clear();
 	if (m_PlugMain(FF_DEINITIALISE, 0, 0).ivalue == FF_FAIL)
 	{
 		Trace::Stream << "FFGL plugin: deinitialise failed" << endl;
 	}
 	dlclose(m_PluginHandle);
+#endif
 }
 
 void FFGLPlugin::ReadParameters()
@@ -513,10 +520,12 @@ void FFGLManager::Render()
 	glPushMatrix();
 	glLoadIdentity();
 
+#ifndef DISABLE_MULTITEXTURE	
 	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
 		glActiveTexture(GL_TEXTURE0);
 	}
+#endif
 
 	glPushAttrib(GL_VIEWPORT_BIT);
 

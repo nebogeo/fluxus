@@ -44,7 +44,7 @@ static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
 								"(define fluxus-version \"%d%d\") " \
 								"(define fluxus-data-location \"%s\") " \
 								"(define static-link \"%s\") "\
-								"(define fluxus-platform '\"%s\") "\
+								"(define fluxus-platform '%s) "\
 								"(load (string-append fluxus-collects-location \"/fluxus-\" " \
                                       "fluxus-version \"/boot.scm\")) ";
 

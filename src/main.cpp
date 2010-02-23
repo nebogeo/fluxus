@@ -36,9 +36,9 @@
 using namespace std;
 
 static const wstring ENGINE_CALLBACK=L"(fluxus-frame-callback)";
-static const string RESHAPE_CALLBACK="fluxus-reshape-callback";
-static const string INPUT_CALLBACK="fluxus-input-callback";
-static const string INPUT_RELEASE_CALLBACK="fluxus-input-release-callback";
+static const wstring RESHAPE_CALLBACK=L"fluxus-reshape-callback";
+static const wstring INPUT_CALLBACK=L"fluxus-input-callback";
+static const wstring INPUT_RELEASE_CALLBACK=L"fluxus-input-release-callback";
 
 FluxusMain *app = NULL;
 EventRecorder *recorder = NULL;
@@ -48,7 +48,11 @@ void ReshapeCallback(int width, int height)
 {
 	app->Reshape(width,height);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	#else
+	swprintf(code,L"(%S %d %d)",RESHAPE_CALLBACK.c_str(),width,height);
+	#endif
 	Interpreter::Interpret(code);
 }
 
@@ -78,8 +82,12 @@ void KeyboardCallback(unsigned char key,int x, int y)
 		app->Handle(key, -1, -1, -1, x, y, mod);
 	wchar_t code[256];
 	if (key > 0 && key<0x80)  
-    { // key is 0 on ctrl+2 and ignore extended ascii for the time being
-		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+	  { // key is 0 on ctrl+2 and ignore extended ascii for the time being
+	      #ifndef WIN32
+		swprintf(code,256,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+		#else
+		swprintf(code,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
+		#endif
 		Interpreter::Interpret(code);
 	}
 	recorder->Record(RecorderMessage("keydown",key,mod));
@@ -90,7 +98,11 @@ void KeyboardUpCallback(unsigned char key,int x, int y)
 	wchar_t code[256];
 	if (key > 0 && key<0x80) 
     { // key is 0 on ctrl+2
-		swprintf(code,256,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+             #ifndef WIN32
+		swprintf(code,256,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+	     #else
+		swprintf(code,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),key,-1,-1,-1,x,y,0);
+	     #endif
 		Interpreter::Interpret(code);
 	}
 	recorder->Record(RecorderMessage("keyup",key,0));
@@ -105,7 +117,11 @@ void SpecialKeyboardCallback(int key,int x, int y)
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
 		app->Handle(0, -1, key, -1, x, y, mod);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	#else
+	swprintf(code,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,key,-1,x,y,mod);
+	#endif
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeydown",key,mod));
 }
@@ -114,7 +130,11 @@ void SpecialKeyboardUpCallback(int key,int x, int y)
 {
 	//app->Handle( 0, 0, key, 1, x, y);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	#else
+	swprintf(code,L"(%S %d %d %d %d %d %d %d)",INPUT_RELEASE_CALLBACK.c_str(),0,-1,key,-1,x,y,0);
+	#endif
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("specialkeyup",key,0));
 }
@@ -123,7 +143,11 @@ void MouseCallback(int button, int state, int x, int y)
 {
 	app->Handle(0, button, -1, state, x, y, 0);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	#else
+	swprintf(code,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,button,-1,state,x,y,0);
+	#endif
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("mouse",x,y,button,state));
 }
@@ -132,7 +156,11 @@ void MotionCallback(int x, int y)
 {
 	app->Handle(0, -1, -1, -1, x, y, 0);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#else
+	swprintf(code,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#endif
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("motion",x,y));
 }
@@ -141,7 +169,11 @@ void PassiveMotionCallback(int x, int y)
 {
 	app->Handle(0, -1, -1, -1, x, y, 0);
 	wchar_t code[256];
-	swprintf(code,256,L"(%s %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#ifndef WIN32
+	swprintf(code,256,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#else
+	swprintf(code,L"(%S %d %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),0,-1,-1,-1,x,y,0);
+	#endif
 	Interpreter::Interpret(code);
 	recorder->Record(RecorderMessage("passivemotion",x,y));
 }

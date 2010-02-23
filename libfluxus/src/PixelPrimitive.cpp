@@ -21,6 +21,10 @@
 #include "State.h"
 #include "Utils.h"
 
+#ifdef WIN32
+#define DISABLE_RENDER_TO_TEXTURE
+#endif
+
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
 //#define DEBUG_GL
@@ -150,11 +154,13 @@ PixelPrimitive::~PixelPrimitive()
 		glDeleteTextures(1,(GLuint*)&m_Texture);
 	}
 
+	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (m_FBOSupported)
 	{
 		glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
 		if (m_DepthBuffer!=0) glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 	}
+	#endif
 
 	delete m_Renderer;
 }
@@ -172,6 +178,7 @@ void PixelPrimitive::PDataDirty()
 
 void PixelPrimitive::ResizeFBO(int w, int h)
 {
+	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (m_FBOSupported)
 	{
 		if (m_Texture != 0)
@@ -268,6 +275,7 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 		cout << "\trenderer: " << hex << m_Renderer << endl;
 #endif
 	}
+#endif
 }
 
 void PixelPrimitive::Upload()
@@ -308,6 +316,7 @@ void PixelPrimitive::Save(const string &filename) const
 
 void PixelPrimitive::Bind()
 {
+	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (!m_FBOSupported)
 		return;
 
@@ -317,10 +326,12 @@ void PixelPrimitive::Bind()
 
 	/* set rendering */
 	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	#endif
 }
 
 void PixelPrimitive::Unbind()
 {
+	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (!m_FBOSupported)
 		return;
 
@@ -334,6 +345,7 @@ void PixelPrimitive::Unbind()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
 	//cout << "pix " << "unbound " << hex << this << endl;
+	#endif
 }
 
 void PixelPrimitive::Render()

@@ -165,7 +165,9 @@ protected:
 	int m_Height;
 
 	static PolyGlyph *m_PolyGlyph;
+#ifndef WIN32
 	static timeval m_Time;
+#endif
 	float m_Delta;
 	float m_Flash;
 	bool m_BlowupCursor;

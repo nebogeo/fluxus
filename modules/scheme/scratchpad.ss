@@ -379,8 +379,8 @@
      (when physics-debug (render-physics))
      (tick-physics)
      (update-audio)
-	 (update-input)
-	 (oa-update))
+     (oa-update)
+     (update-input))
     (else
      (stereo-render)))
   (display (fluxus-error-log)))

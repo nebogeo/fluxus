@@ -33,7 +33,7 @@ m_MultitexturingEnabled(true)
 		cerr << "ERROR Unable to check OpenGL extensions" << endl;
 	}
 
-	#ifndef DISABLE_MULTITEXTURING
+	#ifndef DISABLE_MULTITEXTURE
 	if (!GLEW_ARB_multitexture || (glActiveTexture == NULL) || (glClientActiveTexture == NULL))
 	{
 		Trace::Stream<<"Warning: Can't do multitexturing (no glActiveTexture or GLEW_ARB_multitexture not set)"<<endl;
@@ -51,7 +51,7 @@ TexturePainter::~TexturePainter()
 
 void TexturePainter::Initialise()
 {
-#ifndef DISABLE_MULTITEXTURING
+#ifndef DISABLE_MULTITEXTURE
 	if (m_MultitexturingEnabled)
 	{
 		for (int c=0; c<MAX_TEXTURES; c++)

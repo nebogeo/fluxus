@@ -20,7 +20,9 @@
 #include <GLUT/glut.h>
 #endif
 #include <iostream>
+#ifndef WIN32
 #include <glob.h>
+#endif
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "GLFileDialog.h"
@@ -48,10 +50,10 @@ void GLFileDialog::ReadPath()
 	m_Filenames.clear();
 	m_Directories.clear();
 	
+#ifndef WIN32	
 	// all this seems horribly linux specific...
 	glob_t g;
     
-#ifndef WIN32	
 
 // NOTE: the following snippet is from dirscan.c in ldglite, 
 //       Copyright (C) 1997-1998  Thomas Kern. 
@@ -125,6 +127,7 @@ void GLFileDialog::Render()
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	
+	#ifndef WIN32
 	timeval ThisTime;
 	// stop valgrind complaining
 	ThisTime.tv_sec=0;
@@ -134,8 +137,11 @@ void GLFileDialog::Render()
 	m_Delta=(ThisTime.tv_sec-m_Time.tv_sec)+
 			(ThisTime.tv_usec-m_Time.tv_usec)*0.000001f;
 	m_Time=ThisTime;
-	if (m_Delta>100.0f) m_Delta=0.000001f;
+	#else
+	m_Delta=0.02;
+	#endif
 
+	if (m_Delta>100.0f) m_Delta=0.000001f;
 }
 
 void GLFileDialog::Handle(int button, int key, int special, int state, int x, int y, int mod)

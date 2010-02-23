@@ -23,6 +23,7 @@
 #endif
 #include "Repl.h"
 #include "Unicode.h"
+#include <wchar.h>
 
 using namespace fluxus;
 
@@ -71,7 +72,11 @@ void Repl::Print(const wstring &what)
 	m_PromptPos += to_print.length();
 	m_InsertPos += to_print.length();
 	
-	wcout << to_print;	
+	#ifdef WIN32
+	cout << wstring_to_string(to_print);
+	#else
+	wcout << to_print;
+	#endif
 	EnsureCursorVisible();
 }
 
