@@ -130,8 +130,8 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 ode_double_precision=0
 if sys.platform == 'darwin':
 	ode_double_precision=1
-if ARGUMENTS.get("ODE_DOUBLE","0")=="1":
-	ode_double_precision=1
+ode_double_precision = int(ARGUMENTS.get("ODE_DOUBLE", ode_double_precision))
+
 if ode_double_precision:
 	env.Append(CCFLAGS=' -DdDOUBLE')
 
