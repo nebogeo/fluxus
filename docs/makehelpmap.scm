@@ -282,7 +282,7 @@
                           (cons (list (car localelist) 
                                       (recurse-dir (car localelist) path visitor '())) helpmap)))))
 
-(write-helpmapfile "helpmap.scm" (gather-locales "../" '("pt" "en") '()))
+(write-helpmapfile "helpmap.scm" (gather-locales "../" '("pt" "en" "fr") '()))
 
 
 

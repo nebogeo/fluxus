@@ -105,7 +105,7 @@ using namespace Fluxus;
 //            (draw-cube))))
 //
 // (every-frame (anim))
-// EndFunctionDoc
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // ffgl-load filename-string width-number height-number

@@ -16,7 +16,7 @@
 ;; principais do fluxus, e representa uma forma diferente de criar
 ;; jogos e outros sistemas com comportamento.
 ;; Exemplo:
-;; EndFunctionDoc
+;; EndSectionDoc
 
 (module frisbee (lib "frtime-lang-only.ss" "frtime")
 
