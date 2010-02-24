@@ -27,7 +27,7 @@
     (hint-wire))
 
 ; set the view of the dome
-(dome-setup-main-camera)
+(dome-setup-main-camera 1400 1050)
 
 ; do some animation
 (every-frame 
