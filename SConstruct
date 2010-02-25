@@ -6,7 +6,7 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules
 
-import os, sys, commands
+import os, sys, commands, subprocess
 
 MajorVersion = "0"
 MinorVersion = "17"
@@ -273,9 +273,10 @@ if not GetOption('clean'):
 			++lib config  \
 			++lib stxclass").close()
 	else:
-		mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
+		#mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
+		mzc_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'scheme/base'])
 
-	if mzc_status != None:
+	if mzc_status != 0:
 		print "ERROR: Failed to run command 'mzc'"
 		Exit(1)
 
