@@ -25,7 +25,7 @@ else:
 	Frameworks = Split("GLUT OpenGL PLT_MrEd")
 
 if env['PLATFORM'] == 'win32':
-	    Libs = Split("libmzsch3m_6mqxfs fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")
+	    Libs = Split("libmzsch3m_6ncc9s fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):

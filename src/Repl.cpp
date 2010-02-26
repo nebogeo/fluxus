@@ -114,7 +114,7 @@ void Repl::Print(Scheme_Object *obj)
 			Print(string_to_wstring(string(str)));
 		}
 	}
-	MZ_GC_UNREG();	
+	MZ_GC_UNREG();
 }
 
 void Repl::Handle(int button, int key, int special, int state, 
@@ -268,8 +268,15 @@ bool Repl::TryEval()
 		if (!Empty(defun)) {
 			m_InsertPos = m_Text.length();
 			Print(L"\n");
-
-			Interpreter::Interpret(defun,&out);
+            
+            #ifdef WIN32
+            // not sure why this is required on mingw, and it scares me
+            // it could well be an issue in utf-32 vs utf-16
+            string t = wstring_to_string(defun);
+			Interpreter::Interpret(string_to_wstring(t),&out);
+            #else
+            Interpreter::Interpret(defun,&out);
+            #endif
 
 			if (defun[defun.length()-1] == L'\n')
         			defun.resize(defun.length()-1,0); 

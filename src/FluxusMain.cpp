@@ -163,6 +163,10 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				}
 			}
 			break;
+            case 18: // r
+                // switch to repl (for windows version where ctrl-num is undetectable)
+                SetCurrentEditor(9);
+            break;
 #ifndef __APPLE__
 			case 49: SetCurrentEditor(0); break; // 1
 			case 0: SetCurrentEditor(1); break; // 2
@@ -315,18 +319,18 @@ void FluxusMain::LoadScript(const wstring &Filename)
 		char *buffer = new char[size+1];
 		if (buffer)
 		{
-			if (size!=(long)fread(buffer,1,size,file))
+            long s = (long)fread(buffer,1,size,file);
+			if (size!=s)
 			{
+#ifndef WIN32 // files seem to shrink with mingw - something to 
+              // do with carriage returns being converted
 				delete[] buffer;
 				fclose(file);
-#ifndef WIN32
 				wcerr<<L"read error: "<<Filename<<endl;
-#else
-				cerr<<"read error: "<<wstring_to_string(Filename)<<endl;
-#endif
 				return;
+#endif
 			}
-			buffer[size]='\0';
+			buffer[s]='\0';
 			m_Editor[m_CurrentEditor]->SetText(string_to_wstring(string(buffer)));
 		}
 		else

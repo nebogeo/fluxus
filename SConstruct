@@ -183,7 +183,7 @@ if env['PLATFORM'] == 'win32':
 			["glu32", "GL/glu.h"],
 			["opengl32", "GL/gl.h"],
 #			["openal", "AL/al.h"],
-			["libmzsch3m_6mqxfs", PLTInclude + "/scheme.h"]]
+			["libmzsch3m_6ncc9s", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -331,7 +331,7 @@ if not GetOption('clean') and static_modules:
 	else:
 		# statically link in mzscheme only
 		if env['PLATFORM'] == 'win32':
-			app_env['LIBS'].remove('libmzsch3m_6mqxfs')
+			app_env['LIBS'].remove('libmzsch3m_6ncc9s')
 		else:
 			app_env['LIBS'].remove('mzscheme3m')
 

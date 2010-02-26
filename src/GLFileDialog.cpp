@@ -20,9 +20,13 @@
 #include <GLUT/glut.h>
 #endif
 #include <iostream>
-#ifndef WIN32
+
+#ifdef WIN32
+#include <dirent.h>
+#else
 #include <glob.h>
 #endif
+
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "GLFileDialog.h"
@@ -49,9 +53,26 @@ void GLFileDialog::ReadPath()
 {
 	m_Filenames.clear();
 	m_Directories.clear();
-	
-#ifndef WIN32	
-	// all this seems horribly linux specific...
+
+#ifdef WIN32
+    // this is posix code using mingw - so maybe it'll work for everything...
+    string search=wstring_to_string(m_Path);
+    if (search=="") search = ".";
+    DIR *d = opendir(search.c_str());
+
+    if (d)
+    {
+        dirent *dp;
+        while ((dp=readdir(d))!=NULL)
+        {
+            if (opendir((search+string("/")+string(dp->d_name)).c_str()))
+            {
+                m_Directories.insert(m_Filenames.size());
+            }                        
+            m_Filenames.push_back(string_to_wstring(string(dp->d_name)));            
+        }
+    }
+#else	
 	glob_t g;
     
 

@@ -206,13 +206,14 @@ bool Interpreter::Interpret(const wstring &str, Scheme_Object **ret, bool abort)
 	char msg[LOG_SIZE];
 	mz_jmp_buf * volatile save = NULL, fresh;
 
-	MZ_GC_DECL_REG(1);
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, msg);
+    MZ_GC_VAR_IN_REG(1, save);
 	MZ_GC_REG();
 
 	wstring code = SetupLanguage(str);
 
-	save = scheme_current_thread->error_buf;
+    save = scheme_current_thread->error_buf;
 	scheme_current_thread->error_buf = &fresh;
 
 	if (scheme_setjmp(scheme_error_buf))
@@ -240,7 +241,7 @@ bool Interpreter::Interpret(const wstring &str, Scheme_Object **ret, bool abort)
 		if (ret==NULL)
 		{
 			scheme_eval_string_all(wstring_to_string(code).c_str(), m_Scheme, 1);
-		}
+        }
 		else
 		{
 			*ret = scheme_eval_string_all(wstring_to_string(code).c_str(), m_Scheme, 1);
