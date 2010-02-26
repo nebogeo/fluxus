@@ -125,7 +125,7 @@ void State::Apply()
 	if (Hints&HINT_CULL_CCW) glFrontFace(GL_CW);
 	else glFrontFace(GL_CCW);
 
-	if (Hints & HINT_NORMALIZE)
+	if (Hints & HINT_NORMALISE)
 		glEnable(GL_NORMALIZE);
 
 	if (Hints & HINT_NOZWRITE)
@@ -142,7 +142,7 @@ void State::Apply()
 
 void State::Unapply()
 {
-	if (Hints & HINT_NORMALIZE)
+	if (Hints & HINT_NORMALISE)
 		glDisable(GL_NORMALIZE);
 	if (Hints & HINT_NOZWRITE)
 		glDepthMask(true);
