@@ -117,7 +117,7 @@ MacPorts jack. Make sure to install it before building the application.
 To build, type:
 
 scons --app
-./macos/osx_app-postbuild.sh
+./packages/macos/osx_app-postbuild.sh
 
 Building fluxus on Windows
 --------------------------
