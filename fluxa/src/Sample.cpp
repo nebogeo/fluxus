@@ -153,6 +153,21 @@ void Sample::Mix(const Sample &S, unsigned int Pos)
 	}
 }
 
+void Sample::MulMix(const Sample &S, float m)
+{
+	unsigned int ToPos=0;
+	
+	for (unsigned int FromPos=0; FromPos<S.GetLength(); FromPos++)
+	{
+		float t=S[FromPos]*m;
+	
+		m_Data[ToPos]=m_Data[ToPos]+t;
+		
+		if (ToPos>GetLength()) ToPos=0;
+		ToPos++;
+	}
+}
+
 void Sample::MulClipMix(const Sample &S, float m)
 {
 	unsigned int ToPos=0;
@@ -169,6 +184,7 @@ void Sample::MulClipMix(const Sample &S, float m)
 		ToPos++;
 	}
 }
+
 void Sample::Remove(unsigned int Start, unsigned int End)
 {
 	// do some checking

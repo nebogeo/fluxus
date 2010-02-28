@@ -550,7 +550,7 @@
   (operator ECHO (list in delaytime feedback)))
 
 ;; StartFunctionDoc-en
-;; play time node
+;; play time node optional-pan
 ;; Returns: void
 ;; Description:
 ;; Plays a supplied node at the specified time.
@@ -567,13 +567,14 @@
 ;; (play (+ (time-now) 10) (mul (adsr 0 0.1 0 0) (sine 440)))
 ;; EndFunctionDoc
 
-(define (play time node (f '()))
+(define (play time node (pan 0) (f '()))
   (let ((time (time->timestamp time)))
-    (osc-send "/play" "iii" (list (vector-ref time 0)
-                                  (vector-ref time 1)
-                                  (node-id node))))
+    (osc-send "/play" "iiif" (list (vector-ref time 0)
+                                   (vector-ref time 1)
+                                   (node-id node) pan)))
   (when (not (null? f))
     (spawn-timed-task time f)))
+
 
 ;; StartFunctionDoc-en
 ;; play-now node
@@ -593,8 +594,8 @@
 ;; (play-now (mul (adsr 0 0.1 0 0) (sine 440)))
 ;; EndFunctionDoc
 
-(define (play-now node)
-  (osc-send "/play" "iii" (list 0 0 (node-id node))))
+(define (play-now node (pan 0))
+  (osc-send "/play" "iiif" (list 0 0 (node-id node) pan)))
 
 ;------------------------------
 ; global controls

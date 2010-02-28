@@ -140,6 +140,7 @@ void Fluxa::ProcessCommands()
 			e.TimeStamp.Seconds=(unsigned int)cmd.GetInt(0);
 			e.TimeStamp.Fraction=(unsigned int)cmd.GetInt(1);
 			e.ID=cmd.GetInt(2);
+            e.Pan=cmd.GetFloat(3);
 			
 			if (e.TimeStamp.Seconds==0 && e.TimeStamp.Fraction==0)
 			{
@@ -256,7 +257,7 @@ void Fluxa::Process(unsigned int BufSize)
 		// hack to get round bug with GetDifference throwing big numbers
 		if (t<=0) 
 		{
-			m_Graph.Play(t,e.ID);
+			m_Graph.Play(t,e.ID,e.Pan);
 		}
 		else
 		{
@@ -267,12 +268,10 @@ void Fluxa::Process(unsigned int BufSize)
 		}
 	}
 	
-	m_Graph.Process(BufSize,m_LeftBuffer);
+	m_Graph.Process(BufSize,m_LeftBuffer,m_RightBuffer);
 	m_Eq.Process(BufSize,m_LeftBuffer);
+	m_Eq.Process(BufSize,m_RightBuffer);
 	//m_Comp.Process(BufSize,m_LeftBuffer);
-	m_RightBuffer=m_LeftBuffer;
-	
-	//cerr<<m_RightBuffer[0]<<endl;
 		
 	// panning
 	float leftpan=1,rightpan=1;

@@ -59,6 +59,7 @@ public:
 	void Insert(const Sample &S, unsigned int Pos);
 	void Add(const Sample &S);
 	void Mix(const Sample &S, unsigned int Pos=0);
+	void MulMix(const Sample &S, float m);  
 	void MulClipMix(const Sample &S, float m);
 	void Remove(unsigned int Start, unsigned int End);
 	void Reverse(unsigned int Start, unsigned int End);

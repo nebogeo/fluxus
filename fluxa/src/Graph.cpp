@@ -110,12 +110,12 @@ void Graph::Create(unsigned int id, Type t, float v)
 	map<unsigned int,GraphNode*>::iterator i=m_NodeMap.find(oldid);
 	if (i!=m_NodeMap.end()) m_NodeMap.erase(i);
 	
-	list<unsigned int>::iterator remove;
+	list<pair<unsigned int,float> >::iterator remove;
 	bool found=false;
-	for (list<unsigned int>::iterator ri=m_RootNodes.begin();
+	for (list<pair<unsigned int,float> >::iterator ri=m_RootNodes.begin();
 		ri!=m_RootNodes.end(); ++ri)
 	{
-		if (*ri==oldid) 
+		if (ri->first==oldid) 
 		{
 			remove=ri;
 			found=true;
@@ -144,13 +144,13 @@ void Graph::Connect(unsigned int id, unsigned int arg, unsigned int to)
 	}
 }
 
-void Graph::Play(float time, unsigned int id)
+void Graph::Play(float time, unsigned int id, float pan)
 {
 //cerr<<"play id "<<id<<endl;
 	if (m_NodeMap[id]!=NULL)
 	{
 		m_NodeMap[id]->Trigger(time);
-		m_RootNodes.push_back(id);
+		m_RootNodes.push_back(pair<unsigned int, float>(id,pan));
 		
 		while (m_RootNodes.size()>m_MaxPlaying)
 		{
@@ -159,15 +159,23 @@ void Graph::Play(float time, unsigned int id)
 	}
 }
 
-void Graph::Process(unsigned int bufsize, Sample &in)
+void Graph::Process(unsigned int bufsize, Sample &left, Sample &right)
 {
-	for(list<unsigned int>::iterator i=m_RootNodes.begin();
+	for(list<pair<unsigned int, float> >::iterator i=m_RootNodes.begin();
 		i!=m_RootNodes.end(); ++i)
-	{
-		if (m_NodeMap[*i]!=NULL)
+	{        
+		if (m_NodeMap[i->first]!=NULL)
 		{
-			m_NodeMap[*i]->Process(bufsize);
-			in.MulClipMix(m_NodeMap[*i]->GetOutput(),0.1);
+			m_NodeMap[i->first]->Process(bufsize);
+
+            // do stereo panning
+            float pan = i->second;
+            float leftpan=1,rightpan=1;
+            if (pan<0) leftpan=1-pan;
+            else rightpan=1+pan;
+	
+			left.MulMix(m_NodeMap[i->first]->GetOutput(),0.1*leftpan);
+            right.MulMix(m_NodeMap[i->first]->GetOutput(),0.1*rightpan);
 		}
 	}
 }

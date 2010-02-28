@@ -39,8 +39,8 @@ public:
 	void Clear();
 	void Create(unsigned int id, Type t, float v);
 	void Connect(unsigned int id, unsigned int arg, unsigned int to);
-	void Play(float time, unsigned int id);
-	void Process(unsigned int bufsize, Sample &in);
+	void Play(float time, unsigned int id, float pan);
+	void Process(unsigned int bufsize, Sample &left, Sample &right);
 	void SetMaxPlaying(int s) { m_MaxPlaying=s; }
 	
 private:
@@ -72,7 +72,7 @@ private:
 	};
 	
 	unsigned int m_MaxPlaying;
-	list<unsigned int> m_RootNodes;
+	list<pair<unsigned int, float> > m_RootNodes;
 	map<unsigned int,GraphNode*> m_NodeMap;
 	map<Type,NodeDescVec*> m_NodeDescMap;
 	unsigned int m_NumNodes;
