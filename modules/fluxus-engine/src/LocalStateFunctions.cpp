@@ -1424,16 +1424,16 @@ Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// hint-normalize
+// hint-normalise
 // Returns: void
 // Description:
 // If the current state transform contains a scale transformation, transformed
 // normals might not be unit length, resulting in undesirable lighting problems.
-// (hint-normalize) makes all normals unit length after they are transformed. This
+// (hint-normalise) makes all normals unit length after they are transformed. This
 // is required if the current state transform contains nonuniform scaling.
 // Example:
 // (clear)
-// (hint-normalize)
+// (hint-normalise)
 // (build-cube)
 // ; non uniform scaling
 // (with-primitive (build-cube)
@@ -1447,18 +1447,18 @@ Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// hint-normalize
+// hint-normalise
 // Retorna: void
 // Descrição:
 // Se o estado de transformação atual contém uma escalagem, as normais
 // transformadas podem não ser unitárias em tamanho, resultando em
-// problemas indesejáveis em relação à iluminação. (hint-normalize)
+// problemas indesejáveis em relação à iluminação. (hint-normalise)
 // faz todas as normais serem de tamanho unitário depois de terem sido
 // transformadas. Isto é requerido se o estado de desenho atual contém
 // escalagem não uniforme.
 // Exemplo:
 // (clear)
-// (hint-normalize)
+// (hint-normalise)
 // (build-cube)
 // ; non uniform scaling
 // (with-primitive (build-cube)
@@ -1471,9 +1471,9 @@ Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
 //    (scale 2))
 // EndFunctionDoc
 
-Scheme_Object *hint_normalize(int argc, Scheme_Object **argv)
+Scheme_Object *hint_normalise(int argc, Scheme_Object **argv)
 {
-    Engine::Get()->State()->Hints|=HINT_NORMALIZE;
+    Engine::Get()->State()->Hints|=HINT_NORMALISE;
     return scheme_void;
 }
 
@@ -3011,7 +3011,7 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("hint-cull-ccw",scheme_make_prim_w_arity(hint_cull_ccw,"hint-cull-ccw",0,0), env);
 	scheme_add_global("hint-sphere-map",scheme_make_prim_w_arity(hint_sphere_map,"hint-sphere-map",0,0), env);
 	scheme_add_global("hint-frustum-cull",scheme_make_prim_w_arity(hint_frustum_cull,"hint-frustum-cull",0,0), env);
-	scheme_add_global("hint-normalize",scheme_make_prim_w_arity(hint_normalize,"hint-normalize",0,0), env);
+	scheme_add_global("hint-normalise",scheme_make_prim_w_arity(hint_normalise,"hint-normalise",0,0), env);
 	scheme_add_global("hint-noblend",scheme_make_prim_w_arity(hint_noblend,"hint-noblend",0,0), env);
 	scheme_add_global("hint-nozwrite",scheme_make_prim_w_arity(hint_nozwrite,"hint-nozwrite",0,0), env);
 	scheme_add_global("line-width",scheme_make_prim_w_arity(line_width,"line-width",1,1), env);

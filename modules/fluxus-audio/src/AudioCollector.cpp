@@ -79,7 +79,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
-m_SmoothingBias(1.2),
+m_SmoothingBias(0.8),
 m_FFT(BufferLength),
 m_FFTBuffers(FFTBuffers),
 m_JackBuffer(NULL),
@@ -169,20 +169,21 @@ float *AudioCollector::GetFFT()
 	}
 
 
-	for (int n=0; n<NUM_BARS-1; n++)
+	for (int n=0; n<NUM_BARS; n++)
 	{
 		float Value = 0;
-        unsigned from = (XRanges[n]/256.0f)*m_BufferLength;
-        unsigned to = (XRanges[n+1]/256.0f)*m_BufferLength;
+		unsigned from = (XRanges[n]/255.0f)*m_BufferLength;
+		unsigned to = (XRanges[n+1]/255.0f)*m_BufferLength;
+
 		for (unsigned int i=from; i<to; i++)
 		//for (int i=XRanges[n]; i<XRanges[n+1]; i++)
-        {
+		{
 			Value += m_FFTBuffer[i];
 			if (i>m_BufferLength) cerr<<"whoops"<<endl;
 		}
 		Value*=Value;
 		Value*=m_Gain*0.025;
-		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1/m_SmoothingBias))/2.0f;
+		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1-m_SmoothingBias));
 	}
 
 	/*for (int n=1; n<NUM_BARS-1; n++)

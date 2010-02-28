@@ -46,7 +46,7 @@ namespace Fluxus
 #define HINT_WIRE_STIPPLED  0x00004002 // this also turns on HINT_WIRE
 #define HINT_SPHERE_MAP     0x00008000
 #define HINT_FRUSTUM_CULL   0x00010000
-#define HINT_NORMALIZE      0x00020000
+#define HINT_NORMALISE      0x00020000
 #define HINT_NOBLEND        0x00040000
 #define HINT_NOZWRITE       0x00080000
 
