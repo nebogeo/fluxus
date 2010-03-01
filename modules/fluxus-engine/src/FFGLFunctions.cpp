@@ -107,6 +107,48 @@ using namespace Fluxus;
 // (every-frame (anim))
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// ffgl
+// FreeFrame est un systême de plugin multi-plateformes à effets vidéo temps réel. 
+// Fluxus supporte les FreeFrame 1.5 aussi appellé FreeFrameGL ou FFGL. FF CPU
+// Fluxus supports FreeFrame 1.5 also known as FreeFrameGL or FFGL. Le logiciel
+// FF CPU rendering plugins n'est pas supporté pour le moment.
+// Pour plus d'informations, visiter http://www.freeframe.org
+// Exemple:
+// (clear)
+//
+// (define p (build-pixels 256 256 #t)) ; input pixelprimitive
+//
+// (translate (vector 1.1 0 0))
+// ; output pixelprimitive - rendering is not active
+// ; otherwise it would overwrite the plugin output
+// (define op (build-pixels 256 256))
+//
+// ; load the FFGLTile plugin from the FreeFrame SDK
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (for ([i (ffgl-get-info)]) ; print plugin information
+//        (printf "~a~n" i))
+//   (printf "~a~n" (ffgl-get-parameters)) ; parameter names as strings
+//   (ffgl-process op p)) ; set destination and source pixelprimitives
+//
+// (define (anim)
+//    ; set plugin parameters as keywords arguments
+//    (with-ffgl plugin
+//        (ffgl-set-parameter! #:tilex (/ (mouse-x) (vx (get-screen-size)))
+//                             #:tiley (/ (mouse-y) (vy (get-screen-size)))))
+//    ; render to the input pixelprimitive
+//    (with-pixels-renderer p
+//        (with-state
+//            (clear-colour #(0 1 0))
+//            (scale 5)
+//            (rotate (vector (* 50 (time)) -17 (* -35 (time))))
+//            (draw-cube))))
+//
+// (every-frame (anim))
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // ffgl-load filename-string width-number height-number
 // Returns: plugininstance-number
@@ -128,6 +170,19 @@ using namespace Fluxus;
 // comprimento do plugin tem de ser da mesma resolução da primitiva
 // piexel que você está prestes a usar.
 // Exemplo:
+// (clear)
+// ; load the FFGLTile plugin from the FreeFrame SDK
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-load nom_de_fichier-string largeur-nombre hauteur-nombre
+// Retour: plugininstance-nombre
+// Description:
+// Charge un plugin FFGL et retourne une instance du plugin. La largeur et hauteur
+// doivent être la même que la résolution de la pixel primitive que vous
+// transformez avec le plugin.
+// Exemple:
 // (clear)
 // ; load the FFGLTile plugin from the FreeFrame SDK
 // (define plugin (ffgl-load "FFGLTile" 256 256))
@@ -195,6 +250,21 @@ Scheme_Object *ffgl_pop(int argc, Scheme_Object **argv)
 //        (printf "~a~n" i)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-get-info
+// Retour: (liste de plugin-version-nombre plugin-id-string plugin-nom-string
+//                   plugin-type-symbol plugin-description-string plugin-about-string)
+// Description:
+// Retourne les informations du plugin.
+// Example:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (for ([i (ffgl-get-info)]) ; print plugin information
+//        (printf "~a~n" i)))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 {
   Scheme_Object *info[6];
@@ -246,6 +316,19 @@ Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna a lista com os parametros
 // Exemplo:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "~a~n" (ffgl-get-parameters)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-get-parameters
+// Retour: paramètres-string-liste
+// Description:
+// Retourne la liste des paramètres du plugin.
+// Example:
 // (clear)
 // (define plugin (ffgl-load "FFGLTile" 256 256))
 //
@@ -310,6 +393,19 @@ Scheme_Object *ffgl_get_parameters(int argc, Scheme_Object **argv)
 //   (printf "tilex default: ~a~n" (ffgl-get-parameter-default 'tilex)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-get-parameter-default paramètre-nom-symbol
+// Retour: défaut-paramètre-valeur
+// Description:
+// Retourne la valeur par défaut du paramètre donné. 
+// Exemple:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "tilex default: ~a~n" (ffgl-get-parameter-default 'tilex)))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 {
   FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -367,6 +463,18 @@ Scheme_Object *ffgl_get_parameter_default(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna o valor atual do parametro dado.
 // Exemplo:
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "tilex default: ~a~n" (ffgl-get-parameter 'tilex)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-get-parameter paramètre-nom-symbol
+// Retour: paramètre-valeur
+// Description:
+// Retourne la valeur actuelle du paramètre donné.
+// Exemple:
 // (define plugin (ffgl-load "FFGLTile" 256 256))
 //
 // (with-ffgl plugin
@@ -438,6 +546,19 @@ Scheme_Object *ffgl_get_parameter(int argc, Scheme_Object **argv)
 //   (ffgl-activate #t))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-activate booléen
+// Retour: void
+// Description:
+// Active, desactive le plugin.
+// Exemple:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-activate #t))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 {
   FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -479,6 +600,20 @@ Scheme_Object *ffgl_activate(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna #t se o plugin está ativo, ou #f se não.
 // Exemplo:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (when (ffgl-active?)
+//     (display "plugin is active")))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-active?
+// Retour: booléen
+// Description:
+// Retourne #t si le plugin est actif, sinon #f.
+// Exemple:
 // (clear)
 // (define plugin (ffgl-load "FFGLTile" 256 256))
 //
@@ -591,6 +726,19 @@ Scheme_Object *ffgl_set_parameter_list(int argc, Scheme_Object **argv)
 //   (printf "~a~n" (ffgl-get-min-inputs)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-get-min-inputs
+// Retour: nombre
+// Description:
+// Retourne le nombre minimum d'entrées de pixel primitives que le plugin exige.
+// Exemple:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "~a~n" (ffgl-get-min-inputs)))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 {
   FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -638,6 +786,19 @@ Scheme_Object *ffgl_get_min_inputs(int argc, Scheme_Object **argv)
 //   (printf "~a~n" (ffgl-get-max-inputs)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-get-max-inputs
+// Retour: nombre
+// Description:
+// Retourne le nombre maximum d'entrées de pixel primitives que le plugin exige.
+// Exemple:
+// (clear)
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (printf "~a~n" (ffgl-get-max-inputs)))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 {
   FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -678,6 +839,19 @@ Scheme_Object *ffgl_get_max_inputs(int argc, Scheme_Object **argv)
 // Descrição:
 // Ajusta o tempo em segundos
 // Exemplo:
+// (clear)
+// (define plugin (ffgl-load "FFGLTime" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-set-time! (time)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-set-time! temps-nombre
+// Retour: void
+// Description:
+// Définis le temps en secondes.
+// Exemple:
 // (clear)
 // (define plugin (ffgl-load "FFGLTime" 256 256))
 //
@@ -765,6 +939,35 @@ Scheme_Object *ffgl_set_time(int argc, Scheme_Object **argv)
 // (every-frame (anim))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-process sortie-pixelprimitiveid-nombre entrée-pixelprimitiveid-nombre ...
+// Retour: void
+// Description:
+// Définit la sortie et entrée pour le plugin saisi.
+// La résolution des pixel primitives doit être à la même résolution
+// que le plugin initialisé.
+// Exemple:
+// (clear)
+//
+// (define p (build-pixels 256 256 #t))
+// (define op (build-pixels 256 256))
+//
+// (define plugin (ffgl-load "FFGLTile" 256 256))
+//
+// (with-ffgl plugin
+//   (ffgl-process op p))
+//
+// (define (anim)
+//    (with-pixels-renderer p
+//        (with-state
+//            (clear-colour #(0 1 0))
+//            (scale 5)
+//            (rotate (vector (* 50 (time)) -17 (* -35 (time))))
+//            (draw-cube))))
+//
+// (every-frame (anim))
+// EndFunctionDoc
+
 Scheme_Object *ffgl_process(int argc, Scheme_Object **argv)
 {
   FFGLPluginInstance *pi = FFGLManager::Get()->Current();
@@ -829,6 +1032,15 @@ Scheme_Object *ffgl_process(int argc, Scheme_Object **argv)
 // (ffgl-clear-instances)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ffgl-clear-instances
+// Retour: void
+// Description:
+// Efface les instances des plugin FFGL
+// Exemple:
+// (ffgl-clear-instances)
+// EndFunctionDoc
+
 Scheme_Object *ffgl_clear_instances(int argc, Scheme_Object **argv)
 {
   FFGLManager::Get()->ClearInstances();
@@ -850,6 +1062,15 @@ Scheme_Object *ffgl_clear_instances(int argc, Scheme_Object **argv)
 // Descrição:
 // Limpa o cache e instancias do plugin FFGL
 // Exemplo:
+// (ffgl-clear-cache)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ffgl-clear-cache
+// Retour: void
+// Description:
+// Efface les instances et le cache des plugin FFGL
+// Exemple:
 // (ffgl-clear-cache)
 // EndFunctionDoc
 
