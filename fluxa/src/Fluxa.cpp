@@ -31,7 +31,8 @@ m_Server(server),
 m_GlobalVolume(1.0f),
 m_Pan(0.0f),
 m_Debug(false),
-m_Eq(jack->GetSamplerate()),
+m_LeftEq(jack->GetSamplerate()),
+m_RightEq(jack->GetSamplerate()),
 m_Comp(jack->GetSamplerate())
 {		
 	WaveTable::WriteWaves();
@@ -189,9 +190,12 @@ void Fluxa::ProcessCommands()
 		}
 		else if (name=="/eq")	
 		{ 		
-			m_Eq.SetLow(cmd.GetFloat(0));
-			m_Eq.SetMid(cmd.GetFloat(1));
-			m_Eq.SetHigh(cmd.GetFloat(2));
+			m_LeftEq.SetLow(cmd.GetFloat(0));
+            m_LeftEq.SetMid(cmd.GetFloat(1));
+			m_LeftEq.SetHigh(cmd.GetFloat(2));
+			m_RightEq.SetLow(cmd.GetFloat(0));
+			m_RightEq.SetMid(cmd.GetFloat(1));
+			m_RightEq.SetHigh(cmd.GetFloat(2));
 		}
 		else if (name=="/comp")	
 		{ 		
@@ -269,8 +273,8 @@ void Fluxa::Process(unsigned int BufSize)
 	}
 	
 	m_Graph.Process(BufSize,m_LeftBuffer,m_RightBuffer);
-	m_Eq.Process(BufSize,m_LeftBuffer);
-	m_Eq.Process(BufSize,m_RightBuffer);
+	m_LeftEq.Process(BufSize,m_LeftBuffer);
+	m_RightEq.Process(BufSize,m_RightBuffer);
 	//m_Comp.Process(BufSize,m_LeftBuffer);
 		
 	// panning

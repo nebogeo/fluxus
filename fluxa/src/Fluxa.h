@@ -55,7 +55,8 @@ private:
 	float m_Pan;
 	bool m_Debug;
 	
-	Eq m_Eq;
+	Eq m_LeftEq;
+    Eq m_RightEq;
 	Compressor m_Comp;
 };
 
