@@ -62,7 +62,11 @@
     ((string=? s "en")
      (set! locale-returns "Returns:")
      (set! locale-description "Description:")
-     (set! locale-example "Example:"))))
+     (set! locale-example "Example:"))
+    ((string=? s "fr")
+     (set! locale-returns "Retour:")
+     (set! locale-description "Description:")
+     (set! locale-example "Exemple:"))))
 
 ; returns a string of characters from the current position
 ; using the delimit function to mark beginning and end
@@ -252,7 +256,7 @@
          (cond 
            ((directory-exists? newpath)
             (inner (cdr l) (recurse-dir locale (path->string newpath) visitor helpmap)))
-  		      	(else
+                    (else
                          (inner (cdr l) (visitor newpath helpmap))))))))
   
   (let ((pathlist (directory-list path)))
