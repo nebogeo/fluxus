@@ -16,6 +16,7 @@ BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = ["fluxus-engine", 
+                           "fluxus-openal",
 				"scheme",
 				"material"], 
 

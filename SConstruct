@@ -182,7 +182,7 @@ if env['PLATFORM'] == 'win32':
 			["glut32", "GL/glut.h"],
 			["glu32", "GL/glu.h"],
 			["opengl32", "GL/gl.h"],
-#			["openal", "AL/al.h"],
+			["openal32", "AL/al.h"],
 			["libmzsch3m_6ncc9s", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
