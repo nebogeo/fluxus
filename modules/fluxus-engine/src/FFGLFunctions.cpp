@@ -256,7 +256,7 @@ Scheme_Object *ffgl_pop(int argc, Scheme_Object **argv)
 //                   plugin-type-symbol plugin-description-string plugin-about-string)
 // Description:
 // Retourne les informations du plugin.
-// Example:
+// Exemple:
 // (clear)
 // (define plugin (ffgl-load "FFGLTile" 256 256))
 //
@@ -328,7 +328,7 @@ Scheme_Object *ffgl_get_info(int argc, Scheme_Object **argv)
 // Retour: paramètres-string-liste
 // Description:
 // Retourne la liste des paramètres du plugin.
-// Example:
+// Exemple:
 // (clear)
 // (define plugin (ffgl-load "FFGLTile" 256 256))
 //
