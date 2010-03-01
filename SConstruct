@@ -425,7 +425,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         env.Alias('app', env.MakeBundle('Fluxus.app',
                                         Target,
                                         'key',
-                                        'macos/fluxus-Info.plist',
+                                        'packages/macos/fluxus-Info.plist',
                                         dylibs = dylibs,
                                         frameworks = frameworks,
                                         resources=[['modules/material/fonts/', 'material/fonts/'],
@@ -449,7 +449,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-artkp_ss.dylib']],
 
                                         typecode='APPL',
-                                        icon_file='macos/fluxus.icns'))
+                                        icon_file='packages/macos/fluxus.icns'))
         # build dmg
         '''
         env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
@@ -466,11 +466,11 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         env.Alias('app', env.MakeBundle('Fluxa.app',
                                         'fluxa/fluxa',
                                         'key',
-                                        'macos/fluxa-Info.plist',
+                                        'packages/macos/fluxa-Info.plist',
                                         dylibs = dylibs,
                                         frameworks = frameworks,
                                         typecode='APPL',
-                                        icon_file='macos/fluxa.icns'))
+                                        icon_file='packages/macos/fluxa.icns'))
 
 if (env['PLATFORM'] == "win32"):
 	Target+=".exe"
