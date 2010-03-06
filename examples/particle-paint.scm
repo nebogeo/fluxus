@@ -23,16 +23,18 @@
 
     (define (collide-paint? pos col)
         (with-primitive s
-            (let ((i (line-intersect pos (vadd pos (vmul dir 0.1)))))
+            (let ((i (geo/line-intersect pos (vadd pos (vmul dir 0.1))))
+                  (w (with-primitive t (pixels-width)))
+                  (h (with-primitive t (pixels-height))))
                 (cond 
                     ((not (null? i))
     
                         (let* ((tc (cdr (assoc "t" (car i))))
-                               (tu (inexact->exact (round (* (vector-ref tc 0) 100))))
-                               (tv (inexact->exact (round (* (vector-ref tc 1) 100)))))
+                               (tu (inexact->exact (round (* (vector-ref tc 0) w))))
+                               (tv (inexact->exact (round (* (vector-ref tc 1) h)))))
                         
                         (with-primitive t
-                            (pdata-set! "c" (+ tu (* tv 100)) col)
+                            (pdata-set! "c" (+ tu (* tv w)) col)
                             (pixels-upload)))
                                             
                         #t)
@@ -54,7 +56,7 @@
 ;----------------------------------------
 ; build the primitives
 
-(define t (build-pixels 100 100))
+(define t (build-pixels 64 64))
 (with-primitive t 
     (translate (vector 3 0 0))
     (pdata-map!
