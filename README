@@ -152,8 +152,9 @@ Create a binary which looks for it's collects in the same directory as the binar
 resides - this means that fluxus can be installed anywhere, and can carry around
 it's dependant scheme code.
 
-ODE_DOUBLE=1
-Required if the ODE library is compiled with double precision. If the wrong precision
-is enabled all floating-point data going in and out of ODE will be corrupt, producing
-ODE internal error messages and crashes.
+Note about ODE
+Fluxus requires that the ODE library is compiled with single precision. The precision
+of the ODE library is autodetected and a warning is issued if a double precision installation
+is found. In this case fluxus will run, but you are likely to get ODE internal error messages
+and crashes when using the phyisics system.
 

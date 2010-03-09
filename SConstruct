@@ -127,14 +127,6 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	static_modules=1
 	env.Append(CCFLAGS=' -DSTATIC_LINK')
 
-ode_double_precision=0
-if sys.platform == 'darwin':
-	ode_double_precision=1
-ode_double_precision = int(ARGUMENTS.get("ODE_DOUBLE", ode_double_precision))
-
-if ode_double_precision:
-	env.Append(CCFLAGS=' -DdDOUBLE')
-
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
 MZDYN = PLTLib + "/mzdyn.o"
@@ -251,6 +243,21 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 		env['LIBS'].remove(l)
 		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+
+# detect ode precision
+if not GetOption('clean'):
+	try:
+		odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
+		ode_str = odec.communicate()
+		if isinstance(ode_str[0], str):
+			env.MergeFlags(ode_str[0])
+			if ode_str[0].find('-DdDOUBLE') > -1:
+				print 'WARNING: ODE double precision installation detected'
+				print 'WARNING: you might encounter problems when using the fluxus physics system'
+			else:
+				print 'ODE single precision detected'
+	except:
+		print 'WARNING: unable to run ode-config, cannot detect ODE precision'
 
 ################################################################################
 # Build the fluxus application
