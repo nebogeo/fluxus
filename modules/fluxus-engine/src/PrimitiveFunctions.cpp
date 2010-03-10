@@ -186,6 +186,32 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// build-icosphere level-number
+// Returns: primitiveid-number
+// Description:
+// Build sphere by recursively subdividing an icosahedron.
+// Example:
+// (define mynewshape (build-icosphere 1))
+// EndFunctionDoc
+
+Scheme_Object *build_icosphere(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("build-icosphere", "i", argc, argv);
+	int l=IntFromScheme(argv[0]);
+	if (l<1)
+	{
+		Trace::Stream<<"build-icosphere: level is less than 1!"<<endl;
+		MZ_GC_UNREG();
+		return scheme_void;
+	}
+	PolyPrimitive *SphPrim = new PolyPrimitive(PolyPrimitive::TRILIST);
+    MakeIcosphere(SphPrim, l);
+	MZ_GC_UNREG();
+    return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(SphPrim));
+}
+
+// StartFunctionDoc-en
 // build-torus inner-radius-number outer-radius-number slices-number stacks-number
 // Returns: primitiveid-number
 // Description:
@@ -3075,8 +3101,8 @@ Scheme_Object *get_parent(int argc, Scheme_Object **argv)
 // get-bb
 // Returns: bounding-box
 // Description:
-// Gets the bounding box this primitive in object space. A bounding box is 
-// returned as a list of two vectors, the minimum (closest to the origin) 
+// Gets the bounding box this primitive in object space. A bounding box is
+// returned as a list of two vectors, the minimum (closest to the origin)
 // and maximum (furthest) corner.
 // Example:
 // (with-primitive (build-sphere 10 10)
@@ -3102,7 +3128,7 @@ Scheme_Object *get_bb(int argc, Scheme_Object **argv)
         l = scheme_null;
 		l=scheme_make_pair(FloatsToScheme(bb.min.arr(),3),l);
 		l=scheme_make_pair(FloatsToScheme(bb.max.arr(),3),l);
-		MZ_GC_UNREG();		
+		MZ_GC_UNREG();
 		return l;
 	}
 	Trace::Stream<<"get-bb: no primitive current"<<endl;
@@ -3120,6 +3146,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-polygons", scheme_make_prim_w_arity(build_polygons, "build-polygons", 2, 2), env);
 	scheme_add_global("build-nurbs", scheme_make_prim_w_arity(build_nurbs, "build-nurbs", 1, 1), env);
 	scheme_add_global("build-sphere", scheme_make_prim_w_arity(build_sphere, "build-sphere", 2, 2), env);
+	scheme_add_global("build-icosphere", scheme_make_prim_w_arity(build_icosphere, "build-icosphere", 1, 1), env);
 	scheme_add_global("build-torus", scheme_make_prim_w_arity(build_torus, "build-torus", 4, 4), env);
 	scheme_add_global("build-plane", scheme_make_prim_w_arity(build_plane, "build-plane", 0, 0), env);
 	scheme_add_global("build-seg-plane", scheme_make_prim_w_arity(build_seg_plane, "build-seg-plane", 2, 2), env);

@@ -212,6 +212,86 @@ void Fluxus::MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegm
 	}
 }
 
+static dVector Fluxus::MidpointOnSphere(dVector &a, dVector &b)
+{
+	dVector midpoint = (a + b) * 0.5;
+	dVector radial = midpoint.normalise();
+	return radial;
+}
+
+static void Fluxus::MakeIcosphereFace(PolyPrimitive *p, dVector &a, dVector &b, dVector &c, int level)
+{
+	if (level <= 1)
+	{
+		dVector tex[3]; // TODO: add texture coords
+
+		p->AddVertex(dVertex(a, a, tex[0].x, tex[0].y));
+		p->AddVertex(dVertex(c, c, tex[2].x, tex[2].y));
+		p->AddVertex(dVertex(b, b, tex[1].x, tex[1].y));
+	}
+	else
+	{
+		dVector ab = MidpointOnSphere(a, b);
+		dVector bc = MidpointOnSphere(b, c);
+		dVector ca = MidpointOnSphere(c, a);
+
+		level--;
+		MakeIcosphereFace(p, a, ab, ca, level);
+		MakeIcosphereFace(p, ab, b, bc, level);
+		MakeIcosphereFace(p, ca, bc, c, level);
+		MakeIcosphereFace(p, ab, bc, ca, level);
+	}
+}
+
+/*
+ * Based on the explanation and code by Paul Bourke and Craig Reynolds:
+ * http://local.wasp.uwa.edu.au/~pbourke/geometry/platonic/
+*/
+void Fluxus::MakeIcosphere(PolyPrimitive *p, int level)
+{
+	float sqrt5 = sqrt(5.0);
+	float phi = (1.0 + sqrt5) * 0.5;
+	float ratio = sqrt(10.0f + (2.0 * sqrt5)) / (4.0 * phi);
+	float a = (1 / ratio) * 0.5;
+	float b = (1 / ratio) / (2.0 * phi);
+
+	dVector v[12] = {
+		dVector( 0,  b, -a),
+		dVector( b,  a,  0),
+		dVector(-b,  a,  0),
+		dVector( 0,  b,  a),
+		dVector( 0, -b,  a),
+		dVector(-a,  0,  b),
+		dVector( 0, -b, -a),
+		dVector( a,  0, -b),
+		dVector( a,  0,  b),
+		dVector(-a,  0, -b),
+		dVector( b, -a,  0),
+		dVector(-b, -a,  0)
+	};
+
+	MakeIcosphereFace(p, v[0], v[1], v[2], level);
+	MakeIcosphereFace(p, v[3], v[2], v[1], level);
+	MakeIcosphereFace(p, v[3], v[4], v[5], level);
+	MakeIcosphereFace(p, v[3], v[8], v[4], level);
+	MakeIcosphereFace(p, v[0], v[6], v[7], level);
+	MakeIcosphereFace(p, v[0], v[9], v[6], level);
+	MakeIcosphereFace(p, v[4], v[10], v[11], level);
+	MakeIcosphereFace(p, v[6], v[11], v[10], level);
+	MakeIcosphereFace(p, v[2], v[5], v[9], level);
+	MakeIcosphereFace(p, v[11], v[9], v[5], level);
+	MakeIcosphereFace(p, v[1], v[7], v[8], level);
+	MakeIcosphereFace(p, v[10], v[8], v[7], level);
+	MakeIcosphereFace(p, v[3], v[5], v[2], level);
+	MakeIcosphereFace(p, v[3], v[1], v[8], level);
+	MakeIcosphereFace(p, v[0], v[2], v[9], level);
+	MakeIcosphereFace(p, v[0], v[7], v[1], level);
+	MakeIcosphereFace(p, v[6], v[9], v[11], level);
+	MakeIcosphereFace(p, v[6], v[10], v[7], level);
+	MakeIcosphereFace(p, v[4], v[11], v[5], level);
+	MakeIcosphereFace(p, v[4], v[8], v[10], level);
+}
+
 void Fluxus::MakeTorus(PolyPrimitive *p, float innerradius, float outerradius, int hsegments, int rsegments)
 {
 	float radperouter = (360/(float)rsegments)*DEG_CONV;
