@@ -22,7 +22,6 @@
 #include "JackClient.h"
 
 static const int MAX_FFT_LENGTH = 4096;
-static int XRanges[NUM_BARS+1] = {0, 1, 2, 3, 5, 7, 10, 14, 20, 28, 40, 54, 74, 101, 137, 187, 255};
 
 FFT::FFT(int length) :
 m_FFTLength(length),
@@ -77,6 +76,8 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+const unsigned int AudioCollector::MAX_BARS = 128;
+
 AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
 m_SmoothingBias(0.8),
@@ -86,7 +87,8 @@ m_JackBuffer(NULL),
 m_OSSBuffer(NULL),
 m_OneOverSHRT_MAX(1/(float)SHRT_MAX),
 m_Processing(false),
-m_ProcessPos(0)
+m_ProcessPos(0),
+m_NumBars(16)
 {
 	m_BufferLength = BufferLength;
 	m_Samplerate = Samplerate;
@@ -104,8 +106,8 @@ m_ProcessPos(0)
 	m_AudioBuffer = new float[BufferLength];
 	memset(m_AudioBuffer,0,BufferLength*sizeof(float));
 	
-	m_FFTOutput = new float[NUM_BARS];
-	for (int n=0; n<NUM_BARS; n++) m_FFTOutput[n]=0;
+	m_FFTOutput = new float[MAX_BARS];
+	for (unsigned int n=0; n<MAX_BARS; n++) m_FFTOutput[n]=0;
 	
 	m_Mutex = new pthread_mutex_t;
 	pthread_mutex_init(m_Mutex,NULL);
@@ -137,7 +139,7 @@ bool AudioCollector::IsConnected()
 
 float AudioCollector::GetHarmonic(int h)
 {
-	return  m_FFTOutput[h%NUM_BARS];
+	return  m_FFTOutput[h%m_NumBars];
 }
 
 float *AudioCollector::GetFFT()
@@ -168,33 +170,34 @@ float *AudioCollector::GetFFT()
 		m_FFT.Impulse2Freq(m_AudioBuffer,m_FFTBuffer);
 	}
 
+    // seem to only have stuff in the lower half - something to do with nyquist?
+    float UsefulArea = m_BufferLength/2;
 
-	for (int n=0; n<NUM_BARS; n++)
+	for (unsigned int n=0; n<m_NumBars; n++)
 	{
 		float Value = 0;
-		unsigned from = (XRanges[n]/255.0f)*m_BufferLength;
-		unsigned to = (XRanges[n+1]/255.0f)*m_BufferLength;
+        
+        float f = n/(float)m_NumBars;
+        float t = (n+1)/(float)m_NumBars;
+        f*=f;
+        t*=t;
+        unsigned from = f*UsefulArea;
+        unsigned to = t*UsefulArea;
 
 		for (unsigned int i=from; i<to; i++)
-		//for (int i=XRanges[n]; i<XRanges[n+1]; i++)
 		{
 			Value += m_FFTBuffer[i];
-			if (i>m_BufferLength) cerr<<"whoops"<<endl;
 		}
-		Value*=Value;
-		Value*=m_Gain*0.025;
+
+        if (Value<0) Value=-Value;
+		Value*=m_Gain;
 		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1-m_SmoothingBias));
 	}
-
-	/*for (int n=1; n<NUM_BARS-1; n++)
-	{
-		m_FFTOutput[n]=(m_FFTOutput[n-1]+m_FFTOutput[n]+m_FFTOutput[n+1])/3.0f;
-	} */
 
 	return m_FFTOutput;
 }
 
-
+ 
 void AudioCollector::Process(const string &filename)
 {
 	if (m_Processing) return;

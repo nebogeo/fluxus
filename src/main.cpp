@@ -242,8 +242,17 @@ void ExitHandler()
 	delete app;
 }
 
-int run(Scheme_Env* se, int argc, char *argv[])
+struct args
 {
+    int argc;
+    char **argv;
+};
+
+int run(void *data)
+{
+    args *myargs = (args *)data;
+    int argc = myargs->argc;
+    char **argv = myargs->argv;
 	// we create our own Scheme_Env in here, as we need
 	// to be able to reset it with F6. Seems to be ok to ignore se...
 	Interpreter::Register();
@@ -411,6 +420,9 @@ int run(Scheme_Env* se, int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-	return scheme_main_setup(1, run, argc, argv);
+    args myargs;
+    myargs.argc=argc;
+    myargs.argv=argv;
+	return scheme_main_stack_setup(1, run, (void *)&myargs);
 }
 
