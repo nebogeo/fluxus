@@ -1,5 +1,5 @@
 %{!?_dist: %{expand: %%define dist fc12}}
-%define prever 20100308git
+%define prever 20100310git
 
 Summary: A graphical live coding environment for Scheme
 Name: fluxus
@@ -13,7 +13,7 @@ Source: http://pawfal.org/fluxus/files/fluxus-%{version}.%{prever}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 BuildRequires: ode-devel = 0.9, plt-scheme >= 4.1.2, fftw-devel >= 3.2.1, jack-audio-connection-kit-devel >= 0.118, libsndfile-devel >= 1.0.20, liblo-devel >= 0.24, glew-devel >= 1.5.1, freetype-devel >= 2.2.1, scons, libjpeg-devel >= 6b, libpng-devel >= 1.2.0, libtiff-devel >= 3.8.0, zlib-devel >= 1.2.3, freeglut-devel >= 2.4.0, alsa-lib-devel >= 1.0.16, openal-devel >= 0.0.9, gstreamer-devel >= 0.10.25, gstreamer-plugins-base-devel >= 0.10.25, gstreamer-plugins-good-devel >= 0.10.17, gstreamer-plugins-bad-devel >= 0.10.17, unicap-devel >= 0.9.5, ffmpeg-devel >= 0.5
-Requires: ode = 0.9, plt-scheme >= 4.1, fftw >= 3.0.0, jack-audio-connection-kit >= 0.100, libsndfile >= 1.0.13, liblo >= 0.23, glew >= 1.4.0, freetype >= 2.2.1, libjpeg >= 6b, libpng >= 1.2.0, libtiff >= 3.8.0, zlib >= 1.2.3, freeglut >= 2.4.0, alsa-lib >= 1.0.16, openal >= 0.0.9, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, unicap >= 0.9.5, ffmpeg >= 0.5
+Requires: plt-scheme >= 4.1, fftw >= 3.0.0, jack-audio-connection-kit >= 0.100, libsndfile >= 1.0.13, liblo >= 0.23, glew >= 1.4.0, freetype >= 2.2.1, libjpeg >= 6b, libpng >= 1.2.0, libtiff >= 3.8.0, zlib >= 1.2.3, freeglut >= 2.4.0, alsa-lib >= 1.0.16, openal >= 0.0.9, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, unicap >= 0.9.5, ffmpeg >= 0.5
 
 %description
 Fluxus reads live audio or OSC network messages which can be used as a source
@@ -34,16 +34,13 @@ cd docs
 ./makehelpmap.scm
 
 %install
-scons -Q install DESTDIR="%{buildroot}" Prefix=/usr PLTPrefix=/usr
+scons -Q install DESTDIR="%{buildroot}" Prefix=/usr PLTPrefix=/usr STATIC_ODE=1
 
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-, root, root, 0755)
-#%doc AUTHORS CHANGES COPYING LICENCE README
-#%{_bindir}/fluxus-%{version}
-#%{_bindir}/fluxa-%{version}
 %{_bindir}/fluxus
 %{_bindir}/fluxa
 %{_libdir}/fluxus-017/*
@@ -51,6 +48,8 @@ scons -Q install DESTDIR="%{buildroot}" Prefix=/usr PLTPrefix=/usr
 %{_docdir}/fluxus-017/*
 
 %changelog
+* Mon Mar 10 2010 Gabor Papp - 0.17-1.20100310git.fc12
+- rebuild with ode 0.9 statically
 * Mon Mar 08 2010 Gabor Papp - 0.17-1.20100308git.fc12
 - rebuild with ode 0.9
 * Thu Feb 25 2010 Gabor Papp - 0.17-1.20100225git.fc12
