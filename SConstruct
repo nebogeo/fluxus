@@ -82,6 +82,7 @@ paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconve
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
 env.MergeFlags(ARGUMENTS.get('CCFLAGS', ''))
+env.MergeFlags(ARGUMENTS.get('LDFLAGS', ''))
 
 if env['PLATFORM'] == 'win32':
 	IncludePaths += [ "/MinGW/include/freetype2" ]
