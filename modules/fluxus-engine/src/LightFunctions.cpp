@@ -64,6 +64,33 @@ using namespace SchemeHelper;
 // Exemplo:
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// lumieres
+// Sans lumières, impossible de voir quelque chose. Heureusement, fluxus vous en donne une par défaut, une blanche
+// en point diffusant attaché à la caméra. Pour des éclairages plus intéressants, vous aurez besoin de ces fonctions.
+// Utilisant le pipeline graphique avec les fonction fixes standarts, très simplement, OpenGl multipile ces valeurs
+// avec le matériau de la surface (choisi avec les commandes d'états locaux comme l'ambient et le diffuse) et la couleur
+// de texture pour donner le rendu final.
+// Exemple:
+// ; éteindre la lumière principale
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndSectionDoc 
+
 // StartFunctionDoc-en
 // make-light type-symbol cameralocked-symbol
 // Returns: lightid-number
@@ -99,6 +126,32 @@ using namespace SchemeHelper;
 // ser fixa à câmera, e mexer ao redor quando você mover a câmera.
 // Exemplo:
 // ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// make-light type-symbol verrou-camera-symbol
+// Retour: lightid-nombre
+// Description:
+// Fabrique une nouvellle lampe. Le type peut être: point, directional ou spot. Si la chaîne de caractère du
+// verrou caméra n'est pas vide, alors elle sera attachée à la caméra, et se déplaceront ensemble. 
+// Exemple:
+// ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
@@ -203,6 +256,31 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// light-ambient lightid-nombre couleur
+// Retour: void
+// Description:
+// Détermine l'apport en lumière ambiente pour la lampe spécifiée.
+// Exemple:
+// ; éteindre la lumière principale
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndFunctionDoc
+
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -247,6 +325,31 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // Ajusta a contribuição difusa para a luz especificada.
 // Exemplo:
 // ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// light-diffuse lightid-nombre couleur
+// Retour: void
+// Description:
+// Détermine l'apport en lumière diffusante de la lumière spécifiée.
+// Exemple:
+// ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
@@ -327,6 +430,31 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// light-specular lightid-nombre couleur
+// Retour: void
+// Description:
+// Détermine l'apport de lumière spéculaire à la lumière spécifiée.
+// Exemple:
+// ; éteindre la lumière principale
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndFunctionDoc
+
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -372,6 +500,31 @@ Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 // espaço da câmera se fixa.
 // Exemplo:
 // ; turn off the main light
+// (light-diffuse 0 (vector 0 0 0))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'point 'free))
+// (light-position mylight (vector 5 2 0))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// light-position lightid-nombre position-vecteur
+// Retour: void
+// Description:
+// Détermine la position de la lampe spécifiée. Dans l'espace si libre, dans l'espace camera si attachée. 
+// Exemple:
+// ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
@@ -467,6 +620,39 @@ Scheme_Object *light_position(int argc, Scheme_Object **argv)
 //     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 	
+// StartFunctionDoc-fr
+// light-spot-angle lightid-nombre angle-nombre
+// Retour: void
+// Description:
+// Détermine l'angle du cône de lumière spot pour la lampe spécifiée. Si la lampe n'est pas un spot,
+// la commande n'aura aucun effet. 
+// Exemple:
+// ; éteindre la lumière principale
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
+// EndFunctionDoc
+
 Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -517,6 +703,39 @@ Scheme_Object *light_spot_angle(int argc, Scheme_Object **argv)
 // específicada. Não funciona com outra lâmpada senão a spot.
 // Exemplo:
 // ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// light-spot-exponent lightid-nombre exposant-nombre
+// Retour: void
+// Description:
+// Règle l'exposant du spot (le flou du cône) pour la lumière spécifiée. Si la lampe n'est pas un spot,
+// la commande n'aura aucun effet.   
+// Exemple:
+// ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
@@ -618,6 +837,39 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 //     (build-seg-plane 20 20)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// light-attenuation lightid-nombre type-symbol attenuation-nombre
+// Retour: void
+// Description:
+// Détermine l'atténuation (estompement avec la distance) de la lumière spécifiée. 
+// Le symbol de type peut être: constant, linear ou quadratic
+// Exemple:
+// ; éteindre la lumière principale
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
+// EndFunctionDoc
+
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -684,6 +936,39 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // este comando não tem efeito.
 // Exemplo:
 // ; turn down the main light
+// (light-diffuse 0 (vector 0.1 0.1 0.1))
+// (light-specular 0 (vector 0 0 0))
+// (light-ambient 0 (vector 0 0 0))
+// 
+// (define mylight (make-light 'spot 'free))
+// (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
+// (light-diffuse mylight (rndvec))
+// (light-ambient mylight (vmul (rndvec) 0.1))
+// (light-specular mylight (vmul (rndvec) 10))
+// (light-spot-angle mylight (+ 5 (random 40)))
+// (light-spot-exponent mylight 500)
+// (light-attenuation mylight 'constant 1) 
+// (light-direction mylight (vector -1 0 -1))
+// 
+// (with-state
+//     (ambient (vector 1 1 1))
+//     (colour (vector 1 1 1))
+//     (specular (vector 0.5 0.5 0.5))
+//     (shinyness 20)
+//     (build-torus 1 2 20 20)
+//     (scale (vector 10 10 10))
+//     (translate (vector -0.5 -0.5 0))
+//     (build-seg-plane 20 20)) 
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// light-direction lightid-nombre direction-vecteur
+// Retour: void
+// Description:
+// Détermine la direction d'une lampe directionnelle. Si ce n'est pas une lampe directionnelle,
+// la commande n'aura aucun effet. 
+// Exemple:
+// ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
