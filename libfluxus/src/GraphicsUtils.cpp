@@ -223,11 +223,103 @@ static void Fluxus::MakeIcosphereFace(PolyPrimitive *p, dVector &a, dVector &b, 
 {
 	if (level <= 1)
 	{
-		dVector tex[3]; // TODO: add texture coords
+		dVector ta, tb, tc;
 
-		p->AddVertex(dVertex(a, a, tex[0].x, tex[0].y));
-		p->AddVertex(dVertex(c, c, tex[2].x, tex[2].y));
-		p->AddVertex(dVertex(b, b, tex[1].x, tex[1].y));
+		// cartesian to spherical coordinates
+		ta.x = atan2(a.z, a.x) / (2 * M_PI) + .5;
+		ta.y = acos(a.y) / M_PI;
+		tb.x = atan2(b.z, b.x) / (2 * M_PI) + .5;
+		tb.y = acos(b.y) / M_PI;
+		tc.x = atan2(c.z, c.x) / (2 * M_PI) + .5;
+		tc.y = acos(c.y) / M_PI;
+
+		// texture wrapping coordinate limits
+		const float mint = .25;
+		const float maxt = 1 - mint;
+
+		// fix north and south pole textures
+		if ((a.x == 0) && ((a.y == 1) || (a.y == -1)))
+		{
+			ta.x = (tb.x + tc.x) / 2;
+			if (((tc.x < mint) && (tb.x > maxt)) ||
+				((tb.x < mint) && (tc.x > maxt)))
+			{
+				ta.x += .5;
+			}
+		}
+		else
+		if ((b.x == 0) && ((b.y == 1) || (b.y == -1)))
+		{
+			tb.x = (ta.x + tc.x) / 2;
+			if (((tc.x < mint) && (ta.x > maxt)) ||
+				((ta.x < mint) && (tc.x > maxt)))
+			{
+				tb.x += .5;
+			}
+		}
+		else
+		if ((c.x == 0) && ((c.y == 1) || (c.y == -1)))
+		{
+			tc.x = (ta.x + tb.x) / 2;
+			if (((ta.x < mint) && (tb.x > maxt)) ||
+				((tb.x < mint) && (ta.x > maxt)))
+			{
+				tc.x += .5;
+			}
+		}
+
+		// fix texture wrapping
+		if ((ta.x < mint) && (tc.x > maxt))
+		{
+			if (tb.x < mint)
+				tc.x -= 1;
+			else
+				ta.x += 1;
+		}
+		else
+		if ((ta.x < mint) && (tb.x > maxt))
+		{
+			if (tc.x < mint)
+				tb.x -= 1;
+			else
+				ta.x += 1;
+		}
+		else
+		if ((tc.x < mint) && (tb.x > maxt))
+		{
+			if (ta.x < mint)
+				tb.x -= 1;
+			else
+				tc.x += 1;
+		}
+		else
+		if ((ta.x > maxt) && (tc.x < mint))
+		{
+			if (tb.x < mint)
+				ta.x -= 1;
+			else
+				tc.x += 1;
+		}
+		else
+		if ((ta.x > maxt) && (tb.x < mint))
+		{
+			if (tc.x < mint)
+				ta.x -= 1;
+			else
+				tb.x += 1;
+		}
+		else
+		if ((tc.x > maxt) && (tb.x < mint))
+		{
+			if (ta.x < mint)
+				tc.x -= 1;
+			else
+				tb.x += 1;
+		}
+
+		p->AddVertex(dVertex(a, a, ta.x, ta.y));
+		p->AddVertex(dVertex(c, c, tc.x, tc.y));
+		p->AddVertex(dVertex(b, b, tb.x, tb.y));
 	}
 	else
 	{
