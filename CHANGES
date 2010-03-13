@@ -33,6 +33,8 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * video module(!)
 * new voxel primitive
 * big fft fix
+* the number of fft harmonic groups is controllable,
+  (set-num-frequency-bins), (get-num-frequency-bins)
 * obj import optimisations
 * obj import, supports all face types (and triangulates them) 
 * (active-mesh) and (passive-mesh) for mesh based physics collisions 

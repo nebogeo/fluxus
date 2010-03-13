@@ -62,6 +62,7 @@ public:
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
     void SetNumBars(unsigned int s) { if (s<MAX_BARS) m_NumBars=s; }
+    unsigned GetNumBars(void) { return m_NumBars; }
 
 private:
 
