@@ -24,8 +24,6 @@
 
 using namespace std;
 
-static const int NUM_BARS = 16;
-
 class FFT
 {
 public:
@@ -63,8 +61,12 @@ public:
     void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
+    void SetNumBars(unsigned int s) { if (s<MAX_BARS) m_NumBars=s; }
+    unsigned GetNumBars(void) { return m_NumBars; }
 
 private:
+
+    static const unsigned int MAX_BARS;
 
     void AudioCallback_i(unsigned int);
 	static void AudioCallback(void *, unsigned int);
@@ -92,6 +94,7 @@ private:
 	float *m_ProcessBuffer;
 	unsigned int m_ProcessPos;
 	unsigned int m_ProcessLength;
+    unsigned int m_NumBars;
 };
 
 #endif

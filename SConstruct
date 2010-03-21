@@ -81,6 +81,8 @@ paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconve
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
+env.MergeFlags(ARGUMENTS.get('CCFLAGS', ''))
+env.MergeFlags(ARGUMENTS.get('LDFLAGS', ''))
 
 if env['PLATFORM'] == 'win32':
 	IncludePaths += [ "/MinGW/include/freetype2" ]
@@ -127,13 +129,7 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	static_modules=1
 	env.Append(CCFLAGS=' -DSTATIC_LINK')
 
-ode_double_precision=0
-if sys.platform == 'darwin':
-	ode_double_precision=1
-ode_double_precision = int(ARGUMENTS.get("ODE_DOUBLE", ode_double_precision))
-
-if ode_double_precision:
-	env.Append(CCFLAGS=' -DdDOUBLE')
+static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
@@ -252,6 +248,27 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 		env['LIBS'].remove(l)
 		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
+# detect ode precision
+if not GetOption('clean'):
+	try:
+		odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
+		ode_str = odec.communicate()
+		if isinstance(ode_str[0], str):
+			env.MergeFlags(ode_str[0])
+			if ode_str[0].find('-DdDOUBLE') > -1:
+				print 'WARNING: ODE double precision installation detected'
+				print 'WARNING: you might encounter problems when using the fluxus physics system'
+			else:
+				print 'ODE single precision detected'
+	except:
+		print 'WARNING: unable to run ode-config, cannot detect ODE precision'
+
+# link ode statically
+if static_ode and not GetOption('clean'):
+	if 'ode' in env['LIBS']:
+		env['LIBS'].remove('ode')
+		env['LIBS'].append(File('%s/lib/libode.a' % Prefix))
+
 ################################################################################
 # Build the fluxus application
 Install = BinInstall
@@ -351,11 +368,13 @@ app_env.Program(source = Source, target = Target)
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = Split("libfluxus modules"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
+				   "static_modules", "static_ode", "Prefix"])
 
 else:
 	SConscript(dirs = Split("libfluxus modules fluxa addons"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", "static_modules"])
+           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
+			   "static_modules", "static_ode", "Prefix"])
 
 
 ################################################################################
@@ -363,54 +382,9 @@ else:
 
 Docs = ["docs/fluxus-documentation-en.pdf",
 	"docs/fluxus-documentation-fr.pdf",
-	"examples/allprims.scm",
-	"examples/asteroids.scm",
-	"examples/bars.scm",
-	"examples/blobbies.scm",
-	"examples/cheap-outline.scm",
-	"examples/collide-seq.scm",
-	"examples/cube-matrix.scm",
-	"examples/dancing-robots.scm",
-	"examples/flocking.scm",
-	"examples/ffgl.scm",
-	"examples/GLSL.scm",
-	"examples/GLSL-shaderlib.scm",
-	"examples/hitchcock.scm",
-	"examples/invaders.scm",
-	"examples/l-system-obj.scm",
-	"examples/l-system.scm",
-	"examples/materials.scm",
-	"examples/midi-test.scm",
-	"examples/missile-command.scm",
-	"examples/mouse-interactive.scm",
-	"examples/multitexture.scm",
-	"examples/multi-view.scm",
-	"examples/obj-import.scm",
-	"examples/occlusion-bake.scm",
-	"examples/osc-test.scm",
-	"examples/particle-paint.scm",
-	"examples/particles.scm",
-	"examples/physics-joints.scm",
-	"examples/plenty-o-particles.scm",
-	"examples/poly-eval.scm",
-	"examples/proc-texture.scm",
-	"examples/qflux-game.scm",
-	"examples/random.scm",
-	"examples/realtime-toon.scm",
-	"examples/ribbon-prim.scm",
-	"examples/scenegraph-nav.scm",
-	"examples/select.scm",
-	"examples/shadow-phys.scm",
-	"examples/shadows.scm",
-	"examples/skinning.scm",
-	"examples/sound.scm",
-	"examples/spotlights.scm",
-	"examples/sprite-particles.scm",
-	"examples/texcoords.scm",
-	"examples/toon.scm",
-	"examples/tree.scm",
-	"examples/water-sim.scm",
-	"examples/wire.scm"]
+	"AUTHORS", "CHANGES", "COPYING", "LICENCE", "README"]
+
+Examples = [ "examples" ]
 
 ################################################################################
 # packaging / installing
@@ -476,6 +450,7 @@ if (env['PLATFORM'] == "win32"):
 	Target+=".exe"
 
 env.Install(DocsInstall, Docs)
+env.Install(DocsInstall, Examples)
 env.Install(Install, Target)
 env.Alias('install', [DESTDIR + Prefix, CollectsInstall])
 

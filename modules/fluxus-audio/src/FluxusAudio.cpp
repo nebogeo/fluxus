@@ -365,6 +365,49 @@ Scheme_Object *update_audio(int argc, Scheme_Object **argv)
     return scheme_void;
 }
 
+// StartFunctionDoc-en
+// set-num-frequency-bins count
+// Returns: void
+// Description:
+// Sets the number of frequency bins to use for (gh) up to a limit of 127.
+// Example:
+// (set-num-frequency-bins 64)
+// EndFunctionDoc
+
+Scheme_Object *set_num_frequency_bins(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("set-num-frequency-bins", "number", 0, argc, argv);
+	if (Audio!=NULL)
+	{
+		Audio->SetNumBars((int)scheme_real_to_double(argv[0]));
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// get-num-frequency-bins
+// Returns: count-number
+// Description:
+// Returns the number of frequency bins used for (gh), or 0 if the audio
+// is not started with (start-audio).
+// Example:
+// (get-num-frequency-bins)
+// EndFunctionDoc
+
+Scheme_Object *get_num_frequency_bins(int argc, Scheme_Object **argv)
+{
+	int bars = 0;
+	if (Audio != NULL)
+	{
+		bars = Audio->GetNumBars();
+	}
+	return scheme_make_integer_value(bars);
+}
+
 /////////////////////
 
 #ifdef STATIC_LINK
@@ -388,6 +431,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("process", scheme_make_prim_w_arity(process, "process", 1, 1), menv);
 	scheme_add_global("smoothing-bias", scheme_make_prim_w_arity(smoothing_bias, "smoothing-bias", 1, 1), menv);
 	scheme_add_global("update-audio", scheme_make_prim_w_arity(update_audio, "update-audio", 0, 0), menv);
+	scheme_add_global("set-num-frequency-bins", scheme_make_prim_w_arity(set_num_frequency_bins, "set-num-frequency-bins", 1, 1), menv);
+	scheme_add_global("get-num-frequency-bins", scheme_make_prim_w_arity(get_num_frequency_bins, "get-num-frequency-bins", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();
