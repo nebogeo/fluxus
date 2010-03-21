@@ -4,11 +4,11 @@
 ;; scratchpad
 ;; Functions available as part of the fluxus scratchpad.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 #lang scheme/base
 
-(provide 
+(provide
  init-help
  help
  set-help-locale!
@@ -20,20 +20,20 @@
 (define fluxus-scratchpad-locale "en")
 
 (define (get-helpmap)
-	helpmap)
+  helpmap)
 
 ; The helpmap is of the form:
 ;
 ; (("SectionName" ("SectionDescription" "SectionExample"
-;            (("Function name" ("Arg list" "Description" "Example")) 
+;            (("Function name" ("Arg list" "Description" "Example"))
 ;              ...)))
 ;     (...))
-; 
+;
 ; While the helpmap-all-locales is of the form:
 ;
 ; (("locale" helpmap)
-;	 ("locale" helpmap)
-;  ...)	
+;  ("locale" helpmap)
+;  ...)
 
 ;; StartFunctionDoc-en
 ;; set-help-locale! locale-string
@@ -43,7 +43,7 @@
 ;; Example:
 ;; (set-help-locale! "pt") ; switch to portuguese
 ;; (set-help-locale! "en") ; and back to english
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; set-help-locale! string-locale
@@ -68,8 +68,8 @@
 ;; Displays help information on a fluxus function, or a list with
 ;; available functions matching regexp. For running in the repl mainly.
 ;; Example:
-;; (help "pop") 
-;; EndFunctionDoc    
+;; (help "pop")
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; help string-função
@@ -81,44 +81,46 @@
 ;; (help "pop")
 ;; EndFunctionDoc
 
-(define (help . args)
-  (if (null? args) ; help without an argument prints out some 
-    (func-help-example "tophelp")   ; top level help information (defined above)
-    (cond
-      ((string=? (car args) "keys") (func-help-example (car args)))
-      ((string=? (car args) "console") (func-help-example (car args)))
-      ((string=? (car args) "editor") (func-help-example (car args)))
-      ((string=? (car args) "camera") (func-help-example (car args)))
-      ((string=? (car args) "language") (func-help-example (car args)))
-      ((string=? (car args) "sections") (section-summary))
-      ((string=? (car args) "misc") (func-help-example (car args)))
-      ((string=? (car args) "toplap") (func-help-example (car args)))
-      ((string=? (car args) "authors") (func-help-example (car args)))
-      (else
-       (when (not (section-help (car args))) ; first look in the section help
-         (func-help (car args)))))))     ; if it fails fall through to function help
+(define-syntax help
+  (syntax-rules ()
+    ((help)     ; help without an argument prints out some
+     (func-help-example "tophelp")) ; top level help information (defined above)
+    ((help arg)
+     (begin
+       (define args (if (string? 'arg)
+                        'arg
+                        (symbol->string 'arg)))
+           (cond
+            ((string=? args "keys") (func-help-example args))
+            ((string=? args "console") (func-help-example args))
+            ((string=? args "editor") (func-help-example args))
+            ((string=? args "camera") (func-help-example args))
+            ((string=? args "language") (func-help-example args))
+            ((string=? args "sections") (section-summary))
+            ((string=? args "misc") (func-help-example args))
+            ((string=? args "toplap") (func-help-example args))
+            ((string=? args "authors") (func-help-example args))
+            (else
+             (when (not (section-help args)) ; first look in the section help
+               (func-help args)))))))) ; if it fails fall through to function help
 
 (define (insert-linebreaks src dst count i n)
   (if (>= i (string-length src))
       dst
       (if (and (> n count) (char=? (string-ref src i) #\space))
-          (insert-linebreaks src 
+          (insert-linebreaks src
                              (string-append dst (string (string-ref src i)) (string #\newline)) count (+ i 1) 0)
-          (insert-linebreaks src 
+          (insert-linebreaks src
                              (string-append dst (string (string-ref src i))) count (+ i 1) (+ n 1)))))
 
-;; Dave could we have a different version of this function (func-help) for each locale? --greb
-;; I've simplified the output, but we need to sort out how to cope this these smaller bits of 
-;; text - the save-as dialog is another example. --dave
-
-(define (func-help funcname)  
+(define (func-help funcname)
   (define (inner-help l)
     (let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
       (cond
         (ret
          (display "(")(display (car ret))
          (let ((arguments (list-ref (list-ref ret 1) 0)))
-           (cond 
+           (cond
              ((not (zero? (string-length arguments)))
               (display " ")
               (display arguments))))
@@ -131,11 +133,11 @@
          (newline))
         (else
          (if (null? (cdr l))
-             (let ((r (apropos funcname))) 
+             (let ((r (apropos funcname)))
                (if (null? r) "Function not found"
                    r))
              (inner-help (cdr l)))))))
-  (cond 
+  (cond
     ((null? helpmap)
      (display "No helpmap exists...")(newline)
      (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline))
@@ -144,7 +146,7 @@
 
 ; just print out the example for (preformatted) documentation which isn't
 ; really a function - need to do this in a more general way...!
-(define (func-help-example funcname)  
+(define (func-help-example funcname)
   (define (inner-help l)
     (let ((ret (assoc funcname (list-ref (cadr (car l)) 2))))
       (cond
@@ -155,7 +157,7 @@
          (if (null? (cdr l))
              "Function not found"
              (inner-help (cdr l)))))))
-  (cond 
+  (cond
     ((null? helpmap)
      (display "No helpmap exists...")(newline)
      (display "Your fluxus installation is not setup properly.")(newline)
@@ -165,16 +167,16 @@
      (inner-help helpmap))))
 
 ; print out the section summary
-(define (section-summary)  
+(define (section-summary)
   (define (print-section section)
     (display (car section))(newline))
-  
+
   (define (inner-summary l)
     (cond ((null? l) 0)
           (else
            (print-section (car l))
-           (inner-summary (cdr l))))) 
-  (cond 
+           (inner-summary (cdr l)))))
+  (cond
     ((null? helpmap)
      (display "No helpmap exists...")(newline)
      (display "Try running \"makedocs.sh\" in the fluxus docs directory")(newline)
@@ -183,16 +185,16 @@
      (inner-summary helpmap))))
 
 ; print out the section info
-(define (section-help sectionname)  
-  
+(define (section-help sectionname)
+
   (define (print-functions l c)
-    (cond 
+    (cond
       ((null? l) 0)
       (else
        (display (car (car l)))(display " ")
        (when (zero? (modulo c 5)) (newline)) ; crude wrapping
        (print-functions (cdr l) (+ c 1)))))
-  
+
   (define (print-section section)
     (display "Section: ")
     (display (car section))(newline) ; section name
@@ -200,8 +202,8 @@
     (display (cadr (cadr section)))(newline) ; section example
     (display "Functions:")(newline)
     (print-functions (caddr (cadr section)) 1)(newline) ; functions
-    #t) 
-  
+    #t)
+
   (define (inner-help l)
     (let ((section (assoc sectionname l)))
       (cond
@@ -209,8 +211,8 @@
          (print-section section))
         (else
          #f))))
-  
-  (cond 
+
+  (cond
     ((null? helpmap)
      (display "No helpmap exists...")(newline)
      (display "Try running \"makehelpmap.scm\" in the fluxus docs directory")(newline)
@@ -220,12 +222,12 @@
      (inner-help helpmap))))
 
 (define (init-help helpmapfile)
-  (cond 
+  (cond
     ((file-exists? helpmapfile)
      (let ((file (open-input-file helpmapfile)))
        (set! helpmap-all-locales (read file))
        (close-input-port file)
-       (set-help-locale! "en"))))) ; default to english... 
+       (set-help-locale! "en"))))) ; default to english...
 
 (define (apropos s)
    (let* ([apropos-list (map symbol->string (namespace-mapped-symbols))]
