@@ -61,12 +61,15 @@ public:
     void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
+
     void SetNumBars(unsigned int s) 
     { 
         m_NumBars=s; 
         delete[] m_FFTOutput;
         m_FFTOutput = new float[s];
     }
+
+    unsigned GetNumBars(void) { return m_NumBars; }
 
 private:
 

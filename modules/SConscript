@@ -5,7 +5,8 @@
 # Sets up common stuff, and calls each module SConscript 
 
 import os 
-Import("env", "CollectsInstall", "DataInstall", "MZDYN", "static_modules")
+Import("env", "CollectsInstall", "DataInstall", "MZDYN",
+		"static_modules", "static_ode", "Prefix")
 
 # run mzscheme to get (path->string (system-library-subpath))
 file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
@@ -16,11 +17,11 @@ BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = ["fluxus-engine", 
-                           "fluxus-openal",
+				"fluxus-openal",
 				"scheme",
 				"material"], 
-
-				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
+				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
+					"MZDYN", "static_modules"])
 else:
 	SConscript(dirs = ["fluxus-engine", 
 				"fluxus-audio", 
@@ -29,7 +30,8 @@ else:
 				"fluxus-openal", 
 				"scheme",
 				"material"], 
-
-				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
+				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
+					"MZDYN", "static_modules", "static_ode", "Prefix"])
 
 env.Install(CollectsInstall, "../docs/helpmap.scm")
+

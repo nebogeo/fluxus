@@ -52,6 +52,14 @@ using namespace SchemeHelper;
 // Exemplo:
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// renderer
+// Ces commandes sont pour le contrôl bas niveau de l'afficheur. Vous ne devriez pas avoir besoin
+// de l'utiliser à moins que vous soyez astucieux, ou dans la mise en oeuvre de fluxus
+// d'un afficheur externe à l'interface bloc-note.
+// Exemple:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // make-renderer
 // Returns: rendererid-number
@@ -67,6 +75,15 @@ using namespace SchemeHelper;
 // Descrição:
 // Faz um novo renderizador de gráfico da cena [scenegraph]
 // Exemplo:
+// (make-renderer)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// make-renderer
+// Retour: rendererid-nombre
+// Description:
+// Crée un afficheur de scène graphique [scenegraph]
+// Exemple:
 // (make-renderer)
 // EndFunctionDoc
 
@@ -92,6 +109,15 @@ Scheme_Object *make_renderer(int argc, Scheme_Object **argv)
 // Descrição:
 // Faz este renderizador o atual contexto para comandos.
 // Exemplo:
+// (renderer-grab renderer)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// renderer-grab rendererid-nombre
+// Retour: void
+// Description:
+// Assigne cet afficheur commme contexte courant pour les commandes. 
+// Exemple:
 // (renderer-grab renderer)
 // EndFunctionDoc
 
@@ -134,6 +160,15 @@ Scheme_Object *renderer_grab(int argc, Scheme_Object **argv)
 // (renderer-grab renderer)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// renderer-ungrab
+// Retour: void
+// Description:
+// Libère la pile de contexte d'afficheur
+// Exemple:
+// (renderer-grab renderer)
+// EndFunctionDoc
+
 Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 {
   Engine::Get()->PopRenderer();
@@ -158,6 +193,15 @@ Scheme_Object *renderer_ungrab(int argc, Scheme_Object **argv)
 // (fluxus-render)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// fluxus-render
+// Retour: void
+// Description:
+// Effacce le backbuffer, et affiche tous.
+// Exemple:
+// (fluxus-render)
+// EndFunctionDoc
+
 Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 {
   Engine::Get()->Render();
@@ -179,6 +223,15 @@ Scheme_Object *fluxus_render(int argc, Scheme_Object **argv)
 // Descrição:
 // Atualiza o sistema de física.
 // Exemplo:
+// (tick-physics)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// tick-physics
+// Retour: void
+// Description:
+// Actualise le systême physique.
+// Exemple:
 // (tick-physics)
 // EndFunctionDoc
 
@@ -208,6 +261,16 @@ Scheme_Object *tick_physics(int argc, Scheme_Object **argv)
 // (render-physics)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// render-physics
+// Retour: void
+// Description:
+// Affiche le systême physique (pour aide graphique). Ceci est la commande
+// bas niveau - utiliser set-physics-debug plutôt.
+// Exemple:
+// (render-physics)
+// EndFunctionDoc
+
 Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 {
   Engine::Get()->Physics()->Render();
@@ -232,6 +295,15 @@ Scheme_Object *render_physics(int argc, Scheme_Object **argv)
 // (reset-renderers)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// reset-renderers
+// Retour: void
+// Description:
+// Supprime tous les afficheur et en crée un nouveau par défaut.
+// Exemple:
+// (reset-renderers)
+// EndFunctionDoc
+
 Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 {
   //Engine::Get()->ResetRenderers();
@@ -253,6 +325,15 @@ Scheme_Object *reset_renderers(int argc, Scheme_Object **argv)
 // Descrição:
 // Chama reshape no render atual.
 // Exemplo:
+// (reshape 100 100)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// reshape largeur-nombre hauteur-nombre
+// Retour: void
+// Description:
+// Appelles un remodelage sur l'afficheur actuel.
+// Exemple:
 // (reshape 100 100)
 // EndFunctionDoc
 
@@ -281,6 +362,15 @@ Scheme_Object *reshape(int argc, Scheme_Object **argv)
 // Descrição:
 // Inicia todo o sistema de renderização, só precisa ser chamado uma vez.
 // Exemplo:
+// (fluxus-init)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// fluxus-init
+// Retour: void
+// Description:
+// Initilaise l'ensemble du systême d'affichage, utile qu'une seule fois.
+// Exemple:
 // (fluxus-init)
 // EndFunctionDoc
 
@@ -316,6 +406,16 @@ Scheme_Object *fluxus_init(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna uma string contendo informação sobre o erro no último frame.
 // Exemplo:
+// (display (fluxus-error-log))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// fluxus-error-log
+// Retour: string
+// Description:
+// Retourne une chaîne de caractère contenant les informations
+// sur l'erreur de la dernière frame. 
+// Exemple:
 // (display (fluxus-error-log))
 // EndFunctionDoc
 

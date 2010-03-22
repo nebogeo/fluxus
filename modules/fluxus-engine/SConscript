@@ -4,7 +4,8 @@
 # This is the main PLT module for fluxus, containing all core
 # graphics functions
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
+	"static_ode", "Prefix")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-engine_ss.dylib"
@@ -33,6 +34,12 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 		if l in Libs:
 			Libs.remove(l)
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))
+
+# link ode statically
+if static_ode and not GetOption('clean'):
+	if 'ode' in Libs:
+		Libs.remove('ode')
+		Libs.append(File('%s/lib/libode.a' % Prefix))
 
 Source = Split("src/Engine.cpp \
 		src/FluxusEngine.cpp \

@@ -28,11 +28,15 @@ namespace Fluxus
 void MakeCube(PolyPrimitive *p, float size = 1);
 void MakeCylinder(PolyPrimitive *p, float height, float radius, int hsegments, int rsegments);
 void MakeSphere(PolyPrimitive *p, float radius, int hsegments, int rsegments);
+void MakeIcosphere(PolyPrimitive *p, int level);
 void MakeTorus(PolyPrimitive *p, float innerradius, float outerradius, int hsegments, int rsegments);
 void MakePlane(PolyPrimitive *p);
 void MakePlane(PolyPrimitive *p, int xsegs, int ysegs);
 void MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int rsegments);
 void MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments);
+
+static dVector MidpointOnSphere(dVector &a, dVector &b);
+static void MakeIcosphereFace(PolyPrimitive *p, dVector &a, dVector &b, dVector &c, int level);
 
 }
 
