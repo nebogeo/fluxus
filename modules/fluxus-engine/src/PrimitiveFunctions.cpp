@@ -2932,7 +2932,8 @@ Scheme_Object *recalc_bb(int argc, Scheme_Object **argv)
 // (every-frame
 //     (begin
 //         (with-primitive b
-//             (translate (vector (* -0.1 (sin (time))) 0 0)))
+//             (translate (vector (* -0.1 (sin (time))) 0 0))
+//             (recalc-bb))
 //         (with-primitive a
 //             (when (bb/bb-intersect? b 0)
 //                 (colour (rndvec))))))
