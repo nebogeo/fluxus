@@ -347,6 +347,14 @@ bool dBoundingBox::inside(const dPlane &plane, float threshold) const
 	return false;
 }	
 
+// hack for ode
+void dBoundingBox::fudgenonzerovolume()
+{
+    if (fabs(max.x-min.x)<0.0001) max.x+=0.0001;
+    if (fabs(max.y-min.y)<0.0001) max.y+=0.0001;
+    if (fabs(max.z-min.z)<0.0001) max.z+=0.0001;
+}
+
 // conversions
 dMatrix dQuat::toMatrix() const
 {

@@ -998,7 +998,8 @@ public:
 	bool inside(const dVector &point, float threshold=0) const;
 	bool inside(const dBoundingBox &other, float threshold=0) const;
 	bool inside(const dPlane &plane, float threshold=0) const;
-	
+    // make box non zero volume hack - needed for ode unfortunately
+	void fudgenonzerovolume();
 	
 	dVector min;
 	dVector max;

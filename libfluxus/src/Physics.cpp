@@ -233,6 +233,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
   		case BOX:
   		{
 			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			dVector BoxSize=Box.max-Box.min;
 			dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
 			dMassAdjust(&m,Mass);
@@ -242,6 +243,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	    case SPHERE:
  	    {
 			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
 			float Radius=(Box.max.x-Box.min.x)/2;
@@ -253,6 +255,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	    case CYLINDER:
  	    {
             dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
 			dMassSetCylinder(&m,1,2,Radius,Height);
@@ -279,13 +282,9 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
                     	   sizeof(unsigned int)*3, (void*)normals);
 
 					dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+                    Box.fudgenonzerovolume();
 					dVector BoxSize=Box.max-Box.min;
                     
-                    // ode is tempermental with collapsed bounding volumes
-                    if (BoxSize.x<0.0001f) BoxSize.x=0.0001f;
-                    if (BoxSize.y<0.0001f) BoxSize.y=0.0001f;
-                    if (BoxSize.z<0.0001f) BoxSize.z=0.0001f;
-
 					dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
 					dMassAdjust(&m,Mass);
  					dBodySetMass(Ob->Body,&m);
@@ -399,12 +398,14 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
   		case BOX:
   		{
 			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			dVector BoxSize=Box.max-Box.min;
  			Ob->Bound = dCreateBox(m_Space,BoxSize.x,BoxSize.y,BoxSize.z);
  	    } break;
  	    case SPHERE:
  	    {
 			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
 			float Radius=(Box.max.x-Box.min.x)/2;
@@ -413,6 +414,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
  	    case CYLINDER:
  	    {
             dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            Box.fudgenonzerovolume();
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
  			Ob->Bound = dCreateCylinder(m_Space,Radius,Height);	
