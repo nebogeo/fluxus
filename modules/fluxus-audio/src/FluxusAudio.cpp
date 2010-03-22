@@ -369,7 +369,7 @@ Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 // set-num-frequency-bins count
 // Returns: void
 // Description:
-// Sets the number of frequency bins to use for (gh) up to a limit of 127.
+// Sets the number of frequency bins to use for (gh).
 // Example:
 // (set-num-frequency-bins 64)
 // EndFunctionDoc
