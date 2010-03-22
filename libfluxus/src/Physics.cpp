@@ -268,7 +268,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 			{
 				dTriMeshDataID TriMeshData=dGeomTriMeshDataCreate();
 				if (pp->GetType()==PolyPrimitive::TRILIST && pp->IsIndexed())
-				{
+				{                    
 					float *verts = (float*)(&((*pp->GetDataVec<dVector>("p"))[0]));
 					float *normals = (float*)(&((*pp->GetDataVec<dVector>("n"))[0]));
 					unsigned int *idx = (unsigned int *)(&(pp->GetIndex()[0]));
@@ -280,6 +280,12 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 
 					dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
 					dVector BoxSize=Box.max-Box.min;
+                    
+                    // ode is tempermental with collapsed bounding volumes
+                    if (BoxSize.x<0.0001f) BoxSize.x=0.0001f;
+                    if (BoxSize.y<0.0001f) BoxSize.y=0.0001f;
+                    if (BoxSize.z<0.0001f) BoxSize.z=0.0001f;
+
 					dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
 					dMassAdjust(&m,Mass);
  					dBodySetMass(Ob->Body,&m);
@@ -288,11 +294,13 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 				else
 				{
 					Trace::Stream<<"Physics::MakeActive : PolyPrimitive ["<<ID<<"] needs to be an indexed triangle list"<<endl;
+                    return;
 				}
 			}
 			else
 			{
 				Trace::Stream<<"Physics::MakeActive : Object ["<<ID<<"] is not a polyprimitive, and mesh specified"<<endl;
+                return;
 			}
 
 		} break;

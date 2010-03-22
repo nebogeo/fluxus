@@ -62,7 +62,7 @@ public:
 	/// Retrieves a pointer to the internal vector by name
 	/// Returns NULL if it doesn't exist, or is not the 
 	/// type given in the template call.
-	template<class T> vector<T>* GetDataVec(const string &name);
+	template<class T> vector<T>* GetDataVec(const string &name);      
 	
 	/// Destroys a pdata array
 	void RemoveDataVec(const string &name);
