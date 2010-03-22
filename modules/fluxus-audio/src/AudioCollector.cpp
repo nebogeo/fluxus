@@ -76,8 +76,6 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const unsigned int AudioCollector::MAX_BARS = 128;
-
 AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
 m_Gain(1),
 m_SmoothingBias(0.8),
@@ -106,8 +104,8 @@ m_NumBars(16)
 	m_AudioBuffer = new float[BufferLength];
 	memset(m_AudioBuffer,0,BufferLength*sizeof(float));
 	
-	m_FFTOutput = new float[MAX_BARS];
-	for (unsigned int n=0; n<MAX_BARS; n++) m_FFTOutput[n]=0;
+	m_FFTOutput = new float[m_NumBars];
+	for (unsigned int n=0; n<m_NumBars; n++) m_FFTOutput[n]=0;
 	
 	m_Mutex = new pthread_mutex_t;
 	pthread_mutex_init(m_Mutex,NULL);
@@ -184,9 +182,12 @@ float *AudioCollector::GetFFT()
         unsigned from = f*UsefulArea;
         unsigned to = t*UsefulArea;
 
-		for (unsigned int i=from; i<to; i++)
+		for (unsigned int i=from; i<=to; i++)
 		{
-			Value += m_FFTBuffer[i];
+            if (i<m_BufferLength)
+            {                
+                Value += m_FFTBuffer[i];
+            }
 		}
 
         if (Value<0) Value=-Value;

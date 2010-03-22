@@ -20,7 +20,8 @@
 
 using namespace Fluxus;
 
-RibbonPrimitive::RibbonPrimitive()
+RibbonPrimitive::RibbonPrimitive() :
+    m_InverseNormals(false)
 {
 	AddData("p",new TypedPData<dVector>);
 	AddData("w",new TypedPData<float>);
@@ -87,6 +88,12 @@ void RibbonPrimitive::Render()
 				dVector topnorm=up;
 				dVector botnorm=-up;
 
+                if (m_InverseNormals)
+                {
+                    topnorm=-up;
+                    botnorm=up;
+                }
+
 				glColor4fv((*m_ColData)[n].arr());
 				glTexCoord2f(tx,0);
 				glNormal3fv(botnorm.arr());
@@ -115,6 +122,12 @@ void RibbonPrimitive::Render()
 
 				dVector topnorm=up;
 				dVector botnorm=-up;
+
+                if (m_InverseNormals)
+                {
+                    topnorm=-up;
+                    botnorm=up;
+                }
 
 				glTexCoord2f(tx,0);
 				glNormal3fv(botnorm.arr());

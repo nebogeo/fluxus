@@ -61,11 +61,14 @@ public:
     void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
-    void SetNumBars(unsigned int s) { if (s<MAX_BARS) m_NumBars=s; }
+    void SetNumBars(unsigned int s) 
+    { 
+        m_NumBars=s; 
+        delete[] m_FFTOutput;
+        m_FFTOutput = new float[s];
+    }
 
 private:
-
-    static const unsigned int MAX_BARS;
 
     void AudioCallback_i(unsigned int);
 	static void AudioCallback(void *, unsigned int);

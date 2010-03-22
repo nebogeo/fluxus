@@ -1,6 +1,8 @@
 ; draw a row of cubes, scaled 
 ; by the harmonics from the sound input
 
+(define num-bars 16)
+
 (define (bars c)
     (cond ((not (zero? c))
         (translate (vector 1.1 0 0))
@@ -10,5 +12,6 @@
             (draw-cube))
         (bars (- c 1)))))
 
-(start-audio "alsa_pcm:capture_1" 512 44100)
-(every-frame (bars 16))
+(start-audio "alsa_pcm:capture_1" 1024 44100)
+(set-num-frequency-bins num-bars)
+(every-frame (bars (- num-bars 1)))

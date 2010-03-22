@@ -44,6 +44,8 @@ public:
 	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
 
+    void SetInverseNormals(bool s) { m_InverseNormals=s; }
+
 protected:
 
 	virtual void PDataDirty();
@@ -59,6 +61,8 @@ private:
 	vector<dVector> *m_Normals;
 	vector<dColour> *m_VertCols;
 	vector<dVector> *m_TexCoords;
+
+    bool m_InverseNormals;
 };
 
 }

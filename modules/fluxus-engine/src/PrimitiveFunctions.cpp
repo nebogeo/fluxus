@@ -576,6 +576,36 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// ribbon-inverse-normals 1/0
+// Returns: void
+// Description:
+// Inverts the automatically generated ribbon normals
+// Example:
+// (define mynewshape (build-ribbon 10))
+// (with-primitive mynewshape 
+//     (ribbon-invert-normals 1))
+// EndFunctionDoc
+
+Scheme_Object *ribbon_inverse_normals(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("ribbon-inverse-normals", "i", argc, argv);
+
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a pixel primitive
+		RibbonPrimitive *rp = dynamic_cast<RibbonPrimitive *>(Grabbed);
+		if (rp)
+		{
+			rp->SetInverseNormals(IntFromScheme(argv[0]));
+		}
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // build-nurbs-sphere hsegments rsegments
 // Returns: primitiveid-number
 // Description:
@@ -3157,6 +3187,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("voxels-threshold", scheme_make_prim_w_arity(voxels_threshold, "voxels-threshold", 1, 1), env);
 	scheme_add_global("voxels-point-light", scheme_make_prim_w_arity(voxels_point_light, "voxels-point-light", 2, 2), env);
 	scheme_add_global("text-params", scheme_make_prim_w_arity(text_params, "text-params", 11, 11), env);
+	scheme_add_global("ribbon-inverse-normals", scheme_make_prim_w_arity(ribbon_inverse_normals, "ribbon-inverse-normals", 1, 1), env);
 	scheme_add_global("build-blobby", scheme_make_prim_w_arity(build_blobby, "build-blobby", 3, 3), env);
 	scheme_add_global("blobby->poly", scheme_make_prim_w_arity(blobby2poly, "blobby->poly", 1, 1), env);
 	scheme_add_global("type->poly", scheme_make_prim_w_arity(type2poly, "type->poly", 1, 1), env);
