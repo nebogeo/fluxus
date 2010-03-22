@@ -67,6 +67,7 @@ public:
         m_NumBars=s; 
         delete[] m_FFTOutput;
         m_FFTOutput = new float[s];
+        memset(m_FFTOutput,0,sizeof(float)*s);
     }
 
     unsigned GetNumBars(void) { return m_NumBars; }
