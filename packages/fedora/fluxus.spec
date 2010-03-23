@@ -1,7 +1,7 @@
 %{!?_dist: %{expand: %%define dist fc12}}
-%define prever rc2
+%define prever rc3
 
-Summary: A graphical live coding environment for Scheme
+Summary: A 3D game engine for livecoding worlds into existence
 Name: fluxus
 Version: 0.17
 Release: 1.%{prever}.%{dist}
@@ -16,15 +16,10 @@ BuildRequires: ode-devel >= 0.9, plt-scheme >= 4.1.2, fftw-devel >= 3.2.1, jack-
 Requires: plt-scheme >= 4.1, fftw >= 3.0.0, jack-audio-connection-kit >= 0.100, libsndfile >= 1.0.13, liblo >= 0.23, glew >= 1.4.0, freetype >= 2.2.1, libjpeg >= 6b, libpng >= 1.2.0, libtiff >= 3.8.0, zlib >= 1.2.3, freeglut >= 2.4.0, alsa-lib >= 1.0.16, openal >= 0.0.9, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, libunicap >= 0.9.8, ffmpeg >= 0.5
 
 %description
-Fluxus reads live audio or OSC network messages which can be used as a source
-of animation data for real time performances or installations. Keyboard or mouse
-input can also be read for simple games development, and a physics engine is
-included for real time simulations of rigid body dynamics.
-
-The built in scheme code editor runs on top of the renderer, which means you
-can edit the scripts while they are running. As well as making live coding
-possible, it's also gives you a very fast feedback way of experimenting or
-learning about graphics and animation. 
+A rapid prototyping, livecoding and playing/learning environment for 3D
+graphics, sound and games. Extends PLT Scheme with graphical commands
+and can be used within it’s own livecoding environment or from within
+the DrScheme IDE. Web Page: http://www.pawfal.org/fluxus/
 
 %prep
 %setup -q -n %{name}-%{version}.%{prever}
@@ -35,6 +30,8 @@ cd docs
 
 %install
 scons -Q install DESTDIR="%{buildroot}" Prefix=/usr PLTPrefix=/usr STATIC_ODE=1
+install -m 644 -D modules/material/textures/fluxus-icon.png %{buildroot}/usr/share/pixmaps/fluxus-icon.png
+install -m 644 -D debian/fluxus.desktop %{buildroot}/usr/share/applications/fluxus.desktop
 
 %post
 # fix selinux text relocation errors
@@ -51,8 +48,13 @@ semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i38
 %{_libdir}/fluxus-017/*
 %{_datadir}/fluxus-017/*
 %{_docdir}/fluxus-017/*
+%{_datadir}/pixmaps/fluxus-icon.png
+%{_datadir}/applications/fluxus.desktop
 
 %changelog
+* Mon Mar 23 2010 Gabor Papp - 0.17-1.rc3.fc12
+- 0.17 release candidate 3
+- added menu entry
 * Mon Mar 23 2010 Gabor Papp - 0.17-1.rc2.fc12
 - 0.17 release candidate 2
 - selinux fix
