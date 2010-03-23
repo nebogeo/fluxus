@@ -135,7 +135,12 @@
          (if (null? (cdr l))
              (let ((r (apropos funcname)))
                (if (null? r) "Function not found"
-                   r))
+                   (string-append "Function not found, did you mean one of these?\n"
+                                  (foldl
+                                   (lambda (s r)
+                                     (string-append r " " s))
+                                   ""
+                                   r))))
              (inner-help (cdr l)))))))
   (cond
     ((null? helpmap)
