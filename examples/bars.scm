@@ -4,7 +4,7 @@
 (define num-bars 16)
 
 (define (bars c)
-    (cond ((not (zero? c))
+    (cond ((not (negative? c))
         (translate (vector 1.1 0 0))
         (with-state
             (colour (vector 1 0 (gh c)))
