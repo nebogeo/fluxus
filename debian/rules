@@ -48,9 +48,10 @@ install: build
 
 	# Add here commands to install the package into debian/fluxus.
 	scons Prefix=/usr PLTPrefix=/usr DESTDIR=debian/fluxus install
-	install -d $(DEB_DESTDIR)/usr/share/pixmaps
-	install -m 644 modules/materials/textures/fluxus-icon.png $(DEB_DESTDIR)/usr/share/pixmaps
-	install -m 644 debian/fluxus.desktop /usr/share/applications
+	install -d debian/fluxus/usr/share/pixmaps
+	install -m 644 modules/material/textures/fluxus-icon.png debian/fluxus/usr/share/pixmaps
+	install -d debian/fluxus/usr/share/applications
+	install -m 644 debian/fluxus.desktop debian/fluxus/usr/share/applications
 
 # Build architecture-independent files here.
 binary-indep: build install

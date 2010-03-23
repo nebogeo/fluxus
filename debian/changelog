@@ -1,8 +1,14 @@
+fluxus (0.17rc3-1~karmic1~ppa1) karmic; urgency=low
+
+  * fixed menu stuff
+
+ -- Dave Griffiths <dave@pawfal.org>  Tue, 23 Mar 2010 16:44:15 +0200
+
 fluxus (0.17rc2-1~karmic1~ppa1) karmic; urgency=low
 
   * added icon
 
- -- Dave Griffiths <dave@kittywake>  Tue, 23 Mar 2010 10:46:18 +0200
+ -- Dave Griffiths <dave@pawfal.org>  Tue, 23 Mar 2010 10:46:18 +0200
 
 fluxus (0.17rc1-1~karmic1~ppa1) karmic; urgency=low
 

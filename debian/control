@@ -3,28 +3,12 @@ Section: graphics
 Priority: optional
 Maintainer: Dave Griffiths <dave@pawfal.org>
 Uploaders: Artem Baguinski <artm@v2.nl>, Javier Candeira <javier@candeira.com>, Miriam Ruiz <little_miry@yahoo.es>
-Build-Depends: debhelper (>= 4.0.0), quilt, patchutils, scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, xlibmesa-gl-dev | x11proto-gl-dev, libglu1-xorg-dev | libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev, libopenal-dev, libunicap-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev, libavformat-dev, libavutil-dev, libswscale-dev, libavcodec-dev, plt-scheme, libasound2-dev
+Build-Depends: debhelper (>= 4.0.0), scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, xlibmesa-gl-dev | x11proto-gl-dev, libglu1-xorg-dev | libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev, libopenal-dev, libunicap-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev, libavformat-dev, libavutil-dev, libswscale-dev, libavcodec-dev, plt-scheme, libasound2-dev
 Standards-Version: 3.7.3
 XS-Vcs-Bzr: http://bazaar.launchpad.net/~fluxus-maintainers/fluxus/dev
 
 Package: fluxus
 Architecture: any
 Depends: ${shlibs:Depends}, plt-scheme
-Description: create graphics live, interpreting audio and OSC input
- Fluxus allows you to write Scheme scripts that create graphics live,
- interpreting audio and OSC input as a source of animation data. Fluxus also
- uses a fully featured physics library, which means you can script physical
- properties into objects and simulate them in realtime.
- .
- The built in scheme code editor runs on top of the renderer, which means you
- can edit the scripts while they are running. This allows Fluxus to be used
- for livecoding performances, or simply as a fast feedback way of
- experimenting or learning about graphics and animation.
- .
- Fluxus lends itself to procedural modelling and animation, there is no model
- import functionality, only simple primitives. There is an expermental
- procedural modelling tool however, and full support for texturing and basic
- material properties.
- .
- Web Page: http://www.pawfal.org/fluxus/
-
+Description: A 3D game engine for livecoding worlds into existence. 
+ A rapid prototyping, livecoding and playing/learning environment for 3D graphics, sound and games. Extends PLT Scheme with graphical commands and can be used within it’s own livecoding environment or from within the DrScheme IDE. Web Page: http://www.pawfal.org/fluxus/
