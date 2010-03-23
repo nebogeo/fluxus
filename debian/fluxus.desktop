@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=0.17
+Name=Fluxus
+Comment=A 3D game engine for livecoding
+Exec=fluxus
+Terminal=true
+Type=Application
+Icon=fluxus-icon
+#cats as in menu-spec-1.0:
+Categories=Graphics

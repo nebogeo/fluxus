@@ -9,7 +9,7 @@ XS-Vcs-Bzr: http://bazaar.launchpad.net/~fluxus-maintainers/fluxus/dev
 
 Package: fluxus
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, plt-scheme
 Description: create graphics live, interpreting audio and OSC input
  Fluxus allows you to write Scheme scripts that create graphics live,
  interpreting audio and OSC input as a source of animation data. Fluxus also

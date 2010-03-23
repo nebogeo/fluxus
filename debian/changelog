@@ -1,3 +1,15 @@
+fluxus (0.17rc2-1~karmic1~ppa1) karmic; urgency=low
+
+  * added icon
+
+ -- Dave Griffiths <dave@kittywake>  Tue, 23 Mar 2010 10:46:18 +0200
+
+fluxus (0.17rc1-1~karmic1~ppa1) karmic; urgency=low
+
+  * package for ubuntu
+
+ -- Dave Griffiths <dave@pawfal.org>  Mon, 22 Mar 2010 19:55:39 +0200
+
 fluxus (0.16rc3-1) gutsy; urgency=low
 
   * new release
