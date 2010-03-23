@@ -231,6 +231,7 @@ void GLFileDialog::RenderLoad()
 	glPushMatrix();
 
 	float lineheight=m_CharHeight;
+	const int displayrange = 10;
 	float ypos=(m_CurrentFile/(float)m_Filenames.size())*
 				lineheight*(float)m_Filenames.size();
 
@@ -242,40 +243,44 @@ void GLFileDialog::RenderLoad()
 
 		bool isdir=m_Directories.find(count)!=m_Directories.end();
 
-		while (n<i->size())
+		if (((int)count > ((int)m_CurrentFile - displayrange)) &&
+		    ((int)count < ((int)m_CurrentFile + displayrange)))
 		{
-			float width=StrokeWidth((*i)[n]);
-
-			if (width==0) // bad character
+			glTranslatef(0, ypos, 0);
+			while (n<i->size())
 			{
-				width=m_CursorWidth;
-				glColor4f(1,1,0,0.5);
-				DrawCharBlock();
-				glColor4f(0.7,0.7,0.7,1);
-				glTranslatef(width,0,0);
+				float width=StrokeWidth((*i)[n]);
+
+				if (width==0) // bad character
+				{
+					width=m_CursorWidth;
+					glColor4f(1,1,0,0.5);
+					DrawCharBlock();
+					glColor4f(0.7,0.7,0.7,1);
+					glTranslatef(width,0,0);
+				}
+
+				if (count == m_CurrentFile)
+				{
+					glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
+					DrawCharBlock();
+					glColor4f(0.7,0.7,0.7,1);
+				}
+
+				if (isdir) glColor4f(1-m_TextColourRed+0.5,
+									 1-m_TextColourGreen+0.5,
+									 1-m_TextColourBlue+0.5,
+									 m_Alpha*(1-m_TextColourAlpha+0.5));
+				else glColor4f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue,m_Alpha*m_TextColourAlpha);
+				StrokeCharacter((*i)[n]);
+
+				n++;
 			}
-
-			if (count == m_CurrentFile)
-			{
-				glColor4f(m_CursorColourRed,m_CursorColourGreen,m_CursorColourBlue,m_Alpha*m_CursorColourAlpha);
-				DrawCharBlock();
-				glColor4f(0.7,0.7,0.7,1);
-			}
-
-			if (isdir) glColor4f(1-m_TextColourRed+0.5,
-							     1-m_TextColourGreen+0.5,
-								 1-m_TextColourBlue+0.5,
-								 m_Alpha*(1-m_TextColourAlpha+0.5));
-			else glColor4f(m_TextColourRed,m_TextColourGreen,m_TextColourBlue,m_Alpha*m_TextColourAlpha);
-			StrokeCharacter((*i)[n]);
-
-			n++;
 		}
 
 		glPopMatrix();
 		glPushMatrix();
 		ypos-=lineheight;
-		glTranslatef(0,ypos,0);
 		//glRotatef((m_CurrentFile-(float)count-1)*15.0f,0,0,1);
 		// can't resist the foolishness...
 		count++;
