@@ -154,11 +154,3 @@ it's dependant scheme code.
 
 STATIC_ODE=1
 Build fluxus with ODE statically linked.
-
-Note about ODE
-Fluxus requires that the ODE library is compiled with single precision. The precision
-of the ODE library is autodetected and a warning is issued if a double precision installation
-is found. In this case fluxus will run, but you are likely to get ODE internal error messages
-and crashes when using the phyisics system. It is advised to install ODE with single precision
-and package fluxus with ODE statically linked.
-

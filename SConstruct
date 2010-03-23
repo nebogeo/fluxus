@@ -255,11 +255,6 @@ if not GetOption('clean'):
 		ode_str = odec.communicate()
 		if isinstance(ode_str[0], str):
 			env.MergeFlags(ode_str[0])
-			if ode_str[0].find('-DdDOUBLE') > -1:
-				print 'WARNING: ODE double precision installation detected'
-				print 'WARNING: you might encounter problems when using the fluxus physics system'
-			else:
-				print 'ODE single precision detected'
 	except:
 		print 'WARNING: unable to run ode-config, cannot detect ODE precision'
 
