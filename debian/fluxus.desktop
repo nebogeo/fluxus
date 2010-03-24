@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=Fluxus
-Comment=A 3D game engine for livecoding worlds into existence. 
+Comment=A 3D game engine for livecoding worlds into existence
 Version=1.0
 Exec=fluxus
 Terminal=true
