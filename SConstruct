@@ -6,7 +6,7 @@
 # application, then calls the sconscripts for libfluxus and
 # the fluxus PLT modules
 
-import os, sys, commands, subprocess
+import os, os.path, sys, commands, subprocess
 
 MajorVersion = "0"
 MinorVersion = "17"
@@ -384,7 +384,8 @@ Examples = [ "examples" ]
 ################################################################################
 # packaging / installing
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-        from macos.osxbundle import *
+        sys.path.append(os.path.abspath('packages/macos'))
+        from osxbundle import *
         TOOL_BUNDLE(env)
         # add dynamic libs
         frameworks = [PLTLib + '/PLT_MrEd.framework',

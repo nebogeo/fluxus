@@ -36,7 +36,9 @@ if env['PLATFORM'] == 'darwin':
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	from macos.osxbundle import *
+	import sys, os.path
+	sys.path.append(os.path.abspath('../packages/macos'))
+	from osxbundle import *
 	TOOL_BUNDLE(env)
 	Frameworks += ["Jackmp"]
 
