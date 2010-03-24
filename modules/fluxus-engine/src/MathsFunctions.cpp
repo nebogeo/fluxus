@@ -218,6 +218,7 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 // Description:
 // Returns the normalised form of the vector (length=1)
 // Example:
+// (vnormalise (vector 3 4 5))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -226,6 +227,7 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna a forma normalisada do vetor (length=1)
 // Exemplo:
+// (vnormalise (vector 3 4 5))
 // EndFunctionDoc
 
 Scheme_Object *vnormalise(int argc, Scheme_Object **argv)

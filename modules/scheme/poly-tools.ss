@@ -46,7 +46,7 @@
       ((eq? t 4) 'polygon))))
 
 ;; StartFunctionDoc-en
-;; pdata-for-each-face proc pdatanames
+;; poly-for-each-face proc pdatanames
 ;; Returns: list of pdata values
 ;; Description:
 ;; Calls proc with the indices for each face in a polygon primitive
@@ -146,7 +146,7 @@
              ((eq? (poly-type) 'polygon) (proc (make-range (pdata-size) '()))))))))
 
 ;; StartFunctionDoc-en
-;; pdata-for-each-triangle proc 
+;; poly-for-each-triangle proc
 ;; Returns: list of pdata values
 ;; Description:
 ;; Calls proc with the pdata for each triangle in a face - assumes all faces are convex. 
@@ -179,7 +179,7 @@
 (define (poly-build-triangulate id)
   (with-primitive id
     (let ((triangles '()))
-      (poly-for-each-triangle 
+      (poly-for-each-triangle
 	    (lambda (indices)
 	      (set! triangles (cons 
 		     (map
@@ -207,7 +207,7 @@
 		  
 
 ;; StartFunctionDoc-en
-;; pdata-for-each-tri-sample proc samples-per-triangle
+;; poly-for-each-tri-sample proc samples-per-triangle
 ;; Returns: void
 ;; Description:
 ;; Calls proc with the triangle indices and a random barycentric coord. 
@@ -215,7 +215,7 @@
 ;; EndFunctionDoc 
 
 (define (poly-for-each-tri-sample proc samples-per-triangle)
-  (poly-for-each-triangle 
+  (poly-for-each-triangle
    (lambda (indices)
      (for ((x (in-range 0 samples-per-triangle)))
           (proc indices (vsquash (rndvec)))))))
@@ -441,5 +441,4 @@
 			  (vector 0 0 1))
 			"n"))
 	p))
-	
-	
+
