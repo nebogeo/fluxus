@@ -242,12 +242,6 @@ if not GetOption('clean'):
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])
 
-# replace libs with static libs if building an osx app
-if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
-		env['LIBS'].remove(l)
-		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
-
 # detect ode precision
 if not GetOption('clean'):
 	try:
@@ -263,6 +257,12 @@ if static_ode and not GetOption('clean'):
 	if 'ode' in env['LIBS']:
 		env['LIBS'].remove('ode')
 		env['LIBS'].append(File('%s/lib/libode.a' % Prefix))
+
+# replace libs with static libs if building an osx app
+if env['PLATFORM'] == 'darwin' and GetOption('app'):
+	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
+		env['LIBS'].remove(l)
+		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
 ################################################################################
 # Build the fluxus application
