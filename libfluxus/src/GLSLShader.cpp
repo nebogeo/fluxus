@@ -26,7 +26,9 @@ using namespace Fluxus;
 
 bool GLSLShader::m_Enabled(false);
 
-GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fragment)
+GLSLShaderPair::GLSLShaderPair(bool load, const string &vertex, const string &fragment) :
+m_VertexShader(0),
+m_FragmentShader(0)
 {
 	if (load)
 	{
