@@ -21,7 +21,7 @@ if env['PLATFORM'] == 'win32':
 				"scheme",
 				"material"], 
 				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
-					"MZDYN", "static_modules"])
+					"MZDYN", "static_modules", "static_ode", "Prefix"])
 else:
 	SConscript(dirs = ["fluxus-engine", 
 				"fluxus-audio", 
