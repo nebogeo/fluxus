@@ -45,9 +45,8 @@
 (require "fluxus-modules.ss")
 (require "tasks.ss")
 (provide 
- with-ffgl
- ffgl-set-parameter!
- )
+	with-ffgl
+	ffgl-set-parameter!)
  
 ;; StartFunctionDoc-en
 ;; with-ffgl ffgl-pluginid expression ...
@@ -56,7 +55,7 @@
 ;; Allows you to work with the specified FFGL plugin.
 ;; Example:
 ;; (clear)
-;; (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+;; (define plugin (ffgl-load "FFGLTile" 256 256))
 ;;
 ;; (with-ffgl plugin
 ;;   (for ([i (ffgl-get-info)])
@@ -79,7 +78,7 @@
 ;; Sets ffgl plugin parameters.
 ;; Example:
 ;; (clear)
-;; (define plugin (ffgl-load "FFGLTile.dylib" 256 256))
+;; (define plugin (ffgl-load "FFGLTile" 256 256))
 ;;
 ;; (with-ffgl plugin
 ;;        (ffgl-set-parameter! #:tilex .5 #:tiley .2))
@@ -94,3 +93,4 @@
 				(for/list ([kw kws]
 						   [arg kw-args])
 					(list (string->symbol (keyword->string kw)) arg)))))))
+

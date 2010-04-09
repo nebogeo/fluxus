@@ -609,7 +609,7 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 // Example:
 // (define mynewshape (build-ribbon 10))
 // (with-primitive mynewshape 
-//     (ribbon-invert-normals 1))
+//     (ribbon-inverse-normals 1))
 // EndFunctionDoc
 
 Scheme_Object *ribbon_inverse_normals(int argc, Scheme_Object **argv)

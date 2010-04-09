@@ -68,6 +68,8 @@
 (define (unit-test name code log)
   (clear)
   (printf "testing: ~a~n" name)
+  (when do-log
+     (fprintf log "testing: ~a~n" name))
 
   (cond
     ((string=? code "")
@@ -84,14 +86,14 @@
                      (fprintf log "~a~n" s))
                (set! errors (+ errors 1))
                (set! error-list (cons name error-list))))))
-    (sleep 0.1)
-    )
+    (sleep 0.1))
 
 (define (go)
   (let ((log (open-output-file "log.txt" #:exists 'replace)))
-      (test-sections (get-helpmap) log)
-    (close-output-port log)
-    (printf "testing found ~a errors: ~a ~n" errors error-list)))
+	(file-stream-buffer-mode log 'line)
+	(test-sections (get-helpmap) log)
+	(close-output-port log)
+	(printf "testing found ~a errors: ~a ~n" errors error-list)))
 
 ;; StartFunctionDoc-en
 ;; self-test do-logging

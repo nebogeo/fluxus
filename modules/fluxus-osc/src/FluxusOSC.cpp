@@ -37,15 +37,15 @@ Client *OSCClient = NULL;
 //
 // (define (test)
 //     (push)
-//     (if (osc-msg "/zzz")
+//     (when (osc-msg "/zzz")
 //         (set! value (osc 0)))
 //     (translate (vector 1 0 value))
 //     (draw-cube)
 //     (pop))
-// 
+//
 // (osc-source "6543")
 // (every-frame (test))
-// 
+//
 // --- EOF
 //
 // A PD patch to send control messages to fluxus:

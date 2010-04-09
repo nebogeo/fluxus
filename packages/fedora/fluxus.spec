@@ -1,5 +1,5 @@
 %{!?_dist: %{expand: %%define dist fc12}}
-%define prever rc3
+%define prever rc4
 
 Summary: A 3D game engine for livecoding worlds into existence
 Name: fluxus
@@ -52,10 +52,12 @@ semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i38
 %{_datadir}/applications/fluxus.desktop
 
 %changelog
-* Mon Mar 23 2010 Gabor Papp - 0.17-1.rc3.fc12
+* Wed Mar 24 2010 Gabor Papp - 0.17-1.rc4.fc12
+- 0.17 release candidate 4
+* Tue Mar 23 2010 Gabor Papp - 0.17-1.rc3.fc12
 - 0.17 release candidate 3
 - added menu entry
-* Mon Mar 23 2010 Gabor Papp - 0.17-1.rc2.fc12
+* Tue Mar 23 2010 Gabor Papp - 0.17-1.rc2.fc12
 - 0.17 release candidate 2
 - selinux fix
 * Mon Mar 10 2010 Gabor Papp - 0.17-1.20100310git.fc12
