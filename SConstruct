@@ -159,7 +159,6 @@ else:
 LibList = [["m", "math.h"],
                 ["pthread", "pthread.h"],
                 ["dl", "stdio.h"],
-                ["mzscheme3m", PLTInclude + "/scheme.h"],
                 ["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
                 ["tiff", "tiff.h"],
                 ["freetype", "ft2build.h"],
@@ -170,6 +169,11 @@ LibList = [["m", "math.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
                 ["GLEW", "GL/glew.h"]]
+
+if ARGUMENTS.get('MZNAME','') == 'racket':
+        LibList += [["racket3m", PLTInclude + "/scheme.h"]]
+else:
+        LibList += [["mzscheme3m", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
