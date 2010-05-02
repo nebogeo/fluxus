@@ -980,7 +980,7 @@ Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
 		    return scheme_void;
 		}
 	}
-	
+
 	Trace::Stream<<"voxels-calc-gradient can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -998,10 +998,10 @@ Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
 // (define p (build-voxels 30 30 30))
 // (define t 0)
 //
-// (every-frame (with-primitive p 
+// (every-frame (with-primitive p
 //     (set! t (+ t 0.02))
 //     (for ((i (in-range 0 10)))
-//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
 //             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
 //             (- 1 (/ i 10))))
 //
@@ -1010,11 +1010,11 @@ Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
 Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
-	ArgCheck("voxels-sphere-influence", "vvf", argc, argv);
+	ArgCheck("voxels-sphere-influence", "vcf", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
@@ -1022,15 +1022,14 @@ Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
 		{
 			dVector pos;
 			FloatsFromScheme(argv[0],pos.arr(),3);
-			dColour col;
-			FloatsFromScheme(argv[1],col.arr(),3);
+			dColour col = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
 			pp->SphereInfluence(pos,col,FloatFromScheme(argv[2]));
 			MZ_GC_UNREG();
 		    return scheme_void;
 		}
 	}
 	MZ_GC_UNREG();
-	
+
 	Trace::Stream<<"voxels-sphere-influence can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -1048,10 +1047,10 @@ Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
 // (define p (build-voxels 30 30 30))
 // (define t 0)
 //
-// (every-frame (with-primitive p 
+// (every-frame (with-primitive p
 //     (set! t (+ t 0.02))
 //     (for ((i (in-range 0 10)))
-//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
 //             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
 //             (- 1 (/ i 10))))
 //
@@ -1060,11 +1059,11 @@ Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
 Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
-	ArgCheck("voxels-sphere-solid", "vvf", argc, argv);
+	ArgCheck("voxels-sphere-solid", "vcf", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
@@ -1072,15 +1071,14 @@ Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
 		{
 			dVector pos;
 			FloatsFromScheme(argv[0],pos.arr(),3);
-			dColour col;
-			FloatsFromScheme(argv[1],col.arr(),3);
+			dColour col = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
 			pp->SphereSolid(pos,col,FloatFromScheme(argv[2]));
 			MZ_GC_UNREG();
 		    return scheme_void;
 		}
 	}
 	MZ_GC_UNREG();
-	
+
 	Trace::Stream<<"voxels-sphere-solid can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -1098,10 +1096,10 @@ Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
 // (define p (build-voxels 30 30 30))
 // (define t 0)
 //
-// (every-frame (with-primitive p 
+// (every-frame (with-primitive p
 //     (set! t (+ t 0.02))
 //     (for ((i (in-range 0 10)))
-//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
 //             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
 //             (- 1 (/ i 10))))
 //
@@ -1110,11 +1108,11 @@ Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
 Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
-	ArgCheck("voxels-box-solid", "vvv", argc, argv);
+	ArgCheck("voxels-box-solid", "vvc", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
@@ -1124,15 +1122,14 @@ Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
 			FloatsFromScheme(argv[0],top.arr(),3);
 			dVector bot;
 			FloatsFromScheme(argv[1],bot.arr(),3);
-			dColour col;
-			FloatsFromScheme(argv[2],col.arr(),3);
+			dColour col = ColourFromScheme(argv[2], Engine::Get()->State()->ColourMode);
 			pp->BoxSolid(top,bot,col);
 			MZ_GC_UNREG();
 		    return scheme_void;
 		}
 	}
 	MZ_GC_UNREG();
-	
+
 	Trace::Stream<<"voxels-box-solid can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -1151,7 +1148,7 @@ Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
 // (define p (build-voxels 30 30 30))
 // (define t 0)
 //
-// (every-frame (with-primitive p 
+// (every-frame (with-primitive p
 //     (set! t (+ t 0.02))
 //     (for ((i (in-range 0 10)))
 //         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
@@ -1163,11 +1160,11 @@ Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
 Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
 	ArgCheck("voxels-threshold", "f", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
@@ -1179,7 +1176,7 @@ Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
 		}
 	}
 	MZ_GC_UNREG();
-	
+
 	Trace::Stream<<"voxels-threshold can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
@@ -1197,10 +1194,10 @@ Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
 // (define p (build-voxels 30 30 30))
 // (define t 0)
 //
-// (every-frame (with-primitive p 
+// (every-frame (with-primitive p
 //     (set! t (+ t 0.02))
 //     (for ((i (in-range 0 10)))
-//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
 //             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
 //             (- 1 (/ i 10))))
 //
@@ -1209,11 +1206,11 @@ Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
 Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
-{		
+{
 	DECL_ARGV();
-	ArgCheck("voxels-point-light", "vv", argc, argv);
+	ArgCheck("voxels-point-light", "vc", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-	if (Grabbed) 
+	if (Grabbed)
 	{
 		// only if this is a pixel primitive
 		VoxelPrimitive *pp = dynamic_cast<VoxelPrimitive *>(Grabbed);
@@ -1221,15 +1218,14 @@ Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
 		{
 			dVector pos;
 			FloatsFromScheme(argv[0],pos.arr(),3);
-			dColour col;
-			FloatsFromScheme(argv[1],col.arr(),3);
+			dColour col = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
 			pp->PointLight(pos,col);
 			MZ_GC_UNREG();
 		    return scheme_void;
 		}
 	}
 	MZ_GC_UNREG();
-	
+
 	Trace::Stream<<"voxels-point-light can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
