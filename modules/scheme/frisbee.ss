@@ -24,7 +24,7 @@
  (lib "kw.ss")    ; todo:
  (lib "match.ss") ; change to new versions
  scheme/class
- frtime/list
+; frtime/list
  frtime/etc
  frtime/math
  frtime/lang-ext

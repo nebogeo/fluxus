@@ -282,8 +282,7 @@ if not GetOption('clean'):
 			++lib mzscheme \
 			++lib mzlib/string \
 			++lib setup   \
-			++lib config  \
-			++lib stxclass").close()
+			++lib config").close()
 	else:
 		#mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
 		mzc_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'scheme/base'])
@@ -327,20 +326,22 @@ if not GetOption('clean') and static_modules:
 		
 		# start off with the first options
 		linkcom = " -static-libgcc -Wl,-Bstatic -lstdc++ -ljack -lrt -lasound \
-			-lfluxus -lpthread_nonshared "
+			 -lfluxus -lode -lsndfile -lFLAC -lvorbis -lvorbisenc -logg -lpthread_nonshared "
 	
 		app_env['LIBS'].remove("pthread")
 		app_env['LIBS'].remove("dl")
+                app_env['LIBS'].remove("ode")
+                app_env['LIBS'].remove("sndfile")
 	
 		# now go through the rest of the libs, removing them from 
 		# the environment at the same time
-		for i in " GLEW GLU glut asound m ode fftw3 mzscheme3m png tiff \
-					jpeg freetype sndfile lo z ".split():
+		for i in " GLEW GLU glut asound m fftw3 mzscheme3m png tiff \
+					jpeg freetype lo z ".split():
 			app_env['LIBS'].remove(i)
 			linkcom+="-l"+i+" "
 	
 		# add the remaining dependancies
-		app_env.Append(LINKCOM = linkcom + ' -lFLAC -logg -Wl,-Bdynamic')
+		app_env.Append(LINKCOM = linkcom + ' -Wl,-Bdynamic')
 	else:
 		# statically link in mzscheme only
 		if env['PLATFORM'] == 'win32':
@@ -354,6 +355,7 @@ if not GetOption('clean') and static_modules:
 		app_env.Append(LIBS = ["fluxus"])
 		app_env.Append(LIBS = ["jack"])
 		app_env.Append(LIBS = ["asound"])
+		app_env.Append(LIBS = ["ode"])
 
 app_env.Program(source = Source, target = Target)
 

@@ -113,6 +113,8 @@ private:
 		~JointObject();
 		dJointID Joint;
 		JointType Type;
+		int Ob1;
+		int Ob2;
 	};
 
 	void UpdatePrimitives();

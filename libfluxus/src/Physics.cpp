@@ -511,6 +511,25 @@ void Physics::Free(int ID)
 		Trace::Stream<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
+	
+	cerr<<"freeing "<<ID<<endl;
+	
+	// clean up joints connected to this object
+	vector<map<int,JointObject*>::iterator> toremove;
+	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
+	{
+		if (i->second->Ob1==ID || i->second->Ob2==ID)
+		{
+			cerr<<"freeing joint"<<endl;
+			toremove.push_back(i);
+			delete i->second;
+		}
+	}
+	
+	for (vector<map<int,JointObject*>::iterator>::iterator i=toremove.begin(); i!=toremove.end(); ++i)
+	{	
+		m_JointMap.erase(*i);
+	}
 
 	delete i->second;
 	m_ObjectMap.erase(i);
@@ -709,6 +728,8 @@ int Physics::CreateJointHinge2(int Ob1, int Ob2, dVector Anchor, dVector Hinge[2
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=Hinge2Joint;
+	NewJoint->Ob1=Ob1;
+	NewJoint->Ob2=Ob2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -746,6 +767,8 @@ int Physics::CreateJointHinge(int Ob1, int Ob2, dVector Anchor, dVector Hinge)
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=HingeJoint;
+	NewJoint->Ob1=Ob1;
+	NewJoint->Ob2=Ob2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -774,6 +797,8 @@ int Physics::CreateJointFixed(int Ob)
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=FixedJoint;
+	NewJoint->Ob1=Ob;
+	NewJoint->Ob2=0;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -809,6 +834,8 @@ int Physics::CreateJointSlider(int Ob1, int Ob2, dVector Hinge)
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=SliderJoint;
+	NewJoint->Ob1=Ob1;
+	NewJoint->Ob2=Ob2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -847,6 +874,8 @@ int Physics::CreateJointAMotor(int Ob1, int Ob2, dVector Axis)
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=AMotorJoint;
+	NewJoint->Ob1=Ob1;
+	NewJoint->Ob2=Ob2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
@@ -882,6 +911,8 @@ int Physics::CreateJointBall(int Ob1, int Ob2, dVector Anchor)
 	JointObject *NewJoint = new JointObject;
 	NewJoint->Joint=j;
 	NewJoint->Type=BallJoint;
+	NewJoint->Ob1=Ob1;
+	NewJoint->Ob2=Ob2;
 	m_JointMap[m_NextJointID]=NewJoint;
 	m_NextJointID++;
 	return m_NextJointID-1;
