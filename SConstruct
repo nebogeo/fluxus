@@ -159,7 +159,6 @@ else:
 LibList = [["m", "math.h"],
                 ["pthread", "pthread.h"],
                 ["dl", "stdio.h"],
-                ["mzscheme3m", PLTInclude + "/scheme.h"],
                 ["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
                 ["tiff", "tiff.h"],
                 ["freetype", "ft2build.h"],
@@ -170,6 +169,11 @@ LibList = [["m", "math.h"],
                 ["fftw3", "fftw3.h"],
                 ["lo", "lo/lo.h"],
                 ["GLEW", "GL/glew.h"]]
+
+if ARGUMENTS.get('MZNAME','') == 'racket':
+        LibList += [["racket3m", PLTInclude + "/scheme.h"]]
+else:
+        LibList += [["mzscheme3m", PLTInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
@@ -190,17 +194,18 @@ if env['PLATFORM'] == 'posix':
                     ["openal", "AL/al.h"]]
 
 elif env['PLATFORM'] == 'darwin':
-        # add jack as a library if not making an app
-        if not GetOption('app'):
-            LibList += [["jack", "jack/jack.h"]]
-        env.Append(FRAMEWORKPATH = [PLTLib])
+	# add jack as a library if not making an app
+		if not GetOption('app'):
+			LibList += [["jack", "jack/jack.h"]]
+		env.Append(FRAMEWORKPATH = [PLTLib])
+		env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
 
-        if GetOption('app'):
-            env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
-            # FIXME: check if Jackmp is available when making an app
-            env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation PLT_MrEd Jackmp"))
-        else:
-            env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd"))
+		if GetOption('app'):
+			env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
+			# FIXME: check if Jackmp is available when making an app
+			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation PLT_MrEd Jackmp"))
+		else:
+			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd"))
 
 
 ################################################################################

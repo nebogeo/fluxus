@@ -1,5 +1,5 @@
 %{!?_dist: %{expand: %%define dist fc12}}
-%define prever rc4
+%define prever rc5
 
 Summary: A 3D game engine for livecoding worlds into existence
 Name: fluxus
@@ -52,6 +52,10 @@ semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i38
 %{_datadir}/applications/fluxus.desktop
 
 %changelog
+* Fri Apr 09 2010 Gabor Papp - 0.17-1.rc5.fc12
+- 0.17 release candidate 5
+* Fri Apr 09 2010 Gabor Papp - 0.17-2.rc4.fc12
+- shader crash fix for old graphics cards
 * Wed Mar 24 2010 Gabor Papp - 0.17-1.rc4.fc12
 - 0.17 release candidate 4
 * Tue Mar 23 2010 Gabor Papp - 0.17-1.rc3.fc12
