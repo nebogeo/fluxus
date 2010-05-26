@@ -40,6 +40,13 @@ Primitive *PixelPrimitiveIO::FormatRead(const string &filename)
 bool PixelPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob) 
 {
 	const PixelPrimitive *pp = dynamic_cast<const PixelPrimitive *>(ob);
+
+    if (!pp)
+    {
+        Trace::Stream<<"Can only save images from pixel primitives"<<endl;
+        return false;
+    }
+    
 	pp->Save(filename);
 	return true;
 }

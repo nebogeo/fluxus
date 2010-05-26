@@ -24,11 +24,11 @@
  (lib "kw.ss")    ; todo:
  (lib "match.ss") ; change to new versions
  scheme/class
-; frtime/list
- frtime/etc
- frtime/math
+ frtime/frlibs/list
+ frtime/frlibs/etc
+ frtime/frlibs/math
  frtime/lang-ext
- (all-except frtime/frp-core undefined?)
+ (only frtime/core/frp do-in-manager-after)
  ; import the procedures we want lifted
  (lifted "fluxus.ss"
      vadd2 vsub2 vmul vdiv vtransform vtransform-rot

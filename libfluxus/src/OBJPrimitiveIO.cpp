@@ -418,20 +418,28 @@ void OBJPrimitiveIO::WriteIndices(const Primitive *ob, FILE *file)
 
 bool OBJPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob)
 {
-	FILE *file = fopen(filename.c_str(),"w");
-	if (file==NULL)
-	{
-		Trace::Stream<<"Cannot open .obj file: "<<filename<<endl;
-		return false;
-	}
-	
-	WriteVertices("p","v",ob,file);
-	WriteVertices("n","vn",ob,file);
-	WriteVertices("t","vt",ob,file);
-	WriteIndices(ob,file);
-	
-	fclose(file);
-	
-	return false;
+    // only save obj files for polyprims
+    const PolyPrimitive *pp = dynamic_cast<const PolyPrimitive*>(ob);
+    if (!pp)
+    {       
+        Trace::Stream<<"Can only save OBJ files from PolyPrimitives"<<endl;
+        return false;
+    }
+
+    FILE *file = fopen(filename.c_str(),"w");
+    if (file==NULL)
+    {
+        Trace::Stream<<"Cannot open .obj file: "<<filename<<endl;
+        return false;
+    }
+        
+    WriteVertices("p","v",ob,file);
+    WriteVertices("n","vn",ob,file);
+    WriteVertices("t","vt",ob,file);
+    WriteIndices(ob,file);	
+    
+    fclose(file);
+    
+    return true;
 }
 	
