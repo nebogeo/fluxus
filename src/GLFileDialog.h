@@ -24,7 +24,7 @@
 
 using namespace std;
 
-namespace fluxus 
+namespace fluxus
 {
 
 class GLFileDialog : public GLEditor
@@ -32,15 +32,17 @@ class GLFileDialog : public GLEditor
 public:
 	GLFileDialog();
 	virtual ~GLFileDialog();
-	
+
 	virtual void Render();
 	virtual void Handle(int button, int key, int special, int state, int x, int y, int mod);
-	
+
 	wstring GetOutput() { return m_Output; }
 	void Clear() { m_Output=L""; }
 	void SetSaveAsMode(bool s) { m_SaveAs=s; }
 	bool GetSaveAsMode() { return m_SaveAs; }
-	
+
+	void Refresh() { ReadPath(); }
+
 protected:
 
 	void RenderSaveAs();
@@ -56,7 +58,7 @@ protected:
 	wstring m_Path;
 	wstring m_Output;
 	wstring m_SaveAsInfoText;
-	
+
 	bool m_SaveAs;
 };
 

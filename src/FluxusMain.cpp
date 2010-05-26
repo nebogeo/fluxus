@@ -122,7 +122,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		//for testing
 //		cout << "KEY:" << key << " / " << state << endl;
-		
+
 		// pretty sure this is going to have to change...
 		switch(key)
 		{
@@ -141,6 +141,7 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 				if (m_CurrentEditor!=9) // don't go into the dialogs from the repl
 				{
 					m_FileDialog->SetSaveAsMode(false);
+					m_FileDialog->Refresh();
 					m_ShowFileDialog=!m_ShowFileDialog;
 				}
 			break; // l
@@ -197,11 +198,6 @@ void FluxusMain::Handle(unsigned char key, int button, int special, int state, i
 	{
 		if (special==GLUT_KEY_F9)
 		{
-			/*
-			m_Editor[m_CurrentEditor]->m_TextColourRed=rand()%1000/1000.0f;
-			m_Editor[m_CurrentEditor]->m_TextColourBlue=rand()%1000/1000.0f;
-			m_Editor[m_CurrentEditor]->m_TextColourGreen=rand()%1000/1000.0f;
-			*/
 			m_Editor[m_CurrentEditor]->m_DoEffects =
 				!m_Editor[m_CurrentEditor]->m_DoEffects;
 		}
