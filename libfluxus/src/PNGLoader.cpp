@@ -14,16 +14,17 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <iostream>
 #include <cstdlib>
-#include <png.h>
+#include "png.h"
+#include "OpenGL.h"
 #include "PNGLoader.h"
 #include "Trace.h"
-#include <iostream>
 
 using namespace Fluxus;
 using namespace std;
 
-unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned int &h, PixelFormat &pf)
+unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
 {
 	unsigned char *ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
@@ -82,19 +83,24 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		delete[] row_pointers;
 
 		// convert the format to fluxus texture format stuff
-		w=width;
-		h=height;
-		
+		desc.Width = width;
+		desc.Height = height;
+
 		switch (colour_type)
 		{
-			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
-			case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
-        	default : 
-			{
-				Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
-				delete[] ImageData;
-				ImageData=NULL;
-			}
+			case PNG_COLOR_TYPE_RGB:
+						desc.Format = desc.InternalFormat = GL_RGB;
+						desc.Size = width * height * 3;
+						break;
+			case PNG_COLOR_TYPE_RGB_ALPHA:
+						desc.Format = desc.InternalFormat = GL_RGBA;
+						desc.Size = width * height * 4;
+						break;
+			default:
+						Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
+						delete[] ImageData;
+						ImageData=NULL;
+						break;
         }
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -103,7 +109,7 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 	return ImageData;
 }
 
-void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, PixelFormat pf, unsigned char *data)
+void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, int pf, unsigned char *data)
 {
 	FILE *f;
 	png_structp ppng;
@@ -112,7 +118,7 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 	unsigned int i;
 
 	unsigned int numchannels = 3;
-	if (pf==RGBA) numchannels = 4;
+	if (pf==GL_RGBA) numchannels = 4;
 
 	if (!(f = fopen (Filename.c_str(), "wb")))
 	{
@@ -145,13 +151,13 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 
 	png_init_io (ppng, f);
 
-	if (pf==RGB)
+	if (pf==GL_RGB)
 	{
 		png_set_IHDR (ppng, pinfo, w, h, 8, PNG_COLOR_TYPE_RGB,
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
 		PNG_FILTER_TYPE_BASE);
 	}
-	else if (pf==RGBA)
+	else if (pf==GL_RGBA)
 	{
 		png_set_IHDR (ppng, pinfo, w, h, 8, PNG_COLOR_TYPE_RGBA,
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,

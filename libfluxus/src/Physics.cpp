@@ -511,23 +511,20 @@ void Physics::Free(int ID)
 		Trace::Stream<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
 		return;
 	}
-	
-	cerr<<"freeing "<<ID<<endl;
-	
+
 	// clean up joints connected to this object
 	vector<map<int,JointObject*>::iterator> toremove;
 	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
 	{
 		if (i->second->Ob1==ID || i->second->Ob2==ID)
 		{
-			cerr<<"freeing joint"<<endl;
 			toremove.push_back(i);
 			delete i->second;
 		}
 	}
-	
+
 	for (vector<map<int,JointObject*>::iterator>::iterator i=toremove.begin(); i!=toremove.end(); ++i)
-	{	
+	{
 		m_JointMap.erase(*i);
 	}
 

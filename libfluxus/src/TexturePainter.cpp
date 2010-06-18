@@ -18,6 +18,7 @@
 #include "State.h"
 #include "TexturePainter.h"
 #include "PNGLoader.h"
+#include "DDSLoader.h"
 #include "SearchPaths.h"
 #include <assert.h>
 
@@ -26,7 +27,8 @@ using namespace Fluxus;
 TexturePainter *TexturePainter::m_Singleton=NULL;
 
 TexturePainter::TexturePainter() :
-m_MultitexturingEnabled(true)
+m_MultitexturingEnabled(true),
+m_TextureCompressionEnabled(true)
 {
 	if (glewInit() != GLEW_OK)
 	{
@@ -42,6 +44,13 @@ m_MultitexturingEnabled(true)
 	#else
 	m_MultitexturingEnabled=false;
 	#endif
+
+	if (!GLEW_EXT_texture_compression_s3tc || !GLEW_ARB_texture_compression ||
+			(glCompressedTexImage2DARB == NULL))
+	{
+		Trace::Stream << "Warning: Texture compression disabled." << endl;
+		m_TextureCompressionEnabled = false;
+	}
 }
 
 TexturePainter::~TexturePainter()
@@ -61,7 +70,7 @@ void TexturePainter::Initialise()
 			glLoadIdentity();
 		}
 	}
-	else 
+	else
 #endif
 	{
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -86,45 +95,50 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 	{
 		return LoadCubeMap(Fullpath, params);
 	}
-	
+
 	// see if we've loaded this one already
 	map<string,int>::iterator i=m_LoadedMap.find(Fullpath);
 	if (i!=m_LoadedMap.end())
 	{
 		return i->second;
 	}
-	
+
 	unsigned char *ImageData;
     TextureDesc desc;
-    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
-	
+	string extension = Filename.substr(Filename.find_last_of('.') + 1, Filename.size());
+
+	if (extension == "dds")
+		ImageData = DDSLoader::Load(Fullpath, desc);
+	else
+		ImageData = PNGLoader::Load(Fullpath, desc);
+
 	if (ImageData!=NULL)
     {
 		//\todo support more depths than 8bit
-		
+
 		// upload to card...
 		glEnable(params.Type);
-		
+
 		if (params.ID==-1) // is this a new texture?
 		{
 			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
 			//\todo this means mipmap levels won't be cached
-    		m_TextureMap[params.ID]=desc;
-			m_LoadedMap[Fullpath]=params.ID;					
+			m_TextureMap[params.ID]=desc;
+			m_LoadedMap[Fullpath]=params.ID;
 		}
-				
-		UploadTexture(desc,params,ImageData);										
+
+		UploadTexture(desc,params,ImageData);
 		delete[] ImageData;
-		return params.ID;		
-	}	
+		return params.ID;
+	}
 	m_LoadedMap[Fullpath]=0;
     return 0;
 }
 
 unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &params)
-{	
+{
 	// see if we've loaded this one already
 	map<string,int>::iterator i=m_LoadedCubeMap.find(Fullpath);
 	if (i!=m_LoadedCubeMap.end())
@@ -134,27 +148,27 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 
 	unsigned char *ImageData;
     TextureDesc desc;
-    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
-	
+    ImageData=PNGLoader::Load(Fullpath, desc);
+
 	if (ImageData!=NULL)
     {
 		//\todo support more depths than 8bit
-		
+
 		// upload to card...
 		glEnable(params.Type);
-		
+
 		if (params.ID==-1) // is this a new texture?
 		{
 			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
 			//\todo this means cubemaps won't be cached
-    		m_TextureMap[params.ID]=desc;
+			m_TextureMap[params.ID]=desc;
 			m_LoadedCubeMap[Fullpath]=params.ID;
-						
+
 			CubeMapDesc newcubemap;
 			m_CubeMapMap[params.ID] = newcubemap;
-				
+
 			switch (params.Type) // record the cubemap face
 			{
 				case GL_TEXTURE_CUBE_MAP_POSITIVE_X: m_CubeMapMap[params.ID].Positive[0]=params.ID; break;
@@ -174,7 +188,7 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 			GLuint id;
 			glGenTextures(1,&id);
 			params.ID=id; // ahem
-    		m_TextureMap[params.ID]=desc;
+			m_TextureMap[params.ID]=desc;
 			m_LoadedCubeMap[Fullpath]=params.ID;
 
 			switch (params.Type) // record the cubemap face
@@ -188,11 +202,11 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 				default: assert(0); break;
 			}
 		}
-			
-		UploadTexture(desc,params,ImageData);					
+
+		UploadTexture(desc,params,ImageData);
 		delete[] ImageData;
-		return params.ID;		
-	}	
+		return params.ID;
+	}
 	m_LoadedMap[Fullpath]=0;
     return 0;
 }
@@ -200,33 +214,34 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData)
 {
 	glBindTexture(params.Type,params.ID);
-		
-	if (params.GenerateMipmaps)
+
+	if ((desc.InternalFormat == GL_RGB) || (desc.InternalFormat == GL_RGBA))
 	{
-		if (desc.Format==RGB)
-    	{
-			gluBuild2DMipmaps(params.Type,3,desc.Width,desc.Height,GL_RGB,GL_UNSIGNED_BYTE,ImageData);
-    	}
-    	else
-    	{
-    		gluBuild2DMipmaps(params.Type,4,desc.Width,desc.Height,GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
-    	}
+		if (params.GenerateMipmaps)
+		{
+			gluBuild2DMipmaps(params.Type, desc.InternalFormat, desc.Width, desc.Height, desc.Format, GL_UNSIGNED_BYTE, ImageData);
+		}
+		else
+		{
+			//\todo check power of two
+			//\todo and scale?
+			glTexImage2D(params.Type, params.MipLevel, desc.InternalFormat, desc.Width, desc.Height, params.Border,
+					desc.Format, GL_UNSIGNED_BYTE, ImageData);
+		}
 	}
 	else
-	{		
-		//\todo check power of two
-		//\todo and scale?
-		if (desc.Format==RGB)
-    	{				
-			glTexImage2D(params.Type,params.MipLevel,3,desc.Width,desc.Height,params.Border,
-				GL_RGB,GL_UNSIGNED_BYTE,ImageData);			
+	{
+		if (m_TextureCompressionEnabled)
+		{
+			glCompressedTexImage2DARB(params.Type, params.MipLevel,
+					desc.InternalFormat, desc.Width, desc.Height, params.Border,
+					desc.Size, ImageData);
 		}
-    	else
-    	{
-			glTexImage2D(params.Type,params.MipLevel,4,desc.Width,desc.Height,params.Border,
-				GL_RGBA,GL_UNSIGNED_BYTE,ImageData);
+		else
+		{
+			Trace::Stream << "Couldn't upload image, Texture compression is not supported."<<endl;
 		}
-	}		
+	}
 }
 
 ///todo: all pdata texture load/save is to 8 bit RGB or RGBA - need to deal with arbitrary channels and bit depths
@@ -236,51 +251,51 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 
 	unsigned char *ImageData;
     TextureDesc desc;
-    ImageData=PNGLoader::Load(Fullpath,desc.Width,desc.Height,desc.Format);
-	
+    ImageData=PNGLoader::Load(Fullpath, desc);
+
 	if (ImageData!=NULL)
     {
 		pixels.Resize(desc.Width*desc.Height);
 		w=desc.Width;
 		h=desc.Height;
 
-		if (desc.Format==RGB)
+		if (desc.Format==GL_RGB)
 		{
 			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
-				pixels.m_Data[n]=dColour(ImageData[n*3]/255.0f, 
+				pixels.m_Data[n]=dColour(ImageData[n*3]/255.0f,
 				                         ImageData[n*3+1]/255.0f,
 										 ImageData[n*3+2]/255.0f,1.0f);
-				
-			}	
-		}	
-		else if (desc.Format==RGBA)
+
+			}
+		}
+		else if (desc.Format==GL_RGBA)
 		{
 			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
-				pixels.m_Data[n]=dColour(ImageData[n*4]/255.0f, 
+				pixels.m_Data[n]=dColour(ImageData[n*4]/255.0f,
 				                         ImageData[n*4+1]/255.0f,
 										 ImageData[n*4+2]/255.0f,
 										 ImageData[n*4+3]/255.0f);
-				
-			}	
+
+			}
 		}
 		else
 		{
 			delete[] ImageData;
 			return false;
 		}
-			
+
 		delete[] ImageData;
 		return true;
 	}
-	
+
 	return false;
 }
 
 bool TexturePainter::SavePData(const string &Filename, unsigned int w, unsigned int h, const TypedPData<dColour> &pixels)
 {
-	// save as 8bit rgba 
+	// save as 8bit rgba
 	unsigned char *ImageData=new unsigned char[w*h*4];
 	for (unsigned int n=0; n<w*h; n++)
 	{
@@ -289,9 +304,9 @@ bool TexturePainter::SavePData(const string &Filename, unsigned int w, unsigned 
 		ImageData[n*4+2]=(unsigned char)(pixels.m_Data[n].b*255.0f);
 		ImageData[n*4+3]=(unsigned char)(pixels.m_Data[n].a*255.0f);
 	}
-	
-	PNGLoader::Save(Filename, w, h, RGBA, ImageData);
-	
+
+	PNGLoader::Save(Filename, w, h, GL_RGBA, ImageData);
+
 	delete[] ImageData;
 	return true;
 }
@@ -304,8 +319,8 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
 	{
 		// upload to card...
 		glGenTextures(1,&ID);
-    	glBindTexture(GL_TEXTURE_2D,ID);
-    	gluBuild2DMipmaps(GL_TEXTURE_2D,4,w,h,GL_RGBA,GL_FLOAT,&pixels->m_Data[0]);
+		glBindTexture(GL_TEXTURE_2D,ID);
+		gluBuild2DMipmaps(GL_TEXTURE_2D,4,w,h,GL_RGBA,GL_FLOAT,&pixels->m_Data[0]);
 		return ID;
 	}
     return 0;
@@ -363,7 +378,7 @@ bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
 		glActiveTexture(GL_TEXTURE0);
 	}
 	#endif
-	
+
 	return ret;
 }
 
@@ -372,7 +387,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, state.TexEnv);
 	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, state.EnvColour.arr());
 	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, state.Min);
-	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, state.Mag);	
+	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, state.Mag);
     glTexParameteri(type, GL_TEXTURE_WRAP_S, state.WrapS);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, state.WrapT);
 	if (cubemap) glTexParameteri(type, GL_TEXTURE_WRAP_R, state.WrapT);
@@ -395,7 +410,7 @@ void TexturePainter::DisableAll()
 		}
 		glClientActiveTexture(GL_TEXTURE0);
 	}
-	else 
+	else
 	#endif
 	{
 		glDisable(GL_TEXTURE_2D);
@@ -409,12 +424,8 @@ void TexturePainter::Dump()
 	{
 		TextureDesc info = m_TextureMap[i->second];
 		Trace::Stream<<i->first<<" "<<info.Width<<"X"<<info.Height<<" ";
-		if (info.Format==RGB) Trace::Stream<<"RGB"<<endl;
-		else if (info.Format==RGBA) Trace::Stream<<"RGBA"<<endl;
+		if (info.Format==GL_RGB) Trace::Stream<<"RGB"<<endl;
+		else if (info.Format==GL_RGBA) Trace::Stream<<"RGBA"<<endl;
 	}
 }
-
-
-
-
 

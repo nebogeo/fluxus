@@ -20,13 +20,15 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include "PNGLoader.h"
+#include "OpenGL.h"
 #include "PData.h"
 
 using namespace std;
 
 namespace Fluxus
 {
+
+	class DDSLoader;
 
 //////////////////////////////////////////////////////
 /// The texture state
@@ -61,6 +63,9 @@ public:
 /// which are already on the graphics card.
 class TexturePainter
 {
+	friend class PNGLoader;
+	friend class DDSLoader;
+
 public:
 	///\todo stop this being a singleton...
 	static TexturePainter* Get()
@@ -136,19 +141,21 @@ private:
 	class TextureDesc
 	{
 	public:
-		TextureDesc() : Format(NONE) {}
+		TextureDesc() : Format(0) {}
 		unsigned int Width;
 		unsigned int Height;
-		PixelFormat Format;
+		int InternalFormat; // number of colour components (GL_RGB, GL_RGBA, GL_COMPRESSED..., etc)
+		int Format; // pixel data format
+		int Size; // pixel data size
 	};
-	
+
 	//////////////////////////////////////////////////////
-	/// We need to group together the cube map ids, so we 
+	/// We need to group together the cube map ids, so we
 	/// know which id's to use when the primary one gets set
 	class CubeMapDesc
 	{
 	public:
-		CubeMapDesc() { Positive[0]=0; Positive[1]=0; Positive[2]=0; 
+		CubeMapDesc() { Positive[0]=0; Positive[1]=0; Positive[2]=0;
 		                Negative[0]=0; Negative[1]=0; Negative[2]=0; }
 		unsigned int Positive[3];
 		unsigned int Negative[3];
@@ -166,6 +173,7 @@ private:
 	map<unsigned int,TextureDesc> m_TextureMap;
 	map<unsigned int,CubeMapDesc> m_CubeMapMap;
 	bool m_MultitexturingEnabled;
+	bool m_TextureCompressionEnabled;
 };
 
 }
