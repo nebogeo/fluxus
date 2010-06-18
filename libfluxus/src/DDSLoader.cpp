@@ -14,6 +14,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <cstdio>
 #include <cstdlib>
 #include <iostream>
 #include "Trace.h"
@@ -50,6 +51,7 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 		int format;
 		int components;
 		bool compressed;
+		int size;
 
 		width = ddsh.dwWidth;
 		height = ddsh.dwHeight;
@@ -108,7 +110,7 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 
 		// load surface
 		// FIXME: cubemaps and mipmaps are ignored at the moment
-		int size = surface_size(compressed, format, width, height, components);
+		size = surface_size(compressed, format, width, height, components);
 		ImageData = new unsigned char [size];
 		fread(ImageData, 1, size, fp);
 
