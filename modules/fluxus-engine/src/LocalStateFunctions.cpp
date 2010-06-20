@@ -2121,6 +2121,55 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// is-resident? textureid-number
+// Returns: boolean
+// Description:
+// Checks if the texture is in high-performance memory.
+// Example:
+// (define t (load-texture "test.png"))
+// (display (is-resident? t))(newline) ; usually texture is not resident until used
+// EndFunctionDoc
+
+Scheme_Object *is_resident(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("is-resident?", "i", argc, argv);
+	bool r = Engine::Get()->Renderer()->GetTexturePainter()->IsResident((int)IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+	return r ? scheme_true : scheme_false;
+}
+
+// StartFunctionDoc-en
+// set-texture-priority textureid-number priority-number
+// Returns: void
+// Description:
+// You can provide hints to the OpenGL implementation to decide
+// texture residency by setting the texture’s priority.
+// Priority is between 0.0 and 1.0. A low priority tells the
+// that this texture object should be left out of resident memory
+// whenever space becomes tight. A higher priority (such as 1.0)
+// tells the implementation that you want the texture object to
+// remain resident if possible, even if the texture seems to be used
+// infrequently.
+// Bear in mind that texture priority is only a hint. Some OpenGL
+// implementations are known to ignore them completely.
+// Example:
+// (define t (load-texture "test.png"))
+// (set-texture-priority t 1.0)
+// (display (is-resident? t))(newline)
+// EndFunctionDoc
+
+Scheme_Object *set_texture_priority(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("set-texture-priority", "if", argc, argv);
+	Engine::Get()->Renderer()->GetTexturePainter()->SetTexturePriority((int)IntFromScheme(argv[0]),
+			FloatFromScheme(argv[1]));
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // multitexture textureunit-number textureid-number
 // Returns: void
 // Description:
@@ -2992,6 +3041,8 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("emissive",scheme_make_prim_w_arity(emissive,"emissive",1,1), env);
 	scheme_add_global("shinyness",scheme_make_prim_w_arity(shinyness,"shinyness",1,1), env);
 	scheme_add_global("texture",scheme_make_prim_w_arity(texture,"texture",1,1), env);
+	scheme_add_global("is-resident?",scheme_make_prim_w_arity(is_resident,"is-resident?",1,1), env);
+	scheme_add_global("set-texture-priority",scheme_make_prim_w_arity(is_resident,"set-texture-priority",2,2), env);
 	scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
 	scheme_add_global("hint-solid",scheme_make_prim_w_arity(hint_solid,"hint-solid",0,0), env);
 	scheme_add_global("hint-wire",scheme_make_prim_w_arity(hint_wire,"hint-wire",0,0), env);

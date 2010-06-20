@@ -429,3 +429,14 @@ void TexturePainter::Dump()
 	}
 }
 
+bool TexturePainter::IsResident(unsigned int id)
+{
+	GLboolean resident;
+	return glAreTexturesResident(1, &id, &resident);
+}
+
+void TexturePainter::SetTexturePriority(unsigned int id, float priority)
+{
+	glPrioritizeTextures(1, &id, &priority);
+}
+

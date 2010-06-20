@@ -73,18 +73,18 @@ public:
 		if (m_Singleton==NULL) m_Singleton=new TexturePainter;
 		return m_Singleton;
 	}
-	
+
 	static void Shutdown()
 	{
 		if (m_Singleton!=NULL) delete m_Singleton;
 	}
-	
+
 	/// Initialise all texture units
 	void Initialise();
-	
+
 	/// Clear the texture cache
 	void ClearCache();
-		
+
 	///////////////////////////////////
 	/// Options for texture creation
 	class CreateParams
@@ -102,35 +102,41 @@ public:
 	////////////////////////////////////
 	///@name Texture Generation/Conversion
 	///@{
-	
-	/// Loads a texture returns the OpenGL ID number 
+
+	/// Loads a texture returns the OpenGL ID number
 	unsigned int LoadTexture(const string &Filename, CreateParams &params);
-	
+
 	/// Loads texture information into a pdata array of colour type
 	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
-	
+
 	/// Saves texture information from a pdata array
 	bool SavePData(const string &Filename, unsigned int w, unsigned int h, const TypedPData<dColour> &pixels);
-	
+
 	/// Uploads texture data from pdata - returns OpenGL ID number
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
+
+	/// Checks if a texture is in high-performance memory
+	bool IsResident(unsigned int id);
+
+	/// Hints to decide texture residency
+	void SetTexturePriority(unsigned int id, float priority);
 	///@}
-	
+
 	////////////////////////////////////
 	///@name State control
-	/// Controls the texture rendering state 
+	/// Controls the texture rendering state
 	///@{
-	
+
 	/// Sets the current texture state - allow settings for each unit if multitexturing is enabled.
 	/// The size of ids is expected to be the same as MAX_TEXTURES
 	bool SetCurrent(unsigned int *ids, TextureState *states);
 
 	/// Disables all texturing
 	void DisableAll();
-	
+
 	/// Print out information
 	void Dump();
-	
+
 	/// Is multitexturing possible?
 	bool MultitexturingEnabled() { return m_MultitexturingEnabled; }
 	///@}
