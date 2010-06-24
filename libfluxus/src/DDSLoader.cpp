@@ -19,6 +19,8 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <assert.h>
+
 #include "Trace.h"
 #include "DDSLoader.h"
 
