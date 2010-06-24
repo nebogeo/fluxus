@@ -1,5 +1,7 @@
 // Copyright (C) 2010 Gabor Papp, Dave Griffiths
 //
+// based on NVIDIA's nv_dss.h
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -32,6 +34,7 @@ class DDSLoader
 	public:
 		static unsigned char *Load(const string &Filename,
 				TexturePainter::TextureDesc &desc);
+
 	private:
 		struct DDS_PIXELFORMAT
 		{
@@ -61,7 +64,35 @@ class DDSLoader
 			unsigned long dwReserved2[3];
 		};
 
+		struct DXTColBlock
+		{
+			unsigned short col0;
+			unsigned short col1;
+
+			unsigned char row[4];
+		};
+
+		struct DXT3AlphaBlock
+		{
+			unsigned short row[4];
+		};
+
+		struct DXT5AlphaBlock
+		{
+			unsigned char alpha0;
+			unsigned char alpha1;
+
+			unsigned char row[6];
+		};
+
 		static int surface_size(bool compressed, int format, int width, int height, int components);
+
+		static void flip(unsigned char *image, bool compressed, int format, int width, int height, int depth, int size);
+		static void swap(void *byte1, void *byte2, int size);
+		static void flip_blocks_dxtc1(DXTColBlock *line, int numBlocks);
+		static void flip_blocks_dxtc3(DXTColBlock *line, int numBlocks);
+		static void flip_blocks_dxtc5(DXTColBlock *line, int numBlocks);
+		static void flip_dxt5_alpha(DXT5AlphaBlock *block);
 };
 
 const unsigned long DDS_FOURCC = 0x00000004;

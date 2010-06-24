@@ -1,5 +1,7 @@
 // Copyright (C) 2010 Gabor Papp, Dave Griffiths
 //
+// based on NVIDIA's nv_dss.cpp
+//
 // This program is free software; you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation; either version 2 of the License, or
@@ -113,6 +115,7 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 		size = surface_size(compressed, format, width, height, components);
 		ImageData = new unsigned char [size];
 		fread(ImageData, 1, size, fp);
+		flip(ImageData, compressed, format, width, height, depth, size);
 
 		desc.Width = width;
 		desc.Height = height;
@@ -137,6 +140,218 @@ int DDSLoader::surface_size(bool compressed, int format, int width, int height, 
 	else
 	{
 		return width * height * components;
+	}
+}
+
+void DDSLoader::flip(unsigned char *image, bool compressed, int format, int width, int height, int depth, int size)
+{
+	int linesize;
+	int offset;
+
+	if (!compressed)
+	{
+		assert(depth > 0);
+
+		int imagesize = size/depth;
+		linesize = imagesize / height;
+
+		for (int n = 0; n < depth; n++)
+		{
+			offset = imagesize*n;
+			unsigned char *top = image + offset;
+			unsigned char *bottom = top + (imagesize-linesize);
+
+			for (int i = 0; i < (height >> 1); i++)
+			{
+				swap(bottom, top, linesize);
+
+				top += linesize;
+				bottom -= linesize;
+			}
+		}
+	}
+	else
+	{
+		void (*flipblocks)(DXTColBlock*, int);
+		int xblocks = width / 4;
+		int yblocks = height / 4;
+		int blocksize;
+
+		switch (format)
+		{
+			case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
+				blocksize = 8;
+				flipblocks = &flip_blocks_dxtc1;
+				break;
+			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+				blocksize = 16;
+				flipblocks = &DDSLoader::flip_blocks_dxtc3;
+				break;
+			case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
+				blocksize = 16;
+				flipblocks = &DDSLoader::flip_blocks_dxtc5;
+				break;
+			default:
+				return;
+		}
+
+		linesize = xblocks * blocksize;
+
+		DXTColBlock *top;
+		DXTColBlock *bottom;
+
+		for (int j = 0; j < (yblocks >> 1); j++)
+		{
+			top = (DXTColBlock*)(image + j * linesize);
+			bottom = (DXTColBlock*)(image + (((yblocks-j)-1) * linesize));
+
+			(*flipblocks)(top, xblocks);
+			(*flipblocks)(bottom, xblocks);
+
+			swap(bottom, top, linesize);
+		}
+	}
+}
+
+/* swap to sections of memory */
+void DDSLoader::swap(void *byte1, void *byte2, int size)
+{
+	unsigned char *tmp = new unsigned char[size];
+
+	memcpy(tmp, byte1, size);
+	memcpy(byte1, byte2, size);
+	memcpy(byte2, tmp, size);
+
+	delete [] tmp;
+}
+
+/* flip a DXT1 color block */
+void DDSLoader::flip_blocks_dxtc1(DXTColBlock *line, int numBlocks)
+{
+	DXTColBlock *curblock = line;
+
+	for (int i = 0; i < numBlocks; i++)
+	{
+		swap(&curblock->row[0], &curblock->row[3], sizeof(unsigned char));
+		swap(&curblock->row[1], &curblock->row[2], sizeof(unsigned char));
+
+		curblock++;
+	}
+}
+
+/* flip a DXT3 color block */
+void DDSLoader::flip_blocks_dxtc3(DXTColBlock *line, int numBlocks)
+{
+	DXTColBlock *curblock = line;
+	DXT3AlphaBlock *alphablock;
+
+	for (int i = 0; i < numBlocks; i++)
+	{
+		alphablock = (DXT3AlphaBlock*)curblock;
+
+		swap(&alphablock->row[0], &alphablock->row[3], sizeof(unsigned short));
+		swap(&alphablock->row[1], &alphablock->row[2], sizeof(unsigned short));
+
+		curblock++;
+
+		swap(&curblock->row[0], &curblock->row[3], sizeof(unsigned char));
+		swap(&curblock->row[1], &curblock->row[2], sizeof(unsigned char));
+
+		curblock++;
+	}
+}
+
+/* flip a DXT5 alpha block */
+void DDSLoader::flip_dxt5_alpha(DXT5AlphaBlock *block)
+{
+	unsigned char gBits[4][4];
+
+	const unsigned long mask = 0x00000007;		    // bits = 00 00 01 11
+	unsigned long bits = 0;
+	memcpy(&bits, &block->row[0], sizeof(unsigned char) * 3);
+
+	gBits[0][0] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[0][1] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[0][2] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[0][3] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[1][0] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[1][1] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[1][2] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[1][3] = (unsigned char)(bits & mask);
+
+	bits = 0;
+	memcpy(&bits, &block->row[3], sizeof(unsigned char) * 3);
+
+	gBits[2][0] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[2][1] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[2][2] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[2][3] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[3][0] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[3][1] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[3][2] = (unsigned char)(bits & mask);
+	bits >>= 3;
+	gBits[3][3] = (unsigned char)(bits & mask);
+
+	unsigned long *pBits = ((unsigned long*) &(block->row[0]));
+
+	*pBits &= 0xff000000;
+
+	*pBits = *pBits | (gBits[3][0] << 0);
+	*pBits = *pBits | (gBits[3][1] << 3);
+	*pBits = *pBits | (gBits[3][2] << 6);
+	*pBits = *pBits | (gBits[3][3] << 9);
+
+	*pBits = *pBits | (gBits[2][0] << 12);
+	*pBits = *pBits | (gBits[2][1] << 15);
+	*pBits = *pBits | (gBits[2][2] << 18);
+	*pBits = *pBits | (gBits[2][3] << 21);
+
+	pBits = ((unsigned long*) &(block->row[3]));
+
+	*pBits &= 0xff000000;
+
+	*pBits = *pBits | (gBits[1][0] << 0);
+	*pBits = *pBits | (gBits[1][1] << 3);
+	*pBits = *pBits | (gBits[1][2] << 6);
+	*pBits = *pBits | (gBits[1][3] << 9);
+
+	*pBits = *pBits | (gBits[0][0] << 12);
+	*pBits = *pBits | (gBits[0][1] << 15);
+	*pBits = *pBits | (gBits[0][2] << 18);
+	*pBits = *pBits | (gBits[0][3] << 21);
+}
+
+/* flip a DXT5 color block */
+void DDSLoader::flip_blocks_dxtc5(DXTColBlock *line, int numBlocks)
+{
+	DXTColBlock *curblock = line;
+	DXT5AlphaBlock *alphablock;
+
+	for (int i = 0; i < numBlocks; i++)
+	{
+		alphablock = (DXT5AlphaBlock*)curblock;
+
+		flip_dxt5_alpha(alphablock);
+
+		curblock++;
+
+		swap(&curblock->row[0], &curblock->row[3], sizeof(unsigned char));
+		swap(&curblock->row[1], &curblock->row[2], sizeof(unsigned char));
+
+		curblock++;
 	}
 }
 
