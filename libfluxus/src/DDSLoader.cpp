@@ -58,6 +58,7 @@ void DDSLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc,
 		int components;
 		bool compressed;
 		int size;
+		int num_mipmaps;
 
 		width = ddsh.dwWidth;
 		height = ddsh.dwHeight;
@@ -125,7 +126,7 @@ void DDSLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc,
 		desc.Size = size;
 
 		// load mipmaps
-		int num_mipmaps = ddsh.dwMipMapCount;
+		num_mipmaps = ddsh.dwMipMapCount;
 
 		// number of mipmaps in file includes main surface
 		if (num_mipmaps != 0)
@@ -134,9 +135,9 @@ void DDSLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc,
 		// load all mipmaps for current surface
 		for (int i = 0; i < num_mipmaps; i++)
 		{
-		width = clamp_size(width >> 1);
-		height = clamp_size(height >> 1);
-		depth = clamp_size(depth >> 1);
+			width = clamp_size(width >> 1);
+			height = clamp_size(height >> 1);
+			depth = clamp_size(depth >> 1);
 		// calculate mipmap size
 			size = surface_size(compressed, format, width, height, components) * depth;
 
