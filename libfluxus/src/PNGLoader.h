@@ -30,7 +30,7 @@ class PNGLoader
 {
 public:
 	/// A utility for loading png files and returns the raw pixel data
-	static unsigned char *Load(const string &Filename, TexturePainter::TextureDesc &desc);
+	static void Load(const string &Filename, TexturePainter::TextureDesc &desc);
 	static void Save(const string &Filename, unsigned int w, unsigned int h, int p, unsigned char *);
 private:
 

@@ -24,9 +24,9 @@
 using namespace Fluxus;
 using namespace std;
 
-unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
+void PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
 {
-	unsigned char *ImageData = NULL;
+	desc.ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
 	if (!fp || Filename=="")
 	{
@@ -41,7 +41,8 @@ unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDe
 		{
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 			Trace::Stream<<"Error reading image ["<<Filename<<"]"<<endl;
-			return NULL;
+			fclose(fp);
+			return;
 		}
 
 		png_init_io(png_ptr, fp);
@@ -49,11 +50,11 @@ unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDe
 
 		unsigned long width=info_ptr->width;
 		unsigned long height=info_ptr->height;
-		int bit_depth=info_ptr->bit_depth; 
+		int bit_depth=info_ptr->bit_depth;
 		int colour_type=info_ptr->color_type;
 		png_bytep *row_pointers=new png_bytep[height];
 		unsigned int rb = png_get_rowbytes(png_ptr, info_ptr);
-		
+
 		for (unsigned long row=0; row<height; row++)
 		{
 			row_pointers[row] = new png_byte[rb];
@@ -64,13 +65,13 @@ unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDe
 		fclose(fp);
 
 		// make a new contiguous array to store the pixels
-		ImageData=new unsigned char[rb*height];
+		desc.ImageData=new unsigned char[rb*height];
 		int p=0;
 		for (int row = height-1; row>=0; row--) // flip around to fit opengl
 		{
 			for (unsigned int i=0; i<rb; i++)
 			{
-				ImageData[p]=(unsigned char)(row_pointers[row])[i];
+				desc.ImageData[p]=(unsigned char)(row_pointers[row])[i];
 				p++;
 			}
 		}
@@ -98,15 +99,13 @@ unsigned char *PNGLoader::Load(const string &Filename, TexturePainter::TextureDe
 						break;
 			default:
 						Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
-						delete[] ImageData;
-						ImageData=NULL;
+						delete[] desc.ImageData;
+						desc.ImageData=NULL;
 						break;
         }
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	}
-
-	return ImageData;
 }
 
 void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, int pf, unsigned char *data)

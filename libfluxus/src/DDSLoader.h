@@ -20,6 +20,7 @@
 #define N_DDS
 
 #include <string>
+#include <vector>
 
 #include "TexturePainter.h"
 #include "OpenGL.h"
@@ -32,8 +33,8 @@ namespace Fluxus
 class DDSLoader
 {
 	public:
-		static unsigned char *Load(const string &Filename,
-				TexturePainter::TextureDesc &desc);
+		static void Load(const string &Filename, TexturePainter::TextureDesc &desc,
+							vector<TexturePainter::TextureDesc> &mipmaps);
 
 	private:
 		struct DDS_PIXELFORMAT
@@ -93,6 +94,8 @@ class DDSLoader
 		static void flip_blocks_dxtc3(DXTColBlock *line, int numBlocks);
 		static void flip_blocks_dxtc5(DXTColBlock *line, int numBlocks);
 		static void flip_dxt5_alpha(DXT5AlphaBlock *block);
+
+		static inline int clamp_size(int s) { return (s <= 0) ? 1 : s; }
 };
 
 const unsigned long DDS_FOURCC = 0x00000004;

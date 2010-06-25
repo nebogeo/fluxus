@@ -147,12 +147,14 @@ private:
 	class TextureDesc
 	{
 	public:
-		TextureDesc() : Format(0) {}
+		TextureDesc() : Format(0), ImageData(NULL) {}
+
 		unsigned int Width;
 		unsigned int Height;
 		int InternalFormat; // number of colour components (GL_RGB, GL_RGBA, GL_COMPRESSED..., etc)
 		int Format; // pixel data format
 		int Size; // pixel data size
+		unsigned char *ImageData;
 	};
 
 	//////////////////////////////////////////////////////
@@ -171,7 +173,7 @@ private:
 	~TexturePainter();
 	void ApplyState(int type, TextureState &state, bool cubemap);
 	unsigned int LoadCubeMap(const string &Fullpath, CreateParams &params);
-	void UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData);
+	void UploadTexture(TextureDesc desc, CreateParams params);
 	static TexturePainter *m_Singleton;
 
 	map<string,int> m_LoadedMap;

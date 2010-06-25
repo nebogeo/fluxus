@@ -27,9 +27,11 @@
 using namespace Fluxus;
 using namespace std;
 
-unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
+void DDSLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc,
+		vector<TexturePainter::TextureDesc> &mipmaps)
 {
-	unsigned char *ImageData = NULL;
+	desc.ImageData = NULL;
+
 	FILE *fp = fopen(Filename.c_str(), "rb");
 	if (!fp || Filename == "")
 	{
@@ -59,9 +61,7 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 
 		width = ddsh.dwWidth;
 		height = ddsh.dwHeight;
-		depth = ddsh.dwDepth;
-		if (depth <= 0)
-			depth = 1;
+		depth = clamp_size(ddsh.dwDepth);
 
 		// figure out what the image format is
 		if (ddsh.ddspf.dwFlags & DDS_FOURCC)
@@ -84,8 +84,7 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 					compressed = true;
 					break;
 				default:
-					fclose(fp);
-					return false;
+					goto failure;
 			}
 		}
 		else if (ddsh.ddspf.dwFlags == DDS_RGBA && ddsh.ddspf.dwRGBBitCount == 32)
@@ -113,11 +112,11 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 		}
 
 		// load surface
-		// FIXME: cubemaps and mipmaps are ignored at the moment
-		size = surface_size(compressed, format, width, height, components);
-		ImageData = new unsigned char [size];
-		fread(ImageData, 1, size, fp);
-		flip(ImageData, compressed, format, width, height, depth, size);
+		// FIXME: cubemaps are ignored at the moment
+		size = surface_size(compressed, format, width, height, components) * depth;
+		desc.ImageData = new unsigned char [size];
+		fread(desc.ImageData, 1, size, fp);
+		flip(desc.ImageData, compressed, format, width, height, depth, size);
 
 		desc.Width = width;
 		desc.Height = height;
@@ -125,11 +124,40 @@ unsigned char *DDSLoader::Load(const string &Filename, TexturePainter::TextureDe
 		desc.Format = (components == 3) ? GL_RGB : GL_RGBA;
 		desc.Size = size;
 
+		// load mipmaps
+		int num_mipmaps = ddsh.dwMipMapCount;
+
+		// number of mipmaps in file includes main surface
+		if (num_mipmaps != 0)
+			num_mipmaps--;
+
+		// load all mipmaps for current surface
+		for (int i = 0; i < num_mipmaps; i++)
+		{
+		width = clamp_size(width >> 1);
+		height = clamp_size(height >> 1);
+		depth = clamp_size(depth >> 1);
+		// calculate mipmap size
+			size = surface_size(compressed, format, width, height, components) * depth;
+
+			TexturePainter::TextureDesc mipmap_desc;
+			mipmap_desc.Width = width;
+			mipmap_desc.Height = height;
+			mipmap_desc.InternalFormat = desc.InternalFormat;
+			mipmap_desc.Format = desc.Format;
+			mipmap_desc.Size = size;
+			mipmap_desc.ImageData = new unsigned char [size];
+
+			fread(mipmap_desc.ImageData, 1, size, fp);
+
+			flip(mipmap_desc.ImageData, compressed, desc.InternalFormat,
+					width, height, depth, size);
+
+			mipmaps.push_back(mipmap_desc);
+	}
 failure:
 		fclose(fp);
 	}
-
-	return ImageData;
 }
 
 int DDSLoader::surface_size(bool compressed, int format, int width, int height, int components)

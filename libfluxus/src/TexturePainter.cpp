@@ -103,17 +103,18 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 		return i->second;
 	}
 
-	unsigned char *ImageData;
-    TextureDesc desc;
+	TextureDesc desc;
 	string extension = Filename.substr(Filename.find_last_of('.') + 1, Filename.size());
 
-	if (extension == "dds")
-		ImageData = DDSLoader::Load(Fullpath, desc);
-	else
-		ImageData = PNGLoader::Load(Fullpath, desc);
+	vector<TextureDesc> mipmaps;
 
-	if (ImageData!=NULL)
-    {
+	if (extension == "dds")
+		DDSLoader::Load(Fullpath, desc, mipmaps);
+	else
+		PNGLoader::Load(Fullpath, desc);
+
+	if (desc.ImageData!=NULL)
+	{
 		//\todo support more depths than 8bit
 
 		// upload to card...
@@ -129,12 +130,29 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 			m_LoadedMap[Fullpath]=params.ID;
 		}
 
-		UploadTexture(desc,params,ImageData);
-		delete[] ImageData;
+		UploadTexture(desc,params);
+
+		// upload mipmaps from compressed textures
+		if (!mipmaps.empty() && params.GenerateMipmaps)
+		{
+			for (unsigned i = 0; i < mipmaps.size(); i++)
+			{
+				params.MipLevel = i + 1;
+				UploadTexture(mipmaps[i], params);
+			}
+		}
+
+		delete [] desc.ImageData;
+		for (unsigned i = 0; i < mipmaps.size(); i++)
+		{
+			delete [] mipmaps[i].ImageData;
+		}
+		mipmaps.clear();
+
 		return params.ID;
 	}
 	m_LoadedMap[Fullpath]=0;
-    return 0;
+	return 0;
 }
 
 unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &params)
@@ -146,12 +164,11 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 		return i->second;
 	}
 
-	unsigned char *ImageData;
-    TextureDesc desc;
-    ImageData=PNGLoader::Load(Fullpath, desc);
+	TextureDesc desc;
+	PNGLoader::Load(Fullpath, desc);
 
-	if (ImageData!=NULL)
-    {
+	if (desc.ImageData!=NULL)
+	{
 		//\todo support more depths than 8bit
 
 		// upload to card...
@@ -203,15 +220,15 @@ unsigned int TexturePainter::LoadCubeMap(const string &Fullpath, CreateParams &p
 			}
 		}
 
-		UploadTexture(desc,params,ImageData);
-		delete[] ImageData;
+		UploadTexture(desc,params);
+		delete[] desc.ImageData;
 		return params.ID;
 	}
 	m_LoadedMap[Fullpath]=0;
-    return 0;
+	return 0;
 }
 
-void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData)
+void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params)
 {
 	glBindTexture(params.Type,params.ID);
 
@@ -219,14 +236,14 @@ void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const 
 	{
 		if (params.GenerateMipmaps)
 		{
-			gluBuild2DMipmaps(params.Type, desc.InternalFormat, desc.Width, desc.Height, desc.Format, GL_UNSIGNED_BYTE, ImageData);
+			gluBuild2DMipmaps(params.Type, desc.InternalFormat, desc.Width, desc.Height, desc.Format, GL_UNSIGNED_BYTE, desc.ImageData);
 		}
 		else
 		{
 			//\todo check power of two
 			//\todo and scale?
 			glTexImage2D(params.Type, params.MipLevel, desc.InternalFormat, desc.Width, desc.Height, params.Border,
-					desc.Format, GL_UNSIGNED_BYTE, ImageData);
+					desc.Format, GL_UNSIGNED_BYTE, desc.ImageData);
 		}
 	}
 	else
@@ -235,7 +252,7 @@ void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params, const 
 		{
 			glCompressedTexImage2DARB(params.Type, params.MipLevel,
 					desc.InternalFormat, desc.Width, desc.Height, params.Border,
-					desc.Size, ImageData);
+					desc.Size, desc.ImageData);
 		}
 		else
 		{
@@ -249,12 +266,11 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 {
 	string Fullpath = SearchPaths::Get()->GetFullPath(Filename);
 
-	unsigned char *ImageData;
-    TextureDesc desc;
-    ImageData=PNGLoader::Load(Fullpath, desc);
+	TextureDesc desc;
+	PNGLoader::Load(Fullpath, desc);
 
-	if (ImageData!=NULL)
-    {
+	if (desc.ImageData!=NULL)
+	{
 		pixels.Resize(desc.Width*desc.Height);
 		w=desc.Width;
 		h=desc.Height;
@@ -263,9 +279,9 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 		{
 			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
-				pixels.m_Data[n]=dColour(ImageData[n*3]/255.0f,
-				                         ImageData[n*3+1]/255.0f,
-										 ImageData[n*3+2]/255.0f,1.0f);
+				pixels.m_Data[n]=dColour(desc.ImageData[n*3]/255.0f,
+				                         desc.ImageData[n*3+1]/255.0f,
+										 desc.ImageData[n*3+2]/255.0f,1.0f);
 
 			}
 		}
@@ -273,20 +289,20 @@ bool TexturePainter::LoadPData(const string &Filename, unsigned int &w, unsigned
 		{
 			for (unsigned int n=0; n<desc.Width*desc.Height; n++)
 			{
-				pixels.m_Data[n]=dColour(ImageData[n*4]/255.0f,
-				                         ImageData[n*4+1]/255.0f,
-										 ImageData[n*4+2]/255.0f,
-										 ImageData[n*4+3]/255.0f);
+				pixels.m_Data[n]=dColour(desc.ImageData[n*4]/255.0f,
+				                         desc.ImageData[n*4+1]/255.0f,
+										 desc.ImageData[n*4+2]/255.0f,
+										 desc.ImageData[n*4+3]/255.0f);
 
 			}
 		}
 		else
 		{
-			delete[] ImageData;
+			delete[] desc.ImageData;
 			return false;
 		}
 
-		delete[] ImageData;
+		delete[] desc.ImageData;
 		return true;
 	}
 
@@ -323,7 +339,7 @@ unsigned int TexturePainter::MakeTexture(unsigned int w, unsigned int h, PData *
 		gluBuild2DMipmaps(GL_TEXTURE_2D,4,w,h,GL_RGBA,GL_FLOAT,&pixels->m_Data[0]);
 		return ID;
 	}
-    return 0;
+	return 0;
 }
 
 bool TexturePainter::SetCurrent(unsigned int *ids, TextureState *states)
@@ -388,7 +404,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 	glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, state.EnvColour.arr());
 	glTexParameteri(type, GL_TEXTURE_MIN_FILTER, state.Min);
 	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, state.Mag);
-    glTexParameteri(type, GL_TEXTURE_WRAP_S, state.WrapS);
+	glTexParameteri(type, GL_TEXTURE_WRAP_S, state.WrapS);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, state.WrapT);
 	if (cubemap) glTexParameteri(type, GL_TEXTURE_WRAP_R, state.WrapT);
 	glTexParameterfv(type, GL_TEXTURE_BORDER_COLOR, state.BorderColour.arr());
