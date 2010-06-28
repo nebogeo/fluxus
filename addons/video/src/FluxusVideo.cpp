@@ -546,7 +546,7 @@ Scheme_Object *camera_update(int argc, Scheme_Object **argv)
 //
 // Example:
 // (define cam (camera-init 0 320 240))
-// (let ([p (build-camera)]
+// (let ([p (build-cube)]
 //       [tcoords (camera-tcoords cam)])
 //    (with-primitive p
 //        (texture cam)
