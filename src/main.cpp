@@ -317,7 +317,7 @@ int run(void *data)
 			cout<<"-r filename : record keypresses"<<endl;
 			cout<<"-p filename : playback keypresses"<<endl;
 			cout<<"-d time : set delta time between frames for keypress playback"<<endl;
-			cout<<"-lang language : sets the PLT language to use (may not work)"<<endl;
+			cout<<"-lang language : sets the RACKET language to use (may not work)"<<endl;
 			cout<<"-fs : startup in fullscreen mode"<<endl;
 			cout<<"-hm : hide the mouse pointer on startup"<<endl;
 			cout<<"-geom wxh : set window geometry, e.g. 640x480"<<endl;

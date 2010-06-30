@@ -12,7 +12,7 @@
 ;; Exemplo:
 ;; EndFunctionDoc
 
-#lang scheme/base
+#lang racket/base
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (require "maths.ss")

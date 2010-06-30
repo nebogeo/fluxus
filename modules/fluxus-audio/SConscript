@@ -1,7 +1,7 @@
 ###############################################################
 # SConscript for fluxus-audio
 #
-# This is the main PLT module for the fluxus audio functions
+# This is the main RACKET module for the fluxus audio functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
@@ -17,7 +17,7 @@ Libs =  Split("jack fftw3 sndfile")
 Frameworks = []
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks = Split("CoreAudio PLT_MrEd")
+	Frameworks = Split("CoreAudio Racket")
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):

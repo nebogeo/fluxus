@@ -1,7 +1,7 @@
 ###############################################################
 # SConscript for fluxus-osc
 #
-# This is the main PLT module for the fluxus osc functions
+# This is the main RACKET module for the fluxus osc functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
@@ -22,7 +22,7 @@ Source = Split("src/FluxusOSC.cpp \
 		[MZDYN]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks = ['PLT_MrEd']
+	Frameworks = ['Racket']
 
 if static_modules:
 	env.StaticLibrary(source = Source, 

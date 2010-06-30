@@ -4,7 +4,7 @@
 #
 # Checks all dependencies needed, builds the fluxus canvas
 # application, then calls the sconscripts for libfluxus and
-# the fluxus PLT modules
+# the fluxus Racket modules
 
 import os, os.path, sys, commands, subprocess
 
@@ -15,7 +15,7 @@ FluxusVersion = MajorVersion+MinorVersion
 Target = "fluxus"
 
 # changed prefix and pltprefix so they can be invoked at runtime
-# like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
+# like scons Prefix=/usr RacketPrefix=/usr instead of default /usr/local
 
 DESTDIR = ARGUMENTS.get('DESTDIR', '')
 # this makes DESTDIR relative to root of the source tree, no matter
@@ -25,23 +25,23 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
 
 if sys.platform == 'darwin':
 	AddOption('--app', action='store_true', help='Build OSX application')
-	file = os.popen('dirname "`which mzscheme`"')
-	PLTBin = file.read()
+	file = os.popen('dirname "`which racket`"')
+	RacketBin = file.read()
 	file.close()
 	Prefix = ARGUMENTS.get('Prefix','/opt/local')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix', PLTBin[:-5])
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix', RacketBin[:-5])
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
 elif sys.platform == 'win32':
 	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix','c:/Program Files/PLT')
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix','c:/Program Files/Racket')
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix','/usr/local')
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/plt")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/plt")
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
@@ -51,18 +51,18 @@ CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
 DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
 if sys.platform == 'darwin' or sys.platform == 'win32':
-        PLTCollectsLocation = PLTPrefix + "/collects/"
+        RacketCollectsLocation = RacketPrefix + "/collects/"
 else:
-        PLTCollectsLocation = PLTLib + "/collects/"
+        RacketCollectsLocation = RacketLib + "/collects/"
 
 if sys.platform == 'darwin' and GetOption('app'):
-        PLTCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
+        RacketCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
         FluxusCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
         DataLocation = '/Applications/Fluxus.app/Contents/Resources'
 
 LibPaths     = [
-        PLTLib,
-        PLTLib+"/..",
+        RacketLib,
+        RacketLib+"/..",
         "/usr/lib",
         "../../libfluxus"]
 
@@ -71,7 +71,7 @@ IncludePaths = [
         "/usr/include",
         "/usr/local/include/freetype2",  # arg - freetype needs to be
         "/usr/include/freetype2",        # on the include path :(
-        PLTInclude,
+        RacketInclude,
         "../../libfluxus/src"]
 
 ################################################################################
@@ -96,7 +96,7 @@ env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
-env.Append(CCFLAGS=" -DPLT_COLLECTS_LOCATION="+"\"\\\""+PLTCollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=" -DRACKET_COLLECTS_LOCATION="+"\"\\\""+RacketCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
@@ -133,22 +133,22 @@ static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = PLTLib + "/mzdyn.o"
+MZDYN = RacketLib + "/mzdyn.o"
 
 if env['PLATFORM'] == 'win32':
 	# need to do this to get scons to link plt's mzdyn.o
-	MZDYN = PLTLib + "/gcc/mzdyn.o"
+	MZDYN = RacketLib + "/gcc/mzdyn.o"
 
 	if ARGUMENTS.get("3M","1")=="1":
 		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-		MZDYN = PLTLib + "/gcc/mzdyn3m.o"
+		MZDYN = RacketLib + "/gcc/mzdyn3m.o"
 else:
 	# need to do this to get scons to link plt's mzdyn.o
-	MZDYN = PLTLib + "/mzdyn.o"
+	MZDYN = RacketLib + "/mzdyn.o"
 	
 	if ARGUMENTS.get("3M","1")=="1":
 		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-		MZDYN = PLTLib + "/mzdyn3m.o"
+		MZDYN = RacketLib + "/mzdyn3m.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -171,9 +171,9 @@ LibList = [["m", "math.h"],
                 ["GLEW", "GL/glew.h"]]
 
 if ARGUMENTS.get('MZNAME','') == 'racket':
-        LibList += [["racket3m", PLTInclude + "/scheme.h"]]
+        LibList += [["racket3m", RacketInclude + "/scheme.h"]]
 else:
-        LibList += [["mzscheme3m", PLTInclude + "/scheme.h"]]
+        LibList += [["mzscheme3m", RacketInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
@@ -183,7 +183,7 @@ if env['PLATFORM'] == 'win32':
 			["glu32", "GL/glu.h"],
 			["opengl32", "GL/gl.h"],
 			["openal32", "AL/al.h"],
-			["libmzsch3m_6ncc9s", PLTInclude + "/scheme.h"]]
+			["libmzsch3m_6ncc9s", RacketInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -197,15 +197,15 @@ elif env['PLATFORM'] == 'darwin':
 	# add jack as a library if not making an app
 		if not GetOption('app'):
 			LibList += [["jack", "jack/jack.h"]]
-		env.Append(FRAMEWORKPATH = [PLTLib])
+		env.Append(FRAMEWORKPATH = [RacketLib])
 		env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
 
 		if GetOption('app'):
 			env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
 			# FIXME: check if Jackmp is available when making an app
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation PLT_MrEd Jackmp"))
+			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
 		else:
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd"))
+			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio Racket"))
 
 
 ################################################################################
@@ -217,7 +217,7 @@ if not GetOption('clean'):
         print '--------------------------------------------------------'
         conf = Configure(env)
 
-        # check PLT and OpenAL frameworks on osx
+        # check Racket and OpenAL frameworks on osx
         if env['PLATFORM'] == 'darwin':
                 if not conf.CheckHeader('scheme.h'):
                         print "ERROR: 'mzscheme3m' must be installed!"
@@ -279,9 +279,9 @@ if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
 		# using popen as it's crossplatform 
-		mzc_status = os.popen("mzc --c-mods src/base.c \
-			++lib scheme/base  \
-			++lib scheme/base/lang/reader  \
+		raco_status = os.popen("mzc --c-mods src/base.c \
+			++lib racket/base  \
+			++lib racket/base/lang/reader  \
 			++lib xml/xml \
 			++lib compiler \
 			++lib mzscheme \
@@ -289,10 +289,10 @@ if not GetOption('clean'):
 			++lib setup   \
 			++lib config").close()
 	else:
-		#mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
-		mzc_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'scheme/base'])
+		#raco_status = os.popen("mzc --c-mods src/base.c ++lib racket/base").close()
+		raco_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'racket/base'])
 
-	if mzc_status != 0:
+	if raco_status != 0:
 		print "ERROR: Failed to run command 'mzc'"
 		Exit(1)
 
@@ -395,7 +395,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from osxbundle import *
         TOOL_BUNDLE(env)
         # add dynamic libs
-        frameworks = [PLTLib + '/PLT_MrEd.framework',
+        frameworks = [RacketLib + '/Racket.framework',
                      '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '/opt/local/lib/liblo.dylib']
 

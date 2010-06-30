@@ -5,7 +5,7 @@
 ;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc
-#lang scheme/base
+#lang racket/base
 
 (require "fluxus-modules.ss"
          "building-blocks.ss"

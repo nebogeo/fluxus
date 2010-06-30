@@ -6,7 +6,7 @@
 ;; Example:
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 (require scheme/class)
 (require "fluxus.ss")
 

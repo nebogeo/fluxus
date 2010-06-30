@@ -7,7 +7,7 @@
 ; need to set some global stuff up, I know it's wrong, looking for a way around it.
 ; (how can we load the extensions before requiring the modules they contain)
 
-#lang scheme/base
+#lang racket/base
 
 (require scheme/class
          mred/mred

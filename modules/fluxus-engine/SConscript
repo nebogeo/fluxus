@@ -1,7 +1,7 @@
 ###############################################################
 # SConscript for fluxus-engine
 #
-# This is the main PLT module for fluxus, containing all core
+# This is the main RACKET module for fluxus, containing all core
 # graphics functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
@@ -23,7 +23,7 @@ Install = BinaryModulesLocation
 if env['PLATFORM'] != 'darwin':
 	Libs += Split("GL GLU glut")
 else:
-	Frameworks = Split("GLUT OpenGL PLT_MrEd")
+	Frameworks = Split("GLUT OpenGL Racket")
 
 if env['PLATFORM'] == 'win32':
 	    Libs = Split("libmzsch3m_6ncc9s fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")
