@@ -8,18 +8,18 @@ FluxusVersion = MajorVersion+MinorVersion
 FluxusBundleDir = 'Fluxus.app'
 FluxaBundleDir = 'Fluxa.app'
 
-pipe = os.popen('dirname "`which mzscheme`"')
-PLTPrefix = pipe.read()[:-5]
+pipe = os.popen('dirname "`which racket`"')
+RacketPrefix = pipe.read()[:-5]
 pipe.close()
 
 # copy plt collects path manually preserving original dates
-print 'copying required plt 4.2.3 modules...'
+print 'copying required racket v5.0 modules...'
 for m in ['compiler', 'config', 'defaults', 'frtime', 'lang', \
-		  'mzlib', 'mzscheme', 'scheme', 'setup', 'srfi', \
+		  'mzlib', 'mzscheme', 'planet', 'racket', 'scheme', 'setup', 'srfi', \
 		  'syntax', 'unstable', 'xml']:
 	print '\t', m
 	os.system('cp -pr "%s" Fluxus.app/Contents/Resources/collects/%s' %
-		(PLTPrefix + '/collects/' + m, m))
+		(RacketPrefix + '/collects/' + m, m))
 
 # scheme modules don't get installed for some reason
 print 'copying fluxus collects path...'

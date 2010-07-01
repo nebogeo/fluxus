@@ -28,7 +28,7 @@ in contact!
 It requires:
 
 ode (0.5)           http://opende.sourceforge.net/
-plt scheme (4.x)    http://www.plt-scheme.org/ (from source - see below)
+racket (5.x)		http://www.racket-lang.org/
 fftw (3.0.1)        http://www.fftw.org/
 jack (1.0)          http://jackit.sourceforge.net/
 libsndfile (1.0.12) http://www.mega-nerd.com/libsndfile/
@@ -43,10 +43,10 @@ should also be ok, let me know (via the mailing list) if you run into problems.
 And if that's not enough, you'll also need scons (http://www.scons.org/) to 
 actually build fluxus.
 
-PLT install instructions
+Racket install instructions
 ------------------------
 
-You probably need to install PLT from source, in order to get shared libraries
+You probably need to install Racket from source, in order to get shared libraries
 like this:
 
 ./configure --enable-shared --prefix=/usr/local
@@ -85,20 +85,20 @@ tweaked to correctly find things.
 Fluxus install instructions for OS X
 ------------------------------------
 
-Install PLT Scheme binary (http://download.plt-scheme.org/) and
+Install Racket binary (http://racket-lang.org/download/) and
 MacPorts (http://www.macports.org/).
 
-Put the bin directory of PLT Scheme and MacPorts to your path by adding
+Put the bin directory of Racket and MacPorts to your path by adding
 the following line to the .bash_profile file in your home directory:
 
-PATH=$PATH:/opt/local/bin:/Applications/PLT\ Scheme\ v4.2.3/bin/
+PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.0/bin/
 
 Also add this line to .bash_profile, which is necessary for Fluxus to
-find the PLT frameworks:
+find the Racket frameworks:
 
-export DYLD_FRAMEWORK_PATH=/Applications/PLT\ Scheme\ v4.2.3/lib/
+export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.0/lib/
 
-You might need to change the PLT Scheme version number according to
+You might need to change the Racket version number according to
 the binary package you have installed.
 
 Install dependencies from MacPorts:
@@ -126,7 +126,7 @@ You need to install python, scons and MinGW, then install the win32 versions of
 the dependencies from their websites (eq ode, plt) or for lower level ones 
 like libpng, libtiff etc from here: http://gnuwin32.sourceforge.net/
 Put the libs in the C:\MinGW\lib and includes in c:\MinGW\include for everything
-except PLT scheme. You should now be able to build and install fluxus. 
+except Racket. You should now be able to build and install fluxus. 
 
 It installs by default to C:\Program Files\Fluxus. You now need to add copies 
 of all the dependencies dlls in the bin directory there.
@@ -138,8 +138,8 @@ For building fluxus for packaging or as downloadable all included games or
 applications, there are these flags:
 
 STATIC_MODULES=1
-Build fluxus such that it doesn't require PLT installed - embeds the module binaries
-and all the scheme code required from PLT. Currently you also need to change a couple
+Build fluxus such that it doesn't require Racket installed - embeds the module binaries
+and all the scheme code required from Racket. Currently you also need to change a couple
 of lines of modules/scheme/fluxus-modules, see comments in that file for more info.
 
 STATIC_EVERYTHING=1
