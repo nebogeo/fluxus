@@ -22,10 +22,10 @@ Source = ["src/FluxusMIDI.cpp",
 if env['PLATFORM'] == 'posix':
 	Libs =  ['pthread', 'asound']
 	Frameworks = []
-	env.Append(CCFLAGS = ' -D__LINUX_ALSASEQ__')
+	env.Append(CCFLAGS = ['-D__LINUX_ALSASEQ__'])
 elif env['PLATFORM'] == 'darwin':
 	Libs = []
-	env.Append(CCFLAGS = ' -D__MACOSX_CORE__')
+	env.Append(CCFLAGS = ['-D__MACOSX_CORE__'])
 	Frameworks = ['CoreMIDI', 'CoreAudio', 'CoreFoundation', 'Racket']
 
 if static_modules:

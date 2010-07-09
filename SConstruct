@@ -76,7 +76,7 @@ IncludePaths = [
 
 paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconversion -Wredundant-decls -Wunreachable-code -Winline -Wlarger-than-256'
 
-env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
+env = Environment(CCFLAGS = ['-ggdb', '-pipe', '-Wall', '-O3', '-ffast-math', '-Wno-unused', '-fPIC'],
                   VERSION_NUM = FluxusVersion)
 env.MergeFlags(ARGUMENTS.get('CCFLAGS', ''))
 env.MergeFlags(ARGUMENTS.get('LDFLAGS', ''))
@@ -91,40 +91,40 @@ if env['PLATFORM'] == 'darwin':
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
-env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
-env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
-env.Append(CCFLAGS=" -DRACKET_COLLECTS_LOCATION="+"\"\\\""+RacketCollectsLocation+"\"\\\"")
-env.Append(CCFLAGS=" -DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\"")
-env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
+env.Append(CCFLAGS=['-DFLUXUS_MAJOR_VERSION='+MajorVersion])
+env.Append(CCFLAGS=['-DFLUXUS_MINOR_VERSION='+MinorVersion])
+env.Append(CCFLAGS=["-DRACKET_COLLECTS_LOCATION="+"\"\\\""+RacketCollectsLocation+"\"\\\""])
+env.Append(CCFLAGS=["-DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\""])
+env.Append(CCFLAGS=["-DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\""])
 
 if ARGUMENTS.get("GLSL","1")=="1":
-        env.Append(CCFLAGS=' -DGLSL')
+	env.Append(CCFLAGS=['-DGLSL'])
 
 if ARGUMENTS.get("STEREODEFAULT","0")=="1":
-        env.Append(CCFLAGS=' -DSTEREODEFAULT')
+	env.Append(CCFLAGS=['-DSTEREODEFAULT'])
 
 if ARGUMENTS.get("ACCUM_BUFFER","0")=="1":
-        env.Append(CCFLAGS=' -DACCUM_BUFFER')
+	env.Append(CCFLAGS=['-DACCUM_BUFFER'])
 
 if ARGUMENTS.get("MULTISAMPLE","0")=="1":
-        env.Append(CCFLAGS=' -DMULTISAMPLE')
+	env.Append(CCFLAGS=['-DMULTISAMPLE'])
 
 if ARGUMENTS.get("MULTITEXTURE","1")=="0":
-        env.Append(CCFLAGS=' -DDISABLE_MULTITEXTURE')
+	env.Append(CCFLAGS=['-DDISABLE_MULTITEXTURE'])
 
 if ARGUMENTS.get("RELATIVE_COLLECTS","0")=="1":
-	env.Append(CCFLAGS=' -DRELATIVE_COLLECTS')
+	env.Append(CCFLAGS=['-DRELATIVE_COLLECTS'])
 
 static_modules=0
 if ARGUMENTS.get("STATIC_MODULES","0")=="1":
 	static_modules=1
-	env.Append(CCFLAGS=' -DSTATIC_LINK')
+	env.Append(CCFLAGS=['-DSTATIC_LINK'])
 
 static_everything=0
 if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	static_everything=1
 	static_modules=1
-	env.Append(CCFLAGS=' -DSTATIC_LINK')
+	env.Append(CCFLAGS=['-DSTATIC_LINK'])
 
 static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
 
@@ -137,14 +137,14 @@ if env['PLATFORM'] == 'win32':
 	MZDYN = RacketLib + "/gcc/mzdyn.o"
 
 	if ARGUMENTS.get("3M","1")=="1":
-		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		env.Append(CCFLAGS=['-DMZ_PRECISE_GC'])
 		MZDYN = RacketLib + "/gcc/mzdyn3m.o"
 else:
 	# need to do this to get scons to link plt's mzdyn.o
 	MZDYN = RacketLib + "/mzdyn.o"
 	
 	if ARGUMENTS.get("3M","1")=="1":
-		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
+		env.Append(CCFLAGS=['-DMZ_PRECISE_GC'])
 		MZDYN = RacketLib + "/mzdyn3m.o"
 
 ################################################################################
@@ -191,10 +191,10 @@ elif env['PLATFORM'] == 'darwin':
 		if not GetOption('app'):
 			LibList += [["jack", "jack/jack.h"]]
 		env.Append(FRAMEWORKPATH = [RacketLib])
-		env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
+		env.Append(CCFLAGS = ['-DOS_X']) # required by PLT 4.2.5
 
 		if GetOption('app'):
-			env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
+			env.Append(CCFLAGS = ['-D__APPLE_APP__ -DRELATIVE_COLLECTS'])
 			# FIXME: check if Jackmp is available when making an app
 			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
 		else:
@@ -229,12 +229,12 @@ if not GetOption('clean'):
                         Exit(1)
 
         if not conf.CheckFunc("dInitODE2"):
-            env.Append(CCFLAGS=' -DGOODE_OLDE_ODE')
+                env.Append(CCFLAGS=['-DGOODE_OLDE_ODE'])
 
         # the liblo version 0.25 does not include the declaration of lo_arg_size anymore
         # This will be re-included in future version
         if not conf.CheckFunc("lo_arg_size_check", "#include <lo/lo.h>\n#define lo_arg_size_check() lo_arg_size(LO_INT32, NULL)", "C++"):
-            env.Append(CCFLAGS=' -DNO_LO_ARG_SIZE_DECL')
+                env.Append(CCFLAGS=['-DNO_LO_ARG_SIZE_DECL'])
 
         env = conf.Finish()
         # ... but we shouldn't forget to add them to LIBS manually
@@ -328,8 +328,8 @@ if not GetOption('clean') and static_modules:
 	
 		app_env['LIBS'].remove("pthread")
 		app_env['LIBS'].remove("dl")
-                app_env['LIBS'].remove("ode")
-                app_env['LIBS'].remove("sndfile")
+		app_env['LIBS'].remove("ode")
+		app_env['LIBS'].remove("sndfile")
 	
 		# now go through the rest of the libs, removing them from 
 		# the environment at the same time
