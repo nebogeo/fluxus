@@ -14,9 +14,6 @@ FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
 Target = "fluxus"
 
-# changed prefix and pltprefix so they can be invoked at runtime
-# like scons Prefix=/usr RacketPrefix=/usr instead of default /usr/local
-
 DESTDIR = ARGUMENTS.get('DESTDIR', '')
 # this makes DESTDIR relative to root of the source tree, no matter
 # where we are
@@ -40,8 +37,8 @@ elif sys.platform == 'win32':
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
 	RacketPrefix = ARGUMENTS.get('RacketPrefix','/usr/local')
-	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/plt")
-	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/plt")
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/racket")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/racket")
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
