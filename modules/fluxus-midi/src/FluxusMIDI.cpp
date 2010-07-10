@@ -158,7 +158,6 @@ Scheme_Object *midi_init(int argc, Scheme_Object **argv)
 
 	MZ_GC_UNREG();
     return scheme_void;
-
 }
 
 // StartFunctionDoc-en
@@ -306,6 +305,74 @@ Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// midi-program channel-number
+// Returns: program-value-number
+// Description:
+// Returns the program value.
+// Example:
+// (midi-program 0)
+// EndFunctionDoc
+
+Scheme_Object *midi_program(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("midi-program", "number", 0, argc, argv);
+
+	int channel = (int)scheme_real_to_double(argv[0]);
+
+	if (midilistener != NULL)
+	{
+		int val = midilistener->get_program(channel);
+		ret = scheme_make_integer(val);
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// midi-cc-event
+// Returns: #(channel controller value) or #f
+// Description:
+// Returns the next event from the MIDI note event queue or #f if the queue is empty.
+// Example:
+// (midi-cc-event)
+// EndFunctionDoc
+
+Scheme_Object *midi_cc_event(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(2, ret);
+	MZ_GC_REG();
+
+	ret = scheme_false;
+	if (midilistener != NULL)
+	{
+		MIDIEvent *evt = midilistener->get_cc_event();
+		if (evt)
+		{
+			ret = scheme_make_vector(3, scheme_void);
+			SCHEME_VEC_ELS(ret)[0] = scheme_make_integer(evt->channel);
+			SCHEME_VEC_ELS(ret)[1] = scheme_make_integer(evt->controller);
+			SCHEME_VEC_ELS(ret)[2] = scheme_make_integer(evt->value);
+		}
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
 // midi-peek
 // Returns: msg-string
 // Description:
@@ -364,6 +431,10 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(midi_note, "midi-note", 0, 0), menv);
 	scheme_add_global("midi-peek",
 			scheme_make_prim_w_arity(midi_peek, "midi-peek", 0, 0), menv);
+	scheme_add_global("midi-program",
+			scheme_make_prim_w_arity(midi_program, "midi-program", 1, 1), menv);
+	scheme_add_global("midi-cc-event",
+			scheme_make_prim_w_arity(midi_cc_event, "midi-cc-event", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();
