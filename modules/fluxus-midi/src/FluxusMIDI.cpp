@@ -153,10 +153,30 @@ Scheme_Object *midi_init(int argc, Scheme_Object **argv)
 	}
 	else
 	{
+		midilistener->close();
 		midilistener->open(port);
 	}
 
 	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// midi-close
+// Returns: void
+// Description:
+// Closes the MIDI input port opened.
+// Example:
+// (midi-close)
+// EndFunctionDoc
+
+Scheme_Object *midi_close(int argc, Scheme_Object **argv)
+{
+	if (midilistener != NULL)
+	{
+		midilistener->close();
+	}
+
     return scheme_void;
 }
 
@@ -421,6 +441,8 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("midi-init",
 			scheme_make_prim_w_arity(midi_init, "midi-init", 1, 1), menv);
+	scheme_add_global("midi-close",
+			scheme_make_prim_w_arity(midi_close, "midi-close", 0, 0), menv);
 	scheme_add_global("midi-info",
 			scheme_make_prim_w_arity(midi_info, "midi-info", 0, 0), menv);
 	scheme_add_global("midi-cc",

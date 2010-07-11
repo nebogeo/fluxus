@@ -61,6 +61,7 @@ class MIDIListener
 			/** callback receiving MIDI data */
 			void callback(double deltatime, vector< unsigned char > *message);
 			void open(int port); /**< open a MIDI input connection */
+			void close(void); /**< close MIDI port */
 
 			int get_cc(int channel, int cntrl_number);
 			float get_ccn(int channel, int cntrl_number);
@@ -68,7 +69,7 @@ class MIDIListener
 
 			string get_last_event(void);
 
-			MIDINote *get_note(void);			
+			MIDINote *get_note(void);
 			MIDIEvent *get_cc_event(void);
 
 			enum {
@@ -92,10 +93,10 @@ class MIDIListener
 
 			/** array holding the current state of all, 16*128 controllers */
 			unsigned char *cntrl_values;
-			
+
 			/** array holding program number of 16 channels **/
 			unsigned char *pgm_values;
-			
+
 			deque<MIDINote *> midi_notes;
 			deque<MIDIEvent *> midi_events;
 };

@@ -93,8 +93,8 @@ the following line to the .bash_profile file in your home directory:
 
 PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.0/bin/
 
-Also add this line to .bash_profile, which is necessary for Fluxus to
-find the Racket frameworks:
+Also add this line to .bash_profile, which is necessary for fluxus to
+find the Racket framework:
 
 export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.0/lib/
 

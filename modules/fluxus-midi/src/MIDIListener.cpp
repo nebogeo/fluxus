@@ -186,6 +186,29 @@ void MIDIListener::open(int port)
 }
 
 /**
+ * Closes MIDI port.
+ **/
+void MIDIListener::close()
+{
+	if (midiin == NULL)
+	{
+		init_midi();
+		if (midiin == NULL)
+			return;
+	}
+
+	try
+	{
+		midiin->closePort();
+	}
+	catch (RtError &error)
+	{
+		error.printMessage();
+		return;
+	}
+}
+
+/**
  * Returns controller values.
  * \param channel MIDI channel
  * \param cntrl_number controller number
