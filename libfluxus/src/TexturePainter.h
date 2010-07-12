@@ -90,13 +90,14 @@ public:
 	class CreateParams
 	{
 		public:
-		CreateParams(): ID(-1), Type(GL_TEXTURE_2D), GenerateMipmaps(true), MipLevel(0), Border(0) {}
+		CreateParams(): ID(-1), Type(GL_TEXTURE_2D), GenerateMipmaps(true), MipLevel(0), Border(0), Compress(false) {}
 
 		int ID;
 		int Type;
 		bool GenerateMipmaps;
 		int MipLevel;
 		int Border;
+		bool Compress;
 	};
 
 	////////////////////////////////////
@@ -182,6 +183,7 @@ private:
 	map<unsigned int,CubeMapDesc> m_CubeMapMap;
 	bool m_MultitexturingEnabled;
 	bool m_TextureCompressionEnabled;
+	bool m_SGISGenerateMipmap;
 };
 
 }
