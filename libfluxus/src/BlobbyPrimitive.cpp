@@ -506,12 +506,12 @@ void BlobbyPrimitive::Interpolate(dVertex &vert, dVector &grad, float isolevel, 
 	float vala = m_Voxels[cell].val[a];
 	float valb = m_Voxels[cell].val[b];
 
-	dVector grada(SafeVal(cell + m_Depth * m_Height, a) - SafeVal(cell - m_Depth * m_Height, a),
-				  SafeVal(cell + m_Depth, a) - SafeVal(cell - m_Depth, a),
-				  SafeVal(cell + 1, a) - SafeVal(cell - 1, a));
-	dVector gradb(SafeVal(cell + m_Depth * m_Height, b) - SafeVal(cell - m_Depth * m_Height, b),
-				  SafeVal(cell + m_Depth, b) - SafeVal(cell - m_Depth, b),
-				  SafeVal(cell + 1, b) - SafeVal(cell - 1, b));
+	dVector grada(SafeVal(cell - m_Depth * m_Height, a) - SafeVal(cell + m_Depth * m_Height, a),
+				  SafeVal(cell - m_Depth, a) - SafeVal(cell + m_Depth, a),
+				  SafeVal(cell - 1, a) - SafeVal(cell + 1, a));
+	dVector gradb(SafeVal(cell - m_Depth * m_Height, b) - SafeVal(cell + m_Depth * m_Height, b),
+				  SafeVal(cell - m_Depth, b) - SafeVal(cell + m_Depth, b),
+				  SafeVal(cell - 1, b) - SafeVal(cell + 1, b));
 
 	mu = (isolevel - vala) / (valb - vala);
 	vert.point.x = posa.x + mu * (posb.x - posa.x);
