@@ -49,110 +49,114 @@ using namespace Fluxus;
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// vmul vector number
+// vmulc vector number
 // Returns: result-vector
 // Description:
-// Multiplies a vector by a number
+// Multiplies a vector by a number.
+// Deprecated C version, the Scheme version is faster and more flexible.
 // Example:
-// (vmul (vector 1 2 3) 2)
+// (vmulc (vector 1 2 3) 2)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// vmul vetor número
+// vmulc vetor número
 // Retorna: vetor resultante
 // Descrição:
 // Multiplica um vetor por um número.
 // Exemplo:
-// (vmul (vector 1 2 3) 2)
+// (vmulc (vector 1 2 3) 2)
 // EndFunctionDoc
 
-Scheme_Object *vmul(int argc, Scheme_Object **argv)
+Scheme_Object *vmulc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("vmul", "vf", argc, argv);
+	ArgCheck("vmulc", "vf", argc, argv);
 	dVector ret = VectorFromScheme(argv[0])*scheme_real_to_double(argv[1]);
-  	MZ_GC_UNREG();
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
-// vadd vector vector
+// vaddc vector vector
 // Returns: result-vector
 // Description:
-// Adds two vectors together
+// Adds two vectors together.
+// Deprecated C version, the Scheme version is faster and more flexible.
 // Example:
-// (vadd (vector 1 2 3) (vector 1 2 3))
+// (vaddc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// vadd vetor vetor
+// vaddc vetor vetor
 // Retorna: vetor resultante
 // Descrição:
 // Adiciona dois vetores, um ao outro.
 // Exemplo:
-// (vadd (vector 1 2 3) (vector 1 2 3))
+// (vaddc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
-Scheme_Object *vadd(int argc, Scheme_Object **argv)
+Scheme_Object *vaddc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("vadd", "vv", argc, argv);	
+	ArgCheck("vaddc", "vv", argc, argv);
 	dVector ret = VectorFromScheme(argv[0])+VectorFromScheme(argv[1]);
-  	MZ_GC_UNREG();
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
-// vsub vector vector
+// vsubc vector vector
 // Returns: result-vector
 // Description:
-// Subtracts a vector from another
+// Subtracts a vector from another.
+// Deprecated C version, the Scheme version is faster and more flexible.
 // Example:
-// (vsub (vector 1 2 3) (vector 1 2 3))
+// (vsubc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// vsub vetor vetor
+// vsubc vetor vetor
 // Retorna: vetor resultante
 // Descrição:
 // Subtrai um vetor de outro.
 // Exemplo:
-// (vsub (vector 1 2 3) (vector 1 2 3))
+// (vsubc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
-Scheme_Object *vsub(int argc, Scheme_Object **argv)
+Scheme_Object *vsubc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("vsub", "vv", argc, argv);
- 	dVector ret = VectorFromScheme(argv[0])-VectorFromScheme(argv[1]);
- 	MZ_GC_UNREG();
+	ArgCheck("vsubc", "vv", argc, argv);
+	dVector ret = VectorFromScheme(argv[0])-VectorFromScheme(argv[1]);
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
 // StartFunctionDoc-en
-// vdiv vector number
+// vdivc vector number
 // Returns: result-vector
 // Description:
-// Divides a vector by a number
+// Divides a vector by a number.
+// Deprecated C version, the Scheme version is faster and more flexible.
 // Example:
-// (vdiv (vector 1 2 3) 2)
+// (vdivc (vector 1 2 3) 2)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// vdiv vetor número
+// vdivc vetor número
 // Retorna: vetor resultante
 // Descrição:
 // Divide um vetor por um número
 // Exemplo:
-// (vdiv (vector 1 2 3) 2)
+// (vdivc (vector 1 2 3) 2)
 // EndFunctionDoc
 
-Scheme_Object *vdiv(int argc, Scheme_Object **argv)
+Scheme_Object *vdivc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("vdiv", "vf", argc, argv);
- 	dVector ret = VectorFromScheme(argv[0])/scheme_real_to_double(argv[1]);
-	MZ_GC_UNREG(); 
+	ArgCheck("vdivc", "vf", argc, argv);
+	dVector ret = VectorFromScheme(argv[0])/scheme_real_to_double(argv[1]);
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
@@ -179,7 +183,7 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("vtransform", "vm", argc, argv);
 	dVector ret = MatrixFromScheme(argv[1]).transform_persp(VectorFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
@@ -187,7 +191,7 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 // vtransform-rot vector matrix
 // Returns: result-vector
 // Description:
-// Multiplies (transforms) a vector by a matrix, but leaves out the translation part. For operations 
+// Multiplies (transforms) a vector by a matrix, but leaves out the translation part. For operations
 // involving normals.
 // Example:
 // (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
@@ -197,7 +201,7 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 // vtransform-rot vetor matriz
 // Retorna: vetor resultante
 // Descrição:
-// Multiplica (transforma) um vetor por uma matriz, mas deixa de fora a parte de translação. Para 
+// Multiplica (transforma) um vetor por uma matriz, mas deixa de fora a parte de translação. Para
 // ser usado em operações involvendo normais.
 // Exemplo:
 // (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
@@ -208,7 +212,7 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("vtransform-rot", "vm", argc, argv);
 	dVector ret=MatrixFromScheme(argv[1]).transform_no_trans(VectorFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return FloatsToScheme(ret.arr(),3);
 }
 
@@ -1155,10 +1159,10 @@ void MathsFunctions::AddGlobals(Scheme_Env *env)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
-	scheme_add_global("vmul", scheme_make_prim_w_arity(vmul, "vmul", 2, 2), env);
-	scheme_add_global("vadd2", scheme_make_prim_w_arity(vadd, "vadd", 2, 2), env);
-	scheme_add_global("vsub2", scheme_make_prim_w_arity(vsub, "vsub", 2, 2), env);
-	scheme_add_global("vdiv", scheme_make_prim_w_arity(vdiv, "vdiv", 2, 2), env);
+	scheme_add_global("vmulc", scheme_make_prim_w_arity(vmulc, "vmulc", 2, 2), env);
+	scheme_add_global("vaddc", scheme_make_prim_w_arity(vaddc, "vaddc", 2, 2), env);
+	scheme_add_global("vsubc", scheme_make_prim_w_arity(vsubc, "vsubc", 2, 2), env);
+	scheme_add_global("vdivc", scheme_make_prim_w_arity(vdivc, "vdivc", 2, 2), env);
 	scheme_add_global("vtransform", scheme_make_prim_w_arity(vtransform, "vtransform", 2, 2), env);
 	scheme_add_global("vtransform-rot", scheme_make_prim_w_arity(vtransform_rot, "vtransform-rot", 2, 2), env);
 	scheme_add_global("vnormalise", scheme_make_prim_w_arity(vnormalise, "vnormalise", 1, 1), env);

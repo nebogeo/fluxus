@@ -11,6 +11,7 @@
 #lang scheme/base
 
 (require "fluxus-modules.ss")
+(require "building-blocks.ss")
 
 (provide (all-defined-out))
 
