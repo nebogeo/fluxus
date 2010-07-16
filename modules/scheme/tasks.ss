@@ -33,7 +33,8 @@
 #lang racket/base
 (require "time.ss")
 
-(provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now print-error)
+(provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now print-error
+		 task-running?)
 
 (define task-list '())  ; alist of tasks - maintained in sorted order
 (define timed-task-list '()) ; a separate list of timed tasks
@@ -95,13 +96,28 @@
 ;; (spawn-task (lambda () (draw-torus)) 'torus-task) ; add a task
 ;; (ls-tasks)
 ;; (rm-task 'torus-task)
-;; EndFunctionDoc    
+;; EndFunctionDoc
 
 (define (ls-tasks)
   (for-each (lambda (t)
               (printf "task: ~a ~a~%" (car t) (cdr t)))
             task-list))
 
+
+;; StartFunctionDoc-en
+;; task-running? task-name-symbol
+;; Returns: boolean
+;; Description:
+;; Checks if a task is running.
+;; Example:
+;; (spawn-task (lambda () (draw-torus)) 'torus-task)
+;; (display (task-running? 'torus-task))(newline)
+;; (rm-task 'torus-task)
+;; (display (task-running? 'torus-task))(newline)
+;; EndFunctionDoc
+
+(define (task-running? t)
+  (if (assoc t task-list) #t #f))
 
 
 (define (thunk? t) (let ([arity (procedure-arity t)])
