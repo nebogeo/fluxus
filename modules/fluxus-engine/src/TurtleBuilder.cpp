@@ -123,3 +123,13 @@ void TurtleBuilder::Pop()
 	}
 }
 
+dMatrix TurtleBuilder::GetTransform()
+{
+	dMatrix m;
+	m.rotxyz(m_State.begin()->m_Rot.x,
+			 m_State.begin()->m_Rot.y,
+			 m_State.begin()->m_Rot.z);
+	m.settranslate(m_State.begin()->m_Pos);
+	return m;
+}
+

@@ -405,8 +405,35 @@ Scheme_Object *turtle_seek(int argc, Scheme_Object **argv)
 	return scheme_void;	
 }
 
+// StartFunctionDoc-en
+// get-turtle-transform
+// Returns: matrix-vector
+// Description:
+// Returns a matrix representing the current turtle transform.
+// Example:
+// (clear)
+// (hint-none)
+// (hint-wire)
+// (turtle-reset)
+// (turtle-prim 4)
+// (for ([i (in-range 9)])
+//   (turtle-turn (vector 0 0 36))
+//   (turtle-move 1)
+//   (turtle-vert))
+// (turtle-build)
+// (with-primitive (build-locator)
+//   (hint-origin)
+//   (concat (get-turtle-transform)))
+// EndFunctionDoc
+
+Scheme_Object *get_turtle_transform(int argc, Scheme_Object **argv)
+{
+	dMatrix m = Engine::Get()->GetTurtle()->GetTransform();
+	return FloatsToScheme(m.arr(), 16);
+}
+
 void TurtleFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -422,5 +449,6 @@ void TurtleFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("turtle-skip", scheme_make_prim_w_arity(turtle_skip, "turtle-skip", 1, 1), env);
 	scheme_add_global("turtle-position", scheme_make_prim_w_arity(turtle_position, "turtle-position", 0, 0), env);
 	scheme_add_global("turtle-seek", scheme_make_prim_w_arity(turtle_seek, "turtle-seek", 1, 1), env);
- 	MZ_GC_UNREG(); 
+	scheme_add_global("get-turtle-transform", scheme_make_prim_w_arity(get_turtle_transform, "get-turtle-transform", 0, 0), env);
+	MZ_GC_UNREG();
 }
