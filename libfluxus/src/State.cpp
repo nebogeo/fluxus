@@ -82,7 +82,7 @@ const State &State::operator=(const State &other)
 	{
 		Shader->IncRef();
 	}
-	for (int n=0; n<=MAX_TEXTURES; n++)
+	for (int n=0; n<MAX_TEXTURES; n++)
 	{
 		Textures[n]=other.Textures[n];
 		TextureStates[n]=other.TextureStates[n];

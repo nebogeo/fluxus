@@ -30,7 +30,6 @@ Physics::Object::~Object()
 {
 	if (Type==ACTIVE) dBodyDestroy(Body);
 	dGeomDestroy(Bound);
-	if (Prim!=NULL) Prim->SetPhysicalHint(false);
 }
 
 Physics::JointObject::JointObject()
@@ -181,6 +180,44 @@ void Physics::GroundPlane(dVector ori, float off)
 	m_GroundCreated=true;
 }
 
+void Physics::SetupTransform(Primitive *p, dMatrix &rotation, dVector &Pos)
+{
+	State *ObState=p->GetState();
+
+    // find the bounding box centre
+	dMatrix temp;
+    dBoundingBox old_box = p->GetBoundingBox(temp);
+
+    // ODE position is that of the centre of mass
+    Pos = ObState->Transform.transform( (old_box.min + (old_box.max - old_box.min)/2) );
+    // center the object on it's bounding box centre
+    ObState->Transform.settranslate(ObState->Transform.gettranslate() - Pos);
+	
+	// extract the rotation from the state
+	rotation = ObState->Transform;
+	rotation.remove_scale();
+	rotation.settranslate(dVector(0,0,0));
+	
+    // inverse won't work if there are zero scales involved
+    // so we need to check for that
+    dVector scalecheck=rotation.get_scale();
+    if (scalecheck.feq(dVector(1,1,1)))
+    {
+        // remove the rotation 
+        ObState->Transform*=rotation.inverse();
+    }
+		
+	// need to apply transform to object here, so we are left with an identity in the
+	// state transform for the object, and the bounding volume will be correct.
+	// can't undo this.	
+	p->ApplyTransform(false);
+	
+    // make sure object's transform is in sync with physics right away, so we can use it in scripts directly
+    ObState->Transform=rotation;
+    ObState->Transform.settranslate(Pos);
+}
+
+
 void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 {	
 	if (m_ObjectMap.find(ID)!=m_ObjectMap.end())
@@ -194,55 +231,31 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
 	Ob->Prim = m_Renderer->GetPrimitive(ID);	
 	
 	if (!Ob->Prim) return;
-	Ob->Prim->SetPhysicalHint(true);
 	
 	dMass m;
 	Ob->Body = dBodyCreate(m_World);
 	
-	State *ObState=Ob->Prim->GetState();
-
-    // find the bounding box centre
-	dMatrix temp;
-    dBoundingBox old_box = Ob->Prim->GetBoundingBox(temp);
-
-    // ODE position is that of the centre of mass
-    dVector Pos = ObState->Transform.transform( (old_box.min + (old_box.max - old_box.min)/2) );
-    // center the object on it's bounding box centre
-    ObState->Transform.settranslate(ObState->Transform.gettranslate() - Pos);
-	
-	// extract the rotation from the state
-	dMatrix rotation = ObState->Transform;
-	rotation.remove_scale();
-	rotation.settranslate(dVector(0,0,0));
-	
-	// remove the rotation 
-	ObState->Transform*=rotation.inverse();
-		
-	// need to apply transform to object here, so we are left with an identity in the
-	// state transform for the object, and the bounding volume will be correct.
-	// can't undo this.	
-	Ob->Prim->ApplyTransform(false);
-	
-    // make sure object's transform is in sync with physics right away, so we can use it in scripts directly
-    ObState->Transform=rotation;
-    ObState->Transform.settranslate(Pos);
+    dMatrix rotation;
+    dVector Pos;
+    SetupTransform(Ob->Prim,rotation,Pos);
+    dMatrix ident;
 	  	
 	// get the bounding box from the fluxus object
   	switch (Bound)
   	{
   		case BOX:
   		{
-			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
-			dVector BoxSize=Box.max-Box.min;
-			dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
+ 			dVector BoxSize=Box.max-Box.min;
+ 			dMassSetBox(&m,1,BoxSize.x,BoxSize.y,BoxSize.z);
 			dMassAdjust(&m,Mass);
  			dBodySetMass(Ob->Body,&m);
  			Ob->Bound = dCreateBox (m_Space,BoxSize.x,BoxSize.y,BoxSize.z);
  	    } break;
  	    case SPHERE:
  	    {
-			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
@@ -254,7 +267,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
  	    } break;
  	    case CYLINDER:
  	    {
-            dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
@@ -281,7 +294,7 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
                     	   (void*)idx, pp->GetIndex().size(),
                     	   sizeof(unsigned int)*3, (void*)normals);
 
-					dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+					dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
                     Box.fudgenonzerovolume();
 					dVector BoxSize=Box.max-Box.min;
                     
@@ -342,9 +355,10 @@ void Physics::MakeActive(int ID, float Mass, BoundingType Bound)
   	// remove oldest object if neccesary
   	if ((int)m_ObjectMap.size()>m_MaxObjectCount)
   	{
-  		Free(*m_History.begin());
-  		m_Renderer->RemovePrimitive(*m_History.begin());
-  		m_History.pop_front();
+        int ID=*m_History.begin();
+        Free(ID);
+        m_Renderer->RemovePrimitive(ID);
+        m_History.pop_front();
   	}
 }
 
@@ -361,50 +375,28 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
 	Ob->Prim = m_Renderer->GetPrimitive(ID);	
 	
 	if (!Ob->Prim) return;
-	Ob->Prim->SetPhysicalHint(true);
-	
-	State *ObState=Ob->Prim->GetState();
-	
-    // find the bounding box centre
-	dMatrix temp;
-    dBoundingBox old_box = Ob->Prim->GetBoundingBox(temp);
 
-    // ODE position is that of the centre of mass
-    dVector Pos = ObState->Transform.transform( (old_box.min + (old_box.max - old_box.min)/2) );
-    // center the object on it's bounding box centre
-    ObState->Transform.settranslate(ObState->Transform.gettranslate() - Pos);
-	
-	// extract the rotation from the state
-	dMatrix rotation = ObState->Transform;
-	rotation.remove_scale();
-	rotation.settranslate(dVector(0,0,0));
-	
-	// remove the rotation 
-	ObState->Transform*=rotation.inverse();
-		
-	// need to apply transform to object here, so we are left with an identity in the
-	// state transform for the object, and the bounding volume will be correct.
-	// can't undo this.	
-	Ob->Prim->ApplyTransform(false);
-	
- 	ObState->Transform=rotation;
- 	ObState->Transform.settranslate(Pos);
+    dMatrix rotation;
+    dVector Pos;
+    SetupTransform(Ob->Prim,rotation,Pos);
+    dMatrix ident;
 	
 	// this tells ode to attach joints to the static environment if they are attached
 	// to this joint
 	Ob->Body = 0;
+
   	switch (Bound)
   	{
   		case BOX:
   		{
-			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
 			dVector BoxSize=Box.max-Box.min;
  			Ob->Bound = dCreateBox(m_Space,BoxSize.x,BoxSize.y,BoxSize.z);
  	    } break;
  	    case SPHERE:
  	    {
-			dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+			dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
 			// Take the distance across the box in x divided by 2 to be the
 			// radius. This works with a sphere well enough...
@@ -413,7 +405,7 @@ void Physics::MakePassive(int ID, float Mass, BoundingType Bound)
  	    } break;
  	    case CYLINDER:
  	    {
-            dBoundingBox Box=Ob->Prim->GetBoundingBox(temp);
+            dBoundingBox Box=Ob->Prim->GetBoundingBox(ident);
             Box.fudgenonzerovolume();
 			float Radius=(Box.max.x-Box.min.x)/2;
 			float Height=Box.max.y-Box.min.y;
@@ -506,30 +498,37 @@ void Physics::SetMass(int ID, float mass)
 void Physics::Free(int ID)
 {
 	map<int,Object*>::iterator i = m_ObjectMap.find(ID);
-	if (i==m_ObjectMap.end())
+	if (i!=m_ObjectMap.end())
 	{
-		Trace::Stream<<"Physics::Free : Object ["<<ID<<"] doesn't exist"<<endl;
-		return;
-	}
+        // clean up joints connected to this object
+        vector<map<int,JointObject*>::iterator> toremove;
+        for(map<int,JointObject*>::iterator j=m_JointMap.begin(); j!=m_JointMap.end(); ++j)
+        {
+            if (j->second->Ob1==ID || j->second->Ob2==ID)
+            {
+                toremove.push_back(j);
+                delete j->second;
+            }
+        }
 
-	// clean up joints connected to this object
-	vector<map<int,JointObject*>::iterator> toremove;
-	for(map<int,JointObject*>::iterator i=m_JointMap.begin(); i!=m_JointMap.end(); ++i)
-	{
-		if (i->second->Ob1==ID || i->second->Ob2==ID)
-		{
-			toremove.push_back(i);
-			delete i->second;
-		}
-	}
+        for (vector<map<int,JointObject*>::iterator>::iterator j=toremove.begin(); j!=toremove.end(); ++j)
+        {
+            m_JointMap.erase(*j);
+        }
+        
+        delete i->second;
+        m_ObjectMap.erase(i);
+    }
 
-	for (vector<map<int,JointObject*>::iterator>::iterator i=toremove.begin(); i!=toremove.end(); ++i)
-	{
-		m_JointMap.erase(*i);
-	}
-
-	delete i->second;
-	m_ObjectMap.erase(i);
+    Node *node = m_Renderer->GetSceneGraph().FindNode(ID);
+    if (node!=NULL) // not certain this check is required...
+    {
+        // remove all the children of this object in the scenegraph
+        for (vector<Node*>::const_iterator c=node->Children.begin(); c!=node->Children.end(); ++c)
+        {
+            Free((*c)->ID);
+        }
+    }
 }
 
 void Physics::Clear()

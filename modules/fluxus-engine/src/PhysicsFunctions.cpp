@@ -458,7 +458,7 @@ Scheme_Object *physics_remove(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("physics-remove", "i", argc, argv);
 	int name = IntFromScheme(argv[0]);
-	Engine::Get()->Physics()->Free(name);
+ 	Engine::Get()->Physics()->Free(name);
 	MZ_GC_UNREG();
 	return scheme_void;
 }

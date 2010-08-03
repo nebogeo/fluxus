@@ -2210,17 +2210,8 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 	ArgCheck("destroy", "i", argc, argv);
 	int name=0;
 	name=IntFromScheme(argv[0]);	
-	
-	Primitive *p=Engine::Get()->Renderer()->GetPrimitive(name);
-	if (p)
-	{
-    	if (p->IsPhysicalHint())
-    	{
-    		Engine::Get()->Physics()->Free(name);
-    	}
-    	Engine::Get()->Renderer()->RemovePrimitive(name);
-    }
-
+    Engine::Get()->Physics()->Free(name);
+    Engine::Get()->Renderer()->RemovePrimitive(name);
 	MZ_GC_UNREG(); 
     return scheme_void;
 }
