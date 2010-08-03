@@ -26,30 +26,30 @@ using namespace SchemeHelper;
 
 // StartSectionDoc-en
 // lights
-// Without lights you wouldn't be able to see anything. Luckily fluxus gives you one for free by default, a white 
-// diffuse point light attached to the camera. For more interesting lighting, you'll need these functions. Using the 
-// standard fixed function graphics pipeline, simplistically speaking, OpenGL multiplies these values with the surface 
-// material (set with local state commands like ambient and diffuse) and the texture colour value to give the final 
+// Without lights you wouldn't be able to see anything. Luckily fluxus gives you one for free by default, a white
+// diffuse point light attached to the camera. For more interesting lighting, you'll need these functions. Using the
+// standard fixed function graphics pipeline, simplistically speaking, OpenGL multiplies these values with the surface
+// material (set with local state commands like ambient and diffuse) and the texture colour value to give the fina 
 // colour.
 // Example:
 // ; turn off the main light
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
-// EndSectionDoc 
+//     (build-torus 1 2 20 20))
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // luzes
@@ -76,20 +76,20 @@ using namespace SchemeHelper;
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
-// EndSectionDoc 
+//     (build-torus 1 2 20 20))
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // make-light type-symbol cameralocked-symbol
@@ -102,19 +102,19 @@ using namespace SchemeHelper;
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -129,19 +129,19 @@ using namespace SchemeHelper;
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
@@ -149,37 +149,37 @@ using namespace SchemeHelper;
 // Retour: lightid-nombre
 // Description:
 // Fabrique une nouvellle lampe. Le type peut être: point, directional ou spot. Si la chaîne de caractère du
-// verrou caméra n'est pas vide, alors elle sera attachée à la caméra, et se déplaceront ensemble. 
+// verrou caméra n'est pas vide, alors elle sera attachée à la caméra, et se déplaceront ensemble.
 // Exemple:
 // ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 Scheme_Object *make_light(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("make-light", "SS", argc, argv);
-	
+
 	string type=SymbolName(argv[0]);
 	string cameralocked=SymbolName(argv[1]);
-	
+
 	Light *l=new Light;
-	
+
 	if (type=="point")
 	{
 		l->SetType(Light::POINT);
@@ -201,8 +201,8 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 	{
 		l->SetCameraLock(1);
 	}
-	
-	MZ_GC_UNREG(); 
+
+	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddLight(l));
 }
 
@@ -216,19 +216,19 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -241,19 +241,19 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
@@ -266,30 +266,29 @@ Scheme_Object *make_light(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("light-ambient", "iv", argc, argv);
-	float vec[3];
-	FloatsFromScheme(argv[1],vec,3);
+	ArgCheck("light-ambient", "ic", argc, argv);
+	dColour c = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
-	if (light) light->SetAmbient(dColour(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	if (light) light->SetAmbient(c);
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -303,19 +302,19 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -328,19 +327,19 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
@@ -353,30 +352,29 @@ Scheme_Object *light_ambient(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("light-diffuse", "iv", argc, argv);
-	float vec[3];
-	FloatsFromScheme(argv[1],vec,3);
+	ArgCheck("light-diffuse", "ic", argc, argv);
+	dColour c = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
-	if (light) light->SetDiffuse(dColour(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	if (light) light->SetDiffuse(c);
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -390,19 +388,19 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -415,19 +413,19 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
@@ -440,30 +438,31 @@ Scheme_Object *light_diffuse(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0 0 0))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'point 'free))
 // (light-position mylight (vector 5 2 0))
 // (light-diffuse mylight (rndvec))
 // (light-ambient mylight (vmul (rndvec) 0.1))
 // (light-specular mylight (vmul (rndvec) 10))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
 //     (specular (vector 0.5 0.5 0.5))
 //     (shinyness 20)
-//     (build-torus 1 2 20 20)) 
+//     (build-torus 1 2 20 20))
 // EndFunctionDoc
 
 Scheme_Object *light_specular(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("light-specular", "iv", argc, argv);
-	float vec[3];
-	FloatsFromScheme(argv[1],vec,3);
+
+	ArgCheck("light-specular", "ic", argc, argv);
+	dColour c = ColourFromScheme(argv[1], Engine::Get()->State()->ColourMode);
+
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
-	if (light) light->SetSpecular(dColour(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	if (light) light->SetSpecular(c);
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -848,7 +847,7 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'spot 'free))
 // (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
 // (light-diffuse mylight (rndvec))
@@ -856,9 +855,9 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 // (light-specular mylight (vmul (rndvec) 10))
 // (light-spot-angle mylight (+ 5 (random 40)))
 // (light-spot-exponent mylight 500)
-// (light-attenuation mylight 'constant 1) 
+// (light-attenuation mylight 'constant 1)
 // (light-direction mylight (vector -1 0 -1))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
@@ -867,7 +866,7 @@ Scheme_Object *light_spot_exponent(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)
 //     (scale (vector 10 10 10))
 //     (translate (vector -0.5 -0.5 0))
-//     (build-seg-plane 20 20)) 
+//     (build-seg-plane 20 20))
 // EndFunctionDoc
 
 Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
@@ -875,9 +874,9 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("light-attenuation", "iSf", argc, argv);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
-	if (light) 
+	if (light)
 	{
-		string type=SymbolName(argv[1]);	
+		string type=SymbolName(argv[1]);
 		if (type=="constant")
 		{
 			light->SetAttenuation(0,FloatFromScheme(argv[2]));
@@ -891,8 +890,8 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 			light->SetAttenuation(2,FloatFromScheme(argv[2]));
 		}
 	}
-	
-	MZ_GC_UNREG(); 
+
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -900,13 +899,13 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // light-direction lightid-number direction-vector
 // Returns: void
 // Description:
-// Sets the direction of a directional light. If it's not a directional light, this command has no effect. 
+// Sets the direction of a directional light. If it's not a directional light, this command has no effect.
 // Example:
 // ; turn down the main light
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'spot 'free))
 // (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
 // (light-diffuse mylight (rndvec))
@@ -914,9 +913,9 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // (light-specular mylight (vmul (rndvec) 10))
 // (light-spot-angle mylight (+ 5 (random 40)))
 // (light-spot-exponent mylight 500)
-// (light-attenuation mylight 'constant 1) 
+// (light-attenuation mylight 'constant 1)
 // (light-direction mylight (vector -1 0 -1))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
@@ -925,7 +924,7 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)
 //     (scale (vector 10 10 10))
 //     (translate (vector -0.5 -0.5 0))
-//     (build-seg-plane 20 20)) 
+//     (build-seg-plane 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -939,7 +938,7 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'spot 'free))
 // (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
 // (light-diffuse mylight (rndvec))
@@ -947,9 +946,9 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // (light-specular mylight (vmul (rndvec) 10))
 // (light-spot-angle mylight (+ 5 (random 40)))
 // (light-spot-exponent mylight 500)
-// (light-attenuation mylight 'constant 1) 
+// (light-attenuation mylight 'constant 1)
 // (light-direction mylight (vector -1 0 -1))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
@@ -958,7 +957,7 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)
 //     (scale (vector 10 10 10))
 //     (translate (vector -0.5 -0.5 0))
-//     (build-seg-plane 20 20)) 
+//     (build-seg-plane 20 20))
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
@@ -966,13 +965,13 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // Retour: void
 // Description:
 // Détermine la direction d'une lampe directionnelle. Si ce n'est pas une lampe directionnelle,
-// la commande n'aura aucun effet. 
+// la commande n'aura aucun effet.
 // Exemple:
 // ; éteindre la lumière principale
 // (light-diffuse 0 (vector 0.1 0.1 0.1))
 // (light-specular 0 (vector 0 0 0))
 // (light-ambient 0 (vector 0 0 0))
-// 
+//
 // (define mylight (make-light 'spot 'free))
 // (light-position mylight (vector (+ 4 (crndf)) (crndf) 2))
 // (light-diffuse mylight (rndvec))
@@ -980,9 +979,9 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 // (light-specular mylight (vmul (rndvec) 10))
 // (light-spot-angle mylight (+ 5 (random 40)))
 // (light-spot-exponent mylight 500)
-// (light-attenuation mylight 'constant 1) 
+// (light-attenuation mylight 'constant 1)
 // (light-direction mylight (vector -1 0 -1))
-// 
+//
 // (with-state
 //     (ambient (vector 1 1 1))
 //     (colour (vector 1 1 1))
@@ -991,7 +990,7 @@ Scheme_Object *light_attenuation(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 20 20)
 //     (scale (vector 10 10 10))
 //     (translate (vector -0.5 -0.5 0))
-//     (build-seg-plane 20 20)) 
+//     (build-seg-plane 20 20))
 // EndFunctionDoc
 
 Scheme_Object *light_direction(int argc, Scheme_Object **argv)
@@ -1002,12 +1001,12 @@ Scheme_Object *light_direction(int argc, Scheme_Object **argv)
 	FloatsFromScheme(argv[1],vec,3);
 	Light *light = Engine::Get()->Renderer()->GetLight(IntFromScheme(argv[0]));
 	if (light) light->SetDirection(dVector(vec[0],vec[1],vec[2]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
 void LightFunctions::AddGlobals(Scheme_Env *env)
-{	
+{
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, env);
 	MZ_GC_REG();
@@ -1020,5 +1019,6 @@ void LightFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("light-spot-exponent", scheme_make_prim_w_arity(light_spot_exponent, "light-spot-exponent", 2, 2), env);
 	scheme_add_global("light-attenuation", scheme_make_prim_w_arity(light_attenuation, "light-attenuation", 3, 3), env);
 	scheme_add_global("light-direction", scheme_make_prim_w_arity(light_direction, "light-direction", 2, 2), env);
- 	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 }
+

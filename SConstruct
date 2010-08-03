@@ -14,9 +14,6 @@ FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
 Target = "fluxus"
 
-# changed prefix and pltprefix so they can be invoked at runtime
-# like scons Prefix=/usr RacketPrefix=/usr instead of default /usr/local
-
 DESTDIR = ARGUMENTS.get('DESTDIR', '')
 # this makes DESTDIR relative to root of the source tree, no matter
 # where we are
@@ -81,8 +78,8 @@ paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconve
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
-env.MergeFlags(ARGUMENTS.get('CCFLAGS', ''))
-env.MergeFlags(ARGUMENTS.get('LDFLAGS', ''))
+env.MergeFlags(ARGUMENTS.get('CCFLAGS', '').split())
+env.MergeFlags(ARGUMENTS.get('LDFLAGS', '').split())
 
 if env['PLATFORM'] == 'win32':
 	IncludePaths += [ "/MinGW/include/freetype2" ]
@@ -157,23 +154,19 @@ else:
 # to be passed to the CheckLibWithHeader(...) at configure time.
 # We may add extra libraries later on per platform basis
 LibList = [["m", "math.h"],
-                ["pthread", "pthread.h"],
-                ["dl", "stdio.h"],
-                ["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
-                ["tiff", "tiff.h"],
-                ["freetype", "ft2build.h"],
-                ["z", "zlib.h"],
-                ["png", "png.h"],
-                ["ode", "ode/ode.h"],
-                ["sndfile", "sndfile.h"],
-                ["fftw3", "fftw3.h"],
-                ["lo", "lo/lo.h"],
-                ["GLEW", "GL/glew.h"]]
-
-if ARGUMENTS.get('MZNAME','') == 'racket':
-        LibList += [["racket3m", RacketInclude + "/scheme.h"]]
-else:
-        LibList += [["mzscheme3m", RacketInclude + "/scheme.h"]]
+			["pthread", "pthread.h"],
+			["dl", "stdio.h"],
+			["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
+			["tiff", "tiff.h"],
+			["freetype", "ft2build.h"],
+			["z", "zlib.h"],
+			["png", "png.h"],
+			["ode", "ode/ode.h"],
+			["sndfile", "sndfile.h"],
+			["fftw3", "fftw3.h"],
+			["lo", "lo/lo.h"],
+			["GLEW", "GL/glew.h"],
+			["racket3m", "scheme.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
@@ -220,9 +213,9 @@ if not GetOption('clean'):
         # check Racket and OpenAL frameworks on osx
         if env['PLATFORM'] == 'darwin':
                 if not conf.CheckHeader('scheme.h'):
-                        print "ERROR: 'mzscheme3m' must be installed!"
+                        print "ERROR: 'racket3m' must be installed!"
                         Exit(1)
-                LibList = filter(lambda x: x[0] != 'mzscheme3m', LibList)
+                LibList = filter(lambda x: x[0] != 'racket3m', LibList)
                 # OpenAL should be installed everywhere
                 if not conf.CheckHeader('OpenAL/al.h'):
                         print "ERROR: 'OpenAL' must be installed!"

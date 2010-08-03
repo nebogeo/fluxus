@@ -15,45 +15,45 @@ m_CameraLock(false)
 {
 }
 
-Light::~Light() 
+Light::~Light()
 {
 	glDisable(GL_LIGHT0+m_Index);
 }
 
-void Light::SetIndex(int s) 
-{ 
-	m_Index=s; 
-	glEnable(GL_LIGHT0+m_Index); 
+void Light::SetIndex(int s)
+{
+	m_Index=s;
+	glEnable(GL_LIGHT0+m_Index);
 }
 
-void Light::SetAmbient(dColour s)  
-{ 
-	glLightfv(GL_LIGHT0+m_Index, GL_AMBIENT,  s.arr()); 
+void Light::SetAmbient(dColour s)
+{
+	glLightfv(GL_LIGHT0+m_Index, GL_AMBIENT,  s.arr());
 }
 
-void Light::SetDiffuse(dColour s)  
-{ 
-	glLightfv(GL_LIGHT0+m_Index, GL_DIFFUSE,  s.arr()); 
+void Light::SetDiffuse(dColour s)
+{
+	glLightfv(GL_LIGHT0+m_Index, GL_DIFFUSE,  s.arr());
 }
 
-void Light::SetSpecular(dColour s) 
-{ 
-	glLightfv(GL_LIGHT0+m_Index, GL_SPECULAR,  s.arr()); 
+void Light::SetSpecular(dColour s)
+{
+	glLightfv(GL_LIGHT0+m_Index, GL_SPECULAR,  s.arr());
 }
 
-void Light::SetSpotAngle(float s) 
-{ 
-	if (m_Type==SPOT) glLightf(GL_LIGHT0+m_Index, GL_SPOT_CUTOFF,  s); 
+void Light::SetSpotAngle(float s)
+{
+	if (m_Type==SPOT) glLightf(GL_LIGHT0+m_Index, GL_SPOT_CUTOFF,  s);
 }
 
-void Light::SetSpotExponent(float s) 
-{ 
-	if (m_Type==SPOT) glLightf(GL_LIGHT0+m_Index, GL_SPOT_EXPONENT,  s); 
+void Light::SetSpotExponent(float s)
+{
+	if (m_Type==SPOT) glLightf(GL_LIGHT0+m_Index, GL_SPOT_EXPONENT,  s);
 }
 
-void Light::SetPosition(dVector s) 
-{ 
-	m_Position=s; 
+void Light::SetPosition(dVector s)
+{
+	m_Position=s;
 }
 
 void Light::SetAttenuation(int type, float s)
@@ -66,9 +66,9 @@ void Light::SetAttenuation(int type, float s)
 	}
 }
 
-void Light::SetDirection(dVector s) 
-{ 
-	m_Direction=s; 
+void Light::SetDirection(dVector s)
+{
+	m_Direction=s;
 }
 
 
@@ -76,7 +76,7 @@ void Light::Render()
 {
 	glPushMatrix();
 	glTranslatef(m_Position.x,m_Position.y,m_Position.z);
-	
+
 	if (m_Type==DIRECTIONAL)
 	{
 		float pos[4] = { m_Direction.x,m_Direction.y,m_Direction.z,0 };
@@ -89,11 +89,11 @@ void Light::Render()
 			float pos[4] = { m_Direction.x,m_Direction.y,m_Direction.z,1 };
 			glLightfv(GL_LIGHT0+m_Index, GL_SPOT_DIRECTION, pos);
 		}
-		
+
 		float pos[4] = { 0,0,0,1 };
 		glLightfv(GL_LIGHT0+m_Index, GL_POSITION, pos);
 	}
-	
-	glPopMatrix();	
+
+	glPopMatrix();
 }
 

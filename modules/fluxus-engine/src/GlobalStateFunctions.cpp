@@ -474,9 +474,10 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
 // ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y
 // ;         cube-map-negative-y cube-map-positive-z cube-map-negative-z]
-// ; generate-mipmaps : exact integer, 0 or 1
-// ; mip-level : exact integer
-// ; border : exact integer
+// ; generate-mipmaps: exact integer, 0 or 1
+// ; mip-level: exact integer
+// ; border: exact integer
+// ; compress: exact integer, 0 or 1
 //
 // ; setup an environment cube map
 // (define t (load-texture "cube-left.png" (list 'type 'cube-map-positive-x)))
@@ -670,6 +671,14 @@ Scheme_Object *load_texture(int argc, Scheme_Object **argv)
               SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
           {
             createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+          }
+        }
+        else if (param=="compress")
+        {
+          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+          {
+            createparams.Compress = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
           }
         }
         else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;

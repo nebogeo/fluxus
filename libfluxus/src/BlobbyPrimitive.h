@@ -33,11 +33,11 @@ namespace Fluxus
 class BlobbyPrimitive : public Primitive
 {
 public:
-	
+
 	BlobbyPrimitive(int dimx, int dimy, int dimz, dVector size);
 	BlobbyPrimitive(const BlobbyPrimitive &other);
 	virtual  ~BlobbyPrimitive();
-	
+
 	///////////////////////////////////////////////////
 	///@name Primitive Interface
 	///@{
@@ -49,17 +49,17 @@ public:
 	virtual string GetTypeName() { return "BlobbyPrimitive"; }
 	virtual Evaluator *MakeEvaluator() { return NULL; }
 	///@}
-	
+
 	/// Add a new influence at this position, and uses the vertex
 	/// colour as the blob's colour, which will be blended too.
 	/// The strength corresponds to the size of the 'blob'.
-	virtual void AddInfluence(const dVector &Vert, float Strength);	
-	
+	virtual void AddInfluence(const dVector &Vert, float Strength);
+
 	/// Fills supplied polygon primitive with the mesh
-	/// (needs to be an empty triangle list) 
+	/// (needs to be an empty triangle list)
 	void ConvertToPoly(PolyPrimitive &poly, float isolevel=1.0f);
-	
-	class Cell 
+
+	class Cell
 	{
 	public:
 		dVector p[8];
@@ -68,23 +68,28 @@ public:
 	};
 
 	vector<Cell> &GetVoxels() { return m_Voxels; }
-	
+
     void LockVoxels() { m_LockVoxels=true; }
 
 protected:
-	
+
 	void Draw(float isolevel, bool calcnormals, bool colour);
 	void Interpolate(dVertex &vert, float isolevel, int cell, int a, int b);
+	void Interpolate(dVertex &vert, dVector &grad, float isolevel, int cell, int a, int b);
 	float Sample(const dVector &pos);
 	float SampleCol(const dVector &pos, dColour &col);
-		
+	inline float SafeVal(int cell, int a);
+
 	virtual void PDataDirty();
-	
+
 	vector<dVector> *m_PosData;
 	vector<float> *m_StrengthData;
 	vector<dColour> *m_ColData;
-	
+
 	vector<Cell> m_Voxels;
+	unsigned m_Width;
+	unsigned m_Height;
+	unsigned m_Depth;
 
     bool m_LockVoxels;
 };

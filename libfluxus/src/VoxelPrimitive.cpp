@@ -211,7 +211,7 @@ BlobbyPrimitive *VoxelPrimitive::ConvertToBlobby()
                 cell.val[5]=SafeRef(x+1,y+1,z+1).mag();
                 cell.val[6]=SafeRef(x+1,y,z+1).mag();
                 cell.val[7]=SafeRef(x+1,y,z).mag();
-                                      
+
                 cell.col[0]=SafeRef(x,y+1,z);
                 cell.col[1]=SafeRef(x,y+1,z+1);
                 cell.col[2]=SafeRef(x,y,z+1);
@@ -221,12 +221,12 @@ BlobbyPrimitive *VoxelPrimitive::ConvertToBlobby()
                 cell.col[5]=SafeRef(x+1,y+1,z+1);
                 cell.col[6]=SafeRef(x+1,y,z+1);
                 cell.col[7]=SafeRef(x+1,y,z);
-                 
+
                 pos++;
             }
         }
     }
-    
+
     // stop the influences overwriting these values...
     blob->LockVoxels();
 

@@ -28,7 +28,8 @@ TexturePainter *TexturePainter::m_Singleton=NULL;
 
 TexturePainter::TexturePainter() :
 m_MultitexturingEnabled(true),
-m_TextureCompressionEnabled(true)
+m_TextureCompressionEnabled(true),
+m_SGISGenerateMipmap(true)
 {
 	if (glewInit() != GLEW_OK)
 	{
@@ -50,6 +51,11 @@ m_TextureCompressionEnabled(true)
 	{
 		Trace::Stream << "Warning: Texture compression disabled." << endl;
 		m_TextureCompressionEnabled = false;
+	}
+	if (!GLEW_SGIS_generate_mipmap) // required for texture mipmap compression
+	{
+		Trace::Stream << "Warning: Automatic mipmap generation disabled." << endl;
+		m_SGISGenerateMipmap = false;
 	}
 }
 
@@ -232,6 +238,28 @@ void TexturePainter::UploadTexture(TextureDesc desc, CreateParams params)
 {
 	glBindTexture(params.Type,params.ID);
 
+	if (params.Compress && m_TextureCompressionEnabled)
+	{
+		switch (desc.InternalFormat)
+		{
+			case GL_RGB:
+				desc.InternalFormat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+				break;
+			case GL_RGBA:
+				desc.InternalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+				break;
+		}
+
+		if (params.GenerateMipmaps && m_SGISGenerateMipmap)
+		{
+			glTexParameteri(params.Type, GL_GENERATE_MIPMAP_SGIS, 1);
+		}
+
+		glTexImage2D(params.Type, params.MipLevel, desc.InternalFormat,
+				desc.Width, desc.Height, params.Border,
+				desc.Format, GL_UNSIGNED_BYTE, desc.ImageData);
+	}
+	else
 	if ((desc.InternalFormat == GL_RGB) || (desc.InternalFormat == GL_RGBA))
 	{
 		if (params.GenerateMipmaps)
