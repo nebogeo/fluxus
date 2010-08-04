@@ -272,7 +272,7 @@ if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
 		# using popen as it's crossplatform 
-		raco_status = os.popen("mzc --c-mods src/base.c \
+		raco_status = os.popen("raco ctool --c-mods src/base.c \
 			++lib racket/base  \
 			++lib racket/base/lang/reader  \
 			++lib xml/xml \
@@ -282,11 +282,10 @@ if not GetOption('clean'):
 			++lib setup   \
 			++lib config").close()
 	else:
-		#raco_status = os.popen("mzc --c-mods src/base.c ++lib racket/base").close()
-		raco_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'racket/base'])
+		raco_status = subprocess.call(['raco', 'ctool', '--c-mods', 'src/base.c', '++lib', 'racket/base'])
 
 	if raco_status != 0:
-		print "ERROR: Failed to run command 'mzc'"
+		print "ERROR: Failed to run command 'raco'"
 		Exit(1)
 
 
