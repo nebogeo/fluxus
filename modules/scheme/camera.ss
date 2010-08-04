@@ -11,7 +11,7 @@
 ;; Funções disponíveis como parte do scratchpad fluxus.
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 
 (require "fluxus-modules.ss")
 (require "input.ss")

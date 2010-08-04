@@ -42,7 +42,7 @@ elif env['PLATFORM'] == 'posix':
 	LibList += [['gstapp-0.10', 'gst/app/gstappsink.h']]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks += ['PLT_MrEd']
+	Frameworks += ['Racket']
 
 # check installed libraries
 if not GetOption('clean'):

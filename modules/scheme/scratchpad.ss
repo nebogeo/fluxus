@@ -12,7 +12,7 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 
 (require "fluxus-modules.ss"
 		 "input.ss"

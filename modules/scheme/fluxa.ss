@@ -11,7 +11,7 @@
 ;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-017/fluxa).
 ;; Example:
 ;; EndSectionDoc
-#lang scheme/base
+#lang racket/base
 
 (require "scratchpad.ss"
        "tasks.ss"

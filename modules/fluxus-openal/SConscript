@@ -1,7 +1,7 @@
 ###############################################################
 # SConscript for fluxus-openal
 #
-# This is the main PLT module for the fluxus openal functions
+# This is the main RACKET module for the fluxus openal functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
 
@@ -27,7 +27,7 @@ Source = Split("src/FluxAudio.cpp \
 		[MZDYN]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks = ['OpenAL', 'PLT_MrEd']
+	Frameworks = ['OpenAL', 'Racket']
 
 if static_modules:
 	env.StaticLibrary(source = Source, 

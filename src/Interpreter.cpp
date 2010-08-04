@@ -89,7 +89,7 @@ void Interpreter::Initialise()
 	scheme_set_param(config, MZCONFIG_ERROR_PORT, m_ErrWritePort);
 
 	declare_modules(m_Scheme);
-    v = scheme_intern_symbol("scheme/base");
+    v = scheme_intern_symbol("racket/base");
     scheme_namespace_require(v);
 
 	// figure out what we are running on
@@ -110,7 +110,7 @@ void Interpreter::Initialise()
 	midi_scheme_reload(m_Scheme);
 #endif
 
-	string PLTCollects(PLT_COLLECTS_LOCATION);
+	string RACKETCollects(RACKET_COLLECTS_LOCATION);
 	string FluxusCollects(FLUXUS_COLLECTS_LOCATION);
 	string DataLocation(DATA_LOCATION);
 	string StaticMode("#f");
@@ -137,8 +137,8 @@ void Interpreter::Initialise()
 	#endif
 	#endif
 
-	PLTCollects=string(cwd)+string("/collects");
-	FluxusCollects=PLTCollects;
+	RACKETCollects=string(cwd)+string("/collects");
+	FluxusCollects=RACKETCollects;
 	DataLocation=cwd;
 #endif
 
@@ -151,7 +151,7 @@ void Interpreter::Initialise()
 
 	// insert the version number etc
 	snprintf(startup,1024,STARTUP_SCRIPT.c_str(),
-		PLTCollects.c_str(),
+		RACKETCollects.c_str(),
 		FluxusCollects.c_str(),
 		FLUXUS_MAJOR_VERSION,
 		FLUXUS_MINOR_VERSION,

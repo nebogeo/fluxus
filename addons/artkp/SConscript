@@ -32,7 +32,7 @@ menv.Replace(LIBS = Libs)
 menv.Replace(LIBPATH = LibPaths)
 
 if menv['PLATFORM'] == 'darwin':
-	Frameworks += ['PLT_MrEd', 'OpenGL']
+	Frameworks += ['Racket', 'OpenGL']
 
 output = menv.SharedLibrary(source = Source, 
 				  target = Target,

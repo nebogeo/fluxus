@@ -30,7 +30,7 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 (require "time.ss")
 
 (provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now print-error

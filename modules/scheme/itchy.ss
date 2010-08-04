@@ -1,6 +1,6 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
-#lang scheme/base
+#lang racket/base
 (require scheme/class)
 (require "fluxus.ss")
 (require "time.ss")

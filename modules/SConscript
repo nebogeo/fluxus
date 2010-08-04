@@ -1,6 +1,6 @@
 # -*- mode: python -*-
 ###############################################################
-# Top level SConscript for the fluxus PLT modules
+# Top level SConscript for the fluxus Racket modules
 #
 # Sets up common stuff, and calls each module SConscript 
 
@@ -8,8 +8,8 @@ import os
 Import("env", "CollectsInstall", "DataInstall", "MZDYN",
 		"static_modules", "static_ode", "Prefix")
 
-# run mzscheme to get (path->string (system-library-subpath))
-file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
+# run racket to get (path->string (system-library-subpath))
+file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
 archpath = file.read()
 file.close()
 
