@@ -1,4 +1,4 @@
-#!/usr/bin/env mzscheme 
+#!/usr/bin/env racket
 
 ; Copyright (C) 2007 Dave Griffiths
 ;

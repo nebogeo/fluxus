@@ -1267,34 +1267,238 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 
 Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-    ArgCheck("blend-mode", "SS", argc, argv);
-  string s=SymbolName(argv[0]);
-  string d=SymbolName(argv[1]);
+	DECL_ARGV();
+	ArgCheck("blend-mode", "SS", argc, argv);
+	string s=SymbolName(argv[0]);
+	string d=SymbolName(argv[1]);
 
-  if (s=="zero") Engine::Get()->State()->SourceBlend=GL_ZERO;
-  else if (s=="one") Engine::Get()->State()->SourceBlend=GL_ONE;
-  else if (s=="dst-color") Engine::Get()->State()->SourceBlend=GL_DST_COLOR;
-  else if (s=="one-minus-dst-color") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_COLOR;
-  else if (s=="src-alpha") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA;
-  else if (s=="one-minus-src-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_SRC_ALPHA;
-  else if (s=="dst-alpha") Engine::Get()->State()->SourceBlend=GL_DST_ALPHA;
-  else if (s=="one-minus-dst-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_ALPHA;
-  else if (s=="src-alpha-saturate") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA_SATURATE;
-  else Trace::Stream<<"source blend mode not recognised: "<<s<<endl;
+	if (s=="zero") Engine::Get()->State()->SourceBlend=GL_ZERO;
+	else if (s=="one") Engine::Get()->State()->SourceBlend=GL_ONE;
+	else if (s=="dst-color") Engine::Get()->State()->SourceBlend=GL_DST_COLOR;
+	else if (s=="one-minus-dst-color") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_COLOR;
+	else if (s=="src-alpha") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA;
+	else if (s=="one-minus-src-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (s=="dst-alpha") Engine::Get()->State()->SourceBlend=GL_DST_ALPHA;
+	else if (s=="one-minus-dst-alpha") Engine::Get()->State()->SourceBlend=GL_ONE_MINUS_DST_ALPHA;
+	else if (s=="src-alpha-saturate") Engine::Get()->State()->SourceBlend=GL_SRC_ALPHA_SATURATE;
+	else Trace::Stream<<"source blend mode not recognised: "<<s<<endl;
 
-  if (d=="zero") Engine::Get()->State()->DestinationBlend=GL_ZERO;
-  else if (d=="one") Engine::Get()->State()->DestinationBlend=GL_ONE;
-  else if (d=="src-color") Engine::Get()->State()->DestinationBlend=GL_SRC_COLOR;
-  else if (d=="one-minus-src-color") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_COLOR;
-  else if (d=="src-alpha") Engine::Get()->State()->DestinationBlend=GL_SRC_ALPHA;
-  else if (d=="one-minus-src-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
-  else if (d=="dst-alpha") Engine::Get()->State()->DestinationBlend=GL_DST_ALPHA;
-  else if (d=="one-minus-dst-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
-  else Trace::Stream<<"dest blend mode not recognised: "<<d<<endl;
+	if (d=="zero") Engine::Get()->State()->DestinationBlend=GL_ZERO;
+	else if (d=="one") Engine::Get()->State()->DestinationBlend=GL_ONE;
+	else if (d=="src-color") Engine::Get()->State()->DestinationBlend=GL_SRC_COLOR;
+	else if (d=="one-minus-src-color") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_COLOR;
+	else if (d=="src-alpha") Engine::Get()->State()->DestinationBlend=GL_SRC_ALPHA;
+	else if (d=="one-minus-src-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_SRC_ALPHA;
+	else if (d=="dst-alpha") Engine::Get()->State()->DestinationBlend=GL_DST_ALPHA;
+	else if (d=="one-minus-dst-alpha") Engine::Get()->State()->DestinationBlend=GL_ONE_MINUS_DST_ALPHA;
+	else Trace::Stream<<"dest blend mode not recognised: "<<d<<endl;
 
-  MZ_GC_UNREG();
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// hint-on hint-symbol ...
+// Returns: void
+// Description:
+// Render hints change the way that primitives are rendered, but may have
+// different effects - or no effect on certain primitive types, hence the
+// name hint.
+// The following symbols set the render hints of the current drawing state,
+// or the current primitive.
+// 'solid - solid rendering
+// 'wire - wireframe
+// 'normal - display normals
+// 'points - display points
+// 'anti-alias - anti-alias lines
+// 'box - display bounding box
+// 'vertcols - use vertex colours, overrides the current (colour) state
+// 'origin - display object space origin
+// 'cast-shadow - cast shadow
+// 'depth-test - use depth tests, it is useful to switch off for rendering
+//    transparent objects, as it means objects will be shown behind previously
+//    rendered ones.
+// 'depth-sort - depth sort
+// 'lazy-parent - prevent this primitive passing it's transform to it's children
+// 'cull-ccw - flips the faces which get backface culled
+// 'cull-cw - backface cull clockwise winding order faces (default)
+// 'wire-stippled - stippled wireframe
+// 'sphere-map - render objects as if they were perfecly reflective
+// 'frustum-cull - turn frustum culling, when using frustum culling, make sure
+//    you call (recalc-bb) on the primitive too.
+// 'normalise - if the current state transform contains a scale transformation,
+//    transformed normals might not be unit length, resulting in undesirable
+//    lighting problems. This hint makes all normals unit length after they are
+//    transformed. This is required if the current state transform contains
+//    nonuniform scaling.
+// 'blending - use blending, useful to disable if objects with blending rendered
+//    into a pixelprimitive.
+// 'zwrite - Enables/disables z writes. Useful to disable for sometimes hacking
+//    transparency.
+// 'lit - turn on lighting
+// 'all - all of the hints above
+//
+// Example:
+// (clear)
+// (hint-on 'wire 'anti-alias 'origin)
+// (hint-off 'solid)
+// (build-cube)
+//
+// EndFunctionDoc
+Scheme_Object *hints(int argc, Scheme_Object **argv, int on)
+{
+	DECL_ARGV();
+	for (int n = 0; n < argc; n++)
+	{
+		if (!SCHEME_SYMBOLP(argv[n]))
+		{
+			scheme_wrong_type(on ? "hint-on" : "hint-off",
+					"symbol", n, argc, argv);
+		}
+	}
+
+	unsigned flags = 0;
+	unsigned neg_flags = 0;
+
+	for (int n = 0; n < argc; n++)
+	{
+		string s = SymbolName(argv[n]);
+		if (s == "all")
+		{
+			flags = ~0;
+			neg_flags = 0;
+		}
+		else if (s == "solid")
+		{
+			flags |= HINT_SOLID;
+		}
+		else if (s == "wire")
+		{
+			flags |= HINT_WIRE;
+		}
+		else if (s == "normal")
+		{
+			flags |= HINT_NORMAL;
+		}
+		else if (s == "points")
+		{
+			flags |= HINT_POINTS;
+		}
+		else if (s == "anti-alias")
+		{
+			flags |= HINT_AALIAS;
+		}
+		else if (s == "box")
+		{
+			flags |= HINT_BOUND;
+		}
+		else if (s == "vertcols")
+		{
+			flags |= HINT_VERTCOLS;
+		}
+		else if (s == "origin")
+		{
+			flags |= HINT_ORIGIN;
+		}
+		else if (s == "cast-shadow")
+		{
+			flags |= HINT_CAST_SHADOW;
+		}
+		else if (s == "depth-test")
+		{
+			neg_flags |= HINT_IGNORE_DEPTH;
+		}
+		else if (s == "depth-sort")
+		{
+			flags |= HINT_DEPTH_SORT;
+		}
+		else if (s == "lazy-parent")
+		{
+			flags |= HINT_LAZY_PARENT;
+		}
+		else if (s == "cull-ccw")
+		{
+			flags |= HINT_CULL_CCW;
+		}
+		else if (s == "wire-stippled")
+		{
+			flags |= HINT_WIRE_STIPPLED;
+		}
+		else if (s == "sphere-map")
+		{
+			flags |= HINT_SPHERE_MAP;
+		}
+		else if (s == "frustum-cull")
+		{
+			flags |= HINT_FRUSTUM_CULL;
+		}
+		else if (s == "normalise")
+		{
+			flags |= HINT_NORMALISE;
+		}
+		else if (s == "blending")
+		{
+			neg_flags |= HINT_NOBLEND;
+		}
+		else if (s == "zwrite")
+		{
+			neg_flags |= HINT_NOZWRITE;
+		}
+		else if (s == "lit")
+		{
+			neg_flags |= HINT_UNLIT;
+		}
+		else if (s == "cull-cw")
+		{
+			neg_flags |= HINT_CULL_CCW;
+		}
+		else
+		{
+			Trace::Stream << "hint symbol not recognised: " << s << endl;
+		}
+	}
+
+	if (on)
+	{
+		Engine::Get()->State()->Hints |= flags;
+		Engine::Get()->State()->Hints &= ~neg_flags;
+	}
+	else
+	{
+		Engine::Get()->State()->Hints |= neg_flags;
+		Engine::Get()->State()->Hints &= ~flags;
+	}
+
+	MZ_GC_UNREG();
     return scheme_void;
+}
+
+Scheme_Object *hint_on(int argc, Scheme_Object **argv)
+{
+	return hints(argc, argv, 1);
+}
+
+// StartFunctionDoc-en
+// hint-off hint-symbol ...
+// Returns: void
+// Description:
+// Render hints change the way that primitives are rendered, but may have
+// different effects - or no effect on certain primitive types, hence the
+// name hint.
+// (hint-off) disables the render hints of the current drawing state,
+// or the current primitive. Check (hint-on) for more information on possible
+// hint symbols.
+//
+// Example:
+// (clear)
+// (hint-on 'wire 'anti-alias 'origin)
+// (hint-off 'solid)
+// (build-cube)
+//
+// EndFunctionDoc
+Scheme_Object *hint_off(int argc, Scheme_Object **argv)
+{
+	return hints(argc, argv, 0);
 }
 
 // StartFunctionDoc-en
@@ -3044,6 +3248,8 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("is-resident?",scheme_make_prim_w_arity(is_resident,"is-resident?",1,1), env);
 	scheme_add_global("set-texture-priority",scheme_make_prim_w_arity(is_resident,"set-texture-priority",2,2), env);
 	scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
+	scheme_add_global("hint-on",scheme_make_prim_w_arity(hint_on,"hint-on",0,-1), env);
+	scheme_add_global("hint-off",scheme_make_prim_w_arity(hint_off,"hint-off",0,-1), env);
 	scheme_add_global("hint-solid",scheme_make_prim_w_arity(hint_solid,"hint-solid",0,0), env);
 	scheme_add_global("hint-wire",scheme_make_prim_w_arity(hint_wire,"hint-wire",0,0), env);
 	scheme_add_global("hint-wire-stippled",scheme_make_prim_w_arity(hint_wire_stippled,"hint-wire-stippled",0,0), env);

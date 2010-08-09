@@ -71,6 +71,7 @@ const State &State::operator=(const State &other)
 	SourceBlend=other.SourceBlend;
 	DestinationBlend=other.DestinationBlend;
 	WireColour=other.WireColour;
+	NormalColour=other.NormalColour;
 	WireOpacity=other.WireOpacity;
 	ColourMode=other.ColourMode;
 	Transform=other.Transform;
