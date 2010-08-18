@@ -278,7 +278,8 @@ void GLEditor::DrawCursor()
 			float maxCW = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxWidth*m_CursorWidth*0.5f)+m_CursorWidth*0.5f;
 
 			float maxCH = (BLOWUP_FLASHES - m_Blowup)/BLOWUP_FLASHES*(m_CursorMaxHeight*m_CharHeight)+m_CharHeight;
-			glColor4f(0,1,0,0.7*m_Blowup/BLOWUP_FLASHES);
+			glColor4f(m_CursorColourRed, m_CursorColourGreen, m_CursorColourBlue,
+					m_Alpha * m_CursorColourAlpha * m_Blowup/BLOWUP_FLASHES);
 			glBegin(GL_QUADS);
 			glVertex2f(maxCW,-0.5f*(maxCH-m_CharHeight));
 			glVertex2f(maxCW,0.5f*(maxCH+m_CharHeight));
