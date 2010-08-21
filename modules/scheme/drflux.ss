@@ -9,7 +9,8 @@
 
 #lang racket/base
 
-(require scheme/class
+(require racket/class
+         racket/gui
          mred/mred
          "fluxus.ss"
          (prefix-in gl- sgl/sgl))
