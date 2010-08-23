@@ -166,7 +166,8 @@ LibList = [["m", "math.h"],
 			["fftw3", "fftw3.h"],
 			["lo", "lo/lo.h"],
 			["GLEW", "GL/glew.h"],
-			["racket3m", "scheme.h"]]
+			["racket3m", "scheme.h"],
+			["jack", "jack/jack.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
@@ -185,21 +186,6 @@ if env['PLATFORM'] == 'posix':
                     ["glut", "GL/glut.h"],
                     ["asound", "alsa/asoundlib.h"],
                     ["openal", "AL/al.h"]]
-
-elif env['PLATFORM'] == 'darwin':
-	# add jack as a library if not making an app
-		if not GetOption('app'):
-			LibList += [["jack", "jack/jack.h"]]
-		env.Append(FRAMEWORKPATH = [RacketLib])
-		env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
-
-		if GetOption('app'):
-			env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
-			# FIXME: check if Jackmp is available when making an app
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
-		else:
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio Racket"))
-
 
 ################################################################################
 # Make sure we have these libraries availible
@@ -256,11 +242,24 @@ if static_ode and not GetOption('clean'):
 		env['LIBS'].remove('ode')
 		env['LIBS'].append(File('%s/lib/libode.a' % Prefix))
 
-# replace libs with static libs if building an osx app
-if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
-		env['LIBS'].remove(l)
-		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+if env['PLATFORM'] == 'darwin':
+	env.Append(FRAMEWORKPATH = [RacketLib])
+	env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
+
+	if GetOption('app'):
+		# replace libs with static libs if building an osx app
+		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
+			env['LIBS'].remove(l)
+			env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+
+		env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
+		# add jack as a framework
+		env['LIBS'].remove('jack')
+		# FIXME: check if Jackmp is available when making an app
+		env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
+	else:
+		env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio Racket"))
+
 
 ################################################################################
 # Build the fluxus application
