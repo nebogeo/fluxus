@@ -6,14 +6,7 @@
 
 import os 
 Import("env", "CollectsInstall", "DataInstall", "MZDYN",
-		"static_modules", "static_ode", "Prefix")
-
-# run racket to get (path->string (system-library-subpath))
-file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
-archpath = file.read()
-file.close()
-
-BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
+		"BinaryModulesLocation", "static_modules", "static_ode", "Prefix")
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = ["fluxus-engine", 

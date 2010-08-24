@@ -53,9 +53,17 @@ else:
         RacketCollectsLocation = RacketLib + "/collects/"
 
 if sys.platform == 'darwin' and GetOption('app'):
-        RacketCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
-        FluxusCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
-        DataLocation = '/Applications/Fluxus.app/Contents/Resources'
+		RacketCollectsLocation = 'collects/' # not used relative racket collects path and
+		DataLocation = 'Resources' 			 # data location is determined in Interpreter.cpp
+		FluxusCollectsLocation = 'collects/'
+		CollectsInstall = FluxusCollectsLocation + '/fluxus-' + FluxusVersion
+
+# run racket to get (path->string (system-library-subpath))
+file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
+archpath = file.read()
+file.close()
+
+BinaryModulesLocation = CollectsInstall + "/compiled/native/" + archpath
 
 LibPaths     = [
         RacketLib,
@@ -362,13 +370,12 @@ app_env.Program(source = Source, target = Target)
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = Split("libfluxus modules"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-				   "static_modules", "static_ode", "Prefix"])
+				   "BinaryModulesLocation", "static_modules", "static_ode", "Prefix"])
 
 else:
 	SConscript(dirs = Split("libfluxus modules fluxa addons"),
            exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-			   "static_modules", "static_ode", "Prefix"])
-
+				   "BinaryModulesLocation", "static_modules", "static_ode", "Prefix"])
 
 ################################################################################
 # documentation
@@ -400,21 +407,21 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                                    ['modules/material/meshes/', 'material/meshes/'],
                                                    ['modules/material/shaders/', 'material/shaders/'],
                                                    ['modules/material/textures/', 'material/textures/'],
-                                                   ['modules/scheme/', 'collects/fluxus-%s/' % FluxusVersion],
+                                                   ['modules/scheme/', CollectsInstall],
                                                    ['modules/fluxus-engine/fluxus-engine_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-engine_ss.dylib'],
+                                                       BinaryModulesLocation + '/fluxus-engine_ss.dylib'],
                                                    ['modules/fluxus-audio/fluxus-audio_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-audio_ss.dylib'],
+                                                       BinaryModulesLocation + '/fluxus-audio_ss.dylib'],
                                                    ['modules/fluxus-midi/fluxus-midi_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-midi_ss.dylib'],
+                                                       BinaryModulesLocation + '/fluxus-midi_ss.dylib'],
                                                    ['modules/fluxus-osc/fluxus-osc_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-osc_ss.dylib'],
-												   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib'],
-												   ['addons/video/fluxus-video_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-video_ss.dylib'],
-												   ['addons/artkp/fluxus-artkp_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-artkp_ss.dylib']],
+                                                       BinaryModulesLocation + '/fluxus-osc_ss.dylib'],
+                                                   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
+                                                       BinaryModulesLocation + '/fluxus-openal_ss.dylib'],
+                                                   ['addons/video/fluxus-video_ss.dylib',
+                                                       BinaryModulesLocation + '/fluxus-video_ss.dylib'],
+                                                   ['addons/artkp/fluxus-artkp_ss.dylib',
+                                                       BinaryModulesLocation + '/fluxus-artkp_ss.dylib']],
 
                                         typecode='APPL',
                                         icon_file='packages/macos/fluxus.icns'))
