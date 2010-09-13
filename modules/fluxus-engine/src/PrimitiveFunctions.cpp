@@ -1326,7 +1326,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("locator-bounding-radius", "i", argc, argv);
+	ArgCheck("locator-bounding-radius", "f", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed)
 	{

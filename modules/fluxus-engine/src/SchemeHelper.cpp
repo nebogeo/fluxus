@@ -48,7 +48,7 @@ int SchemeHelper::IntFromScheme(Scheme_Object *ob)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, ob);
 	MZ_GC_REG();
-	int ret=(int)scheme_real_to_double(ob);
+	int ret=SCHEME_INT_VAL(ob);
 	MZ_GC_UNREG();
 	return ret;
 }
@@ -301,10 +301,10 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'i':
-					if (!SCHEME_NUMBERP(argv[n]))
+					if (!SCHEME_INTP(argv[n]))
 					{
 						MZ_GC_UNREG();
-						scheme_wrong_type(funcname.c_str(), "number", n, argc, argv);
+						scheme_wrong_type(funcname.c_str(), "int", n, argc, argv);
 					}
 				break;
 

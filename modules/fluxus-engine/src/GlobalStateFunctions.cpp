@@ -1219,7 +1219,7 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 {
   Camera cam;
-  return scheme_make_double(Engine::Get()->Renderer()->AddCamera(cam));
+  return scheme_make_integer_value(Engine::Get()->Renderer()->AddCamera(cam));
 }
 
 // StartFunctionDoc-en
@@ -1550,7 +1550,7 @@ Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 Scheme_Object *viewport(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
-  ArgCheck("viewport", "iiii", argc, argv);
+  ArgCheck("viewport", "ffff", argc, argv);
   Engine::Get()->GetCamera()->SetViewport(
     FloatFromScheme(argv[0]),
     FloatFromScheme(argv[1]),

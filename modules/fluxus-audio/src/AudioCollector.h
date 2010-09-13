@@ -53,24 +53,25 @@ public:
 	float *GetFFT();
 	float *GetAudioBuffer() { return m_AudioBuffer; }
 	int GetAudioBufferLength() { return m_BufferLength; }
-    float GetHarmonic(int h);
-    bool  IsConnected();
-    void  SetGain(float s) { m_Gain=s; }
-    float  GetGain() { return m_Gain; }
-    void  SetSmoothingBias(float s) { if (s<2 && s>0) m_SmoothingBias=s; }
-    void  Process(const string &filename);
+	float GetHarmonic(int h);
+	bool  IsConnected();
+	void  SetGain(float s) { m_Gain=s; }
+	float  GetGain() { return m_Gain; }
+	void  SetSmoothingBias(float s) { if (s<2 && s>0) m_SmoothingBias=s; }
+	void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }
 
-    void SetNumBars(unsigned int s) 
-    { 
-        m_NumBars=s; 
-        delete[] m_FFTOutput;
-        m_FFTOutput = new float[s];
-        memset(m_FFTOutput,0,sizeof(float)*s);
-    }
+	void SetNumBars(unsigned int s)
+	{
+		if (s < 1) s = 1;
+		m_NumBars = s;
+		delete[] m_FFTOutput;
+		m_FFTOutput = new float[s];
+		memset(m_FFTOutput, 0, sizeof(float) * s);
+	}
 
-    unsigned GetNumBars(void) { return m_NumBars; }
+	unsigned GetNumBars(void) { return m_NumBars; }
 
 private:
 
