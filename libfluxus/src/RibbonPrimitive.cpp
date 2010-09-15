@@ -143,6 +143,8 @@ void RibbonPrimitive::Render()
 
 	if (m_State.Hints & HINT_WIRE)
 	{
+		glDisable(GL_LIGHTING);
+
 		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
 		{
 			glEnable(GL_LINE_STIPPLE);
@@ -178,6 +180,8 @@ void RibbonPrimitive::Render()
 		{
 			glDisable(GL_LINE_STIPPLE);
 		}
+
+		glEnable(GL_LIGHTING);
 	}
 
 	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);
