@@ -70,7 +70,7 @@
 	 (when (eq? button 3) (set! mouse-wheel-v 1))
 	 (when (eq? button 4) (set! mouse-wheel-v -1))
      (when (eq? state 0) (vector-set! mouse 2 (+ button 1)))
-     (when (eq? state 1) (vector-set! mouse 2 0))
+     (when (eq? state 1) (vector-set! mouse 2 #f))
      (vector-set! mouse 0 x)
      (vector-set! mouse 1 y))))
 
