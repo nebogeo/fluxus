@@ -29,7 +29,8 @@
 (define keys-this-frame '())
 (define special-keys '())
 (define special-keys-this-frame '())
-(define mouse (vector 0 0 #f))
+(define mouse (vector 0 0))
+(define mouse-buttons (vector #f #f #f))
 (define mouse-wheel-v 0)
 
 ; utils funcs for using lists as sets
@@ -69,8 +70,12 @@
     ((and (eq? key 0) (eq? special -1)) 
 	 (when (eq? button 3) (set! mouse-wheel-v 1))
 	 (when (eq? button 4) (set! mouse-wheel-v -1))
-     (when (eq? state 0) (vector-set! mouse 2 (+ button 1)))
-     (when (eq? state 1) (vector-set! mouse 2 #f))
+     (when (and (eq? state 0)
+				(< button (vector-length mouse-buttons)))
+	   (vector-set! mouse-buttons button #t))
+     (when (and (eq? state 1)
+				(< button (vector-length mouse-buttons)))
+	   (vector-set! mouse-buttons button #f))
      (vector-set! mouse 0 x)
      (vector-set! mouse 1 y))))
 
@@ -265,7 +270,8 @@
 ;; mouse-button button-number
 ;; Returns: boolean
 ;; Description:
-;; Returns true if the specifed mouse button is pressed
+;; Returns true if the specifed mouse button is pressed. Button numbers start
+;; counting from 1 with the left mouse button.
 ;; Example:
 ;; (display (mouse-button 1))
 ;; EndFunctionDoc	
@@ -281,7 +287,8 @@
 ;; EndFunctionDoc
 
 (define (mouse-button n)
-  (eq? n (vector-ref mouse 2)))
+  (and (<= 1 n (vector-length mouse-buttons))
+	   (vector-ref mouse-buttons (- n 1))))
   
 ;; StartFunctionDoc-en
 ;; mouse-wheel
