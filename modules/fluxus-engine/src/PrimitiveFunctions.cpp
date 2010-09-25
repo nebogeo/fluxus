@@ -464,15 +464,18 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-type", "ss", argc, argv);
 
-	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if (TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetText(StringFromScheme(argv[1]));
+		MZ_GC_UNREG();
+		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 	}
-	MZ_GC_UNREG();
-
-	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+	else
+	{
+		MZ_GC_UNREG();
+		return scheme_void;
+	}
 }
 
 // StartFunctionDoc-en
@@ -505,15 +508,18 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-extruded-type", "ssf", argc, argv);
 
-	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if(TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+		MZ_GC_UNREG();
+		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 	}
-	MZ_GC_UNREG();
-
-	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+	else
+	{
+		MZ_GC_UNREG();
+		return scheme_void;
+	}
 }
 
 // StartFunctionDoc-en
@@ -608,7 +614,7 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 // Inverts the automatically generated ribbon normals
 // Example:
 // (define mynewshape (build-ribbon 10))
-// (with-primitive mynewshape 
+// (with-primitive mynewshape
 //     (ribbon-inverse-normals 1))
 // EndFunctionDoc
 
