@@ -83,13 +83,13 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-nurbs", "i", argc, argv);
 	int size=IntFromScheme(argv[0]);
-	NURBSPrimitive *Prim = new NURBSPrimitive();
 	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
 		MZ_GC_UNREG();
 		return scheme_void;
 	}
+	NURBSPrimitive *Prim = new NURBSPrimitive();
 	Prim->Resize(size);
 	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
@@ -138,7 +138,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	}
 	if (size<1)
 	{
-		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
+		Trace::Stream<<"build-polygons: size less than 1!"<<endl;
 		MZ_GC_UNREG();
 		return scheme_void;
 	}
@@ -474,6 +474,7 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 	else
 	{
 		MZ_GC_UNREG();
+		delete TypePrim;
 		return scheme_void;
 	}
 }
@@ -518,6 +519,7 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 	else
 	{
 		MZ_GC_UNREG();
+		delete TypePrim;
 		return scheme_void;
 	}
 }

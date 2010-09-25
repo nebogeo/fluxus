@@ -85,6 +85,7 @@ protected:
 	void RenderGeometry(const GlyphGeometry &geo);
 	vector<GlyphGeometry*> m_GlyphVec;
 
+	bool m_TTFLoaded;
 	FT_Library    m_Library;
 	FT_Face       m_Face;
 	FT_GlyphSlot  m_Slot;
