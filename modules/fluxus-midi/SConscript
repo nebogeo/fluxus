@@ -16,6 +16,7 @@ Install = BinaryModulesLocation
 
 Source = ["src/FluxusMIDI.cpp",
 		"src/MIDIListener.cpp",
+		"src/MIDIOut.cpp",
 		"src/RtMidi.cpp",
 		MZDYN]
 

@@ -192,9 +192,7 @@ void MIDIListener::close()
 {
 	if (midiin == NULL)
 	{
-		init_midi();
-		if (midiin == NULL)
-			return;
+		return;
 	}
 
 	try
