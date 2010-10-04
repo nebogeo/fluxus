@@ -31,10 +31,10 @@ using namespace Fluxus;
 // Example:
 // (define (build n)
 //     (turtle-reset)
-//     (turtle-prim 4)
+//     (turtle-prim 'polygon)
 //     (build-loop n n)
 //     (turtle-build))
-// 
+//
 // (define (build-loop n t)
 //     (turtle-turn (vector 0 (/ 360 t) 0))
 //     (turtle-move 1)
@@ -42,7 +42,7 @@ using namespace Fluxus;
 //     (if (< n 1)
 //         0
 //         (build-loop (- n 1) t)))
-// EndSectionDoc 
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // tartaruga
@@ -55,10 +55,10 @@ using namespace Fluxus;
 // Exemplo:
 // (define (build n)
 //     (turtle-reset)
-//     (turtle-prim 4)
+//     (turtle-prim 'polygon)
 //     (build-loop n n)
 //     (turtle-build))
-// 
+//
 // (define (build-loop n t)
 //     (turtle-turn (vector 0 (/ 360 t) 0))
 //     (turtle-move 1)
@@ -69,13 +69,13 @@ using namespace Fluxus;
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// turtle-prim type-number
+// turtle-prim type-symbol
 // Returns: void
 // Description:
-// Starts building a new polygon primitive with the turtle. The type specifies the polygon face type and is one 
-// of the following: 0: triangle strip, 1: quad list, 2: triangle list, 3: triangle fan, 4: general polygon
+// Starts building a new polygon primitive with the turtle. The type specifies the polygon face type and is one
+// of the following: 'triangle-strip, 'quad-list, 'triangle-list, 'triangle-fan, 'polygon.
 // Example:
-// (turtle-prim 0)
+// (turtle-prim 'triangle-strip)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -92,14 +92,51 @@ using namespace Fluxus;
 Scheme_Object *turtle_prim(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-prim", "i", argc, argv);		
-	Engine::Get()->GetTurtle()->Prim(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+
+	PolyPrimitive::Type type = PolyPrimitive::TRISTRIP;
+	if (SCHEME_INTP(argv[0]))
+	{
+		type = (PolyPrimitive::Type)IntFromScheme(argv[0]);
+	}
+	else
+	if (SCHEME_SYMBOLP(argv[0]))
+	{
+		string t = SymbolName(argv[0]);
+		if (t == "triangle-strip")
+			type = PolyPrimitive::TRISTRIP;
+		else
+		if (t == "quad-list")
+			type = PolyPrimitive::QUADS;
+		else
+		if (t == "triangle-list")
+			type=PolyPrimitive::TRILIST;
+		else
+		if (t == "triangle-fan")
+			type = PolyPrimitive::TRIFAN;
+		else
+		if (t == "polygon")
+			type = PolyPrimitive::POLYGON;
+		else
+		{
+			Trace::Stream << "turtle-prim: unknown poly type: " << t << endl;
+			MZ_GC_UNREG();
+			return scheme_void;
+		}
+	}
+	else
+	{
+		MZ_GC_UNREG();
+		scheme_wrong_type("turtle-prim", "int or symbol", 0, argc, argv);
+		return scheme_void;
+	}
+
+	Engine::Get()->GetTurtle()->Prim(type);
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
 // StartFunctionDoc-en
-// turtle-vert 
+// turtle-vert
 // Returns: void
 // Description:
 // Creates a new vertex in the current position, or sets the current vertex if the turtle builder is attached.
@@ -124,10 +161,10 @@ Scheme_Object *turtle_vert(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// turtle-build 
+// turtle-build
 // Returns: primitiveid-number
 // Description:
-// Builds the object with the vertex list defined and gives it to the renderer. 
+// Builds the object with the vertex list defined and gives it to the renderer.
 // Has no effect if the turtle builder is attached to a primitive.
 // Example:
 // (define mynewshape (turtle-build))
@@ -170,9 +207,9 @@ Scheme_Object *turtle_build(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_move(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-move", "f", argc, argv);		
+	ArgCheck("turtle-move", "f", argc, argv);
 	Engine::Get()->GetTurtle()->Move(FloatFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -205,7 +242,7 @@ Scheme_Object *turtle_push(int argc, Scheme_Object **argv)
 // turtle-pop
 // Returns: void
 // Description:
-// The turtle build has it's own transform stack. Pop forgets the current position and orientation, and 
+// The turtle build has it's own transform stack. Pop forgets the current position and orientation, and
 // goes back to the state at the last push.
 // Example:
 // (turtle-pop)
@@ -250,16 +287,16 @@ Scheme_Object *turtle_pop(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-turn", "v", argc, argv);		
+	ArgCheck("turtle-turn", "v", argc, argv);
 	float rot[3];
 	FloatsFromScheme(argv[0],rot,3);
 	Engine::Get()->GetTurtle()->Turn(dVector(rot[0],rot[1],rot[2]));
-	MZ_GC_UNREG(); 
-	return scheme_void;	
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
-// turtle-reset 
+// turtle-reset
 // Returns: void
 // Description:
 // Resets the current position and rotation of the turtle to the origin.
@@ -279,14 +316,14 @@ Scheme_Object *turtle_turn(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->GetTurtle()->Reset();
-	return scheme_void;	
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
 // turtle-attach primitiveid-number
 // Returns: void
 // Description:
-// Attaches the turtle to an existing poly primitive. This means you are able to 
+// Attaches the turtle to an existing poly primitive. This means you are able to
 // deform an existing objects points using the turtle builder.
 // Example:
 // (define myshape (build-sphere 10 10))
@@ -299,7 +336,7 @@ Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 // Descrição:
 // Anexa a tartaruga a uma primitiva poligonal existente. Isso significa
 // que você será capaz de deformar pontos de objetos existentes usando o
-// construtor tartaruga. 
+// construtor tartaruga.
 // Exemplo:
 // (define myshape (build-sphere 10 10))
 // (turtle-attach myshape)
@@ -308,7 +345,7 @@ Scheme_Object *turtle_reset(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-attach", "i", argc, argv);		
+	ArgCheck("turtle-attach", "i", argc, argv);
 	PolyPrimitive *poly = dynamic_cast<PolyPrimitive*>(Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0])));
 	if (poly)
 	{
@@ -318,16 +355,16 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 	{
 		Trace::Stream<<"turtle-attach only works on polys"<<endl;
 	}
-	MZ_GC_UNREG(); 
-	
-	return scheme_void;	
+	MZ_GC_UNREG();
+
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
 // turtle-skip count-number
 // Returns: void
 // Description:
-// When attached, causes the turtle to skip vertices. This value may be negative, which will set 
+// When attached, causes the turtle to skip vertices. This value may be negative, which will set
 // the turtle to write to previous vertices.
 // Example:
 // (turtle-skip -1)
@@ -347,10 +384,10 @@ Scheme_Object *turtle_attach(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_skip(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-skip", "i", argc, argv);		
+	ArgCheck("turtle-skip", "i", argc, argv);
 	Engine::Get()->GetTurtle()->Skip(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
-	return scheme_void;	
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -399,10 +436,10 @@ Scheme_Object *turtle_position(int argc, Scheme_Object **argv)
 Scheme_Object *turtle_seek(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("turtle-seek", "i", argc, argv);		
+	ArgCheck("turtle-seek", "i", argc, argv);
 	Engine::Get()->GetTurtle()->SetPosition(IntFromScheme(argv[0]));
-	MZ_GC_UNREG(); 
-	return scheme_void;	
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -452,3 +489,4 @@ void TurtleFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("get-turtle-transform", scheme_make_prim_w_arity(get_turtle_transform, "get-turtle-transform", 0, 0), env);
 	MZ_GC_UNREG();
 }
+

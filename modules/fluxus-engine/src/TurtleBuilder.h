@@ -32,7 +32,7 @@ public:
 
 	void Initialise();
 
-	void Prim(int Type=1);
+	void Prim(PolyPrimitive::Type Type = PolyPrimitive::TRISTRIP);
 	int Build(Renderer *renderer);
 
 	void Attach(PolyPrimitive *p);
