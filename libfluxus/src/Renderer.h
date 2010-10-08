@@ -94,7 +94,7 @@ public:
 	dBoundingBox GetBoundingBox(int ID);
 	/// Immediate mode (don't delete prim till after Render() - when it
 	/// will actually be rendered
-	void         RenderPrimitive(Primitive *Prim);
+	void         RenderPrimitive(Primitive *Prim, bool del = false);
 	/// Get primitive ID from screen space
 	int          Select(unsigned int CamIndex, int x, int y, int size);
 	/// Get all primitive IDs from screen space

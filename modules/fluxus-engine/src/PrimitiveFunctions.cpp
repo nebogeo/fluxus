@@ -2186,9 +2186,41 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
-{    	
+{
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTorus);
     return scheme_void;
+}
+
+// StartFunctionDoc-en
+// draw-line point-vector point-vector
+// Returns: void
+// Description:
+// Draws a line in the current state in immediate mode.
+// primitive.
+// Example:
+// (define (render)
+//		(draw-line (vector 0 0 0) (vector 2 1 0)))
+// (every-frame (render))
+// EndFunctionDoc
+
+Scheme_Object *draw_line(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("draw-line", "vv", argc, argv);
+	dVector p0, p1;
+	FloatsFromScheme(argv[0], p0.arr(), 3);
+	FloatsFromScheme(argv[1], p1.arr(), 3);
+	RibbonPrimitive *p = new RibbonPrimitive();
+	p->Resize(2);
+	p->SetData<dVector>("p", 0, p0);
+	p->SetData<dVector>("p", 1, p1);
+	// force a hint-wire state
+	Engine::Get()->Renderer()->PushState();
+	Engine::Get()->State()->Hints |= HINT_WIRE;
+	Engine::Get()->Renderer()->RenderPrimitive(p, true);
+	Engine::Get()->Renderer()->PopState();
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2217,11 +2249,11 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("destroy", "i", argc, argv);
 	int name=0;
-	name=IntFromScheme(argv[0]);	
-    Engine::Get()->Physics()->Free(name);
-    Engine::Get()->Renderer()->RemovePrimitive(name);
-	MZ_GC_UNREG(); 
-    return scheme_void;
+	name=IntFromScheme(argv[0]);
+	Engine::Get()->Physics()->Free(name);
+	Engine::Get()->Renderer()->RemovePrimitive(name);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -3274,6 +3306,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
 	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
+	scheme_add_global("draw-line", scheme_make_prim_w_arity(draw_line, "draw-line", 2, 2), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-indices", scheme_make_prim_w_arity(poly_indices, "poly-indices", 0, 0), env);

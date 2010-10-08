@@ -27,13 +27,14 @@ ImmediateMode::~ImmediateMode()
 {
 }
 
-void ImmediateMode::Add(Primitive *p, State *s)
+void ImmediateMode::Add(Primitive *p, State *s, bool del /* = false */)
 {
 	assert(p!=NULL);
 	assert(s!=NULL);
 	IMItem *newitem = new IMItem;
 	newitem->m_State = *s;
 	newitem->m_Primitive = p;
+	newitem->m_DelPrim = del;
 	m_IMRecord.push_back(newitem);
 }
 
@@ -64,8 +65,13 @@ void ImmediateMode::Clear()
 {
 	for(vector<IMItem*>::iterator i=m_IMRecord.begin(); i!=m_IMRecord.end(); ++i)
 	{
+		if ((*i)->m_DelPrim)
+		{
+			delete (*i)->m_Primitive;
+		}
 		delete *i;
 	}
 
 	m_IMRecord.clear();
 }
+

@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #ifndef FLUX_IMMEDIATE_MODE
 #define FLUX_IMMEDIATE_MODE
 
@@ -27,29 +27,30 @@ namespace Fluxus
 //////////////////////////////////////////////////////
 /// Immediate Mode
 /// A store for immediate mode primitives, which we can
-/// be given at any time, we keep pointers to them and 
+/// be given at any time, we keep pointers to them and
 /// render them all in one when the renderer is ready
 class ImmediateMode
 {
 public:
-	
+
 	ImmediateMode();
 	~ImmediateMode();
-	
-	void Add(Primitive *p, State *s);
-    void Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen = NULL);
-    void Clear();
-	
+
+	void Add(Primitive *p, State *s, bool del = false);
+	void Render(unsigned int CamIndex, ShadowVolumeGen *shadowgen = NULL);
+	void Clear();
+
 private:
-    struct IMItem
-    {
-    	State m_State;
-    	Primitive *m_Primitive;
-   	};
-	
-   	vector<IMItem*> m_IMRecord;
+	struct IMItem
+	{
+		State m_State;
+		Primitive *m_Primitive;
+		bool m_DelPrim; // delete primitive on clear
+	};
+	vector<IMItem*> m_IMRecord;
 };
 
 }
 
 #endif
+

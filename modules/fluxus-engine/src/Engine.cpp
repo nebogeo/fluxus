@@ -28,8 +28,8 @@ PolyPrimitive*  Engine::StaticPlane=NULL;
 PolyPrimitive*  Engine::StaticSphere=NULL;
 PolyPrimitive*  Engine::StaticCylinder=NULL;
 PolyPrimitive*  Engine::StaticTorus=NULL;
-	
-Engine::Engine() 
+
+Engine::Engine()
 {
 	StaticCube = new PolyPrimitive(PolyPrimitive::QUADS);
     MakeCube(StaticCube);
@@ -51,15 +51,15 @@ Engine::Engine()
 	PushRenderer(StackItem(renderer, physics));
 }
 
-Engine::~Engine() 
+Engine::~Engine()
 {
-	for (deque<StackItem>::iterator i=m_RendererStack.begin(); 
+	for (deque<StackItem>::iterator i=m_RendererStack.begin();
 	 i!=m_RendererStack.end(); ++i)
 	{
 		delete i->m_Renderer;
 		delete i->m_Physics;
 	}
-	
+
 	delete StaticCube;
 	delete StaticPlane;
 	delete StaticSphere;

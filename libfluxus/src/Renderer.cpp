@@ -565,9 +565,9 @@ void Renderer::DetachPrimitive(int ID)
 }
 
 // immediate mode
-void Renderer::RenderPrimitive(Primitive *Prim)
-{	
-	m_ImmediateMode.Add(Prim,GetState());
+void Renderer::RenderPrimitive(Primitive *Prim, bool del /* = false */)
+{
+	m_ImmediateMode.Add(Prim, GetState(), del);
 }
 
 dMatrix Renderer::GetGlobalTransform(int ID)
