@@ -2215,9 +2215,11 @@ Scheme_Object *draw_line(int argc, Scheme_Object **argv)
 	p->SetData<dVector>("p", 0, p0);
 	p->SetData<dVector>("p", 1, p1);
 	// force a hint-wire state
+	Engine::Get()->PushGrab(0);
 	Engine::Get()->Renderer()->PushState();
 	Engine::Get()->State()->Hints |= HINT_WIRE;
 	Engine::Get()->Renderer()->RenderPrimitive(p, true);
+	Engine::Get()->PopGrab();
 	Engine::Get()->Renderer()->PopState();
 	MZ_GC_UNREG();
 	return scheme_void;
