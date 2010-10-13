@@ -2199,7 +2199,7 @@ Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
 // primitive.
 // Example:
 // (define (render)
-//		(draw-line (vector 0 0 0) (vector 2 1 0)))
+//     (draw-line (vector 0 0 0) (vector 2 1 0)))
 // (every-frame (render))
 // EndFunctionDoc
 
