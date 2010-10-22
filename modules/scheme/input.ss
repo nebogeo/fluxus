@@ -13,6 +13,7 @@
  keys-down
  key-special-pressed
  keys-special-down
+ key-modifiers
  key-pressed-this-frame
  key-special-pressed-this-frame
  mouse-x
@@ -32,6 +33,7 @@
 (define mouse (vector 0 0))
 (define mouse-buttons (vector #f #f #f))
 (define mouse-wheel-v 0)
+(define key-mods '())
 
 ; utils funcs for using lists as sets
 (define (set-remove a l)
@@ -66,7 +68,12 @@
   (when (not (= special -1)) ; special keypress
     (set! special-keys (set-add special special-keys))
 	(set! special-keys-this-frame (set-add special special-keys-this-frame)))
-  (cond  ; mouse
+  (set! key-mods ; key modifiers
+	  (for/list ([bitmask (list 1 2 4)]
+				 [bitsym '(shift ctrl alt)]
+				 #:when (> (bitwise-and mod bitmask) 0))
+			bitsym))
+  (cond ; mouse
     ((and (eq? key 0) (eq? special -1)) 
 	 (when (eq? button 3) (set! mouse-wheel-v 1))
 	 (when (eq? button 4) (set! mouse-wheel-v -1))
@@ -181,6 +188,19 @@
 
 (define (keys-special-down)
   special-keys)
+
+;; StartFunctionDoc-en
+;; key-modifiers
+;; Returns: modifiers-list
+;; Description:
+;; Returns a list of key modifiers symbols consisting
+;; 'shift, 'ctrl and 'alt.
+;; Example:
+;; (display (key-modifiers))
+;; EndFunctionDoc
+
+(define (key-modifiers)
+  key-mods)
 
 ;; StartFunctionDoc-en
 ;; key-pressed-this-frame key-string

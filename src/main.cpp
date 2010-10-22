@@ -68,26 +68,33 @@ void print_bin(unsigned char v)
 
 void KeyboardCallback(unsigned char key,int x, int y)
 {
-    // multibyte characters seem broken on linux?
-    #ifndef __APPLE__
-    if (key>0x80)
-    {
-        return;
-    }
-    #endif
+	// multibyte characters seem broken on linux?
+#ifndef __APPLE__
+	if (key>0x80)
+	{
+		return;
+	}
+#endif
 
 	int mod=modifiers;
 	if (recorder->GetMode()!=EventRecorder::PLAYBACK) mod=glutGetModifiers();
 	if ((recorder->GetMode() != EventRecorder::PLAYBACK) || ((x == -1) && (y == -1)))
 		app->Handle(key, -1, -1, -1, x, y, mod);
 	wchar_t code[256];
-	if (key > 0 && key<0x80)  
-	  { // key is 0 on ctrl+2 and ignore extended ascii for the time being
-	      #ifndef WIN32
-		swprintf(code,256,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
-		#else
-		swprintf(code,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,mod);
-		#endif
+	if (key > 0 && key<0x80)
+	{ // key is 0 on ctrl+2 and ignore extended ascii for the time being
+		int imod = 0;
+		if (mod & GLUT_ACTIVE_SHIFT)
+			imod |= 1;
+		if (mod & GLUT_ACTIVE_CTRL)
+			imod |= 2;
+		if (mod & GLUT_ACTIVE_ALT)
+			imod |= 4;
+#ifndef WIN32
+		swprintf(code,256,L"(%S #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,imod);
+#else
+		swprintf(code,L"(%s #\\%c %d %d %d %d %d %d)",INPUT_CALLBACK.c_str(),key,-1,-1,-1,x,y,imod);
+#endif
 		Interpreter::Interpret(code);
 	}
 	recorder->Record(RecorderMessage("keydown",key,mod));
