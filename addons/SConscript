@@ -5,7 +5,7 @@
 # Sets up common stuff, and calls each module SConscript 
 
 import os 
-Import("env", "CollectsInstall", "DataInstall", "MZDYN", "static_modules")
+Import("env", "CollectsInstall", "DataInstall", "MZDYN", "static_modules", "racket_framework")
 
 # run mzscheme to get (path->string (system-library-subpath))
 file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
@@ -15,5 +15,6 @@ file.close()
 BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
 
 SConscript(dirs = env.Split("video artkp"),
-		exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation", "MZDYN", "static_modules"])
+		exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
+			"MZDYN", "static_modules", "racket_framework"])
 

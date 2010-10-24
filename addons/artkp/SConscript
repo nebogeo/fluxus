@@ -1,7 +1,8 @@
 ###############################################################
 # SConscript for fluxus-artkp
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
+		"racket_framework")
 
 menv = env.Clone()
 
@@ -32,7 +33,11 @@ menv.Replace(LIBS = Libs)
 menv.Replace(LIBPATH = LibPaths)
 
 if menv['PLATFORM'] == 'darwin':
-	Frameworks += ['Racket', 'OpenGL']
+	Frameworks += ['OpenGL']
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
 
 output = menv.SharedLibrary(source = Source, 
 				  target = Target,

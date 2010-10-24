@@ -6,7 +6,7 @@
 
 import os 
 Import("env", "CollectsInstall", "DataInstall", "MZDYN",
-		"BinaryModulesLocation", "static_modules", "static_ode", "Prefix")
+		"BinaryModulesLocation", "static_modules", "static_ode", "racket_framework", "Prefix")
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = ["fluxus-engine", 
@@ -24,7 +24,7 @@ else:
 				"scheme",
 				"material"], 
 				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
-					"MZDYN", "static_modules", "static_ode", "Prefix"])
+					"MZDYN", "static_modules", "static_ode", "racket_framework", "Prefix"])
 
 env.Install(CollectsInstall, "../docs/helpmap.scm")
 

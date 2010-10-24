@@ -154,3 +154,10 @@ it's dependant scheme code.
 
 STATIC_ODE=1
 Build fluxus with ODE statically linked.
+
+ADDONS=0
+Disable building additional modules.
+
+RACKET_FRAMEWORK=0
+Build with the Racket library instead of the framework on OSX.
+

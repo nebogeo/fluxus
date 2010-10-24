@@ -3,7 +3,7 @@
 #
 # This is the main RACKET module for the fluxus midi functions
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules", "racket_framework")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-midi_ss.dylib"
@@ -26,8 +26,13 @@ if env['PLATFORM'] == 'posix':
 	env.Append(CCFLAGS = ' -D__LINUX_ALSASEQ__')
 elif env['PLATFORM'] == 'darwin':
 	Libs = []
+	Frameworks = ['CoreMIDI', 'CoreAudio', 'CoreFoundation']
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
+
 	env.Append(CCFLAGS = ' -D__MACOSX_CORE__')
-	Frameworks = ['CoreMIDI', 'CoreAudio', 'CoreFoundation', 'Racket']
 
 if static_modules:
 	env.StaticLibrary(source = Source, 

@@ -29,6 +29,7 @@ if sys.platform == 'darwin':
 	RacketPrefix = ARGUMENTS.get('RacketPrefix', RacketBin[:-5])
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
+
 elif sys.platform == 'win32':
 	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
 	RacketPrefix = ARGUMENTS.get('RacketPrefix','c:/Program Files/Racket')
@@ -48,9 +49,9 @@ CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
 DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
 if sys.platform == 'darwin' or sys.platform == 'win32':
-        RacketCollectsLocation = RacketPrefix + "/collects/"
+        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 else:
-        RacketCollectsLocation = RacketLib + "/collects/"
+        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketLib  + "/collects/")
 
 if sys.platform == 'darwin' and GetOption('app'):
 		RacketCollectsLocation = 'collects/' # not used relative racket collects path and
@@ -94,8 +95,10 @@ if env['PLATFORM'] == 'win32':
 	LibPaths += [ "/MinGW/lib" ]
 
 if env['PLATFORM'] == 'darwin':
-	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
-	LibPaths += ['/opt/local/lib']
+	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2',
+                   '/usr/X11/include', '/usr/X11/include/freetype2']
+	LibPaths += ['/usr/X11/lib']
+	if os.path.exists('/opt/local/lib'): LibPaths += ['/opt/local/lib']
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
@@ -135,6 +138,7 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	env.Append(CCFLAGS=' -DSTATIC_LINK')
 
 static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
+racket_framework=int(ARGUMENTS.get("RACKET_FRAMEWORK", "1"))
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
@@ -202,6 +206,16 @@ if not GetOption('clean'):
         print '--------------------------------------------------------'
         print 'Fluxus: Configuring Build Environment'
         print '--------------------------------------------------------'
+        # detect ode precision
+        if not GetOption('clean'):
+          try:
+            odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
+            ode_str = odec.communicate()
+            if isinstance(ode_str[0], str):
+              env.MergeFlags(ode_str[0])
+          except:
+            print 'WARNING: unable to run ode-config, cannot detect ODE precision'
+
         conf = Configure(env)
 
         # check Racket and OpenAL frameworks on osx
@@ -209,7 +223,8 @@ if not GetOption('clean'):
                 if not conf.CheckHeader('scheme.h'):
                         print "ERROR: 'racket3m' must be installed!"
                         Exit(1)
-                LibList = filter(lambda x: x[0] != 'racket3m', LibList)
+                if racket_framework:
+                  LibList = filter(lambda x: x[0] != 'racket3m', LibList)
                 # OpenAL should be installed everywhere
                 if not conf.CheckHeader('OpenAL/al.h'):
                         print "ERROR: 'OpenAL' must be installed!"
@@ -234,16 +249,6 @@ if not GetOption('clean'):
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])
 
-# detect ode precision
-if not GetOption('clean'):
-	try:
-		odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
-		ode_str = odec.communicate()
-		if isinstance(ode_str[0], str):
-			env.MergeFlags(ode_str[0])
-	except:
-		print 'WARNING: unable to run ode-config, cannot detect ODE precision'
-
 # link ode statically
 if static_ode and not GetOption('clean'):
 	if 'ode' in env['LIBS']:
@@ -266,7 +271,9 @@ if env['PLATFORM'] == 'darwin':
 		# FIXME: check if Jackmp is available when making an app
 		env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
 	else:
-		env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio Racket"))
+		frameworks = Split("GLUT OpenGL CoreAudio")
+		if racket_framework: frameworks += ['Racket']
+		env.Append(FRAMEWORKS = frameworks)
 
 
 ################################################################################
@@ -367,15 +374,14 @@ app_env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-if env['PLATFORM'] == 'win32':
-	SConscript(dirs = Split("libfluxus modules"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-				   "BinaryModulesLocation", "static_modules", "static_ode", "Prefix"])
+build_dirs = ['libfluxus', 'modules']
+if env['PLATFORM'] != 'win32':
+  build_dirs += ['fluxa']
+  if int(ARGUMENTS.get('ADDONS', '1')): build_dirs += ['addons']
 
-else:
-	SConscript(dirs = Split("libfluxus modules fluxa addons"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-				   "BinaryModulesLocation", "static_modules", "static_ode", "Prefix"])
+SConscript(dirs = build_dirs,
+         exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
+         "BinaryModulesLocation", "static_modules", "static_ode", "racket_framework", "Prefix"])
 
 ################################################################################
 # documentation

@@ -3,7 +3,7 @@
 #
 # This is the main RACKET module for the fluxus openal functions
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules", "racket_framework")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-openal_ss.dylib"
@@ -16,18 +16,21 @@ if static_modules: Target = "fluxus-openal_ss"
 
 Install = BinaryModulesLocation
 
-if env['PLATFORM'] == 'darwin': Libs = []
-elif env['PLATFORM'] == 'win32': Libs = ['libmzsch3m_6ncc9s', 'openal32']
-else: Libs=['openal']
-
 Frameworks = []
+Libs = []
+if env['PLATFORM'] == 'darwin': Frameworks += ['OpenAL']
+elif env['PLATFORM'] == 'win32': Libs += ['libmzsch3m_6ncc9s', 'openal32']
+else: Libs += ['openal']
 
 Source = Split("src/FluxAudio.cpp \
 		src/OpenALFunctions.cpp") + \
 		[MZDYN]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks = ['OpenAL', 'Racket']
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
 
 if static_modules:
 	env.StaticLibrary(source = Source, 

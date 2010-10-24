@@ -3,7 +3,7 @@
 #
 # This is the main RACKET module for the fluxus audio functions
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules", "racket_framework")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-audio_ss.dylib"
@@ -14,10 +14,15 @@ if static_modules: Target = "fluxus-audio_ss"
 
 Install = BinaryModulesLocation
 Libs =  Split("jack fftw3 sndfile")
-Frameworks = []
 
+Frameworks = Split("CoreAudio")
 if env['PLATFORM'] == 'darwin':
-	Frameworks = Split("CoreAudio Racket")
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
+
+
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
