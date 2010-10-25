@@ -119,6 +119,14 @@ To build, type:
 scons --app
 ./packages/macos/osx_app-postbuild.sh
 
+
+Homebrew (http://mxcl.github.com/homebrew/) users:
+
+The homebrew formula conveniently installs all dependencies for you (including racket):
+
+brew update
+brew install fluxus
+
 Building fluxus on Windows
 --------------------------
 
