@@ -254,6 +254,7 @@
          ))
        (do-render)
        ;reset
+       (clear-frame 1)
        (set-colour-mask #(#t #t #t #t))))))
 
 ;-------------------------------------------------
