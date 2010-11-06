@@ -377,13 +377,13 @@
      (when camera-update (set-camera (get-camera-transform)))
      (framedump-update)
      (do-render)
-     (when physics-debug (render-physics))
-     (tick-physics)
-     (update-audio)
-     (oa-update)
-     (update-input))
+     (when physics-debug (render-physics)))
     (else
      (stereo-render)))
+  (tick-physics)
+  (update-audio)
+  (oa-update)
+  (update-input)
   (display (fluxus-error-log)))
 
 (define fluxus-frame-callback default-fluxus-frame-callback)
