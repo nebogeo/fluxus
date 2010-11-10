@@ -139,6 +139,7 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 
 static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
 racket_framework=int(ARGUMENTS.get("RACKET_FRAMEWORK", "1"))
+addons=int(ARGUMENTS.get('ADDONS', '1'))
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
@@ -263,13 +264,15 @@ if env['PLATFORM'] == 'darwin':
 		# replace libs with static libs if building an osx app
 		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 			env['LIBS'].remove(l)
-			env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+			env['LIBS'].append(File('%s/lib/lib%s.a' % (Prefix, l)))
 
 		env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
 		# add jack as a framework
 		env['LIBS'].remove('jack')
 		# FIXME: check if Jackmp is available when making an app
-		env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation Racket Jackmp"))
+		frameworks = Split("GLUT OpenGL CoreAudio CoreFoundation Jackmp")
+		if racket_framework: frameworks += ['Racket']
+		env.Append(FRAMEWORKS = frameworks)
 	else:
 		frameworks = Split("GLUT OpenGL CoreAudio")
 		if racket_framework: frameworks += ['Racket']
@@ -377,7 +380,7 @@ app_env.Program(source = Source, target = Target)
 build_dirs = ['libfluxus', 'modules']
 if env['PLATFORM'] != 'win32':
   build_dirs += ['fluxa']
-  if int(ARGUMENTS.get('ADDONS', '1')): build_dirs += ['addons']
+  if addons: build_dirs += ['addons']
 
 SConscript(dirs = build_dirs,
          exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
@@ -401,7 +404,28 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         # add dynamic libs
         frameworks = [RacketLib + '/Racket.framework',
                      '/Library/Frameworks/Jackmp.framework']
-        dylibs = [ '/opt/local/lib/liblo.dylib']
+        dylibs = [ '%s/lib/liblo.dylib' % Prefix]
+
+        resources = [['modules/material/fonts/', 'material/fonts/'],
+           ['modules/material/meshes/', 'material/meshes/'],
+           ['modules/material/shaders/', 'material/shaders/'],
+           ['modules/material/textures/', 'material/textures/'],
+           ['modules/scheme/', CollectsInstall],
+           ['modules/fluxus-engine/fluxus-engine_ss.dylib',
+             BinaryModulesLocation + '/fluxus-engine_ss.dylib'],
+           ['modules/fluxus-audio/fluxus-audio_ss.dylib',
+             BinaryModulesLocation + '/fluxus-audio_ss.dylib'],
+           ['modules/fluxus-midi/fluxus-midi_ss.dylib',
+             BinaryModulesLocation + '/fluxus-midi_ss.dylib'],
+           ['modules/fluxus-osc/fluxus-osc_ss.dylib',
+             BinaryModulesLocation + '/fluxus-osc_ss.dylib'],
+           ['modules/fluxus-openal/fluxus-openal_ss.dylib',
+             BinaryModulesLocation + '/fluxus-openal_ss.dylib']]
+        if addons:
+            resources += [['addons/video/fluxus-video_ss.dylib',
+                           BinaryModulesLocation + '/fluxus-video_ss.dylib'],
+                         ['addons/artkp/fluxus-artkp_ss.dylib',
+                           BinaryModulesLocation + '/fluxus-artkp_ss.dylib']]
 
         env.Alias('app', env.MakeBundle('Fluxus.app',
                                         Target,
@@ -409,28 +433,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         'packages/macos/fluxus-Info.plist',
                                         dylibs = dylibs,
                                         frameworks = frameworks,
-                                        resources=[['modules/material/fonts/', 'material/fonts/'],
-                                                   ['modules/material/meshes/', 'material/meshes/'],
-                                                   ['modules/material/shaders/', 'material/shaders/'],
-                                                   ['modules/material/textures/', 'material/textures/'],
-                                                   ['modules/scheme/', CollectsInstall],
-                                                   ['modules/fluxus-engine/fluxus-engine_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-engine_ss.dylib'],
-                                                   ['modules/fluxus-audio/fluxus-audio_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-audio_ss.dylib'],
-                                                   ['modules/fluxus-midi/fluxus-midi_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-midi_ss.dylib'],
-                                                   ['modules/fluxus-osc/fluxus-osc_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-osc_ss.dylib'],
-                                                   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-openal_ss.dylib'],
-                                                   ['addons/video/fluxus-video_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-video_ss.dylib'],
-                                                   ['addons/artkp/fluxus-artkp_ss.dylib',
-                                                       BinaryModulesLocation + '/fluxus-artkp_ss.dylib']],
-
-                                        typecode='APPL',
-                                        icon_file='packages/macos/fluxus.icns'))
+                                        resources = resources,
+                                        typecode = 'APPL',
+                                        icon_file = 'packages/macos/fluxus.icns'))
         # build dmg
         '''
         env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
@@ -443,7 +448,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 
         # fluxa
         frameworks = [ '/Library/Frameworks/Jackmp.framework']
-        dylibs = [ '/opt/local/lib/liblo.dylib']
+        dylibs = [ '%s/lib/liblo.dylib' % Prefix]
         env.Alias('app', env.MakeBundle('Fluxa.app',
                                         'fluxa/fluxa',
                                         'key',
