@@ -402,8 +402,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from osxbundle import *
         TOOL_BUNDLE(env)
         # add dynamic libs
-        frameworks = [RacketLib + '/Racket.framework',
-                     '/Library/Frameworks/Jackmp.framework']
+        frameworks = ['/Library/Frameworks/Jackmp.framework']
+        if racket_framework:
+            frameworks += [RacketLib + '/Racket.framework']
         dylibs = [ '%s/lib/liblo.dylib' % Prefix]
 
         resources = [['modules/material/fonts/', 'material/fonts/'],
