@@ -48,10 +48,10 @@ void PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
 		png_init_io(png_ptr, fp);
 		png_read_info(png_ptr, info_ptr);
 
-		unsigned long width=info_ptr->width;
-		unsigned long height=info_ptr->height;
-		int bit_depth=info_ptr->bit_depth;
-		int colour_type=info_ptr->color_type;
+		unsigned long width = png_get_image_width(png_ptr, info_ptr);
+		unsigned long height = png_get_image_height(png_ptr, info_ptr);
+		int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+		int colour_type = png_get_color_type(png_ptr, info_ptr);
 		png_bytep *row_pointers=new png_bytep[height];
 		unsigned int rb = png_get_rowbytes(png_ptr, info_ptr);
 
@@ -98,7 +98,7 @@ void PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
 						desc.Size = width * height * 4;
 						break;
 			default:
-						Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
+						Trace::Stream<<"PNG pixel format not supported : "<<(int)png_get_color_type(png_ptr, info_ptr)<<" "<<Filename<<endl;
 						delete[] desc.ImageData;
 						desc.ImageData=NULL;
 						break;
@@ -174,8 +174,8 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, int
 	atext[0].text = const_cast<char *>("made with fluxus");
 	atext[0].compression = PNG_TEXT_COMPRESSION_NONE;
 	#ifdef PNG_iTXt_SUPPORTED
-	text_ptr[0].lang = NULL;
-	text_ptr[1].lang = NULL;
+	atext[0].lang = NULL;
+	atext[1].lang = NULL;
 	#endif
 	png_set_text (ppng, pinfo, atext, 2);
 	png_write_info (ppng, pinfo);
