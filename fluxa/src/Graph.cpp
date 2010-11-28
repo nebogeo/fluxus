@@ -71,6 +71,7 @@ void Graph::Init()
 				case DISTORT : nodedesc->m_Node = new EffectNode(EffectNode::DISTORT,m_SampleRate); break;
 				case CLIP : nodedesc->m_Node = new EffectNode(EffectNode::CLIP,m_SampleRate); break;
 				case DELAY : nodedesc->m_Node = new EffectNode(EffectNode::DELAY,m_SampleRate); break;				
+				case KS : nodedesc->m_Node = new KSNode(m_SampleRate); break;				
 				default: assert(0); break;
 			}
 			

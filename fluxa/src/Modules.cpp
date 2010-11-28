@@ -748,7 +748,7 @@ void FilterWrapper::Process(unsigned int BufSize, Sample &in, Sample &CutoffCV, 
 {
 	switch (m_Type)
 	{
-		case MOOG_LO : m_MoogFilter.Process(BufSize, in, &CutoffCV, &out, NULL, NULL); break;
+    case MOOG_LO : m_MoogFilter.Process(BufSize, in, &CutoffCV, &out, NULL, NULL); break;
 		case MOOG_BAND : m_MoogFilter.Process(BufSize, in, &CutoffCV, NULL, &out, NULL); break;
 		case MOOG_HI : m_MoogFilter.Process(BufSize, in, &CutoffCV, NULL, NULL, &out); break;
 		case FORMANT : m_FormantFilter.Process(BufSize, in, &CutoffCV, out); break;
@@ -953,4 +953,54 @@ void Compressor::Process(unsigned int BufSize, Sample &In)
 	
 	
 	
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+
+KS::KS(int SampleRate) :
+Module(SampleRate),
+m_Position(0),
+m_Filter(SampleRate)
+{
+	Reset();
+	m_Buffer.Allocate((int)(MAX_DELAYTIME*m_SampleRate));
+}
+
+void KS::Reset()
+{
+	m_Delay=0;
+	m_Feedback=0;
+    m_Filter.Reset();
+}
+
+void KS::Trigger(float time, float pitch, float slidepitch, float vol)
+{
+	m_Delay=1.0f/pitch; 
+	//m_Volume=vol*1.0;
+
+	unsigned int delay=(unsigned int)(m_SampleRate*m_Delay);
+
+	for (unsigned int n=0; n<delay; n++)
+	{
+		m_Buffer[n]=RandRange(-1,1);
+    }
+}
+
+void KS::Process(unsigned int BufSize, Sample &Out)
+{
+	unsigned int delay=(unsigned int)(m_SampleRate*m_Delay);
+	
+	if (delay==0) return;
+	if (delay>=(unsigned int)m_Buffer.GetLength()) 
+    {
+        delay=m_Buffer.GetLength()-1;
+	}
+
+	for (unsigned int n=0; n<BufSize; n++)
+	{
+        m_Buffer[m_Position]=m_Filter.ProcessSingle(m_Buffer[m_Position]);        
+		Out[n]=m_Buffer[m_Position];
+		m_Position=(m_Position+1)%delay;
+	}
 }

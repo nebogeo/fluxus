@@ -359,3 +359,51 @@ void EffectNode::Process(unsigned int bufsize)
 		};
 	}
 }
+
+KSNode::KSNode(unsigned int SampleRate):
+GraphNode(3),
+m_KS(SampleRate)
+{
+}
+
+void KSNode::Trigger(float time)
+{
+	TriggerChildren(time);
+
+	float freq=440;
+	if (ChildExists(0) && GetChild(0)->IsTerminal()) 
+	{
+		freq=GetChild(0)->GetValue();
+	}
+	//if (ChildExists(1) && GetChild(0)->IsTerminal()) 
+	//{
+	//	freq=GetChild(1)->GetValue();
+	//}
+
+	m_KS.Trigger(time, freq, freq, 1);
+}
+
+void KSNode::Process(unsigned int bufsize)
+{
+	if (bufsize>(unsigned int)m_Output.GetLength())
+	{
+		m_Output.Allocate(bufsize);
+	}
+	ProcessChildren(bufsize);
+
+	if (ChildExists(1) && ChildExists(2))
+	{		
+		if (GetChild(1)->IsTerminal())
+		{
+			float c=GetChild(1)->GetValue();			
+			if (c>=0 && c<1) m_KS.SetCutoff(c);
+		}
+        if (GetChild(2)->IsTerminal())
+        {
+            float r=GetChild(2)->GetValue();
+            if (r>=0 && r<0.5) m_KS.SetResonance(r);
+		}
+	}
+	
+	m_KS.Process(bufsize, m_Output);
+}

@@ -76,9 +76,9 @@ public:
 	AudioType &operator[](unsigned int i) const
 	{		
 		#ifdef DEBUG
-			assert(i<m_Length);
+        assert(i<m_Length);
 		#endif
-		return m_Data[i];
+        return m_Data[i%m_Length];
 	}
 	
 	// Linear interpolated
@@ -87,23 +87,24 @@ public:
 		unsigned int ii=(unsigned int)i;
 		
 		#ifdef DEBUG
-			if (ii>=m_Length) cerr<<m_Length<<" "<<ii<<endl;
-			assert(ii<m_Length);
+        if (ii>=m_Length) cerr<<m_Length<<" "<<ii<<endl;
+        assert(ii<m_Length);
 		#endif
 		
-		if (ii==m_Length-1) return m_Data[ii];	
+        if (ii==m_Length-1) return m_Data[ii%m_Length];	
 		AudioType t=i-ii;		
-		return ((m_Data[ii]*(1-t))+(m_Data[ii+1])*t);
+		return ((m_Data[ii%m_Length]*(1-t))+
+                (m_Data[(ii+1)%m_Length])*t);
 	}
 
 
 	void Set(unsigned int i, AudioType v)
 	{	
 		#ifdef DEBUG
-			if (i>=m_Length) cerr<<m_Length<<" "<<i<<endl;
-			assert(i<m_Length);
+        if (i>=m_Length) cerr<<m_Length<<" "<<i<<endl;
+        assert(i<m_Length);
 		#endif							
-		m_Data[i]=v;
+		m_Data[i%m_Length]=v;
 	}	
 	
 	Sample &operator=(const Sample &rhs)

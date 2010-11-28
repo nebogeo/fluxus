@@ -16,6 +16,7 @@
 
 #include "Types.h"
 #include "Sample.h"
+#include <stdlib.h>
 
 #ifndef MODULES
 #define MODULES
@@ -181,7 +182,41 @@ public:
 
 	void SetCutoff(float s) { Cutoff=s; }
 	void SetResonance(float s) { if (s<0.5 && s>=0.0) Resonance=s; }
-	
+
+    // only used by ks, as I couldn't figure out the cyclic buffer stuff :(
+    inline float ProcessSingle(float in)
+    {
+        float Q=0;
+        fc = Cutoff; 
+        fc*=0.25;
+        if (fc<0) fc=0;
+        else if (fc>1) fc=1;
+        
+        q = 1.0f - fc;
+        p = fc + 0.8f * fc * q;
+        f = p + p - 1.0f;
+        Q = Resonance*6-3;
+        q = Q + (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
+        
+        // say no to denormalisation!
+        in+=(rand()%1000)*0.000000001;	
+        
+        in -= q * b4;
+		
+        if (in>1) in=1;
+        if (in<-1) in=-1;
+        
+        t1 = b1; b1 = (in + b0) * p - b1 * f;
+        t2 = b2; b2 = (b1 + t1) * p - b2 * f;
+        t1 = b3; b3 = (b2 + t2) * p - b3 * f;		
+        b4 = (b3 + t1) * p - b4 * f;	
+        b4 = b4 - b4 * b4 * b4 * 0.166667f;
+        
+        b0 = in;
+        
+        return b4;	 
+    }
+    
 protected:
 	float Cutoff, Resonance;
 	
@@ -314,4 +349,26 @@ protected:
     float tatt;       // attack time  (ms)
     float trel;       // release time (ms)
 };
+
+class KS : public Module
+{
+public:
+	KS(int SampleRate);
+	virtual ~KS() {}
+	
+	virtual void Process(unsigned int BufSize, Sample &Out);
+	virtual void Trigger(float time, float pitch, float slidepitch, float vol);
+	virtual void Reset();
+
+    void SetCutoff(float s) { m_Filter.SetCutoff(s); }    
+    void SetResonance(float s) { m_Filter.SetResonance(s); }
+	
+protected:
+	float m_Delay, m_Feedback;
+	unsigned int m_Position;
+	Sample m_Buffer;
+    MoogFilter m_Filter;
+};
+
+
 #endif

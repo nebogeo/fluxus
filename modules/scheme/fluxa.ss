@@ -20,8 +20,8 @@
 (provide
  play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
  sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-  set-bpm-mult logical-time inter pick)
+ crush distort klip echo ks reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+  set-bpm-mult logical-time inter pick set-scale)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
@@ -32,7 +32,7 @@
 (define WHITE 5) (define PINK 6) (define ADSR 7) (define ADD 8) (define SUB 9)
 (define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14)
 (define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18)
-(define DISTORT 19) (define CLIP 20) (define ECHO 21)
+(define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -550,6 +550,27 @@
   (operator ECHO (list in delaytime feedback)))
 
 ;; StartFunctionDoc-en
+;; echo signal-node delay-time-number-or-node feedback-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Creates a echo effect node
+;; Example:
+;; (play-now (echo 3 (sine 440)))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; echo nó-signal nó-número-atraso-tempo nó-número-feedback
+;; Retorna: nó-número-id
+;; Descrição:
+;; Cria um nó de efeito echo.
+;; Exemplo:
+;; (play-now (echo 3 (sine 440)))
+;; EndFunctionDoc
+
+(define (ks freq cutoff resonance)
+  (operator KS (list freq cutoff resonance)))
+
+;; StartFunctionDoc-en
 ;; play time node optional-pan
 ;; Returns: void
 ;; Description:
@@ -775,8 +796,12 @@
 ;; (note 35)
 ;; EndFunctionDoc
 
+(define (set-scale s) (set! flx-scale s)) 
+
+(define flx-scale '(1 1 1 1 1 1 1 1 1 1 1))
+
 (define (note n)
-  (list-ref scale-lut (modulo n (length scale-lut))))
+  (list-ref scale-lut (modulo (inter flx-scale n) (length scale-lut))))
 
 ;; StartFunctionDoc-en
 ;; reset

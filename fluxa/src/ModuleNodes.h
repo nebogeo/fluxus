@@ -49,6 +49,18 @@ private:
 	unsigned int m_Shape;
 };
 
+class KSNode : public GraphNode
+{
+public:
+    KSNode(unsigned int SampleRate);
+	virtual void Trigger(float time);
+	virtual void Process(unsigned int bufsize);
+	
+private:
+	KS m_KS;
+	unsigned int m_Shape;
+};
+
 class ADSRNode : public GraphNode
 {
 public:
