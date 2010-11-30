@@ -17,6 +17,7 @@
 #include "PrimitiveIO.h"
 #include "OBJPrimitiveIO.h"
 #include "PixelPrimitiveIO.h"
+#include "SceneGraph.h"
 
 using namespace Fluxus;
 	
@@ -53,15 +54,16 @@ Primitive *PrimitiveIO::Read(const string &filename, bool cache)
 	return prim->Clone();
 }
 
-bool PrimitiveIO::Write(const std::string &filename, const Primitive *ob)
+bool PrimitiveIO::Write(const std::string &filename, const Primitive *ob, unsigned id,
+		const SceneGraph &world)
 {
-	string extension = filename.substr(filename.find_last_of('.')+1,filename.size());
+	string extension = filename.substr(filename.find_last_of('.') + 1, filename.size());
 	PrimitiveIO *pio = GetFromExtension(extension);
 	Primitive *prim = NULL;
-	bool ret=false;
-	if (pio!=NULL)
+	bool ret = false;
+	if (pio != NULL)
 	{
-		ret = pio->FormatWrite(filename, ob);
+		ret = pio->FormatWrite(filename, ob, id, world);
 	}
 	delete pio;
 	return ret;

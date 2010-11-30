@@ -1411,10 +1411,24 @@ Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
 // save-primitive
 // Returns: void
 // Description:
-// Saves the current primitive to disk
+// Saves the current primitive to disk. Pixel primitives are saved as PNG
+// files.
+// Polygon primitives are saved as Wavefront OBJ files with material
+// information. The children of the primitives are also saved as different
+// objects in the file. New groups are generated for each locator in the
+// hierarchy.
 // Example:
+// (define l (build-locator))
 // (with-primitive (build-sphere 10 10)
-//     (save-primitive "mymesh.obj"))
+//    (colour #(1 0 0))
+//    (parent l))
+// (translate (vector 3 2 0))
+// (rotate (vector 15 60 70))
+// (with-primitive (build-torus 1 2 10 10)
+//    (colour #(0 1 0))
+//    (parent l))
+// (with-primitive l
+//    (save-primitive "p.obj"))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1430,11 +1444,13 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("save-primitive", "s", argc, argv);
-	string filename=StringFromScheme(argv[0]);
-	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	string filename = StringFromScheme(argv[0]);
+	Primitive *Grabbed = Engine::Get()->Renderer()->Grabbed();
+	unsigned id = Engine::Get()->GrabbedID();
 	if (Grabbed)
 	{
-		PrimitiveIO::Write(filename,Grabbed);
+		PrimitiveIO::Write(filename, Grabbed, id,
+						Engine::Get()->Renderer()->GetSceneGraph());
 	}
 	MZ_GC_UNREG();
     return scheme_void;

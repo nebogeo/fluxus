@@ -13,11 +13,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #ifndef FLUX_PIXEL_PRIMITIVE_IO
 #define FLUX_PIXEL_PRIMITIVE_IO
 
 #include "PrimitiveIO.h"
+#include "SceneGraph.h"
 #include <vector>
 
 namespace Fluxus
@@ -29,8 +30,9 @@ public:
 	PixelPrimitiveIO();
 	virtual ~PixelPrimitiveIO();
 	virtual Primitive *FormatRead(const std::string &filename);
-	virtual bool FormatWrite(const std::string &filename, const Primitive *ob);
-	
+	virtual bool FormatWrite(const std::string &filename, const Primitive *ob, unsigned id,
+			const SceneGraph &world);
+
 private:
 };
 

@@ -65,6 +65,7 @@ public:
 	/// general to all primitives
 	void SetState(State *s)         { assert(s); m_State=*s; }
 	State *GetState()               { return &m_State; }
+	State *GetState() const         { return const_cast<State *>(&m_State); }
 
 	/// Visibility status bitfield - prevents rendering for different cameras
 	unsigned int GetVisibility()    { return m_Visibility; }
