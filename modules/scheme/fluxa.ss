@@ -550,21 +550,13 @@
   (operator ECHO (list in delaytime feedback)))
 
 ;; StartFunctionDoc-en
-;; echo signal-node delay-time-number-or-node feedback-number-or-node
+;; ks freq cutoff resonance
 ;; Returns: node-id-number
 ;; Description:
-;; Creates a echo effect node
+;; Karplus strong "ocillator" node. Plucks virtual strings by filtering white 
+;; noise in a feedback delay loop set resonate at the desired frequency. 
 ;; Example:
-;; (play-now (echo 3 (sine 440)))
-;; EndFunctionDoc
-
-;; StartFunctionDoc-pt
-;; echo nó-signal nó-número-atraso-tempo nó-número-feedback
-;; Retorna: nó-número-id
-;; Descrição:
-;; Cria um nó de efeito echo.
-;; Exemplo:
-;; (play-now (echo 3 (sine 440)))
+;; (play-now (ks (random 1000) 0.9 0.1))
 ;; EndFunctionDoc
 
 (define (ks freq cutoff resonance)

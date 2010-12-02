@@ -17,7 +17,7 @@
 #include "assert.h"
 #include "PixelPrimitive.h"
 #include "PixelPrimitiveIO.h"
-#include "Scenegraph.h"
+#include "SceneGraph.h"
 #include "Trace.h"
 
 using namespace Fluxus;
