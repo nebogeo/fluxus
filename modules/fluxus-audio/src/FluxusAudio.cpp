@@ -379,10 +379,10 @@ Scheme_Object *set_num_frequency_bins(int argc, Scheme_Object **argv)
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_REG();
-	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("set-num-frequency-bins", "number", 0, argc, argv);
+	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("set-num-frequency-bins", "int", 0, argc, argv);
 	if (Audio!=NULL)
 	{
-		Audio->SetNumBars((int)scheme_real_to_double(argv[0]));
+		Audio->SetNumBars(SCHEME_INT_VAL(argv[0]));
 	}
 	MZ_GC_UNREG();
 	return scheme_void;

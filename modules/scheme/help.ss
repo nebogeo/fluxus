@@ -6,7 +6,7 @@
 ;; Example:
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 
 (provide
  init-help

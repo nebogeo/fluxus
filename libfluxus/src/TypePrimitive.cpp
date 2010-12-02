@@ -27,7 +27,8 @@ using namespace Fluxus;
 
 #define FT_SCALE 0.001f
 
-TypePrimitive::TypePrimitive()
+TypePrimitive::TypePrimitive() :
+	m_TTFLoaded(false)
 {
 }
 
@@ -42,9 +43,13 @@ TypePrimitive* TypePrimitive::Clone() const
 
 TypePrimitive::~TypePrimitive()
 {
-	Clear();
-	FT_Done_Face(m_Face);
-	FT_Done_FreeType(m_Library);
+	if (m_TTFLoaded)
+	{
+		Clear();
+		FT_Done_Face(m_Face);
+		FT_Done_FreeType(m_Library);
+		m_TTFLoaded = false;
+	}
 }
 
 bool TypePrimitive::LoadTTF(const string &FontFilename)

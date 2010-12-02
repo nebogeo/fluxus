@@ -65,10 +65,7 @@ public:
 	/// general to all primitives
 	void SetState(State *s)         { assert(s); m_State=*s; }
 	State *GetState()               { return &m_State; }
-
-	/// A hint if we are in the physics system or not
-	void SetPhysicalHint(bool s)    { m_IsPhysical=s; }
-	bool IsPhysicalHint()           { return m_IsPhysical; }
+	State *GetState() const         { return const_cast<State *>(&m_State); }
 
 	/// Visibility status bitfield - prevents rendering for different cameras
 	unsigned int GetVisibility()    { return m_Visibility; }
@@ -103,7 +100,6 @@ private:
 
 
 	///\todo: make these into an enum/bitfield?
-	bool  m_IsPhysical;
 	unsigned int m_Visibility;
 	bool  m_Selectable;
 };

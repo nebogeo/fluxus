@@ -14,18 +14,19 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+#include <iostream>
 #include <cstdlib>
-#include <png.h>
+#include "png.h"
+#include "OpenGL.h"
 #include "PNGLoader.h"
 #include "Trace.h"
-#include <iostream>
 
 using namespace Fluxus;
 using namespace std;
 
-unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned int &h, PixelFormat &pf)
+void PNGLoader::Load(const string &Filename, TexturePainter::TextureDesc &desc)
 {
-	unsigned char *ImageData = NULL;
+	desc.ImageData = NULL;
 	FILE *fp=fopen(Filename.c_str(),"rb");
 	if (!fp || Filename=="")
 	{
@@ -40,19 +41,20 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		{
 			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
 			Trace::Stream<<"Error reading image ["<<Filename<<"]"<<endl;
-			return NULL;
+			fclose(fp);
+			return;
 		}
 
 		png_init_io(png_ptr, fp);
 		png_read_info(png_ptr, info_ptr);
 
-		unsigned long width=info_ptr->width;
-		unsigned long height=info_ptr->height;
-		int bit_depth=info_ptr->bit_depth; 
-		int colour_type=info_ptr->color_type;
+		unsigned long width = png_get_image_width(png_ptr, info_ptr);
+		unsigned long height = png_get_image_height(png_ptr, info_ptr);
+		int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+		int colour_type = png_get_color_type(png_ptr, info_ptr);
 		png_bytep *row_pointers=new png_bytep[height];
 		unsigned int rb = png_get_rowbytes(png_ptr, info_ptr);
-		
+
 		for (unsigned long row=0; row<height; row++)
 		{
 			row_pointers[row] = new png_byte[rb];
@@ -63,13 +65,13 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		fclose(fp);
 
 		// make a new contiguous array to store the pixels
-		ImageData=new unsigned char[rb*height];
+		desc.ImageData=new unsigned char[rb*height];
 		int p=0;
 		for (int row = height-1; row>=0; row--) // flip around to fit opengl
 		{
 			for (unsigned int i=0; i<rb; i++)
 			{
-				ImageData[p]=(unsigned char)(row_pointers[row])[i];
+				desc.ImageData[p]=(unsigned char)(row_pointers[row])[i];
 				p++;
 			}
 		}
@@ -82,28 +84,31 @@ unsigned char *PNGLoader::Load(const string &Filename, unsigned int &w, unsigned
 		delete[] row_pointers;
 
 		// convert the format to fluxus texture format stuff
-		w=width;
-		h=height;
-		
+		desc.Width = width;
+		desc.Height = height;
+
 		switch (colour_type)
 		{
-			case PNG_COLOR_TYPE_RGB : pf=RGB; break;
-			case PNG_COLOR_TYPE_RGB_ALPHA : pf=RGBA; break;
-        	default : 
-			{
-				Trace::Stream<<"PNG pixel format not supported : "<<(int)png_ptr->color_type<<" "<<Filename<<endl;
-				delete[] ImageData;
-				ImageData=NULL;
-			}
+			case PNG_COLOR_TYPE_RGB:
+						desc.Format = desc.InternalFormat = GL_RGB;
+						desc.Size = width * height * 3;
+						break;
+			case PNG_COLOR_TYPE_RGB_ALPHA:
+						desc.Format = desc.InternalFormat = GL_RGBA;
+						desc.Size = width * height * 4;
+						break;
+			default:
+						Trace::Stream<<"PNG pixel format not supported : "<<(int)png_get_color_type(png_ptr, info_ptr)<<" "<<Filename<<endl;
+						delete[] desc.ImageData;
+						desc.ImageData=NULL;
+						break;
         }
 
 		png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 	}
-
-	return ImageData;
 }
 
-void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, PixelFormat pf, unsigned char *data)
+void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, int pf, unsigned char *data)
 {
 	FILE *f;
 	png_structp ppng;
@@ -112,7 +117,7 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 	unsigned int i;
 
 	unsigned int numchannels = 3;
-	if (pf==RGBA) numchannels = 4;
+	if (pf==GL_RGBA) numchannels = 4;
 
 	if (!(f = fopen (Filename.c_str(), "wb")))
 	{
@@ -145,13 +150,13 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 
 	png_init_io (ppng, f);
 
-	if (pf==RGB)
+	if (pf==GL_RGB)
 	{
 		png_set_IHDR (ppng, pinfo, w, h, 8, PNG_COLOR_TYPE_RGB,
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
 		PNG_FILTER_TYPE_BASE);
 	}
-	else if (pf==RGBA)
+	else if (pf==GL_RGBA)
 	{
 		png_set_IHDR (ppng, pinfo, w, h, 8, PNG_COLOR_TYPE_RGBA,
 		PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
@@ -169,8 +174,8 @@ void PNGLoader::Save(const string &Filename, unsigned int w, unsigned int h, Pix
 	atext[0].text = const_cast<char *>("made with fluxus");
 	atext[0].compression = PNG_TEXT_COMPRESSION_NONE;
 	#ifdef PNG_iTXt_SUPPORTED
-	text_ptr[0].lang = NULL;
-	text_ptr[1].lang = NULL;
+	atext[0].lang = NULL;
+	atext[1].lang = NULL;
 	#endif
 	png_set_text (ppng, pinfo, atext, 2);
 	png_write_info (ppng, pinfo);

@@ -71,6 +71,7 @@ const State &State::operator=(const State &other)
 	SourceBlend=other.SourceBlend;
 	DestinationBlend=other.DestinationBlend;
 	WireColour=other.WireColour;
+	NormalColour=other.NormalColour;
 	WireOpacity=other.WireOpacity;
 	ColourMode=other.ColourMode;
 	Transform=other.Transform;
@@ -82,7 +83,7 @@ const State &State::operator=(const State &other)
 	{
 		Shader->IncRef();
 	}
-	for (int n=0; n<=MAX_TEXTURES; n++)
+	for (int n=0; n<MAX_TEXTURES; n++)
 	{
 		Textures[n]=other.Textures[n];
 		TextureStates[n]=other.TextureStates[n];
@@ -98,14 +99,6 @@ State::~State()
 
 void State::Apply()
 {
-	/*
-	if (Target != NULL)
-	{
-		cout << "state bind target " << Target << endl;
-		Target->Bind();
-	}
-	*/
-
 	glMultMatrixf(Transform.arr());
 	if (Opacity != 1.0f) Colour.a=Ambient.a=Emissive.a=Specular.a=Opacity;
 	if (WireOpacity != 1.0f) WireColour.a=WireOpacity;

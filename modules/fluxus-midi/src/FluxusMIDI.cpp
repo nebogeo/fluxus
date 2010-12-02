@@ -18,10 +18,12 @@
 #include <escheme.h>
 #include <iostream>
 #include "MIDIListener.h"
+#include "MIDIOut.h"
 
 using namespace std;
 
-MIDIListener *midilistener = NULL;
+static MIDIListener *midilistener = NULL;
+static MIDIOut *midiout = NULL;
 
 // StartSectionDoc-en
 // midi
@@ -67,9 +69,9 @@ MIDIListener *midilistener = NULL;
 
 // StartFunctionDoc-en
 // midi-info
-// Returns: a list of (midi-port-number . midi-port-name-string) pairs
+// Returns: a list of two lists of (midi-port-number . midi-port-name-string) pairs
 // Description:
-// Returns information about the available MIDI input ports.
+// Returns information about the available MIDI input and output ports.
 // Example:
 // (midi-info)
 // EndFunctionDoc
@@ -86,6 +88,8 @@ MIDIListener *midilistener = NULL;
 Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
+
+	// input ports
 	if (midilistener == NULL)
 	{
 		midilistener = new MIDIListener();
@@ -114,37 +118,71 @@ Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 		MZ_GC_UNREG();
 	}
 
-	ret = scheme_build_list(port_count, a);
+	Scheme_Object *input_ports = scheme_build_list(port_count, a);
+
+	// output ports
+	if (midiout == NULL)
+	{
+		midiout = new MIDIOut();
+	}
+
+	port_names = midiout->info();
+	port_count = port_names.size();
+	Scheme_Object **b = (Scheme_Object **)scheme_malloc(port_count *
+							sizeof(Scheme_Object *));
+
+	for (int i = 0; i < port_count; i++)
+	{
+		Scheme_Object *port_num = NULL;
+		Scheme_Object *port_name = NULL;
+
+		MZ_GC_DECL_REG(2);
+		MZ_GC_VAR_IN_REG(0, port_num);
+		MZ_GC_VAR_IN_REG(1, port_name);
+		MZ_GC_REG();
+
+		port_num = scheme_make_integer(i);
+		port_name = scheme_make_symbol(port_names[i].c_str());
+
+		b[i] = scheme_make_pair(port_num, port_name);
+
+		MZ_GC_UNREG();
+	}
+
+	Scheme_Object *output_ports = scheme_build_list(port_count, b);
+
+	// combine the two lists
+	ret = scheme_make_pair(input_ports, scheme_make_pair(output_ports, scheme_null));
 
 	return ret;
 }
 
 // StartFunctionDoc-en
-// midi-init port-number
+// midiin-open port-number
 // Returns: void
 // Description:
 // Opens the specified MIDI input port.
 // Example:
-// (midi-init 1)
+// (midiin-open 1)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// midi-init número-porta
+// midiin-open número-porta
 // Retorna: void
 // Descrição:
 // Abre a porta de entrada MIDI especificada.
 // Exemplo:
-// (midi-init 1)
+// (midiin-open 1)
 // EndFunctionDoc
 
-Scheme_Object *midi_init(int argc, Scheme_Object **argv)
+Scheme_Object *midiin_open(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, argv);
 	MZ_GC_REG();
 
 	if (!SCHEME_NUMBERP(argv[0]))
-		scheme_wrong_type("midi-init", "number", 0, argc, argv);
+		scheme_wrong_type("midiin-open", "number", 0, argc, argv);
 	int port = (int)scheme_real_to_double(argv[0]);
 
 	if (!midilistener)
@@ -153,12 +191,83 @@ Scheme_Object *midi_init(int argc, Scheme_Object **argv)
 	}
 	else
 	{
+		midilistener->close();
 		midilistener->open(port);
 	}
 
 	MZ_GC_UNREG();
     return scheme_void;
+}
 
+// StartFunctionDoc-en
+// midiout-open port-number
+// Returns: void
+// Description:
+// Opens the specified MIDI output port.
+// Example:
+// (midiout-open 1)
+// EndFunctionDoc
+
+Scheme_Object *midiout_open(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("midiout-open", "number", 0, argc, argv);
+	int port = (int)scheme_real_to_double(argv[0]);
+
+	if (!midiout)
+	{
+		midiout = new MIDIOut(port);
+	}
+	else
+	{
+		midiout->close();
+		midiout->open(port);
+	}
+
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// midiin-close
+// Returns: void
+// Description:
+// Closes the MIDI input port opened.
+// Example:
+// (midiin-close)
+// EndFunctionDoc
+
+Scheme_Object *midiin_close(int argc, Scheme_Object **argv)
+{
+	if (midilistener != NULL)
+	{
+		midilistener->close();
+	}
+
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// midiout-close
+// Returns: void
+// Description:
+// Closes the MIDI outpu port opened.
+// Example:
+// (midiout-close)
+// EndFunctionDoc
+
+Scheme_Object *midiout_close(int argc, Scheme_Object **argv)
+{
+	if (midiout != NULL)
+	{
+		midiout->close();
+	}
+
+    return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -306,6 +415,74 @@ Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// midi-program channel-number
+// Returns: program-value-number
+// Description:
+// Returns the program value.
+// Example:
+// (midi-program 0)
+// EndFunctionDoc
+
+Scheme_Object *midi_program(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+
+	if (!SCHEME_NUMBERP(argv[0]))
+		scheme_wrong_type("midi-program", "number", 0, argc, argv);
+
+	int channel = (int)scheme_real_to_double(argv[0]);
+
+	if (midilistener != NULL)
+	{
+		int val = midilistener->get_program(channel);
+		ret = scheme_make_integer(val);
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// midi-cc-event
+// Returns: #(channel controller value) or #f
+// Description:
+// Returns the next event from the MIDI note event queue or #f if the queue is empty.
+// Example:
+// (midi-cc-event)
+// EndFunctionDoc
+
+Scheme_Object *midi_cc_event(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(2, ret);
+	MZ_GC_REG();
+
+	ret = scheme_false;
+	if (midilistener != NULL)
+	{
+		MIDIEvent *evt = midilistener->get_cc_event();
+		if (evt)
+		{
+			ret = scheme_make_vector(3, scheme_void);
+			SCHEME_VEC_ELS(ret)[0] = scheme_make_integer(evt->channel);
+			SCHEME_VEC_ELS(ret)[1] = scheme_make_integer(evt->controller);
+			SCHEME_VEC_ELS(ret)[2] = scheme_make_integer(evt->value);
+		}
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
 // midi-peek
 // Returns: msg-string
 // Description:
@@ -337,6 +514,49 @@ Scheme_Object *midi_peek(int argc, Scheme_Object **argv)
 	}
 }
 
+// StartFunctionDoc-en
+// midi-send
+// Returns: void
+// Description:
+// Immediately send a single message out an open MIDI output port.
+// Example:
+// (midiout-open 0)
+// (midi-send 144 64 90)
+// (sleep 1)
+// (midi-send 128 64 40)
+// (midiout-close)
+// EndFunctionDoc
+
+Scheme_Object *midi_send(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	for (int n = 0; n < argc; n++)
+	{
+		if (!SCHEME_INTP(argv[n]))
+		{
+			scheme_wrong_type("midi-send", "int", n, argc, argv);
+			break;
+		}
+	}
+
+	if (midiout != NULL)
+	{
+		std::vector<unsigned char> message;
+		for (int n = 0; n < argc; n++)
+		{
+			message.push_back(SCHEME_INT_VAL(argv[n]));
+		}
+
+		midiout->send(message);
+	}
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
 #ifdef STATIC_LINK
 Scheme_Object *midi_scheme_reload(Scheme_Env *env)
 #else
@@ -352,8 +572,16 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	// add all the modules from this extension
 	menv = scheme_primitive_module(scheme_intern_symbol("fluxus-midi"), env);
 
-	scheme_add_global("midi-init",
-			scheme_make_prim_w_arity(midi_init, "midi-init", 1, 1), menv);
+	scheme_add_global("midiin-open",
+			scheme_make_prim_w_arity(midiin_open, "midiin-open", 1, 1), menv);
+	scheme_add_global("midiin-close",
+			scheme_make_prim_w_arity(midiin_close, "midiin-close", 0, 0), menv);
+
+	scheme_add_global("midiout-open",
+		scheme_make_prim_w_arity(midiout_open, "midiout-open", 1, 1), menv);
+	scheme_add_global("midiout-close",
+			scheme_make_prim_w_arity(midiout_close, "midiout-close", 0, 0), menv);
+
 	scheme_add_global("midi-info",
 			scheme_make_prim_w_arity(midi_info, "midi-info", 0, 0), menv);
 	scheme_add_global("midi-cc",
@@ -364,6 +592,13 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 			scheme_make_prim_w_arity(midi_note, "midi-note", 0, 0), menv);
 	scheme_add_global("midi-peek",
 			scheme_make_prim_w_arity(midi_peek, "midi-peek", 0, 0), menv);
+	scheme_add_global("midi-program",
+			scheme_make_prim_w_arity(midi_program, "midi-program", 1, 1), menv);
+	scheme_add_global("midi-cc-event",
+			scheme_make_prim_w_arity(midi_cc_event, "midi-cc-event", 0, 0), menv);
+
+	scheme_add_global("midi-send",
+			scheme_make_prim_w_arity(midi_send, "midi-send", 1, 3), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();

@@ -24,12 +24,22 @@ using namespace std;
 
 /** maximum number of midi notes stored */
 static const unsigned MAX_MIDI_NOTE_COUNT = 256;
+/** maximum number of midi events stored.. there could be *a lot* of events,
+    so this size is intensionally left small. **/
+static const unsigned MAX_MIDI_EVENT_COUNT = 16;
 
 MIDINote::MIDINote(int _on_off, int _channel, int _note, int _velocity) :
 	on_off(_on_off),
 	channel(_channel),
 	note(_note),
 	velocity(_velocity)
+{
+}
+
+MIDIEvent::MIDIEvent(int _channel, int _controller, int _value) :
+	channel(_channel),
+	controller(_controller),
+	value(_value)
 {
 }
 
@@ -51,6 +61,10 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	/* allocate array for controller values and clear it */
 	cntrl_values = new unsigned char[MAX_CNTRL];
 	fill(cntrl_values, cntrl_values + MAX_CNTRL, 0);
+
+	/* likewise for the per channel "program" values */
+	pgm_values = new unsigned char[MAX_CHAN];
+	fill(pgm_values, pgm_values + MAX_CHAN, 0);
 
 	pthread_mutex_init(&mutex, NULL);
 }
@@ -172,6 +186,27 @@ void MIDIListener::open(int port)
 }
 
 /**
+ * Closes MIDI port.
+ **/
+void MIDIListener::close()
+{
+	if (midiin == NULL)
+	{
+		return;
+	}
+
+	try
+	{
+		midiin->closePort();
+	}
+	catch (RtError &error)
+	{
+		error.printMessage();
+		return;
+	}
+}
+
+/**
  * Returns controller values.
  * \param channel MIDI channel
  * \param cntrl_number controller number
@@ -188,6 +223,26 @@ int MIDIListener::get_cc(int channel, int cntrl_number)
 
 	pthread_mutex_lock(&mutex);
 	int v = cntrl_values[(channel << 7) + cntrl_number];
+	pthread_mutex_unlock(&mutex);
+	return v;
+}
+
+/**
+ * Returns program value.
+ * \param channel MIDI channel
+ * \retval int program value
+ **/
+int MIDIListener::get_program(int channel)
+{
+	if (midiin == NULL)
+	{
+		init_midi();
+		if (midiin == NULL)
+			return 0;
+	}
+
+	pthread_mutex_lock(&mutex);
+	int v = pgm_values[channel];
 	pthread_mutex_unlock(&mutex);
 	return v;
 }
@@ -257,6 +312,46 @@ MIDINote *MIDIListener::get_note(void)
 }
 
 /**
+ * Returns next MIDI controller event from event queue.
+ * \retval MIDIEvent* pointer to MIDI Event or NULL if the queue is empty
+ **/
+MIDIEvent *MIDIListener::get_cc_event(void)
+{
+	static MIDIEvent evt;
+
+	pthread_mutex_lock(&mutex);
+	if (midi_events.empty())
+	{
+		pthread_mutex_unlock(&mutex);
+		return NULL;
+	}
+
+	MIDIEvent *n = midi_events.front();
+	midi_events.pop_front();
+	pthread_mutex_unlock(&mutex);
+
+	evt.channel = n->channel;
+	evt.value = n->value;
+	evt.controller = n->controller;
+	delete n;
+	return &evt;
+}
+
+/**
+ * Adds a new event to the event queue.
+ **/
+void MIDIListener::add_event(int channel, int controller, int value)
+{
+	MIDIEvent *n = new MIDIEvent(channel,controller,value);
+	midi_events.push_back(n);
+	while (midi_events.size() > MAX_MIDI_EVENT_COUNT)
+	{
+		delete midi_events.front();
+		midi_events.pop_front();
+	}
+}
+
+/**
  * Adds a new note to the event queue.
  **/
 void MIDIListener::add_note(int on_off, int ch, int note, int velocity)
@@ -281,6 +376,16 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 
 	switch (status)
 	{
+		case MIDIListener::MIDI_PROGRAM_CHANGE:
+			if (count == 2)
+			{
+				int program_number = (*message)[1];
+				pthread_mutex_lock(&mutex);
+				pgm_values[ch] = program_number;
+				pthread_mutex_unlock(&mutex);
+			}
+			break;
+
 		case MIDIListener::MIDI_CONTROLLER:
 			if (count == 3)
 			{
@@ -290,6 +395,7 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 				int value = (*message)[2]; /* controller value */
 				pthread_mutex_lock(&mutex);
 				cntrl_values[i] = value;
+				add_event(ch, cntrl_number, value);
 				pthread_mutex_unlock(&mutex);
 			}
 			break;

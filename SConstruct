@@ -4,7 +4,7 @@
 #
 # Checks all dependencies needed, builds the fluxus canvas
 # application, then calls the sconscripts for libfluxus and
-# the fluxus PLT modules
+# the fluxus Racket modules
 
 import os, os.path, sys, commands, subprocess
 
@@ -14,9 +14,6 @@ FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
 Target = "fluxus"
 
-# changed prefix and pltprefix so they can be invoked at runtime
-# like scons Prefix=/usr PLTPrefix=/usr instead of default /usr/local
-
 DESTDIR = ARGUMENTS.get('DESTDIR', '')
 # this makes DESTDIR relative to root of the source tree, no matter
 # where we are
@@ -25,23 +22,24 @@ if len(DESTDIR)>0 and DESTDIR[0] != "/":
 
 if sys.platform == 'darwin':
 	AddOption('--app', action='store_true', help='Build OSX application')
-	file = os.popen('dirname "`which mzscheme`"')
-	PLTBin = file.read()
+	file = os.popen('dirname "`which racket`"')
+	RacketBin = file.read()
 	file.close()
 	Prefix = ARGUMENTS.get('Prefix','/opt/local')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix', PLTBin[:-5])
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix', RacketBin[:-5])
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
+
 elif sys.platform == 'win32':
 	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix','c:/Program Files/PLT')
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix','c:/Program Files/Racket')
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
-	PLTPrefix = ARGUMENTS.get('PLTPrefix','/usr/local')
-	PLTInclude = ARGUMENTS.get('PLTInclude', PLTPrefix + "/include/plt")
-	PLTLib = ARGUMENTS.get('PLTLib', PLTPrefix + "/lib/plt")
+	RacketPrefix = ARGUMENTS.get('RacketPrefix','/usr/local')
+	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/racket")
+	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/racket")
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
@@ -51,18 +49,26 @@ CollectsInstall = DESTDIR + FluxusCollectsLocation + "/fluxus-" + FluxusVersion
 DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 
 if sys.platform == 'darwin' or sys.platform == 'win32':
-        PLTCollectsLocation = PLTPrefix + "/collects/"
+        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 else:
-        PLTCollectsLocation = PLTLib + "/collects/"
+        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketLib  + "/collects/")
 
 if sys.platform == 'darwin' and GetOption('app'):
-        PLTCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
-        FluxusCollectsLocation = '/Applications/Fluxus.app/Contents/Resources/collects/'
-        DataLocation = '/Applications/Fluxus.app/Contents/Resources'
+		RacketCollectsLocation = 'collects/' # not used relative racket collects path and
+		DataLocation = 'Resources' 			 # data location is determined in Interpreter.cpp
+		FluxusCollectsLocation = 'collects/'
+		CollectsInstall = FluxusCollectsLocation + '/fluxus-' + FluxusVersion
+
+# run racket to get (path->string (system-library-subpath))
+file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
+archpath = file.read()
+file.close()
+
+BinaryModulesLocation = CollectsInstall + "/compiled/native/" + archpath
 
 LibPaths     = [
-        PLTLib,
-        PLTLib+"/..",
+        RacketLib,
+        RacketLib+"/..",
         "/usr/lib",
         "../../libfluxus"]
 
@@ -71,7 +77,7 @@ IncludePaths = [
         "/usr/include",
         "/usr/local/include/freetype2",  # arg - freetype needs to be
         "/usr/include/freetype2",        # on the include path :(
-        PLTInclude,
+        RacketInclude,
         "../../libfluxus/src"]
 
 ################################################################################
@@ -81,22 +87,24 @@ paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconve
 
 env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
                   VERSION_NUM = FluxusVersion)
-env.MergeFlags(ARGUMENTS.get('CCFLAGS', ''))
-env.MergeFlags(ARGUMENTS.get('LDFLAGS', ''))
+env.MergeFlags(ARGUMENTS.get('CCFLAGS', '').split())
+env.MergeFlags(ARGUMENTS.get('LDFLAGS', '').split())
 
 if env['PLATFORM'] == 'win32':
 	IncludePaths += [ "/MinGW/include/freetype2" ]
 	LibPaths += [ "/MinGW/lib" ]
 
 if env['PLATFORM'] == 'darwin':
-	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
-	LibPaths += ['/opt/local/lib']
+	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2',
+                   '/usr/X11/include', '/usr/X11/include/freetype2']
+	LibPaths += ['/usr/X11/lib']
+	if os.path.exists('/opt/local/lib'): LibPaths += ['/opt/local/lib']
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
 env.Append(CCFLAGS=' -DFLUXUS_MAJOR_VERSION='+MajorVersion)
 env.Append(CCFLAGS=' -DFLUXUS_MINOR_VERSION='+MinorVersion)
-env.Append(CCFLAGS=" -DPLT_COLLECTS_LOCATION="+"\"\\\""+PLTCollectsLocation+"\"\\\"")
+env.Append(CCFLAGS=" -DRACKET_COLLECTS_LOCATION="+"\"\\\""+RacketCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DFLUXUS_COLLECTS_LOCATION="+"\"\\\""+FluxusCollectsLocation+"\"\\\"")
 env.Append(CCFLAGS=" -DDATA_LOCATION="+"\"\\\""+DataLocation+"\"\\\"")
 
@@ -130,25 +138,27 @@ if ARGUMENTS.get("STATIC_EVERYTHING","0")=="1":
 	env.Append(CCFLAGS=' -DSTATIC_LINK')
 
 static_ode=int(ARGUMENTS.get("STATIC_ODE","0"))
+racket_framework=int(ARGUMENTS.get("RACKET_FRAMEWORK", "1"))
+addons=int(ARGUMENTS.get('ADDONS', '1'))
 
 # need to do this to get scons to link plt's mzdyn.o
 env["STATIC_AND_SHARED_OBJECTS_ARE_THE_SAME"]=1
-MZDYN = PLTLib + "/mzdyn.o"
+MZDYN = RacketLib + "/mzdyn.o"
 
 if env['PLATFORM'] == 'win32':
 	# need to do this to get scons to link plt's mzdyn.o
-	MZDYN = PLTLib + "/gcc/mzdyn.o"
+	MZDYN = RacketLib + "/gcc/mzdyn.o"
 
 	if ARGUMENTS.get("3M","1")=="1":
 		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-		MZDYN = PLTLib + "/gcc/mzdyn3m.o"
+		MZDYN = RacketLib + "/gcc/mzdyn3m.o"
 else:
 	# need to do this to get scons to link plt's mzdyn.o
-	MZDYN = PLTLib + "/mzdyn.o"
+	MZDYN = RacketLib + "/mzdyn.o"
 	
 	if ARGUMENTS.get("3M","1")=="1":
 		env.Append(CCFLAGS=' -DMZ_PRECISE_GC')
-		MZDYN = PLTLib + "/mzdyn3m.o"
+		MZDYN = RacketLib + "/mzdyn3m.o"
 
 ################################################################################
 # Figure out which libraries we are going to need
@@ -157,23 +167,20 @@ else:
 # to be passed to the CheckLibWithHeader(...) at configure time.
 # We may add extra libraries later on per platform basis
 LibList = [["m", "math.h"],
-                ["pthread", "pthread.h"],
-                ["dl", "stdio.h"],
-                ["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
-                ["tiff", "tiff.h"],
-                ["freetype", "ft2build.h"],
-                ["z", "zlib.h"],
-                ["png", "png.h"],
-                ["ode", "ode/ode.h"],
-                ["sndfile", "sndfile.h"],
-                ["fftw3", "fftw3.h"],
-                ["lo", "lo/lo.h"],
-                ["GLEW", "GL/glew.h"]]
-
-if ARGUMENTS.get('MZNAME','') == 'racket':
-        LibList += [["racket3m", PLTInclude + "/scheme.h"]]
-else:
-        LibList += [["mzscheme3m", PLTInclude + "/scheme.h"]]
+			["pthread", "pthread.h"],
+			["dl", "stdio.h"],
+			["jpeg", ["stdio.h", "stdlib.h", "jpeglib.h"]],
+			["tiff", "tiff.h"],
+			["freetype", "ft2build.h"],
+			["z", "zlib.h"],
+			["png", "png.h"],
+			["ode", "ode/ode.h"],
+			["sndfile", "sndfile.h"],
+			["fftw3", "fftw3.h"],
+			["lo", "lo/lo.h"],
+			["GLEW", "GL/glew.h"],
+			["racket3m", "scheme.h"],
+			["jack", "jack/jack.h"]]
 
 if env['PLATFORM'] == 'win32':
 	LibList = [["m", "math.h"],
@@ -183,7 +190,7 @@ if env['PLATFORM'] == 'win32':
 			["glu32", "GL/glu.h"],
 			["opengl32", "GL/gl.h"],
 			["openal32", "AL/al.h"],
-			["libmzsch3m_6ncc9s", PLTInclude + "/scheme.h"]]
+			["libmzsch3m_6ncc9s", RacketInclude + "/scheme.h"]]
 
 if env['PLATFORM'] == 'posix':
         env.Prepend(LINKFLAGS = ["-rdynamic"])
@@ -193,21 +200,6 @@ if env['PLATFORM'] == 'posix':
                     ["asound", "alsa/asoundlib.h"],
                     ["openal", "AL/al.h"]]
 
-elif env['PLATFORM'] == 'darwin':
-	# add jack as a library if not making an app
-		if not GetOption('app'):
-			LibList += [["jack", "jack/jack.h"]]
-		env.Append(FRAMEWORKPATH = [PLTLib])
-		env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
-
-		if GetOption('app'):
-			env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
-			# FIXME: check if Jackmp is available when making an app
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio CoreFoundation PLT_MrEd Jackmp"))
-		else:
-			env.Append(FRAMEWORKS = Split("GLUT OpenGL CoreAudio PLT_MrEd"))
-
-
 ################################################################################
 # Make sure we have these libraries availible
 
@@ -215,14 +207,25 @@ if not GetOption('clean'):
         print '--------------------------------------------------------'
         print 'Fluxus: Configuring Build Environment'
         print '--------------------------------------------------------'
+        # detect ode precision
+        if not GetOption('clean'):
+          try:
+            odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
+            ode_str = odec.communicate()
+            if isinstance(ode_str[0], str):
+              env.MergeFlags(ode_str[0])
+          except:
+            print 'WARNING: unable to run ode-config, cannot detect ODE precision'
+
         conf = Configure(env)
 
-        # check PLT and OpenAL frameworks on osx
+        # check Racket and OpenAL frameworks on osx
         if env['PLATFORM'] == 'darwin':
                 if not conf.CheckHeader('scheme.h'):
-                        print "ERROR: 'mzscheme3m' must be installed!"
+                        print "ERROR: 'racket3m' must be installed!"
                         Exit(1)
-                LibList = filter(lambda x: x[0] != 'mzscheme3m', LibList)
+                if racket_framework:
+                  LibList = filter(lambda x: x[0] != 'racket3m', LibList)
                 # OpenAL should be installed everywhere
                 if not conf.CheckHeader('OpenAL/al.h'):
                         print "ERROR: 'OpenAL' must be installed!"
@@ -247,27 +250,34 @@ if not GetOption('clean'):
         # ... but we shouldn't forget to add them to LIBS manually
         env.Replace(LIBS = [rec[0] for rec in LibList])
 
-# detect ode precision
-if not GetOption('clean'):
-	try:
-		odec = subprocess.Popen(['ode-config', '--cflags', '--libs'], stdout=subprocess.PIPE)
-		ode_str = odec.communicate()
-		if isinstance(ode_str[0], str):
-			env.MergeFlags(ode_str[0])
-	except:
-		print 'WARNING: unable to run ode-config, cannot detect ODE precision'
-
 # link ode statically
 if static_ode and not GetOption('clean'):
 	if 'ode' in env['LIBS']:
 		env['LIBS'].remove('ode')
 		env['LIBS'].append(File('%s/lib/libode.a' % Prefix))
 
-# replace libs with static libs if building an osx app
-if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
-		env['LIBS'].remove(l)
-		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+if env['PLATFORM'] == 'darwin':
+	env.Append(FRAMEWORKPATH = [RacketLib])
+	env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
+
+	if GetOption('app'):
+		# replace libs with static libs if building an osx app
+		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
+			env['LIBS'].remove(l)
+			env['LIBS'].append(File('%s/lib/lib%s.a' % (Prefix, l)))
+
+		env.Append(CCFLAGS = ' -D__APPLE_APP__ -DRELATIVE_COLLECTS')
+		# add jack as a framework
+		env['LIBS'].remove('jack')
+		# FIXME: check if Jackmp is available when making an app
+		frameworks = Split("GLUT OpenGL CoreAudio CoreFoundation Jackmp")
+		if racket_framework: frameworks += ['Racket']
+		env.Append(FRAMEWORKS = frameworks)
+	else:
+		frameworks = Split("GLUT OpenGL CoreAudio")
+		if racket_framework: frameworks += ['Racket']
+		env.Append(FRAMEWORKS = frameworks)
+
 
 ################################################################################
 # Build the fluxus application
@@ -279,9 +289,9 @@ if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
 		# using popen as it's crossplatform 
-		mzc_status = os.popen("mzc --c-mods src/base.c \
-			++lib scheme/base  \
-			++lib scheme/base/lang/reader  \
+		raco_status = os.popen("raco ctool --c-mods src/base.c \
+			++lib racket/base  \
+			++lib racket/base/lang/reader  \
 			++lib xml/xml \
 			++lib compiler \
 			++lib mzscheme \
@@ -289,11 +299,10 @@ if not GetOption('clean'):
 			++lib setup   \
 			++lib config").close()
 	else:
-		#mzc_status = os.popen("mzc --c-mods src/base.c ++lib scheme/base").close()
-		mzc_status = subprocess.call(['mzc', '--c-mods', 'src/base.c', '++lib', 'scheme/base'])
+		raco_status = subprocess.call(['raco', 'ctool', '--c-mods', 'src/base.c', '++lib', 'racket/base'])
 
-	if mzc_status != 0:
-		print "ERROR: Failed to run command 'mzc'"
+	if raco_status != 0:
+		print "ERROR: Failed to run command 'raco'"
 		Exit(1)
 
 
@@ -368,16 +377,14 @@ app_env.Program(source = Source, target = Target)
 # Build everything else
 # call the core library builder and the scheme modules
 
-if env['PLATFORM'] == 'win32':
-	SConscript(dirs = Split("libfluxus modules"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-				   "static_modules", "static_ode", "Prefix"])
+build_dirs = ['libfluxus', 'modules']
+if env['PLATFORM'] != 'win32':
+  build_dirs += ['fluxa']
+  if addons: build_dirs += ['addons']
 
-else:
-	SConscript(dirs = Split("libfluxus modules fluxa addons"),
-           exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
-			   "static_modules", "static_ode", "Prefix"])
-
+SConscript(dirs = build_dirs,
+         exports = ["env", "CollectsInstall", "DataInstall", "MZDYN", "BinInstall", \
+         "BinaryModulesLocation", "static_modules", "static_ode", "racket_framework", "Prefix"])
 
 ################################################################################
 # documentation
@@ -395,9 +402,31 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from osxbundle import *
         TOOL_BUNDLE(env)
         # add dynamic libs
-        frameworks = [PLTLib + '/PLT_MrEd.framework',
-                     '/Library/Frameworks/Jackmp.framework']
-        dylibs = [ '/opt/local/lib/liblo.dylib']
+        frameworks = ['/Library/Frameworks/Jackmp.framework']
+        if racket_framework:
+            frameworks += [RacketLib + '/Racket.framework']
+        dylibs = [ '%s/lib/liblo.dylib' % Prefix]
+
+        resources = [['modules/material/fonts/', 'material/fonts/'],
+           ['modules/material/meshes/', 'material/meshes/'],
+           ['modules/material/shaders/', 'material/shaders/'],
+           ['modules/material/textures/', 'material/textures/'],
+           ['modules/scheme/', CollectsInstall],
+           ['modules/fluxus-engine/fluxus-engine_ss.dylib',
+             BinaryModulesLocation + '/fluxus-engine_ss.dylib'],
+           ['modules/fluxus-audio/fluxus-audio_ss.dylib',
+             BinaryModulesLocation + '/fluxus-audio_ss.dylib'],
+           ['modules/fluxus-midi/fluxus-midi_ss.dylib',
+             BinaryModulesLocation + '/fluxus-midi_ss.dylib'],
+           ['modules/fluxus-osc/fluxus-osc_ss.dylib',
+             BinaryModulesLocation + '/fluxus-osc_ss.dylib'],
+           ['modules/fluxus-openal/fluxus-openal_ss.dylib',
+             BinaryModulesLocation + '/fluxus-openal_ss.dylib']]
+        if addons:
+            resources += [['addons/video/fluxus-video_ss.dylib',
+                           BinaryModulesLocation + '/fluxus-video_ss.dylib'],
+                         ['addons/artkp/fluxus-artkp_ss.dylib',
+                           BinaryModulesLocation + '/fluxus-artkp_ss.dylib']]
 
         env.Alias('app', env.MakeBundle('Fluxus.app',
                                         Target,
@@ -405,28 +434,9 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         'packages/macos/fluxus-Info.plist',
                                         dylibs = dylibs,
                                         frameworks = frameworks,
-                                        resources=[['modules/material/fonts/', 'material/fonts/'],
-                                                   ['modules/material/meshes/', 'material/meshes/'],
-                                                   ['modules/material/shaders/', 'material/shaders/'],
-                                                   ['modules/material/textures/', 'material/textures/'],
-                                                   ['modules/scheme/', 'collects/fluxus-%s/' % FluxusVersion],
-                                                   ['modules/fluxus-engine/fluxus-engine_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-engine_ss.dylib'],
-                                                   ['modules/fluxus-audio/fluxus-audio_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-audio_ss.dylib'],
-                                                   ['modules/fluxus-midi/fluxus-midi_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-midi_ss.dylib'],
-                                                   ['modules/fluxus-osc/fluxus-osc_ss.dylib',
-                                                       'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-osc_ss.dylib'],
-												   ['modules/fluxus-openal/fluxus-openal_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-openal_ss.dylib'],
-												   ['addons/video/fluxus-video_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-video_ss.dylib'],
-												   ['addons/artkp/fluxus-artkp_ss.dylib',
-													   'collects/fluxus-' + FluxusVersion + '/compiled/native/i386-macosx/3m/fluxus-artkp_ss.dylib']],
-
-                                        typecode='APPL',
-                                        icon_file='packages/macos/fluxus.icns'))
+                                        resources = resources,
+                                        typecode = 'APPL',
+                                        icon_file = 'packages/macos/fluxus.icns'))
         # build dmg
         '''
         env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
@@ -439,7 +449,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 
         # fluxa
         frameworks = [ '/Library/Frameworks/Jackmp.framework']
-        dylibs = [ '/opt/local/lib/liblo.dylib']
+        dylibs = [ '%s/lib/liblo.dylib' % Prefix]
         env.Alias('app', env.MakeBundle('Fluxa.app',
                                         'fluxa/fluxa',
                                         'key',

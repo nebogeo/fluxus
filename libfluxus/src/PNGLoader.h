@@ -18,21 +18,20 @@
 #define N_PNG
 
 #include <iostream>
-#include "string"
+#include <string>
+#include "TexturePainter.h"
 
 using namespace std;
 
 namespace Fluxus
 {
 
-enum PixelFormat {NONE,RGB,RGBA};
-
 class PNGLoader
 {
 public:
 	/// A utility for loading png files and returns the raw pixel data
-	static unsigned char *Load(const string &Filename, unsigned int &w, unsigned int &h, PixelFormat &p);
-	static void Save(const string &Filename, unsigned int w, unsigned int h, PixelFormat p, unsigned char *);
+	static void Load(const string &Filename, TexturePainter::TextureDesc &desc);
+	static void Save(const string &Filename, unsigned int w, unsigned int h, int p, unsigned char *);
 private:
 
 };

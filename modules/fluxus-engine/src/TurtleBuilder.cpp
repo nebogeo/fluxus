@@ -18,7 +18,7 @@
 
 using namespace Fluxus;
 
-TurtleBuilder::TurtleBuilder() : 
+TurtleBuilder::TurtleBuilder() :
 m_BuildingPrim(NULL),
 m_AttachedPoints(NULL),
 m_Position(0)
@@ -26,13 +26,13 @@ m_Position(0)
 	Reset();
 }
 
-void TurtleBuilder::Reset() 
-{ 
+void TurtleBuilder::Reset()
+{
 	m_State.clear();
 	Push();
-	m_State.begin()->m_Pos=dVector(0,0,0); 
-	m_State.begin()->m_Rot=dVector(0,0,0); 
-	m_State.begin()->m_Colour=dColour(1,1,1); 
+	m_State.begin()->m_Pos=dVector(0,0,0);
+	m_State.begin()->m_Rot=dVector(0,0,0);
+	m_State.begin()->m_Colour=dColour(1,1,1);
 	m_Position=0;
 }
 
@@ -44,10 +44,10 @@ void TurtleBuilder::Initialise()
 	m_Position=0;
 }
 
-void TurtleBuilder::Prim(int Type)
+void TurtleBuilder::Prim(PolyPrimitive::Type Type)
 {
 	Initialise();
-	m_BuildingPrim=new PolyPrimitive((PolyPrimitive::Type)Type);
+	m_BuildingPrim=new PolyPrimitive(Type);
 }
 
 void TurtleBuilder::Attach(PolyPrimitive *p)
@@ -60,7 +60,7 @@ void TurtleBuilder::Attach(PolyPrimitive *p)
 
 void TurtleBuilder::Vert()
 {
-	if (m_BuildingPrim) 
+	if (m_BuildingPrim)
 	{
 		m_BuildingPrim->AddVertex(dVertex(m_State.begin()->m_Pos,dVector(0,1,0)));
 	}
@@ -79,7 +79,7 @@ void TurtleBuilder::Skip(int n)
 
 int TurtleBuilder::Build(Renderer *renderer)
 {
-	if (m_BuildingPrim) 
+	if (m_BuildingPrim)
 	{
 		int id = renderer->AddPrimitive(m_BuildingPrim);
 		m_BuildingPrim=NULL;
@@ -121,5 +121,15 @@ void TurtleBuilder::Pop()
 	{
 		m_State.pop_front();
 	}
+}
+
+dMatrix TurtleBuilder::GetTransform()
+{
+	dMatrix m;
+	m.rotxyz(m_State.begin()->m_Rot.x,
+			 m_State.begin()->m_Rot.y,
+			 m_State.begin()->m_Rot.z);
+	m.settranslate(m_State.begin()->m_Pos);
+	return m;
 }
 

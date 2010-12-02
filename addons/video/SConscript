@@ -3,7 +3,8 @@
 #
 import os, sys
 
-Import("env", "BinaryModulesLocation", "MZDYN", "static_modules")
+Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
+		"racket_framework")
 
 Target = 'fluxus-video_ss'
 
@@ -42,7 +43,12 @@ elif env['PLATFORM'] == 'posix':
 	LibList += [['gstapp-0.10', 'gst/app/gstappsink.h']]
 
 if env['PLATFORM'] == 'darwin':
-	Frameworks += ['PLT_MrEd']
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
+elif env['PLATFORM'] == 'posix':
+	env.Append(CXXFLAGS = ' -D__STDC_CONSTANT_MACROS')
 
 # check installed libraries
 if not GetOption('clean'):

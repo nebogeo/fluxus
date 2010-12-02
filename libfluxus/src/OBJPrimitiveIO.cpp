@@ -20,7 +20,9 @@
 
 #include "assert.h"
 #include "PolyPrimitive.h"
+#include "LocatorPrimitive.h"
 #include "OBJPrimitiveIO.h"
+#include "SceneGraph.h"
 #include "Trace.h"
 
 using namespace Fluxus;
@@ -346,13 +348,15 @@ void OBJPrimitiveIO::UnifyIndices(const vector<Indices> &unique)
 
 //////////////////////////////////
 
-void OBJPrimitiveIO::WriteVertices(const string &pdataname, const string &objname, const Primitive *ob, FILE *file)
+void OBJPrimitiveIO::WriteVertices(const string &pdataname, const string &objname,
+		const Primitive *ob, dMatrix &t, FILE *file)
 {
 	char line[2048];
 	const TypedPData<dVector> *pdata = dynamic_cast<const TypedPData<dVector> *>(ob->GetDataRawConst(pdataname));
 	for (unsigned int i=0; i<ob->Size(); i++)
 	{
-		dVector o = pdata->m_Data[i];
+		dVector p = pdata->m_Data[i];
+		dVector o = t.transform(p);
 		snprintf(line,2048,"%s %f %f %f\n",objname.c_str(),o.x,o.y,o.z);
 		fwrite(line,1,strlen(line),file);
 	}
@@ -362,84 +366,147 @@ void OBJPrimitiveIO::WriteIndices(const Primitive *ob, FILE *file)
 {
 	char line[2048];
 	const PolyPrimitive *pp = dynamic_cast<const PolyPrimitive *>(ob);
-	
+
 	int facecount=3;
 	switch (pp->GetType())
 	{
 		case PolyPrimitive::TRILIST: facecount=3; break;
 		case PolyPrimitive::QUADS: facecount=4; break;
-		default: 
+		default:
 		{
 			Trace::Stream<<"primitive can only be saved with type triangle-list or quad-list"<<endl;
 			return;
 		}
 	}
-	
+
 	if (pp->IsIndexed())
 	{
 		vector<unsigned int> indices = pp->GetIndexConst();
 		unsigned int i=0;
-		while (i<indices.size())
+		while (i < indices.size())
 		{
-			snprintf(line,2048,"f ");
-			fwrite(line,1,strlen(line),file);
+			snprintf(line, 2048,"f ");
+			fwrite(line, 1, strlen(line), file);
 
-			for (int c=0; c<facecount; c++)
+			for (int c = 0; c < facecount; c++)
 			{
-				snprintf(line,2048,"%d/%d/%d ",indices[i]+1,indices[i]+1,indices[i]+1);
-				fwrite(line,1,strlen(line),file);
+				unsigned idx = indices[i] + 1 + m_WIndices;
+				snprintf(line, 2048, "%d/%d/%d ", idx, idx, idx);
+				fwrite(line, 1, strlen(line), file);
 				i++;
 			}
-			
-			snprintf(line,2048,"\n");
-			fwrite(line,1,strlen(line),file);
+
+			snprintf(line, 2048, "\n");
+			fwrite(line, 1, strlen(line), file);
 		}
 	}
 	else
 	{
 		unsigned int i=0;
-		while (i<pp->Size())
+		while (i < pp->Size())
 		{
-			snprintf(line,2048,"f ");
-			fwrite(line,1,strlen(line),file);
+			snprintf(line, 2048, "f ");
+			fwrite(line, 1, strlen(line), file);
 
-			for (int c=0; c<facecount; c++)
+			for (int c = 0; c < facecount; c++)
 			{
-				snprintf(line,2048,"%d/%d/%d ",i+1,i+1,i+1);
-				fwrite(line,1,strlen(line),file);
+				unsigned idx = i + 1 + m_WIndices;
+				snprintf(line, 2048, "%d/%d/%d ", idx, idx, idx);
+				fwrite(line, 1, strlen(line), file);
 				i++;
 			}
-			
-			snprintf(line,2048,"\n");
-			fwrite(line,1,strlen(line),file);
+
+			snprintf(line, 2048, "\n");
+			fwrite(line, 1, strlen(line), file);
 		}
 	}
 }
 
-bool OBJPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob)
+bool OBJPrimitiveIO::FormatWrite(const std::string &filename, const Primitive *ob,
+		unsigned id, const SceneGraph &world)
 {
-    // only save obj files for polyprims
-    const PolyPrimitive *pp = dynamic_cast<const PolyPrimitive*>(ob);
-    if (!pp)
-    {       
-        Trace::Stream<<"Can only save OBJ files from PolyPrimitives"<<endl;
-        return false;
-    }
+	// only save obj files for polyprims
+	const PolyPrimitive *pp = dynamic_cast<const PolyPrimitive*>(ob);
+	const LocatorPrimitive *lp = dynamic_cast<const LocatorPrimitive*>(ob);
+	if (!pp && !lp)
+	{
+		Trace::Stream<<"Can only save OBJ files from PolyPrimitives"<<endl;
+		return false;
+	}
 
-    FILE *file = fopen(filename.c_str(),"w");
-    if (file==NULL)
-    {
-        Trace::Stream<<"Cannot open .obj file: "<<filename<<endl;
-        return false;
-    }
-        
-    WriteVertices("p","v",ob,file);
-    WriteVertices("n","vn",ob,file);
-    WriteVertices("t","vt",ob,file);
-    WriteIndices(ob,file);	
-    
-    fclose(file);
-    
-    return true;
+	FILE *file = fopen(filename.c_str(), "w");
+	if (file == NULL)
+	{
+		Trace::Stream << "Cannot open .obj file: " << filename << endl;
+		return false;
+	}
+
+	const int dot_index = filename.rfind(".", filename.size());
+	string mfilename = filename.substr(0, dot_index) + ".mtl";
+
+	FILE *mfile = fopen(mfilename.c_str(), "w");
+	if (mfile == NULL)
+	{
+		Trace::Stream << "Cannot open .mtl file: " << mfilename << endl;
+		return false;
+	}
+
+	m_WIndices = 0;
+	FormatWriteOBJ(ob, id, world, file, mfile);
+
+	fclose(file);
+	fclose(mfile);
+
+	return true;
 }
-	
+
+void OBJPrimitiveIO::FormatWriteOBJ(const Primitive *ob, unsigned id,
+		const SceneGraph &world, FILE *file, FILE *mfile)
+{
+	const LocatorPrimitive *lp = dynamic_cast<const LocatorPrimitive*>(ob);
+	Node *node = world.FindNode(id);
+
+	if (lp) // new group for locators
+	{
+		fprintf(file, "g Group.%03d\n", id); // group
+	}
+	else // new object
+	{
+		// material
+		fprintf(file, "usemtl Material.%03d\n", id);
+		FormatWriteMTL(ob, id, mfile);
+
+		// primitive data
+		dMatrix t = world.GetGlobalTransform((SceneNode *)node);
+		fprintf(file, "o Object.%03d\n", id); // objects
+		WriteVertices("p", "v", ob, t, file);
+		t.settranslate(dVector(0, 0, 0));
+		WriteVertices("n", "vn", ob, t, file);
+		t.init();
+		WriteVertices("t", "vt", ob, t, file);
+		WriteIndices(ob, file);
+		m_WIndices += ob->Size(); // increase global vertex index
+	}
+
+	// save children
+	for (vector<Node*>::iterator i = node->Children.begin(); i != node->Children.end(); ++i)
+	{
+		SceneNode *sn = (SceneNode *)*i;
+		FormatWriteOBJ(sn->Prim, sn->ID, world, file, mfile);
+	}
+}
+
+void OBJPrimitiveIO::FormatWriteMTL(const Primitive *ob, unsigned id, FILE *mfile)
+{
+	const State *state = ob->GetState();
+	fprintf(mfile, "newmtl Material.%03d\n", id);
+	dColour ambient = state->Ambient;
+	fprintf(mfile, "Ka %4.3f %4.3f %4.3f\n", ambient.r, ambient.g, ambient.b);
+	dColour diffuse = state->Colour;
+	fprintf(mfile, "Kd %4.3f %4.3f %4.3f\n", diffuse.r, diffuse.g, diffuse.b);
+	dColour specular = state->Specular;
+	fprintf(mfile, "Ks %4.3f %4.3f %4.3f\n", specular.r, specular.g, specular.b);
+	fprintf(mfile, "Ns %5.3f\n", state->Shinyness);
+	fprintf(mfile, "d %2.1f\n", state->Opacity);
+}
+

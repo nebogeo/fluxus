@@ -15,7 +15,7 @@
 ;; EndFunctionDoc
 
 
-#lang scheme/base
+#lang racket/base
 (require "scratchpad.ss")
 (require "help.ss")
 (require "camera.ss")

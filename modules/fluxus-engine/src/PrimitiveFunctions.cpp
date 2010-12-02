@@ -83,13 +83,13 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-nurbs", "i", argc, argv);
 	int size=IntFromScheme(argv[0]);
-	NURBSPrimitive *Prim = new NURBSPrimitive();
 	if (size<1)
 	{
 		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
 		MZ_GC_UNREG();
 		return scheme_void;
 	}
+	NURBSPrimitive *Prim = new NURBSPrimitive();
 	Prim->Resize(size);
 	MZ_GC_UNREG();
 	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
@@ -138,7 +138,7 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 	}
 	if (size<1)
 	{
-		Trace::Stream<<"build-nurbs: size less than 1!"<<endl;
+		Trace::Stream<<"build-polygons: size less than 1!"<<endl;
 		MZ_GC_UNREG();
 		return scheme_void;
 	}
@@ -464,15 +464,19 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-type", "ss", argc, argv);
 
-	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if (TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetText(StringFromScheme(argv[1]));
+		MZ_GC_UNREG();
+		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 	}
-	MZ_GC_UNREG();
-
-	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+	else
+	{
+		MZ_GC_UNREG();
+		delete TypePrim;
+		return scheme_void;
+	}
 }
 
 // StartFunctionDoc-en
@@ -505,15 +509,19 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("build-extruded-type", "ssf", argc, argv);
 
-	// 16*16 grid of letters
 	TypePrimitive *TypePrim = new TypePrimitive();
 	if(TypePrim->LoadTTF(StringFromScheme(argv[0])))
 	{
 		TypePrim->SetTextExtruded(StringFromScheme(argv[1]),FloatFromScheme(argv[2]));
+		MZ_GC_UNREG();
+		return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
 	}
-	MZ_GC_UNREG();
-
-	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TypePrim));
+	else
+	{
+		MZ_GC_UNREG();
+		delete TypePrim;
+		return scheme_void;
+	}
 }
 
 // StartFunctionDoc-en
@@ -608,7 +616,7 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 // Inverts the automatically generated ribbon normals
 // Example:
 // (define mynewshape (build-ribbon 10))
-// (with-primitive mynewshape 
+// (with-primitive mynewshape
 //     (ribbon-inverse-normals 1))
 // EndFunctionDoc
 
@@ -1326,7 +1334,7 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("locator-bounding-radius", "i", argc, argv);
+	ArgCheck("locator-bounding-radius", "f", argc, argv);
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
 	if (Grabbed)
 	{
@@ -1403,10 +1411,24 @@ Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
 // save-primitive
 // Returns: void
 // Description:
-// Saves the current primitive to disk
+// Saves the current primitive to disk. Pixel primitives are saved as PNG
+// files.
+// Polygon primitives are saved as Wavefront OBJ files with material
+// information. The children of the primitives are also saved as different
+// objects in the file. New groups are generated for each locator in the
+// hierarchy.
 // Example:
+// (define l (build-locator))
 // (with-primitive (build-sphere 10 10)
-//     (save-primitive "mymesh.obj"))
+//    (colour #(1 0 0))
+//    (parent l))
+// (translate (vector 3 2 0))
+// (rotate (vector 15 60 70))
+// (with-primitive (build-torus 1 2 10 10)
+//    (colour #(0 1 0))
+//    (parent l))
+// (with-primitive l
+//    (save-primitive "p.obj"))
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
@@ -1422,11 +1444,13 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
 	ArgCheck("save-primitive", "s", argc, argv);
-	string filename=StringFromScheme(argv[0]);
-	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	string filename = StringFromScheme(argv[0]);
+	Primitive *Grabbed = Engine::Get()->Renderer()->Grabbed();
+	unsigned id = Engine::Get()->GrabbedID();
 	if (Grabbed)
 	{
-		PrimitiveIO::Write(filename,Grabbed);
+		PrimitiveIO::Write(filename, Grabbed, id,
+						Engine::Get()->Renderer()->GetSceneGraph());
 	}
 	MZ_GC_UNREG();
     return scheme_void;
@@ -2178,9 +2202,43 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
-{    	
+{
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTorus);
     return scheme_void;
+}
+
+// StartFunctionDoc-en
+// draw-line point-vector point-vector
+// Returns: void
+// Description:
+// Draws a line in the current state in immediate mode.
+// primitive.
+// Example:
+// (define (render)
+//     (draw-line (vector 0 0 0) (vector 2 1 0)))
+// (every-frame (render))
+// EndFunctionDoc
+
+Scheme_Object *draw_line(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("draw-line", "vv", argc, argv);
+	dVector p0, p1;
+	FloatsFromScheme(argv[0], p0.arr(), 3);
+	FloatsFromScheme(argv[1], p1.arr(), 3);
+	RibbonPrimitive *p = new RibbonPrimitive();
+	p->Resize(2);
+	p->SetData<dVector>("p", 0, p0);
+	p->SetData<dVector>("p", 1, p1);
+	// force a hint-wire state
+	Engine::Get()->PushGrab(0);
+	Engine::Get()->Renderer()->PushState();
+	Engine::Get()->State()->Hints |= HINT_WIRE;
+	Engine::Get()->Renderer()->RenderPrimitive(p, true);
+	Engine::Get()->PopGrab();
+	Engine::Get()->Renderer()->PopState();
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2209,20 +2267,11 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 	DECL_ARGV();
 	ArgCheck("destroy", "i", argc, argv);
 	int name=0;
-	name=IntFromScheme(argv[0]);	
-	
-	Primitive *p=Engine::Get()->Renderer()->GetPrimitive(name);
-	if (p)
-	{
-    	if (p->IsPhysicalHint())
-    	{
-    		Engine::Get()->Physics()->Free(name);
-    	}
-    	Engine::Get()->Renderer()->RemovePrimitive(name);
-    }
-
-	MZ_GC_UNREG(); 
-    return scheme_void;
+	name=IntFromScheme(argv[0]);
+	Engine::Get()->Physics()->Free(name);
+	Engine::Get()->Renderer()->RemovePrimitive(name);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -3275,6 +3324,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
 	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
+	scheme_add_global("draw-line", scheme_make_prim_w_arity(draw_line, "draw-line", 2, 2), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-indices", scheme_make_prim_w_arity(poly_indices, "poly-indices", 0, 0), env);

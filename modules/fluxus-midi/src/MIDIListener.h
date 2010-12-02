@@ -26,7 +26,8 @@
 
 using namespace std;
 
-#define MAX_CNTRL (16*128)
+#define MAX_CHAN   16
+#define MAX_CNTRL (MAX_CHAN*128)
 
 class MIDINote
 {
@@ -40,6 +41,16 @@ class MIDINote
 			int velocity; /**< velocity of MIDI note */
 };
 
+class MIDIEvent
+{
+	public:
+			MIDIEvent() { channel = controller = value; }
+			MIDIEvent(int channel, int controller, int value);
+			int channel;	/**< MIDI channel (>=0) **/
+			int controller;	/*<< MIDI controller number **/
+			int value; /**< the actual controller value **/
+};
+
 class MIDIListener
 {
 	public:
@@ -50,13 +61,16 @@ class MIDIListener
 			/** callback receiving MIDI data */
 			void callback(double deltatime, vector< unsigned char > *message);
 			void open(int port); /**< open a MIDI input connection */
+			void close(void); /**< close MIDI port */
 
 			int get_cc(int channel, int cntrl_number);
 			float get_ccn(int channel, int cntrl_number);
+			int get_program(int channel);
 
 			string get_last_event(void);
 
 			MIDINote *get_note(void);
+			MIDIEvent *get_cc_event(void);
 
 			enum {
 				MIDI_NOTE_OFF = 0x08,
@@ -68,6 +82,7 @@ class MIDIListener
 	private:
 			void init_midi(void);
 			void add_note(int on_off, int ch, int note, int velocity);
+			void add_event(int channel, int controller, int value);
 
 			pthread_mutex_t mutex;
 
@@ -79,7 +94,11 @@ class MIDIListener
 			/** array holding the current state of all, 16*128 controllers */
 			unsigned char *cntrl_values;
 
+			/** array holding program number of 16 channels **/
+			unsigned char *pgm_values;
+
 			deque<MIDINote *> midi_notes;
+			deque<MIDIEvent *> midi_events;
 };
 
 #endif

@@ -1,4 +1,4 @@
-#!/usr/bin/env mzscheme 
+#!/usr/bin/env racket
 
 ; Copyright (C) 2007 Dave Griffiths
 ;
@@ -19,7 +19,7 @@
 ; a script to convert the fluxus helpmap into a human readable text file
 ; fixed by Claude Heiland-Allen 
 
-#lang scheme/base
+#lang racket/base
 
 (require scheme/file)
 (require scheme/path)

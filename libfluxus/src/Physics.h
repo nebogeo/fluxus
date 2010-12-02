@@ -51,7 +51,11 @@ public:
 	void MakeActive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	void MakePassive(int ID,float MassBoundingType, BoundingType Bound=BOX);
 	///@}
-
+    
+    /// Free needs to check all the children
+    /// and remove them from the simulation too - this needs to be called
+    /// for all primitives as they may contain children in the sim when
+    /// deleted.
     void Free(int ID);
     void Clear();
 	///\todo Remove the dependancy on the renderer (use primitive
@@ -92,6 +96,7 @@ private:
 	// helpers that use ode types for convienience, and so it can be built with double support
 	void DrawLocator(dVector3 pos);
 	void DrawAxis(dVector3 pos, dVector3 dir);
+    void SetupTransform(Primitive *p, dMatrix &rotation, dVector &Pos);
 
 	enum JointType {BallJoint,HingeJoint,SliderJoint,ContactJoint,UniversalJoint,Hinge2Joint,FixedJoint,AMotorJoint};
 

@@ -1,6 +1,6 @@
 ;; [ Copyright (C) 2008 Dave Griffiths : GPLv2 see LICENCE ]
 
-#lang scheme/base
+#lang racket/base
 
 ; for the moment, comment the top require/provide out and uncomment the 
 ; lower when installing a static build of the fluxus modules

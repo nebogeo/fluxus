@@ -12,7 +12,7 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
-#lang scheme/base
+#lang racket/base
 (require "fluxus-modules.ss")
 (require "tasks.ss")
 (provide
@@ -26,7 +26,7 @@
  detach-parent
  vx vy vz vr vg vb va
  vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
- vadd vsub mmul madd msub mdiv
+ vadd vsub vmul vdiv mmul madd msub mdiv
  )
 
 ;; StartFunctionDoc-en
@@ -525,30 +525,103 @@
 (define (vb-set! v s) (vector-set! v 2 s))
 (define (va-set! v s) (vector-set! v 3 s))
 
-; macros for vadd, vsub, mmul, madd, mdiv, msub allowing
-; them to take arbitrary counts of arguments
+;; StartFunctionDoc-en
+;; vadd vector vector ...
+;; Returns: result-vector
+;; Description:
+;; Adds vectors together
+;; Example:
+;; (vadd (vector 1 2 3) (vector 5 2 7))
+;; (vadd (vector 1 2 3 4) (vector 7 1 1 4))
+;; (vadd (vector 1 2) (vector 3 3) (vector 5 5))
+;; EndFunctionDoc
+
+(define (vadd2 a b)
+  (build-vector (vector-length a)
+                (lambda (i)
+                  (+ (vector-ref a i)
+                     (vector-ref b i)))))
 
 (define-syntax vadd
   (syntax-rules ()
-    ((_ a ...)
-      (vadd-list (list a ...)))))
+    [(vadd a b) (vadd2 a b)]
+    [(vadd a b c ...) (vadd2 a (vadd b c ...))]))
 
-(define (vadd-list l)
-  (cond
-    ((eq? (length l) 1) (car l))
-    ((eq? (length l) 2) (vadd2 (car l) (cadr l)))
-    (else (vadd2 (car l) (vadd-list (cdr l))))))
+;; StartFunctionDoc-en
+;; vsub vector vector ...
+;; Returns: result-vector
+;; Description:
+;; Subtracts a vector or multiple vectors from each other
+;; Example:
+;; (vsub (vector 1 2 3) (vector 5 2 7))
+;; (vsub (vector 1 2 3 4) (vector 7 1 1 4))
+;; (vsub (vector 1 2) (vector 3 3) (vector 5 5))
+;; EndFunctionDoc
+
+(define (vsub2 a b)
+  (build-vector (vector-length a)
+                (lambda (i)
+                  (- (vector-ref a i)
+                     (vector-ref b i)))))
 
 (define-syntax vsub
   (syntax-rules ()
-    ((_ a ...)
-      (vsub-list (list a ...)))))
+    [(vsub a b) (vsub2 a b)]
+    [(vsub a b c ...) (vsub2 a (vadd b c ...))]))
 
-(define (vsub-list l)
-  (cond
-    ((eq? (length l) 1) (car l))
-    ((eq? (length l) 2) (vsub2 (car l) (cadr l)))
-    (else (vsub2 (car l) (vadd-list (cdr l))))))
+;; StartFunctionDoc-en
+;; vmul vector number
+;; Returns: result-vector
+;; Description:
+;; Multiplies a vector by a number
+;; Example:
+;; (vmul (vector 1 2 3) 2)
+;; (vmul (vector 1 2 3 4 5) 3)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; vmul vetor número
+;; Retorna: vetor resultante
+;; Descrição:
+;; Multiplica um vetor por um número.
+;; Exemplo:
+;; (vmul (vector 1 2 3) 2)
+;; (vmul (vector 1 2 3 4 5) 3)
+;; EndFunctionDoc
+
+(define (vmul a m)
+  (build-vector (vector-length a)
+                (lambda (i)
+                  (* (vector-ref a i) m))))
+
+;; StartFunctionDoc-en
+;; vdiv vector number
+;; Returns: result-vector
+;; Description:
+;; Divides a vector by a number
+;; Example:
+;; (vdiv (vector 1 2 3) 2)
+;; (vdiv (vector 1 2 3 4 5) 3)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-pt
+;; vdiv vetor número
+;; Retorna: vetor resultante
+;; Descrição:
+;; Divide um vetor por um número
+;; Exemplo:
+;; (vdiv (vector 1 2 3) 2)
+;; (vdiv (vector 1 2 3 4 5) 3)
+;; EndFunctionDoc
+
+(define (vdiv a m)
+  (build-vector (vector-length a)
+                (lambda (i)
+                  (/ (vector-ref a i) m))))
+
+
+; macros for mmul, madd, mdiv, msub allowing
+; them to take arbitrary counts of arguments
 
 (define-syntax mmul
   (syntax-rules ()

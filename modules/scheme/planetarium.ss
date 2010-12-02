@@ -1,4 +1,4 @@
-#lang scheme
+#lang racket
 ; planetarium.ss
 
 (require "fluxus.ss")

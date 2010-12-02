@@ -6,7 +6,7 @@
 ;; Example:
 ;; EndSectionDoc 
 
-#lang scheme/base
+#lang racket/base
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (provide 
@@ -16,13 +16,12 @@
 	hermite
 	vlerp
 	hermite-tangent
-	vlerp-tangent
 	lerp
 	mlerp)
 
 ;; StartFunctionDoc-en
 ;; vmix a b t
-;; Returns: void
+;; Returns: vector
 ;; Description:
 ;; Linearly interpolates the two vectors together by t
 ;; Example:  
@@ -35,7 +34,7 @@
 	
 ;; StartFunctionDoc-en
 ;; vclamp a
-;; Returns: void
+;; Returns: vector
 ;; Description:
 ;; Clamp the vector so the elements are all between 0 and 1
 ;; Example:  
@@ -48,11 +47,11 @@
 		(if (< v 0) 0
 			(if (> v 1) 1
 				v)))
-    (vector (clamp (vx a)) (clamp (vy a)) (clamp (vz a))))
+		(vector (clamp (vx a)) (clamp (vy a)) (clamp (vz a))))
 
 ;; StartFunctionDoc-en
 ;; vsquash a
-;; Returns: void
+;; Returns: vector
 ;; Description:
 ;; Normalise the vector so all the elements are between 0 and 1 but 
 ;; maintain the same ratio between them.
@@ -64,7 +63,6 @@
 (define (vsquash v)
 	(let ((t (+ (vx v) (vy v) (vz v))))
 		(vector (/ (vx v) t) (/ (vy v) t) (/ (vz v) t))))
-
 
 ; slow implementation of hermite curves for animation
 (define (hermite p1 p2 t1 t2 s)
@@ -97,35 +95,39 @@
     (let ((p (hermite p1 p2 t1 t2 t)))
         (list p (vsub (hermite p1 p2 t1 t2 (- t 0.01)) p))))
 
+;; StartFunctionDoc-en
+;; lerp a b t
+;; Returns: number
+;; Description:
+;; Linearly interpolates the two numbers together by t
+;; Example:
+;; (lerp 1 2 .3)
+;; EndFunctionDoc
+
 (define (lerp p1 p2 t)
-    (+ (* p1 t) (* p2 (- 1 t))))
+	(+ p1 (* (- p2 p1) t)))
 	
-(define (vlerp p1 p2 t)
-    (vadd (vmul p1 t) (vmul p2 (- 1 t))))
+;; StartFunctionDoc-en
+;; vlerp a b t
+;; Returns: vector
+;; Description:
+;; Linearly interpolates the two vectors together by t
+;; Example:
+;; ; mix red and blue together
+;; (colour (vlerp (vector 1 0 0) (vector 0 0 1) 0.3))
+;; EndFunctionDoc
 
-(define (vlerp-tangent p1 p2 t)
-    (let ((p (vlerp t p1 p2)))
-        (list p (vsub (vlerp (- t 0.01) p1 p2) p))))
+(define (vlerp v1 v2 t)
+	(vadd v1 (vmul (vsub v2 v1) t)))
 
+;; StartFunctionDoc-en
+;; mlerp a b t
+;; Returns: vector
+;; Description:
+;; Linearly interpolates the two matrices together by t
+;; Example:
+;; (mlerp (mtranslate (vector 1 0 0)) (mtranslate (vector 0 1 0)) .3)
+;; EndFunctionDoc
 
-(define (mlerp m1 m2 t)
-    (vector 
-		(lerp (vector-ref m1 0) (vector-ref m2 0) t)
-		(lerp (vector-ref m1 1) (vector-ref m2 1) t)
-		(lerp (vector-ref m1 2) (vector-ref m2 2) t)
-		(lerp (vector-ref m1 3) (vector-ref m2 3) t)
+(define mlerp vlerp)
 
-		(lerp (vector-ref m1 4) (vector-ref m2 4) t)
-		(lerp (vector-ref m1 5) (vector-ref m2 5) t)
-		(lerp (vector-ref m1 6) (vector-ref m2 6) t)
-		(lerp (vector-ref m1 7) (vector-ref m2 7) t)
-
-		(lerp (vector-ref m1 8) (vector-ref m2 8) t)
-		(lerp (vector-ref m1 9) (vector-ref m2 9) t)
-		(lerp (vector-ref m1 10) (vector-ref m2 10) t)
-		(lerp (vector-ref m1 11) (vector-ref m2 11) t)
-
-		(lerp (vector-ref m1 12) (vector-ref m2 12) t)
-		(lerp (vector-ref m1 13) (vector-ref m2 13) t)
-		(lerp (vector-ref m1 14) (vector-ref m2 14) t)
-		(lerp (vector-ref m1 15) (vector-ref m2 15) t)))

@@ -31,7 +31,7 @@
  (only frtime/core/frp do-in-manager-after)
  ; import the procedures we want lifted
  (lifted "fluxus.ss"
-     vadd2 vsub2 vmul vdiv vtransform vtransform-rot
+     vaddc vsubc vmul vdiv vtransform vtransform-rot
          vnormalise vdot vreflect vdist vmag vcross madd2 msub2 mdiv2 mmul2 mident mtranslate
          mrotate mscale mtranspose minverse maim qaxisangle qmul qnormalise qtomatrix qconjugate
          set-camera rndvec crndvec srndvec rndf crndf hsrndvec grndf grndvec)
@@ -42,8 +42,8 @@
  (all-from (lib "frtime-lang-only.ss" "frtime")))
 
 ; get around the fact we can't lift the maths macros
-(define vadd vadd2)
-(define vsub vsub2)
+(define vadd vaddc)
+(define vsub vsubc)
 (define madd madd2)
 (define msub msub2)
 (define mmul mmul2)

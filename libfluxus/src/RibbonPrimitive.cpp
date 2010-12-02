@@ -143,6 +143,8 @@ void RibbonPrimitive::Render()
 
 	if (m_State.Hints & HINT_WIRE)
 	{
+		glDisable(GL_LIGHTING);
+
 		if ((m_State.Hints & HINT_WIRE_STIPPLED) > HINT_WIRE)
 		{
 			glEnable(GL_LINE_STIPPLE);
@@ -152,16 +154,12 @@ void RibbonPrimitive::Render()
 		if (m_State.Hints & HINT_VERTCOLS)
 		{
 			glBegin(GL_LINE_STRIP);
-			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
-				float txstart = n/(float)m_VertData->size();
-				float txend = (n+1)/(float)m_VertData->size();
-				glTexCoord2f(txstart,0);
+				float tx = n/(float)m_VertData->size();
+				glTexCoord2f(tx,0);
 				glColor4fv((*m_ColData)[n].arr());
 				glVertex3fv((*m_VertData)[n].arr());
-				glTexCoord2f(txend,0);
-				glColor4fv((*m_ColData)[n+1].arr());
-				glVertex3fv((*m_VertData)[n+1].arr());
 			}
 			glEnd();
 		}
@@ -169,14 +167,11 @@ void RibbonPrimitive::Render()
 		{
 		    glColor4fv(m_State.WireColour.arr());
 			glBegin(GL_LINE_STRIP);
-			for (unsigned int n=0; n<m_VertData->size()-1; n++)
+			for (unsigned int n=0; n<m_VertData->size(); n++)
 			{
-				float txstart = n/(float)m_VertData->size();
-				float txend = (n+1)/(float)m_VertData->size();
-				glTexCoord2f(txstart,0);
+				float tx = n/(float)m_VertData->size();
+				glTexCoord2f(tx,0);
 				glVertex3fv((*m_VertData)[n].arr());
-				glTexCoord2f(txend,0);
-				glVertex3fv((*m_VertData)[n+1].arr());
 			}
 			glEnd();
 		}
@@ -185,6 +180,8 @@ void RibbonPrimitive::Render()
 		{
 			glDisable(GL_LINE_STIPPLE);
 		}
+
+		glEnable(GL_LIGHTING);
 	}
 
 	if (m_State.Hints & HINT_AALIAS) glDisable(GL_LINE_SMOOTH);

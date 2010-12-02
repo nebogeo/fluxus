@@ -18,6 +18,8 @@
 #define FLUX_OBJ_PRIMITIVE_IO
 
 #include "PrimitiveIO.h"
+#include "SceneGraph.h"
+#include "dada.h"
 #include <vector>
 
 namespace Fluxus
@@ -29,7 +31,8 @@ public:
 	OBJPrimitiveIO();
 	virtual ~OBJPrimitiveIO();
 	virtual Primitive *FormatRead(const std::string &filename);
-	virtual bool FormatWrite(const std::string &filename, const Primitive *ob);
+	virtual bool FormatWrite(const std::string &filename, const Primitive *ob, unsigned id,
+			const SceneGraph &world);
 
 private:
 	class Indices
@@ -67,8 +70,13 @@ private:
 	void UnifyIndices(const vector<Indices> &unique);
 	Primitive *MakePrimitive();
 
-	void WriteVertices(const std::string &pdataname, const std::string &objname, const Primitive *ob, FILE *file);
+	void FormatWriteOBJ(const Primitive *ob, unsigned id, const SceneGraph &world, FILE *file, FILE *mfile);
+	void WriteVertices(const std::string &pdataname, const std::string &objname, const Primitive *ob,
+			dMatrix &t, FILE *file);
 	void WriteIndices(const Primitive *ob, FILE *file);
+	unsigned m_WIndices;
+
+	void FormatWriteMTL(const Primitive *ob, unsigned id, FILE *file);
 
 	unsigned int m_DataSize;
 	char *m_Data;

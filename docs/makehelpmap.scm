@@ -1,4 +1,4 @@
-#!/usr/bin/env mzscheme 
+#!/usr/bin/env racket
 
 ; Copyright (C) 2007 Dave Griffiths
 ;
@@ -21,7 +21,7 @@
 ;; parses C++ and Scheme files looking for function documentation
 ;; and then converts this into a scheme helpmap list 
 
-#lang scheme/base
+#lang racket/base
 
 (require scheme/file)
 (require scheme/path)

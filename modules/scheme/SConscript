@@ -1,5 +1,5 @@
 ###############################################################
-# SConscript for the Scheme PLT modules
+# SConscript for the Scheme RACKET modules
 #
 # Should be ok for cross platform
 

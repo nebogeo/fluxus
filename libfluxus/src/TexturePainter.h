@@ -20,13 +20,15 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include "PNGLoader.h"
+#include "OpenGL.h"
 #include "PData.h"
 
 using namespace std;
 
 namespace Fluxus
 {
+
+	class DDSLoader;
 
 //////////////////////////////////////////////////////
 /// The texture state
@@ -61,6 +63,9 @@ public:
 /// which are already on the graphics card.
 class TexturePainter
 {
+	friend class PNGLoader;
+	friend class DDSLoader;
+
 public:
 	///\todo stop this being a singleton...
 	static TexturePainter* Get()
@@ -68,64 +73,71 @@ public:
 		if (m_Singleton==NULL) m_Singleton=new TexturePainter;
 		return m_Singleton;
 	}
-	
+
 	static void Shutdown()
 	{
 		if (m_Singleton!=NULL) delete m_Singleton;
 	}
-	
+
 	/// Initialise all texture units
 	void Initialise();
-	
+
 	/// Clear the texture cache
 	void ClearCache();
-		
+
 	///////////////////////////////////
 	/// Options for texture creation
 	class CreateParams
 	{
 		public:
-		CreateParams(): ID(-1), Type(GL_TEXTURE_2D), GenerateMipmaps(true), MipLevel(0), Border(0) {}
+		CreateParams(): ID(-1), Type(GL_TEXTURE_2D), GenerateMipmaps(true), MipLevel(0), Border(0), Compress(false) {}
 
 		int ID;
 		int Type;
 		bool GenerateMipmaps;
 		int MipLevel;
 		int Border;
+		bool Compress;
 	};
 
 	////////////////////////////////////
 	///@name Texture Generation/Conversion
 	///@{
-	
-	/// Loads a texture returns the OpenGL ID number 
+
+	/// Loads a texture returns the OpenGL ID number
 	unsigned int LoadTexture(const string &Filename, CreateParams &params);
-	
+
 	/// Loads texture information into a pdata array of colour type
 	bool LoadPData(const string &Filename, unsigned int &w, unsigned int &h, TypedPData<dColour> &pixels);
-	
+
 	/// Saves texture information from a pdata array
 	bool SavePData(const string &Filename, unsigned int w, unsigned int h, const TypedPData<dColour> &pixels);
-	
+
 	/// Uploads texture data from pdata - returns OpenGL ID number
 	unsigned int MakeTexture(unsigned int w, unsigned int h, PData *data);
+
+	/// Checks if a texture is in high-performance memory
+	bool IsResident(unsigned int id);
+
+	/// Hints to decide texture residency
+	void SetTexturePriority(unsigned int id, float priority);
 	///@}
-	
+
 	////////////////////////////////////
 	///@name State control
-	/// Controls the texture rendering state 
+	/// Controls the texture rendering state
 	///@{
-	
+
 	/// Sets the current texture state - allow settings for each unit if multitexturing is enabled.
 	/// The size of ids is expected to be the same as MAX_TEXTURES
 	bool SetCurrent(unsigned int *ids, TextureState *states);
 
 	/// Disables all texturing
 	void DisableAll();
-	
+
 	/// Print out information
 	void Dump();
-	
+
 	/// Is multitexturing possible?
 	bool MultitexturingEnabled() { return m_MultitexturingEnabled; }
 	///@}
@@ -136,19 +148,23 @@ private:
 	class TextureDesc
 	{
 	public:
-		TextureDesc() : Format(NONE) {}
+		TextureDesc() : Format(0), ImageData(NULL) {}
+
 		unsigned int Width;
 		unsigned int Height;
-		PixelFormat Format;
+		int InternalFormat; // number of colour components (GL_RGB, GL_RGBA, GL_COMPRESSED..., etc)
+		int Format; // pixel data format
+		int Size; // pixel data size
+		unsigned char *ImageData;
 	};
-	
+
 	//////////////////////////////////////////////////////
-	/// We need to group together the cube map ids, so we 
+	/// We need to group together the cube map ids, so we
 	/// know which id's to use when the primary one gets set
 	class CubeMapDesc
 	{
 	public:
-		CubeMapDesc() { Positive[0]=0; Positive[1]=0; Positive[2]=0; 
+		CubeMapDesc() { Positive[0]=0; Positive[1]=0; Positive[2]=0;
 		                Negative[0]=0; Negative[1]=0; Negative[2]=0; }
 		unsigned int Positive[3];
 		unsigned int Negative[3];
@@ -158,7 +174,7 @@ private:
 	~TexturePainter();
 	void ApplyState(int type, TextureState &state, bool cubemap);
 	unsigned int LoadCubeMap(const string &Fullpath, CreateParams &params);
-	void UploadTexture(TextureDesc desc, CreateParams params, const unsigned char *ImageData);
+	void UploadTexture(TextureDesc desc, CreateParams params);
 	static TexturePainter *m_Singleton;
 
 	map<string,int> m_LoadedMap;
@@ -166,6 +182,8 @@ private:
 	map<unsigned int,TextureDesc> m_TextureMap;
 	map<unsigned int,CubeMapDesc> m_CubeMapMap;
 	bool m_MultitexturingEnabled;
+	bool m_TextureCompressionEnabled;
+	bool m_SGISGenerateMipmap;
 };
 
 }

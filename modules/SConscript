@@ -1,19 +1,12 @@
 # -*- mode: python -*-
 ###############################################################
-# Top level SConscript for the fluxus PLT modules
+# Top level SConscript for the fluxus Racket modules
 #
 # Sets up common stuff, and calls each module SConscript 
 
 import os 
 Import("env", "CollectsInstall", "DataInstall", "MZDYN",
-		"static_modules", "static_ode", "Prefix")
-
-# run mzscheme to get (path->string (system-library-subpath))
-file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
-archpath = file.read()
-file.close()
-
-BinaryModulesLocation = CollectsInstall + "/compiled/native/"+archpath
+		"BinaryModulesLocation", "static_modules", "static_ode", "racket_framework", "Prefix")
 
 if env['PLATFORM'] == 'win32':
 	SConscript(dirs = ["fluxus-engine", 
@@ -31,7 +24,7 @@ else:
 				"scheme",
 				"material"], 
 				exports = ["env", "CollectsInstall", "DataInstall", "BinaryModulesLocation",
-					"MZDYN", "static_modules", "static_ode", "Prefix"])
+					"MZDYN", "static_modules", "static_ode", "racket_framework", "Prefix"])
 
 env.Install(CollectsInstall, "../docs/helpmap.scm")
 

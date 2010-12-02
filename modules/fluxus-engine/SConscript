@@ -1,11 +1,11 @@
 ###############################################################
 # SConscript for fluxus-engine
 #
-# This is the main PLT module for fluxus, containing all core
+# This is the main RACKET module for fluxus, containing all core
 # graphics functions
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
-	"static_ode", "Prefix")
+	"static_ode", "Prefix", "racket_framework")
 
 if env['PLATFORM'] == 'darwin':
 	Target = "fluxus-engine_ss.dylib"
@@ -16,14 +16,18 @@ else:
 
 if static_modules: Target = "fluxus-engine_ss"
 
-Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
 Frameworks = []
-
+Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
 Install = BinaryModulesLocation
+
 if env['PLATFORM'] != 'darwin':
 	Libs += Split("GL GLU glut")
 else:
-	Frameworks = Split("GLUT OpenGL PLT_MrEd")
+	Frameworks += ["GLUT",  "OpenGL"]
+	if racket_framework:
+		Frameworks += ['Racket']
+	else:
+		Libs += ['racket3m']
 
 if env['PLATFORM'] == 'win32':
 	    Libs = Split("libmzsch3m_6ncc9s fluxus glu32 glew32 glut32 opengl32 png ode tiff jpeg freetype")

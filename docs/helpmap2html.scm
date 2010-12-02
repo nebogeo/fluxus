@@ -1,4 +1,4 @@
-#!/usr/bin/env mzscheme 
+#!/usr/bin/env racket 
 
 ; Copyright (C) 2007 Dave Griffiths
 ;
@@ -19,7 +19,7 @@
 ; a script to convert the fluxus helpmap into a human readable text file
 ; fixed by Claude Heiland-Allen 
 
-#lang scheme/base
+#lang racket/base
 
 (require scheme/file)
 (require scheme/path)
@@ -127,8 +127,8 @@
 
 (let ((file (open-input-file "helpmap.scm")))
   (let ((htmlfile (open-output-file "index.html" #:exists 'replace)))
-    (write-header "en" "Fluxus Documentation 0.16" htmlfile "fluxusdoc.css")
-    (fprintf htmlfile "<h1>Fluxus Documentation 0.16</h1>~n")
+    (write-header "en" "Fluxus Documentation 0.17" htmlfile "fluxusdoc.css")
+    (fprintf htmlfile "<h1>Fluxus Documentation 0.17</h1>~n")
     (fprintf htmlfile "<p>Extracted and html-ised from the runtime documentation system</p>~n")
     (fprintf htmlfile "<p>Available languages: ")
     (parse-locale (read file) htmlfile)
