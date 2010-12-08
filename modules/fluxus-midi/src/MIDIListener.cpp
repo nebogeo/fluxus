@@ -53,6 +53,7 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	midiin(NULL),
 	last_event("")
 {
+	reset_song_position();
 	init_midi();
 
 	if (port >= 0)
@@ -337,6 +338,30 @@ MIDIEvent *MIDIListener::get_cc_event(void)
 	return &evt;
 }
 
+int MIDIListener::get_bar(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = bar;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_beat(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = beat;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_pulse(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = pulse;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
 /**
  * Adds a new event to the event queue.
  **/
@@ -349,6 +374,15 @@ void MIDIListener::add_event(int channel, int controller, int value)
 		delete midi_events.front();
 		midi_events.pop_front();
 	}
+}
+
+void MIDIListener::reset_song_position()
+{
+	pthread_mutex_lock(&mutex);
+	bar = 0;
+	beat = 0;
+	pulse = 0;
+	pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -409,6 +443,45 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 				pthread_mutex_unlock(&mutex);
 			}
 			break;
+		case MIDI_SYSTEM:
+			if(count==1) switch(ch)
+			{
+			case MIDIListener::MIDI_START:
+				{
+					//set_started(true);
+					reset_song_position();
+				}
+				break;
+			case MIDIListener::MIDI_STOP:
+				{
+					//set_started(false);
+				}
+				break;
+			case MIDIListener::MIDI_CONTINUE:
+				{
+					//set_started(true);
+				}
+				break;
+			case MIDIListener::MIDI_CLOCK:
+				{
+					pthread_mutex_lock(&mutex);
+					++pulse;
+					if(24==pulse)
+					{
+						pulse = 0;
+						++beat;
+						if(4==beat)
+						{
+							beat = 0;
+							++bar;
+						}
+					}
+					pthread_mutex_unlock(&mutex);
+				}
+				break;
+			default:
+				break;
+			}
 
 		default:
 			break;

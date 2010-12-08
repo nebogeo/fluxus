@@ -557,6 +557,36 @@ Scheme_Object *midi_send(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// midi-position
+// Returns: #(bar beat ticks)
+// Description:
+// Returns the current position given by MIDI clocks.
+// Example:
+// (midiin-open 0)
+// (midi-position)
+// (midiin-close)
+// EndFunctionDoc
+
+Scheme_Object *midi_position(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+
+	if (midilistener != NULL)
+	{
+		ret = scheme_make_vector(3, scheme_void);
+		SCHEME_VEC_ELS(ret)[0] = scheme_make_integer(midilistener->get_bar());
+		SCHEME_VEC_ELS(ret)[1] = scheme_make_integer(midilistener->get_beat());
+		SCHEME_VEC_ELS(ret)[2] = scheme_make_integer(midilistener->get_pulse());
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	return ret;
+}
+
 #ifdef STATIC_LINK
 Scheme_Object *midi_scheme_reload(Scheme_Env *env)
 #else
@@ -599,6 +629,9 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("midi-send",
 			scheme_make_prim_w_arity(midi_send, "midi-send", 1, 3), menv);
+
+	scheme_add_global("midi-position",
+			scheme_make_prim_w_arity(midi_position, "midi-position", 0, 0), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();

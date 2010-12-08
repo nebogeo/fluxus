@@ -72,17 +72,29 @@ class MIDIListener
 			MIDINote *get_note(void);
 			MIDIEvent *get_cc_event(void);
 
+			int get_bar(void);
+			int get_beat(void);
+			int get_pulse(void);
+
 			enum {
+				MIDI_SYSTEM = 0x0F,
 				MIDI_NOTE_OFF = 0x08,
 				MIDI_NOTE_ON = 0x09,
 				MIDI_CONTROLLER = 0x0b,
 				MIDI_PROGRAM_CHANGE = 0x0c,
 				MIDI_PITCH_BEND = 0x0e
 			};
+			enum {
+				MIDI_CLOCK = 0x08,
+				MIDI_START = 0x0A,
+				MIDI_CONTINUE = 0x0B,
+				MIDI_STOP = 0x0C
+			};
 	private:
 			void init_midi(void);
 			void add_note(int on_off, int ch, int note, int velocity);
 			void add_event(int channel, int controller, int value);
+			void reset_song_position();
 
 			pthread_mutex_t mutex;
 
@@ -99,6 +111,8 @@ class MIDIListener
 
 			deque<MIDINote *> midi_notes;
 			deque<MIDIEvent *> midi_events;
+			/* song position */
+			int bar, beat, pulse;
 };
 
 #endif
