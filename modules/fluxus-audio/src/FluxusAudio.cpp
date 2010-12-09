@@ -59,6 +59,21 @@ AudioCollector *Audio = NULL;
 // (every-frame (animate))
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// audio
+// Cette partie de fluxus est responsable de la capture du son entrant, et du traitement
+// en harmoniques avec l'utilisation de fft (Fast Fourier Transform). Les harmoniques sont
+// des bandes de fréquences du son découpé, donnant l'indication de sa qualité.
+// C'est ce que représentent les équaliseur graphiques - un des scripts d'exemples (bars.scm)
+// agit comme tel, et peut être utilisé pour tester les fonctionnalités audios.
+// Exemple:
+// (start-audio "alsa_pcm:capture_1" 1024 44100)
+// (define (animate)
+//		(colour (vector (gh 1) (gh 2) (gh 3))) ; fabrique une couleur à partir des harmoniques
+//                                             ; et l'applique comme la couleur courante
+//		(draw-cube)) ; dessine un cube avec cette couleur
+// (every-frame (animate))
+// EndSectionDoc
 
 // StartFunctionDoc-en
 // start-audio jackport-string buffersize-number samplerate-number
@@ -83,6 +98,18 @@ AudioCollector *Audio = NULL;
 // você. Que pode então usar qjackctrl ou equivalente para fazer a
 // conexão manualmente. Fluxus lè uma única fonte mono.
 // Exemplo:
+// (start-audio "alsa_pcm:capture_1" 1024 44100)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// start-audio jackport-string buffersize-number samplerate-number
+// Retour: void
+// Description:
+// Démarre le systême audio avec les réglages spcifiés, vous aurez besoin d'appeler ceci en premier,
+// ou de le rentrer dans $HOME/.fluxus.scm pour l'appeler automatiquement au démarrage.
+// Si une chaîne vide est rentrée en nom de port jack, il ne cherchera pas à se connecter pour vous.
+// Utiliser qjackctrl ou équivalent pour connecter manuellement. Fluxus ne lit qu'une source mono.
+// Exemple:
 // (start-audio "alsa_pcm:capture_1" 1024 44100)
 // EndFunctionDoc
 
@@ -137,6 +164,22 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 // (every-frame (animate))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// gh harmonic-number
+// Retour: harmonic-real
+// Description:
+// Fluxus convertis l'audio entrant en harmoniques des fréquences qui peuvent être intégrées à vos
+// animation en utilisant cette commande. Il y a par défault 16 bandes d'harmoniques disponibles,
+// l'argumenr en valeur de l'harmonique sera bouclé si il est inférieur ou supérieur à 16, ainsi
+// cette commande peut être utilisée sans ce soucier des erreures de dépassements.
+// Exemple:
+// (define (animate)
+//		(colour (vector (gh 1) (gh 2) (gh 3))) ; fabrique une couleur à partir des harmoniques
+//                                             ; et l'applique comme la couleur courante
+//		(draw-cube)) ; dessine un cube avec cette couleur
+// (every-frame (animate))
+// EndFunctionDoc
+
 Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
@@ -179,6 +222,27 @@ Scheme_Object *get_harmonic(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna o conteúdo do buffer de audio atual.
 // Exemplo:
+// (clear)
+// (define p (build-ribbon 128))
+// (with-primitive p
+//    (hint-unlit)
+//    (pdata-map! (lambda (w) .1) "w"))
+//
+// (every-frame
+//    (let ([a (ga)])
+//        (with-primitive p
+//            (pdata-index-map!
+//                (lambda (i p)
+//                    (vector (* .25 (- i (/ (pdata-size) 2))) (* 10 (vector-ref a i)) 0))
+//                "p"))))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ga
+// Retour: audio-buffer-vector
+// Description:
+// Retourne le contenu courant du buffer audio.
+// Exemple:
 // (clear)
 // (define p (build-ribbon 128))
 // (with-primitive p
@@ -243,6 +307,15 @@ Scheme_Object *get_audio(int argc, Scheme_Object **argv)
 // (gain 100) ; muito quieto?!
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// gain gain-number
+// Retour: void
+// Description:
+// Règle le niveau de gain pour le son fft, 1 est la valeur par défaut.
+// Example:
+// (gain 100) ; pas assez fort?!
+// EndFunctionDoc
+
 Scheme_Object *gain(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -281,6 +354,19 @@ Scheme_Object *gain(int argc, Scheme_Object **argv)
 // com que a sincrônia entre quadros e audio seja possível.
 // Exemplo:
 // (process "somemusic.wav") ; read a precorded audio file
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// process wavfile-string
+// Retour: void
+// Description:
+// Cette commande désactive temporairement la lecture temps-réel du flux audio d'entrée et
+// lis un fichier wav à la place. Peut être utilisé avec la commande framedump pour traiter l'audio
+// séparément pour la création de vidéos avec musique. L'avantage est que le taux d'image est fixe,
+// ainsi la quantité audio lut pour chaque image est correcte - ceci rendant la synchronisation
+// entre image et audio possible.
+// Exemple:
+// (process "somemusic.wav") ; lecture d'un fichier audio pré-enregistré
 // EndFunctionDoc
 
 Scheme_Object *process(int argc, Scheme_Object **argv)
@@ -323,6 +409,17 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // (smoothing-bias 0) ; no smoothing
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// smoothing-bias value-number
+// Retour: void
+// Description:
+// Une sorte de moyenne pondérée pour les bandes harmoniques qui les lissent au cours du temps.
+// Le réglage par défaut est à 1.5 et peut aller de 0 à 2. La meilleure valeur dépend vraiment de la qualité de la music
+// et de la taille du buffer. C'est plus parlant en essayant avec le script d'exemple bars.scm.
+// Exemple:
+// (smoothing-bias 0) ; pas de lissage
+// EndFunctionDoc
+
 Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1); 
@@ -356,6 +453,16 @@ Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 // (update-audio)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// update-audio
+// Retour: void
+// Description:
+// Met à jour le sous-systême audio. Cette fonction est appellée pour vous (à chaque image)
+// dans fluxus-canvas.ss
+// Exemple:
+// (update-audio)
+// EndFunctionDoc
+
 Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 {
 	if (Audio!=NULL)
@@ -370,6 +477,15 @@ Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Sets the number of frequency bins to use for (gh).
+// Example:
+// (set-num-frequency-bins 64)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// set-num-frequency-bins count
+// Retour: void
+// Description:
+// Fixe le nombre de bandes de fréquences utilsées par (gh).
 // Example:
 // (set-num-frequency-bins 64)
 // EndFunctionDoc
@@ -395,6 +511,16 @@ Scheme_Object *set_num_frequency_bins(int argc, Scheme_Object **argv)
 // Returns the number of frequency bins used for (gh), or 0 if the audio
 // is not started with (start-audio).
 // Example:
+// (get-num-frequency-bins)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// get-num-frequency-bins
+// Retour: count-number
+// Description:
+// Retourne le nombre de bandes de fréquences utilisable par (gh), ou 0 si
+// l'audio n'as pas été démarré avec (start-audio).
+// Exemple:
 // (get-num-frequency-bins)
 // EndFunctionDoc
 
