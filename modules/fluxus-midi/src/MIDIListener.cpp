@@ -53,7 +53,6 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	midiin(NULL),
 	last_event("")
 {
-	reset_song_position();
 	init_midi();
 
 	if (port >= 0)
@@ -68,6 +67,8 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	fill(pgm_values, pgm_values + MAX_CHAN, 0);
 
 	pthread_mutex_init(&mutex, NULL);
+
+	set_signature(4, 4);
 }
 
 MIDIListener::~MIDIListener()
@@ -362,6 +363,31 @@ int MIDIListener::get_pulse(void)
 	return ret;
 }
 
+int MIDIListener::get_beats_per_bar()
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = beats_per_bar;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_clocks_per_beat()
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = clocks_per_beat;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+void MIDIListener::set_signature(int upper, int lower)
+{
+ 	pthread_mutex_lock(&mutex);
+	beats_per_bar = upper;
+	clocks_per_beat = (24*4)/lower;
+	pthread_mutex_unlock(&mutex);
+	reset_song_position();
+}
+
 /**
  * Adds a new event to the event queue.
  **/
@@ -466,11 +492,11 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 				{
 					pthread_mutex_lock(&mutex);
 					++pulse;
-					if(24==pulse)
+					if(clocks_per_beat==pulse)
 					{
 						pulse = 0;
 						++beat;
-						if(4==beat)
+						if(beats_per_bar==beat)
 						{
 							beat = 0;
 							++bar;
@@ -482,7 +508,6 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 			default:
 				break;
 			}
-
 		default:
 			break;
 	}

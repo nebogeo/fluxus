@@ -75,6 +75,9 @@ class MIDIListener
 			int get_bar(void);
 			int get_beat(void);
 			int get_pulse(void);
+			int get_beats_per_bar();
+			int get_clocks_per_beat();
+			void set_signature(int upper, int lower);
 
 			enum {
 				MIDI_SYSTEM = 0x0F,
@@ -113,6 +116,7 @@ class MIDIListener
 			deque<MIDIEvent *> midi_events;
 			/* song position */
 			int bar, beat, pulse;
+			int beats_per_bar, clocks_per_beat;
 };
 
 #endif

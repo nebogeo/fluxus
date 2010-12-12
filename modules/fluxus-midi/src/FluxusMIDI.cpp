@@ -571,6 +571,9 @@ Scheme_Object *midi_send(int argc, Scheme_Object **argv)
 Scheme_Object *midi_position(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(2, ret);
+	MZ_GC_REG();
 
 	if (midilistener != NULL)
 	{
@@ -584,7 +587,99 @@ Scheme_Object *midi_position(int argc, Scheme_Object **argv)
 		ret = scheme_void;
 	}
 
+	MZ_GC_UNREG();
 	return ret;
+}
+
+// StartFunctionDoc-en
+// midi-clocks-per-beat
+// Returns: clocks-per-beat-value-number
+// Description:
+// Returns the number of MIDI clocks per beat, depending on the time signature.
+// Example:
+// (midi-clocks-per-beat)
+// EndFunctionDoc
+
+Scheme_Object *midi_clocks_per_beat(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+
+	if (midilistener != NULL)
+	{
+		ret = scheme_make_integer(midilistener->get_clocks_per_beat());
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
+// midi-beats-per-bar
+// Returns: beats-per-bar-value-number
+// Description:
+// Returns the number of beats per bar, depending on the time signature.
+// Example:
+// (midi-beats-per-bar)
+// EndFunctionDoc
+
+Scheme_Object *midi_beats_per_bar(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_REG();
+
+	if (midilistener != NULL)
+	{
+		ret = scheme_make_integer(midilistener->get_beats_per_bar());
+	}
+	else
+	{
+		ret = scheme_void;
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
+// midi-set-signature
+// Returns: void
+// Description:
+// Sets the time signature
+// Calling this function resets the song position.
+// Example:
+// ;set the signature to 3/4
+// (midi-set-signature 3 4)
+// EndFunctionDoc
+
+Scheme_Object *midi_set_signature(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	if (midilistener != NULL)
+	{
+		if (!SCHEME_NUMBERP(argv[0]))
+			scheme_wrong_type("midi-set-signature", "number", 0, argc, argv);
+		if (!SCHEME_NUMBERP(argv[1]))
+			scheme_wrong_type("midi-set-signature", "number", 1, argc, argv);
+
+		int bpb = (int)scheme_real_to_double(argv[0]);
+		int cpb = (int)scheme_real_to_double(argv[1]);
+		midilistener->set_signature(bpb, cpb);
+	}
+
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 #ifdef STATIC_LINK
@@ -632,6 +727,15 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("midi-position",
 			scheme_make_prim_w_arity(midi_position, "midi-position", 0, 0), menv);
+
+	scheme_add_global("midi-clocks-per-beat",
+			scheme_make_prim_w_arity(midi_clocks_per_beat, "midi-clocks-per-beat", 0, 0), menv);
+
+	scheme_add_global("midi-beats-per-bar",
+			scheme_make_prim_w_arity(midi_beats_per_bar, "midi-beats-per-bar", 0, 0), menv);
+
+	scheme_add_global("midi-set-signature",
+			scheme_make_prim_w_arity(midi_set_signature, "midi-set-signature", 2, 2), menv);
 
 	scheme_finish_primitive_module(menv);
 	MZ_GC_UNREG();
