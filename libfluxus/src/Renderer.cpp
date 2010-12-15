@@ -146,7 +146,7 @@ void Renderer::Render()
 			PostRender();
 		}
 	}
-	
+
 	m_ImmediateMode.Clear();
 
 	if (m_MainRenderer)

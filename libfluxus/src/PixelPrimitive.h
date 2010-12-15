@@ -33,7 +33,8 @@ namespace Fluxus
 class PixelPrimitive : public Primitive
 {
 public:
-	PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive = false);
+	PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive = false,
+			unsigned txtcount = 1);
 	PixelPrimitive(const PixelPrimitive &other);
 	virtual ~PixelPrimitive();
 
@@ -42,6 +43,7 @@ public:
 	///@{
 	virtual PixelPrimitive* Clone() const;
 	virtual void Render();
+	// TODO: check maximum textures supported by hardware
 	virtual dBoundingBox GetBoundingBox(const dMatrix &space);
 	virtual void RecalculateNormals(bool smooth) {}
 	virtual void ApplyTransform(bool ScaleRotOnly=false);
@@ -65,7 +67,16 @@ public:
 	void Save(const string &filename) const;
 
 	/// Get the uploaded texture ID - call Upload() first.
-	unsigned int GetTexture() { return m_Texture; }
+	unsigned int GetTexture(unsigned i = 0) { return m_Textures[i % m_MaxTextures]; }
+
+	/// Set the texture ID used when rendering the primitive
+	void SetDisplayTexture(unsigned id) { m_DisplayTexture = id; }
+
+	/// Set the texture ID used when rendering into the primitive
+	void SetRenderTexture(unsigned id);
+
+	/// Get the texture ID used for rendering
+	unsigned GetRenderTexture() { return m_RenderTexture; }
 
 	/// Get the width
 	unsigned int GetWidth() { return m_Width; }
@@ -101,14 +112,18 @@ protected:
 	vector<dVector> m_Points;
 	vector<dColour> *m_ColourData;
 
-	unsigned int m_Texture;
-	unsigned int m_DepthBuffer;
-	unsigned int m_FBO;
+	unsigned m_MaxTextures;
+	unsigned *m_Textures; // attached textures
+	unsigned m_DisplayTexture; // id for rendering the primitive on screen
+	unsigned m_RenderTexture; // id for rendering into the fbo
+	unsigned m_RenderTextureIndex; // index for rendering into the fbo
+	unsigned m_DepthBuffer;
+	unsigned m_FBO;
 
-	unsigned int m_Width;
-	unsigned int m_Height;
-	unsigned int m_FBOWidth;
-	unsigned int m_FBOHeight;
+	unsigned m_Width;
+	unsigned m_Height;
+	unsigned m_FBOWidth;
+	unsigned m_FBOHeight;
 	float m_FBOMaxS;
 	float m_FBOMaxT;
 

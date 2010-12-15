@@ -1,16 +1,8 @@
-; FreeFrame GL example
-; for more information on FreeFrame plugins please visit
-; http://www.freeframe.org
 
 (clear)
 
-(define p (build-pixels 256 256 #t)) ; input pixelprimitive
-
-(translate (vector 1.1 0 0))
-
-; output pixelprimitive - rendering is not active
-; otherwise it would overwrite the plugin output
-(define op (build-pixels 256 256))
+; pixelprimitive with 2 textures and an active renderer
+(define p (build-pixels 256 256 #t 2))
 
 ; load plugin FFGLTile, available from the FreeFrame SDK
 ; at http://www.freeframe.org
@@ -20,14 +12,21 @@
     (for ([i (ffgl-get-info)]) ; print plugin information
         (printf "~a~n" i))
     (printf "~a~n" (ffgl-get-parameters)) ; parameter names as strings
-    (ffgl-process op p)) ; set destination and source pixelprimitives
+    (ffgl-process p ; output pixel primitive
+        (pixels->texture p 1) ; output texture
+        (pixels->texture p 0))) ; input texture
 
+(with-primitive p
+    ; the renderer of the pixelprimitive renders to texture 0
+    (pixels-render-to (pixels->texture p 0))
+    ; the pixel primitive is displayed using texture 1
+    (pixels-display (pixels->texture p 1)))
 (define (anim)
-	; set plugin parameters as keywords arguments
+    ; set plugin parameters as keywords arguments
     (with-ffgl plugin
         (ffgl-set-parameter! #:tilex (/ (mouse-x) (vx (get-screen-size)))
-                             #:tiley (/ (mouse-y) (vy (get-screen-size)))))
-	; render to the input pixelprimitive
+            #:tiley (/ (mouse-y) (vy (get-screen-size)))))
+    ; render to the input pixelprimitive
     (with-pixels-renderer p
         (with-state
             (clear-colour #(0 1 0))
@@ -36,4 +35,3 @@
             (draw-cube))))
 
 (every-frame (anim))
-

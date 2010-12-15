@@ -74,8 +74,9 @@ static void check_fbo_errors(void)
 #endif
 
 
-PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive /* = false */) :
-m_Texture(0),
+PixelPrimitive::PixelPrimitive(unsigned int w, unsigned int h, bool RendererActive /* = false */,
+		unsigned txtcount /* = 1 */) :
+m_RenderTextureIndex(0),
 m_DepthBuffer(0),
 m_FBO(0),
 m_Width(w),
@@ -90,6 +91,12 @@ m_RendererActive(RendererActive)
 
 	AddData("c",new TypedPData<dColour>);
 
+	if ((txtcount > 0) && m_FBOSupported)
+	{
+		// TODO: check maximum textures supported by hardware
+		m_MaxTextures = txtcount;
+	}
+
 	// setup the direct access for speed
 	PDataDirty();
 
@@ -101,10 +108,16 @@ m_RendererActive(RendererActive)
 		}
 	}
 
-	m_Points.push_back(dVector(0,0,0));
-	m_Points.push_back(dVector(1,0,0));
-	m_Points.push_back(dVector(1,1,0));
-	m_Points.push_back(dVector(0,1,0));
+	m_Points.push_back(dVector(-.5, -.5, 0));
+	m_Points.push_back(dVector(.5, -.5, 0));
+	m_Points.push_back(dVector(.5, .5, 0));
+	m_Points.push_back(dVector(-.5, .5, 0));
+
+	m_Textures = new unsigned [m_MaxTextures];
+	for (unsigned i = 0; i < m_MaxTextures; i++)
+	{
+		m_Textures[i] = 0;
+	}
 
 	if (m_FBOSupported)
 	{
@@ -112,20 +125,24 @@ m_RendererActive(RendererActive)
 	}
 	else
 	{
-		glGenTextures(1, (GLuint*)&m_Texture);
+		glGenTextures(1, (GLuint*)m_Textures);
 
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		glBindTexture(GL_TEXTURE_2D, m_Textures[0]);
 		gluBuild2DMipmaps(GL_TEXTURE_2D, 4, m_Width, m_Height,
 				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
 		cerr << "FBO is not supported" << endl;
 	}
+	m_DisplayTexture = m_RenderTexture = m_Textures[m_RenderTextureIndex];
 }
 
 PixelPrimitive::PixelPrimitive(const PixelPrimitive &other) :
 Primitive(other),
 m_Points(other.m_Points),
+m_MaxTextures(other.m_MaxTextures),
+m_DisplayTexture(other.m_DisplayTexture),
+m_RenderTextureIndex(other.m_RenderTextureIndex),
 m_Width(other.m_Width),
 m_Height(other.m_Height),
 m_ReadyForUpload(other.m_ReadyForUpload),
@@ -136,6 +153,12 @@ m_RendererActive(other.m_RendererActive)
 	m_Renderer = new Renderer();
 	m_Physics = new Physics(m_Renderer);
 
+	m_Textures = new unsigned [m_MaxTextures];
+	for (unsigned i = 0; i < m_MaxTextures; i++)
+	{
+		m_Textures[i] = 0;
+	}
+
 	PDataDirty();
 	if (m_FBOSupported)
 	{
@@ -143,22 +166,30 @@ m_RendererActive(other.m_RendererActive)
 	}
 	else
 	{
-		glGenTextures(1, (GLuint*)&m_Texture);
+		glGenTextures(1, (GLuint*)m_Textures);
 	}
+	m_DisplayTexture = m_RenderTexture = m_Textures[m_RenderTextureIndex];
 }
 
 PixelPrimitive::~PixelPrimitive()
 {
-	if (m_Texture!=0)
+	for (unsigned i = 0; i < m_MaxTextures; i++)
 	{
-		glDeleteTextures(1,(GLuint*)&m_Texture);
+		if (m_Textures[i] != 0)
+		{
+			glDeleteTextures(1, (GLuint *)&m_Textures[i]);
+		}
 	}
+	delete [] m_Textures;
 
 	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (m_FBOSupported)
 	{
 		glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
-		if (m_DepthBuffer!=0) glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+		if (m_DepthBuffer != 0)
+		{
+			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+		}
 	}
 	#endif
 
@@ -181,14 +212,17 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 	#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (m_FBOSupported)
 	{
-		if (m_Texture != 0)
-			glDeleteTextures(1,(GLuint*)&m_Texture);
+		for (unsigned i = 0; i < m_MaxTextures; i++)
+		{
+			if (m_Textures[i] != 0)
+				glDeleteTextures(1, (GLuint *)&m_Textures[i]);
+		}
 		if (m_FBO != 0)
 			glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
-		if (m_DepthBuffer!=0)
+		if (m_DepthBuffer != 0)
 			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 
-		glGenTextures(1, (GLuint*)&m_Texture);
+		glGenTextures(m_MaxTextures, (GLuint*)m_Textures);
 
 		m_FBOWidth = 1 << (unsigned)ceil(log2(w));
 		m_FBOHeight = 1 << (unsigned)ceil(log2(h));
@@ -199,46 +233,46 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 		glGenFramebuffersEXT(1, (GLuint *)&m_FBO);
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, (GLuint)m_FBO);
 
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		for (unsigned i = 0; i < m_MaxTextures; i++)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_Textures[i]);
 
-		/* set texture parameters */
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
-				m_State.TextureStates[0].Mag);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
-				m_State.TextureStates[0].Min);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-				m_State.TextureStates[0].WrapS);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-				m_State.TextureStates[0].WrapT);
-		glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+			/* set texture parameters */
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+					m_State.TextureStates[0].Mag);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+					m_State.TextureStates[0].Min);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+					m_State.TextureStates[0].WrapS);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
+					m_State.TextureStates[0].WrapT);
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 
-		/* create a texture of m_FBOWidth x m_FBOHeight size */
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
-				GL_RGBA, GL_FLOAT, NULL);
-
-		/* establish a mipmap chain for the texture */
-		glGenerateMipmapEXT(GL_TEXTURE_2D);
+			/* create a texture of m_FBOWidth x m_FBOHeight size */
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
+					GL_RGBA, GL_FLOAT, NULL);
 #ifdef DEBUG_GL
-		check_gl_errors("ResizeFBO glGenerateMipmapEXT");
+			check_gl_errors("ResizeFBO glTexImage2D");
 #endif
 
-		/* upload pdata to the top left corner of m_Width x m_Height size */
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+			/* establish a mipmap chain for the texture */
+			glGenerateMipmapEXT(GL_TEXTURE_2D);
 #ifdef DEBUG_GL
-		check_gl_errors("ResizeFBO glTexSubImage2D");
+			check_gl_errors("ResizeFBO glGenerateMipmapEXT");
 #endif
-
-		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
+			/* upload pdata to the top left corner of m_Width x m_Height size */
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
+					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+#ifdef DEBUG_GL
+			check_gl_errors("ResizeFBO glTexSubImage2D");
+#endif
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 
 		/* create the depth buffer */
 		if (m_State.Hints & HINT_IGNORE_DEPTH)
 		{
 			m_DepthBuffer = 0;
-			//cout << " no depth" << endl;
 		}
 		else
 		{
@@ -248,16 +282,20 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 					m_FBOWidth, m_FBOHeight);
 		}
 
-		/* attach the texture to the FBO as GL_COLOR_ATTACHMENT0_EXT */
-		glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-				GL_COLOR_ATTACHMENT0_EXT,
-				GL_TEXTURE_2D, (GLuint)m_Texture, 0);
-
 		/* attach the depth buffer to the fbo */
-		if (m_DepthBuffer!=0)
+		if (m_DepthBuffer != 0)
 			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
 					GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
 					(GLuint)m_DepthBuffer);
+
+		/* attach the textures to the FBO */
+		for (unsigned i = 0; i < m_MaxTextures; i++)
+		{
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+					GL_COLOR_ATTACHMENT0_EXT + i,
+					GL_TEXTURE_2D, (GLuint)m_Textures[i], 0);
+		}
+
 #ifdef DEBUG_GL
 		check_fbo_errors();
 #endif
@@ -325,7 +363,7 @@ void PixelPrimitive::Bind()
 	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, m_FBO);
 
 	/* set rendering */
-	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT);
+	glDrawBuffer(GL_COLOR_ATTACHMENT0_EXT + m_RenderTextureIndex);
 	#endif
 }
 
@@ -340,7 +378,7 @@ void PixelPrimitive::Unbind()
 
 	// generate mipmaps
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
@@ -360,17 +398,17 @@ void PixelPrimitive::Render()
 	// render the pixel primitive scenegraph
 	if (m_FBOSupported && m_RendererActive)
 	{
-		glMatrixMode (GL_PROJECTION);
+		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
-		glMatrixMode (GL_MODELVIEW);
+		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		Bind();
 		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
-		glMatrixMode (GL_PROJECTION);
+		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
-		glMatrixMode (GL_MODELVIEW);
+		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 	}
 
@@ -390,7 +428,7 @@ void PixelPrimitive::Render()
 		glEnd();
 
 		glColor4fv(m_State.Colour.arr());
-		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
 	}
@@ -405,7 +443,7 @@ void PixelPrimitive::Render()
 
 	// override the state texture!
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D,m_Texture);
+	glBindTexture(GL_TEXTURE_2D, m_DisplayTexture);
 
 	glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
@@ -418,6 +456,7 @@ void PixelPrimitive::Render()
 	glTexCoord2f(0,t);
 	glVertex3fv(m_Points[3].arr());
 	glEnd();
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
 
@@ -465,19 +504,11 @@ void PixelPrimitive::ApplyTransform(bool ScaleRotOnly)
 
 void PixelPrimitive::UploadPData()
 {
-	if (m_FBOSupported)
-	{
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	else
-	{
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
-				GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-	}
+	glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
+
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
+			GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void PixelPrimitive::DownloadPData()
@@ -485,15 +516,29 @@ void PixelPrimitive::DownloadPData()
 	if (m_FBOSupported)
 	{
 		Bind();
-		GLubyte *data=GetScreenBuffer(0, 0, m_Width, m_Height, 1);
-		for (unsigned int i=0; i<m_Width*m_Height; i++)
+		GLubyte *data = GetScreenBuffer(0, 0, m_Width, m_Height, 1);
+		for (unsigned int i = 0; i < m_Width * m_Height; i++)
 		{
-			(*m_ColourData)[i].r=data[i*3]/255.0f;
-			(*m_ColourData)[i].g=data[i*3+1]/255.0f;
-			(*m_ColourData)[i].b=data[i*3+2]/255.0f;
+			(*m_ColourData)[i].r = data[i*3] / 255.0f;
+			(*m_ColourData)[i].g = data[i*3+1] / 255.0f;
+			(*m_ColourData)[i].b = data[i*3+2] / 255.0f;
 		}
         free(data);
 		Unbind();
 	}
+}
+
+void PixelPrimitive::SetRenderTexture(unsigned id)
+{
+	m_RenderTextureIndex = 0;
+	for (unsigned i = 0; i < m_MaxTextures; i++)
+	{
+		if (m_Textures[i] == id)
+		{
+			m_RenderTextureIndex = i;
+			break;
+		}
+	}
+	m_RenderTexture = m_Textures[m_RenderTextureIndex];
 }
 

@@ -57,7 +57,7 @@ public:
 	unsigned Instantiate(int width, int height);
 	void Deinstantiate(unsigned instance);
 
-	void Render(PixelPrimitive *output, unsigned instance, ProcessOpenGLStruct *pogl);
+	void Render(PixelPrimitive *output, unsigned output_txt, unsigned instance, ProcessOpenGLStruct *pogl);
 
 	float PluginVersion;
 	char PluginID[5];
@@ -103,7 +103,7 @@ public:
 	~FFGLPluginInstance();
 
 	void Free();
-	void SetPixels(vector<PixelPrimitive *> &pixels);
+	void SetPixels(PixelPrimitive *outputpp, vector<unsigned> &textures);
 	void Render();
 	void Activate(bool a) { m_Active = a; }
 	bool Active() { return m_Active; }
@@ -114,6 +114,7 @@ public:
 private:
 	ProcessOpenGLStruct *pogl;
 	PixelPrimitive *output;
+	unsigned output_txt;
 	bool m_Active;
 };
 
