@@ -164,7 +164,7 @@ Scheme_Object *flxseed(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// set-searchpathss paths-list
+// set-searchpaths paths-list
 // Returns: void
 // Description:
 // Sets a list of search path strings to use for looking for fluxus related files, such as
