@@ -402,7 +402,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         from osxbundle import *
         TOOL_BUNDLE(env)
         # add dynamic libs
-        frameworks = ['/Library/Frameworks/Jackmp.framework']
+        frameworks = [] #['/Library/Frameworks/Jackmp.framework']
         if racket_framework:
             frameworks += [RacketLib + '/Racket.framework']
         dylibs = [ '%s/lib/liblo.dylib' % Prefix]
@@ -448,7 +448,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
         '''
 
         # fluxa
-        frameworks = [ '/Library/Frameworks/Jackmp.framework']
+        frameworks = [] #[ '/Library/Frameworks/Jackmp.framework']
         dylibs = [ '%s/lib/liblo.dylib' % Prefix]
         env.Alias('app', env.MakeBundle('Fluxa.app',
                                         'fluxa/fluxa',
@@ -459,8 +459,8 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         typecode='APPL',
                                         icon_file='packages/macos/fluxa.icns'))
 
-if (env['PLATFORM'] == "win32"):
-	Target+=".exe"
+if env['PLATFORM'] == 'win32':
+	Target += '.exe'
 
 env.Install(DocsInstall, Docs)
 env.Install(DocsInstall, Examples)
