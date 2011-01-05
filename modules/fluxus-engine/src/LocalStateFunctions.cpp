@@ -2879,21 +2879,22 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 				}
 				else if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]))
 				{
-					if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 3)
+					// set vec2f, vec3f, vec4f uniform variables
+					listvec = SCHEME_VEC_ELS(paramvec)[n + 1];
+					int vecsize = SCHEME_VEC_SIZE(listvec);
+
+					if ((2 <= vecsize) && (vecsize <= 4))
 					{
 						dVector vec;
-						FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),3);
-						shader->SetVector(param,vec);
-					}
-					else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
-					{
-						dColour vec;
-						FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
-						shader->SetColour(param,vec);
+						cerr << param << " " << vecsize << endl;
+						FloatsFromScheme(listvec, vec.arr(), vecsize);
+						cerr << vec.x << " " << vec.y << " " << vec.z << " " << vec.w << endl;
+						shader->SetVector(param, vec, vecsize);
 					}
 					else
 					{
-						Trace::Stream<<"shader has found an argument vector of a strange size"<<endl;
+						Trace::Stream << "shader is expecting vector size 2, 3 or 4, but found " << vecsize <<
+							" for variable " << param << endl;
 					}
 				}
 				else if (SCHEME_LISTP(SCHEME_VEC_ELS(paramvec)[n+1]))

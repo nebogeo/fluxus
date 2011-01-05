@@ -20,6 +20,7 @@
 #include "GLSLShader.h"
 #include "Trace.h"
 #include "SearchPaths.h"
+#include "DebugGL.h"
 
 using namespace std;
 using namespace Fluxus;
@@ -284,12 +285,25 @@ void GLSLShader::SetFloat(const string &name, float s)
 	#endif
 }
 
-void GLSLShader::SetVector(const string &name, dVector s)
+void GLSLShader::SetVector(const string &name, dVector s, int size /* = 4 */)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
+
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
-	glUniform3f(param,s.x,s.y,s.z);
+	switch (size)
+	{
+		case 2:
+			glUniform2f(param, s.x, s.y);
+			break;
+		case 3:
+			glUniform3f(param, s.x, s.y, s.z);
+			break;
+		case 4:
+			glUniform4f(param, s.x, s.y, s.z, s.w);
+			break;
+	}
+	CHECK_GL_ERRORS("glUniform");
 	#endif
 }
 

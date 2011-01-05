@@ -81,7 +81,7 @@ public:
 	///@{
 	void SetInt(const string &name, int s);
 	void SetFloat(const string &name, float s);
-	void SetVector(const string &name, dVector s);
+	void SetVector(const string &name, dVector s, int size = 4);
 	void SetColour(const string &name, dColour s);
 	void SetIntArray(const string &name, const vector<int> &s);
 	void SetFloatArray(const string &name, const vector<float> &s);

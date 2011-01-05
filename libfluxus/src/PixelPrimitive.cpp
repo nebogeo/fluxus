@@ -20,6 +20,7 @@
 #include "PixelPrimitive.h"
 #include "State.h"
 #include "Utils.h"
+#include "DebugGL.h"
 
 #ifdef WIN32
 #define DISABLE_RENDER_TO_TEXTURE
@@ -27,24 +28,10 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
-//#define DEBUG_GL
 
 using namespace Fluxus;
 
 #ifdef DEBUG_GL
-static void check_gl_errors(const char *call)
-{
-	GLenum status = glGetError();
-	if (status == GL_NO_ERROR)
-		return;
-
-	const char *status_msg = (const char *)gluErrorString(status);
-	if (status_msg == NULL)
-		status_msg = "unknown gl error";
-
-	cerr << call << " - " << status_msg << " (" << status << ")" << endl;
-}
-
 static void check_fbo_errors(void)
 {
 	const char *fbo_status_msg[] =
@@ -251,21 +238,16 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 			/* create a texture of m_FBOWidth x m_FBOHeight size */
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_FBOWidth, m_FBOHeight, 0,
 					GL_RGBA, GL_FLOAT, NULL);
-#ifdef DEBUG_GL
-			check_gl_errors("ResizeFBO glTexImage2D");
-#endif
+			CHECK_GL_ERRORS("ResizeFBO glTexImage2D");
 
 			/* establish a mipmap chain for the texture */
 			glGenerateMipmapEXT(GL_TEXTURE_2D);
-#ifdef DEBUG_GL
-			check_gl_errors("ResizeFBO glGenerateMipmapEXT");
-#endif
+			CHECK_GL_ERRORS("ResizeFBO GlGenerateMipmapEXT");
 			/* upload pdata to the top left corner of m_Width x m_Height size */
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, m_Width, m_Height,
 					GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
-#ifdef DEBUG_GL
-			check_gl_errors("ResizeFBO glTexSubImage2D");
-#endif
+			CHECK_GL_ERRORS("ResizeFBO glTexSubImage2D");
+
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
