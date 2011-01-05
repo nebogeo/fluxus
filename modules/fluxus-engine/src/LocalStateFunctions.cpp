@@ -2886,9 +2886,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 					if ((2 <= vecsize) && (vecsize <= 4))
 					{
 						dVector vec;
-						cerr << param << " " << vecsize << endl;
 						FloatsFromScheme(listvec, vec.arr(), vecsize);
-						cerr << vec.x << " " << vec.y << " " << vec.z << " " << vec.w << endl;
 						shader->SetVector(param, vec, vecsize);
 					}
 					else
