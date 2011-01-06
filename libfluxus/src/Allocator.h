@@ -16,7 +16,7 @@
 
 #include <memory.h>
 #include <limits>
-#include <malloc.h>
+#include <stdlib.h>
 #include "dada.h"
 
 #ifndef FLUXUS_ALLOCATOR
@@ -31,7 +31,7 @@ void dealloc_hook(void *ptr, size_t n);
 namespace Fluxus
 {
     template <class T> class allocator;
-    
+
     template <class T>
     class allocator
     {
@@ -119,3 +119,4 @@ bool operator!=(const allocator<T1>& a1, const allocator<T2>& a2) throw()
 }
 
 #endif
+
