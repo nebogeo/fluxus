@@ -15,4 +15,20 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "Allocator.h"
+#include <set>
 
+using namespace std;
+
+set<int> mem;
+
+void alloc_hook(void *ptr, size_t n)
+{
+    mem.insert((int)ptr);
+    std::cerr<<"++"<<mem.size()<<endl;
+}
+
+void dealloc_hook(void *ptr, size_t n)
+{
+    mem.erase((int)ptr);
+    std::cerr<<"--"<<mem.size()<<endl;
+}

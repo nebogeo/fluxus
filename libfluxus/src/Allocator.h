@@ -25,8 +25,8 @@
 #define FLX_ALLOC(T) std::allocator<T>
 //#define FLX_ALLOC(T) Fluxus::allocator<T>
 
-static long long stats_allocated=0;
-static long long stats_highwater=0;
+void alloc_hook(void *ptr, size_t n);
+void dealloc_hook(void *ptr, size_t n);
 
 namespace Fluxus
 {
@@ -80,18 +80,14 @@ namespace Fluxus
 
         pointer allocate(size_type n, allocator<T>::const_pointer hint = 0)
         {
-            stats_allocated+=1;
-            if (stats_allocated>stats_highwater)
-            {
-                stats_highwater=stats_allocated;
-                std::cerr<<"highwater now "<<stats_highwater<<std::endl;
-            }
-            return reinterpret_cast<pointer>(malloc(n * sizeof(T)));
+            pointer ret=reinterpret_cast<pointer>(malloc(n * sizeof(T)));
+            alloc_hook((void*)ret,n);
+            return ret;
         }
 
         void deallocate(pointer p, size_type n)
         {
-            stats_allocated--;
+            dealloc_hook((void*)p,n);
             free(p);
         }
 
