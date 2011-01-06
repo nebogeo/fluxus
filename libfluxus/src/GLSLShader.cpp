@@ -252,7 +252,7 @@ void GLSLShader::SetColour(const string &name, dColour s)
 	#endif
 }
 
-void GLSLShader::SetIntArray(const string &name, const vector<int> &s)
+void GLSLShader::SetIntArray(const string &name, const vector<int,FLX_ALLOC(int) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -261,7 +261,7 @@ void GLSLShader::SetIntArray(const string &name, const vector<int> &s)
 	#endif
 }
 
-void GLSLShader::SetFloatArray(const string &name, const vector<float> &s)
+void GLSLShader::SetFloatArray(const string &name, const vector<float,FLX_ALLOC(float) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -270,7 +270,7 @@ void GLSLShader::SetFloatArray(const string &name, const vector<float> &s)
 	#endif
 }
 
-void GLSLShader::SetVectorArray(const string &name, const vector<dVector> &s)
+void GLSLShader::SetVectorArray(const string &name, const vector<dVector,FLX_ALLOC(dVector) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -279,7 +279,7 @@ void GLSLShader::SetVectorArray(const string &name, const vector<dVector> &s)
 	#endif
 }
 
-void GLSLShader::SetColourArray(const string &name, const vector<dColour> &s)
+void GLSLShader::SetColourArray(const string &name, const vector<dColour,FLX_ALLOC(dColour) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -288,7 +288,7 @@ void GLSLShader::SetColourArray(const string &name, const vector<dColour> &s)
 	#endif
 }
 
-void GLSLShader::SetFloatAttrib(const string &name, const vector<float> &s)
+void GLSLShader::SetFloatAttrib(const string &name, const vector<float,FLX_ALLOC(float) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -298,7 +298,7 @@ void GLSLShader::SetFloatAttrib(const string &name, const vector<float> &s)
 	#endif
 }
 
-void GLSLShader::SetVectorAttrib(const string &name, const vector<dVector> &s)
+void GLSLShader::SetVectorAttrib(const string &name, const vector<dVector,FLX_ALLOC(dVector) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
@@ -308,7 +308,7 @@ void GLSLShader::SetVectorAttrib(const string &name, const vector<dVector> &s)
 	#endif
 }
 
-void GLSLShader::SetColourAttrib(const string &name, const vector<dColour> &s)
+void GLSLShader::SetColourAttrib(const string &name, const vector<dColour,FLX_ALLOC(dColour) > &s)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;

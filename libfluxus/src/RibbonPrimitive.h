@@ -53,14 +53,14 @@ protected:
 private:
 	void Realloc();
 
-	vector<dVector> *m_VertData;
-	vector<dColour> *m_ColData;
-	vector<float> *m_WidthData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_VertData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
+	vector<float,FLX_ALLOC(float) > *m_WidthData;
 
-	vector<dVector> *m_Vertices;
-	vector<dVector> *m_Normals;
-	vector<dColour> *m_VertCols;
-	vector<dVector> *m_TexCoords;
+	vector<dVector,FLX_ALLOC(dVector) > *m_Vertices;
+	vector<dVector,FLX_ALLOC(dVector) > *m_Normals;
+	vector<dColour,FLX_ALLOC(dColour) > *m_VertCols;
+	vector<dVector,FLX_ALLOC(dVector) > *m_TexCoords;
 
     bool m_InverseNormals;
 };

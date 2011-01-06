@@ -20,6 +20,7 @@
 #include "LocalStateFunctions.h"
 #include "Renderer.h"
 #include "ShaderCache.h"
+#include "Allocator.h"
 
 using namespace LocalStateFunctions;
 using namespace SchemeHelper;
@@ -2920,7 +2921,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
             {
               if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[0]))
               {
-                vector<int> array;
+                vector<int, FLX_ALLOC(int) > array;
                 for (unsigned int i=0; i<sz; i++)
                 {
                   if (!SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[i]))
@@ -2934,7 +2935,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
               }
               else
               {
-                vector<float> array;
+                vector<float, FLX_ALLOC(float) > array;
                 for (unsigned int i=0; i<sz; i++)
                 {
                   if (!SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[i]))
@@ -2951,7 +2952,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
             {
               if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 3)
               {
-                vector<dVector> array;
+                vector<dVector, FLX_ALLOC(dVector) > array;
                 for (unsigned int i=0; i<sz; i++)
                 {
                   if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
@@ -2968,7 +2969,7 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
               }
               else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 4)
               {
-                vector<dColour> array;
+                vector<dColour, FLX_ALLOC(dColour) > array;
                 for (unsigned int i=0; i<sz; i++)
                 {
                   if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||

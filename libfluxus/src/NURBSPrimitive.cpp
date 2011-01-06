@@ -227,7 +227,7 @@ void NURBSPrimitive::RecalculateNormals(bool smooth)
 dBoundingBox NURBSPrimitive::GetBoundingBox(const dMatrix &space)
 {
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_CVVec->begin();	i!=m_CVVec->end(); ++i)
 	{
 		box.expand(space.transform(*i));
 	}
@@ -238,14 +238,14 @@ void NURBSPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVector>::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_CVVec->begin(); i!=m_CVVec->end(); ++i)
 		{
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}

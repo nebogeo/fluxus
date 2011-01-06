@@ -67,8 +67,8 @@ protected:
 
 private:
 
-	vector<dColour> *m_ColData;
-	vector<dColour> *m_GradData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_GradData;
 	unsigned int m_Width;
 	unsigned int m_Height;
 	unsigned int m_Depth;

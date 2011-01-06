@@ -61,12 +61,12 @@ protected:
 	virtual void PDataDirty();
 	void SetupSurface();
 
-	vector<dVector> *m_CVVec;
-	vector<dVector> *m_STVec;
-	vector<dVector> *m_NVec;
-	vector<dColour> *m_ColData;
-	vector<float> m_UKnotVec;
-	vector<float> m_VKnotVec;
+	vector<dVector,FLX_ALLOC(dVector) > *m_CVVec;
+	vector<dVector,FLX_ALLOC(dVector) > *m_STVec;
+	vector<dVector,FLX_ALLOC(dVector) > *m_NVec;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
+	vector<float,FLX_ALLOC(float) > m_UKnotVec;
+	vector<float,FLX_ALLOC(float) > m_VKnotVec;
 
 	int m_UOrder;
 	int m_VOrder;

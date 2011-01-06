@@ -82,9 +82,9 @@ protected:
 
 	virtual void PDataDirty();
 
-	vector<dVector> *m_PosData;
-	vector<float> *m_StrengthData;
-	vector<dColour> *m_ColData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_PosData;
+	vector<float,FLX_ALLOC(float) > *m_StrengthData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
 
 	vector<Cell> m_Voxels;
 	unsigned m_Width;

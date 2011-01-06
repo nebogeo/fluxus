@@ -145,7 +145,7 @@ void ParticlePrimitive::Render()
 dBoundingBox ParticlePrimitive::GetBoundingBox(const dMatrix &space)
 {
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 	{
 		box.expand(space.transform(*i));
 	}
@@ -156,14 +156,14 @@ void ParticlePrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}

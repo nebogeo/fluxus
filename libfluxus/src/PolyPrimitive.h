@@ -116,10 +116,10 @@ protected:
 	vector<unsigned int> m_IndexData;
 	
 	Type m_Type;
-	vector<dVector> *m_VertData;
-	vector<dVector> *m_NormData;
-	vector<dColour> *m_ColData;
-	vector<dVector> *m_TexData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_VertData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_NormData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_TexData;
 };
 
 };

@@ -436,7 +436,7 @@ void PixelPrimitive::Render()
 dBoundingBox PixelPrimitive::GetBoundingBox(const dMatrix &space)
 {
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
 	{
 		box.expand(space.transform(*i));
 	}
@@ -447,7 +447,7 @@ void PixelPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_Points.begin(); i!=m_Points.end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}

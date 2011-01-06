@@ -62,7 +62,7 @@ public:
 	/// Retrieves a pointer to the internal vector by name
 	/// Returns NULL if it doesn't exist, or is not the 
 	/// type given in the template call.
-	template<class T> vector<T>* GetDataVec(const string &name);      
+	template<class T> vector<T,FLX_ALLOC(T) >* GetDataVec(const string &name);      
 	
 	/// Destroys a pdata array
 	void RemoveDataVec(const string &name);
@@ -129,7 +129,7 @@ T PDataContainer::GetData(const string &name, unsigned int index) const
 }
 
 template<class T>
-vector<T>* PDataContainer::GetDataVec(const string &name)
+vector<T,FLX_ALLOC(T) >* PDataContainer::GetDataVec(const string &name)
 {
 	map<string,PData*>::iterator i=m_PData.find(name);
 	if (i==m_PData.end())

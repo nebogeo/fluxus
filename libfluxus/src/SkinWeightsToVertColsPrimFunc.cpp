@@ -46,14 +46,14 @@ void SkinWeightsToVertColsPrimFunc::Run(Primitive &prim, const SceneGraph &world
 	}
 
 	// make some random colours
-	vector<dColour> colours;
+	vector<dColour, FLX_ALLOC(dColour) > colours;
 	for (unsigned int bone=0; bone<numbones; bone++)
 	{
 		colours.push_back(dColour(RandFloat(),RandFloat(),RandFloat()));
 	}
 
 	// get pointers to all the weights
-	vector<vector<float>*> weights;
+	vector<vector<float, FLX_ALLOC(float) >*> weights;
 	for (unsigned int bone=0; bone<numbones; bone++)
 	{
 		snprintf(wname,256,"w%d",bone);

@@ -8,7 +8,8 @@ Import("env")
 
 Target = "libfluxus.a"
 
-Source = Split("src/PData.cpp \
+Source = Split("src/Allocator.cpp \
+        src/PData.cpp \
         src/PDataOperator.cpp \
 		src/PDataContainer.cpp \
 		src/PDataArithmetic.cpp \

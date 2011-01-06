@@ -98,8 +98,8 @@ protected:
 	void DownloadPData();
 	void UploadPData();
 
-	vector<dVector> m_Points;
-	vector<dColour> *m_ColourData;
+	vector<dVector,FLX_ALLOC(dVector) > m_Points;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColourData;
 
 	unsigned int m_Texture;
 	unsigned int m_DepthBuffer;

@@ -56,10 +56,10 @@ protected:
 
 private:
 
-	vector<dVector> *m_VertData;
-	vector<dColour> *m_ColData;
-	vector<dVector> *m_SizeData;
-	vector<float> *m_RotateData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_VertData;
+	vector<dColour,FLX_ALLOC(dColour) > *m_ColData;
+	vector<dVector,FLX_ALLOC(dVector) > *m_SizeData;
+	vector<float,FLX_ALLOC(float) > *m_RotateData;
 	
 	class SortItem
 	{

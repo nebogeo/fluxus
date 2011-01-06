@@ -21,7 +21,7 @@ using namespace Fluxus;
 template <>
 PData *AddOperator::Operate(TypedPData<float> *a, float b)
 {
-	for (vector<float>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<float,FLX_ALLOC(float) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		*i+=b;
 	}
@@ -32,7 +32,7 @@ PData *AddOperator::Operate(TypedPData<float> *a, float b)
 template <>
 PData *AddOperator::Operate(TypedPData<dVector> *a, float b)
 {
-	for (vector<dVector>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		i->x+=b;
 		i->y+=b;
@@ -44,7 +44,7 @@ PData *AddOperator::Operate(TypedPData<dVector> *a, float b)
 template <>
 PData *AddOperator::Operate(TypedPData<dVector> *a, dVector b)
 {
-	for (vector<dVector>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		i->x+=b.x;
 		i->y+=b.y;
@@ -84,7 +84,7 @@ PData *AddOperator::Operate(TypedPData<dVector> *a, TypedPData<dVector> *b)
 template <>
 PData *MultOperator::Operate(TypedPData<float> *a, float b)
 {
-	for (vector<float>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<float,FLX_ALLOC(float) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		(*i)*=b;
 	}
@@ -94,7 +94,7 @@ PData *MultOperator::Operate(TypedPData<float> *a, float b)
 template <>
 PData *MultOperator::Operate(TypedPData<dVector> *a, float b)
 {
-	for (vector<dVector>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		(*i)*=b;
 	}
@@ -104,7 +104,7 @@ PData *MultOperator::Operate(TypedPData<dVector> *a, float b)
 template <>
 PData *MultOperator::Operate(TypedPData<dColour> *a, float b)
 {
-	for (vector<dColour>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<dColour,FLX_ALLOC(dColour) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		(*i)*=b;
 	}
@@ -114,7 +114,7 @@ PData *MultOperator::Operate(TypedPData<dColour> *a, float b)
 template <>
 PData *MultOperator::Operate(TypedPData<dVector> *a, dVector b)
 {
-	for (vector<dVector>::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
 	{
 		(*i).x*=b.x;
 		(*i).y*=b.y;

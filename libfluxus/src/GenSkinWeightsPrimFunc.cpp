@@ -35,7 +35,7 @@ void GenSkinWeightsPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 {
 	int rootid = GetArg<int>("skeleton-root",0);
 	float sharpness = GetArg<float>("sharpness",0);
-	vector<dVector> *p = prim.GetDataVec<dVector>("p");
+	vector<dVector, FLX_ALLOC(dVector) > *p = prim.GetDataVec<dVector>("p");
 	vector<TypedPData<float> *> weights;
 	int bone=0;
 	vector<pair<const SceneNode*,const SceneNode*> > skeleton;

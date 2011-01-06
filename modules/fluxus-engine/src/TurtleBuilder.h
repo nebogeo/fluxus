@@ -53,7 +53,7 @@ public:
 private:
 
 	PolyPrimitive* m_BuildingPrim;
-	vector<dVector> *m_AttachedPoints;
+	vector<dVector, FLX_ALLOC(dVector) > *m_AttachedPoints;
 	unsigned int m_Position;
 
 	struct State

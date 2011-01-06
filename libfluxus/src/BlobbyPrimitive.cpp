@@ -215,7 +215,7 @@ void BlobbyPrimitive::RecalculateNormals(bool smooth)
 dBoundingBox BlobbyPrimitive::GetBoundingBox(const dMatrix &space)
 {	
 	dBoundingBox box;
-	for (vector<dVector>::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
+	for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
 	{
 		box.expand(space.transform(*i));
 	}
@@ -226,7 +226,7 @@ void BlobbyPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_PosData->begin(); i!=m_PosData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 			// why not normals?

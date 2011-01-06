@@ -173,9 +173,9 @@ void OBJPrimitiveIO::TokeniseIndices(const string &str, vector<string> &output)
 	}
 }
 
-void OBJPrimitiveIO::ReadOBJ(std::vector<dVector> &positions,
-		std::vector<dVector> &textures,
-		std::vector<dVector> &normals,
+void OBJPrimitiveIO::ReadOBJ(std::vector<dVector, FLX_ALLOC(dVector) > &positions,
+		std::vector<dVector, FLX_ALLOC(dVector) > &textures,
+		std::vector<dVector, FLX_ALLOC(dVector) > &normals,
 		std::vector<Face> &faces)
 {
 	unsigned int pos=0;
@@ -315,9 +315,9 @@ vector<OBJPrimitiveIO::Indices> OBJPrimitiveIO::RemoveDuplicateIndices()
 
 void OBJPrimitiveIO::ReorderData(const vector<OBJPrimitiveIO::Indices> &unique)
 {
-	vector<dVector> NewPosition;
-	vector<dVector> NewTexture;
-	vector<dVector> NewNormal;
+	vector<dVector, FLX_ALLOC(dVector) > NewPosition;
+	vector<dVector, FLX_ALLOC(dVector) > NewTexture;
+	vector<dVector, FLX_ALLOC(dVector) > NewNormal;
 
 	for (vector<Indices>::const_iterator i=unique.begin();
 		i!=unique.end(); ++i)

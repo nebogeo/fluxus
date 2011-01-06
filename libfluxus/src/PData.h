@@ -20,6 +20,7 @@
 #include <vector>
 #include <string>
 #include "dada.h"
+#include "Allocator.h"
 
 using namespace std;
 
@@ -55,7 +56,7 @@ public:
 	TypedPData() {}	
 	TypedPData(T first) { m_Data.push_back(first); }	
 	TypedPData(unsigned int size) { Resize(size); }	
-	TypedPData(vector<T> s) : m_Data(s) {}
+	TypedPData(vector<T, FLX_ALLOC(T) > s) : m_Data(s) {}
 	virtual ~TypedPData() {}
 	
 	virtual PData *Copy() const
@@ -76,7 +77,7 @@ public:
 	}
 	
 	///\todo add operator[] and make m_Data private
-	vector<T> m_Data;
+	vector<T, FLX_ALLOC(T) > m_Data;
 };
 
 }

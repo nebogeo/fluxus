@@ -34,10 +34,10 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	int rootid = GetArg<int>("skeleton-root",0);
 	int bindposerootid = GetArg<int>("bindpose-root",0);
 	bool skinnormals = GetArg<int>("skin-normals",0);
-	vector<dVector> *p = prim.GetDataVec<dVector>("p");
-	vector<dVector> *pref = prim.GetDataVec<dVector>("pref");
-	vector<dVector> *n = NULL;
-	vector<dVector> *nref = NULL;
+	vector<dVector, FLX_ALLOC(dVector) > *p = prim.GetDataVec<dVector>("p");
+	vector<dVector, FLX_ALLOC(dVector) > *pref = prim.GetDataVec<dVector>("pref");
+	vector<dVector, FLX_ALLOC(dVector) > *n = NULL;
+	vector<dVector, FLX_ALLOC(dVector) > *nref = NULL;
 
 	if (!pref)
 	{
@@ -93,12 +93,12 @@ void SkinningPrimFunc::Run(Primitive &prim, const SceneGraph &world)
 	}
 
 	// get pointers to all the weights
-	vector<vector<float>*> weights;
+	vector<vector<float, FLX_ALLOC(float) >*> weights;
 	for (unsigned int bone=0; bone<skeleton.size(); bone++)
 	{
 		char wname[256];
 		snprintf(wname,256,"w%d",bone);
-		vector<float> *w = prim.GetDataVec<float>(wname);
+		vector<float, FLX_ALLOC(float) > *w = prim.GetDataVec<float>(wname);
 		if (w==NULL)
 		{
 			Trace::Stream<<"SkinningPrimFunc::Run: can't find weights, aborting"<<endl;

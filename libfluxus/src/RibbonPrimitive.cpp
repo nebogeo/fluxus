@@ -207,14 +207,14 @@ void RibbonPrimitive::ApplyTransform(bool ScaleRotOnly)
 {
 	if (!ScaleRotOnly)
 	{
-		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform(*i);
 		}
 	}
 	else
 	{
-		for (vector<dVector>::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
+		for (vector<dVector,FLX_ALLOC(dVector) >::iterator i=m_VertData->begin(); i!=m_VertData->end(); ++i)
 		{
 			*i=GetState()->Transform.transform_no_trans(*i);
 		}

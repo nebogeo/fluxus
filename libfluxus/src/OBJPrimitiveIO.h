@@ -61,9 +61,9 @@ private:
 
 	unsigned int TokeniseLine(unsigned int pos, vector<string> &output);
 	void TokeniseIndices(const string &str, vector<string> &output);
-	void ReadOBJ(std::vector<dVector> &positions,
-				std::vector<dVector> &textures,
-				std::vector<dVector> &normals,
+	void ReadOBJ(std::vector<dVector, FLX_ALLOC(dVector) > &positions,
+				std::vector<dVector, FLX_ALLOC(dVector) > &textures,
+				std::vector<dVector, FLX_ALLOC(dVector) > &normals,
 				std::vector<Face> &faces);
 	vector<Indices> RemoveDuplicateIndices();
 	void ReorderData(const vector<Indices> &unique);
@@ -82,9 +82,9 @@ private:
 	char *m_Data;
 
 	vector<Face> m_Faces;
-	vector<dVector> m_Position;
-	vector<dVector> m_Texture;
-	vector<dVector> m_Normal;
+	vector<dVector, FLX_ALLOC(dVector) > m_Position;
+	vector<dVector, FLX_ALLOC(dVector) > m_Texture;
+	vector<dVector, FLX_ALLOC(dVector) > m_Normal;
 	vector<unsigned int> m_Indices;
 
 	bool m_UnifiedIndices;

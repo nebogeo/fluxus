@@ -43,8 +43,8 @@ protected:
 
 	virtual void PDataDirty();
 
-	vector<dVector> m_Points;
-	vector<dVector> *m_TexData;
+	vector<dVector, FLX_ALLOC(dVector) > m_Points;
+	vector<dVector, FLX_ALLOC(dVector) > *m_TexData;
 
 	Renderer *m_Renderer;
 
