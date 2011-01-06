@@ -23,6 +23,7 @@
 #define FLUXUS_ALLOCATOR
 
 #define FLX_ALLOC(T) std::allocator<T>
+//#define FLX_ALLOC(T) Fluxus::allocator<T>
 
 static long long stats_allocated=0;
 static long long stats_highwater=0;
