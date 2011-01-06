@@ -362,8 +362,10 @@ int FFGLPlugin::SetTime(FFGLPluginInstance *pi, double time)
 
 	return 1;
 }
-void FFGLPlugin::Render(PixelPrimitive *output, unsigned instance, ProcessOpenGLStruct *pogl)
+void FFGLPlugin::Render(PixelPrimitive *output, unsigned output_txt, unsigned instance, ProcessOpenGLStruct *pogl)
 {
+	unsigned old_output_txt = output->GetRenderTexture();
+	output->SetRenderTexture(output_txt);
 	output->Bind();
 	glViewport(0, 0, output->GetWidth(), output->GetHeight());
 	if (m_PlugMain(FF_PROCESSOPENGL, (unsigned long)pogl,  instance).ivalue == FF_FAIL)
@@ -371,6 +373,7 @@ void FFGLPlugin::Render(PixelPrimitive *output, unsigned instance, ProcessOpenGL
 		Trace::Stream << "FFGL plugin: ProcessOpenGL failed" << endl;
 	}
 	output->Unbind();
+	output->SetRenderTexture(old_output_txt);
 }
 
 FFGLPluginInstance::~FFGLPluginInstance()
@@ -392,11 +395,11 @@ void FFGLPluginInstance::Free()
 	}
 }
 
-void FFGLPluginInstance::SetPixels(vector<PixelPrimitive *> &pixels)
+void FFGLPluginInstance::SetPixels(PixelPrimitive *outputpp, vector<unsigned> &textures)
 {
 	Free();
 
-	unsigned n = pixels.size() - 1;
+	unsigned n = textures.size() - 1;
 	unsigned mininputs = plugin->GetMinInputs();
 	unsigned maxinputs = plugin->GetMaxInputs();
 
@@ -405,12 +408,12 @@ void FFGLPluginInstance::SetPixels(vector<PixelPrimitive *> &pixels)
 		if (mininputs == maxinputs)
 		{
 			Trace::Stream << "FFGL plugin: expecting " << mininputs <<
-				" input pixel primitive(s), received " << n << " one(s)" << endl;
+				" input texture(s), received " << n << " one(s)" << endl;
 		}
 		else
 		{
 			Trace::Stream << "FFGL plugin: expecting between " << mininputs << " and " <<
-				maxinputs << " input pixel primitive(s), received " << n << " one(s)" << endl;
+				maxinputs << " input texture(s), received " << n << " one(s)" << endl;
 		}
 		return;
 	}
@@ -418,19 +421,23 @@ void FFGLPluginInstance::SetPixels(vector<PixelPrimitive *> &pixels)
 	pogl->numInputTextures = n;
 	pogl->inputTextures = new FFGLTextureStruct*[n];
 
-	output = pixels[0];
+	output = outputpp;
+	output_txt = textures[0];
 	pogl->HostFBO = output->GetFBO();
+
+	unsigned width = output->GetWidth();
+	unsigned height = output->GetHeight();
+	unsigned hwwidth = output->GetFBOWidth();
+	unsigned hwheight = output->GetFBOHeight();
 
 	for (unsigned i = 0; i < n; i++)
 	{
-		PixelPrimitive *p = pixels[i + 1];
 		FFGLTextureStruct *t = pogl->inputTextures[i] = new FFGLTextureStruct;
-
-		t->Width = p->GetWidth();
-		t->Height = p->GetHeight();
-		t->HardwareWidth = p->GetFBOWidth();
-		t->HardwareHeight = p->GetFBOHeight();
-		t->Handle = p->GetTexture();
+		t->Width = width;
+		t->Height = height;
+		t->HardwareWidth = hwwidth;
+		t->HardwareHeight = hwheight;
+		t->Handle = textures[i + 1];
 	}
 }
 
@@ -438,7 +445,7 @@ void FFGLPluginInstance::Render()
 {
 	if ((pogl != NULL) && m_Active)
 	{
-		plugin->Render(output, instance, pogl);
+		plugin->Render(output, output_txt, instance, pogl);
 	}
 }
 
@@ -520,7 +527,7 @@ void FFGLManager::Render()
 	glPushMatrix();
 	glLoadIdentity();
 
-#ifndef DISABLE_MULTITEXTURE	
+#ifndef DISABLE_MULTITEXTURE
 	if (TexturePainter::Get()->MultitexturingEnabled())
 	{
 		glActiveTexture(GL_TEXTURE0);

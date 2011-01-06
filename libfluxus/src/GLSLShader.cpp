@@ -20,6 +20,7 @@
 #include "GLSLShader.h"
 #include "Trace.h"
 #include "SearchPaths.h"
+#include "DebugGL.h"
 
 using namespace std;
 using namespace Fluxus;
@@ -62,11 +63,31 @@ bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsour
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled) return true;
 
-	m_VertexShader = MakeShader("Inline vertex shader source",vertexsource,GL_VERTEX_SHADER);
-	if (m_VertexShader==0) return false;
-	m_FragmentShader = MakeShader("Inline fragment shader source",fragmentsource,GL_FRAGMENT_SHADER);
-	if (m_FragmentShader==0) return false;
+	if (vertexsource == "")
+	{
+		m_VertexShader = 0;
+	}
+	else
+	{
+		m_VertexShader = MakeShader("Inline vertex shader source",vertexsource,GL_VERTEX_SHADER);
+		if (m_VertexShader==0) return false;
+	}
 
+	if (fragmentsource == "")
+	{
+		m_FragmentShader = 0;
+	}
+	else
+	{
+		m_FragmentShader = MakeShader("Inline fragment shader source",fragmentsource,GL_FRAGMENT_SHADER);
+		if (m_FragmentShader==0) return false;
+	}
+
+	if (!m_VertexShader && !m_FragmentShader)
+	{
+		Trace::Stream << "No shaders specifed" << endl;
+		return false;
+	}
 	#endif
 	return true;
 }
@@ -76,11 +97,31 @@ bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfi
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled) return true;
 
-	m_VertexShader = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
-	if (m_VertexShader==0) return false;
-	m_FragmentShader = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
-	if (m_FragmentShader==0) return false;
+	if (vertexfilename == "")
+	{
+		m_VertexShader = 0;
+	}
+	else
+	{
+		m_VertexShader = LoadShader(SearchPaths::Get()->GetFullPath(vertexfilename),GL_VERTEX_SHADER);
+		if (m_VertexShader == 0) return false;
+	}
 
+	if (fragmentfilename == "")
+	{
+		m_FragmentShader = 0;
+	}
+	else
+	{
+		m_FragmentShader = LoadShader(SearchPaths::Get()->GetFullPath(fragmentfilename),GL_FRAGMENT_SHADER);
+		if (m_FragmentShader == 0) return false;
+	}
+
+	if (!m_VertexShader && !m_FragmentShader)
+	{
+		Trace::Stream << "No shaders specifed" << endl;
+		return false;
+	}
 	#endif
 	return true;
 }
@@ -165,18 +206,28 @@ m_RefCount(1)
 	if (!m_Enabled) return;
 
 	m_Program = glCreateProgram();
-	glAttachShader(m_Program, pair.GetVertexShader());
-	glAttachShader(m_Program, pair.GetFragmentShader());
+	if (pair.GetVertexShader())
+		glAttachShader(m_Program, pair.GetVertexShader());
+	if (pair.GetFragmentShader())
+		glAttachShader(m_Program, pair.GetFragmentShader());
 	glLinkProgram(m_Program);
 
 	GLint status = GL_FALSE;
 	glGetProgramiv(m_Program, GL_LINK_STATUS, &status);
-	if(status != GL_TRUE)
+	if (status != GL_TRUE)
 	{
-		GLsizei size = 0;
 		char log[1024];
-		glGetProgramInfoLog(m_Program, 1024, &size, log);
-		Trace::Stream<<log<<endl;
+		glGetProgramInfoLog(m_Program, 1024, NULL, log);
+		Trace::Stream << log << endl;
+	}
+
+	glValidateProgram(m_Program);
+	glGetProgramiv(m_Program, GL_VALIDATE_STATUS, &status);
+	if (status != GL_TRUE)
+	{
+		char log[1024];
+		glGetProgramInfoLog(m_Program, 1024, NULL, log);
+		Trace::Stream << log << endl;
 	}
 	else
 	{
@@ -234,12 +285,25 @@ void GLSLShader::SetFloat(const string &name, float s)
 	#endif
 }
 
-void GLSLShader::SetVector(const string &name, dVector s)
+void GLSLShader::SetVector(const string &name, dVector s, int size /* = 4 */)
 {
 	#ifdef GLSL
 	if (!m_Enabled) return;
+
 	GLuint param = glGetUniformLocation(m_Program, name.c_str());
-	glUniform3f(param,s.x,s.y,s.z);
+	switch (size)
+	{
+		case 2:
+			glUniform2f(param, s.x, s.y);
+			break;
+		case 3:
+			glUniform3f(param, s.x, s.y, s.z);
+			break;
+		case 4:
+			glUniform4f(param, s.x, s.y, s.z, s.w);
+			break;
+	}
+	CHECK_GL_ERRORS("glUniform");
 	#endif
 }
 

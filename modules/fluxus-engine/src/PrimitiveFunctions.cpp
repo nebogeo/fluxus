@@ -1506,16 +1506,25 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	bool rend=false;
-	if (argc==2)
+	bool rend = false;
+	unsigned txts = 1;
+	if (argc == 2)
 	{
 		ArgCheck("build-pixels", "ii", argc, argv);
 	}
 	else
+	if (argc == 3)
 	{
 		ArgCheck("build-pixels", "iib", argc, argv);
-		rend=BoolFromScheme(argv[2]);
+		rend = BoolFromScheme(argv[2]);
 	}
+	else
+	{
+		ArgCheck("build-pixels", "iibi", argc, argv);
+		rend = BoolFromScheme(argv[2]);
+		txts = IntFromScheme(argv[3]);
+	}
+
 	int x=IntFromScheme(argv[0]);
 	int y=IntFromScheme(argv[1]);
 	if (x<1 || y<1)
@@ -1524,7 +1533,7 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 		MZ_GC_UNREG();
 		return scheme_void;
 	}
-	PixelPrimitive *Prim = new PixelPrimitive(x,y,rend);
+	PixelPrimitive *Prim = new PixelPrimitive(x, y, rend, txts);
 	MZ_GC_UNREG();
     return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(Prim));
 }
@@ -1586,23 +1595,23 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 // Downloads the texture data from the GPU to the PData array.
 // Example:
 // (clear)
-// 
+//
 // (define p (build-pixels 256 256 #t))
-// 
+//
 // (define q (with-pixels-renderer p
 //         (clear-colour (vector 1 1 1))
 //         (scale 3)
 //         (colour (vector 0 0 1))
 //         (build-torus 0.2 2 10 20)))
-// 
+//
 // (define i (with-state
 //         (translate (vector 0.5 0.5 0))
 //         (scale 0.2)
 //         (build-cube)))
-// 
+//
 // (every-frame
 //     (begin
-//     (with-primitive p 
+//     (with-primitive p
 //         (pixels-download)
 //         ; paint the cube with the colour of the pixel underneath it
 //         (let ((c (pdata-ref "c" (pixels-index (vector 0.5 0.5 0)))))
@@ -1655,7 +1664,7 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// pixels->texture pixelprimitiveid-number
+// pixels->texture pixelprimitiveid-number [textureindex-number]
 // Returns: textureid-number
 // Description:
 // Returns a texture you can use exactly like a normal loaded one.
@@ -1696,7 +1705,17 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("pixels->texture", "i", argc, argv);
+
+	unsigned txt = 0;
+	if (argc == 1)
+	{
+		ArgCheck("pixels->texture", "i", argc, argv);
+	}
+	else
+	{
+		ArgCheck("pixels->texture", "ii", argc, argv);
+		txt = IntFromScheme(argv[1]);
+	}
 	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
 	if (Prim)
 	{
@@ -1705,7 +1724,7 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 		if (pp)
 		{
 			MZ_GC_UNREG();
-		    return scheme_make_integer_value(pp->GetTexture());
+		    return scheme_make_integer_value(pp->GetTexture(txt));
 		}
 	}
 
@@ -1772,6 +1791,50 @@ Scheme_Object *pixels_height(int argc, Scheme_Object **argv)
 	}
 
 	Trace::Stream<<"pixels-height can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+Scheme_Object *pixels_render_to(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("pixels-render-to", "i", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->SetRenderTexture(IntFromScheme(argv[0]));
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+
+	Trace::Stream<<"pixels-render-to can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG();
+    return scheme_void;
+}
+
+Scheme_Object *pixels_display(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("pixels-display", "i", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		if (pp)
+		{
+			pp->SetDisplayTexture(IntFromScheme(argv[0]));
+			MZ_GC_UNREG();
+		    return scheme_void;
+		}
+	}
+
+	Trace::Stream<<"pixels-display can only be called on a pixelprimitive"<<endl;
 	MZ_GC_UNREG();
     return scheme_void;
 }
@@ -3289,7 +3352,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-locator", scheme_make_prim_w_arity(build_locator, "build-locator", 0, 0), env);
 	scheme_add_global("build-voxels", scheme_make_prim_w_arity(build_voxels, "build-voxels", 3, 3), env);
 	scheme_add_global("locator-bounding-radius", scheme_make_prim_w_arity(locator_bounding_radius, "locator-bounding-radius", 1, 1), env);
-	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 3), env);
+	scheme_add_global("build-pixels", scheme_make_prim_w_arity(build_pixels, "build-pixels", 2, 4), env);
 	scheme_add_global("build-type", scheme_make_prim_w_arity(build_type, "build-type", 2, 2), env);
 	scheme_add_global("build-extruded-type", scheme_make_prim_w_arity(build_extruded_type, "build-extruded-type", 3, 3), env);
 	scheme_add_global("load-primitive", scheme_make_prim_w_arity(load_primitive, "load-primitive", 1, 1), env);
@@ -3300,7 +3363,9 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
-	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 1), env);
+	scheme_add_global("pixels-render-to", scheme_make_prim_w_arity(pixels_render_to, "pixels-render-to", 1, 1), env);
+	scheme_add_global("pixels-display", scheme_make_prim_w_arity(pixels_display, "pixels-display", 1, 1), env);
+	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 2), env);
 	scheme_add_global("pixels-renderer-activate", scheme_make_prim_w_arity(pixels_renderer_activate, "pixels-renderer-activate", 1, 1), env);
 	scheme_add_global("voxels->blobby", scheme_make_prim_w_arity(voxels2blobby, "voxels->blobby", 1, 1), env);
 	scheme_add_global("voxels->poly", scheme_make_prim_w_arity(voxels2poly, "voxels->poly", 1, 2), env);

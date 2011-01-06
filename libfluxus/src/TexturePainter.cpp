@@ -434,7 +434,7 @@ void TexturePainter::ApplyState(int type, TextureState &state, bool cubemap)
 	glTexParameteri(type, GL_TEXTURE_MAG_FILTER, state.Mag);
 	glTexParameteri(type, GL_TEXTURE_WRAP_S, state.WrapS);
 	glTexParameteri(type, GL_TEXTURE_WRAP_T, state.WrapT);
-	if (cubemap) glTexParameteri(type, GL_TEXTURE_WRAP_R, state.WrapT);
+	if (cubemap) glTexParameteri(type, GL_TEXTURE_WRAP_R, state.WrapR);
 	glTexParameterfv(type, GL_TEXTURE_BORDER_COLOR, state.BorderColour.arr());
 	glTexParameterf(type, GL_TEXTURE_PRIORITY, state.Priority);
 	glTexParameterf(type, GL_TEXTURE_MIN_LOD, state.MinLOD);

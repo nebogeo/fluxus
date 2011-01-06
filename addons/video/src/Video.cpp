@@ -60,6 +60,7 @@ VideoTexture::VideoTexture() :
 	}
 
 	mipmapping_enabled = (glGenerateMipmapEXT != NULL);
+	npot_enabled = glewIsSupported("GL_ARB_texture_non_power_of_two");
 }
 
 VideoTexture::~VideoTexture()
@@ -72,8 +73,16 @@ VideoTexture::~VideoTexture()
 
 void VideoTexture::gen_texture()
 {
-	tex_width = 1 << (unsigned)ceil(log2(width));
-	tex_height = 1 << (unsigned)ceil(log2(height));
+	if (npot_enabled)
+	{
+		tex_width = width;
+		tex_height = height;
+	}
+	else
+	{
+		tex_width = 1 << (unsigned)ceil(log2(width));
+		tex_height = 1 << (unsigned)ceil(log2(height));
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glGenTextures(1, &texture_id);
@@ -105,7 +114,7 @@ void VideoTexture::upload(unsigned char *pixels)
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height,
 			GL_RGB, GL_UNSIGNED_BYTE, pixels);
-	CHECK_GL_ERRORS("update: glTexImage2d");
+	CHECK_GL_ERRORS("update: glTexSubImage2d");
 
 	if (mipmapping_enabled)
 	{
@@ -183,7 +192,6 @@ Camera::Camera(unsigned device_id, int w, int h)
 
 Camera::~Camera()
 {
-	cerr << "device closed" << endl;
 	camera.close();
 }
 

@@ -13,6 +13,7 @@
 ;; EndSectionDoc
 
 #lang racket/base
+(require racket/list)
 (require "fluxus-modules.ss")
 (require "tasks.ss")
 (provide
@@ -27,6 +28,7 @@
  vx vy vz vr vg vb va
  vx-set! vy-set! vz-set! vr-set! vg-set! vb-set! va-set!
  vadd vsub vmul vdiv mmul madd msub mdiv
+ shader-set!
  )
 
 ;; StartFunctionDoc-en
@@ -667,4 +669,15 @@
     ((eq? (length l) 2) (mdiv2 (car l) (cadr l)))
     (else (mdiv2 (car l) (mdiv-list (cdr l))))))
 
+;; shader-set! with keyword arguments
+(define shader-set!
+  (make-keyword-procedure
+    (lambda (kws kw-args . rest)
+        (shader-list-set!
+            (flatten
+				(append
+					rest
+					(for/list ([kw kws]
+							   [arg kw-args])
+						(list (keyword->string kw) arg))))))))
 

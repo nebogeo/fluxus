@@ -67,6 +67,8 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 	fill(pgm_values, pgm_values + MAX_CHAN, 0);
 
 	pthread_mutex_init(&mutex, NULL);
+
+	set_signature(4, 4);
 }
 
 MIDIListener::~MIDIListener()
@@ -337,6 +339,55 @@ MIDIEvent *MIDIListener::get_cc_event(void)
 	return &evt;
 }
 
+int MIDIListener::get_bar(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = bar;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_beat(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = beat;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_pulse(void)
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = pulse;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_beats_per_bar()
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = beats_per_bar;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+int MIDIListener::get_clocks_per_beat()
+{
+ 	pthread_mutex_lock(&mutex);
+	int ret = clocks_per_beat;
+	pthread_mutex_unlock(&mutex);
+	return ret;
+}
+
+void MIDIListener::set_signature(int upper, int lower)
+{
+ 	pthread_mutex_lock(&mutex);
+	beats_per_bar = upper;
+	clocks_per_beat = (24*4)/lower;
+	pthread_mutex_unlock(&mutex);
+	reset_song_position();
+}
+
 /**
  * Adds a new event to the event queue.
  **/
@@ -349,6 +400,15 @@ void MIDIListener::add_event(int channel, int controller, int value)
 		delete midi_events.front();
 		midi_events.pop_front();
 	}
+}
+
+void MIDIListener::reset_song_position()
+{
+	pthread_mutex_lock(&mutex);
+	bar = 0;
+	beat = 0;
+	pulse = 0;
+	pthread_mutex_unlock(&mutex);
 }
 
 /**
@@ -409,7 +469,45 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 				pthread_mutex_unlock(&mutex);
 			}
 			break;
-
+		case MIDI_SYSTEM:
+			if(count==1) switch(ch)
+			{
+			case MIDIListener::MIDI_START:
+				{
+					//set_started(true);
+					reset_song_position();
+				}
+				break;
+			case MIDIListener::MIDI_STOP:
+				{
+					//set_started(false);
+				}
+				break;
+			case MIDIListener::MIDI_CONTINUE:
+				{
+					//set_started(true);
+				}
+				break;
+			case MIDIListener::MIDI_CLOCK:
+				{
+					pthread_mutex_lock(&mutex);
+					++pulse;
+					if(clocks_per_beat==pulse)
+					{
+						pulse = 0;
+						++beat;
+						if(beats_per_bar==beat)
+						{
+							beat = 0;
+							++bar;
+						}
+					}
+					pthread_mutex_unlock(&mutex);
+				}
+				break;
+			default:
+				break;
+			}
 		default:
 			break;
 	}

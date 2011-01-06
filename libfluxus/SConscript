@@ -59,7 +59,8 @@ Source = Split("src/Allocator.cpp \
 		src/ImagePrimitive.cpp \
 		src/FFGLManager.cpp \
 		src/VoxelPrimitive.cpp \
-		src/DDSLoader.cpp"
+		src/DDSLoader.cpp \
+		src/DebugGL.cpp"
 		)
 				
 env.StaticLibrary(source = Source, target = Target)

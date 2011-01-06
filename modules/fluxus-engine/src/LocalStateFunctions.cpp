@@ -2623,17 +2623,13 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // shader vertexprogram-string fragmentprogram-string
 // Returns: void
 // Description:
-// Loads, compiles and sets the GLSL harware shader pair for the current drawing state, or the
+// Loads, compiles and sets the GLSL hardware shader pair for the current drawing state, or the
 // current primitive. Requires OpenGL 2 support.
 // The shader's uniform data can be controlled via shader-set! and all the pdata is sent through as
 // per-vertex attribute data to the shader.
 // Example:
 // ; you need to have built fluxus with GLSL=1
 // (clear)
-// (fluxus-init) ; this is important to add when using shaders
-//               ; at the moment, it will be moved somewhere
-//               ; to run automatically...
-//
 // (define s (with-state
 //     ; assign the shaders to the surface
 //     (shader "simple.vert.glsl" "simple.frag.glsl")
@@ -2669,10 +2665,6 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // Exemplo:
 // ; you need to have built fluxus with GLSL=1
 // (clear)
-// (fluxus-init) ; this is important to add when using shaders
-//               ; at the moment, it will be moved somewhere
-//               ; to run automatically...
-//
 // (define s (with-state
 //     ; assign the shaders to the surface
 //     (shader "simple.vert.glsl" "simple.frag.glsl")
@@ -2737,22 +2729,22 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 
 Scheme_Object *shader_source(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-    ArgCheck("shader-source", "ss", argc, argv);
+	DECL_ARGV();
+	ArgCheck("shader-source", "ss", argc, argv);
 
-  string vert=StringFromScheme(argv[0]);
-  string frag=StringFromScheme(argv[1]);
+	string vert=StringFromScheme(argv[0]);
+	string frag=StringFromScheme(argv[1]);
 
-  if (Engine::Get()->State()->Shader &&
-      Engine::Get()->State()->Shader->DecRef())
-  {
-    delete Engine::Get()->State()->Shader;
-  }
+	if (Engine::Get()->State()->Shader &&
+		Engine::Get()->State()->Shader->DecRef())
+	{
+		delete Engine::Get()->State()->Shader;
+	}
 
-  Engine::Get()->State()->Shader = ShaderCache::Make(vert,frag);
+	Engine::Get()->State()->Shader = ShaderCache::Make(vert,frag);
 
-  MZ_GC_UNREG();
-  return scheme_void;
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2780,18 +2772,16 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// shader-set! argument-list
+// shader-set! [parameter-name-keyword parameter-value ...] argument-list
 // Returns: void
 // Description:
-// Sets the uniform shader parameters for the GLSL shader. The list consists of token-string value
-// pairs, which relate to the corresponding shader parameters names and values.
+// Sets the uniform shader parameters for the GLSL shader. Parameters are
+// keyword value pairs which relate to the corresponding shader parameter
+// name and value.
+// (shader-set!) also accepts a list consisting of token-string value pairs
+// for backward compatibity.
 // Example:
-// ; you need to have built fluxus with GLSL=1
 // (clear)
-// (fluxus-init) ; this is important to add when using shaders
-//               ; at the moment, it will be moved somewhere
-//               ; to run automatically...
-//
 // (define s (with-state
 //     ; assign the shaders to the surface
 //     (shader "simple.vert.glsl" "simple.frag.glsl")
@@ -2810,7 +2800,7 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 // (define (animate)
 //     (with-primitive s
 //         ; animate the deformamount uniform input parameter
-//         (shader-set! (list "deformamount" (cos (time))))))
+//         (shader-set! #:deformamount (cos (time)))))
 //
 // (every-frame (animate))
 // EndFunctionDoc
@@ -2825,10 +2815,6 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 // Exemplo:
 // ; you need to have built fluxus with GLSL=1
 // (clear)
-// (fluxus-init) ; this is important to add when using shaders
-//               ; at the moment, it will be moved somewhere
-//               ; to run automatically...
-//
 // (define s (with-state
 //     ; assign the shaders to the surface
 //     (shader "simple.vert.glsl" "simple.frag.glsl")
@@ -2854,158 +2840,152 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 
 Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 {
-  Scheme_Object *paramvec = NULL;
-  Scheme_Object *listvec = NULL;
-  MZ_GC_DECL_REG(3);
-  MZ_GC_VAR_IN_REG(0, argv);
-  MZ_GC_VAR_IN_REG(1, paramvec);
-  MZ_GC_VAR_IN_REG(2, listvec);
-  MZ_GC_REG();
+	Scheme_Object *paramvec = NULL;
+	Scheme_Object *listvec = NULL;
+	MZ_GC_DECL_REG(3);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_VAR_IN_REG(2, listvec);
+	MZ_GC_REG();
 
-    ArgCheck("shader-set!", "l", argc, argv);
-
-  if (Engine::Get()->State()->Shader!=NULL)
-  {
-    GLSLShader *shader=Engine::Get()->State()->Shader;
-
-    // vectors seem easier to handle than lists with this api
-    paramvec = scheme_list_to_vector(argv[0]);
-
-    // apply to set parameters
-    shader->Apply();
-
-    for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
-    {
-      if (SCHEME_CHAR_STRINGP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
-      {
-        // get the parameter name
-        string param = StringFromScheme(SCHEME_VEC_ELS(paramvec)[n]);
-
+	ArgCheck("shader-set!", "l", argc, argv);
+    
+	if (Engine::Get()->State()->Shader!=NULL)
+	{
+		GLSLShader *shader=Engine::Get()->State()->Shader;
+        
+		// vectors seem easier to handle than lists with this api
+		paramvec = scheme_list_to_vector(argv[0]);
+        
+		// apply to set parameters
+		shader->Apply();
+        
         if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]))
         {
-          if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            shader->SetInt(param,IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
-          }
-          else
-          {
-            shader->SetFloat(param,(float)FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
-          }
+            if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+            {
+                shader->SetInt(param,IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+            }
+            else
+            {
+                shader->SetFloat(param,(float)FloatFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]));
+            }
         }
         else if (SCHEME_VECTORP(SCHEME_VEC_ELS(paramvec)[n+1]))
         {
-          if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 3)
-          {
-            dVector vec;
-            FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),3);
-            shader->SetVector(param,vec);
-          }
-          else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
-          {
-            dColour vec;
-            FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
-            shader->SetColour(param,vec);
-          }
-          else
-          {
-            Trace::Stream<<"shader has found an argument vector of a strange size"<<endl;
-          }
+            if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 3)
+            {
+                dVector vec;
+                FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),3);
+                shader->SetVector(param,vec);
+            }
+            else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(paramvec)[n+1]) == 4)
+            {
+                dColour vec;
+                FloatsFromScheme(SCHEME_VEC_ELS(paramvec)[n+1],vec.arr(),4);
+                shader->SetColour(param,vec);
+            }
+            else
+            {
+                Trace::Stream<<"shader has found an argument vector of a strange size"<<endl;
+            }
         }
         else if (SCHEME_LISTP(SCHEME_VEC_ELS(paramvec)[n+1]))
         {
-          listvec = scheme_list_to_vector(SCHEME_VEC_ELS(paramvec)[n+1]);
-          unsigned int sz = SCHEME_VEC_SIZE(listvec);
-          if (sz>0)
-          {
-            if (SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[0]))
+            listvec = scheme_list_to_vector(SCHEME_VEC_ELS(paramvec)[n+1]);
+            unsigned int sz = SCHEME_VEC_SIZE(listvec);
+            if (sz>0)
             {
-              if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[0]))
-              {
-                vector<int, FLX_ALLOC(int) > array;
-                for (unsigned int i=0; i<sz; i++)
+                if (SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[0]))
                 {
-                  if (!SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[i]))
-                  {
-                    Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
-                    break;
-                  }
-                  array.push_back(IntFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+                    if (SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[0]))
+                    {
+                        vector<int, FLX_ALLOC(int) > array;
+                        for (unsigned int i=0; i<sz; i++)
+                        {
+                            if (!SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(listvec)[i]))
+                            {
+                                Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+                                break;
+                            }
+                            array.push_back(IntFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+                        }
+                        shader->SetIntArray(param,array);
+                    }
+                    else
+                    {
+                        vector<float, FLX_ALLOC(float) > array;
+                        for (unsigned int i=0; i<sz; i++)
+                        {
+                            if (!SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[i]))
+                            {
+                                Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+                                break;
+                            }
+                            array.push_back(FloatFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+                        }
+                        shader->SetFloatArray(param,array);
+                    }
                 }
-                shader->SetIntArray(param,array);
-              }
-              else
-              {
-                vector<float, FLX_ALLOC(float) > array;
-                for (unsigned int i=0; i<sz; i++)
+                else if (SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[0]))
                 {
-                  if (!SCHEME_NUMBERP(SCHEME_VEC_ELS(listvec)[i]))
-                  {
-                    Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
-                    break;
-                  }
-                  array.push_back(FloatFromScheme(SCHEME_VEC_ELS(listvec)[i]));
+                    if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 3)
+                    {
+                        vector<dVector, FLX_ALLOC(dVector) > array;
+                        for (unsigned int i=0; i<sz; i++)
+                        {
+                            if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
+                                SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 3)
+                            {
+                                Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+                                break;
+                            }
+                            dVector vec;
+                            FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),3);
+                            array.push_back(vec);
+                        }
+                        shader->SetVectorArray(param,array);
+                    }
+                    else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 4)
+                    {
+                        vector<dColour, FLX_ALLOC(dColour) > array;
+                        for (unsigned int i=0; i<sz; i++)
+                        {
+                            if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
+                                SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 4)
+                            {
+                                Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
+                                break;
+                            }
+                            dColour vec;
+                            FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),4);
+                            array.push_back(vec);
+                        }
+                        shader->SetColourArray(param,array);
+                    }
+                    else
+                    {
+                        Trace::Stream<<"shader has found a vector argument list of a strange size"<<endl;
+                    }
                 }
-                shader->SetFloatArray(param,array);
-              }
             }
-            else if (SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[0]))
-            {
-              if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 3)
-              {
-                vector<dVector, FLX_ALLOC(dVector) > array;
-                for (unsigned int i=0; i<sz; i++)
-                {
-                  if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
-                    SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 3)
-                  {
-                    Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
-                    break;
-                  }
-                  dVector vec;
-                  FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),3);
-                  array.push_back(vec);
-                }
-                shader->SetVectorArray(param,array);
-              }
-              else if (SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[0]) == 4)
-              {
-                vector<dColour, FLX_ALLOC(dColour) > array;
-                for (unsigned int i=0; i<sz; i++)
-                {
-                  if (!SCHEME_VECTORP(SCHEME_VEC_ELS(listvec)[i]) ||
-                    SCHEME_VEC_SIZE(SCHEME_VEC_ELS(listvec)[i]) != 4)
-                  {
-                    Trace::Stream<<"found a dodgy element in a uniform array"<<endl;
-                    break;
-                  }
-                  dColour vec;
-                  FloatsFromScheme(SCHEME_VEC_ELS(listvec)[i],vec.arr(),4);
-                  array.push_back(vec);
-                }
-                shader->SetColourArray(param,array);
-              }
-              else
-              {
-                Trace::Stream<<"shader has found a vector argument list of a strange size"<<endl;
-              }
-            }
-          }
         }
         else
         {
-          Trace::Stream<<"shader has found an argument type it can't send, numbers and vectors, or lists of them only"<<endl;
+            Trace::Stream<<"shader has found an argument type it can't send, numbers and vectors, or lists of them only"<<endl;
         }
-      }
-      else
-      {
-        Trace::Stream<<"shader has found a mal-formed parameter list"<<endl;
-      }
     }
-    GLSLShader::Unapply();
-  }
+    else
+    {
+        Trace::Stream<<"shader has found a mal-formed parameter list"<<endl;
+    }
+}
 
-  MZ_GC_UNREG();
-  return scheme_void;
+GLSLShader::Unapply();
+}
+
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en

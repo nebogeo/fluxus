@@ -113,7 +113,7 @@
 
 
 ; pixels primitive
-(translate (vector -6 1.5 0))
+(translate (vector -5.5 2.5 0))
 (with-primitive (build-pixels 100 100)
     ; randomise the influence positions
     (pdata-map!

@@ -5,7 +5,8 @@
 ; for the moment, comment the top require/provide out and uncomment the 
 ; lower when installing a static build of the fluxus modules
 
-(require "fluxus-engine.ss"
+(require (rename-in "fluxus-engine.ss"
+					(shader-set! shader-list-set!))
          "fluxus-audio.ss"
          "fluxus-osc.ss"
          "fluxus-midi.ss"
@@ -20,7 +21,8 @@
  (all-from-out "fluxus-openal.ss")
 )
 
-#;(require 'fluxus-engine
+#;(require (rename-in 'fluxus-engine
+					(shader-set! shader-list-set!))
          'fluxus-audio
          'fluxus-osc
          'fluxus-midi)

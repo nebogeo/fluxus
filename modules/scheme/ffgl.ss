@@ -5,16 +5,12 @@
 ;; FreeFrame is a cross platform real-time video effects plugin system.
 ;; Fluxus supports FreeFrame 1.5 also known as FreeFrameGL or FFGL. FF CPU
 ;; software rendering plugins are not supported at the moment.
-;; For more information visit http:;;www.freeframe.org
+;; For more information visit http://www.freeframe.org
 ;; Example:
 ;; (clear)
 ;;
-;; (define p (build-pixels 256 256 #t)) ; input pixelprimitive
-;;
-;; (translate (vector 1.1 0 0))
-;; ; output pixelprimitive - rendering is not active
-;; ; otherwise it would overwrite the plugin output
-;; (define op (build-pixels 256 256))
+;; ; pixelprimitive with 2 textures and an active renderer
+;; (define p (build-pixels 256 256 #t 2))
 ;;
 ;; ; load the FFGLTile plugin from the FreeFrame SDK
 ;; (define plugin (ffgl-load "FFGLTile" 256 256))
@@ -23,8 +19,15 @@
 ;;   (for ([i (ffgl-get-info)]) ; print plugin information
 ;;        (printf "~a~n" i))
 ;;   (printf "~a~n" (ffgl-get-parameters)) ; parameter names as strings
-;;   (ffgl-process op p)) ; set destination and source pixelprimitives
+;;   (ffgl-process p ; pixel primitive
+;;                (pixels->texture p 1) ; output texture
+;;                (pixels->texture p 0))) ; input texture
 ;;
+;; (with-primitive p
+;;    ; the renderer of the pixelprimitive renders to texture 0
+;;    (pixels-render-to (pixels->texture p 0))
+;;    ; the pixel primitive is displayed using texture 1
+;;    (pixels-display (pixels->texture p 1)))
 ;; (define (anim)
 ;;    ; set plugin parameters as keywords arguments
 ;;    (with-ffgl plugin

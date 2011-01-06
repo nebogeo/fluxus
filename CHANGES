@@ -7,6 +7,8 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * midi out support
 * updated to Racket
 * added (draw-line)
+* pixel primitives with more texture attachments for feedback effects and FFGL plugins
+* (shader-set!) accepts keyword arguments as shader parameters
 
 0.17
 

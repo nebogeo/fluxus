@@ -82,7 +82,9 @@ m_ShowFileDialog(false)
 
 	float colour[]={0, 0, 0, 1};
 	Interpreter::Interpret(L"fluxus-scratchpad-cursor-colour", &t);
-	for (int n=0; n<min(4, SCHEME_VEC_SIZE(t)); n++)
+	int ts = SCHEME_VEC_SIZE(t);
+
+	for (int n=0; n<min(4, ts); n++)
 	{
 		colour[n]=scheme_real_to_double(SCHEME_VEC_ELS(t)[n]);
 	}

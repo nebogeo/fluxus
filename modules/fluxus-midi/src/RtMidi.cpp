@@ -284,6 +284,10 @@ void midiInputCallback( const MIDIPacketList *list, void *procRef, void *srcRef 
             iByte += 3;
           }
         }
+        else if ( status == 0xFA || status == 0xFC || status == 0xFB ) {
+          //start/stop/continue
+          size = 1;
+        }
         else if ( status == 0xFE && (data->ignoreFlags & 0x04) ) {
           // A MIDI active sensing message and we're ignoring it.
           size = 0;
@@ -912,7 +916,7 @@ extern "C" void *alsaMidiHandler( void *ptr )
     case SND_SEQ_EVENT_SENSING: // Active sensing
       if ( data->ignoreFlags & 0x04 ) break;
 
-		case SND_SEQ_EVENT_SYSEX:
+	case SND_SEQ_EVENT_SYSEX:
       if ( (data->ignoreFlags & 0x01) ) break;
       if ( ev->data.ext.len > apiData->bufferSize ) {
         apiData->bufferSize = ev->data.ext.len;
