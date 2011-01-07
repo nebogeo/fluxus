@@ -301,7 +301,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 				break;
 
 				case 'i':
-					if (!SCHEME_INTP(argv[n]) && !SCHEME_NUMBERP(argv[n]))
+					if (!SCHEME_INTP(argv[n]))
 					{
 						MZ_GC_UNREG();
 						scheme_wrong_type(funcname.c_str(), "int", n, argc, argv);
