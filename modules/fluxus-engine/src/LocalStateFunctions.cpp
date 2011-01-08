@@ -1183,7 +1183,9 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 // consist of:
 // zero one dst-color one-minus-dst-color src-alpha one-minus-src-alpha dst-alpha
 // one-minus-dst-alpha
-// Also src-alpha-saturate as an option for the source blendmode only.
+// Also 'src-alpha-saturate as an option for the source blendmode only.
+// The initial value is 'src-alpha for the source, and 'one-minus-src-alpha for the
+// destination blendmode.
 // Example:
 // ; list out all the possible blendmodes
 //
