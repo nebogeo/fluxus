@@ -2338,6 +2338,36 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// primitive-type-name
+// Returns: void
+// Description:
+// Returns the name of the primtive, as a string.
+// Example:
+// (define p (build-cube))
+// (display (with-primitive p (primitive-type-name)))(newline)
+// EndFunctionDoc
+
+Scheme_Object *primitive_type_name(int argc, Scheme_Object **argv)
+{	
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+	
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) 
+	{
+        ret = scheme_make_utf8_string(Grabbed->GetTypeName().c_str());
+        MZ_GC_UNREG(); 
+        return ret;
+	}
+    Trace::Stream<<"primitive-type-name called without a current primitive"<<endl;
+	MZ_GC_UNREG(); 
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
 // poly-indices
 // Returns: void
 // Description:
@@ -3391,6 +3421,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
 	scheme_add_global("draw-line", scheme_make_prim_w_arity(draw_line, "draw-line", 2, 2), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
+	scheme_add_global("primitive-type-name", scheme_make_prim_w_arity(primitive_type_name, "primitive-type-name", 0, 0), env);
 	scheme_add_global("poly-set-index", scheme_make_prim_w_arity(poly_set_index, "poly-set-index", 1, 1), env);
 	scheme_add_global("poly-indices", scheme_make_prim_w_arity(poly_indices, "poly-indices", 0, 0), env);
 	scheme_add_global("poly-type-enum", scheme_make_prim_w_arity(poly_type_enum, "poly-type-enum", 0, 0), env);
