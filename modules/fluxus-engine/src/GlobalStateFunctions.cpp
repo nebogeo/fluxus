@@ -725,6 +725,93 @@ Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// is-resident? textureid-number
+// Returns: boolean
+// Description:
+// Checks if the texture is in high-performance memory.
+// Example:
+// (define t (load-texture "test.png"))
+// (display (is-resident? t))(newline) ; usually texture is not resident until used
+// EndFunctionDoc
+
+Scheme_Object *is_resident(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("is-resident?", "i", argc, argv);
+	bool r = Engine::Get()->Renderer()->GetTexturePainter()->IsResident((int)IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+	return r ? scheme_true : scheme_false;
+}
+
+// StartFunctionDoc-en
+// set-texture-priority textureid-number priority-number
+// Returns: void
+// Description:
+// You can provide hints to the OpenGL implementation to decide
+// texture residency by setting the texture’s priority.
+// Priority is between 0.0 and 1.0. A low priority tells the
+// that this texture object should be left out of resident memory
+// whenever space becomes tight. A higher priority (such as 1.0)
+// tells the implementation that you want the texture object to
+// remain resident if possible, even if the texture seems to be used
+// infrequently.
+// Bear in mind that texture priority is only a hint. Some OpenGL
+// implementations are known to ignore them completely.
+// Example:
+// (define t (load-texture "test.png"))
+// (set-texture-priority t 1.0)
+// (display (is-resident? t))(newline)
+// EndFunctionDoc
+
+Scheme_Object *set_texture_priority(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("set-texture-priority", "if", argc, argv);
+	Engine::Get()->Renderer()->GetTexturePainter()->SetTexturePriority((int)IntFromScheme(argv[0]),
+			FloatFromScheme(argv[1]));
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// texture-width textureid-number
+// Returns: width-number
+// Description:
+// Returns texture width.
+// Example:
+// (define t (load-texture "test.png"))
+// (display (texture-width t))(newline)
+// EndFunctionDoc
+
+Scheme_Object *texture_width(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("texture-width", "i", argc, argv);
+	int w = Engine::Get()->Renderer()->GetTexturePainter()->GetTextureWidth(IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+	return scheme_make_integer_value(w);
+}
+
+// StartFunctionDoc-en
+// texture-height textureid-number
+// Returns: width-height
+// Description:
+// Returns texture height.
+// Example:
+// (define t (load-texture "test.png"))
+// (display (texture-height t))(newline)
+// EndFunctionDoc
+
+Scheme_Object *texture_height(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+	ArgCheck("texture-height", "i", argc, argv);
+	int w = Engine::Get()->Renderer()->GetTexturePainter()->GetTextureHeight(IntFromScheme(argv[0]));
+	MZ_GC_UNREG();
+	return scheme_make_integer_value(w);
+}
+
+// StartFunctionDoc-en
 // frustum left-number right-number bottom-number top-number
 // Returns: void
 // Description:
@@ -2553,54 +2640,58 @@ Scheme_Object *set_full_screen(int argc, Scheme_Object **argv)
 
 void GlobalStateFunctions::AddGlobals(Scheme_Env *env)
 {
-  MZ_GC_DECL_REG(1);
-  MZ_GC_VAR_IN_REG(0, env);
-  MZ_GC_REG();
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, env);
+	MZ_GC_REG();
 
-  scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
-  scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
-  scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
-  scheme_add_global("show-axis", scheme_make_prim_w_arity(show_axis, "show-axis", 1, 1), env);
-  scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
-  scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
-  scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
-  scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
-  scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
-  scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 4, 4), env);
-  scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
-  scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
-  scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);
-  scheme_add_global("set-ortho-zoom", scheme_make_prim_w_arity(set_ortho_zoom, "set-ortho-zoom", 1, 1), env);
-  scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
-  scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
-  scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
-  scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
-  scheme_add_global("build-camera", scheme_make_prim_w_arity(build_camera, "build-camera", 0, 0), env);
-  scheme_add_global("current-camera", scheme_make_prim_w_arity(current_camera, "current-camera", 1, 1), env);
-  scheme_add_global("viewport", scheme_make_prim_w_arity(viewport, "viewport", 4, 4), env);
-  scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
-  scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
-  scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
-  scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
-  scheme_add_global("set-projection-transform", scheme_make_prim_w_arity(set_projection_transform, "set-projection-transform", 1, 1), env);
-  scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
-  scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
-  scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
-  scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
-  scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
-  scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
-  scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
-  scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
-  scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
-  scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
-  scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
-  scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
-  scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
-  scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
-  scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
-  scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
-  scheme_add_global("set-full-screen", scheme_make_prim_w_arity(set_full_screen, "set-full-screen", 0, 0), env);
+	scheme_add_global("clear-engine", scheme_make_prim_w_arity(clear_engine, "clear-engine", 0, 0), env);
+	scheme_add_global("blur", scheme_make_prim_w_arity(blur, "blur", 1, 1), env);
+	scheme_add_global("fog", scheme_make_prim_w_arity(fog, "fog", 4, 4), env);
+	scheme_add_global("show-axis", scheme_make_prim_w_arity(show_axis, "show-axis", 1, 1), env);
+	scheme_add_global("show-fps", scheme_make_prim_w_arity(show_fps, "show-fps", 1, 1), env);
+	scheme_add_global("lock-camera", scheme_make_prim_w_arity(lock_camera, "lock-camera", 1, 1), env);
+	scheme_add_global("camera-lag", scheme_make_prim_w_arity(camera_lag, "camera-lag", 1, 1), env);
+	scheme_add_global("load-texture", scheme_make_prim_w_arity(load_texture, "load-texture", 1, 2), env);
+	scheme_add_global("clear-texture-cache", scheme_make_prim_w_arity(clear_texture_cache, "clear-texture-cache", 0, 0), env);
+	scheme_add_global("is-resident?",scheme_make_prim_w_arity(is_resident,"is-resident?",1,1), env);
+	scheme_add_global("set-texture-priority",scheme_make_prim_w_arity(is_resident,"set-texture-priority",2,2), env);
+	scheme_add_global("texture-width",scheme_make_prim_w_arity(texture_width,"texture-width",1,1), env);
+	scheme_add_global("texture-height",scheme_make_prim_w_arity(texture_height,"texture-height",1,1), env);
+	scheme_add_global("frustum", scheme_make_prim_w_arity(frustum, "frustum", 4, 4), env);
+	scheme_add_global("clip", scheme_make_prim_w_arity(clip, "clip", 2, 2), env);
+	scheme_add_global("ortho", scheme_make_prim_w_arity(ortho, "ortho", 0, 0), env);
+	scheme_add_global("persp", scheme_make_prim_w_arity(persp, "persp", 0, 0), env);
+	scheme_add_global("set-ortho-zoom", scheme_make_prim_w_arity(set_ortho_zoom, "set-ortho-zoom", 1, 1), env);
+	scheme_add_global("clear-colour", scheme_make_prim_w_arity(clear_colour, "clear-colour", 1, 1), env);
+	scheme_add_global("clear-frame", scheme_make_prim_w_arity(clear_frame, "clear-frame", 1, 1), env);
+	scheme_add_global("clear-zbuffer", scheme_make_prim_w_arity(clear_zbuffer, "clear-zbuffer", 1, 1), env);
+	scheme_add_global("clear-accum", scheme_make_prim_w_arity(clear_accum, "clear-accum", 1, 1), env);
+	scheme_add_global("build-camera", scheme_make_prim_w_arity(build_camera, "build-camera", 0, 0), env);
+	scheme_add_global("current-camera", scheme_make_prim_w_arity(current_camera, "current-camera", 1, 1), env);
+	scheme_add_global("viewport", scheme_make_prim_w_arity(viewport, "viewport", 4, 4), env);
+	scheme_add_global("get-locked-matrix", scheme_make_prim_w_arity(get_locked_matrix, "get-locked-matrix", 0, 0), env);
+	scheme_add_global("get-camera", scheme_make_prim_w_arity(get_camera, "get-camera", 0, 0), env);
+	scheme_add_global("set-camera", scheme_make_prim_w_arity(set_camera, "set-camera", 1, 1), env);
+	scheme_add_global("get-projection-transform", scheme_make_prim_w_arity(get_projection_transform, "get-projection-transform", 0, 0), env);
+	scheme_add_global("set-projection-transform", scheme_make_prim_w_arity(set_projection_transform, "set-projection-transform", 1, 1), env);
+	scheme_add_global("get-screen-size", scheme_make_prim_w_arity(get_screen_size, "get-screen-size", 0, 0), env);
+	scheme_add_global("set-screen-size", scheme_make_prim_w_arity(set_screen_size, "set-screen-size", 1, 1), env);
+	scheme_add_global("select", scheme_make_prim_w_arity(select, "select", 3, 3), env);
+	scheme_add_global("select-all", scheme_make_prim_w_arity(select_all, "select-all", 3, 3), env);
+	scheme_add_global("desiredfps", scheme_make_prim_w_arity(desiredfps, "desiredfps", 1, 1), env);
+	scheme_add_global("draw-buffer", scheme_make_prim_w_arity(draw_buffer, "draw-buffer", 1, 1), env);
+	scheme_add_global("read-buffer", scheme_make_prim_w_arity(read_buffer, "read-buffer", 1, 1), env);
+	scheme_add_global("set-stereo-mode", scheme_make_prim_w_arity(set_stereo_mode, "set-stereo-mode", 1, 1), env);
+	scheme_add_global("get-stereo-mode", scheme_make_prim_w_arity(get_stereo_mode, "get-stereo-mode", 0, 0), env);
+	scheme_add_global("set-colour-mask", scheme_make_prim_w_arity(set_colour_mask, "set-colour-mask", 1, 1), env);
+	scheme_add_global("shadow-light", scheme_make_prim_w_arity(shadow_light, "shadow-light", 1, 1), env);
+	scheme_add_global("shadow-length", scheme_make_prim_w_arity(shadow_length, "shadow-length", 1, 1), env);
+	scheme_add_global("shadow-debug", scheme_make_prim_w_arity(shadow_debug, "shadow-ldebug", 1, 1), env);
+	scheme_add_global("accum", scheme_make_prim_w_arity(accum, "accum", 2, 2), env);
+	scheme_add_global("print-info", scheme_make_prim_w_arity(print_info, "print-info", 0, 0), env);
+	scheme_add_global("set-cursor",scheme_make_prim_w_arity(set_cursor,"set-cursor",1,1), env);
+	scheme_add_global("set-full-screen", scheme_make_prim_w_arity(set_full_screen, "set-full-screen", 0, 0), env);
 
-  MZ_GC_UNREG();
+	MZ_GC_UNREG();
 }
 

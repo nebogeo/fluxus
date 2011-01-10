@@ -746,13 +746,13 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
 
 Scheme_Object *translate(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("translate", "v", argc, argv);
-  dVector t;
-  FloatsFromScheme(argv[0],t.arr(),3);
-    Engine::Get()->State()->Transform.translate(t.x,t.y,t.z);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("translate", "v", argc, argv);
+	dVector t;
+	FloatsFromScheme(argv[0],t.arr(),3);
+	Engine::Get()->State()->Transform.translate(t.x,t.y,t.z);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -777,30 +777,30 @@ Scheme_Object *translate(int argc, Scheme_Object **argv)
 
 Scheme_Object *rotate(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-    if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("rotate", "vector", 0, argc, argv);
+	DECL_ARGV();
+	if (!SCHEME_VECTORP(argv[0])) scheme_wrong_type("rotate", "vector", 0, argc, argv);
 
-  if (SCHEME_VEC_SIZE(argv[0])==3)
-  {
-    // euler angles
-    float rot[3];
-    FloatsFromScheme(argv[0],rot,3);
-      Engine::Get()->State()->Transform.rotxyz(rot[0],rot[1],rot[2]);
-  }
-  else if (SCHEME_VEC_SIZE(argv[0])==4)
-  {
-    // quaternion
-    dQuat a;
-    FloatsFromScheme(argv[0],a.arr(),4);
-    dMatrix m=a.toMatrix();
-    Engine::Get()->State()->Transform*=m;
-  }
-  else
-  {
-    Trace::Stream<<"rotate - wrong number of elements in vector"<<endl;
-  }
-  MZ_GC_UNREG();
-    return scheme_void;
+	if (SCHEME_VEC_SIZE(argv[0])==3)
+	{
+		// euler angles
+		float rot[3];
+		FloatsFromScheme(argv[0],rot,3);
+		Engine::Get()->State()->Transform.rotxyz(rot[0],rot[1],rot[2]);
+	}
+	else if (SCHEME_VEC_SIZE(argv[0])==4)
+	{
+		// quaternion
+		dQuat a;
+		FloatsFromScheme(argv[0],a.arr(),4);
+		dMatrix m=a.toMatrix();
+		Engine::Get()->State()->Transform*=m;
+	}
+	else
+	{
+		Trace::Stream<<"rotate - wrong number of elements in vector"<<endl;
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -826,24 +826,24 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 
 Scheme_Object *scale(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  if ((!SCHEME_VECTORP(argv[0]) || (SCHEME_VEC_SIZE(argv[0])!=3))
-      && (!SCHEME_NUMBERP(argv[0])))
-    scheme_wrong_type("scale", "vector size 3 or number", 0, argc, argv);
+	DECL_ARGV();
+	if ((!SCHEME_VECTORP(argv[0]) || (SCHEME_VEC_SIZE(argv[0])!=3))
+			&& (!SCHEME_NUMBERP(argv[0])))
+		scheme_wrong_type("scale", "vector size 3 or number", 0, argc, argv);
 
-  if (SCHEME_VECTORP(argv[0]))
-  {
-    dVector t;
-    FloatsFromScheme(argv[0],t.arr(),3);
-    Engine::Get()->State()->Transform.scale(t.x,t.y,t.z);
-  }
-  else
-  {
-    float t=FloatFromScheme(argv[0]);
-    Engine::Get()->State()->Transform.scale(t,t,t);
-  }
-  MZ_GC_UNREG();
-    return scheme_void;
+	if (SCHEME_VECTORP(argv[0]))
+	{
+		dVector t;
+		FloatsFromScheme(argv[0],t.arr(),3);
+		Engine::Get()->State()->Transform.scale(t.x,t.y,t.z);
+	}
+	else
+	{
+		float t=FloatFromScheme(argv[0]);
+		Engine::Get()->State()->Transform.scale(t,t,t);
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -942,7 +942,7 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 {
-  return FloatsToScheme(Engine::Get()->State()->Transform.arr(),16);
+	return FloatsToScheme(Engine::Get()->State()->Transform.arr(),16);
 }
 
 // StartFunctionDoc-en
@@ -1041,15 +1041,15 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 
 Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
 {
-  if (Engine::Get()->Grabbed())
-  {
-    SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
-    if (a)
-    {
-      return FloatsToScheme(Engine::Get()->Renderer()->GetSceneGraph().GetGlobalTransform(a).arr(),16);
-    }
-  }
-  return scheme_void;
+	if (Engine::Get()->Grabbed())
+	{
+		SceneNode *a=(SceneNode*)(Engine::Get()->Renderer()->GetSceneGraph().FindNode(Engine::Get()->GrabbedID()));
+		if (a)
+		{
+			return FloatsToScheme(Engine::Get()->Renderer()->GetSceneGraph().GetGlobalTransform(a).arr(),16);
+		}
+	}
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1088,22 +1088,22 @@ Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
 
 Scheme_Object *parent(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("parent", "i", argc, argv);
-  Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
-  if (Grabbed) // reparent...
-  {
-    Engine::Get()->Renderer()->GetSceneGraph().
-      ReparentNode(Engine::Get()->GrabbedID(),IntFromScheme(argv[0]));
-    // also set the state, although it probably isn't needed
-      Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
-  }
-  else
-  {
-      Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
-  }
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("parent", "i", argc, argv);
+	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
+	if (Grabbed) // reparent...
+	{
+		Engine::Get()->Renderer()->GetSceneGraph().
+			ReparentNode(Engine::Get()->GrabbedID(),IntFromScheme(argv[0]));
+		// also set the state, although it probably isn't needed
+		Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+	}
+	else
+	{
+		Engine::Get()->State()->Parent=IntFromScheme(argv[0]);
+	}
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1133,11 +1133,11 @@ Scheme_Object *parent(int argc, Scheme_Object **argv)
 
 Scheme_Object *line_width(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("line-width", "f", argc, argv);
-    Engine::Get()->State()->LineWidth=FloatFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("line-width", "f", argc, argv);
+	Engine::Get()->State()->LineWidth=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1167,11 +1167,11 @@ Scheme_Object *line_width(int argc, Scheme_Object **argv)
 
 Scheme_Object *point_width(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("point-width", "f", argc, argv);
-    Engine::Get()->State()->PointWidth=FloatFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("point-width", "f", argc, argv);
+	Engine::Get()->State()->PointWidth=FloatFromScheme(argv[0]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -1801,12 +1801,12 @@ Scheme_Object *hint_nozwrite(int argc, Scheme_Object **argv)
 
 Scheme_Object *line_pattern(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("line-pattern", "ii", argc, argv);
-    Engine::Get()->State()->StippleFactor=IntFromScheme(argv[0]);
-    Engine::Get()->State()->StipplePattern=IntFromScheme(argv[1]);
-  MZ_GC_UNREG();
-    return scheme_void;
+	DECL_ARGV();
+	ArgCheck("line-pattern", "ii", argc, argv);
+	Engine::Get()->State()->StippleFactor=IntFromScheme(argv[0]);
+	Engine::Get()->State()->StipplePattern=IntFromScheme(argv[1]);
+	MZ_GC_UNREG();
+	return scheme_void;
 }
 
 // StartFunctionDoc-en
@@ -2319,58 +2319,9 @@ Scheme_Object *hint_sphere_map(int argc, Scheme_Object **argv)
 
 Scheme_Object *texture(int argc, Scheme_Object **argv)
 {
-  DECL_ARGV();
-  ArgCheck("texture", "i", argc, argv);
-  Engine::Get()->State()->Textures[0]=(int)IntFromScheme(argv[0]);
-  MZ_GC_UNREG();
-    return scheme_void;
-}
-
-// StartFunctionDoc-en
-// is-resident? textureid-number
-// Returns: boolean
-// Description:
-// Checks if the texture is in high-performance memory.
-// Example:
-// (define t (load-texture "test.png"))
-// (display (is-resident? t))(newline) ; usually texture is not resident until used
-// EndFunctionDoc
-
-Scheme_Object *is_resident(int argc, Scheme_Object **argv)
-{
 	DECL_ARGV();
-	ArgCheck("is-resident?", "i", argc, argv);
-	bool r = Engine::Get()->Renderer()->GetTexturePainter()->IsResident((int)IntFromScheme(argv[0]));
-	MZ_GC_UNREG();
-	return r ? scheme_true : scheme_false;
-}
-
-// StartFunctionDoc-en
-// set-texture-priority textureid-number priority-number
-// Returns: void
-// Description:
-// You can provide hints to the OpenGL implementation to decide
-// texture residency by setting the texture’s priority.
-// Priority is between 0.0 and 1.0. A low priority tells the
-// that this texture object should be left out of resident memory
-// whenever space becomes tight. A higher priority (such as 1.0)
-// tells the implementation that you want the texture object to
-// remain resident if possible, even if the texture seems to be used
-// infrequently.
-// Bear in mind that texture priority is only a hint. Some OpenGL
-// implementations are known to ignore them completely.
-// Example:
-// (define t (load-texture "test.png"))
-// (set-texture-priority t 1.0)
-// (display (is-resident? t))(newline)
-// EndFunctionDoc
-
-Scheme_Object *set_texture_priority(int argc, Scheme_Object **argv)
-{
-	DECL_ARGV();
-	ArgCheck("set-texture-priority", "if", argc, argv);
-	Engine::Get()->Renderer()->GetTexturePainter()->SetTexturePriority((int)IntFromScheme(argv[0]),
-			FloatFromScheme(argv[1]));
+	ArgCheck("texture", "i", argc, argv);
+	Engine::Get()->State()->Textures[0]=(int)IntFromScheme(argv[0]);
 	MZ_GC_UNREG();
 	return scheme_void;
 }
@@ -3232,8 +3183,6 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("emissive",scheme_make_prim_w_arity(emissive,"emissive",1,1), env);
 	scheme_add_global("shinyness",scheme_make_prim_w_arity(shinyness,"shinyness",1,1), env);
 	scheme_add_global("texture",scheme_make_prim_w_arity(texture,"texture",1,1), env);
-	scheme_add_global("is-resident?",scheme_make_prim_w_arity(is_resident,"is-resident?",1,1), env);
-	scheme_add_global("set-texture-priority",scheme_make_prim_w_arity(is_resident,"set-texture-priority",2,2), env);
 	scheme_add_global("multitexture",scheme_make_prim_w_arity(multitexture,"multitexture",2,2), env);
 	scheme_add_global("hint-on",scheme_make_prim_w_arity(hint_on,"hint-on",0,-1), env);
 	scheme_add_global("hint-off",scheme_make_prim_w_arity(hint_off,"hint-off",0,-1), env);
@@ -3262,7 +3211,6 @@ void LocalStateFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("line-pattern",scheme_make_prim_w_arity(line_pattern,"line-pattern",2,2), env);
 	scheme_add_global("point-width",scheme_make_prim_w_arity(point_width,"point-width",1,1), env);
 	scheme_add_global("blend-mode",scheme_make_prim_w_arity(blend_mode,"blend-mode",2,2), env);
-	scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
 	scheme_add_global("parent",scheme_make_prim_w_arity(parent,"parent",1,1), env);
 	scheme_add_global("hide",scheme_make_prim_w_arity(hide,"hide",1,1), env);
 	scheme_add_global("camera-hide",scheme_make_prim_w_arity(camera_hide,"camera-hide",1,1), env);
