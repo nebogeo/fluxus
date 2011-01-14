@@ -19,16 +19,16 @@
 
 using namespace std;
 
-set<int> mem;
+set<void *> mem;
 
 void alloc_hook(void *ptr, size_t n)
 {
-    mem.insert((int)ptr);
+    mem.insert(ptr);
     std::cerr<<"++"<<mem.size()<<endl;
 }
 
 void dealloc_hook(void *ptr, size_t n)
 {
-    mem.erase((int)ptr);
+    mem.erase(ptr);
     std::cerr<<"--"<<mem.size()<<endl;
 }
