@@ -605,90 +605,90 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
 {
-  Scheme_Object *paramvec = NULL;
-  MZ_GC_DECL_REG(2);
-  MZ_GC_VAR_IN_REG(0, argv);
-  MZ_GC_VAR_IN_REG(1, paramvec);
-  MZ_GC_REG();
+	Scheme_Object *paramvec = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, paramvec);
+	MZ_GC_REG();
 
-  if (argc==2) ArgCheck("load-texture", "sl", argc, argv);
-  else ArgCheck("load-texture", "s", argc, argv);
+	if (argc==2) ArgCheck("load-texture", "pl", argc, argv);
+	else ArgCheck("load-texture", "p", argc, argv);
 
-  TexturePainter::CreateParams createparams;
+	TexturePainter::CreateParams createparams;
 
-  if (argc==2)
-  {
-    paramvec = scheme_list_to_vector(argv[1]);
+	if (argc==2)
+	{
+		paramvec = scheme_list_to_vector(argv[1]);
 
-    for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
-    {
-      if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
-      {
-        // get the parameter name
-        string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
-        if (param=="id")
-        {
-          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
-              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            createparams.ID = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-          }
-        }
-        else if (param=="type")
-        {
-          if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
-            if (type=="texture-2d") createparams.Type = GL_TEXTURE_2D;
-            else if (type=="cube-map-positive-x") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-            else if (type=="cube-map-negative-x") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-            else if (type=="cube-map-positive-y") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-            else if (type=="cube-map-negative-y") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-            else if (type=="cube-map-positive-z") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-            else if (type=="cube-map-negative-z") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-            else Trace::Stream<<"load-texture: unknown parameter for "<<param<<": "<<type<<endl;
-          }
-        }
-        else if (param=="generate-mipmaps")
-        {
-          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
-              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            createparams.GenerateMipmaps = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-          }
-        }
-        else if (param=="mip-level")
-        {
-          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
-              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            createparams.MipLevel = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-          }
-        }
-        else if (param=="border")
-        {
-          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
-              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-          }
-        }
-        else if (param=="compress")
-        {
-          if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
-              SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
-          {
-            createparams.Compress = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
-          }
-        }
-        else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;
-      }
-    }
-  }
+		for (int n=0; n<SCHEME_VEC_SIZE(paramvec); n+=2)
+		{
+			if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n]) && SCHEME_VEC_SIZE(paramvec)>n+1)
+			{
+				// get the parameter name
+				string param = SymbolName(SCHEME_VEC_ELS(paramvec)[n]);
+				if (param=="id")
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+							SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						createparams.ID = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="type")
+				{
+					if (SCHEME_SYMBOLP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						string type=SymbolName(SCHEME_VEC_ELS(paramvec)[n+1]);
+						if (type=="texture-2d") createparams.Type = GL_TEXTURE_2D;
+						else if (type=="cube-map-positive-x") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+						else if (type=="cube-map-negative-x") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+						else if (type=="cube-map-positive-y") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+						else if (type=="cube-map-negative-y") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+						else if (type=="cube-map-positive-z") createparams.Type = GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+						else if (type=="cube-map-negative-z") createparams.Type = GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+						else Trace::Stream<<"load-texture: unknown parameter for "<<param<<": "<<type<<endl;
+					}
+				}
+				else if (param=="generate-mipmaps")
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+							SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						createparams.GenerateMipmaps = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="mip-level")
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+							SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						createparams.MipLevel = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="border")
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+							SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						createparams.Border = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else if (param=="compress")
+				{
+					if (SCHEME_NUMBERP(SCHEME_VEC_ELS(paramvec)[n+1]) &&
+							SCHEME_EXACT_INTEGERP(SCHEME_VEC_ELS(paramvec)[n+1]))
+					{
+						createparams.Compress = IntFromScheme(SCHEME_VEC_ELS(paramvec)[n+1]);
+					}
+				}
+				else Trace::Stream<<"load-texture: unknown parameter "<<param<<endl;
+			}
+		}
+	}
 
-  int ret=Engine::Get()->Renderer()->GetTexturePainter()->LoadTexture(StringFromScheme(argv[0]),createparams);
-  MZ_GC_UNREG();
-    return scheme_make_integer_value(ret);
+	int ret=Engine::Get()->Renderer()->GetTexturePainter()->LoadTexture(PathFromScheme(argv[0]),createparams);
+	MZ_GC_UNREG();
+	return scheme_make_integer_value(ret);
 }
 
 // StartFunctionDoc-en

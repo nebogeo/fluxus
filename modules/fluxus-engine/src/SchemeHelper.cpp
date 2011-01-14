@@ -65,14 +65,38 @@ bool SchemeHelper::BoolFromScheme(Scheme_Object *ob)
 
 string SchemeHelper::StringFromScheme(Scheme_Object *ob)
 {
-	char *ret=NULL;
+	char *ret = NULL;
 	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, ob);
 	MZ_GC_VAR_IN_REG(1, ret);
 	MZ_GC_REG();
-	ret=scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob),SCHEME_CHAR_STRLEN_VAL(ob),NULL,0);
+	ret = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob), SCHEME_CHAR_STRLEN_VAL(ob), NULL, 0);
 	MZ_GC_UNREG();
 	return string(ret);
+}
+
+string SchemeHelper::PathFromScheme(Scheme_Object *ob)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, ob);
+	MZ_GC_REG();
+	string ret;
+	if (SCHEME_PATHP(ob))
+	{
+		ret = SCHEME_PATH_VAL(ob);
+	}
+	else
+	{
+		char *r = NULL;
+		MZ_GC_DECL_REG(1);
+		MZ_GC_VAR_IN_REG(0, r);
+		MZ_GC_REG();
+		r = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob), SCHEME_CHAR_STRLEN_VAL(ob), NULL, 0);
+		ret = r;
+		MZ_GC_UNREG();
+	}
+	MZ_GC_UNREG();
+	return ret;
 }
 
 void SchemeHelper::FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
@@ -331,6 +355,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 						scheme_wrong_type(funcname.c_str(), "symbol", n, argc, argv);
 					}
 				break;
+
 				case 'b':
 					if (!SCHEME_BOOLP(argv[n]))
 					{
@@ -338,6 +363,7 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 						scheme_wrong_type(funcname.c_str(), "boolean", n, argc, argv);
 					}
 				break;
+
 				case 'k':
 					if (!SCHEME_KEYWORDP(argv[n]))
 					{
@@ -345,6 +371,15 @@ void SchemeHelper::ArgCheck(const string &funcname, const string &format, int ar
 						scheme_wrong_type(funcname.c_str(), "keyword", n, argc, argv);
 					}
 				break;
+
+				case 'p': // path or string
+					if (!SCHEME_CHAR_STRINGP(argv[n]) && !SCHEME_PATHP(argv[n]))
+					{
+						MZ_GC_UNREG();
+						scheme_wrong_type(funcname.c_str(), "path or string", n, argc, argv);
+					}
+				break;
+
 
 				case '?':
 				break;

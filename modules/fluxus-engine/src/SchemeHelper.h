@@ -35,6 +35,7 @@ namespace SchemeHelper
 	bool BoolFromScheme(Scheme_Object *ob);
 	void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size);
 	string StringFromScheme(Scheme_Object *ob);
+	string PathFromScheme(Scheme_Object *ob);
 	bool IsSymbol(Scheme_Object *src,const string &symbol);
 	string SymbolName(Scheme_Object *src);
 	Scheme_Object *FloatsToScheme(float *src, unsigned int size);
