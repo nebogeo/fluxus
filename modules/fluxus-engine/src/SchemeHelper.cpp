@@ -87,13 +87,7 @@ string SchemeHelper::PathFromScheme(Scheme_Object *ob)
 	}
 	else
 	{
-		char *r = NULL;
-		MZ_GC_DECL_REG(1);
-		MZ_GC_VAR_IN_REG(0, r);
-		MZ_GC_REG();
-		r = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(ob), SCHEME_CHAR_STRLEN_VAL(ob), NULL, 0);
-		ret = r;
-		MZ_GC_UNREG();
+		ret = StringFromScheme(ob);
 	}
 	MZ_GC_UNREG();
 	return ret;

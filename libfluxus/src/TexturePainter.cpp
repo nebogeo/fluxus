@@ -157,7 +157,6 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 
 		return params.ID;
 	}
-	m_LoadedMap[Fullpath]=0;
 	return 0;
 }
 
