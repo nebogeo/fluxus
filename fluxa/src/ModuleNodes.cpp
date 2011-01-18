@@ -343,20 +343,35 @@ void EffectNode::Process(unsigned int bufsize)
 	
 	ProcessChildren(bufsize);
 
-	if (ChildExists(0) && !GetChild(0)->IsTerminal() && ChildExists(1) && ChildExists(2))
-	{		
-		switch (m_Type)
-		{
-			case CRUSH : m_Output=GetInput(0); Crush(m_Output, GetChild(1)->GetCVValue(), GetChild(2)->GetCVValue()); break;
-			case DISTORT : m_Output=GetInput(0); Distort(m_Output, GetChild(1)->GetCVValue()); break;
-			case CLIP : m_Output=GetInput(0); HardClip(m_Output, GetChild(1)->GetCVValue()); break;
-			case DELAY : 
-			{
-				m_Delay.SetDelay(GetChild(1)->GetCVValue());
-				m_Delay.SetFeedback(GetChild(2)->GetCVValue());
-				m_Delay.Process(bufsize, GetInput(0), m_Output); break;
-			}
-		};
+    if (ChildExists(0) && !GetChild(0)->IsTerminal() && ChildExists(1))
+    {
+        if (m_Type==CLIP)
+        {
+            m_Output=GetInput(0);
+            if (GetChild(0)->IsTerminal())
+            {
+                HardClip(m_Output, GetChild(1)->GetCVValue());
+            }
+            else
+            {
+                MovingHardClip(m_Output, GetInput(1));
+            }
+        }
+        else if (ChildExists(2))
+        {		
+            switch (m_Type)
+            {
+			    case CRUSH : m_Output=GetInput(0); Crush(m_Output, GetChild(1)->GetCVValue(), GetChild(2)->GetCVValue()); break;
+			    case DISTORT : m_Output=GetInput(0); Distort(m_Output, GetChild(1)->GetCVValue()); break;
+                case DELAY : 
+			    {  
+                    m_Delay.SetDelay(GetChild(1)->GetCVValue());
+                    m_Delay.SetFeedback(GetChild(2)->GetCVValue());
+                    m_Delay.Process(bufsize, GetInput(0), m_Output); break;
+                }
+                case CLIP : assert(0); break;
+            }
+		}
 	}
 }
 
