@@ -1373,8 +1373,8 @@ Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
 Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
-	ArgCheck("load-primitive", "s", argc, argv);
-	string filename=StringFromScheme(argv[0]);
+	ArgCheck("load-primitive", "p", argc, argv);
+	string filename=PathFromScheme(argv[0]);
 	Primitive *Prim = PrimitiveIO::Read(SearchPaths::Get()->GetFullPath(filename));
 	if (Prim!=NULL)
 	{

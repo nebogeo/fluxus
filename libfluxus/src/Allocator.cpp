@@ -19,7 +19,7 @@
 
 using namespace std;
 
-set<int> mem;
+set<void *> mem;
 
 int count=0;
 

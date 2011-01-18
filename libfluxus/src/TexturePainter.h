@@ -121,6 +121,13 @@ public:
 
 	/// Hints to decide texture residency
 	void SetTexturePriority(unsigned int id, float priority);
+
+	/// Returns texture width
+	unsigned GetTextureWidth(unsigned int id);
+
+	/// Returns texture height
+	unsigned GetTextureHeight(unsigned int id);
+
 	///@}
 
 	////////////////////////////////////

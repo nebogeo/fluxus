@@ -157,7 +157,6 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 
 		return params.ID;
 	}
-	m_LoadedMap[Fullpath]=0;
 	return 0;
 }
 
@@ -482,5 +481,31 @@ bool TexturePainter::IsResident(unsigned int id)
 void TexturePainter::SetTexturePriority(unsigned int id, float priority)
 {
 	glPrioritizeTextures(1, &id, &priority);
+}
+
+unsigned TexturePainter::GetTextureWidth(unsigned int id)
+{
+	map<unsigned int, TextureDesc>::iterator i = m_TextureMap.find(id);
+	if (i != m_TextureMap.end())
+	{
+		return i->second.Width;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+unsigned TexturePainter::GetTextureHeight(unsigned int id)
+{
+	map<unsigned int, TextureDesc>::iterator i = m_TextureMap.find(id);
+	if (i != m_TextureMap.end())
+	{
+		return i->second.Height;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
