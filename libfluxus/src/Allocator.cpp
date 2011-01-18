@@ -21,14 +21,22 @@ using namespace std;
 
 set<int> mem;
 
+int count=0;
+
 void alloc_hook(void *ptr, size_t n)
 {
+    count++;
     mem.insert((int)ptr);
-    std::cerr<<"++"<<mem.size()<<endl;
+
+    if (count>1000)
+    {
+        std::cerr<<mem.size()<<endl;
+        count=0;
+    }
 }
 
 void dealloc_hook(void *ptr, size_t n)
 {
     mem.erase((int)ptr);
-    std::cerr<<"--"<<mem.size()<<endl;
+    //std::cerr<<"--"<<mem.size()<<endl;
 }
