@@ -66,7 +66,7 @@ if not GetOption('clean'):
 env.Append(LIBS = Libs)
 
 # replace libs with static libs if building an osx app
-if env['PLATFORM'] == 'darwin' and GetOption('app'):
+if env['PLATFORM'] == 'darwin' and GetOption('app') and not GetOption('clean'):
 	for l in ['GLEW']:
 		env['LIBS'].remove(l)
 		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))

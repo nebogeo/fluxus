@@ -260,7 +260,7 @@ if env['PLATFORM'] == 'darwin':
 	env.Append(FRAMEWORKPATH = [RacketLib])
 	env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
 
-	if GetOption('app'):
+	if GetOption('app') and not GetOption('clean'):
 		# replace libs with static libs if building an osx app
 		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 			env['LIBS'].remove(l)
@@ -437,6 +437,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         resources = resources,
                                         typecode = 'APPL',
                                         icon_file = 'packages/macos/fluxus.icns'))
+        env.Clean('Fluxus.app', 'Fluxus.app')
         # build dmg
         '''
         env['BUILDERS']['DiskImage'] = Builder(action = BuildDmg)
@@ -458,6 +459,7 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
                                         frameworks = frameworks,
                                         typecode='APPL',
                                         icon_file='packages/macos/fluxa.icns'))
+        env.Clean('Fluxa.app', 'Fluxa.app')
 
 if env['PLATFORM'] == 'win32':
 	Target += '.exe'
