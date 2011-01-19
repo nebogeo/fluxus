@@ -455,7 +455,9 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // load-texture pngfilename-string optional-create-params-list
 // Returns: textureid-number
 // Description:
-// Loads a texture from disk, converts it to a texture, and returns the id number. The texture loading
+// Loads a texture from disk, converts it to a texture, and returns the id number. The texture width and height
+// should be power of two on older graphics cards. Usually there are no size restriction on newer cards, but if
+// you experience unexpected results make the texture size multiple of 4. The texture loading
 // is memory cached, so repeatedly calling this will not cause it to load again. The cache can be cleared
 // with clear-texture-cache. The png may be RGB or RGBA to use alpha transparency. To get more control how your
 // texture is created you can use a list of parameters. See the example for more explanation. Use id for

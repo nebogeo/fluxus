@@ -191,6 +191,7 @@ private:
 	bool m_MultitexturingEnabled;
 	bool m_TextureCompressionEnabled;
 	bool m_SGISGenerateMipmap;
+	bool m_NPOTTextureEnabled;
 };
 
 }

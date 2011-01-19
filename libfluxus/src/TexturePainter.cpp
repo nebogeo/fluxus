@@ -57,6 +57,8 @@ m_SGISGenerateMipmap(true)
 		Trace::Stream << "Warning: Automatic mipmap generation disabled." << endl;
 		m_SGISGenerateMipmap = false;
 	}
+
+	m_NPOTTextureEnabled = GLEW_ARB_texture_non_power_of_two;
 }
 
 TexturePainter::~TexturePainter()
@@ -125,6 +127,25 @@ unsigned int TexturePainter::LoadTexture(const string &Filename, CreateParams &p
 
 		// upload to card...
 		glEnable(params.Type);
+
+		if (!m_NPOTTextureEnabled)
+		{
+			if ((desc.Width & (desc.Width - 1)) || (desc.Height & (desc.Height - 1)))
+			{
+				Trace::Stream << "Warning: texture size " << desc.Width << "x" <<
+					desc.Height << " is not power of two." << endl;
+			}
+		}
+		else
+		{
+			// this does not seem to be a requirement, but seems to be a problem
+			// on most cards
+			if ((desc.Width & 3) || (desc.Height & 3))
+			{
+				Trace::Stream << "Warning: texture size " << desc.Width << "x" <<
+					desc.Height << " is not multiple of 4." << endl;
+			}
+		}
 
 		if (params.ID==-1) // is this a new texture?
 		{
