@@ -63,7 +63,7 @@ bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsour
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled) return true;
 
-	if (vertexsource == "")
+	if (vertexsource.empty())
 	{
 		m_VertexShader = 0;
 	}
@@ -73,7 +73,7 @@ bool GLSLShaderPair::Make(const string &vertexsource, const string &fragmentsour
 		if (m_VertexShader==0) return false;
 	}
 
-	if (fragmentsource == "")
+	if (fragmentsource.empty())
 	{
 		m_FragmentShader = 0;
 	}
@@ -97,7 +97,7 @@ bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfi
 	#ifdef GLSL
 	if (!GLSLShader::m_Enabled) return true;
 
-	if (vertexfilename == "")
+	if (vertexfilename.empty())
 	{
 		m_VertexShader = 0;
 	}
@@ -107,7 +107,7 @@ bool GLSLShaderPair::Load(const string &vertexfilename, const string &fragmentfi
 		if (m_VertexShader == 0) return false;
 	}
 
-	if (fragmentfilename == "")
+	if (fragmentfilename.empty())
 	{
 		m_FragmentShader = 0;
 	}
