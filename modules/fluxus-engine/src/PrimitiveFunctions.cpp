@@ -644,6 +644,8 @@ Scheme_Object *ribbon_inverse_normals(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // Builds a tesselated nurbs sphere, texture mapped in the same fashion as the poly sphere.
+// Since the nurbs sphere uses additional control points the primitive data count can be
+// calculated by (hsegments + 3) * rsegments.
 // Example:
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
@@ -677,10 +679,12 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// build-nurbs-plane hsegments rsegments
+// build-nurbs-plane xsegments ysegments
 // Returns: primitiveid-number
 // Description:
 // Builds a tesselated nurbs plane, texture mapped in uv direction.
+// Since the nurbs plane uses additional control points the primitive data count can be
+// calculated by (xsegments + 1) * (ysegments + 1)
 // Example:
 // (define mynewshape (build-nurbs-plane 10 10))
 // EndFunctionDoc
