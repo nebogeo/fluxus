@@ -52,8 +52,6 @@ namespace Fluxus
 
 #define MAX_TEXTURES  8
 
-class PixelPrimitive;
-
 ///////////////////////////////////////
 /// The fluxus graphics state
 /// This is used to form the state stack
@@ -96,8 +94,6 @@ public:
 	dMatrix Transform;
 	GLSLShader *Shader;
 	bool Cull;
-
-	PixelPrimitive *Target;
 };
 
 };

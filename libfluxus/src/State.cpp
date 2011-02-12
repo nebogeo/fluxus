@@ -39,8 +39,7 @@ NormalColour(1,0,0),
 WireOpacity(1.0f),
 ColourMode(MODE_RGB),
 Shader(NULL),
-Cull(true),
-Target(NULL)
+Cull(true)
 {
 	for (int c=0; c<MAX_TEXTURES; c++)
 	{
@@ -48,7 +47,7 @@ Target(NULL)
 	}
 }
 
-State::State(const State &other) 
+State::State(const State &other)
 {
 	*this=other;
 }
@@ -77,7 +76,6 @@ const State &State::operator=(const State &other)
 	Transform=other.Transform;
 	Shader=other.Shader;
 	Cull=other.Cull;
-	Target=other.Target;
 
 	if (Shader!=NULL)
 	{

@@ -333,16 +333,17 @@ void Renderer::PreRender(unsigned int CamIndex, bool PickMode)
 		glEnable(GL_DEPTH_TEST);
 		glDisable(GL_COLOR_MATERIAL);
 	}
-		
+
 	if (m_FPSDisplay && !PickMode)
 	{
-		PushState();
+		State DefaultState;
+		m_StateStack.push_back(DefaultState);
 		GetState()->Transform.translate(Cam.GetLeft(),Cam.GetBottom(),0);
 		GetState()->Colour=dColour(0,0,1);
 		char s[32];
 		sprintf(s,"%f fps",FPS);
-    	DrawText(s);
-    	PopState();
+		DrawText(s);
+		PopState();
 	}
 
 	RenderLights(true); // camera locked
