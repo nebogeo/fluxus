@@ -5,6 +5,7 @@ import os, sys
 
 Import("env", "BinaryModulesLocation", "MZDYN", "static_modules",
 		"racket_framework")
+venv = env.Clone()
 
 Target = 'fluxus-video_ss'
 
@@ -14,73 +15,71 @@ Source = ['src/Video.cpp',
 		'src/ofVideoGrabber.cpp',
 		MZDYN]
 
-if env['PLATFORM'] == 'darwin':
+if venv['PLATFORM'] == 'darwin':
 	Source += ['src/ofQtUtils.cpp']
-elif env['PLATFORM'] == 'posix':
+elif venv['PLATFORM'] == 'posix':
 	Source += ['src/ofUCUtils.cpp']
 
 # libs to check for
-LibList = [["GLEW", "GL/glew.h"]]
+LibList = [['GLEW', 'GL/glew.h']]
 Libs = []
 
 Frameworks = []
 
 Requirements = True
 
-env.Replace(LIBS = [])
-
-if env['PLATFORM'] == 'darwin':
+if venv['PLATFORM'] == 'darwin':
 	Frameworks += ['Carbon', 'QuickTime', 'OpenGL', 'AppKit', 'Foundation']
 
-elif env['PLATFORM'] == 'posix':
+elif venv['PLATFORM'] == 'posix':
 	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0', 'libunicap',
 			'libavformat', 'libswscale']:
 		try:
-			env.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
+			venv.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
 		except:
 			print "ERROR: '%s' must be installed!" % pkg
 			Requirements = False
 	LibList += [['gstapp-0.10', 'gst/app/gstappsink.h']]
 
-if env['PLATFORM'] == 'darwin':
+if venv['PLATFORM'] == 'darwin':
 	if racket_framework:
 		Frameworks += ['Racket']
 	else:
 		Libs += ['racket3m']
-elif env['PLATFORM'] == 'posix':
-	env.Append(CXXFLAGS = ' -D__STDC_CONSTANT_MACROS')
+elif venv['PLATFORM'] == 'posix':
+	venv.Append(CXXFLAGS = ' -D__STDC_CONSTANT_MACROS')
 
 # check installed libraries
 if not GetOption('clean'):
 	print 'Checking requirements for', Target, '...'
-	conf = Configure(env)
+	conf = Configure(venv)
 	for (lib, headers) in LibList:
 		if not conf.CheckHeader(headers):
 			print "ERROR: '%s' must be installed!" % (lib)
 			Requirements = False
 
-	env = conf.Finish()
+	venv = conf.Finish()
 	# ... but we shouldn't forget to add them to LIBS manually
 	Libs += [rec[0] for rec in LibList]
 
-env.Append(LIBS = Libs)
+venv.Replace(LIBS = Libs)
 
 # replace libs with static libs if building an osx app
-if env['PLATFORM'] == 'darwin' and GetOption('app') and not GetOption('clean'):
+if venv['PLATFORM'] == 'darwin' and GetOption('app') and not GetOption('clean'):
 	for l in ['GLEW']:
-		env['LIBS'].remove(l)
-		env['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
+		venv['LIBS'].remove(l)
+		venv['LIBS'].append(File('/opt/local/lib/lib%s.a' % l))
 
 if Requirements:
 	if not GetOption('clean'):
 		print Target, 'requirements... yes'
-	output = env.SharedLibrary(source = Source, 
+	output = venv.SharedLibrary(source = Source, 
 					  target = Target,
 					  FRAMEWORKS = Frameworks,
 					  SHLIBPREFIX = '')
 
 	if not static_modules:
-		env.Install(BinaryModulesLocation, output)
+		venv.Install(BinaryModulesLocation, output)
 else:
 	if not GetOption('clean'):
 		print Target, 'requirements... NO'
