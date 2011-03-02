@@ -27,6 +27,12 @@
 #include <glob.h>
 #endif
 
+#ifdef __APPLE_APP__
+#include <pwd.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#endif
+
 #include <sys/stat.h>
 #include <sys/time.h>
 #include "GLFileDialog.h"
@@ -37,14 +43,40 @@ using namespace fluxus;
 GLFileDialog::GLFileDialog() :
 m_CurrentFile(0),
 m_SaveAs(true)
-{ 
+{
 	m_Path=L"";
+
+#ifdef __APPLE_APP__
+	// use ~/Documents/Fluxus in OSX app
+	struct passwd *pwd = getpwuid(getuid());
+	if (pwd)
+	{
+		string documents(pwd->pw_dir + string("/Documents/"));
+		if (access(documents.c_str(), F_OK) == 0)
+		{
+			string fdocs = documents + "Fluxus/";
+			if (access(fdocs.c_str(), F_OK) < 0)
+			{
+				if (mkdir(fdocs.c_str(), 0755) == 0)
+				{
+					documents = fdocs;
+				}
+			}
+			else
+			{
+				documents = fdocs;
+			}
+		}
+		m_Path = string_to_wstring(documents);
+	}
+#endif
+
 	m_SaveAsInfoText=L"Save as (esc to exit)";
 	m_Text=L"";
 	ReadPath();
 }
 
-GLFileDialog::~GLFileDialog() 
+GLFileDialog::~GLFileDialog()
 {
 }
 
