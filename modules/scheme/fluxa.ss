@@ -14,19 +14,19 @@
 #lang racket/base
 
 (require "scratchpad.ss"
-       "tasks.ss"
-     "fluxus-modules.ss"
-        scheme/list)
+		"tasks.ss"
+		"fluxus-modules.ss"
+		scheme/list)
 (provide
- play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
- sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
- crush distort klip echo ks reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-  set-bpm-mult logical-time inter pick set-scale)
+		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
+		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
+		crush distort klip echo ks reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+		set-bpm-mult logical-time inter pick set-scale)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
 (define bpm-mult 1)
-(define nm-searchpath "/home/dave/noiz/nm/")
+(define fluxa-searchpaths (get-searchpaths))
 
 (define TERMINAL 0) (define SINE 1) (define SAW 2) (define TRI 3) (define SQU 4)
 (define WHITE 5) (define PINK 6) (define ADSR 7) (define ADD 8) (define SUB 9)
@@ -38,7 +38,9 @@
   (osc-destination "osc.udp://127.0.0.1:4004")
   (osc-source "4444")
   (osc-send "/setclock" "" '())
-  (searchpath nm-searchpath)
+  (for-each
+	  searchpath
+	  fluxa-searchpaths)
   (spawn-task go-flux 'fluxa-update-task))
 
 ;------------------------------
@@ -724,6 +726,8 @@
 ;; EndFunctionDoc
 
 (define (searchpath path)
+  (unless (member path fluxa-searchpaths)
+	  (set! fluxa-searchpaths (cons path fluxa-searchpaths)))
   (osc-send "/addsearchpath" "s" (list path)))
 
 ;; StartFunctionDoc-en
