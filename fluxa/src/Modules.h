@@ -33,6 +33,7 @@ static const float RAD=(PI/180.0)*360.0;
 float RandRange(float L, float H);
 void Crush(Sample &buf, float freq, float bits);
 void Distort(Sample &buf, float amount);
+void MovingDistort(Sample &buf, const Sample &amount);
 void HardClip(Sample &buf, float level);
 void MovingHardClip(Sample &buf, const Sample &level);
 

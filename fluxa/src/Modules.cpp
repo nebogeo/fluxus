@@ -57,6 +57,19 @@ void Distort(Sample &buf, float amount)
 	}
 }
 
+
+void MovingDistort(Sample &buf, const Sample &amount)
+{
+	for(unsigned int i=0; i<buf.GetLength(); i++)
+	{
+		float a =fabs(amount[i]);
+        if (a>0.99) a = 0.99;
+		float k=2*a/(1-a);
+		
+        buf[i]=((1+k)*buf[i]/(1+k*fabs(buf[i])))*(1-a);
+	}
+}
+
 void HardClip(Sample &buf, float level)
 {
 	if (feq(level,0,0.0001)) level==0.0001;

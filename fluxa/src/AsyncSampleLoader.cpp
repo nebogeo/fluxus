@@ -100,7 +100,7 @@ void AsyncSampleLoader::LoadQueue()
 		//cerr<<"Could not get a lock on the loaderqueue from LoadQueue()"<<endl;
 	}
 }
-
+/*
 void AsyncSampleLoader::LoadLoop()
 {		
 	pthread_mutex_lock(m_Mutex);
@@ -161,8 +161,8 @@ void AsyncSampleLoader::LoadLoop()
 	}		
 	pthread_mutex_unlock(m_Mutex);
 }
+*/
 
-/*
 void AsyncSampleLoader::LoadLoop()
 {		
 	pthread_mutex_lock(m_Mutex);
@@ -209,7 +209,7 @@ void AsyncSampleLoader::LoadLoop()
 	}		
 	pthread_mutex_unlock(m_Mutex);
 }
-*/
+
 // having problems with libsndfile crashing in this thread. (nm/eb.wav)
 // need to look into it more, but need this working for a gig
 // so writing a quick dirty wav loader here 

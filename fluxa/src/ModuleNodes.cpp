@@ -348,7 +348,7 @@ void EffectNode::Process(unsigned int bufsize)
         if (m_Type==CLIP)
         {
             m_Output=GetInput(0);
-            if (GetChild(0)->IsTerminal())
+            if (GetChild(1)->IsTerminal())
             {
                 HardClip(m_Output, GetChild(1)->GetCVValue());
             }
@@ -357,12 +357,24 @@ void EffectNode::Process(unsigned int bufsize)
                 MovingHardClip(m_Output, GetInput(1));
             }
         }
+        else if (m_Type==DISTORT)
+        {
+            m_Output=GetInput(0);
+            if (GetChild(1)->IsTerminal())
+            {
+                Distort(m_Output, GetChild(1)->GetCVValue());
+            }
+            else
+            {
+                MovingDistort(m_Output, GetInput(1));
+            }
+        }
         else if (ChildExists(2))
         {		
             switch (m_Type)
             {
 			    case CRUSH : m_Output=GetInput(0); Crush(m_Output, GetChild(1)->GetCVValue(), GetChild(2)->GetCVValue()); break;
-			    case DISTORT : m_Output=GetInput(0); Distort(m_Output, GetChild(1)->GetCVValue()); break;
+			    //case DISTORT : m_Output=GetInput(0); Distort(m_Output, GetChild(1)->GetCVValue()); break;
                 case DELAY : 
 			    {  
                     m_Delay.SetDelay(GetChild(1)->GetCVValue());
