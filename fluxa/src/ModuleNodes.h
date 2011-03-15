@@ -61,6 +61,15 @@ private:
 	unsigned int m_Shape;
 };
 
+class XFadeNode : public GraphNode
+{
+public:
+    XFadeNode();
+	virtual void Trigger(float time);
+	virtual void Process(unsigned int bufsize);
+};
+
+
 class ADSRNode : public GraphNode
 {
 public:

@@ -20,7 +20,7 @@
 (provide
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
-		crush distort klip echo ks reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+		crush distort klip echo ks xfade reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
 		set-bpm-mult logical-time inter pick set-scale)
 
 (define time-offset 0.0)
@@ -32,7 +32,7 @@
 (define WHITE 5) (define PINK 6) (define ADSR 7) (define ADD 8) (define SUB 9)
 (define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14)
 (define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18)
-(define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22)
+(define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22) (define XFADE 23)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -563,6 +563,20 @@
 
 (define (ks freq cutoff resonance)
   (operator KS (list freq cutoff resonance)))
+
+;; StartFunctionDoc-en
+;; xfade signal1-number-or-node signal2-number-or-node mix-number-or-node
+;; Returns: node-id-number
+;; Description:
+;; Crossfader. Linearly crossfades between two signals or values 
+;; "mix" ranges from -1 t0 1.
+;; Example:
+;; (play-now (xfade (sine 200) (saw 100) (sine 4))
+;; EndFunctionDoc
+
+(define (xfade s0 s1 mix)
+  (operator XFADE (list s0 s1 mix)))
+
 
 ;; StartFunctionDoc-en
 ;; play time node optional-pan

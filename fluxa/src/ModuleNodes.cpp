@@ -435,3 +435,150 @@ void KSNode::Process(unsigned int bufsize)
 	
 	m_KS.Process(bufsize, m_Output);
 }
+
+XFadeNode::XFadeNode():
+GraphNode(3)
+{
+}
+
+void XFadeNode::Trigger(float time)
+{
+	TriggerChildren(time);
+}
+
+void XFadeNode::Process(unsigned int bufsize)
+{
+	if (bufsize>(unsigned int)m_Output.GetLength())
+	{
+		m_Output.Allocate(bufsize);
+	}
+	ProcessChildren(bufsize);
+
+	if (ChildExists(0) && ChildExists(1) && ChildExists(2))
+	{		
+		if (GetChild(0)->IsTerminal())
+		{
+			if (GetChild(1)->IsTerminal())
+			{
+				if (GetChild(2)->IsTerminal())
+				{
+					float value=0;
+					float v0 = GetChild(0)->GetValue();
+					float v1 = GetChild(1)->GetValue();
+					float mix = GetChild(2)->GetValue();
+					if (mix < -1) mix = -1;
+					else if (mix > 1) mix = 1;
+					mix = (0.5 + (mix * 0.5));
+					value = (v0 * (1 - mix)) + (v1 * mix);
+			
+					for (unsigned int n=0; n<bufsize; n++) m_Output[n]=value;
+				}
+				else
+				{
+					float v0 = GetChild(0)->GetValue();
+					float v1 = GetChild(1)->GetValue();
+					
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						float mix = GetChild(2)->GetOutput()[n];	
+						if (mix < -1) mix = -1;
+						else if (mix > 1) mix = 1;
+						mix = (0.5 + (mix * 0.5));
+						
+						m_Output[n]=(v0 * (1 - mix)) + (v1 * mix);
+					}
+				}
+			}
+			else
+			{
+				if (GetChild(2)->IsTerminal())
+				{
+					float v0 = GetChild(0)->GetValue();
+					float mix = GetChild(2)->GetValue();
+					if (mix < -1) mix = -1;
+					else if (mix > 1) mix = 1;
+					mix = (0.5 + (mix * 0.5));
+				
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						
+						m_Output[n]=(v0 * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
+					}
+				}
+				else
+				{
+					float v0 = GetChild(0)->GetValue();
+					
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						float mix = GetChild(2)->GetOutput()[n];
+						if (mix < -1) mix = -1;
+						else if (mix > 1) mix = 1;
+						mix = (0.5 + (mix * 0.5));
+						
+						m_Output[n]=(v0 * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
+					}
+				}
+			}
+		}
+		else
+		{
+			if (GetChild(1)->IsTerminal())
+			{
+				if (GetChild(2)->IsTerminal())
+				{
+					float v1 = GetChild(1)->GetValue();
+					float mix = GetChild(2)->GetValue();
+					if (mix < -1) mix = -1;
+					else if (mix > 1) mix = 1;
+					mix = (0.5 + (mix * 0.5));
+					
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						
+						m_Output[n]=(GetChild(0)->GetOutput()[n] * (1 - mix)) + (v1 * mix);
+					}
+				}
+				else
+				{
+					float v1 = GetChild(1)->GetValue();
+					
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						float mix = GetChild(2)->GetOutput()[n];
+						if (mix < -1) mix = -1;
+						else if (mix > 1) mix = 1;
+						mix = (0.5 + (mix * 0.5));
+						m_Output[n]=(GetChild(0)->GetOutput()[n] * (1 - mix)) + (v1 * mix);
+					}
+				}
+			}
+			else
+			{
+				if (GetChild(2)->IsTerminal())
+				{
+					float mix = GetChild(2)->GetValue();
+					if (mix < -1) mix = -1;
+					else if (mix > 1) mix = 1;
+					mix = (0.5 + (mix * 0.5));
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						m_Output[n]=(GetChild(0)->GetOutput()[n] * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
+					}
+				}
+				else
+				{
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						float mix = GetChild(2)->GetOutput()[n];
+						if (mix < -1) mix = -1;
+						else if (mix > 1) mix = 1;
+						mix = (0.5 + (mix * 0.5));
+						m_Output[n]=(GetChild(0)->GetOutput()[n] * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
+					}
+				}
+			}
+		}
+	}
+	
+}
