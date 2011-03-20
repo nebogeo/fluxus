@@ -391,13 +391,15 @@ void PixelPrimitive::Render()
 		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
+
+		// reapply state (texture states, shader, etc)
+		ApplyState();
+
+		// restore transform
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
-
-		// have to reapply state
-		ApplyState();
 	}
 
 	if (m_State.Hints & HINT_WIRE)
