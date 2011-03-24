@@ -20,7 +20,7 @@
 (provide
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
-		crush distort klip echo ks xfade reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+		crush distort klip echo ks xfade s&h t&h reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
 		set-bpm-mult logical-time inter pick set-scale)
 
 (define time-offset 0.0)
@@ -33,6 +33,7 @@
 (define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14)
 (define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18)
 (define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22) (define XFADE 23)
+(define SAMPNHOLD 24) (define TRACKNHOLD 25)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -576,6 +577,30 @@
 
 (define (xfade s0 s1 mix)
   (operator XFADE (list s0 s1 mix)))
+
+;; StartFunctionDoc-en
+;; s&h signal1-number-or-node CV-number-or-node 
+;; Returns: node-id-number
+;; Description:
+;; Sample&Hold. Samples the input at positive zero crossings of the CV signal
+;; Example:
+;; (play-now (sine (add 1000 (mul 500 (s&h (white 440) (sine 8))))))
+;; EndFunctionDoc
+
+(define (s&h sig cv)
+  (operator SAMPNHOLD (list sig cv)))
+
+;; StartFunctionDoc-en
+;; t&h signal1-number-or-node CV-number-or-node 
+;; Returns: node-id-number
+;; Description:
+;; Track&Hold. Like s&h, except it samples at any positive CV value
+;; Example:
+;; (play-now (sine (add 1000 (mul 500 (t&h (white 440) (sine 4))))))
+;; EndFunctionDoc
+
+(define (t&h sig cv)
+  (operator TRACKNHOLD (list sig cv)))
 
 
 ;; StartFunctionDoc-en

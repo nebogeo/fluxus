@@ -73,6 +73,8 @@ void Graph::Init()
 				case DELAY : nodedesc->m_Node = new EffectNode(EffectNode::DELAY,m_SampleRate); break;				
 				case KS : nodedesc->m_Node = new KSNode(m_SampleRate); break;
 				case XFADE : nodedesc->m_Node = new XFadeNode(); break;
+				case SAMPNHOLD : nodedesc->m_Node = new HoldNode(HoldNode::SAMP); break;
+				case TRACKNHOLD : nodedesc->m_Node = new HoldNode(HoldNode::TRACK); break;
 				default: assert(0); break;
 			}
 			

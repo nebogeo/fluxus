@@ -582,3 +582,101 @@ void XFadeNode::Process(unsigned int bufsize)
 	}
 	
 }
+
+HoldNode::HoldNode(Type t):
+GraphNode(2),
+m_Type(t),
+m_heldValue(0), 
+m_lastCtrlVal(0)
+{
+}
+
+void HoldNode::Trigger(float time)
+{
+	TriggerChildren(time);
+}
+
+void HoldNode::Process(unsigned int bufsize)
+{
+	if (bufsize>(unsigned int)m_Output.GetLength())
+	{
+		m_Output.Allocate(bufsize);
+	}
+	ProcessChildren(bufsize);
+
+	if (ChildExists(0) && ChildExists(1))
+	{
+		if (GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
+		{
+			if (GetChild(1)->GetValue() > 0) m_heldValue=GetChild(0)->GetValue();
+			for (unsigned int n=0; n<bufsize; n++) m_Output[n]=m_heldValue;
+		}			
+		else if (!GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
+		{
+			if (GetChild(1)->GetValue() <= 0)
+			{
+				for (unsigned int n=0; n<bufsize; n++) m_Output[n]=m_heldValue;
+			}
+			else
+			{
+				switch (m_Type)
+				{
+					case SAMP:
+					{
+						for (unsigned int n=0; n<bufsize; n++)
+						{
+							if (m_lastCtrlVal <= 0)	m_heldValue = GetChild(0)->GetOutput()[n];
+							m_lastCtrlVal = GetChild(1)->GetValue();
+							m_Output[n]=m_heldValue;
+						}
+						break;
+					} 
+					case TRACK:
+					{
+						for (unsigned int n=0; n<bufsize; n++) 
+						{
+							m_Output[n] = GetChild(0)->GetOutput()[n];
+						}
+						break;
+					}
+				}
+			}
+		}
+		else if (GetChild(0)->IsTerminal() && !GetChild(1)->IsTerminal())
+		{
+			for (unsigned int n=0; n<bufsize; n++)
+			{
+				if  (GetChild(1)->GetOutput()[n] > 0)
+				{
+					m_heldValue = GetChild(0)->GetValue();
+				}
+				m_Output[n] = m_heldValue;
+			}					
+		}
+		else 
+		{
+			switch (m_Type)
+			{
+				case SAMP:
+				{
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						if (m_lastCtrlVal <= 0 && GetChild(1)->GetOutput()[n] > 0) m_heldValue = GetChild(0)->GetOutput()[n];
+						m_lastCtrlVal = GetChild(1)->GetOutput()[n];
+						m_Output[n] = m_heldValue;
+					}
+					break;
+				} 
+				case TRACK: 
+				{
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						if (GetChild(1)->GetOutput()[n] > 0) m_heldValue = GetChild(0)->GetOutput()[n];
+						m_Output[n] = m_heldValue;
+					}
+					break;
+				}
+			}
+		}
+	}
+}

@@ -1029,3 +1029,4 @@ void KS::Process(unsigned int BufSize, Sample &Out)
 		m_Position=(m_Position+1)%delay;
 	}
 }
+
