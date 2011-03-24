@@ -370,6 +370,9 @@ void PixelPrimitive::Unbind()
 
 void PixelPrimitive::Render()
 {
+	// override the state texture!
+	m_State.Textures[0] = m_DisplayTexture;
+
 	// we need to do uploading while we have an active gl context
 	if (m_ReadyForUpload)
 	{
@@ -388,6 +391,11 @@ void PixelPrimitive::Render()
 		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
+
+		// reapply state (texture states, shader, etc)
+		ApplyState();
+
+		// restore transform
 		glMatrixMode(GL_PROJECTION);
 		glPopMatrix();
 		glMatrixMode(GL_MODELVIEW);
@@ -423,10 +431,7 @@ void PixelPrimitive::Render()
 	float s = m_FBOSupported ? m_FBOMaxS : 1;
 	float t = m_FBOSupported ? m_FBOMaxT : 1;
 
-	// override the state texture!
 	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, m_DisplayTexture);
-
 	glDisable(GL_LIGHTING);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0,0);
