@@ -63,6 +63,9 @@ class MIDIListener
 			void open(int port); /**< open a MIDI input connection */
 			void close(void); /**< close MIDI port */
 
+			void set_cc_encoder_mode(int mode);
+			int get_cc_encoder_mode(void);
+
 			int get_cc(int channel, int cntrl_number);
 			float get_ccn(int channel, int cntrl_number);
 			int get_program(int channel);
@@ -93,6 +96,13 @@ class MIDIListener
 				MIDI_CONTINUE = 0x0B,
 				MIDI_STOP = 0x0C
 			};
+			/** MIDI cc encoder types */
+			enum {
+				MIDI_CC_ABSOLUTE = 0,
+				MIDI_CC_DOEPFER, /* inc - cc#97 data=cc id, dec - cc#96, data=cc id */
+				MIDI_CC_ABLETON  /* normal cc - data = 1-64 inc, 65-127 dec */
+			};
+
 	private:
 			void init_midi(void);
 			void add_note(int on_off, int ch, int note, int velocity);
@@ -107,16 +117,19 @@ class MIDIListener
 			string last_event; /**< last midi event as string */
 
 			/** array holding the current state of all, 16*128 controllers */
-			unsigned char *cntrl_values;
+			signed char *cntrl_values;
 
 			/** array holding program number of 16 channels **/
 			unsigned char *pgm_values;
 
 			deque<MIDINote *> midi_notes;
 			deque<MIDIEvent *> midi_events;
+
 			/* song position */
 			int bar, beat, pulse;
 			int beats_per_bar, clocks_per_beat;
+
+			int cc_encoder_mode;
 };
 
 #endif

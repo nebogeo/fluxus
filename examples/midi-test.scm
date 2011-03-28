@@ -5,7 +5,7 @@
 
 (display (midi-info))(newline)
 
-(midi-init 1)
+(midiin-open 0)
 
 (define (midi-test)
 	(with-state

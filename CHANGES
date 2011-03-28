@@ -5,6 +5,7 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * compressed texture support
 * added (midi-program) and (midi-cc-event) by Hugo van Galen
 * midi out support
+* midi incremental cc messages (midi-set-cc-mode), (midi-get-cc-mode)
 * updated to Racket
 * added (draw-line)
 * pixel primitives with more texture attachments for feedback effects and FFGL plugins

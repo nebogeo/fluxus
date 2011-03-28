@@ -271,6 +271,103 @@ Scheme_Object *midiout_close(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// midi-set-cc-mode mode-symbol
+// Returns: void
+// Description:
+// Sets the controller encoder mode. The mode can be 'absolute, 'doepfer or 'ableton.
+// The default is 'absolute. 'doepfer and 'ableton are incremental encoding modes.
+// Example:
+// (midi-set-cc-mode 'ableton)
+// EndFunctionDoc
+
+Scheme_Object *midi_set_cc_mode(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	if (!SCHEME_SYMBOLP(argv[0]))
+		scheme_wrong_type("midi-set-cc-mode", "symbol", 0, argc, argv);
+
+	string mode_str = scheme_symbol_name(argv[0]);
+
+	if (midilistener != NULL)
+	{
+		int mode = -1;
+
+		if (mode_str == "absolute")
+		{
+			 mode = MIDIListener::MIDI_CC_ABSOLUTE;
+		}
+		else
+		if (mode_str == "doepfer")
+		{
+			 mode = MIDIListener::MIDI_CC_DOEPFER;
+		}
+		else
+		if (mode_str == "ableton")
+		{
+			 mode = MIDIListener::MIDI_CC_ABLETON;
+		}
+		else
+		{
+			cerr << "midi-set-cc-mode: unknown mode " << mode_str << endl;
+		}
+
+		if (mode != -1)
+		{
+			midilistener->set_cc_encoder_mode(mode);
+		}
+	}
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// midi-get-cc-mode
+// Returns: mode-symbol
+// Description:
+// Returns the controller encoder mode. The mode can be 'absolute, 'doepfer or 'ableton.
+// Example:
+// (define cc-mode (midi-get-cc-mode))
+// EndFunctionDoc
+
+Scheme_Object *midi_get_cc_mode(int argc, Scheme_Object **argv)
+{
+	Scheme_Object *ret = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
+	MZ_GC_REG();
+
+	if (midilistener != NULL)
+	{
+		int mode = midilistener->get_cc_encoder_mode();
+
+		switch (mode)
+		{
+			case MIDIListener::MIDI_CC_ABSOLUTE:
+				ret = scheme_make_symbol("absolute");
+				break;
+			case MIDIListener::MIDI_CC_DOEPFER:
+				ret = scheme_make_symbol("doepfer");
+				break;
+			case MIDIListener::MIDI_CC_ABLETON:
+				ret = scheme_make_symbol("ableton");
+				break;
+			default:
+				cerr << "midi-get-cc-mode: unknown mode " << mode << endl;
+				ret = scheme_void;
+				break;
+		}
+	}
+
+	MZ_GC_UNREG();
+	return ret;
+}
+
+// StartFunctionDoc-en
 // midi-cc channel-number controller-number
 // Returns: controller-value-number
 // Description:
@@ -709,6 +806,10 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 
 	scheme_add_global("midi-info",
 			scheme_make_prim_w_arity(midi_info, "midi-info", 0, 0), menv);
+	scheme_add_global("midi-set-cc-mode",
+			scheme_make_prim_w_arity(midi_set_cc_mode, "midi-set-cc-mode", 1, 1), menv);
+	scheme_add_global("midi-get-cc-mode",
+			scheme_make_prim_w_arity(midi_get_cc_mode, "midi-get-cc-mode", 0, 0), menv);
 	scheme_add_global("midi-cc",
 			scheme_make_prim_w_arity(midi_cc, "midi-cc", 2, 2), menv);
 	scheme_add_global("midi-ccn",

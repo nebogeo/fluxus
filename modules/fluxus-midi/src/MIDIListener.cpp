@@ -51,7 +51,8 @@ void midi_callback(double deltatime, vector<unsigned char> *message,
 
 MIDIListener::MIDIListener(int port /*= -1*/) :
 	midiin(NULL),
-	last_event("")
+	last_event(""),
+	cc_encoder_mode(MIDI_CC_ABSOLUTE)
 {
 	init_midi();
 
@@ -59,7 +60,7 @@ MIDIListener::MIDIListener(int port /*= -1*/) :
 		open(port);
 
 	/* allocate array for controller values and clear it */
-	cntrl_values = new unsigned char[MAX_CNTRL];
+	cntrl_values = new signed char[MAX_CNTRL];
 	fill(cntrl_values, cntrl_values + MAX_CNTRL, 0);
 
 	/* likewise for the per channel "program" values */
@@ -209,6 +210,24 @@ void MIDIListener::close()
 }
 
 /**
+ * Sets controller encoder mode
+ * \param mode MIDI_CC_ABSOLUTE, MIDI_CC_ABLETON or MIDI_CC_DOEPFER
+ **/
+void MIDIListener::set_cc_encoder_mode(int mode)
+{
+	cc_encoder_mode = mode;
+}
+
+/**
+ * Returns current controller encoder mode
+ * \retval mode MIDI_CC_ABSOLUTE, MIDI_CC_ABLETON or MIDI_CC_DOEPFER
+ **/
+int MIDIListener::get_cc_encoder_mode(void)
+{
+	return cc_encoder_mode;
+}
+
+/**
  * Returns controller values.
  * \param channel MIDI channel
  * \param cntrl_number controller number
@@ -223,8 +242,13 @@ int MIDIListener::get_cc(int channel, int cntrl_number)
 			return 0;
 	}
 
+	int i = (channel << 7) + cntrl_number;
 	pthread_mutex_lock(&mutex);
-	int v = cntrl_values[(channel << 7) + cntrl_number];
+	int v = cntrl_values[i];
+	if (cc_encoder_mode != MIDI_CC_ABSOLUTE)
+	{
+		cntrl_values[i] = 0;
+	}
 	pthread_mutex_unlock(&mutex);
 	return v;
 }
@@ -264,8 +288,13 @@ float MIDIListener::get_ccn(int channel, int cntrl_number)
 			return 0;
 	}
 
+	int i = (channel << 7) + cntrl_number;
 	pthread_mutex_lock(&mutex);
-	float v = (float)cntrl_values[(channel << 7) + cntrl_number] / 127.0;
+	float v = (float)cntrl_values[i] / 127.0;
+	if (cc_encoder_mode != MIDI_CC_ABSOLUTE)
+	{
+		cntrl_values[i] = 0;
+	}
 	pthread_mutex_unlock(&mutex);
 	return v;
 }
@@ -341,7 +370,7 @@ MIDIEvent *MIDIListener::get_cc_event(void)
 
 int MIDIListener::get_bar(void)
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	int ret = bar;
 	pthread_mutex_unlock(&mutex);
 	return ret;
@@ -349,7 +378,7 @@ int MIDIListener::get_bar(void)
 
 int MIDIListener::get_beat(void)
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	int ret = beat;
 	pthread_mutex_unlock(&mutex);
 	return ret;
@@ -357,7 +386,7 @@ int MIDIListener::get_beat(void)
 
 int MIDIListener::get_pulse(void)
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	int ret = pulse;
 	pthread_mutex_unlock(&mutex);
 	return ret;
@@ -365,7 +394,7 @@ int MIDIListener::get_pulse(void)
 
 int MIDIListener::get_beats_per_bar()
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	int ret = beats_per_bar;
 	pthread_mutex_unlock(&mutex);
 	return ret;
@@ -373,7 +402,7 @@ int MIDIListener::get_beats_per_bar()
 
 int MIDIListener::get_clocks_per_beat()
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	int ret = clocks_per_beat;
 	pthread_mutex_unlock(&mutex);
 	return ret;
@@ -381,7 +410,7 @@ int MIDIListener::get_clocks_per_beat()
 
 void MIDIListener::set_signature(int upper, int lower)
 {
- 	pthread_mutex_lock(&mutex);
+	pthread_mutex_lock(&mutex);
 	beats_per_bar = upper;
 	clocks_per_beat = (24*4)/lower;
 	pthread_mutex_unlock(&mutex);
@@ -449,10 +478,29 @@ void MIDIListener::callback(double deltatime, vector<unsigned char> *message)
 		case MIDIListener::MIDI_CONTROLLER:
 			if (count == 3)
 			{
-				int cntrl_number = (*message)[1]; /* controller number */
+				int cntrl_number; /* controller number */
+
+				if (cc_encoder_mode == MIDI_CC_DOEPFER)
+					cntrl_number = (*message)[2];
+				else
+					cntrl_number = (*message)[1];
 				/* array index from channel and controller number */
 				int i = (ch << 7) + cntrl_number;
-				int value = (*message)[2]; /* controller value */
+
+				int value; /* controller value */
+				if (cc_encoder_mode == MIDI_CC_DOEPFER)
+				{
+					value = (*message)[1] == 97 ? -1 : 1;
+				}
+				else
+				{
+					value = (*message)[2];
+					if ((cc_encoder_mode == MIDI_CC_ABLETON) && (value > 64))
+					{
+						value = 64 - value;
+					}
+				}
+
 				pthread_mutex_lock(&mutex);
 				cntrl_values[i] = value;
 				add_event(ch, cntrl_number, value);
