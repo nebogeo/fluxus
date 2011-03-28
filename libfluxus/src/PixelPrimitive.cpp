@@ -503,6 +503,8 @@ void PixelPrimitive::DownloadPData()
 	if (m_FBOSupported)
 	{
 		Bind();
+
+		glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + m_RenderTextureIndex);
 		GLubyte *data = GetScreenBuffer(0, 0, m_Width, m_Height, 1);
 		for (unsigned int i = 0; i < m_Width * m_Height; i++)
 		{
