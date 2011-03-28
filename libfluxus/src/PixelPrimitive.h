@@ -58,7 +58,7 @@ public:
 	void Upload();
 
 	/// Download the texture from the graphics card
-	void Download();
+	void Download(unsigned handle = 0 );
 
 	/// Load a png file into this primitive
 	void Load(const string &filename);
@@ -84,7 +84,7 @@ public:
 	/// Get the height
 	unsigned int GetHeight() { return m_Height; }
 
-	void Bind();
+	void Bind(int texture = -1);
 	void Unbind();
 
 	/// Get the FBO width
@@ -114,9 +114,12 @@ protected:
 
 	unsigned m_MaxTextures;
 	unsigned *m_Textures; // attached textures
+
 	unsigned m_DisplayTexture; // id for rendering the primitive on screen
 	unsigned m_RenderTexture; // id for rendering into the fbo
 	unsigned m_RenderTextureIndex; // index for rendering into the fbo
+	unsigned GetTextureIndex(unsigned id);
+
 	unsigned m_DepthBuffer;
 	unsigned m_FBO;
 
@@ -132,6 +135,7 @@ protected:
 
 	bool m_ReadyForUpload;
 	bool m_ReadyForDownload;
+	unsigned m_DownloadTextureHandle;
 	bool m_FBOSupported;
 	bool m_RendererActive;
 };

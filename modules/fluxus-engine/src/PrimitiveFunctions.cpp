@@ -1593,10 +1593,12 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// pixels-download
+// pixels-download [texture-id]
 // Returns: void
 // Description:
 // Downloads the texture data from the GPU to the PData array.
+// Optional texture id can be supplied to specify the pixel primitive
+// texture the data is downloaded from.
 // Example:
 // (clear)
 //
@@ -1631,9 +1633,16 @@ Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
 	{
 		// only if this is a pixel primitive
 		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Grabbed);
+		int handle = 0;
+		if (argc == 1)
+		{
+			ArgCheck("pixels-download", "i", argc, argv);
+			handle = IntFromScheme(argv[0]);
+		}
+
 		if (pp)
 		{
-			pp->Download();
+			pp->Download(handle);
 		    return scheme_void;
 		}
 	}
@@ -3393,7 +3402,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("save-primitive", scheme_make_prim_w_arity(save_primitive, "save-primitive", 1, 1), env);
 	scheme_add_global("clear-geometry-cache", scheme_make_prim_w_arity(clear_geometry_cache, "clear-geometry-cache", 0, 0), env);
 	scheme_add_global("pixels-upload", scheme_make_prim_w_arity(pixels_upload, "pixels-upload", 0, 0), env);
-	scheme_add_global("pixels-download", scheme_make_prim_w_arity(pixels_download, "pixels-download", 0, 0), env);
+	scheme_add_global("pixels-download", scheme_make_prim_w_arity(pixels_download, "pixels-download", 0, 1), env);
 	scheme_add_global("pixels-load", scheme_make_prim_w_arity(pixels_load, "pixels-load", 1, 1), env);
 	scheme_add_global("pixels-width", scheme_make_prim_w_arity(pixels_width, "pixels-width", 0, 0), env);
 	scheme_add_global("pixels-height", scheme_make_prim_w_arity(pixels_height, "pixels-height", 0, 0), env);
