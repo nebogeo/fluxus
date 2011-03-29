@@ -535,6 +535,7 @@ void FFGLManager::Render()
 #endif
 
 	glPushAttrib(GL_VIEWPORT_BIT);
+	glColor4f(1, 1, 1, 1);
 
 	map<unsigned, FFGLPluginInstance *>::iterator i = m_PluginInstances.begin();
 	for (; i != m_PluginInstances.end(); ++i)
