@@ -518,14 +518,9 @@ void PixelPrimitive::DownloadPData()
 		}
 
 		glReadBuffer(GL_COLOR_ATTACHMENT0_EXT + textureIndex);
-		GLubyte *data = GetScreenBuffer(0, 0, m_Width, m_Height, 1);
-		for (unsigned int i = 0; i < m_Width * m_Height; i++)
-		{
-			(*m_ColourData)[i].r = data[i*3] / 255.0f;
-			(*m_ColourData)[i].g = data[i*3+1] / 255.0f;
-			(*m_ColourData)[i].b = data[i*3+2] / 255.0f;
-		}
-        free(data);
+		glPixelStorei(GL_PACK_ALIGNMENT, 1);
+		glReadPixels(0, 0, m_Width, m_Height, GL_RGBA, GL_FLOAT, &(*m_ColourData)[0]);
+
 		Unbind();
 	}
 }
