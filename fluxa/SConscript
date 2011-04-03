@@ -4,7 +4,7 @@
 #
 # Fluxus's synth and sampler server
 
-Import("env", "BinInstall")
+Import("env", "BinInstall", "Prefix")
 
 Target       = "fluxa"
 Install      = BinInstall
@@ -42,10 +42,10 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 	TOOL_BUNDLE(env)
 	Frameworks += ["Jackmp"]
 
-	for l in ['sndfile']:
+	for l in ['sndfile', 'ogg', 'vorbis', 'vorbisenc', 'FLAC']:
 		if l in Libs:
 			Libs.remove(l)
-		Libs.append(File('/opt/local/lib/lib%s.a' % l))
+		Libs.append(File('%s/lib/lib%s.a' % (Prefix, l)))
 	Libs.remove('jack')
 
 env.Program(source = Source, target = Target, LIBS = Libs, FRAMEWORKS = Frameworks)
