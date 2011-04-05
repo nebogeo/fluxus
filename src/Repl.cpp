@@ -95,8 +95,8 @@ void Repl::Print(Scheme_Object *obj)
 {
 	MZ_GC_DECL_REG(1);
 	MZ_GC_VAR_IN_REG(0, obj);
-    MZ_GC_REG();
-	long length=0;
+	MZ_GC_REG();
+	intptr_t length=0;
 	if (obj)
 	{
 		if (obj == scheme_multiple_values)
@@ -110,14 +110,14 @@ void Repl::Print(Scheme_Object *obj)
 		}
 		else
 		{
-			char *str = scheme_display_to_string(obj, &length);            
+			char *str = scheme_display_to_string(obj, &length);
 			Print(string_to_wstring(string(str)));
 		}
 	}
 	MZ_GC_UNREG();
 }
 
-void Repl::Handle(int button, int key, int special, int state, 
+void Repl::Handle(int button, int key, int special, int state,
 		  int x, int y, int mod)
 {
 	
