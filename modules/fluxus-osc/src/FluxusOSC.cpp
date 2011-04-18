@@ -393,7 +393,7 @@ Scheme_Object *osc_send(int argc, Scheme_Object **argv)
 				if (types[n]=='f') oscargs.push_back(new OSCFloat(scheme_real_to_double(SCHEME_VEC_ELS(argvec)[n])));
 				else if (types[n]=='i') 
 				{
-					unsigned long val=0;
+					uintptr_t val=0;
 					scheme_get_unsigned_int_val(SCHEME_VEC_ELS(argvec)[n],&val);
 					oscargs.push_back(new OSCInt(val));
 				}
