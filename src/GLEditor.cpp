@@ -770,6 +770,18 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 		}
 	}
 	else
+	if (mod&GLUT_ACTIVE_ALT)
+	{
+		switch(key)
+		{
+			// alt+l = lambda
+			case 'l':
+				m_Text.insert(m_Position, L"\x3bb");
+				m_Position++;
+				break;
+		}
+	}
+	else
 	{
 		if (key!=0)
 		{	
