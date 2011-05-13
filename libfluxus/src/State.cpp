@@ -124,8 +124,11 @@ void State::Apply()
 
 	TexturePainter::Get()->SetCurrent(Textures,TextureStates);
 
-	if (Shader!=NULL)
+	if (Shader != NULL)
 	{
+		if (Hints & HINT_POINTS)
+			glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
 		Shader->Apply();
 	}
 	else GLSLShader::Unapply();
@@ -135,8 +138,15 @@ void State::Unapply()
 {
 	if (Hints & HINT_NORMALISE)
 		glDisable(GL_NORMALIZE);
+
 	if (Hints & HINT_NOZWRITE)
 		glDepthMask(true);
+
+	if (Shader != NULL)
+	{
+		if (Hints & HINT_POINTS)
+			glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+	}
 }
 
 void State::Spew()
