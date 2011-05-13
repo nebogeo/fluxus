@@ -95,10 +95,14 @@ if env['PLATFORM'] == 'win32':
 	LibPaths += [ "/MinGW/lib" ]
 
 if env['PLATFORM'] == 'darwin':
-	IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2',
-                   '/usr/X11/include', '/usr/X11/include/freetype2']
-	LibPaths += ['/usr/X11/lib']
-	if os.path.exists('/opt/local/lib'): LibPaths += ['/opt/local/lib']
+	if os.path.exists('/opt/local/lib'):
+		# macports
+		IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
+		LibPaths += ['/opt/local/lib']
+	else:
+		# homebrew
+		IncludePaths += ['/usr/X11/include', '/usr/X11/include/freetype2']
+		LibPaths += ['/usr/X11/lib']
 
 env.Append(CPPPATH = IncludePaths)
 env.Append(LIBPATH = LibPaths)
