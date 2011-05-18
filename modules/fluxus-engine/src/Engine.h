@@ -75,6 +75,7 @@ public:
 	static Fluxus::PolyPrimitive* StaticSphere;
 	static Fluxus::PolyPrimitive* StaticCylinder;
 	static Fluxus::PolyPrimitive* StaticTorus;
+	static Fluxus::PolyPrimitive* StaticTeapot;
 
 	Fluxus::TurtleBuilder *GetTurtle() { return &m_Turtle; }
 	Fluxus::PFuncContainer *GetPFuncContainer() { return &m_PFuncContainer; }

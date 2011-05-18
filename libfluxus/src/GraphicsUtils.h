@@ -34,9 +34,10 @@ void MakePlane(PolyPrimitive *p);
 void MakePlane(PolyPrimitive *p, int xsegs, int ysegs);
 void MakeNURBSSphere(NURBSPrimitive *p, float radius, int hsegments, int rsegments);
 void MakeNURBSPlane(NURBSPrimitive *p, int usegments, int vsegments);
+void MakeTeapot(PolyPrimitive *p);
 
-static dVector MidpointOnSphere(dVector &a, dVector &b);
-static void MakeIcosphereFace(PolyPrimitive *p, dVector &a, dVector &b, dVector &c, int level);
+//static dVector MidpointOnSphere(dVector &a, dVector &b);
+//static void MakeIcosphereFace(PolyPrimitive *p, dVector &a, dVector &b, dVector &c, int level);
 
 }
 

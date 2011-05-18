@@ -23,28 +23,32 @@ using namespace Fluxus;
 
 Engine Engine::m_Engine;
 
-PolyPrimitive*  Engine::StaticCube=NULL;
-PolyPrimitive*  Engine::StaticPlane=NULL;
-PolyPrimitive*  Engine::StaticSphere=NULL;
-PolyPrimitive*  Engine::StaticCylinder=NULL;
-PolyPrimitive*  Engine::StaticTorus=NULL;
+PolyPrimitive* Engine::StaticCube=NULL;
+PolyPrimitive* Engine::StaticPlane=NULL;
+PolyPrimitive* Engine::StaticSphere=NULL;
+PolyPrimitive* Engine::StaticCylinder=NULL;
+PolyPrimitive* Engine::StaticTorus=NULL;
+PolyPrimitive* Engine::StaticTeapot=NULL;
 
 Engine::Engine()
 {
 	StaticCube = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakeCube(StaticCube);
+	MakeCube(StaticCube);
 
 	StaticPlane = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakePlane(StaticPlane);
+	MakePlane(StaticPlane);
 
 	StaticSphere = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeSphere(StaticSphere,1,5,10);
+	MakeSphere(StaticSphere,1,5,10);
 
 	StaticCylinder = new PolyPrimitive(PolyPrimitive::TRILIST);
-    MakeCylinder(StaticCylinder,1,1,5,10);
+	MakeCylinder(StaticCylinder,1,1,5,10);
 
 	StaticTorus = new PolyPrimitive(PolyPrimitive::QUADS);
-    MakeTorus(StaticTorus,0.5,1,12,12);
+	MakeTorus(StaticTorus,0.5,1,12,12);
+
+	StaticTeapot = new PolyPrimitive(PolyPrimitive::TRILIST);
+	MakeTeapot(StaticTeapot);
 
 	Fluxus::Renderer *renderer = new Fluxus::Renderer(true);
 	Fluxus::Physics *physics = new Fluxus::Physics(renderer);
@@ -54,7 +58,7 @@ Engine::Engine()
 Engine::~Engine()
 {
 	for (deque<StackItem>::iterator i=m_RendererStack.begin();
-	 i!=m_RendererStack.end(); ++i)
+			i!=m_RendererStack.end(); ++i)
 	{
 		delete i->m_Renderer;
 		delete i->m_Physics;
@@ -65,6 +69,7 @@ Engine::~Engine()
 	delete StaticSphere;
 	delete StaticCylinder;
 	delete StaticTorus;
+	delete StaticTeapot;
 }
 
 bool Engine::PushRenderer(const StackItem &si)

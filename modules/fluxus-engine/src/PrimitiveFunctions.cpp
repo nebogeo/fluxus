@@ -212,6 +212,24 @@ Scheme_Object *build_icosphere(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// build-teapot
+// Returns: primitiveid-number
+// Description:
+// Builds a teapot object. Note that the teapot does not have texture
+// coordinates yet.
+// Example:
+// (define (render)
+//     (draw-teapot))
+// (every-frame (render))
+// EndFunctionDoc
+
+Scheme_Object *build_teapot(int argc, Scheme_Object **argv)
+{
+	PolyPrimitive *TeapotPrim = new PolyPrimitive(*Engine::StaticTeapot);
+	return scheme_make_integer_value(Engine::Get()->Renderer()->AddPrimitive(TeapotPrim));
+}
+
+// StartFunctionDoc-en
 // build-torus inner-radius-number outer-radius-number slices-number stacks-number
 // Returns: primitiveid-number
 // Description:
@@ -2139,11 +2157,10 @@ Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// draw-cube 
+// draw-cube
 // Returns: void
 // Description:
-// Draws a cube in the current state in immediate mode
-// primitive.
+// Draws a cube in the current state in immediate mode.
 // Example:
 // (define (render)
 //     (draw-cube))
@@ -2162,7 +2179,7 @@ Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 // EndFunctionDoc
 
 Scheme_Object *draw_cube(int argc, Scheme_Object **argv)
-{    	
+{
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticCube);
     return scheme_void;
 }
@@ -2280,6 +2297,24 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
 {
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTorus);
+    return scheme_void;
+}
+
+// StartFunctionDoc-en
+// draw-teapot
+// Returns: void
+// Description:
+// Draws a teapot in the current state in immediate mode. Note that the
+// teapot does not have texture coordinates yet.
+// Example:
+// (define (render)
+//     (draw-teapot))
+// (every-frame (render))
+// EndFunctionDoc
+
+Scheme_Object *draw_teapot(int argc, Scheme_Object **argv)
+{
+    Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTeapot);
     return scheme_void;
 }
 
@@ -3382,6 +3417,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("build-nurbs", scheme_make_prim_w_arity(build_nurbs, "build-nurbs", 1, 1), env);
 	scheme_add_global("build-sphere", scheme_make_prim_w_arity(build_sphere, "build-sphere", 2, 2), env);
 	scheme_add_global("build-icosphere", scheme_make_prim_w_arity(build_icosphere, "build-icosphere", 1, 1), env);
+	scheme_add_global("build-teapot", scheme_make_prim_w_arity(build_teapot, "build-teapot", 0, 0), env);
 	scheme_add_global("build-torus", scheme_make_prim_w_arity(build_torus, "build-torus", 4, 4), env);
 	scheme_add_global("build-plane", scheme_make_prim_w_arity(build_plane, "build-plane", 0, 0), env);
 	scheme_add_global("build-seg-plane", scheme_make_prim_w_arity(build_seg_plane, "build-seg-plane", 2, 2), env);
@@ -3432,6 +3468,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("draw-sphere", scheme_make_prim_w_arity(draw_sphere, "draw-sphere", 0, 0), env);
 	scheme_add_global("draw-cylinder", scheme_make_prim_w_arity(draw_cylinder, "draw-cylinder", 0, 0), env);
 	scheme_add_global("draw-torus", scheme_make_prim_w_arity(draw_torus, "draw-torus", 0, 0), env);
+	scheme_add_global("draw-teapot", scheme_make_prim_w_arity(draw_teapot, "draw-teapot", 0, 0), env);
 	scheme_add_global("draw-line", scheme_make_prim_w_arity(draw_line, "draw-line", 2, 2), env);
 	scheme_add_global("destroy", scheme_make_prim_w_arity(destroy, "destroy", 1, 1), env);
 	scheme_add_global("primitive-type-name", scheme_make_prim_w_arity(primitive_type_name, "primitive-type-name", 0, 0), env);
