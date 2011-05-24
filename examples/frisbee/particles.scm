@@ -1,4 +1,4 @@
-(require fluxus-017/frisbee)
+(require fluxus-018/frisbee)
 
 (scene
  (list

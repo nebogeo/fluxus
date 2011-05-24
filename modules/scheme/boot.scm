@@ -33,7 +33,7 @@
 
 ; now require everything
 (require scheme/pretty)
-(require fluxus-017/fluxus)
+(require fluxus-018/fluxus)
 
 ; load the helpmap
 (init-help (string-append fluxus-collects-location "/" fluxus-name "/helpmap.scm"))

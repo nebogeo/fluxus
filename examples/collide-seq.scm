@@ -2,7 +2,7 @@
 ; same as mouse-interactive, but with sound!
 ; make sure you're also running jackd and fluxa
 
-(require fluxus-017/fluxa)
+(require fluxus-018/fluxa)
 
 (clear)
 

@@ -47,7 +47,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/fluxus.
-	scons Prefix=/usr PLTPrefix=/usr DESTDIR=debian/fluxus install
+	scons Prefix=/usr RacketPrefix=/usr DESTDIR=debian/fluxus install
 	install -d debian/fluxus/usr/share/pixmaps
 	install -m 644 modules/material/textures/fluxus-icon.png debian/fluxus/usr/share/pixmaps
 	install -d debian/fluxus/usr/share/applications

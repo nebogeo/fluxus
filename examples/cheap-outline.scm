@@ -1,4 +1,4 @@
-(require fluxus-017/tricks)
+(require fluxus-018/tricks)
 (clear)
 (define p (with-state
     (hint-normal)

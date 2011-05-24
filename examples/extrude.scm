@@ -1,6 +1,6 @@
 ; an example of the fluxus extrusion tool
 
-(require fluxus-017/shapes)
+(require fluxus-018/shapes)
 
 (clear)
 (clear-colour 0.5)

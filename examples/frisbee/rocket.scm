@@ -1,5 +1,5 @@
 ; a stupid shoot-em-up example for frisbee
-(require fluxus-017/frisbee)
+(require fluxus-018/frisbee)
 
 (clear-colour (vector 0 0.4 1))
 

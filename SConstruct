@@ -9,7 +9,7 @@
 import os, os.path, sys, commands, subprocess
 
 MajorVersion = "0"
-MinorVersion = "17"
+MinorVersion = "18"
 FluxusVersion = MajorVersion+MinorVersion
 # remember to change fluxa too...
 Target = "fluxus"
@@ -29,17 +29,22 @@ if sys.platform == 'darwin':
 	RacketPrefix = ARGUMENTS.get('RacketPrefix', RacketBin[:-5])
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
+	RacketCollects = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 
 elif sys.platform == 'win32':
 	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
 	RacketPrefix = ARGUMENTS.get('RacketPrefix','c:/Program Files/Racket')
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
+	RacketCollects = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 else:
 	Prefix = ARGUMENTS.get('Prefix','/usr/local')
 	RacketPrefix = ARGUMENTS.get('RacketPrefix','/usr/local')
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/racket")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/racket")
+# dave changed for racket package which puts collects in /usr/share
+	RacketCollects = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
+
 BinInstall = DESTDIR + Prefix + "/bin"
 
 DataLocation = Prefix + "/share/fluxus-"+FluxusVersion
@@ -51,7 +56,8 @@ DocsInstall = DESTDIR + Prefix + "/share/doc/fluxus-" + FluxusVersion
 if sys.platform == 'darwin' or sys.platform == 'win32':
         RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 else:
-        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketLib  + "/collects/")
+        RacketCollectsLocation = ARGUMENTS.get('RacketCollects', RacketCollects)
+
 
 if sys.platform == 'darwin' and GetOption('app'):
 		RacketCollectsLocation = 'collects/' # not used relative racket collects path and

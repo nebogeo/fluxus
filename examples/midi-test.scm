@@ -1,7 +1,7 @@
 ; simple midi test
 ; a cube is scaled by the value of controllers 1, 2, 3 on channel 0 
 
-(require fluxus-017/fluxus-midi)
+(require fluxus-018/fluxus-midi)
 
 (display (midi-info))(newline)
 

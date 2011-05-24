@@ -1,5 +1,5 @@
 
-(require fluxus-017/frisbee)
+(require fluxus-018/frisbee)
 (clear)
 
 (define (new-mushroom pos lst)
