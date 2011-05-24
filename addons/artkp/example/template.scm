@@ -1,8 +1,8 @@
 ;; fluxus-artkp example
 ;; detecting template based markers
 
-(require fluxus-017/fluxus-video)
-(require fluxus-017/fluxus-artkp)
+(require fluxus-018/fluxus-video)
+(require fluxus-018/fluxus-artkp)
 
 (clear)
 (camera-clear-cache)

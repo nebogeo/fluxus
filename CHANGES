@@ -10,6 +10,8 @@ Fluxus : (C) 2008 Dave Griffiths : dave at pawfal dot org : www.pawfal.org
 * added (draw-line)
 * pixel primitives with more texture attachments for feedback effects and FFGL plugins
 * (shader-set!) accepts keyword arguments as shader parameters
+* new primitive: (draw-teapot), (build-teapot)
+* alt+l for λ
 
 0.17
 
