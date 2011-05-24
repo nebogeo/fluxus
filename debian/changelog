@@ -1,3 +1,21 @@
+fluxus (0.18rc3-1~natty1~ppa1) natty; urgency=low
+
+  * fixed dodgy files list
+
+ -- Dave Griffiths <dave@fo.am>  Tue, 24 May 2011 16:46:13 +0200
+
+fluxus (0.18rc2-1~maverick1~ppa1) maverick; urgency=low
+
+  * fixed build
+
+ -- Dave Griffiths <dave@fo.am>  Tue, 24 May 2011 15:42:13 +0200
+
+fluxus (0.18rc1-1~maverick1~ppa1) maverick; urgency=low
+
+  * new release
+
+ -- Dave Griffiths <dave@fo.am>  Tue, 24 May 2011 13:42:13 +0200
+
 fluxus (0.17rc3-1~karmic1~ppa1) karmic; urgency=low
 
   * fixed menu stuff

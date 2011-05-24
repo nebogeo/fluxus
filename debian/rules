@@ -23,7 +23,7 @@ build-stamp: configure-stamp
 	dh_testdir
 	export PATH=$(PATH):/usr/local/bin
 	echo $(PATH)
-	scons Prefix=/usr PLTPrefix=/usr
+	scons Prefix=/usr RacketPrefix=/usr RacketCollects=/usr/share/racket/collects
 	touch build-stamp
 
 clean:
@@ -32,7 +32,7 @@ clean:
 	rm -f config.log
 	rm -f build-stamp configure-stamp
 	# Add here commands to clean up after the build process.
-	scons -c Prefix=/usr PLTPrefix=/usr
+	scons -c Prefix=/usr RacketPrefix=/usr RacketCollects=/usr/share/racket/collects
 	rm -rf .sconf_temp/
 	rm -f .sconsign src/.sconsign libfluxus/src/.sconsign libfluxphysics/src/.sconsign
 	rm -f .sconsign.dblite
@@ -47,7 +47,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/fluxus.
-	scons Prefix=/usr RacketPrefix=/usr DESTDIR=debian/fluxus install
+	scons Prefix=/usr RacketPrefix=/usr RacketCollects=/usr/share/racket/collects DESTDIR=debian/fluxus install
 	install -d debian/fluxus/usr/share/pixmaps
 	install -m 644 modules/material/textures/fluxus-icon.png debian/fluxus/usr/share/pixmaps
 	install -d debian/fluxus/usr/share/applications

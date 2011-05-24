@@ -8,7 +8,7 @@ import os
 Import("env", "CollectsInstall", "DataInstall", "MZDYN", "static_modules", "racket_framework")
 
 # run mzscheme to get (path->string (system-library-subpath))
-file = os.popen("mzscheme -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
+file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
 archpath = file.read()
 file.close()
 

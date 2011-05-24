@@ -1,14 +1,14 @@
 Source: fluxus
 Section: graphics
 Priority: optional
-Maintainer: Dave Griffiths <dave@pawfal.org>
+Maintainer: Dave Griffiths <dave@fo.am>
 Uploaders: Artem Baguinski <artm@v2.nl>, Javier Candeira <javier@candeira.com>, Miriam Ruiz <little_miry@yahoo.es>
-Build-Depends: debhelper (>= 4.0.0), scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, xlibmesa-gl-dev | x11proto-gl-dev, libglu1-xorg-dev | libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev, libopenal-dev, libunicap-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev, libavformat-dev, libavutil-dev, libswscale-dev, libavcodec-dev, plt-scheme, libasound2-dev
-Standards-Version: 3.7.3
+Build-Depends: debhelper, scons, libode-dev, fftw3-dev, libsndfile1-dev, liblo0-dev, libtiff-dev, libpng-dev, libglew-dev, x11proto-gl-dev, libglu1-mesa-dev, freeglut3-dev, libjack-dev, libfreetype6-dev, libopenal-dev, libunicap-dev, libgstreamer0.10-dev, libgstreamer-plugins-base0.10-dev, libavformat-dev, libavutil-dev, libswscale-dev, libavcodec-dev, libasound2-dev, racket
+Standards-Version: 3.9.1
 XS-Vcs-Bzr: http://bazaar.launchpad.net/~fluxus-maintainers/fluxus/dev
 
 Package: fluxus
 Architecture: any
-Depends: ${shlibs:Depends}, plt-scheme
+Depends: ${shlibs:Depends}, racket
 Description: A 3D game engine for livecoding worlds into existence. 
  A rapid prototyping, livecoding and playing/learning environment for 3D graphics, sound and games. Extends PLT Scheme with graphical commands and can be used within it’s own livecoding environment or from within the DrScheme IDE. Web Page: http://www.pawfal.org/fluxus/
