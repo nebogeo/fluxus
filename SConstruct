@@ -29,7 +29,7 @@ if sys.platform == 'darwin':
 	RacketPrefix = ARGUMENTS.get('RacketPrefix', RacketBin[:-5])
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib")
-	RacketCollects = ARGUMENTS.get('RacketCollects', RacketLib + "/racket/collects/")
+	RacketCollects = ARGUMENTS.get('RacketCollects', RacketPrefix + "/collects/")
 
 elif sys.platform == 'win32':
 	Prefix = ARGUMENTS.get('Prefix','c:/Program Files/Fluxus')
@@ -43,7 +43,7 @@ else:
 	RacketInclude = ARGUMENTS.get('RacketInclude', RacketPrefix + "/include/racket")
 	RacketLib = ARGUMENTS.get('RacketLib', RacketPrefix + "/lib/racket")
 # dave changed for racket package which puts collects in /usr/share
-	RacketCollects = ARGUMENTS.get('RacketCollects', RacketLib + "/racket/collects/")
+	RacketCollects = ARGUMENTS.get('RacketCollects', RacketLib + "/collects/")
 
 BinInstall = DESTDIR + Prefix + "/bin"
 
