@@ -131,19 +131,22 @@ Scheme_Object *video_load(int argc, Scheme_Object **argv)
 
 static Scheme_Object *scheme_vector(float v0, float v1, float v2)
 {
-    Scheme_Object *ret = NULL;
-    Scheme_Object *tmp = NULL;
-    MZ_GC_DECL_REG(2);
-    MZ_GC_VAR_IN_REG(0, ret);
-    MZ_GC_VAR_IN_REG(1, tmp);
-    MZ_GC_REG();
-    ret = scheme_make_vector(3, scheme_void);
-	SCHEME_VEC_ELS(ret)[0] = scheme_make_double(v0);
-	SCHEME_VEC_ELS(ret)[1] = scheme_make_double(v1);
-	SCHEME_VEC_ELS(ret)[2] = scheme_make_double(v2);
+	Scheme_Object *ret = NULL;
+	Scheme_Object *tmp = NULL;
+	MZ_GC_DECL_REG(2);
+	MZ_GC_VAR_IN_REG(0, ret);
+	MZ_GC_VAR_IN_REG(1, tmp);
+	MZ_GC_REG();
+	ret = scheme_make_vector(3, scheme_void);
+	tmp = scheme_make_double(v0);
+	SCHEME_VEC_ELS(ret)[0] = tmp;
+	tmp = scheme_make_double(v1);
+	SCHEME_VEC_ELS(ret)[1] = tmp;
+	tmp = scheme_make_double(v2);
+	SCHEME_VEC_ELS(ret)[2] = tmp;
 
-    MZ_GC_UNREG();
-    return ret;
+	MZ_GC_UNREG();
+	return ret;
 }
 
 // StartFunctionDoc-en
