@@ -75,7 +75,8 @@ public:
 	FluxAudio();
 	virtual ~FluxAudio();
 	int Load(const string &Filename);
-	void Play(unsigned int id, dVector pos, float pitch=1.0f, float gain=1.0f);
+	void Play(unsigned int id, dVector pos = dVector(0, 0, 0), float pitch = 1.0f, float gain = 1.0f, bool looping = false);
+	void Stop();
 	void SetHeadPos(dVector pos, dVector front);
 	void SetPoly(int s) { m_Poly=s; }
 	void SetCullDist(float s) { m_CullDist=s; }
@@ -106,6 +107,7 @@ private:
 		dVector Pos;
 		float Pitch;
 		float Gain;
+		bool Looping;
 	};
 
 	AcousticDesc m_Acoustics;

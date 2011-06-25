@@ -29,7 +29,7 @@ FluxAudio *Audio = NULL;
 // OpenAL is a cross platform audio library designed for use in conjunction
 // with 3D applications.
 // Example:
-// EndSectionDoc 
+// EndSectionDoc
 
 // StartSectionDoc-pt
 // openal
@@ -150,10 +150,10 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// oa-play sample-id position pitch gain
+// oa-play sample-id [position] [pitch] [gain] [looping]
 // Returns: void
 // Description:
-// Plays a sample. 
+// Plays a sample.
 // Example:
 // (oa-start)
 // (define mysample (oa-load-sample (fullpath "sample.wav")))
@@ -173,23 +173,85 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 
 Scheme_Object *play(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(4); 
-	MZ_GC_VAR_IN_REG(0, argv); 
-	MZ_GC_REG();	
-	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("oa-play", "number", 0, argc, argv);
-	if (!SCHEME_VECTORP(argv[1])) scheme_wrong_type("oa-play", "vector", 1, argc, argv);
-	if (!SCHEME_NUMBERP(argv[2])) scheme_wrong_type("oa-play", "number", 2, argc, argv);
-	if (!SCHEME_NUMBERP(argv[3])) scheme_wrong_type("oa-play", "number", 3, argc, argv);
+	MZ_GC_DECL_REG(4);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
 
-	if (Audio!=NULL)
+	dVector pos(0, 0, 0);
+	float pitch = 1.0;
+	float gain = 1.0;
+	bool looping = false;
+
+	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("oa-play", "number", 0, argc, argv);
+
+	if (argc > 1)
+	{
+		if (SCHEME_VECTORP(argv[1]) && (SCHEME_VEC_SIZE(argv[1]) == 3))
+			FloatsFromScheme(argv[1], pos.arr(), 3);
+		else
+			scheme_wrong_type("oa-play", "vector size 3", 1, argc, argv);
+	}
+
+	if (argc > 2)
+	{
+		if (!SCHEME_NUMBERP(argv[2]))
+			scheme_wrong_type("oa-play", "number", 2, argc, argv);
+		else
+			pitch = scheme_real_to_double(argv[2]);
+	}
+
+	if (argc > 3)
+	{
+		if (!SCHEME_NUMBERP(argv[3]))
+			scheme_wrong_type("oa-play", "number", 3, argc, argv);
+		else
+			gain = scheme_real_to_double(argv[3]);
+	}
+
+	if (argc > 4)
+	{
+		if (!SCHEME_BOOLP(argv[4]))
+			scheme_wrong_type("oa-play", "bool", 4, argc, argv);
+		else
+			looping = SCHEME_TRUEP(argv[4]);
+	}
+
+	if (Audio != NULL)
 	{
 		unsigned int id=(unsigned int)scheme_real_to_double(argv[0]);
-		dVector pos;
-		FloatsFromScheme(argv[1],pos.arr(),3);
-		Audio->Play(id,pos,scheme_real_to_double(argv[2]),scheme_real_to_double(argv[3]));
+		Audio->Play(id, pos, pitch, gain, looping);
 	}
-	
-	MZ_GC_UNREG(); 
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
+// oa-stop
+// Returns: void
+// Description:
+// Stops all playing samples.
+// Example:
+// (oa-start)
+// (define s (oa-load-sample (fullpath "sample.wav")))
+// (oa-play s (vector 0 0 0) 1 1 #t)
+// ; schedule a task 5 seconds from now
+// (spawn-timed-task (+ (time-now) 5)
+//     (lambda () (oa-stop)))
+// EndFunctionDoc
+
+Scheme_Object *stop(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+
+	if (Audio != NULL)
+	{
+		Audio->Stop();
+	}
+
+	MZ_GC_UNREG();
 	return scheme_void;
 }
 
@@ -364,14 +426,15 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("oa-start", scheme_make_prim_w_arity(start, "oa-start", 0, 0), menv);
 	scheme_add_global("oa-load-sample", scheme_make_prim_w_arity(load_sample, "oa-load-sample", 1, 1), menv);
 	scheme_add_global("oa-update", scheme_make_prim_w_arity(update, "oa-update", 0, 0), menv);
-	scheme_add_global("oa-play", scheme_make_prim_w_arity(play, "oa-play", 4, 4), menv);
+	scheme_add_global("oa-play", scheme_make_prim_w_arity(play, "oa-play", 1, 5), menv);
+	scheme_add_global("oa-stop", scheme_make_prim_w_arity(stop, "oa-stop", 0, 0), menv);
 	scheme_add_global("oa-set-head-pos", scheme_make_prim_w_arity(set_head_pos, "oa-set-head-pos", 2, 2), menv);
 	scheme_add_global("oa-set-poly", scheme_make_prim_w_arity(set_poly, "oa-set-poly", 1, 1), menv);
 	scheme_add_global("oa-set-cull-dist", scheme_make_prim_w_arity(set_cull_dist, "oa-set-cull-dist", 1, 1), menv);
 	scheme_add_global("oa-set-acoustics", scheme_make_prim_w_arity(set_acoustics, "oa-set-acoustics", 4, 4), menv);
 
-	scheme_finish_primitive_module(menv);	
-	
+	scheme_finish_primitive_module(menv);
+
 	return scheme_void;
 }
 

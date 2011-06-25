@@ -180,7 +180,7 @@ int FluxAudio::Load(const string &Filename)
 
 		alBufferData(ID, format, data, size, freq);
 		delete data;
-		
+
 		if( alGetError() != AL_NO_ERROR )
 		{
 			cerr<<"Could not BufferData "<<Filename<<endl;
@@ -190,7 +190,8 @@ int FluxAudio::Load(const string &Filename)
 	return ID;
 }
 
-void FluxAudio::Play(unsigned int id, dVector pos, float pitch, float gain)
+void FluxAudio::Play(unsigned int id, dVector pos /*= dVector(0, 0, 0) */,
+		float pitch /* = 1.0f */, float gain /* = 1.0f */, bool looping /* = false */)
 {
 	if (pitch<MIN_FREQ || gain<MIN_GAIN) return;
 
@@ -204,6 +205,7 @@ void FluxAudio::Play(unsigned int id, dVector pos, float pitch, float gain)
 			newevent.Pos=pos;
 			newevent.Pitch=pitch;
 			newevent.Gain=gain;
+			newevent.Looping=looping;
 			m_EventVec.push_back(newevent);
 		}
 	}
@@ -219,6 +221,7 @@ void FluxAudio::Update()
 		alSourcei(m_Sources[m_NextSource], AL_BUFFER, i->Id);
 		alSourcef(m_Sources[m_NextSource], AL_PITCH, i->Pitch);
 		alSourcef(m_Sources[m_NextSource], AL_GAIN, i->Gain);
+		alSourcei(m_Sources[m_NextSource], AL_LOOPING, i->Looping ? AL_TRUE : AL_FALSE);
 
 		//alSourcef(m_Sources[m_NextSource], AL_DISTANCE_SCALE, m_Acoustics.AttenScale);
 		alSourcef(m_Sources[m_NextSource], AL_MAX_DISTANCE, m_Acoustics.MaxDistance);
@@ -245,5 +248,11 @@ void FluxAudio::SetHeadPos(dVector pos, dVector front)
 	alListenerfv(AL_POSITION, pos.arr() );
 	alListenerfv(AL_ORIENTATION, front.arr() );
 	m_HeadPos=pos;
+}
+
+void FluxAudio::Stop()
+{
+	// stop all sources
+	alSourceStopv(m_Sources.size(), &(m_Sources[0]));
 }
 
