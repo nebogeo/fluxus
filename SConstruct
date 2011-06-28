@@ -60,11 +60,11 @@ else:
 
 
 if sys.platform == 'darwin' and GetOption('app'):
-		RacketCollectsLocation = 'collects/' # not used relative racket collects path and
-		DataLocation = 'Resources' 			 # data location is determined in Interpreter.cpp
-		FluxusCollectsLocation = '#Fluxus.app/Contents/Resources/collects/'
-		CollectsInstall = FluxusCollectsLocation + '/fluxus-' + FluxusVersion
-		DataInstall = '#Fluxus.app/Contents/Resources/'
+	RacketCollectsLocation = 'collects/' # not used relative racket collects path and
+	DataLocation = 'Resources' 			 # data location is determined in Interpreter.cpp
+	FluxusCollectsLocation = '#Fluxus.app/Contents/Resources/collects/'
+	CollectsInstall = FluxusCollectsLocation + '/fluxus-' + FluxusVersion
+	DataInstall = '#Fluxus.app/Contents/Resources/'
 
 # run racket to get (path->string (system-library-subpath))
 file = os.popen("racket -em \"(begin (display (path->string (system-library-subpath)))(exit))\"")
@@ -272,6 +272,8 @@ if env['PLATFORM'] == 'darwin':
 	env.Append(CCFLAGS = ' -DOS_X') # required by PLT 4.2.5
 
 	if GetOption('app') and not GetOption('clean'):
+		# make enough space for install_name_tool
+		env.Append(LINKFLAGS='-headerpad_max_install_names')
 		# replace libs with static libs if building an osx app
 		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 			env['LIBS'].remove(l)
