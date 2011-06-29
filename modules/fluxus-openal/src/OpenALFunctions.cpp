@@ -151,7 +151,7 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // oa-play sample-id [position] [pitch] [gain] [looping]
-// Returns: void
+// Returns: source-id-number
 // Description:
 // Plays a sample.
 // Example:
@@ -162,7 +162,7 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-pt
 // oa-play sampleid posição pitch gain
-// Retorna: void
+// Retorna: source-id-number
 // Descrição:
 // Toca uma amostra.
 // Exemplo:
@@ -173,8 +173,11 @@ Scheme_Object *update(int argc, Scheme_Object **argv)
 
 Scheme_Object *play(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(4);
+	Scheme_Object *ret = scheme_void;
+
+	MZ_GC_DECL_REG(2);
 	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_VAR_IN_REG(1, ret);
 	MZ_GC_REG();
 
 	dVector pos(0, 0, 0);
@@ -219,11 +222,13 @@ Scheme_Object *play(int argc, Scheme_Object **argv)
 	if (Audio != NULL)
 	{
 		unsigned int id=(unsigned int)scheme_real_to_double(argv[0]);
-		Audio->Play(id, pos, pitch, gain, looping);
+		int source_id = Audio->Play(id, pos, pitch, gain, looping);
+		if (source_id >= 0)
+			ret = scheme_make_integer_value(source_id);
 	}
 
 	MZ_GC_UNREG();
-	return scheme_void;
+	return ret;
 }
 
 // StartFunctionDoc-en
@@ -416,6 +421,37 @@ Scheme_Object *set_acoustics(int argc, Scheme_Object **argv)
 	return scheme_void;
 }
 
+// StartFunctionDoc-en
+// oa-set-pitch source-id-number pitch-number
+// Returns: void
+// Description:
+// Pitch shifts the playing source with the desired value, where 1.0 equals identity.
+// Each reduction by 50 percent equals a pitch shift of -12 semitones (one octave reduction).
+// Each doubling equals a pitch shift of 12 semitones (one octave increase). Zero is not a legal value.
+// Example:
+// (define s (oa-load-sample (fullpath "sample.wav")))
+// (define id (oa-play s (vector 0 0 0) 1 1 #t))
+// (every-frame
+//    (oa-set-pitch id (+ 1.1 (sin (time)))))
+// EndFunctionDoc
+
+Scheme_Object *set_pitch(int argc, Scheme_Object **argv)
+{
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
+	if (!SCHEME_INTP(argv[0])) scheme_wrong_type("oa-set-pitch", "int", 0, argc, argv);
+	if (!SCHEME_NUMBERP(argv[1])) scheme_wrong_type("oa-set-pitch", "number", 1, argc, argv);
+
+	if (Audio!=NULL)
+	{
+		Audio->SetPitch(SCHEME_INT_VAL(argv[0]), scheme_real_to_double(argv[1]));
+	}
+
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
 /////////////////////
 
 Scheme_Object *scheme_reload(Scheme_Env *env)
@@ -432,6 +468,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	scheme_add_global("oa-set-poly", scheme_make_prim_w_arity(set_poly, "oa-set-poly", 1, 1), menv);
 	scheme_add_global("oa-set-cull-dist", scheme_make_prim_w_arity(set_cull_dist, "oa-set-cull-dist", 1, 1), menv);
 	scheme_add_global("oa-set-acoustics", scheme_make_prim_w_arity(set_acoustics, "oa-set-acoustics", 4, 4), menv);
+	scheme_add_global("oa-set-pitch", scheme_make_prim_w_arity(set_pitch, "oa-set-pitch", 2, 2), menv);
 
 	scheme_finish_primitive_module(menv);
 
