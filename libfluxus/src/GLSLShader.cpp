@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <assert.h>
 
 #include "GLSLShader.h"
 #include "Trace.h"
