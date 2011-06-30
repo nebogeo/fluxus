@@ -94,6 +94,16 @@ Renderer::~Renderer()
 
 void Renderer::Clear()
 {
+	m_ShowAxis = false;
+
+	m_FogDensity = 0;
+	m_FogStart = 0;
+	m_FogEnd = 100;
+
+	m_FPSDisplay = false;
+
+	m_BGColour = dColour(0, 0, 0, 1);
+
 	m_World.Clear();
 	m_StateStack.clear();
 	m_CameraVec.clear();

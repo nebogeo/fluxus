@@ -86,6 +86,7 @@ public:
 	void SetColour(const string &name, dColour s);
 	void SetIntArray(const string &name, const vector<int,FLX_ALLOC(int) > &s);
 	void SetFloatArray(const string &name, const vector<float,FLX_ALLOC(float) > &s);
+	void SetMatrix(const string &name, dMatrix &m);
 	void SetVectorArray(const string &name, const vector<dVector,FLX_ALLOC(dVector) > &s);
 	void SetColourArray(const string &name, const vector<dColour,FLX_ALLOC(dColour) > &s);
 	///@}

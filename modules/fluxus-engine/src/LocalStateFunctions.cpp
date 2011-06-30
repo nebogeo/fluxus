@@ -2843,8 +2843,15 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 						shader->SetVector(param, vec, vecsize);
 					}
 					else
+					if (vecsize == 16)
 					{
-						Trace::Stream << "shader is expecting vector size 2, 3 or 4, but found " << vecsize <<
+						dMatrix m;
+						FloatsFromScheme(listvec, m.arr(), vecsize);
+						shader->SetMatrix(param, m);
+					}
+					else
+					{
+						Trace::Stream << "shader is expecting vector size 2, 3, 4 or 16 but found " << vecsize <<
 							" for variable " << param << endl;
 					}
 				}
