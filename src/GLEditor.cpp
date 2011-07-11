@@ -786,6 +786,7 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 	}
 	else
 	{
+handle_keys:
 		if (key!=0)
 		{
 			switch(key)
@@ -830,7 +831,6 @@ void GLEditor::Handle(int button, int key, int special, int state, int x, int y,
 				case GLEDITOR_RETURN: 
 					key='\n'; // fallthrough (replacement of newline)
 				default:
-handle_keys:
 					if (m_Selection)
                     {
                         m_Text.erase(m_HighlightStart,m_HighlightEnd-m_HighlightStart);
