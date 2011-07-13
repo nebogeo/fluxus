@@ -44,7 +44,7 @@ void MIDIOut::init_midi(void)
 	{
 		try
 		{
-			midiout = new RtMidiOut();
+			midiout = new RtMidiOut("FluxusMidi Output");
 		}
 		catch (RtError &error)
 		{

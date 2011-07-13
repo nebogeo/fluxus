@@ -95,7 +95,7 @@ void MIDIListener::init_midi(void)
 	{
 		try
 		{
-			midiin = new RtMidiIn();
+			midiin = new RtMidiIn("FluxusMidi Input");
 		}
 		catch (RtError &error)
 		{
