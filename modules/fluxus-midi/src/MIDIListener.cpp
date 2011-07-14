@@ -95,7 +95,7 @@ void MIDIListener::init_midi(void)
 	{
 		try
 		{
-			midiin = new RtMidiIn("FluxusMidi Input");
+			midiin = new RtMidiIn("FluxusMidi Input Client");
 		}
 		catch (RtError &error)
 		{
@@ -172,7 +172,7 @@ void MIDIListener::open(int port)
 
 	try
 	{
-		midiin->openPort(port);
+		midiin->openPort(port, "FluxusMidi Input");
 	}
 	catch (RtError &error)
 	{

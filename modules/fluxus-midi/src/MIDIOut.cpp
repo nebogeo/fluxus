@@ -44,7 +44,7 @@ void MIDIOut::init_midi(void)
 	{
 		try
 		{
-			midiout = new RtMidiOut("FluxusMidi Output");
+			midiout = new RtMidiOut("FluxusMidi Output Client");
 		}
 		catch (RtError &error)
 		{
@@ -110,7 +110,7 @@ void MIDIOut::open(int port)
 
 	try
 	{
-		midiout->openPort(port);
+		midiout->openPort(port, "FluxusMidi Output");
 	}
 	catch (RtError &error)
 	{
