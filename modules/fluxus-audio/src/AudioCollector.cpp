@@ -168,29 +168,29 @@ float *AudioCollector::GetFFT()
 		m_FFT.Impulse2Freq(m_AudioBuffer,m_FFTBuffer);
 	}
 
-    // seem to only have stuff in the lower half - something to do with nyquist?
-    float UsefulArea = m_BufferLength/2;
+	// seem to only have stuff in the lower half - something to do with nyquist?
+	float UsefulArea = m_BufferLength/2;
 
 	for (unsigned int n=0; n<m_NumBars; n++)
 	{
 		float Value = 0;
-        
-        float f = n/(float)m_NumBars;
-        float t = (n+1)/(float)m_NumBars;
-        f*=f;
-        t*=t;
-        unsigned from = f*UsefulArea;
-        unsigned to = t*UsefulArea;
+
+		float f = n/(float)m_NumBars;
+		float t = (n+1)/(float)m_NumBars;
+		f*=f;
+		t*=t;
+		unsigned from = f*UsefulArea;
+		unsigned to = t*UsefulArea;
 
 		for (unsigned int i=from; i<=to; i++)
 		{
-            if (i<m_BufferLength)
-            {                
-                Value += m_FFTBuffer[i];
-            }
+			if (i<m_BufferLength)
+			{
+				Value += m_FFTBuffer[i];
+			}
 		}
 
-        if (Value<0) Value=-Value;
+		if (Value<0) Value=-Value;
 		Value*=m_Gain;
 		m_FFTOutput[n]=((m_FFTOutput[n]*m_SmoothingBias)+Value*(1-m_SmoothingBias));
 	}
@@ -198,7 +198,7 @@ float *AudioCollector::GetFFT()
 	return m_FFTOutput;
 }
 
- 
+
 void AudioCollector::Process(const string &filename)
 {
 	if (m_Processing) return;

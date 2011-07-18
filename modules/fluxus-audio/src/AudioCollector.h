@@ -57,7 +57,7 @@ public:
 	bool  IsConnected();
 	void  SetGain(float s) { m_Gain=s; }
 	float  GetGain() { return m_Gain; }
-	void  SetSmoothingBias(float s) { if (s<2 && s>0) m_SmoothingBias=s; }
+	void  SetSmoothingBias(float s) { if ((s < 1) && (s >= 0)) m_SmoothingBias = s; }
 	void  Process(const string &filename);
 	bool  IsProcessing() { return m_Processing; }
 	float BufferTime() { return m_BufferTime; }

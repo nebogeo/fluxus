@@ -388,9 +388,9 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // smoothing-bias value-number
 // Returns: void
 // Description:
-// A kind of weighted average for the harmonic bands which smooth them out over time. 
-// This setting defaults to 1.5. The best value really depends on the quality of the music, 
-// and the buffer sizes, and ranges from 0 -> 2. It's more obvious if you give it a try 
+// A kind of weighted average for the harmonic bands which smooth them out over time.
+// This setting defaults to 0.8. The best value really depends on the quality of the music,
+// and the buffer sizes, and ranges from 0 -> 1. It's more obvious if you give it a try
 // with the bars.scm script
 // Example:
 // (smoothing-bias 0) ; no smoothing
@@ -401,9 +401,9 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // Retorna: void
 // Descrição:
 // Uma espécie de média balanceada para as bandas harmônicas que as
-// acalmam com o tempo. Esta opção é por padrão definida como 1.5. O
+// acalmam com o tempo. Esta opção é por padrão definida como 0.8. O
 // melhor valor realmente depende da qualidade da música, e do tamanho
-// do buffer, e varia de 0 -> 2. Fica mais óbvio se você tentar com o
+// do buffer, e varia de 0 -> 1. Fica mais óbvio se você tentar com o
 // script bars.scm
 // Exemplo:
 // (smoothing-bias 0) ; no smoothing
@@ -414,7 +414,7 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 // Retour: void
 // Description:
 // Une sorte de moyenne pondérée pour les bandes harmoniques qui les lissent au cours du temps.
-// Le réglage par défaut est à 1.5 et peut aller de 0 à 2. La meilleure valeur dépend vraiment de la qualité de la music
+// Le réglage par défaut est à 0.8 et peut aller de 0 à 1. La meilleure valeur dépend vraiment de la qualité de la music
 // et de la taille du buffer. C'est plus parlant en essayant avec le script d'exemple bars.scm.
 // Exemple:
 // (smoothing-bias 0) ; pas de lissage
@@ -422,15 +422,15 @@ Scheme_Object *process(int argc, Scheme_Object **argv)
 
 Scheme_Object *smoothing_bias(int argc, Scheme_Object **argv)
 {
-	MZ_GC_DECL_REG(1); 
-	MZ_GC_VAR_IN_REG(0, argv); 
-	MZ_GC_REG();	
+	MZ_GC_DECL_REG(1);
+	MZ_GC_VAR_IN_REG(0, argv);
+	MZ_GC_REG();
 	if (!SCHEME_NUMBERP(argv[0])) scheme_wrong_type("smoothing-bias", "number", 0, argc, argv);
 	if (Audio!=NULL)
-	{	
+	{
 		Audio->SetSmoothingBias(scheme_real_to_double(argv[0]));
 	}
-	MZ_GC_UNREG(); 
+	MZ_GC_UNREG();
     return scheme_void;
 }
 
