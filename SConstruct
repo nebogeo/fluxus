@@ -102,6 +102,9 @@ if env['PLATFORM'] == 'win32':
 	LibPaths += [ "/MinGW/lib" ]
 
 if env['PLATFORM'] == 'darwin':
+	env.Append(CCFLAGS = ' -arch i386 ')
+	env.Append(LINKFLAGS = ' -arch i386 ')
+	env.Append(FRAMEWORKPATH = '/Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/')
 	if os.path.exists('/opt/local/lib'):
 		# macports
 		IncludePaths += ['/opt/local/include', '/opt/local/include/freetype2']
