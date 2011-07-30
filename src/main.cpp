@@ -19,6 +19,7 @@
 #include <sys/time.h>
 #include <iostream>
 #include <string>
+#include <unistd.h>
 #include "Unicode.h"
 
 #include "GL/glew.h"
@@ -188,6 +189,9 @@ void PassiveMotionCallback(int x, int y)
 void IdleCallback()
 {
 	glutPostRedisplay();
+#ifndef WIN32
+	usleep(100);
+#endif
 }
 
 void DoRecorder()
