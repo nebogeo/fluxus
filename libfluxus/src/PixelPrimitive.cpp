@@ -384,27 +384,29 @@ void PixelPrimitive::Render()
 		m_ReadyForUpload=false;
 	}
 
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+
 	// render the pixel primitive scenegraph
 	if (m_FBOSupported && m_RendererActive)
 	{
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
 		Bind();
 		m_Renderer->Reinitialise();
 		m_Renderer->Render();
 		Unbind();
-
-		// reapply state (texture states, shader, etc)
-		ApplyState();
-
-		// restore transform
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
 	}
+
+	// bind texture with current texture filter settings in passive mode and
+	// reapply state after FBO (texture states, shader, etc) if renderer is active
+	ApplyState();
+
+	// restore transform
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 
 	if (m_State.Hints & HINT_WIRE)
 	{
@@ -447,6 +449,7 @@ void PixelPrimitive::Render()
 	glTexCoord2f(0,t);
 	glVertex3fv(m_Points[3].arr());
 	glEnd();
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glEnable(GL_LIGHTING);
 	glDisable(GL_TEXTURE_2D);
