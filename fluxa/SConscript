@@ -8,7 +8,7 @@ Import("env", "BinInstall", "Prefix")
 
 Target       = "fluxa"
 Install      = BinInstall
-Libs = Split("m sndfile jack lo")
+Libs = Split("m sndfile jack lo pthread dl")
 Frameworks = []
 
 Source = Split("src/Sample.cpp \

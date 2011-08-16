@@ -1,9 +1,9 @@
-%{!?_dist: %{expand: %%define dist fc12}}
-%define prever rc5
+%{!?_dist: %{expand: %%define dist fc15}}
+%define prever rc1
 
 Summary: A 3D game engine for livecoding worlds into existence
 Name: fluxus
-Version: 0.17
+Version: 0.18
 Release: 1.%{prever}.%{dist}
 License: GPLv2
 Group: Applications/Multimedia
@@ -12,14 +12,14 @@ URL: http://pawfal.org/fluxus/
 Source: http://pawfal.org/fluxus/files/fluxus-%{version}.%{prever}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-BuildRequires: ode-devel >= 0.9, plt-scheme >= 4.1.2, fftw-devel >= 3.2.1, jack-audio-connection-kit-devel >= 0.118, libsndfile-devel >= 1.0.20, liblo-devel >= 0.24, glew-devel >= 1.5.1, freetype-devel >= 2.2.1, scons, libjpeg-devel >= 6b, libpng-devel >= 1.2.0, libtiff-devel >= 3.8.0, zlib-devel >= 1.2.3, freeglut-devel >= 2.4.0, alsa-lib-devel >= 1.0.16, openal-devel >= 0.0.9, gstreamer-devel >= 0.10.25, gstreamer-plugins-base-devel >= 0.10.25, gstreamer-plugins-good-devel >= 0.10.17, gstreamer-plugins-bad-devel >= 0.10.17, libunicap-devel >= 0.9.8, ffmpeg-devel >= 0.5
-Requires: plt-scheme >= 4.1, fftw >= 3.0.0, jack-audio-connection-kit >= 0.100, libsndfile >= 1.0.13, liblo >= 0.23, glew >= 1.4.0, freetype >= 2.2.1, libjpeg >= 6b, libpng >= 1.2.0, libtiff >= 3.8.0, zlib >= 1.2.3, freeglut >= 2.4.0, alsa-lib >= 1.0.16, openal >= 0.0.9, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, libunicap >= 0.9.8, ffmpeg >= 0.5
+BuildRequires: ode-devel >= 0.9, racket = 5.1.1, fftw-devel >= 3.2.2, jack-audio-connection-kit-devel >= 1.9.7, libsndfile-devel >= 1.0.25, liblo-devel >= 0.26, glew-devel >= 1.5.8, freetype-devel >= 2.2.4, scons, libjpeg-turbo-devel >= 1.1.1, libpng-devel >= 1.2.46, libtiff-devel >= 3.9.5, zlib-devel >= 1.2.3, freeglut-devel >= 2.6.0, alsa-lib-devel >= 1.0.24, openal-soft-devel >= 1.12.854, gstreamer-devel >= 0.10.25, gstreamer-plugins-base-devel >= 0.10.25, gstreamer-plugins-good-devel >= 0.10.17, gstreamer-plugins-bad-devel >= 0.10.17, libunicap-devel >= 0.9.8, ffmpeg-devel >= 0.5
+Requires: racket = 5.1.1, fftw >= 3.2.2, jack-audio-connection-kit >= 1.9.7, libsndfile >= 1.0.25, liblo >= 0.26, glew >= 1.5.8, freetype >= 2.2.4, libjpeg-turbo >= 1.1.1, libpng >= 1.2.46, libtiff >= 3.9.5, zlib >= 1.2.3, freeglut >= 2.6.0, alsa-lib >= 1.0.24, openal-soft >= 1.12.854, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, libunicap >= 0.9.8, ffmpeg >= 0.5
 
 %description
 A rapid prototyping, livecoding and playing/learning environment for 3D
-graphics, sound and games. Extends PLT Scheme with graphical commands
+graphics, sound and games. Extends Racket with graphical commands
 and can be used within it’s own livecoding environment or from within
-the DrScheme IDE. Web Page: http://www.pawfal.org/fluxus/
+the DrRacket IDE. Web Page: http://www.pawfal.org/fluxus/
 
 %prep
 %setup -q -n %{name}-%{version}.%{prever}
@@ -29,14 +29,14 @@ cd docs
 ./makehelpmap.scm
 
 %install
-scons -Q install DESTDIR="%{buildroot}" Prefix=/usr PLTPrefix=/usr STATIC_ODE=1
+scons -Q install DESTDIR="%{buildroot}" Prefix=/usr RacketPrefix=/usr STATIC_ODE=1
 install -m 644 -D modules/material/textures/fluxus-icon.png %{buildroot}/usr/share/pixmaps/fluxus-icon.png
 install -m 644 -D debian/fluxus.desktop %{buildroot}/usr/share/applications/fluxus.desktop
 
 %post
 # fix selinux text relocation errors
-chcon -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i386-linux/3m/fluxus-engine_ss.so'
-semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i386-linux/3m/fluxus-engine_ss.so'
+chcon -t textrel_shlib_t '/usr/lib/fluxus-018/compiled/native/i386-linux/3m/fluxus-engine_ss.so'
+semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-018/compiled/native/i386-linux/3m/fluxus-engine_ss.so'
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -45,13 +45,15 @@ semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-017/compiled/native/i38
 %defattr(-, root, root, 0755)
 %{_bindir}/fluxus
 %{_bindir}/fluxa
-%{_libdir}/fluxus-017/*
-%{_datadir}/fluxus-017/*
-%{_docdir}/fluxus-017/*
+%{_libdir}/fluxus-018/*
+%{_datadir}/fluxus-018/*
+%{_docdir}/fluxus-018/*
 %{_datadir}/pixmaps/fluxus-icon.png
 %{_datadir}/applications/fluxus.desktop
 
 %changelog
+* Tue Aug 16 2010 Gabor Papp - 0.18-1.rc5.fc15
+- rebuild for Fedora Core 15
 * Fri Apr 09 2010 Gabor Papp - 0.17-1.rc5.fc12
 - 0.17 release candidate 5
 * Fri Apr 09 2010 Gabor Papp - 0.17-2.rc4.fc12

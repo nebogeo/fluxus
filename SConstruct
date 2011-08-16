@@ -92,7 +92,7 @@ IncludePaths = [
 
 paranoid = ' -W -Wcast-qual -Wwrite-strings -Wcast-align -Wpointer-arith -Wconversion -Wredundant-decls -Wunreachable-code -Winline -Wlarger-than-256'
 
-env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC',
+env = Environment(CCFLAGS = '-ggdb -pipe -Wall -O3 -ffast-math -Wno-unused -fPIC -pthread',
                   VERSION_NUM = FluxusVersion)
 env.MergeFlags(ARGUMENTS.get('CCFLAGS', '').split())
 env.MergeFlags(ARGUMENTS.get('LDFLAGS', '').split())
