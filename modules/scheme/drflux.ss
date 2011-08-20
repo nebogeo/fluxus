@@ -7,11 +7,16 @@
 ; need to set some global stuff up, I know it's wrong, looking for a way around it.
 ; (how can we load the extensions before requiring the modules they contain)
 
+; NOTE:
+; Uncheck Language/Choose Language/Show Details/"Populate "compiled" directories for faster loading"
+; otherwise an error message is displayed complaining about "make-directory: cannot make directory"
+
+
 #lang racket/base
 
 (require racket/class
-         racket/gui
-         mred/mred
+         racket/gui/base
+         ;mred/mred
          "fluxus.ss"
          (prefix-in gl- sgl/sgl))
 
