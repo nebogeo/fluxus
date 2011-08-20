@@ -24,7 +24,7 @@
  (all-from-out "fluxus.ss"))
 
 (define fluxus-collects-location (path->string (car (cdr (current-library-collection-paths)))))
-(define fluxus-version "0.16")
+(define fluxus-version "0.18")
 
 (define fluxus-canvas%
   (class* canvas% ()
@@ -48,10 +48,20 @@
     
     ; mouse
     (define/override (on-event event)
-      (let* ((button (cond
-                       ((send event get-left-down) 0)
-                       ((send event get-middle-down) 1)
-                       ((send event get-right-down) 2)
+      (let* ((type (send event get-event-type))
+             (button (cond
+                       ((or (send event get-left-down)
+                            (eq? type 'left-up)
+                            (eq? type 'left-down))
+                        0)
+                       ((or (send event get-middle-down)
+                            (eq? type 'middle-down)
+                            (eq? type 'middle-up))
+                        1)
+                       ((or (send event get-right-down)
+                            (eq? type 'right-down)
+                            (eq? type 'right-up))
+                        2)
                        (else -1)))
              (state (cond 
                       ((send event button-down? 'any) 0)
