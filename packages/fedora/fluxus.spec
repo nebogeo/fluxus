@@ -4,7 +4,7 @@
 Summary: A 3D game engine for livecoding worlds into existence
 Name: fluxus
 Version: 0.18
-Release: 1.%{prever}.%{dist}
+Release: 2.%{prever}.%{dist}
 License: GPLv2
 Group: Applications/Multimedia
 URL: http://pawfal.org/fluxus/
@@ -12,8 +12,8 @@ URL: http://pawfal.org/fluxus/
 Source: http://pawfal.org/fluxus/files/fluxus-%{version}.%{prever}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
-BuildRequires: ode-devel >= 0.9, racket = 5.1.1, fftw-devel >= 3.2.2, jack-audio-connection-kit-devel >= 1.9.7, libsndfile-devel >= 1.0.25, liblo-devel >= 0.26, glew-devel >= 1.5.8, freetype-devel >= 2.2.4, scons, libjpeg-turbo-devel >= 1.1.1, libpng-devel >= 1.2.46, libtiff-devel >= 3.9.5, zlib-devel >= 1.2.3, freeglut-devel >= 2.6.0, alsa-lib-devel >= 1.0.24, openal-soft-devel >= 1.12.854, gstreamer-devel >= 0.10.25, gstreamer-plugins-base-devel >= 0.10.25, gstreamer-plugins-good-devel >= 0.10.17, gstreamer-plugins-bad-devel >= 0.10.17, libunicap-devel >= 0.9.8, ffmpeg-devel >= 0.5
-Requires: racket = 5.1.1, fftw >= 3.2.2, jack-audio-connection-kit >= 1.9.7, libsndfile >= 1.0.25, liblo >= 0.26, glew >= 1.5.8, freetype >= 2.2.4, libjpeg-turbo >= 1.1.1, libpng >= 1.2.46, libtiff >= 3.9.5, zlib >= 1.2.3, freeglut >= 2.6.0, alsa-lib >= 1.0.24, openal-soft >= 1.12.854, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad >= 0.10.17, libunicap >= 0.9.8, ffmpeg >= 0.5
+BuildRequires: ode-devel >= 0.9, racket = 5.1.1, fftw-devel >= 3.2.2, jack-audio-connection-kit-devel >= 1.9.7, libsndfile-devel >= 1.0.25, liblo-devel >= 0.26, glew-devel >= 1.5.8, freetype-devel >= 2.2.4, scons, libjpeg-turbo-devel >= 1.1.1, libpng-devel >= 1.2.46, libtiff-devel >= 3.9.5, zlib-devel >= 1.2.3, freeglut-devel >= 2.6.0, alsa-lib-devel >= 1.0.24, openal-soft-devel >= 1.12.854, gstreamer-devel >= 0.10.25, gstreamer-plugins-base-devel >= 0.10.25, gstreamer-plugins-good-devel >= 0.10.17, gstreamer-plugins-bad-free-devel >= 0.10.22, libunicap-devel >= 0.9.12, ffmpeg-devel >= 0.7
+Requires: racket = 5.1.1, fftw >= 3.2.2, jack-audio-connection-kit >= 1.9.7, libsndfile >= 1.0.25, liblo >= 0.26, glew >= 1.5.8, freetype >= 2.2.4, libjpeg-turbo >= 1.1.1, libpng >= 1.2.46, libtiff >= 3.9.5, zlib >= 1.2.3, freeglut >= 2.6.0, alsa-lib >= 1.0.24, openal-soft >= 1.12.854, gstreamer >= 0.10.25, gstreamer-plugins-base >= 0.10.25, gstreamer-plugins-good >= 0.10.17, gstreamer-plugins-bad-free >= 0.10.22, libunicap >= 0.9.12, ffmpeg >= 0.7
 
 %description
 A rapid prototyping, livecoding and playing/learning environment for 3D
@@ -29,7 +29,7 @@ cd docs
 ./makehelpmap.scm
 
 %install
-scons -Q install DESTDIR="%{buildroot}" Prefix=/usr RacketPrefix=/usr STATIC_ODE=1
+scons -Q install DESTDIR="%{buildroot}" Prefix=/usr RacketPrefix=/usr
 install -m 644 -D modules/material/textures/fluxus-icon.png %{buildroot}/usr/share/pixmaps/fluxus-icon.png
 install -m 644 -D debian/fluxus.desktop %{buildroot}/usr/share/applications/fluxus.desktop
 
@@ -52,7 +52,9 @@ semanage fcontext -a -t textrel_shlib_t '/usr/lib/fluxus-018/compiled/native/i38
 %{_datadir}/applications/fluxus.desktop
 
 %changelog
-* Tue Aug 16 2010 Gabor Papp - 0.18-1.rc5.fc15
+* Tue Aug 25 2010 Gabor Papp - 0.18-2.rc1.fc15
+- rebuild with ADDONS=1
+* Tue Aug 16 2010 Gabor Papp - 0.18-1.rc1.fc15
 - rebuild for Fedora Core 15
 * Fri Apr 09 2010 Gabor Papp - 0.17-1.rc5.fc12
 - 0.17 release candidate 5

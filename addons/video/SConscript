@@ -33,13 +33,12 @@ if venv['PLATFORM'] == 'darwin':
 
 elif venv['PLATFORM'] == 'posix':
 	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0', 'libunicap',
-			'libavformat', 'libswscale']:
+			'libavformat', 'libswscale', 'gstreamer-app-0.10']:
 		try:
 			venv.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
 		except:
 			print "ERROR: '%s' must be installed!" % pkg
 			Requirements = False
-	LibList += [['gstapp-0.10', 'gst/app/gstappsink.h']]
 
 if venv['PLATFORM'] == 'darwin':
 	if racket_framework:
@@ -62,7 +61,8 @@ if not GetOption('clean'):
 	# ... but we shouldn't forget to add them to LIBS manually
 	Libs += [rec[0] for rec in LibList]
 
-venv.Replace(LIBS = Libs)
+if venv['PLATFORM'] != 'posix':
+	venv.Replace(LIBS = Libs)
 
 # replace libs with static libs if building an osx app
 if venv['PLATFORM'] == 'darwin' and GetOption('app') and not GetOption('clean'):
