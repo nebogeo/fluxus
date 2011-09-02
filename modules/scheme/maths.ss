@@ -17,6 +17,7 @@
 	vlerp
 	hermite-tangent
 	lerp
+	clamp
 	mlerp)
 
 ;; StartFunctionDoc-en
@@ -107,6 +108,20 @@
 (define (lerp p1 p2 t)
 	(+ p1 (* (- p2 p1) t)))
 	
+;; StartFunctionDoc-en
+;; clamp t [low 0] [high 1]
+;; Returns: number
+;; Description:
+;; Constrains value t to not exceed a minimum and maximum value.
+;; Example:
+;; (clamp 1 .2 .3)
+;; EndFunctionDoc
+
+(define (clamp t [low 0] [high 1])
+	(cond [(< t low) low]
+		  [(> t high) high]
+		  [else t]))
+
 ;; StartFunctionDoc-en
 ;; vlerp a b t
 ;; Returns: vector
