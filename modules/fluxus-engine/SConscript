@@ -17,7 +17,7 @@ else:
 if static_modules: Target = "fluxus-engine_ss"
 
 Frameworks = []
-Libs = Split("GLEW fluxus png ode tiff jpeg freetype")
+Libs = Split("GLEW fluxus png ode tiff jpeg freetype z bz2")
 Install = BinaryModulesLocation
 
 if env['PLATFORM'] != 'darwin':
@@ -34,7 +34,7 @@ if env['PLATFORM'] == 'win32':
 
 # link libraries statically when making an os x app
 if env['PLATFORM'] == 'darwin' and GetOption('app'):
-	for l in ['png', 'tiff', 'GLEW', 'freetype', 'ode', 'z', 'jpeg']:
+	for l in ['png', 'tiff', 'GLEW', 'freetype', 'ode', 'z', 'bz2', 'jpeg']:
 		if l in Libs:
 			Libs.remove(l)
 		Libs.append(File('/opt/local/lib/lib%s.a' % l))
