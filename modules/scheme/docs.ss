@@ -15,6 +15,12 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
+;; StartSectionDoc-fr
+;; high-level-scratchpad-docs
+;; Documentation utile de haut niveau.
+;; Exemple:
+;; EndSectionDoc
+
 ; This is the documentation printed when you type (help) for more general things -
 ; maybe I need to make the documentation more general to cope better with bits of
 ; extra documentation like this)
@@ -104,6 +110,43 @@
 ;; (help "autores") quem fez isso?
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; tophelp
+;; Returns:
+;; Description:
+;; Example:
+;; Fluxus documentation
+;; --------------------
+;;
+;; acte d'un fluide; un avancement continuel ou un passage,
+;; comme celui d'un ruisseau qui coule; une succession continue de changements 
+;;
+;; Fluxus est un moteur de rendu temps-réel pour le livecoding en Scheme.
+;; Pour plus de détails, voir fluxus/docs/fluxus-documentation.txt
+;;
+;; Le scratchpad Fluxus possède deux modes d'opération, la console
+;; (que vous voyez maintent) permet d'entrer des commandes et de voir
+;; leurs résultat immédiatement. L'autre mode est l'éditeur qui s'apparente
+;; plus à un éditeur de texte classique. Il y a 9 espaces de travail
+;; qui permettent d'éditer plus d'un script à la fois. ctrl-1 jusqu'à ctrl-9
+;; permet de basculer entre ces espaces, et ctrl-0 reviens sur la console.
+;;
+;; Pour copier/coller des exemples, enmener le curseur
+;; jusque derrière l'invite de commande, naviguer jusqu'à l'exemple,
+;; utiliser shift pour le selectionner, presser ctrl-c pour copier,
+;; puis ctrl-0 et ctrl-v pour coller dans le buffer de texte.
+;;
+;; Autre sujets d'aide:
+;; (help "keys") pour les commandes de control de fluxus au clavier
+;; (help "console") pour plus d'aide sur la console
+;; (help "editor") pour plus d'aide sur l'éditeur de livecoding
+;; (help "camera") pour l'aide sur le control de la caméra
+;; (help "language") pour plus d'infos sur les commandes Fluxus
+;; (help "misc") pour diverses infos sur Fluxus
+;; (help "toplap") pour le manifeste toplap
+;; (help "authors") qui a fait cela?
+;; EndFunctionDoc
+
 ;; StartFunctionDoc-en
 ;; keys
 ;; Returns:
@@ -160,6 +203,34 @@
 ;; F12 : Pausa as teclas durante playback.
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; keys
+;; Returns:
+;; Description:
+;; Example:
+;; Raccourcis Fluxus 
+;; -----------
+;;
+;; ctrl-f : Mode plein-écran.
+;; ctrl-w : Mode fenêtré.
+;; ctrl-h : Cache/Montre le texte.
+;; ctrl-l : Charge un nouveau script (navigation avec le curseur puis Entrée).
+;; ctrl-s : Enregistrer le script en cours.
+;; ctrl-d : Enregistrer sous - Ouvre une invite de nom de fichier.
+;; ctrl-p : Auto-indentatino des espaces dans le script scheme pour plus de clarté
+;; ctrl-b : Montre où se trouve le curseur.
+;; ctrl-1 to 9 : Bascule entre les espace de travail.
+;; ctrl-0 : Bascule vers le REPL.
+;; F3 : Réinitialise la caméra en cas d'égarement.
+;; F5 : (ou ctrl-e) Execute le texte sélectionné, ou tout si rien n'est sélectionné.
+;; F6 : Réinitialise complètement l'interprèteur, puis exécute le texte sélectionné,
+;;      ou tout si rien n'est sélectionnné.
+;; F9 : Bascule les effets sur le scratchpad.
+;; F10 : Diminue l'opacité du texte.
+;; F11 : Augmente l'opacité du texte.
+;; F12 : Met en pause la lecture d'un fichier d'enregistrement de touche (keypress).
+;; EndFunctionDoc
+
 ;; StartFunctionDoc-en
 ;; console
 ;; Returns:
@@ -198,6 +269,27 @@
 ;; inspecionar variáveis globais e funções que elas definem. Esta
 ;; janela é também onde todo os erros são impressos, junto com a
 ;; janela de terminal que você iniciou o fluxus.
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; console
+;; Returns:
+;; Description:
+;; Example:
+;; Fluxus console (ou REPL)
+;; ------------------------
+;;
+;; Si vous pressez ctrl et 0, au lieu d'obtenir un nouvel espace
+;; de script, vous serez en face du Read Evaluate Print
+;; Loop interpreter, ou en abbrégé : REPL. Ceci s'apparente vraiment
+;; à un interpréteur interactif, similaire à une ligne de commande,
+;; où vous pouvez entrer du code Scheme pour une évaluation immédiate.
+;; Ce code est évalué avec le même interpréteur
+;; que celui des autres scripts. Vous pouvez donc utiliser le REPL
+;; pour débugger ou inspecter les variables globales et les fonctions
+;; que vous avez définies. Cette fenêtre est aussi l'endroit
+;; où apparaitront les erreurs reportées, en même temps quand dans le terminal
+;; duquel vous aurez lancé Fluxus.
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
@@ -267,6 +359,40 @@
 ;; assim no seu diretório home, contendo essa linha.
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; editor
+;; Returns:
+;; Description:
+;; Example:
+;; Fluxus editeur
+;; -------------
+;;
+;; En utilisant le scratchpad Fluxus, l'idée est de n'utiliser
+;; qu'une fenêtre pour construire, ou jouer en live. f5 est la
+;; touche qui lance le script quand vous êtes prêt. En sélectionnant
+;; du texte (en utilisant shift) et pressant f5, seulement
+;; le texte sélectionné sera exécuté. Ceci est pratique pour
+;; réévaluer des fonctions sans relancer tout le script à
+;; chaque fois.
+;;
+;; Espaces de travail (Workspaces)
+;; ----------
+;;
+;; L'éditeur de scripts permet jusqu'à 9 scripts simultanément
+;; grâce aux espaces de travail. Pour basculer entre-eux,
+;; utiliser ctrl+nombre. Un seul pour tourner en même temps,
+;; en revanche, pressé f5 exécutera l'espace de travail actif.
+;;
+;; Auto focus
+;; ----------
+;;
+;; L'éditeur inclus un centrage et mise à l'échelle automatique
+;; acivé par defaut. Pour le désactiver - ajouter la line:
+;; (set! fluxus-scratchpad-do-autofocus 0)
+;; à votre fichier .fluxus.scm - ou créé en un nouveau dans
+;; votre dossier utilisateur comprenant cette ligne.
+;; EndFunctionDoc
+
 ;; StartFunctionDoc-en
 ;; camera
 ;; Returns:
@@ -297,6 +423,22 @@
 ;; Botão esquerdo do mouse: Rotaciona
 ;; Botão do meio do mouse: Movimenta
 ;; Botão direito do mouse: Afasta/Aproxima(zoom)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; camera
+;; Returns:
+;; Description:
+;; Example:
+;; Fluxus control caméra
+;; ---------------------
+;;
+;; La caméra est controllée en bougeant et pressant les boutons
+;; de la souris.
+;;
+;; Boutton Gauche souris: Rotation
+;; Boutton Milieu souris: Translation
+;; Boutton Droit souris: Zoom
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
@@ -374,6 +516,44 @@
 ;;
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; misc
+;; Returns:
+;; Description:
+;; Example:
+;; Fluxus script d'initialisation
+;; ------------------
+;; Fluxus recherche un script dans votre dossier utilisateur
+;; appelé .fluxus.scm qui sera lancé s'il est trouvé. Il est
+;; util pour y placer les commandes d'initialisation comme
+;; la connection audio vers Jack ou la langue d'aide, etc.
+;;
+;; Etranglement du taux d'images
+;; ---------------------
+;; Par défaut Fluxus maintient le taux d'image aux alentours
+;; de 40 fps. Pour le désactiver (et utiliser le cpu à 100%),
+;; saisir la commande desiredfps avec un nombre large arbitraire:
+;; (desiredfps 100000000)
+;; Pour afficher les fps en cours (show-fps 1)
+;;
+;; Options de la ligne  de commande
+;; ---------------------
+;; La manière la plus simple de charge un script dans Fluxus est
+;; de le spécifier avec la ligne de commande, par exemple:
+;; $ fluxus monscript.scm
+;; Fluxus démarrera et charge le script dans l'éditeur.
+;; $ fluxus -x myscript.scm
+;; Fluxus démarrera, charge, cache et exécuter le script.
+;; Utiliser -h pour afficher toutes les options de la ligne de commande.
+;;
+;; FLuxus possède également un enregistreur des évenements de touches
+;; du clavier et de la souris pour la captation des sessions de livecoding:
+;; $ fluxus -r nom-de-fichier : enregistre vers le fihier de touches
+;; $ fluxus -p nom-de-fichier : rejoue à partir du fichier
+;; $ fluxus -p nom-de-fichier -d temps : secondes par temps d'images
+                            pour la relecture avec (frame-dump)
+;; EndFunctionDoc
+
 ;; StartFunctionDoc-en
 ;; authors
 ;; Returns:
@@ -429,6 +609,33 @@
 ;; EndFunctionDoc
 
 ;; StartFunctionDoc-en
+;; authors
+;; Returns:
+;; Description:
+;; Example:
+;;
+;; Authors
+;; -------
+;; Glauber Alex Dias Prado
+;; Artem Baguinski
+;; Dan Bethell
+;; Nik Gaffney
+;; Dave Griffiths
+;; Claude Heiland-Allen
+;; Alex Norman
+;; Gabor Papp
+;; Fabien Pelisson
+;; Jeff Rose
+;; James Tittle
+;; Scott Watson
+;; Evan Raskob
+;;
+;; "Les ordinateurs sont inutiles. Ils ne font que donner des réponses."
+;;     Pablo Picasso (1881 - 1973).
+;;
+;; EndFunctionDoc
+
+;; StartFunctionDoc-en
 ;; language
 ;; Returns:
 ;; Description:
@@ -441,7 +648,7 @@
 ;;
 ;; Scheme itself is out of the scope of this documentation,
 ;; but fluxus is a good way of learning it. I reccommend
-;; "The Little Schemer" by by Daniel P. Friedman and Matthias
+;; "The Little Schemer" by Daniel P. Friedman and Matthias
 ;; Felleisen.
 ;;
 ;; The functions are grouped into sections to make things
@@ -488,6 +695,43 @@
 ;;    ... descrição e lista das funções matemáticas ...
 ;; (help "vmul")
 ;;    ... detalhes sobre a função com exemplos ...
+;;
+;;
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; language
+;; Returns:
+;; Description:
+;; Example:
+;; Langage Docs
+;; -------------
+;;
+;; Fluxus est composé d'un ensemble de fonctions
+;; qui étendent le Scheme pour créer des infographies
+;; temps réel.
+;;
+;; Le Scheme en lui-même est hors-portée de cette documentation
+;; mais Fluxus est une bonne manière de l'apprendre.
+;; La lecture de "The Little Schemer" de Daniel P. Friedman et Matthias
+;; Felleisen est recommandée.
+;;
+;; Ces fonctions sont groupées en sections pour les rendre un peu plus
+;; faciles  à retrouver.
+;;
+;; (help "sections") pour la liste de toutes les sections.
+;; (help "nom-de-la-section") pour en savoir plus sur la section.
+;; (help "nom-de-la-fonction") pour en savoir plus sur une fonction.
+;;
+;; L'idée est que vous puissiez trouvez les fonctions intéressante
+;; en effectuant quelque chose comme:
+;;
+;; (help "sections")
+;;    ... liste des sections ...
+;; (help "maths")
+;;    ... description et liste des fonctions mathématiques ...
+;; (help "vmul")
+;;    ... details sur la fonction avec son exemple ...
 ;;
 ;;
 ;; EndFunctionDoc
@@ -581,4 +825,48 @@
 ;; Perfomances e eventos próximamente alcançando os critérios desse
 ;; manifesto podem aplicar pela aprovação e selo TOPLAP.
 ;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; toplap
+;; Returns:
+;; Description:
+;; Example:
+;; MANIFESTE TOPLAP
+;; Nous exigeons:
+;;  * Donnez nous accès à l'esprit du créateur, l'instrument humain tout entier.
+;;  * L'obscurentisme est dangereux. Montrez nous vos écrans.
+;;  * Les programmes sont des instruments qui changent eux-mêmes/
+;;  * Les programmes est à transcendenter - Le language artificiel est la voie.
+;;  * Le code est à voir autant qu'à entendre, les algoritmes vus aussi bien
+;;    que les visuels en aboutissants.
+;;  * Le Codage Live n'est pas à propos d'outils. Les algorithmes sont pensées.
+;;    Les tronçonneuses sont des outils. C'est pourquoi les algorithmes
+;;    sont parfois plus difficiles à remarquer que les tronçonneuses.
+;;
+;; Nous reconnaissons les continuums d'interaction et de la profondeur, mais préfèront:
+;;  * Un aperçu des algorithmes.
+;;  * L'improvisation habile de l'algorithme comme un écran
+;;    expressive / impressionnant de dextérité mentale.
+;;  * Aucune sauvegarde 
+;;  * No backup (minidisc, DVD, ordinateur)
+;;
+;; Nous reconnaissons que:
+;;  * Il n'est pas nécessaire pour un public profane à comprendre le code
+;;    pour l'apprécier, autant qu'il n'est pas nécessaire de savoir jouer
+;;    de la guitare afin d'apprécier de regarder un spectacle guitare.
+;;  * Le Codage Live peut être accompagné d'une impressionnante démonstration
+;;    de dextérité manuelle et la glorification de l'interface de frappe.
+;;  * La Performance implique des continuums d'interaction, couvrant peut-être
+;;    la portée des contrôles à l'égard de l'espace des paramètres de l'oeuvre,
+;;    ou le contenu gestuel, en particulier la franchise de détail expressif.
+;;    Alors que les écarts de taux traditionnels haptique de l'expressivité
+;;    dans la musique instrumentale ne sont pas approchés dans le code,
+;;    pourquoi répéter le passé?
+;;    Sans doute l'écriture de code et expression de la pensée dévellopera
+;;    sa propres nuances et ses coutumes.
+;;
+;; Les performances et évenements réalisant dûement les closes de ce manifeste
+;; pourront éventuellement recevoir l'approbation et le sceau de TOPLAP.
+;; EndFunctionDoc
+
 

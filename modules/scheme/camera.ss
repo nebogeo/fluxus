@@ -11,6 +11,12 @@
 ;; Funções disponíveis como parte do scratchpad fluxus.
 ;; EndSectionDoc
 
+;; StartSectionDoc-fr
+;; scratchpad
+;; Fonctions disponibles dans le cadre de scratchpad Fluxus
+;; Exemple:
+;; EndSectionDoc
+
 #lang racket/base
 
 (require "fluxus-modules.ss")
@@ -64,6 +70,20 @@
 ;; (reset-camera)
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; reset-camera
+;; Retour: vide
+;; Description:
+;; Réinitialise les transformations de la caméra, utile si la vue deviens confuse,
+;; ou si elle est perdue quelque part dans l'espace. Détache également l'accroche de la caméra
+;; sur les objets par (lock-camera)
+;; Exemple:
+;; ; ruine la transformation de la caméra
+;; (set-camera-transform (vector 123 41832 28 0.2 128 0.001 123 41832 28 0.2 128 0.001 0.2 100 13 1931))
+;; ; La replace en postion/orientation de départ
+;; (reset-camera)
+;; EndFunctionDoc
+
 (define (reset-camera)
   (set! camera-matrix (mtranslate (vector 0 1 -10)))
   (set! camera-position (vector 0 0 -10))
@@ -92,6 +112,16 @@
 ;; (set-camera-transform (mtranslate (vector 0 0 -10)))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; set-camera-transform matrice-de-transformation
+;; Retour: vide
+;; Description:
+;; Réassigne et bloque la transformation de la caméra avec votre valeur.
+;; Pour la débloquer à nouveau, rappeler (reset-camera)
+;; Exemple:
+;; (set-camera-transform (mtranslate (vector 0 0 -10)))
+;; EndFunctionDoc
+
 (define (set-camera-transform m)
   (set! camera-locked #t)
   (set! camera-matrix m))
@@ -117,6 +147,16 @@
 ;; Retorna a transformação da câmera atual.
 ;; Para destravar de novo chame camera-reset.
 ;; Exemplo:
+;; (define tx (get-camera-transform))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; get-camera-transform
+;; Retour: matrice-de-transformation
+;; Description:
+;; Retourne la transformation de la caméra en cours.
+;; Pour la débloquer à nouveau, rappeler (reset-camera)
+;; Exemple:
 ;; (define tx (get-camera-transform))
 ;; EndFunctionDoc
 
