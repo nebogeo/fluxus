@@ -187,6 +187,7 @@ LibList = [["m", "math.h"],
 			["tiff", "tiff.h"],
 			["freetype", "ft2build.h"],
 			["z", "zlib.h"],
+			["bz2", "bzlib.h"],
 			["png", "png.h"],
 			["ode", "ode/ode.h"],
 			["sndfile", "sndfile.h"],
@@ -278,7 +279,7 @@ if env['PLATFORM'] == 'darwin':
 		# make enough space for install_name_tool
 		env.Append(LINKFLAGS='-headerpad_max_install_names')
 		# replace libs with static libs if building an osx app
-		for l in ['png', 'tiff', 'GLEW', 'z', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
+		for l in ['png', 'tiff', 'GLEW', 'z', 'bz2', 'sndfile', 'fftw3', 'freetype', 'ode', 'jpeg']:
 			env['LIBS'].remove(l)
 			env['LIBS'].append(File('%s/lib/lib%s.a' % (Prefix, l)))
 
