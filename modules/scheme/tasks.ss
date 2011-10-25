@@ -33,8 +33,8 @@
 #lang racket/base
 (require "time.ss")
 
-(provide spawn-task ls-tasks rm-task rm-all-tasks run-tasks spawn-timed-task time-now print-error
-		 task-running?)
+(provide spawn-task ls-tasks ls-timed-tasks rm-task rm-all-tasks run-tasks
+         spawn-timed-task time-now print-error task-running?)
 
 (define task-list '())  ; alist of tasks - maintained in sorted order
 (define timed-task-list '()) ; a separate list of timed tasks
@@ -85,13 +85,14 @@
 ;; EndFunctionDoc    
 
 (define (rm-all-tasks)
-  (set! task-list '()))
+  (set! task-list '())
+  (set! timed-task-list '()))
 
 ;; StartFunctionDoc-en
 ;; ls-tasks
 ;; Returns: void
 ;; Description:
-;; Prints a list of current a tasks
+;; Prints a list of current tasks
 ;; Example:
 ;; (spawn-task (lambda () (draw-torus)) 'torus-task) ; add a task
 ;; (ls-tasks)
@@ -102,7 +103,6 @@
   (for-each (lambda (t)
               (printf "task: ~a ~a~%" (car t) (cdr t)))
             task-list))
-
 
 ;; StartFunctionDoc-en
 ;; task-running? task-name-symbol
@@ -130,6 +130,24 @@
         [else (error "Non-thunk or continuation passed to call-task")]))
 
 (define-struct timed-task (time thunk))
+
+;; StartFunctionDoc-en
+;; ls-timed-tasks
+;; Returns: void
+;; Description:
+;; Prints a list of current timed tasks
+;; Example:
+;; (spawn-timed-task (+ (time-now) 10) ; schedule a task 10 seconds from now
+;;     (lambda () (display "hello future!") (newline)))
+;; (printf "now: ~a~n" (time-now))
+;; (ls-timed-tasks)
+;; (rm-all-tasks)
+;; EndFunctionDoc
+
+(define (ls-timed-tasks)
+  (for-each (lambda (t)
+              (printf "timed task at ~a~%" (timed-task-time t)))
+            timed-task-list))
 
 ;; StartFunctionDoc-en
 ;; spawn-timed-task time thunk
