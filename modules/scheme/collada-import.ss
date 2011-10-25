@@ -5,6 +5,13 @@
 ;; High level fluxus commands written in Scheme.
 ;; Example:
 ;; EndSectionDoc
+
+;; StartSectionDoc-fr
+;; scheme-utils
+;; Commandes Fluxus haut-niveau écritent en Scheme
+;; Exemple:
+;; EndSectionDoc
+
 #lang racket/base
 
 (require "fluxus-modules.ss"
@@ -517,6 +524,17 @@
 ;; é usualmente uma opção na exportação.
 ;; Nota: isto é lento para modelos pesados.
 ;; Exemplo:
+;; ;(collada-import "test.dae")
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; collada-import nom-de-fichier-en-chaine-de-caractères
+;; Retour: vide
+;; Description:
+;; Charge un fichier de scène collada et en retourne une liste de description.
+;; Le fichier doit contenir des données de modèle triangulé - en général en option d'exportation.
+;; Note: Lent pour les modèles lourds
+;; Exemple:
 ;; ;(collada-import "test.dae")
 ;; EndFunctionDoc
 
