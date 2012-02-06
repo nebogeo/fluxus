@@ -112,9 +112,9 @@
 
 ;; StartFunctionDoc-fr
 ;; tophelp
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Fluxus documentation
 ;; --------------------
 ;;
@@ -205,9 +205,9 @@
 
 ;; StartFunctionDoc-fr
 ;; keys
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Raccourcis Fluxus 
 ;; -----------
 ;;
@@ -273,9 +273,9 @@
 
 ;; StartFunctionDoc-fr
 ;; console
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Fluxus console (ou REPL)
 ;; ------------------------
 ;;
@@ -361,9 +361,9 @@
 
 ;; StartFunctionDoc-fr
 ;; editor
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Fluxus editeur
 ;; -------------
 ;;
@@ -427,9 +427,9 @@
 
 ;; StartFunctionDoc-fr
 ;; camera
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Fluxus control caméra
 ;; ---------------------
 ;;
@@ -518,9 +518,9 @@
 
 ;; StartFunctionDoc-fr
 ;; misc
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Fluxus script d'initialisation
 ;; ------------------
 ;; Fluxus recherche un script dans votre dossier utilisateur
@@ -701,9 +701,9 @@
 
 ;; StartFunctionDoc-fr
 ;; language
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; Langage Docs
 ;; -------------
 ;;
@@ -828,9 +828,9 @@
 
 ;; StartFunctionDoc-fr
 ;; toplap
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;; MANIFESTE TOPLAP
 ;; Nous exigeons:
 ;;  * Donnez nous accès à l'esprit du créateur, l'instrument humain tout entier.

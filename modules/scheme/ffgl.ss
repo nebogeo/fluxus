@@ -114,7 +114,7 @@
 ;; Retour: Résultat de la dernière expression
 ;; Description:
 ;; Permet de travailler avec le plugin FFGL spécifié.
-;; Example:
+;; Exemple:
 ;; (clear)
 ;; (define plugin (ffgl-load "FFGLTile" 256 256))
 ;;
@@ -151,7 +151,7 @@
 ;; Retour: vide
 ;; Description:
 ;; Règle les paramètres d u plugin FFGL.
-;; Example:
+;; Exemple:
 ;; (clear)
 ;; (define plugin (ffgl-load "FFGLTile" 256 256))
 ;;
