@@ -312,7 +312,7 @@ Scheme_Object *get_audio(int argc, Scheme_Object **argv)
 // Retour: void
 // Description:
 // Règle le niveau de gain pour le son fft, 1 est la valeur par défaut.
-// Example:
+// Exemple:
 // (gain 100) ; pas assez fort?!
 // EndFunctionDoc
 
@@ -486,7 +486,7 @@ Scheme_Object *update_audio(int argc, Scheme_Object **argv)
 // Retour: void
 // Description:
 // Fixe le nombre de bandes de fréquences utilsées par (gh).
-// Example:
+// Exemple:
 // (set-num-frequency-bins 64)
 // EndFunctionDoc
 

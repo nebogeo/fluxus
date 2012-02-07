@@ -736,6 +736,16 @@ Scheme_Object *clear_texture_cache(int argc, Scheme_Object **argv)
 // (display (is-resident? t))(newline) ; usually texture is not resident until used
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// is-resident? textureid-nombre
+// Retour: boolean
+// Description:
+// Vérifie si la texture est mémoire haute performance.
+// Exemple:
+// (define t (load-texture "test.png"))
+// (display (is-resident? t))(newline) ; En général, la texture n'est pas résidente jusqu'à ce quelle soit utilisée
+// EndFunctionDoc
+
 Scheme_Object *is_resident(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -765,6 +775,25 @@ Scheme_Object *is_resident(int argc, Scheme_Object **argv)
 // (display (is-resident? t))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// set-texture-priority textureid-nombre priorité-nombre
+// Retour: vide
+// Description:
+// Vous permet de régler les priorités de résidence des textures
+// à l'implentation OpenGl.
+// Les priorités sont entre 0.0 et 1.0. Une faible priorité annonce
+// que la texture doit être laissée en dehors de la mémoire résidente
+// quand l'espace se fait faible. Une plus forte priorité (comme 1.0)
+// signale à l'implentation que vous voulez que la texture doit restée
+// résidente si possible, même si elle est peu utilisée.
+// Gardez à l'esprit que cette priorité de texture est juste un signal.
+// Certaines implémentations OpenGl sont connues pour les ignorées totalement.
+// Exemple:
+// (define t (load-texture "test.png"))
+// (set-texture-priority t 1.0)
+// (display (is-resident? t))(newline)
+// EndFunctionDoc
+
 Scheme_Object *set_texture_priority(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -785,6 +814,16 @@ Scheme_Object *set_texture_priority(int argc, Scheme_Object **argv)
 // (display (texture-width t))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// texture-width textureid-nombre
+// Retour: largeur-nombre
+// Description:
+// Retourne la largeur de la texture.
+// Exemple:
+// (define t (load-texture "test.png"))
+// (display (texture-width t))(newline)
+// EndFunctionDoc
+
 Scheme_Object *texture_width(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -796,10 +835,20 @@ Scheme_Object *texture_width(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // texture-height textureid-number
-// Returns: width-height
+// Returns: height-number
 // Description:
 // Returns texture height.
 // Example:
+// (define t (load-texture "test.png"))
+// (display (texture-height t))(newline)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// texture-height textureid-nombre
+// Retour: hauteur-nombre
+// Description:
+// Retourne la hauteur de la texture.
+// Exemple:
 // (define t (load-texture "test.png"))
 // (display (texture-height t))(newline)
 // EndFunctionDoc

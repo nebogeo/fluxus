@@ -608,13 +608,13 @@
 ;;
 ;; EndFunctionDoc
 
-;; StartFunctionDoc-en
+;; StartFunctionDoc-fr
 ;; authors
-;; Returns:
+;; Retour:
 ;; Description:
-;; Example:
+;; Exemple:
 ;;
-;; Authors
+;; Autheurs
 ;; -------
 ;; Glauber Alex Dias Prado
 ;; Artem Baguinski
