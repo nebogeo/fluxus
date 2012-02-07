@@ -4,7 +4,13 @@
 ;; scratchpad
 ;; Functions available as part of the fluxus scratchpad.
 ;; Example:
-;; EndSectionDoc	
+;; EndSectionDoc
+
+;; StartSectionDoc-fr
+;; scratchpad
+;; Fonctions disponibles à partir du scratchpad fluxus.
+;; Exemple:
+;; EndSectionDoc
 
 #lang racket/base
 (require "fluxus-modules.ss")
@@ -110,6 +116,15 @@
 ;; (when (key-pressed "q") (display "q pressed!"))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; key-pressed key-chaine-de-caractères
+;; Retour: booléen
+;; Description:
+;; Retourne vrai si la touche spécifiée est actuellement appuyée.
+;; Exemple:
+;; (when (key-pressed "q") (display "appui sur q!"))
+;; EndFunctionDoc	
+
 (define (key-pressed s)
   (set-contains (car (string->list s)) keys))
 
@@ -128,6 +143,15 @@
 ;; Descrição:
 ;; Retorna uma lista das teclas pressionadas.
 ;; Exemplo:
+;; (display (keys-down))(newline)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; keys-down
+;; Retour: keys-liste
+;; Description:
+;; Retourne la liste des touches appuyées
+;; Exemple:
 ;; (display (keys-down))(newline)
 ;; EndFunctionDoc
 
@@ -165,6 +189,21 @@
 ;; (when (key-special-pressed 103) (display "down cursor pressed"))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; key-special-pressed key-nombre
+;; Retour: booléen
+;; Description:
+;; Retourne vrai si la touche spéciale spécifiée est actuellement appuyée.
+;; Les touches spéciales sont celles ne correspondant pas aux valeurs ascii.
+;; La facon la plus facile de les trouver est d'afficher le résultat de key-special-pressed
+;; en appuyant la touche désirée.
+;; Exemple: 
+;; (when (key-special-pressed 100) (display "appui curseur gauche"))
+;; (when (key-special-pressed 102) (display "appui curseur droit"))
+;; (when (key-special-pressed 101) (display "appui curseur haut"))
+;; (when (key-special-pressed 103) (display "appui curseur bas"))
+;; EndFunctionDoc	
+
 (define (key-special-pressed k)
   (set-contains k special-keys))
 
@@ -186,6 +225,15 @@
 ;; (display (keys-special-down))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; keys-special-down
+;; Retour: keys-liste
+;; Description:
+;; Retourne la liste des touches spéciales appuyées.
+;; Exemple:
+;; (display (keys-special-down))
+;; EndFunctionDoc
+
 (define (keys-special-down)
   special-keys)
 
@@ -196,6 +244,16 @@
 ;; Returns a list of key modifiers symbols consisting
 ;; 'shift, 'ctrl and 'alt.
 ;; Example:
+;; (display (key-modifiers))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; key-modifiers
+;; Retour: modifiers-liste
+;; Description:
+;; Retourne la liste des touches modificatrices sous formes
+;; de symboles soit 'shift, 'ctrl and 'alt.
+;; Exemple:
 ;; (display (key-modifiers))
 ;; EndFunctionDoc
 
@@ -220,26 +278,46 @@
 ;; (when (key-pressed-this-frame "q") (display "q pressed!"))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; key-pressed-this-frame key-chaine-de-caractères
+;; Retour: booléen
+;; Description:
+;; Retourne vrai si la touche spécifiée était la première appuyée
+;; lors de cette image.
+;; Exemple:
+;; (when (key-pressed-this-frame "q") (display "appui sur q!"))
+;; EndFunctionDoc	
+
 (define (key-pressed-this-frame s)
   (set-contains (car (string->list s)) keys-this-frame))
 
 ;; StartFunctionDoc-en
-;; key-special-pressed-this-frame key-string
+;; key-special-pressed-this-frame key-number
 ;; Returns: boolean 
 ;; Description:
 ;; Returns true if the specified special key was first pressed down this frame.
 ;; Example:
-;; (when (key-special-pressed-this-frame "q") (display "q pressed!"))
+;; (when (key-special-pressed 102) (display "right cursor pressed"))
 ;; EndFunctionDoc	
 
 ;; StartFunctionDoc-pt
-;; key-special-pressed-this-frame string-tecla
+;; key-special-pressed-this-frame número-tecla
 ;; Retorna: booleano
 ;; Descrição:
 ;; Retorna verdadeiro se a tecla especial foi pressionada neste quadro.
 ;; Exemplo:
-;; (when (key-special-pressed-this-frame "q") (display "q pressed!"))
+;; (when (key-special-pressed 102) (display "right cursor pressed"))
 ;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; key-special-pressed-this-frame key-nombre
+;; Retour: booléen
+;; Description:
+;; Retourne vrai si la touche spéciale spécifiée était la première appuyée
+;; lors de cette image.
+;; Exemple:
+;; (when (key-special-pressed-this-frame 102) (display "appui curseur droit!"))
+;; EndFunctionDoc	
 
 (define (key-special-pressed-this-frame s)
   (set-contains s special-keys-this-frame))
@@ -262,6 +340,15 @@
 ;; (display (mouse-x))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; mouse-x
+;; Retour: coord-nombre
+;; Description:
+;; Retourne la position x de la souris
+;; Exemple:
+;; (display (mouse-x))
+;; EndFunctionDoc	
+
 (define (mouse-x)
   (vector-ref mouse 0))
 
@@ -282,6 +369,15 @@
 ;; Exemplo:
 ;; (display (mouse-y))
 ;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; mouse-y
+;; Retour: coord-nombre
+;; Description:
+;; Retourne la position y de la souris
+;; Exemple:
+;; (display (mouse-y))
+;; EndFunctionDoc	
 
 (define (mouse-y)
   (vector-ref mouse 1))
@@ -306,6 +402,16 @@
 ;; (display (mouse-button 1))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; mouse-button bouton-nombre
+;; Retour: booléen
+;; Description:
+;; Retourne vrai si le bouton de souris spécifié est appuyé. Les numéros de bouton
+;; démarre le compte à 1 avec le bouton gauche de la souris.
+;; Exemple:
+;; (display (mouse-button 1))
+;; EndFunctionDoc	
+
 (define (mouse-button n)
   (and (<= 1 n (vector-length mouse-buttons))
 	   (vector-ref mouse-buttons (- n 1))))
@@ -327,6 +433,17 @@
 ;; Retorna 1 se a rodinha do mouse foi movida em uma direção no último
 ;; quadro ou -1 se na direção contrária, ou então retorna 0.
 ;; Exemplo:
+;; (display (mouse-wheel))
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; mouse-wheel
+;; Retour: booléen
+;; Description:
+;; Retourne 1 si la molette de la souris a bougée dans une direction
+;; durant la dernière image, ou -1 si elle a tournée dans l'autre sens.
+;; Autrement, 0.
+;; Exemple:
 ;; (display (mouse-wheel))
 ;; EndFunctionDoc
 
@@ -354,6 +471,17 @@
 ;; (colour (vector 1 0 0)) ; paints objects the mouse is over red
 ;; (ungrab)
 ;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; mouse-over
+;; Retour: primitiveid-nombre
+;; Description:
+;; Retourne l'objet actuellement sous le curseur de la souris.
+;; Exemple:
+;; (grab (mouse-over))
+;; (colour (vector 1 0 0)) ; paint l'objet sous la souris en rouge
+;; (ungrab)
+;; EndFunctionDoc	
 
 (define (mouse-over)
   (select (vector-ref mouse 0) (vector-ref mouse 1) 3))
