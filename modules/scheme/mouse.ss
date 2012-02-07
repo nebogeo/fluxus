@@ -6,6 +6,12 @@
 ;; Example:
 ;; EndSectionDoc 
 
+;; StartSectionDoc-fr
+;; scheme-utils
+;; Commandes fluxus haut-niveau écrites en Scheme.
+;; Exemple:
+;; EndSectionDoc 
+
 #lang racket/base
 (require "fluxus.ss")
 
@@ -28,6 +34,15 @@
 ;; Example:  
 ;; EndFunctionDoc 
 
+;; StartFunctionDoc-fr
+;; get-line-from-xy
+;; Retour: liste de 2 vecteurs (position début, position fin)
+;; Description:
+;; Ligne représentant un segment de la projection des points x, y dans l'espace 3D
+;; à la distance z de la caméra.
+;; Exemple:  
+;; EndFunctionDoc 
+
 (define (get-line-from-xy x y z)
     (let* ((ndcpos (vector (* (- (/ x (vx (get-screen-size))) 0.5) 2)
                     (* (- (- (/ y (vy (get-screen-size))) 0.5)) 1.5) -1))
@@ -44,6 +59,15 @@
 ;; Example:  
 ;; EndFunctionDoc 
 
+;; StartFunctionDoc-fr
+;; world-pos x-nombre y-nombre z-nombre
+;; Retour: vecteur
+;; Description:
+;; Retourne la position d'un point dans l'espace 3D par rapport à la caméra.
+;; Gets the world position of a point in 3D world space.
+;; Exemple:
+;; EndFunctionDoc 
+
 ; we'll just use the end of the projection line here
 (define (world-pos x y z)
     (cadr (get-line-from-xy x y z)))
@@ -56,6 +80,14 @@
 ;; Description:
 ;; Gets the mouse position in 3D world space.
 ;; Example:  
+;; EndFunctionDoc 
+
+;; StartFunctionDoc-fr
+;; mouse-pos
+;; Retour: vecteur
+;; Description:
+;; Retourne la position de la souris dans l'espace 3D.
+;; Exemple:  
 ;; EndFunctionDoc 
 
 ; we'll just use the end of the projection line here
@@ -71,6 +103,14 @@
 ;; Example:  
 ;; EndFunctionDoc 
 
+;; StartFunctionDoc-fr
+;; mouse-pos-z
+;; Retour: vecteur
+;; Description:
+;; Retourne la position de la souris dans l'espace 3D avec z comme profondeur.
+;; Exemple:
+;; EndFunctionDoc 
+
 ; we'll just use the end of the projection line here
 (define (mouse-pos-z z)
     (world-pos (mouse-x) (mouse-y) z))
@@ -82,6 +122,14 @@
 ;; Description:
 ;; Converts a 2D vector into an angle, with some dodgy Dave maths
 ;; Example:  
+;; EndFunctionDoc 
+
+;; StartFunctionDoc-fr
+;; 2dvec->angle x y
+;; Retour: décimal
+;; Description:
+;; Convertit un vecteur 2D en un angle, avec quelques maths louches de Dave.
+;; Exemple:
 ;; EndFunctionDoc 
 
 (define (2dvec->angle x y)
