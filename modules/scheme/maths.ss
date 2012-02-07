@@ -6,6 +6,12 @@
 ;; Example:
 ;; EndSectionDoc 
 
+;; StartSectionDoc-fr
+;; scheme-utils
+;; Commandes fluxus haut-niveau écrites en Scheme.
+;; Exemple:
+;; EndSectionDoc 
+
 #lang racket/base
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
@@ -30,6 +36,16 @@
 ;; (colour (vmix (vector 1 0 0) (vector 0 0 1) 0.5))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; vmix a b t
+;; Retour: vecteur
+;; Description:
+;; Interpolatin linéaire des deux vecteurs par t
+;; Exemple:
+;; ; mixer le rouge et bleu ensemble
+;; (colour (vmix (vector 1 0 0) (vector 0 0 1) 0.5))
+;; EndFunctionDoc
+
 (define (vmix a b t)
     (vlerp a b t))
 	
@@ -40,6 +56,17 @@
 ;; Clamp the vector so the elements are all between 0 and 1
 ;; Example:  
 ;; ; make a valid colour from any old vector
+;; (colour (vclamp (vector 2 400 -123)))
+;; EndFunctionDoc 
+
+;; StartFunctionDoc-fr
+;; vclamp a
+;; Retour: vecteur
+;; Description:
+;; Ajuste le vecteur de facon à ce que les élements soient tous
+;; entre 0 et 1.
+;; Exemple:
+;; ; produit un vecteur valide de couleur à partir de n'importe quel ancien vecteur
 ;; (colour (vclamp (vector 2 400 -123)))
 ;; EndFunctionDoc 
 
@@ -58,6 +85,17 @@
 ;; maintain the same ratio between them.
 ;; Example:  
 ;; ; make a valid colour from any old vector
+;; (colour (vsquash (vector 2 400 -123)))
+;; EndFunctionDoc 
+
+;; StartFunctionDoc-fr
+;; vsquash a
+;; Retour: vecteur
+;; Description:
+;; Normalise le vecteur de facon à ce que tout les éléments soient
+;; entre 0 et 1 mais conserve le ratio entre eux. 
+;; Exemple:
+;; ; produit un vecteur valide de couleur à partir de n'importe quel ancien vecteur
 ;; (colour (vsquash (vector 2 400 -123)))
 ;; EndFunctionDoc 
 
@@ -105,6 +143,15 @@
 ;; (lerp 1 2 .3)
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; lerp a b t
+;; Retour : nombre
+;; Description:
+;; Interpolation linéaire entre les deux nombres par t.
+;; Exemple:
+;; (lerp 1 2 .3)
+;; EndFunctionDoc
+
 (define (lerp p1 p2 t)
 	(+ p1 (* (- p2 p1) t)))
 	
@@ -114,6 +161,15 @@
 ;; Description:
 ;; Constrains value t to not exceed a minimum and maximum value.
 ;; Example:
+;; (clamp 1 .2 .3)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; clamp t [bas 0] [haut 1]
+;; Retour : nombre
+;; Description:
+;; Constraints la valeur t à ne pas dépasser les valeurs minimums et maximums.
+;; Exemple:
 ;; (clamp 1 .2 .3)
 ;; EndFunctionDoc
 
@@ -132,6 +188,16 @@
 ;; (colour (vlerp (vector 1 0 0) (vector 0 0 1) 0.3))
 ;; EndFunctionDoc
 
+;; StartFunctionDoc-fr
+;; vlerp a b t
+;; Retour : vecteur
+;; Description:
+;; Interpolation linéaire des deux vecteurs par t.
+;; Exemple:
+;; ; Mélanger le rouge et bleu ensemble
+;; (colour (vlerp (vector 1 0 0) (vector 0 0 1) 0.3))
+;; EndFunctionDoc
+
 (define (vlerp v1 v2 t)
 	(vadd v1 (vmul (vsub v2 v1) t)))
 
@@ -141,6 +207,15 @@
 ;; Description:
 ;; Linearly interpolates the two matrices together by t
 ;; Example:
+;; (mlerp (mtranslate (vector 1 0 0)) (mtranslate (vector 0 1 0)) .3)
+;; EndFunctionDoc
+
+;; StartFunctionDoc-fr
+;; mlerp a b t
+;; Retour : vecteur
+;; Description:
+;; Interpolation linéaire des deux matrices ensemble par t.
+;; Exemple:
 ;; (mlerp (mtranslate (vector 1 0 0)) (mtranslate (vector 0 1 0)) .3)
 ;; EndFunctionDoc
 
