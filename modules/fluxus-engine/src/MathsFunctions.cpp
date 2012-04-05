@@ -48,6 +48,14 @@ using namespace Fluxus;
 // Exemplo:
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// maths
+// Ces fonctions sont optimisées pour les graphiques 3D, et la collision entre science informatique et mathématique est ici évidente.
+// Donc les vecteurs Scheme représentant les vecteurs informatiques contiennent dans ce contexte 3 éléments, quaternions sont des vecteurs
+// de 4 éléments, et les matrices, des vecteurs de 16 éléments. 
+// Exemple:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // vmulc vector number
 // Returns: result-vector
@@ -64,6 +72,16 @@ using namespace Fluxus;
 // Descrição:
 // Multiplica um vetor por um número.
 // Exemplo:
+// (vmulc (vector 1 2 3) 2)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vmulc vecteur nombre
+// Retour: vecteur-resultant
+// Description:
+// Multiplie un vecteur par un nombre.
+// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Exemple:
 // (vmulc (vector 1 2 3) 2)
 // EndFunctionDoc
 
@@ -95,6 +113,16 @@ Scheme_Object *vmulc(int argc, Scheme_Object **argv)
 // (vaddc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vaddc vecteur vecteur
+// Retour: vecteur-resultant
+// Description:
+// Additionne deux vecteurs ensemble.
+// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Exemple:
+// (vaddc (vector 1 2 3) (vector 1 2 3))
+// EndFunctionDoc
+
 Scheme_Object *vaddc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -120,6 +148,16 @@ Scheme_Object *vaddc(int argc, Scheme_Object **argv)
 // Descrição:
 // Subtrai um vetor de outro.
 // Exemplo:
+// (vsubc (vector 1 2 3) (vector 1 2 3))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vsubc vecteur vecteur
+// Retour: vecteur-resultant
+// Description:
+// Soustrait un vecteur par un autre.
+// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Exemple:
 // (vsubc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
 
@@ -151,6 +189,16 @@ Scheme_Object *vsubc(int argc, Scheme_Object **argv)
 // (vdivc (vector 1 2 3) 2)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vdivc vecteur nombre
+// Retour: vecteur-resultant
+// Description:
+// Divise un vecteur par un nombre.
+// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Exemple:
+// (vdivc (vector 1 2 3) 2)
+// EndFunctionDoc
+
 Scheme_Object *vdivc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -175,6 +223,15 @@ Scheme_Object *vdivc(int argc, Scheme_Object **argv)
 // Descrição:
 // Multiplica (transforma) um vetor por uma matriz.
 // Exemplo:
+// (vtransform (vector 0 1 0) (mrotate (vector 90 0 0)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vtransform vecteur matrice
+// Retour: vecteur-resultant
+// Description:
+// Multiplie (transforme) un vecteur par un matrice.
+// Exemple:
 // (vtransform (vector 0 1 0) (mrotate (vector 90 0 0)))
 // EndFunctionDoc
 
@@ -207,6 +264,16 @@ Scheme_Object *vtransform(int argc, Scheme_Object **argv)
 // (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vtransform-rot vecteur matrice
+// Retour: vecteur-resultant
+// Description:
+// Multiplie (transform) un vecteur par un matrice, mais ignore la partie translation pour les opérations
+// impliquant les normales.
+// Exemple:
+// (vtransform-rot (vector 0 1 0) (mrotate (vector 90 0 0)))
+// EndFunctionDoc
+
 Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -231,6 +298,15 @@ Scheme_Object *vtransform_rot(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna a forma normalisada do vetor (length=1)
 // Exemplo:
+// (vnormalise (vector 3 4 5))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vnormalise vecteur
+// Retour: vecteur-resultant
+// Description:
+// Retourne un vecteur normalisé à partir du vecteur spécifié (longueur=1)
+// Exemple:
 // (vnormalise (vector 3 4 5))
 // EndFunctionDoc
 
@@ -262,6 +338,15 @@ Scheme_Object *vnormalise(int argc, Scheme_Object **argv)
 // (vdot (vector 0 1 0) (vector 1 0 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vdot vecteur vecteur
+// Retour: nombre-resultant
+// Description:
+// Retourne le produit scalaire de deux vecteurs.
+// Exemple:
+// (vdot (vector 0 1 0) (vector 1 0 0))
+// EndFunctionDoc
+
 Scheme_Object *vdot(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -275,7 +360,7 @@ Scheme_Object *vdot(int argc, Scheme_Object **argv)
 // vmag vector
 // Returns: result-number
 // Description:
-// Returns the magnitude, or length of the vector
+// Returns the magnitude, or length of the vector.
 // Example:
 // (vmag (vector 0 1 1))
 // EndFunctionDoc
@@ -286,6 +371,15 @@ Scheme_Object *vdot(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna a magnitude, ou alcance do vetor
 // Exemplo:
+// (vmag (vector 0 1 1))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vmag vecteur
+// Retour: nombre-resultant
+// Description:
+// Retourne la magnitude, ou longueur du vecteur.
+// Example:
 // (vmag (vector 0 1 1))
 // EndFunctionDoc
 
@@ -316,6 +410,15 @@ Scheme_Object *vmag(int argc, Scheme_Object **argv)
 // (vreflect (vector 0 1 1) (vector 1 0 1))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vreflect vecteur vecteur
+// Retour: vecteur-resultant
+// Description:
+// Retourne la reflection d'un vecteur par un autre.
+// Exemple:
+// (vreflect (vector 0 1 1) (vector 1 0 1))
+// EndFunctionDoc
+
 Scheme_Object *vreflect(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -343,6 +446,15 @@ Scheme_Object *vreflect(int argc, Scheme_Object **argv)
 // (vdist (vector 100 100 0) (vector 0 0 100))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vdist vecteur vecteur
+// Retour: nombre-resultant
+// Description:
+// Traite les vecteurs comme des points et retourne la distance entre les deux.
+// Exemple:
+// (vdist (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
 Scheme_Object *vdist(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -367,6 +479,16 @@ Scheme_Object *vdist(int argc, Scheme_Object **argv)
 // Descrição:
 // Tratando os vetores como pontos, retorna a distancia entre eles.
 // Exemplo:
+// (vdist-sq (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// vdist-sq vecteur vecteur
+// Retour: nombre-resultant
+// Description:
+// Traite les vecteurs comme des points et retourne la racine carrée de la distance entre les deux.
+// Plus rapide que vdist.
+// Exemple:
 // (vdist-sq (vector 100 100 0) (vector 0 0 100))
 // EndFunctionDoc
 
@@ -399,6 +521,16 @@ Scheme_Object *vdistsq(int argc, Scheme_Object **argv)
 // (vcross (vector 100 100 0) (vector 0 0 100)) 
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// vcross vecteur vecteur
+// Retour: vecteur-resultant
+// Description:
+// Retourne le produit vectoriel (cross product) des deux vecteurs, résultant un vecteur perpendiculaire
+// aux vecteurs croisés.
+// Exemple:
+// (vcross (vector 100 100 0) (vector 0 0 100))
+// EndFunctionDoc
+
 Scheme_Object *vcross(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -416,13 +548,22 @@ Scheme_Object *vcross(int argc, Scheme_Object **argv)
 // Example:
 // (mmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
- 
+
 // StartFunctionDoc-pt
 // mmul vetor-matriz vetor-matriz
 // Retorna: vetor-matriz
 // Descrição:
 // Multiplica duas matrizes.
 // Exemplo:
+// (mmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// mmul matrice-vecteur matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Multiplie deux matrices ensemble.
+// Exemple:
 // (mmul (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
  
@@ -453,6 +594,15 @@ Scheme_Object *mmul(int argc, Scheme_Object **argv)
 // (madd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// madd matrice-vecteur matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Additionne deux matrices ensemble.
+// Exemple:
+// (madd (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
 Scheme_Object *madd(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -477,6 +627,15 @@ Scheme_Object *madd(int argc, Scheme_Object **argv)
 // Descrição:
 // Subtrai uma matriz de outra.
 // Exemplo:
+// (msub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// msub matrice-vecteur matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Soustrait une matrice par une autre.
+// Exemple:
 // (msub (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
@@ -507,6 +666,15 @@ Scheme_Object *msub(int argc, Scheme_Object **argv)
 // (mdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// mdiv matrice-vecteur matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Divise une matrice par une autre.
+// Exemple:
+// (mdiv (mtranslate (vector 1 0 0)) (mrotate (vector 0 90 0)))
+// EndFunctionDoc
+
 Scheme_Object *mdiv(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -534,6 +702,15 @@ Scheme_Object *mdiv(int argc, Scheme_Object **argv)
 // (mident)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// mident 
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice identité.
+// Exemple:
+// (mident)
+// EndFunctionDoc
+
 Scheme_Object *mident(int argc, Scheme_Object **argv)
 {
 	dMatrix m;
@@ -555,6 +732,15 @@ Scheme_Object *mident(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna uma matriz representando a tranformação(translação) especificada.
 // Exemplo:
+// (mtranslate (vector 100 0 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// mtranslate vecteur
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant la transformation spécifiée.
+// Exemple:
 // (mtranslate (vector 100 0 0))
 // EndFunctionDoc
 
@@ -584,6 +770,16 @@ Scheme_Object *mtranslate(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna uma matriz representando a rotação especificada. Aceita um vetor de angulos euler, ou um quatérnio.
 // Exemplo:
+// (mrotate (vector 0 45 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// mrotate vecteur
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant la rotation spécifiée. Accepte un vecteur aux angles d'Euler,
+// ou un quaternion.
+// Exemple:
 // (mrotate (vector 0 45 0))
 // EndFunctionDoc
 
@@ -635,6 +831,15 @@ Scheme_Object *mrotate(int argc, Scheme_Object **argv)
 // (mscale (vector 0.5 2 0.5))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// mscale vecteur
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant l'échelle spécifiée.
+// Exemple:
+// (mscale (vector 0.5 2 0.5))
+// EndFunctionDoc
+
 Scheme_Object *mscale(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -664,6 +869,15 @@ Scheme_Object *mscale(int argc, Scheme_Object **argv)
 // (mtranspose (mident))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// mtranspose matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Retourne la transposition du vecteur d'entrée.
+// Exemple:
+// (mtranspose (mident))
+// EndFunctionDoc
+
 Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -690,6 +904,15 @@ Scheme_Object *mtranspose(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna o inverso do vetor de entrada.
 // Exemplo:
+// (minverse (mscale (vector 0.5 2 0.5)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// minverse matrice-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Retourne l'inverse du vecteur d'entrée.
+// Exemple:
 // (minverse (mscale (vector 0.5 2 0.5)))
 // EndFunctionDoc
 
@@ -724,6 +947,16 @@ Scheme_Object *minverse(int argc, Scheme_Object **argv)
 // (maim (vector 0 0 1) (vector 0 1 0))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// maim vecteur-cible vector-haut
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant une rotation cible de facon à ce que l'axe X pointe en bas la direction ciblée,
+// et l'axe Y pointe en haut du vecteur-haut. Souffre probablement de Gimbal 
+// Example:
+// (maim (vector 0 0 1) (vector 0 1 0))
+// EndFunctionDoc
+
 Scheme_Object *maim(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -735,7 +968,7 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// matrix->euler vector-matriz
+// matrix->euler matrix-vector
 // Returns: vector
 // Description:
 // Returns the euler angles extracted from the matrix.
@@ -749,6 +982,15 @@ Scheme_Object *maim(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna os angulos euler extraidos da matriz.
 // Exemplo:
+// (matrix->euler (mrotate (vector 15 0 0)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// matrix->euler vecteur-matrice
+// Retour: vecteur
+// Description:
+// Retourne les angles d'Euler extraient de la matrice.
+// Exemple:
 // (matrix->euler (mrotate (vector 15 0 0)))
 // EndFunctionDoc
 
@@ -782,6 +1024,15 @@ Scheme_Object *matrix_to_euler(int argc, Scheme_Object **argv)
 // (qaxisangle (vector 0 1 0) 45)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// qaxisangle axe-vecteur angle-nombre
+// Retour: quaternion-vecteur
+// Description:
+// Retour un quaternion représentant la rotation d'angle en degrés de l'axe spécifié.
+// Exemple:
+// (qaxisangle (vector 0 1 0) 45)
+// EndFunctionDoc
+
 Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -810,6 +1061,15 @@ Scheme_Object *qaxisangle(int argc, Scheme_Object **argv)
 // (qmul (qaxisangle (vector 0 1 0) 45) (qaxisangle (vector 0 0 1) 180))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// qmul quaternion-vecteur quaternion-vecteur
+// Retour: quaternion-vecteur
+// Description:
+// Multiplie deux quaternions ensemble. 
+// Exemple:
+// (qmul (qaxisangle (vector 0 1 0) 45) (qaxisangle (vector 0 0 1) 180))
+// EndFunctionDoc
+
 Scheme_Object *qmul(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -834,6 +1094,15 @@ Scheme_Object *qmul(int argc, Scheme_Object **argv)
 // Descrição:
 // Normalisa um quatérnio
 // Exemplo:
+// (qnormalise (qaxisangle (vector 0 19 0) 45))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// qnormalise quaternion-vecteur
+// Retour: quaternion-vecteur
+// Description:
+// Normalise un quaternion. 
+// Exemple:
 // (qnormalise (qaxisangle (vector 0 19 0) 45))
 // EndFunctionDoc
 
@@ -866,6 +1135,15 @@ Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 // (qtomatrix (qaxisangle (vector 0 1 0) 45))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// qtomatrix quaternion-vecteur
+// Retour: matrice-vecteur
+// Description:
+// Convertis un quaternion en un matrice de rotation.
+// Exemple:
+// (qtomatrix (qaxisangle (vector 0 1 0) 45))
+// EndFunctionDoc
+
 Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -882,7 +1160,7 @@ Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 // qconjugate quaternion-vector
 // Returns: quaternion-vector
 // Description:
-// Conjugatea a quaternion. 
+// Conjugate a quaternion. 
 // Example:
 // (qconjugate (qaxisangle (vector 0 1 0) 45))
 // EndFunctionDoc
@@ -893,6 +1171,15 @@ Scheme_Object *qtomatrix(int argc, Scheme_Object **argv)
 // Descrição:
 // Conjuga um quatérnio
 // Exemplo:
+// (qconjugate (qaxisangle (vector 0 1 0) 45))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// qconjugate quaternion-vecteur
+// Retour: quaternion-vecteur
+// Description:
+// Retourne le conjugué d'un quaternion.
+// Exemple:
 // (qconjugate (qaxisangle (vector 0 1 0) 45))
 // EndFunctionDoc
 
@@ -920,6 +1207,15 @@ Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna o resto em ponto-flutuante de numerador/denominador.
 // Exemplo:
+// (fmod 14.4 10)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// fmod numerateur-nombre denominateur-nombre
+// Retour: réel-nombre
+// Description:
+// Retourne le reste en nombre flottant de numerateur/denominateur.
+// Exemple:
 // (fmod 14.4 10)
 // EndFunctionDoc
 
@@ -962,6 +1258,26 @@ Scheme_Object *fmod(int argc, Scheme_Object **argv)
 // (snoise 6.1 2.4 .5 1.3) ; 4D noise
 // 
 // ; example on a pixel prim
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (snoise (* 0.1 (modulo i (pixels-width)))
+//                     (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// snoise réel-nombre ...
+// Retour: réel-nombre
+// Description:
+// Retourne un 1D/2D/3D/4D Simplex Noise dans l'interval -1->1 en fonction du nombre de paramètres.
+// Exemple:
+// (snoise 1.0 2.0) ; bruit 2D
+// (snoise 6.1 2.4 .5 1.3) ; bruit 4D
+// 
+// ; Exemple sur une primitive pixel
 // (clear)
 // (with-primitive (build-pixels 100 100)
 //     (pdata-index-map!
@@ -1051,6 +1367,26 @@ Scheme_Object *snoise(int argc, Scheme_Object **argv)
 //     (pixels-upload))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// noise réel-nombre ...
+// Retour: réel-nombre
+// Description:
+// Retour une valeur Perlin Noise aux coordonnées spécifiées.
+// Exemple:
+// (noise 1.0 2.0) ; bruit 2D
+// (noise 6.1 2.4 .5) ; bruit 3D
+//
+// ; Exemple sur une primitive pixel
+// (clear)
+// (with-primitive (build-pixels 100 100)
+//     (pdata-index-map!
+//         (lambda (i c)
+//             (noise (* 0.1 (modulo i (pixels-width)))
+//                    (* 0.1 (quotient i (pixels-height)))))
+//         "c")
+//     (pixels-upload))
+// EndFunctionDoc
+
 Scheme_Object *noise(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1101,6 +1437,15 @@ Scheme_Object *noise(int argc, Scheme_Object **argv)
 // (noise-seed 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// noise-seed nombre-non-signé
+// Retour: vide
+// Description:
+// Fixe la valeur racine du bruit.
+// Exemple:
+// (noise-seed 1)
+// EndFunctionDoc
+
 Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1128,6 +1473,16 @@ Scheme_Object *noise_seed(int argc, Scheme_Object **argv)
 // Exemplo:
 // (noise-detail 4) ; noise with 4 octaves
 // (noise-detail 4 .5) ; noise with 4 octaves and .5 falloff
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// noise-detail octaves-nombre atténuation-nombre
+// Retour: vide
+// Description:
+// Ajuste le caractère et le niveau de détail produit par le bruit Perlin.
+// Exemple:
+// (noise-detail 4) ; bruit de 4 octaves
+// (noise-detail 4 .5) ; bruit de 4 octaves et atténuation à .5
 // EndFunctionDoc
 
 Scheme_Object *noise_detail(int argc, Scheme_Object **argv)
