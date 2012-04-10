@@ -83,6 +83,33 @@ using namespace Fluxus;
 // (ungrab)
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// primitive-data
+// Les Données Primitives (raccourcient en "pdata") est l'appellation fluxus des données dont sont composées les primitives.
+// Dans les primitives polygones, celà revient aux informations des vertex; dans les primtives particules, celà correspond
+// aux informationx des particules; dans les primitives NURBS elles controlent les arrêtes. Accéder aux pdata donnent accès aux
+// primitives, qui sont sinon pas très interresantes, et permet de déformer et façonner les autres primitives pour donner plus
+// de détails aux modèles et animation. Vous pouvez également ajouter vos propres pdata, qui sont traitées comme celles inclusent.
+// Les pdata sont nommées par chaînes de caractères, les noms dépendent du type de primitive. Toutes les opérations pdata opèrent
+// sur la primitive actuellement accrochée.
+// Exemple:
+// ; une fonction qui déforme les points d'un objet
+// (define (deform n)
+//     (pdata-set! "p" n (vadd  (pdata-ref "p" n)                ; le point original,the original point, plus
+//         (vmul (vector (flxrnd) (flxrnd) (flxrnd)) 0.1)))     ; plus un petit vecteur aléatoire
+//     (if (zero? n)
+//         0
+//         (deform (- n 1))))
+//     
+// (hint-unlit) ; déclarer quelques options de rendu
+// (hint-wire)  ; pour améliorer la visibilité
+// (line-width 4)
+// (define myobj (build-sphere 10 10)) ; construire une sphère
+// (grab myobj)
+// (deform (pdata-size)) ; la déformer
+// (ungrab)
+// EndSectionDoc 
+
 // StartFunctionDoc-en
 // pdata-ref type-string index-number
 // Returns: value-vector/colour/matrix/number
@@ -98,6 +125,15 @@ using namespace Fluxus;
 // Descrição:
 // Retorna o elemento pdata correspondente.
 // Exemplo:
+// (pdata-ref "p" 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pdata-ref type-chaîne-de-caractères index-nombre
+// Retour: valeur-vecteur/couleur/matrice/nombre
+// Description:
+// Retourne l'élément pdata correspondant.
+// Exemple:
 // (pdata-ref "p" 1)
 // EndFunctionDoc
 
@@ -179,6 +215,15 @@ Scheme_Object *pdata_ref(int argc, Scheme_Object **argv)
 // Descrição:
 // Escreve ao elemento pdata correspondente.
 // Exemplo:
+// (pdata-set! "p" 1 (vector 0 100 0))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pdata-set! type-chaîne-de-caractères index-nomvre valeur-vecteur/couleur/matrice/nombre
+// Retour: vide
+// Description:
+// Ecris dans l'élément pdata correspondant.
+// Exemple:
 // (pdata-set! "p" 1 (vector 0 100 0))
 // EndFunctionDoc
 
@@ -282,6 +327,16 @@ Scheme_Object *pdata_set(int argc, Scheme_Object **argv)
 // (pdata-set "mydata" 0 (vector 1 2 3))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pdata-add nom-chaîne-de-caractères type-chaîne-de-caractères
+// Retour: vide
+// Description:
+// Ajoute un nouveau tableau de pdata utilisateur. Le type peut être "v":vecteur, "c":couleur, "f":flottant or "m":matrice.
+// Exemple:
+// (pdata-add "mydata" "v")
+// (pdata-set "mydata" 0 (vector 1 2 3))
+// EndFunctionDoc
+
 Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -344,6 +399,20 @@ Scheme_Object *pdata_add(int argc, Scheme_Object **argv)
 //     (display "we have myarray!") (newline))))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pdata-exists? nom-chaîne-de-caractères
+// Retour: vide
+// Description:
+// Retourne vrai, si le tableau de pdata existe sur la primitive.
+// Exemple:
+// (with-primitive (build-cube)
+//   (when (pdata-exists? "p") 
+//     (display "we have positions!") (newline))
+//   (pdata-add "myarray" "v")
+//   (when (pdata-exists? "myarray") 
+//     (display "we have myarray!") (newline)))
+// EndFunctionDoc
+
 Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -388,6 +457,19 @@ Scheme_Object *pdata_exists(int argc, Scheme_Object **argv)
 // p -> position
 // c -> color
 // Exemplo:
+// (with-primitive (build-cube)
+//     (display (pdata-names)) (newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pdata-names 
+// Retour: vide
+// Description:
+// Retourne la liste des noms des tableaux pdata pour la primitive.
+// t -> texture
+// p -> position
+// c -> couleur
+// Exemple:
 // (with-primitive (build-cube)
 //     (display (pdata-names)) (newline))
 // EndFunctionDoc
@@ -519,6 +601,54 @@ Scheme_Object *pdata_names(int argc, Scheme_Object **argv)
 // 
 // (every-frame (with-primitive p
 //     (pdata-op "+" "p" "vel")))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pdata-op nomfonction-chaîne-de-caractères nompdata-chaîne-de-caractères operateur
+// Retour: vide
+// Description:
+// Ceci est une fonctionnalité expérimentale vous permettant des opérations sur les pdata très rapidement.
+// Par exemple, ajouter un élément d'un tableau à un autre. Vous pouvez l'implément
+// en Scheme en boucle sur chaque élément, mais cette méthode est lente puisque l'interpréteur
+// fait tout le travail. Il est bien plus rapide d'utiliser les pdata-op puisque la même
+// opération est faite en un unique appel Scheme.
+// Exemple:
+// (clear)
+// (define t (build-torus 1 4 10 10))
+// 
+// (with-primitive t
+//     (pdata-op "+" "p" (vector 1 0 0))  ; ajoute un vecteur à chaque pdata vecteur
+//     (pdata-op "+" "p" "n")  ; ajoute deux pdata vecteurs à chaque éléments
+//     (pdata-op "*" "n" (vector -1 -1 -1)) ;  multiplie un vecteur à tous les vecteurs pdata
+//     (pdata-op "*" "n" "p")  ; multiplie deux pdata vecteurs aux éléments
+//     (let ((pos (pdata-op "closest" "p" (vector 100 0 0)))) ;  retourne la position du vertex le proche de ce point
+//         (with-state ; dessine une sphère
+//             (translate pos)
+//             (scale (vector 0.1 0.1 0.1))
+//             (build-sphere 5 5)))
+//     ;(pdata-op "sin" "mydata" "myotherdata")  ; sinus d'un flottant pdata dans un autre
+//     ;(pdata-op "cos" "mydata" "myotherdata")  ; cosinus d'un flottant pdata dans un autre
+//     )
+// 
+// Exemple le plus commun d'opération pdata sur des particules
+// (define p (with-state
+//     (hint-points)
+//     (point-width 10)
+//     (build-particles 100)))
+// 
+// (with-primitive p
+//     (pdata-add "vel" "v") ; ajoute un vecteur de vélocité
+//     (pdata-map!
+//         (lambda (vel)
+//             (srndvec)) ; détermine des vélocités aléatoires
+//         "vel")
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec)) ; détermine des couleurs alétoires
+//         "c"))
+// 
+// (every-frame (with-primitive p
+//     (pdata-op "+" "p" "vel"))) 
 // EndFunctionDoc
 
 Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
@@ -660,6 +790,16 @@ Scheme_Object *pdata_op(int argc, Scheme_Object **argv)
 // (pdata-copy "p" "mydata") ; copia as posições de vértices para uma array do usuário
 // EndFunctionDoc
 
+
+// StartFunctionDoc-fr
+// pdata-copy originepdata-chaîne-de-caractères ciblepdata-chaîne-de-caractères
+// Retour: vide
+// Description:
+// Copie le contenu d'un tableau pdata vers un autre. Les tableaux doivent être de même types.
+// Exemple:
+// (pdata-copy "p" "mydata") ; copie les positions des vertex vers un tableau utilisateur
+// EndFunctionDoc
+
 Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -714,6 +854,25 @@ Scheme_Object *pdata_copy(int argc, Scheme_Object **argv)
 // (ungrab)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pdata-size 
+// Retour: compte-nombre
+// Description:
+// Retourne la taille du tableau pdata (ils doivent normalement être tous égaux).
+// Ceci est principalement utilisé pour le parcours des tableaux.
+// Exemple:
+// (define (mashup n)
+//     (pdata-set "p" n (vector (flxrnd) (flxrnd) (flxrnd))) ; Position aléatoire des vertex
+//     (if (zero? n)
+//         0
+//         (mashup (- n 1)))) ; loops till n is 0
+//
+// (define shape (build-sphere 10 10))
+// (grab shape)
+// (mashup (pdata-size)) ; disperse aléatoirement les vertex de la primitive actuellement attachée
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 {
     Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();    
@@ -748,6 +907,19 @@ Scheme_Object *pdata_size(int argc, Scheme_Object **argv)
 // (define shape (build-sphere 10 10)) ; build a sphere (which is smooth by default)
 // (grab shape)
 // (recalc-normals 0) ; make the sphere faceted
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// recalc-normals lissageounon-nombre
+// Retour: vide
+// Description:
+// Pour les primitives polygones uniquement. Etudie la position des vertex et calcule les normales d'éclairage
+// automatiquement. Appellé avec "1" pour les normales lissées, "0" pour des normales en facettes.
+// Exemple:
+// (define shape (build-sphere 10 10)) ; construit une sphère (lissée par défaut)
+// (grab shape)
+// (recalc-normals 0) ; rend la sphère en facettes
 // (ungrab)
 // EndFunctionDoc
 
