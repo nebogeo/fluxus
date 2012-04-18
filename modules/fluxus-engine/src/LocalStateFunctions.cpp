@@ -45,6 +45,15 @@ using namespace Fluxus;
 // Exemplo:
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// local-state
+// Les fonctions d'état local contrôlent le rendu ainsi que l'état courant - ou l'état de la
+// primitive en cours. Dans fluxus, l'état signifie la façon dont les choses sont affichées,
+// ainsi qu'activé ou non les options de rendu, changer le style de différentes fonctionnalités,
+// ou interagir sur la transformation en cours.
+// Exemple:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // push
 // Returns: void
@@ -75,6 +84,22 @@ using namespace Fluxus;
 // (draw-cube)         ; desenha um cubo verde
 // (pop)           ; esquece estado de desenho antigo
 // ; cor corrente é vermelha de novo.
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// push
+// Retour: vide
+// Description:
+// Pousse une copie de l'état courant de rendu au sommet de la pîle. L'état de rendu contient
+// les informations sur les objets comme la couleur, les transformations et les options de rendu.
+// Cette fonction a été remplacée par (with-state).
+// Exemple:
+// (colour (vector 1 0 0)) ; fixe la couleur courante à rouge
+// (push)                  ; copie et pousse l'état de rendu
+// (colour (vector 0 1 0)) ; fixe la couleur courante à vert
+// (draw-cube)             ; dessine un cube vert
+// (pop)           ; oublie l'ancien état de rendu
+// ; la couleur en cours redevient rouge
 // EndFunctionDoc
 
 Scheme_Object *push(int argc, Scheme_Object **argv)
@@ -119,6 +144,23 @@ Scheme_Object *push(int argc, Scheme_Object **argv)
 // ; cor corrente é vermelha de novo.
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pop
+// Retour: vide
+// Description:
+// Détruis l'état courant de rendu, et replace l'état précédement poussé dans la pîle.
+// L'état de rendu contient les informations sur les objets comme la couleur,
+// les transformations et les options de rendu.
+// Cette fonction a été remplacée par (with-state).
+// Exemple:
+// (colour (vector 1 0 0)) ; fixe la couleur courante à rouge
+// (push)                  ; copie et pousse l'état de rendu
+// (colour (vector 0 1 0)) ; fixe la couleur courante à vert
+// (draw-cube)             ; dessine un cube vert
+// (pop)           ; oublie l'ancien état de rendu
+// ; la couleur en cours redevient rouge
+// EndFunctionDoc
+
 Scheme_Object *pop(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->PopGrab();
@@ -160,6 +202,23 @@ Scheme_Object *pop(int argc, Scheme_Object **argv)
 // (ungrab)          ; retorna ao estado normal
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// grab objet-id
+// Retour: vide
+// Description:
+// Attrape l'objet spécifié. Une fois l'objet accroché, son état peut être modifié en
+// utilisant les mêmes commandes pour modifier l'état de rendu. (ungrab) doit être utilisé
+// pour retourner à l'état de rendu en cours. L'accrochage peut aussi être empilé, dans ce cas
+// il faut relacher les primtives jusqu'à la dernière accrochée.
+// Cette fonction a été remplacée par (with-primitive).
+// Exemple:
+// (colour (vector 1 0 0))      ; fixe la couleur courante à rouge
+// (define mycube (build-cube)) ; fabrique un cube rouge
+// (grab mycube)
+// (colour (vector 0 1 0)) ; fixe la couleur du cube à vert
+// (ungrab)          ; retour à l'état normal
+// EndFunctionDoc
+
 Scheme_Object *grab(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -198,6 +257,21 @@ Scheme_Object *grab(int argc, Scheme_Object **argv)
 // (ungrab)          ; retorna ao estado normal
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ungrab
+// Retour: vide
+// Description:
+// Relache l'objet courant, et retourne à l'état normale ou la denière
+// primitive accrochée.
+// Cette fonction a été remplacée par (with-primitive).
+// Exemple:
+// (colour (vector 1 0 0))      ; fixe la couleur courante à rouge
+// (define mycube (build-cube)) ; fabrique un cube rouge
+// (grab mycube)
+// (colour (vector 0 1 0)) ; fixe la couleur du cube à vert
+// (ungrab)          ; retour à l'état normal
+// EndFunctionDoc
+
 Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->PopGrab();
@@ -227,6 +301,19 @@ Scheme_Object *ungrab(int argc, Scheme_Object **argv)
 // (rotate (vector 45 0 0))
 // (define mycube (build-cube)) ; faz um cubo com uma rotação
 // (with-primitive mycube (apply-transform)) ; aplica a rotação aos pontos do cubo
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// apply-transform optionel-objet-id
+// Retour: vide
+// Description:
+// Applique la transformation de l'objet courant aux positions des vertex de l'objet courant
+// et l'applique comme son identité. Peut-être passé l'id optionel pour la version archaïque
+// de cette commande.
+// Exemple:
+// (rotate (vector 45 0 0))
+// (define mycube (build-cube)) ; fabriche un cube avec une rotation
+// (with-primitive mycube (apply-transform)) ; applique la rotation aux points du cube
 // EndFunctionDoc
 
 Scheme_Object *apply(int argc, Scheme_Object **argv)
@@ -269,6 +356,16 @@ Scheme_Object *apply(int argc, Scheme_Object **argv)
 // (define mycube (build-cube)) ; faz um cubo semi-transparente.
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// opacity valeur
+// Retour: vide
+// Description:
+// Fixe l'opacité de l'état courant de rendu, ou de la primtive en cours.
+// Exemple:
+// (opacity 0.5)
+// (define mycube (build-cube)) ; fabrique un cube semi-transparent
+// EndFunctionDoc
+
 Scheme_Object *opacity(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -308,6 +405,21 @@ Scheme_Object *opacity(int argc, Scheme_Object **argv)
 // (build-cube) ; makes a half transparent wireframe cube
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// wire-opacity valeur
+// Retour: vide
+// Description:
+// Fixe l'opacité du maillage de l'état courant de rendu, ou de la primitive en cours.
+// Exemple:
+// (hint-none)
+// (hint-wire)
+// (backfacecull 0)
+// (line-width 5)
+// (wire-colour (vector 1 1 1))
+// (wire-opacity 0.5)
+// (build-cube) ; fabrique un cube en fil de fer semi-transparent 
+// EndFunctionDoc
+
 Scheme_Object *wire_opacity(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -342,6 +454,18 @@ Scheme_Object *wire_opacity(int argc, Scheme_Object **argv)
 // (define mysphere (build-sphere 10 10)) ; makes a shiny cube
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// shinyness valeur
+// Retour: vide
+// Description:
+// Fixe la brillance de l'état courant de rendu, ou de la primitive en cours.
+// Cette valeur fixe l'étroitesse des reflets spéculaires .
+// Exemple:
+// (shinyness 100)
+// (specular (vector 1 1 1)) ; fixe la couleur des spéculaires
+// (define mysphere (build-sphere 10 10)) ; fabrique un cube brillant
+// EndFunctionDoc
+
 Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -369,6 +493,16 @@ Scheme_Object *shinyness(int argc, Scheme_Object **argv)
 // Exemplo:
 // (colour (vector 1 0.5 0.1)) ; mmm laranja...
 // (define mycube (build-cube)) ; faz um cubo laranja
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// colour colour-vector
+// Retour: vide
+// Description:
+// Fixe la couleur de l'état courant de rendu, ou de la primitive en cours.
+// Exemple:
+// (colour (vector 1 0.5 0.1)) ; mmm orange...
+// (define mycube (build-cube)) ; fabrique un cube orange
 // EndFunctionDoc
 
 Scheme_Object *colour(int argc, Scheme_Object **argv)
@@ -415,6 +549,23 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
 //   (build-cube))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// colour-mode mode
+// Retour: vide
+// Description:
+// Change la façon dont Fluxus interprète les valeurs de couleur de l'état courant de rendu,
+// ou de la primitive en cours.
+// Les symboles Colourmode  possibles sont: rgb hsv
+// Exemple:
+// (clear)
+// (colour-mode 'hsv)
+//
+// (for ((x (in-range 0 10)))
+//   (translate (vector 1 0 0))
+//   (colour (vector (/ x 10) 1 1))
+//   (build-cube))
+// EndFunctionDoc
+
 Scheme_Object *colour_mode(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -444,6 +595,15 @@ Scheme_Object *colour_mode(int argc, Scheme_Object **argv)
 // Descrição:
 // Converte a cor RGB para HSV.
 // Exemplo:
+// (rgb->hsv (vector 1 0.5 0.1))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// rgb->hsv couleur-vecteur
+// Retour: vecteur
+// Description:
+// Convertis une couleur RGB en HSV.
+// Exemple:
 // (rgb->hsv (vector 1 0.5 0.1))
 // EndFunctionDoc
 
@@ -490,6 +650,21 @@ Scheme_Object *rgbtohsv(int argc, Scheme_Object **argv)
 //     (build-cube))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hsv->rgb couleur-vecteur
+// Retour: vecteur
+// Description:
+// Convertis une couleur HSV en RGB.
+// Exemple:
+// (clear)
+// (for* ((x (in-range 0 10))  ; construit un motif de couleur HSV en 10x10
+//        (y (in-range 0 10)))
+//     (identity)
+//     (translate (vector x y 0))
+//     (colour (hsv->rgb (vector (/ x 10) (/ y 10) 1)))
+//     (build-cube))
+// EndFunctionDoc
+
 Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -528,6 +703,17 @@ Scheme_Object *hsvtorgb(int argc, Scheme_Object **argv)
 // (define mycube (build-cube)) ; faz um cubo com wireframe amarelo
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// wire-colour couleur-vecteur
+// Retour: vide
+// Description:
+// Fixe la couleur du maillage de l'état courant de rendu, ou de la primitive en cours.
+// Visible avec (hint-wire) sur la plupart des primitives.
+// Exemple:
+// (wire-colour (vector 1 1 0)) ; fixe jaune la couleur de maillage courante
+// (hint-wire)
+// (define mycube (build-cube)) ; fabrique un cube en fil de fer jaune
+// EndFunctionDoc
 Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -548,6 +734,18 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 // (normal-colour (vector 1 1 0)) ; set yellow as current normals colour
 // (hint-normal)
 // (define mycube (build-cube)) ; makes a cube with yellow wireframe
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// normal-colour couleur-vecteur
+// Retour: vide
+// Description:
+// Fixe la couleur des normales de l'état courant de rendu, ou de la primitive en cours.
+// Visible avec (hint-normal) sur la plupart des primitives.
+// Example:
+// (normal-colour (vector 1 1 0)) ; fixe à jaune la couleur des normales
+// (hint-normal)
+// (define mycube (build-cube)) ; fabrique un cube aux normales jaunes
 // EndFunctionDoc
 
 Scheme_Object *normal_colour(int argc, Scheme_Object **argv)
@@ -582,6 +780,16 @@ Scheme_Object *normal_colour(int argc, Scheme_Object **argv)
 // (define mysphere (build-sphere 10 10)) ; faz uma esfera azul brilhante.
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// specular couleur-vecteur
+// Retour: vide
+// Description:
+// Fixe la couleur des spéculaires de l'état courant de rendu, ou de la primitive en cours.
+// Exemple:
+// (specular (vector 0 0 1)) ; Fixe à bleu la couleur des spéculaires
+// (define mysphere (build-sphere 10 10)) ; Fabrique une sphère à brillance bleue
+// EndFunctionDoc
+
 Scheme_Object *specular(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -613,6 +821,16 @@ Scheme_Object *specular(int argc, Scheme_Object **argv)
 // (define mysphere (build-sphere 10 10)) ; faz uma chata esfera azul
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// ambient couleur-vecteur
+// Retour: vide
+// Description:
+// Fixe la couleur ambiente de l'état courant de rendu, ou de la primitive en cours.
+// Exemple:
+// (ambient (vector 0 0 1)) ; Fixe à bleu la couleur ambiente
+// (define mysphere (build-sphere 10 10)) ; Fabrique une sphère bleue
+// EndFunctionDoc
+
 Scheme_Object *ambient(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -642,6 +860,16 @@ Scheme_Object *ambient(int argc, Scheme_Object **argv)
 // Exemplo:
 // (emissive (vector 0 0 1)) ; ajusta a cor emissiva para azul
 // (define mysphere (build-sphere 10 10)) ; faz uma esfera azul brilhante
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// emissive couleur-vecteur
+// Retour: vide
+// Description:
+// Fixe la couleur d'émission de l'état courant de rendu, ou de la primitive en cours.
+// Exemple:
+// (emissive (vector 0 0 1)) ; Fixe la couleur d'émission à bleue
+// (define mysphere (build-sphere 10 10)) ; Fabrique une éclatante sphère bleue
 // EndFunctionDoc
 
 Scheme_Object *emissive(int argc, Scheme_Object **argv)
@@ -683,6 +911,20 @@ Scheme_Object *emissive(int argc, Scheme_Object **argv)
 //                 ; estado original
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// identity
+// Retour: vide
+// Description:
+// Retourne l'état courant de rendu, ou de la primitive en cours à son identité.
+// Exemple:
+// (define mycube (with-state
+//     (scale (vector 2 2 2)) ; fixe la taille courante au double de sa dimension
+//     (build-cube))) ; fabrique un cube doublé
+//
+// (with-primitive mycube
+//     (identity)) ; efface la transformation et retourne le cube à son état original
+// EndFunctionDoc
+
 Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
 {
 	Engine::Get()->State()->Transform.init();
@@ -710,6 +952,17 @@ Scheme_Object *flux_identity(int argc, Scheme_Object **argv)
 // (define mymatrix (mrotate (vector 0 45 0))) ; faz uma matriz
 // (concat mymatrix) ; concat ela no estado atual
 // (build-cube) ; faz um cubo com esta rotação
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// concat matrice
+// Retour: vide
+// Description:
+// Concatène (multiplie) une matrice à l'état courant de rendu, ou à la primitive en cours.
+// Exemple:
+// (define mymatrix (mrotate (vector 0 45 0))) ; fabrication d'une matrice
+// (concat mymatrix) ; concaténationà l'état courant
+// (build-cube) ; fabrique un cube avec cette rotation
 // EndFunctionDoc
 
 Scheme_Object *concat(int argc, Scheme_Object **argv)
@@ -744,6 +997,16 @@ Scheme_Object *concat(int argc, Scheme_Object **argv)
 // (build-cube) ; constrói um cubo com esta transformação
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// translate vecteur
+// Retour: vide
+// Description:
+// Applique une translation à l'état courant de rendu, ou à la primitive en cours.
+// Exemple:
+// (translate (vector 0 1.4 0)) ; translationne la transformation courante d'un petit peu
+// (build-cube) ; fabrique un cube avec cette transformation
+// EndFunctionDoc
+
 Scheme_Object *translate(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -773,6 +1036,16 @@ Scheme_Object *translate(int argc, Scheme_Object **argv)
 // Exemplo:
 // (rotate (vector 0 45 0)) ; vira 45 graus no eixo Y
 // (build-cube) ; constrói um cubo com esta transformação
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// rotate vecteur-ou-quaternion
+// Retour: vide
+// Description:
+// Applique une rotation à l'état courant de rendu, ou à la primitive en cours.
+// Exemple:
+// (rotate (vector 0 45 0)) ; tourne de 45 degrés en axe des Y
+// (build-cube) ; fabrique un cube avec cette transformation
 // EndFunctionDoc
 
 Scheme_Object *rotate(int argc, Scheme_Object **argv)
@@ -824,6 +1097,16 @@ Scheme_Object *rotate(int argc, Scheme_Object **argv)
 // (build-cube) ; constrói um cubo com esta transformação
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// scale vecteur
+// Retour: vide
+// Description:
+// Applique une nouvelle échelle à l'état courant de rendu, ou à la primitive en cours.
+// Exemple:
+// (scale (vector 0.5 0.5 0.5)) ; change la taille de la transformation courante de moitié
+// (build-cube) ; fabrique un cube avec cette transformation
+// EndFunctionDoc
+
 Scheme_Object *scale(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -850,7 +1133,7 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 // get-transform
 // Returns: matrix-vector
 // Description:
-// Returns a matrix representing the current state transform or for the
+// Returns a matrix representing the current state transform for the
 // current primitive.
 // Example:
 // (clear)
@@ -871,7 +1154,7 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 //         (build-cube)))
 //
 // (define (animate)
-//     ; animate the heirarchy
+//     ; animate the hierarchy
 //     (with-primitive a (rotate (vector 0 0 (sin (time)))))
 //     (with-primitive b (rotate (vector 0 0 (sin (time)))))
 //     (with-primitive c (rotate (vector 0 0 (sin (time)))))
@@ -918,7 +1201,7 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 //         (build-cube)))
 //
 // (define (animate)
-//     ; animate the heirarchy
+//     ; animate the hierarchy
 //     (with-primitive a (rotate (vector 0 0 (sin (time)))))
 //     (with-primitive b (rotate (vector 0 0 (sin (time)))))
 //     (with-primitive c (rotate (vector 0 0 (sin (time)))))
@@ -931,6 +1214,53 @@ Scheme_Object *scale(int argc, Scheme_Object **argv)
 //         (draw-sphere))
 //
 //     ; position a purple sphere with c's global transform
+//     (with-state
+//         (concat (with-primitive c (get-global-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 0 1))
+//         (draw-sphere)))
+//
+// (every-frame (animate))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// get-transform
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant l'état courant de transformation
+// pour la primitive en cours.
+// Exemple:
+// (clear)
+// ; établissement d'une hiérarchie
+// (define a
+//     (with-state
+//         (colour (vector 1 0.5 0.5))
+//         (build-cube)))
+// (define b (with-state
+//         (colour (vector 0.5 1 0.5))
+//         (parent a)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// (define c (with-state
+//         (colour (vector 0.5 0.5 1))
+//         (parent b)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+//
+// (define (animate)
+//     ; animation de la hiérarchie
+//     (with-primitive a (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive b (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive c (rotate (vector 0 0 (sin (time)))))
+//
+//     ; positionne une sphère jaune avec les transformations de 'c'
+//     (with-state
+//         (concat (with-primitive c (get-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 1 0))
+//         (draw-sphere))
+//
+//     ; positionne une sphère jaune avec les transformations globales de 'c'
 //     (with-state
 //         (concat (with-primitive c (get-global-transform)))
 //         (opacity 0.5)
@@ -1039,6 +1369,53 @@ Scheme_Object *get_transform(int argc, Scheme_Object **argv)
 // (every-frame (animate))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// get-global-transform
+// Retour: matrice-vecteur
+// Description:
+// Retourne une matrice représentant l'état global courant de transformation
+// pour la primitive en cours.
+// Exemple:
+// (clear)
+// ; établissement d'une hiérarchie
+// (define a
+//     (with-state
+//         (colour (vector 1 0.5 0.5))
+//         (build-cube)))
+// (define b (with-state
+//         (colour (vector 0.5 1 0.5))
+//         (parent a)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+// (define c (with-state
+//         (colour (vector 0.5 0.5 1))
+//         (parent b)
+//         (translate (vector 2 0 0))
+//         (build-cube)))
+//
+// (define (animate)
+//     ; animation de la hiérarchie
+//     (with-primitive a (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive b (rotate (vector 0 0 (sin (time)))))
+//     (with-primitive c (rotate (vector 0 0 (sin (time)))))
+//
+//     ; positionne une sphère jaune avec les transformations de 'c'
+//     (with-state
+//         (concat (with-primitive c (get-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 1 0))
+//         (draw-sphere))
+//
+//     ; positionne une sphère jaune avec les transformations globales de 'c'
+//     (with-state
+//         (concat (with-primitive c (get-global-transform)))
+//         (opacity 0.5)
+//         (colour (vector 1 0 1))
+//         (draw-sphere)))
+//
+// (every-frame (animate))
+// EndFunctionDoc
+
 Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
 {
 	if (Engine::Get()->Grabbed())
@@ -1057,7 +1434,7 @@ Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Parents the current primitive to the supplied parent primitive. The current
-// primitive will now be moved around with the parent by aquiring all the parent's
+// primitive will now be moved around with the parent by acquiring all the parent's
 // transforms.
 // Example:
 // (define parent-prim (build-cube)) ; make a parent cube
@@ -1083,6 +1460,23 @@ Scheme_Object *get_global_transform(int argc, Scheme_Object **argv)
 // (define child-prim (build-cube)) ; make a child cube
 // (grab parent-prim)
 // (rotate (vector 0 45 0)) ; the child will now be moved by this transform in addition to its own
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// parent primitive-id
+// Retour: vide
+// Description:
+// Rend parente la primitive courante de la primitive ciblée. La primitive courante
+// sera désormais déplacée avec le parent en prenant toutes les transformations
+// des parents.
+// Exemple:
+// (define parent-prim (build-cube)) ; fabrication du cube parent
+// (translate (vector 2 0 0)) ; mouvement léger en X
+// (parent parent-prim) ; fix parent-prim comme le parent en cours
+// (define child-prim (build-cube)) ; fabrication du cube enfant
+// (grab parent-prim)
+// (rotate (vector 0 45 0)) ; l'enfant se déplace par cette transformation en plus de la sienne
 // (ungrab)
 // EndFunctionDoc
 
@@ -1131,6 +1525,18 @@ Scheme_Object *parent(int argc, Scheme_Object **argv)
 // (build-sphere 10 10) ; faz uma esfera com um denso wireframe
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// line-width valeur
+// Retour: vide
+// Description:
+// Fixe la largeur des lignes (à l'écran) de l'état en cours de rendu, ou de la primitive courante.
+// N'affecte que les fils de fer.
+// Exemple:
+// (line-width 5)
+// (hint-wire)
+// (build-sphere 10 10) ; fabrication d'une sphère en maillage épais
+// EndFunctionDoc
+
 Scheme_Object *line_width(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1163,6 +1569,18 @@ Scheme_Object *line_width(int argc, Scheme_Object **argv)
 // (point-width 5)
 // (hint-points)
 // (build-sphere 10 10) ; faz uma esfera com pontos grossos
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// point-width valeur
+// Retour: vide
+// Description:
+// Fixe la largeur des lignes (à l'écran) de l'état en cours de rendu, ou de la primitive courante.
+// N'affecte que les rendu de points et les particule en mode de points matériel.
+// Exemple:
+// (point-width 5)
+// (hint-points)
+// (build-sphere 10 10) ; fabrication d'une sphère en points épais
 // EndFunctionDoc
 
 Scheme_Object *point_width(int argc, Scheme_Object **argv)
@@ -1267,6 +1685,55 @@ Scheme_Object *point_width(int argc, Scheme_Object **argv)
 // (rnd-sphere 100)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// blend-mode src dst
+// Retour: vide
+// Description:
+// Fice le mode de fusion de l'état en cours de rendu, ou de la primitive courante.
+// C'est de cette façon que l'alpha est combiné à la surface de rendu. Le symbole Blendmode
+// peut être:
+// zero one dst-color one-minus-dst-color src-alpha one-minus-src-alpha dst-alpha
+// one-minus-dst-alpha
+// Aussi 'src-alpha-saturate en option pour une fusion uniquement avec la source.
+// La valeur initiale est 'src-alpha pour la source, et 'one-minus-src-alpha
+// pour la destination.
+// Exemple:
+// ; list de toutes les possibilités de mode de fusion
+//
+// (define src-blend (vector 'zero 'one 'dst-color 'one-minus-dst-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha
+//                     'src-alpha-saturate))
+//
+// (define dst-blend (vector 'zero 'one 'src-color 'one-minus-src-color 'src-alpha
+//                     'one-minus-src-alpha 'dst-alpha 'one-minus-dst-alpha))
+//
+// ; prend un élément aléatoire
+// (define (pick-rnd-item l)
+//     (vector-ref l (random (vector-length l))))
+//
+// ; fabrication de multiples sphères aléatoires
+// (define (rnd-sphere n)
+//     (push)
+//     (hint-depth-sort)
+//     (opacity 0.5)
+//     (colour (vector (flxrnd) (flxrnd) (flxrnd)))
+//
+//     ; fixe le mode de fusion
+//     (blend-mode (pick-rnd-item src-blend) (pick-rnd-item dst-blend))
+//
+//     (translate (vector (flxrnd) (flxrnd) (flxrnd)))
+//     (scale (vector 0.1 0.1 0.1))
+//     (build-sphere 10 10)
+//     (pop)
+//     (if (zero? n)
+//         0
+//         (rnd-sphere (- n 1))))
+//
+// (clear)
+// (clear-colour (vector 0.5 0.5 0.5))
+// (rnd-sphere 100)
+// EndFunctionDoc
+
 Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1347,6 +1814,52 @@ Scheme_Object *blend_mode(int argc, Scheme_Object **argv)
 // (build-cube)
 //
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-on hint-symbole ...
+// Retour: vide
+// Description:
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Les symboles suivants fixe les indications de rendu de l'état
+// en cours de rendu, ou de la primitive courante.
+// 'solid - rendu en solide
+// 'wire - fil de fer
+// 'normal - affiche les normales
+// 'points - affiche les points
+// 'anti-alias - ligne avec anti-alias
+// 'box - affiche les bôites de rebond
+// 'vertcols - utilise les couleurs de vertex, supplante l'état (couleur) courant
+// 'origin - affiche l'origine spatiale des objets
+// 'cast-shadow - ombres portées
+// 'depth-test - utilise le test de profondeur, utile pour le rendu des objets
+//               transparents, les objets seront derrières ceux rendu précédement.
+// 'depth-sort - rangement par profondeur
+// 'lazy-parent - empêche la primitive de passé ses transformation à ses enfants
+// 'cull-ccw - inverse les faces qui sont en face arrière
+// 'cull-cw - met les faces en face arrière dans le sens des aiguilles d'une montre (default)
+// 'wire-stippled - fil de fer en pointillés
+// 'sphere-map - les objets sont rendus comme s'ils étaient parfaitement réfléchissante
+// 'frustum-cull - active l'élimination par frustrum (pyramide de caméra). En utilisant cette option,
+//                 assurez vous d'utiliser sur la primitive (recalc-bb)  également.
+// 'normalise - si l'état courant de transformation contient une transformation d'échelle,
+//              les normales transformées pourraient ne pas être de longueur unitaire, en résultant
+//              des problêmes d'éclairage indésirables. Cette fonction est requise si la transformation
+//              d'état courante contient une transforamtion d'échelle non-uniforme.
+// 'blending - utilise les modes de fusion, utile si les objets avec fusion sont rendus dans une pixelprimitive.
+// 'zwrite - Active/désactive l'écriture en Z. Utile pour certains hacks de transparence
+// 'lit - active l'éclairage
+// 'all - actives toutes les indications de rendu ci-dessus
+//
+// Exemple:
+// (clear)
+// (hint-on 'wire 'anti-alias 'origin)
+// (hint-off 'solid)
+// (build-cube)
+//
+// EndFunctionDoc
+
 Scheme_Object *hints(int argc, Scheme_Object **argv, int on)
 {
 	DECL_ARGV();
@@ -1498,6 +2011,26 @@ Scheme_Object *hint_on(int argc, Scheme_Object **argv)
 // (build-cube)
 //
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-off hint-symbole ...
+// Retour: vide
+// Description:
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// (hint-off) désactive les indications de rendu de l'état
+// en cours de rendu, ou de la primitive courante.
+// Recherchez (hint-on) pour plus d'information sur les symboles possibles.
+//
+// Exemple:
+// (clear)
+// (hint-on 'wire 'anti-alias 'origin)
+// (hint-off 'solid)
+// (build-cube)
+//
+// EndFunctionDoc
+
 Scheme_Object *hint_off(int argc, Scheme_Object **argv)
 {
 	return hints(argc, argv, 0);
@@ -1527,6 +2060,19 @@ Scheme_Object *hint_off(int argc, Scheme_Object **argv)
 // (hint-solid) ; esse é o estilo de render original então não deve
 //              ; muito estimulante
 // (build-cube) ; faz um cubo renderizado sólido
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-solid
+// Retour: vide
+// Description:
+// Active l'indication de rendu solide à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-solid) ; ceci est le style de rendu par défaut, ce qui n'est donc pas très excitant
+// (build-cube) ; fabrique un cube solide
 // EndFunctionDoc
 
 Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
@@ -1560,6 +2106,18 @@ Scheme_Object *hint_solid(int argc, Scheme_Object **argv)
 // (build-cube) ; faz um cubo em wireframe
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-wire
+// Retour: vide
+// Description:
+// Active l'indication de rendu en fil de fer à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-wire)
+// (build-cube) ; fabrication d'un cube avec rendu du maillage
+// EndFunctionDoc
 
 Scheme_Object *hint_wire(int argc, Scheme_Object **argv)
 {
@@ -1591,6 +2149,20 @@ Scheme_Object *hint_wire(int argc, Scheme_Object **argv)
 // (build-cube) ; make a stippled wirefame cube
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-wire-stippled
+// Retour: vide
+// Description:
+// Active l'indication de rendu en fil de fer en pointillés à l'état en cours de rendu,
+// ou à la primitive courante. Les indications de rendu changent la façon dont
+// les primitives sont rendues, mais peuvent avoir différents effets - ou aucun effet -
+// sur certains types de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-none)
+// (hint-wire-stippled)
+// (build-cube) ; fabrication d'un cube avec rendu du maillage en pointillés
+// EndFunctionDoc
+
 Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_WIRE_STIPPLED;
@@ -1620,6 +2192,21 @@ Scheme_Object *hint_wire_stippled(int argc, Scheme_Object **argv)
 // dica. Quando usar frustum culling, certifique-se de chamar
 // (recalc-bb) na primitiva também.
 // Exemplo:
+// (hint-frustum-cull)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-frustum-cull
+// Retour: vide
+// Description:
+// Active l'indication de rendu de la limitation au frustrum à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Lors de l'utilisation du frustrum culling, assurez vous d'appeller également (recalc-bb)
+// sur la primitive.
+// Exemple:
 // (hint-frustum-cull)
 // EndFunctionDoc
 
@@ -1672,6 +2259,29 @@ Scheme_Object *hint_frustum_cull(int argc, Scheme_Object **argv)
 //    (scale #(3 1 1))
 //    (translate #(.5 0 0)))
 // ; uniform scaling
+// (with-primitive (build-cube)
+//    (translate #(0 0 2))
+//    (scale 2))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-normalise
+// Retour: vide
+// Description:
+// Si l'état courant de transformation contient une transformation d'échelle,
+// les normales transformées pourraient ne pas être de longueur unitaire, en résultant
+// des problêmes d'éclairage indésirables. Cette fonction est requise si la transformation
+// d'état courante contient une transforamtion d'échelle non-uniforme.
+// Exemple:
+// (clear)
+// (hint-normalise)
+// (build-cube)
+// ; échelle non-uniform
+// (with-primitive (build-cube)
+//    (translate #(.5 0 0))
+//    (scale #(3 1 1))
+//    (translate #(.5 0 0)))
+// ; échelle uniforme
 // (with-primitive (build-cube)
 //    (translate #(0 0 2))
 //    (scale 2))
@@ -1738,6 +2348,35 @@ Scheme_Object *hint_normalise(int argc, Scheme_Object **argv)
 //        (pdata-map! (lambda (c) #(1 .5)) "c")))
 // EndFunctionDoc
 
+
+// StartFunctionDoc-fr
+// hint-noblend
+// Retour: vide
+// Description:
+// Désactive les modes de fusion. Utile si les objets sont rendus
+// dans une pixelprimitive.
+// Exemple:
+// (clear)
+// (hint-wire)
+// (scale #(9.8 8 1))
+// (translate #(-1 -.5 0))
+// (define p0 (build-pixels 512 512 #t))
+// (with-pixels-renderer p0
+//    (hint-ignore-depth)
+//    (with-primitive (build-particles 2048)
+//        (pdata-map! (lambda (p) (vmul (crndvec) 2)) "p")
+//        (pdata-map! (lambda (c) #(1 .5)) "c")))
+//
+// (hint-noblend)
+// (translate #(1 0 0))
+// (define p1 (build-pixels 512 512 #t))
+// (with-pixels-renderer p1
+//    (hint-ignore-depth)
+//    (with-primitive (build-particles 2048)
+//        (pdata-map! (lambda (p) (vmul (crndvec) 2)) "p")
+//        (pdata-map! (lambda (c) #(1 .5)) "c")))
+// EndFunctionDoc
+
 Scheme_Object *hint_noblend(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_NOBLEND;
@@ -1760,6 +2399,16 @@ Scheme_Object *hint_noblend(int argc, Scheme_Object **argv)
 // Descrição:
 // Desativa escrita em z. Útil para algumas transparencias hackeadas.
 // Exemplo:
+// (clear)
+// (hint-noblend)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-nozwrite
+// Retour: vide
+// Description:
+// Désactive l'écriture en z. Utile pour certains hacks de transparence.
+// Exemple:
 // (clear)
 // (hint-noblend)
 // EndFunctionDoc
@@ -1799,6 +2448,21 @@ Scheme_Object *hint_nozwrite(int argc, Scheme_Object **argv)
 // (build-cube) ; make a stippled wirefame cube
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// line-pattern facteur motif
+// Retour: vide
+// Description:
+// Le facteur spécifie un multiplicateur pour chaque bit du motif de
+// la ligne en pointillé. Le motif est un entier de 16-bits, le motif
+// des bits détermine quels fragments de la ligne seront dessinés quand
+// la ligne est calculée.
+// Exemple:
+// (hint-none)
+// (hint-wire-stippled)
+// (line-pattern 4 #x0aaaa)
+// (build-cube) ; fabrique un cube au maillage en pointillé
+// EndFunctionDoc
+
 Scheme_Object *line_pattern(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1834,6 +2498,20 @@ Scheme_Object *line_pattern(int argc, Scheme_Object **argv)
 // (build-cube) ; mostra as normais do cubo
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-normal
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'affichage des normales à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-normal)
+// (build-cube) ; affiche les normales du cube
+// EndFunctionDoc
+
 Scheme_Object *hint_normal(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_NORMAL;
@@ -1863,6 +2541,20 @@ Scheme_Object *hint_normal(int argc, Scheme_Object **argv)
 // Exemplo:
 // (hint-points)
 // (build-cube) ; mostra os pontos dos vertices deste cubo
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-points
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'affichage des points à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-points)
+// (build-cube) ; affiche les sommets du cube
 // EndFunctionDoc
 
 Scheme_Object *hint_points(int argc, Scheme_Object **argv)
@@ -1896,6 +2588,20 @@ Scheme_Object *hint_points(int argc, Scheme_Object **argv)
 // (build-cube) ; mostra um cubo macio
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-anti-alias
+// Retour: vide
+// Description:
+// Active l'indication de rendu avec anti-aliasing à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-anti-alias)
+// (build-cube) ; affiche un cube lissé
+// EndFunctionDoc
+
 Scheme_Object *hint_anti_alias(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_AALIAS;
@@ -1925,6 +2631,20 @@ Scheme_Object *hint_anti_alias(int argc, Scheme_Object **argv)
 // Exemplo:
 // (hint-unlit)
 // (build-cube) ; mostra um cubo sem iluminação
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-unlit
+// Retour: vide
+// Description:
+// Active l'indication de rendu de non-éclairage à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-unlit)
+// (build-cube) ; affiche un cube sans-éclairage
 // EndFunctionDoc
 
 Scheme_Object *hint_unlit(int argc, Scheme_Object **argv)
@@ -1974,6 +2694,28 @@ Scheme_Object *hint_unlit(int argc, Scheme_Object **argv)
 //         "c"))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-vertcols
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'utilisation des couleurs des vertex
+// à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Les couleurs de vertex supplante l'état courant (couleur)
+// Exemple:
+// (clear)
+// (hint-vertcols)
+// (define mycube (build-cube)) ; fabrique un cube avec vertcols activé
+//
+// (with-primitive mycube
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec)) ; donne des couleurs aléatoires aux sommets
+//         "c"))
+// EndFunctionDoc
+
 Scheme_Object *hint_vertcols(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_VERTCOLS;
@@ -2004,6 +2746,20 @@ Scheme_Object *hint_vertcols(int argc, Scheme_Object **argv)
 // Exemplo:
 // (hint-box)
 // (build-sphere 10 10) ; faz uma esfera com a bounding box
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-box
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'affichage des boîtes de rebond
+// à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-box)
+// (build-sphere 10 10) ; fabrique une sphère avec la boîte de rebond affichée
 // EndFunctionDoc
 
 Scheme_Object *hint_box(int argc, Scheme_Object **argv)
@@ -2037,6 +2793,19 @@ Scheme_Object *hint_box(int argc, Scheme_Object **argv)
 // (hint-none)
 // (hint-wire)
 // (build-cube) ; faz um cubo vísivel apenas em wireframe
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-none
+// Retour: vide
+// Description:
+// Efface les indications de rendu de l'état en cours de rendu, ou de la primitive courante.
+// Ceci permet principalement de retourner au style solide par défaut, mais siginifie également
+// que vous pouvez activer ou désactiver les indication sans utiliser les (push) et (pop).
+// Exemple:
+// (hint-none)
+// (hint-wire)
+// (build-cube) ; fabrique un cube dont seul le maillage est visible
 // EndFunctionDoc
 
 Scheme_Object *hint_none(int argc, Scheme_Object **argv)
@@ -2073,6 +2842,34 @@ Scheme_Object *hint_none(int argc, Scheme_Object **argv)
 // (build-sphere 10 10) ; make a sphere with the origin displayed
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-points
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'affichage des points à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-points)
+// (build-cube) ; affiche les sommets du cube
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-origin
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'affichage des origines spatiales des objets
+// à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-origin)
+// (build-sphere 10 10) ; fabrique une sphère avec son origine affichée
+// EndFunctionDoc
+
 Scheme_Object *hint_origin(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_ORIGIN;
@@ -2107,6 +2904,21 @@ Scheme_Object *hint_origin(int argc, Scheme_Object **argv)
 // (build-sphere 10 10) ; make a sphere with the origin displayed
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-cast-shadow
+// Retour: vide
+// Description:
+// (note: Pas encore implémenté)
+// Active l'indication de rendu de projection des ombre
+// à l'état en cours de rendu, ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-origin)
+// (build-sphere 10 10) ; make a sphere with the origin displayed
+// EndFunctionDoc
+
 Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_CAST_SHADOW;
@@ -2135,6 +2947,19 @@ Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
 // as primitivas são renderizadas, mas podem ter efeitos diferentes -
 // ou nenhum efeito em certas primitivas portanto o nome dicas.
 // Exemplo:
+// (hint-depth-sort)
+// (build-sphere 10 10)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-depth-sort
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'ordonnancement par profondeur à l'état en cours de rendu,
+// ou à la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
 // (hint-depth-sort)
 // (build-sphere 10 10)
 // EndFunctionDoc
@@ -2193,6 +3018,31 @@ Scheme_Object *hint_depth_sort(int argc, Scheme_Object **argv)
 //         (build-cube)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-ignore-depth
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'ignorer les tests de profondeur pour l'état en cours de rendu,
+// ou la primitive courante.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Cette fonctionnalité est utile pour le rendu d'objets transparents, les objets seront
+// dessinés derrière les objets déjà précédemment dessinés.
+// Exemple:
+// (clear)
+// (with-state
+//     (hint-ignore-depth)
+//     (opacity 0.6)
+//     (with-state
+//         (colour (vector 1 0 0))
+//         (build-cube))
+//     (with-state
+//         (colour (vector 0 1 0))
+//         (translate (vector 1 0 0))
+//         (build-cube)))
+// EndFunctionDoc
+
 Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_IGNORE_DEPTH;
@@ -2226,6 +3076,20 @@ Scheme_Object *hint_ignore_depth(int argc, Scheme_Object **argv)
 // (build-sphere 10 10) ; make a sphere with the origin displayed
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-lazy-parent
+// Retour: vide
+// Description:
+// Active l'indication de rendu d'annuler le passage des informations de transformation
+// aux objets enfants.
+// Les indications de rendu changent la façon dont les primitives sont rendues,
+// mais peuvent avoir différents effets - ou aucun effet - sur certains types
+// de primitives, d'où l'appellation indication (hint).
+// Exemple:
+// (hint-lazy-parent)
+// (build-sphere 10 10)
+// EndFunctionDoc
+
 Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_LAZY_PARENT;
@@ -2252,6 +3116,16 @@ Scheme_Object *hint_lazy_parent(int argc, Scheme_Object **argv)
 // (build-sphere 10 10) ; make an inside out
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// hint-cull-ccw
+// Retour: vide
+// Description:
+// Retourne les faces qui sont sont en face arrière.
+// Exemple:
+// (hint-cull-ccw)
+// (build-sphere 10 10) ; met l'interieur à l'exterieur
+// EndFunctionDoc
+
 Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
 {
     Engine::Get()->State()->Hints|=HINT_CULL_CCW;
@@ -2262,7 +3136,6 @@ Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
 // hint-sphere-map
 // Returns: void
 // Description:
-//
 // Sets the render hints to render objects as if they were perfecly reflective
 // for the current drawing state, or the current primitive.
 // Example:
@@ -2281,6 +3154,22 @@ Scheme_Object *hint_cull_ccw(int argc, Scheme_Object **argv)
 // Ajusta as dicas para renderizar objetos como se eles fossem
 // perfeitamente refletivos para o estado ou primitiva atual.
 // Exemplo:
+// (clear)
+// (hint-sphere-map)
+// (texture (load-texture "test.png"))
+// (define p (build-torus 1 2 20 20))
+// (every-frame (with-primitive p
+//                 (rotate #(.543 .59 .87))))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hint-sphere-map
+// Retour: vide
+// Description:
+// Active l'indication de rendu pour le texturage comme si l'objet
+// était totalement réfléchissant pour l'état en cours de rendu,
+// ou la primitive courante.
+// Exemple:
 // (clear)
 // (hint-sphere-map)
 // (texture (load-texture "test.png"))
@@ -2315,6 +3204,17 @@ Scheme_Object *hint_sphere_map(int argc, Scheme_Object **argv)
 // Exemplo:
 // (texture (load-texture "mytexture.png"))
 // (build-sphere 10 10) ; faz uma textura com mytexture.png
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// texture textureid-nombre
+// Retour: vide
+// Description:
+// Fixe la texture pour l'état en cours de rendu, ou la primitive courante.
+// Les identifiants de texture peuvent être généré par la fonction (load-texture).
+// Exemple:
+// (texture (load-texture "mytexture.png"))
+// (build-sphere 10 10) ; fabrique une sphère texturée avec mytexture.png
 // EndFunctionDoc
 
 Scheme_Object *texture(int argc, Scheme_Object **argv)
@@ -2372,6 +3272,28 @@ Scheme_Object *texture(int argc, Scheme_Object **argv)
 // (ungrab)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// multitexture textureunit-nombre textureid-nombre
+// Retour: vide
+// Description:
+// Fixe la texture pour l'état en cours de rendu, ou la primitive courante de la même
+// façon que la fonction (texture), met permet de spécifier l'unité de texture à
+// appliquer sur la texture. Le Multitexturing permet d'appliquer différentes textures et
+// coordonnées de textures au même objet en une opération. L'unité de texture par défaut est 0
+// (qui utilise pdata "t" pour ses coordonnées de texture). L'unité de texture 'n' cherche ses coordonnées
+// auprès de pdata "tn".
+// Par exemple, la multitexture 1 cherche "t1". Vous devez les ajouter vous-même en utilisant (pdata-add) ou
+// (pdata-copy). Le MultiTexturage est utile lorsque les textures contienne un alpha, ainsi elle peuvent
+// être superposées, par exemple : des décalcomanies sur une texture de fond.
+// Exemple:
+// (clear)
+// (define p (build-torus 1 2 20 20))
+//
+// (with-primitive p
+//     (multitexture 0 (load-texture "refmap.png"))
+//     (multitexture 1 (load-texture "transp.png")))
+// EndFunctionDoc
+
 Scheme_Object *multitexture(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
@@ -2396,6 +3318,15 @@ Scheme_Object *multitexture(int argc, Scheme_Object **argv)
 // Descrição:
 // Mostra o scene graph corrente, útil para debug.
 // Exemplo:
+// (print-scene-graph) ; exciting...
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// print-scene-graph
+// Retour: vide
+// Description:
+// Imprime le graphique de scène courante, utile pour le débugage.
+// Exemple:
 // (print-scene-graph) ; exciting...
 // EndFunctionDoc
 
@@ -2429,6 +3360,19 @@ Scheme_Object *print_scene_graph(int argc, Scheme_Object **argv)
 // (define obj (build-cube))
 // (grab obj)
 // (hide 1) ; hide this cube
+// (ungrab)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// hide hidden-nombre
+// Retour: vide
+// Description:
+// Fixe l'état de dissimulation de la primitive courante (affecte également les primitives enfants).
+// Les primitives masquées peuvent être traité comme d'habitude, elles ne seront juste pas affichées.
+// Exemple:
+// (define obj (build-cube))
+// (grab obj)
+// (hide 1) ; masque le cube
 // (ungrab)
 // EndFunctionDoc
 
@@ -2476,6 +3420,19 @@ Scheme_Object *hide(int argc, Scheme_Object **argv)
 // (define obj (build-cube))
 // (with-primitive obj
 //     (camera-hide 1)) ; hide this cube
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// camera-hide hidden-nombre
+// Retour: vide
+// Description:
+// Fixe l'état de dissimulation de la primitive courante, avec la caméra en cours,
+// affecte également les primitives enfants.
+// Permet de désactiver le rendu de certaines primitives pour différentes caméras.
+// Exemple:
+// (define obj (build-cube))
+// (with-primitive obj
+//     (camera-hide 1)) ; masque le cube
 // EndFunctionDoc
 
 Scheme_Object *camera_hide(int argc, Scheme_Object **argv)
@@ -2527,6 +3484,18 @@ Scheme_Object *camera_hide(int argc, Scheme_Object **argv)
 // (ungrab)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// selectable selectable-nombre
+// Retour: vide
+// Description:
+// Indique si la primitive peut être sélectionnées grâce à la commande (select).
+// Example:
+// (define obj (build-cube))
+// (grab obj)
+// (selectable 0) ; le cube ne sera pas détecté par la commande (select)
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *selectable(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
@@ -2559,6 +3528,17 @@ Scheme_Object *selectable(int argc, Scheme_Object **argv)
 // câmera. É ligado por padrão, mas isto não é desejado sempre, eg
 // para poligonos com dupla face.
 // Exemplo:
+// (backfacecull 0)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// backfacecull setting-nombre
+// Retour: vide
+// Description:
+// Activé ou désactive l'élimination des face arrières. Cette fonction accélerre le rendu en supprimant
+// les faces non orientées vers la caméra. Activée par défaut, mais pas toujours désirable,
+// par exemple pour les polygones doubles faces.
+// Exemple:
 // (backfacecull 0)
 // EndFunctionDoc
 
@@ -2640,6 +3620,40 @@ Scheme_Object *backfacecull(int argc, Scheme_Object **argv)
 // (every-frame (animate))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// shader vertexprogram-chaine-de-caractère fragmentprogram-chaine-de-caractère
+// Retour: vide
+// Description:
+// Charge, compile et active les paires de shaders GLSL matériels pour l'état de rendu actuel,
+// ou la primitive en cours. OpenGL2 requis.
+// Les données uniformisées des shaders peuvent être contrôlées via shader-set! et toutes les pdata
+// sont envoyées par données d'attributs de vertex au shader.
+// Exemple:
+// ; vous devez avoir compilé fluxus avec l'option GLSL=1
+// (clear)
+// (define s (with-state
+//     ; assigne les shaders à la surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//
+// (with-primitive s
+//     ; ajoute et fixe les pdata - qui sont ensuite récupérées par le vertex shader
+//     ; comme un attribut d'entrée appellé "testcol"
+//     (pdata-add "testcol" "v")
+//     ; rempli le testcol pdata avec des couleurs aléatoires pour chaque vertex
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "testcol"))
+//
+// (define (animate)
+//     (with-primitive s
+//         ; anime le paramètre de gain de transformation uniforme
+//         (shader-set! (list "deformamount" (cos (time))))))
+//
+// (every-frame (animate))
+// EndFunctionDoc
+
 Scheme_Object *shader(int argc, Scheme_Object **argv)
 {
   DECL_ARGV();
@@ -2677,6 +3691,18 @@ Scheme_Object *shader(int argc, Scheme_Object **argv)
 // Exemplo:
 // ; you need to have built fluxus with GLSL=1
 // (clear)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// shader-source vertexprogram-source-chaine-de-caractère fragmentprogram-source-chaine-de-caractère
+// Retour: vide
+// Description:
+// Identique à shader, mais utilise la chaîne de caractère comme code source
+// du shader.
+// Ceci permet d'embarquer le code GLSL dans les scripts scheme.
+// Same as shader, but uses the supplied strings as shader sourcecode.
+// Exemple:
+// ; vous devez avoir compilé fluxus avec l'option GLSL=1
 // EndFunctionDoc
 
 Scheme_Object *shader_source(int argc, Scheme_Object **argv)
@@ -2717,6 +3743,15 @@ Scheme_Object *shader_source(int argc, Scheme_Object **argv)
 // (clear-shader-cache)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// clear-shader-cache
+// Retour: vide
+// Description:
+// Vide le cache des shaders
+// Exemple:
+// (clear-shader-cache)
+// EndFunctionDoc
+
 Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 {
   ShaderCache::Clear();
@@ -2731,7 +3766,7 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 // keyword value pairs which relate to the corresponding shader parameter
 // name and value.
 // (shader-set!) also accepts a list consisting of token-string value pairs
-// for backward compatibity.
+// for backward compatibility.
 // Example:
 // (clear)
 // (define s (with-state
@@ -2786,6 +3821,40 @@ Scheme_Object *clear_shader_cache(int argc, Scheme_Object **argv)
 //     (with-primitive s
 //         ; animate the deformamount uniform input parameter
 //         (shader-set! (list "deformamount" (cos (time))))))
+//
+// (every-frame (animate))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// shader-set! [paramètre-nom-motclef paramètre-valeur ...] argument-liste
+// Retour: vide
+// Description:
+// Détermine les paramètres uniformes pour le shader GLSL. Les paramètres
+// sont des paires de mots clés et leur valeurs, qui correspondent aux paramètres
+// des shader nome/valeur.
+// (shader-set!) accepte aussi un liste constituée de chaîne de caractères marquée
+// pour la rétro-compatibilité.
+// Exemple:
+// (clear)
+// (define s (with-state
+//     ; assigne les shaders à la surface
+//     (shader "simple.vert.glsl" "simple.frag.glsl")
+//     (build-sphere 20 20)))
+//
+// (with-primitive s
+//     ; ajoute, et fixe les pdata - récupérées ensuite par le shader de vertex
+//     ; comme attribut d'entrée appellé "testcol"
+//     (pdata-add "testcol" "v")
+//     ; fixe les pdata "testcol" par des couleur aléatoire pour chaque vertex
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "testcol"))
+//
+// (define (animate)
+//     (with-primitive s
+//         ; anime le paramètre de gain de transformation uniforme
+//         (shader-set! #:deformamount (cos (time)))))
 //
 // (every-frame (animate))
 // EndFunctionDoc
@@ -2995,6 +4064,30 @@ Scheme_Object *shader_set(int argc, Scheme_Object **argv)
 // ; wrap-s : [clamp repeat]
 // ; wrap-t : [clamp repeat]
 // ; wrap-r : [clamp repeat] (for cube maps)
+// ; border-colour : (vector of length 4)
+// ; priority : real number 0 -> 1
+// ; env-colour : (vector of length 4)
+// ; min-lod : real number (for mipmap blending - default -1000)
+// ; max-lod : real number (for mipmap blending - default 1000)
+// (texture-params 0 '(min nearest mag nearest))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// texture-params texture-unit-nombre paramètre-liste
+// Retour: vide
+// Description:
+// Détermine l'état de la texture courante pour l'unité de texture spécifiée. Cet état contrôle comme la texture
+// est appliquée sur la surface de l'objet, et comment sont filtrer les texels, ou miplevels. L'unité de texture
+// est utilisée si vous employez le multitexturing - l'unité de texture par défaut est 0. Vous pourriez avoir
+// besoin de lire sur l'OpenGL ou expérimenter pour découvrir la signification de chacune de ces options.
+// Exemple:
+// ; les paramètres sont les suivants:
+// ; tex-env : [modulate decal blend replace]
+// ; min : [nearest linear nearest-mipmap-nearest linear-mipmap-nearest linear-mipmap-linear]
+// ; mag : [nearest linear]
+// ; wrap-s : [clamp repeat]
+// ; wrap-t : [clamp repeat]
+// ; wrap-r : [clamp repeat] (pour le mapping en cube)
 // ; border-colour : (vector of length 4)
 // ; priority : real number 0 -> 1
 // ; env-colour : (vector of length 4)
