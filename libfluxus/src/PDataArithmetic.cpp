@@ -79,6 +79,19 @@ PData *AddOperator::Operate(TypedPData<dVector> *a, TypedPData<dVector> *b)
 	return NULL;
 }
 
+template <>
+PData *AddOperator::Operate(TypedPData<dColour> *a, dVector b)
+{
+	for (vector<dColour,FLX_ALLOC(dColour) >::iterator i=a->m_Data.begin(); i!=a->m_Data.end(); i++)
+	{
+		i->r+=b.x;
+		i->g+=b.y;
+		i->b+=b.z;
+//		i->A=i.A;
+	}
+	return NULL;
+}
+
 ////////////////////////////////////////////////////////////////////////////
 
 template <>
