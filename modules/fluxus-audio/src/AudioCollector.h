@@ -47,7 +47,7 @@ private:
 class AudioCollector
 {
 public:
-	AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers = 1);
+	AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, const string &portname = "Fluxus", int FFTBuffers = 1);
 	~AudioCollector();
 
 	float *GetFFT();

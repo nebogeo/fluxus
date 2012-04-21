@@ -76,7 +76,7 @@ void FFT::Impulse2Freq(float *imp, float *out)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, int FFTBuffers) :
+AudioCollector::AudioCollector(const string &port, int BufferLength, unsigned int Samplerate, const string &portname, int FFTBuffers) :
 m_Gain(1),
 m_SmoothingBias(0.8),
 m_FFT(BufferLength),
@@ -112,7 +112,7 @@ m_NumBars(16)
 	
 	JackClient *Jack = JackClient::Get();
 	Jack->SetCallback(AudioCallback,(void*)this);
-	Jack->Attach("fluxus");
+	Jack->Attach(portname);
 	if (Jack->IsAttached())
 	{	
 		int id=Jack->AddInputPort();

@@ -76,19 +76,20 @@ AudioCollector *Audio = NULL;
 // EndSectionDoc
 
 // StartFunctionDoc-en
-// start-audio jackport-string buffersize-number samplerate-number
+// start-audio jackport-string buffersize-number samplerate-number optional-fluxus-jack-portname
 // Returns: void
 // Description:
 // Starts up the audio with the specified settings, you'll need to call this first, or put it into 
 // $HOME/.fluxus.scm to call it automatically at startup. Make the jack port name an empty 
 // string and it won't try to connect to anything for you. You can use qjackctrl or equivelent to 
 // do the connection manually. Fluxus reads a single mono source.
+// The fourth parameter let you precise the fluxus jack portname, usefull for fluxus multi-instance.
 // Example:
 // (start-audio "alsa_pcm:capture_1" 1024 44100)
 // EndFunctionDoc
 
 // StartFunctionDoc-pt
-// start-audio string-porta-do-jack número-tamanho-buffer número-taxa-amostragem
+// start-audio string-porta-do-jack número-tamanho-buffer número-taxa-amostragem opcional-fluxus-jack-porta-nome
 // Retorna: void
 // Descrição:
 // Inicia o áudio com as configurações específicadas, você precisa
@@ -102,13 +103,14 @@ AudioCollector *Audio = NULL;
 // EndFunctionDoc
 
 // StartFunctionDoc-fr
-// start-audio jackport-string buffersize-number samplerate-number
+// start-audio jackport-chaine-de-caractère buffersize-nombre samplerate-nombre optionel-fluxus-jack-port-name
 // Retour: void
 // Description:
 // Démarre le systême audio avec les réglages spcifiés, vous aurez besoin d'appeler ceci en premier,
 // ou de le rentrer dans $HOME/.fluxus.scm pour l'appeler automatiquement au démarrage.
 // Si une chaîne vide est rentrée en nom de port jack, il ne cherchera pas à se connecter pour vous.
 // Utiliser qjackctrl ou équivalent pour connecter manuellement. Fluxus ne lit qu'une source mono.
+// Il est possible de préciser le nom du port Jack de Fluxus, utile pour le lancement de plusieurs instances Fluxus.
 // Exemple:
 // (start-audio "alsa_pcm:capture_1" 1024 44100)
 // EndFunctionDoc
@@ -126,7 +128,15 @@ Scheme_Object *start_audio(int argc, Scheme_Object **argv)
 	if (Audio==NULL)
 	{
 		char *name = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[0]),SCHEME_CHAR_STRLEN_VAL(argv[0]),NULL,0);
-		Audio = new AudioCollector(name,(unsigned int)scheme_real_to_double(argv[1]),(int)scheme_real_to_double(argv[2]));
+		if (argc == 4)
+		{
+    		char *portname = scheme_utf8_encode_to_buffer(SCHEME_CHAR_STR_VAL(argv[3]),SCHEME_CHAR_STRLEN_VAL(argv[3]),NULL,0);
+    		Audio = new AudioCollector(name,(unsigned int)scheme_real_to_double(argv[1]),(int)scheme_real_to_double(argv[2]), portname);
+    	}
+    	else
+    	{
+    	    Audio = new AudioCollector(name,(unsigned int)scheme_real_to_double(argv[1]),(int)scheme_real_to_double(argv[2]));
+    	}
 	}
 	
 	MZ_GC_UNREG(); 
@@ -550,7 +560,7 @@ Scheme_Object *scheme_reload(Scheme_Env *env)
 	// add all the modules from this extension
 	menv=scheme_primitive_module(scheme_intern_symbol("fluxus-audio"), env);
 
-	scheme_add_global("start-audio", scheme_make_prim_w_arity(start_audio, "start-audio", 3, 3), menv);
+	scheme_add_global("start-audio", scheme_make_prim_w_arity(start_audio, "start-audio", 3, 4), menv);
 	scheme_add_global("gh", scheme_make_prim_w_arity(get_harmonic, "gh", 1, 1), menv);
 	scheme_add_global("ga", scheme_make_prim_w_arity(get_audio, "ga", 0, 0), menv);
 	scheme_add_global("gain", scheme_make_prim_w_arity(gain, "gain", 1, 1), menv);
