@@ -67,10 +67,6 @@ PData *AddOperator::Operate(TypedPData<dColour> *a, float b);
 template<>
 PData *AddOperator::Operate(TypedPData<dColour> *c, TypedPData<float> *d);
 template<>
-PData *AddOperator::Operate(TypedPData<dColour> *a, dVector b);
-template<>
-PData *AddOperator::Operate(TypedPData<dColour> *c, TypedPData<dVector> *d);
-template<>
 PData *AddOperator::Operate(TypedPData<dColour> *c, dColour d);
 template<>
 PData *AddOperator::Operate(TypedPData<dColour> *c, TypedPData<dColour> *d);
