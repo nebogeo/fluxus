@@ -318,6 +318,12 @@ public:
 			return *this;
 		}
 
+		inline dColour &operator+=(dVector const &rhs)
+		{
+			r+=rhs.x; g+=rhs.y; b+=rhs.z;
+			return *this;
+		}
+
 		inline dColour &operator-=(dColour const &rhs)
 		{
 			r-=rhs.r; g-=rhs.g; b-=rhs.b; a-=rhs.a;
