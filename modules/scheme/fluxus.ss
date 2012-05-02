@@ -7,7 +7,7 @@
      "help.ss"
      "camera.ss"
      "building-blocks.ss"
-     "collada-import.ss"
+     ;"collada-import.ss" ;; FIXME: does not work with Racket 5.2+
      "randomness.ss"
      "poly-tools.ss"
      "pixels-tools.ss"
@@ -25,7 +25,7 @@
  (all-from-out "help.ss")
  (all-from-out "camera.ss")
  (all-from-out "building-blocks.ss")
- (all-from-out "collada-import.ss")
+ ;(all-from-out "collada-import.ss")
  (all-from-out "randomness.ss")
  (all-from-out "poly-tools.ss")
  (all-from-out "pixels-tools.ss")

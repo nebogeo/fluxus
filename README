@@ -91,12 +91,12 @@ MacPorts (http://www.macports.org/).
 Put the bin directory of Racket and MacPorts to your path by adding
 the following line to the .bash_profile file in your home directory:
 
-PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.1.1/bin/
+PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.2.1/bin/
 
 Also add this line to .bash_profile, which is necessary for fluxus to
 find the Racket framework:
 
-export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.1.1/lib/
+export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.2.1/lib/
 
 You might need to change the Racket version number according to
 the binary package you have installed.

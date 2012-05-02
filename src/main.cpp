@@ -266,7 +266,7 @@ int run(void *data)
     char **argv = myargs->argv;
 	// we create our own Scheme_Env in here, as we need
 	// to be able to reset it with F6. Seems to be ok to ignore se...
-	Interpreter::Register();
+	//Interpreter::Register();
 	Interpreter::Initialise();
 
 	srand(time(NULL));
