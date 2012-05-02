@@ -81,6 +81,7 @@ void Interpreter::Initialise()
 	MZ_GC_REG();
 
 	m_Scheme=scheme_basic_env();
+	Interpreter::Register();
 
 	scheme_pipe(&m_OutReadPort,&m_OutWritePort);
 	scheme_pipe(&m_ErrReadPort,&m_ErrWritePort);
