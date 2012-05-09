@@ -145,7 +145,7 @@
 
 ;; StartFunctionDoc-fr
 ;; lerp a b t
-;; Retour : nombre
+;; Retour: nombre
 ;; Description:
 ;; Interpolation linéaire entre les deux nombres par t.
 ;; Exemple:
@@ -166,7 +166,7 @@
 
 ;; StartFunctionDoc-fr
 ;; clamp t [bas 0] [haut 1]
-;; Retour : nombre
+;; Retour: nombre
 ;; Description:
 ;; Constraints la valeur t à ne pas dépasser les valeurs minimums et maximums.
 ;; Exemple:
@@ -190,7 +190,7 @@
 
 ;; StartFunctionDoc-fr
 ;; vlerp a b t
-;; Retour : vecteur
+;; Retour: vecteur
 ;; Description:
 ;; Interpolation linéaire des deux vecteurs par t.
 ;; Exemple:
@@ -212,7 +212,7 @@
 
 ;; StartFunctionDoc-fr
 ;; mlerp a b t
-;; Retour : vecteur
+;; Retour: vecteur
 ;; Description:
 ;; Interpolation linéaire des deux matrices ensemble par t.
 ;; Exemple:

@@ -99,7 +99,8 @@
 ;; Lightens a circular area of a pixels primitive
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-dodge (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-clear (vector 0 0 0))
+;;     (pixels-dodge (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
 ;; EndFunctionDoc  
 
@@ -110,7 +111,8 @@
 ;; Illumine une zone circulaire dans la primitive pixels.
 ;; Exemple:
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-dodge (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-clear (vector 0 0 0))
+;;     (pixels-dodge (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
 ;; EndFunctionDoc  
 
@@ -122,8 +124,9 @@
                               (quotient i (pixels-height)) 0))
                   (d (vdist-sq p pos)))
                 (if (< d radius)
-                    (vclamp (vmix c (vadd c (vector strength strength strength)) 
-						(/ d radius)))
+                    (vclamp (vmix (vadd c (vector strength strength strength 1))
+                                  c
+                                  (/ d radius)))
                     c)))
         "c")))
 
@@ -134,7 +137,7 @@
 ;; Darkens a circular area of a pixels primitive
 ;; Example: 
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-burn (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-burn (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
 ;; EndFunctionDoc  
 
@@ -145,7 +148,7 @@
 ;; Assombri une zone circulaire dans la primitive pixels.
 ;; Exemple:
 ;; (with-primitive (build-pixels 100 100)
-;;     (pixels-burn (vector 50 50 0) 30 (vector 1 0 0 1))
+;;     (pixels-burn (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
 ;; EndFunctionDoc  
 
@@ -157,8 +160,9 @@
                               (quotient i (pixels-height)) 0))
                   (d (vdist-sq p pos)))
                 (if (< d radius)
-                    (vclamp (vmix c (vsub c (vector strength strength strength)) 
-						(/ d radius)))
+                    (vclamp (vmix (vsub c (vector strength strength strength 1))
+                                  c
+                                  (/ d radius)))
                     c)))
         "c")))
 		
