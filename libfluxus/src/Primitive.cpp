@@ -87,16 +87,17 @@ void Primitive::RenderAxes()
 		glVertex3f(0,0,1);
 	glEnd();
 
-    /*glColor3f(1, 0, 0);
-    glRasterPos3f(1.1, 0.0, 0.0);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'x');
-    glColor3f(0, 1, 0);
-    glRasterPos3f(0.0, 1.1, 0.0);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'y');
-    glColor3f(0, 0, 1);
-    glRasterPos3f(0.0, 0.0, 1.1);
-    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');*/
-    glEnable(GL_LIGHTING);
+	/*glColor3f(1, 0, 0);
+	glRasterPos3f(1.1, 0.0, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'x');
+	glColor3f(0, 1, 0);
+	glRasterPos3f(0.0, 1.1, 0.0);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'y');
+	glColor3f(0, 0, 1);
+	glRasterPos3f(0.0, 0.0, 1.1);
+	glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, 'z');*/
+	glEnable(GL_LIGHTING);
+	glColor4fv(m_State.Colour.arr());
 }
 
 void Primitive::RenderBoundingBox()

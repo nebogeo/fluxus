@@ -56,7 +56,7 @@ public:
 	///@name Primitive Interface
 	///@{
 	void RenderBoundingBox();
-	static void RenderAxes();
+	void RenderAxes();
 	void Prerender();
 	void ApplyState()               { m_State.Apply(); }
 	void UnapplyState()             { m_State.Unapply(); }

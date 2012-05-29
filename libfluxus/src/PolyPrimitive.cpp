@@ -130,6 +130,7 @@ void PolyPrimitive::Render()
 		}
 		glEnd();
 		glEnable(GL_LIGHTING);
+		glColor4fv(m_State.Colour.arr());
 	}
 	if (m_State.Hints & HINT_UNLIT) glDisable(GL_LIGHTING);
 
@@ -211,6 +212,7 @@ void PolyPrimitive::Render()
 		{
 			glDisable(GL_LINE_STIPPLE);
 		}
+		glColor4fv(m_State.Colour.arr());
 	}
 
 	if (m_State.Hints & HINT_POINTS)
@@ -224,6 +226,7 @@ void PolyPrimitive::Render()
 		glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 		glEnable(GL_LIGHTING);
 		glEnable(GL_TEXTURE_2D);
+		glColor4fv(m_State.Colour.arr());
 	}
 
 

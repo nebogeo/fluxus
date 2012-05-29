@@ -380,7 +380,7 @@ void Renderer::PostRender()
 	glFrontFace(GL_CCW);
 
 	glDisable(GL_DEPTH_TEST);
-	if (m_ShowAxis) Primitive::RenderAxes();
+	if (m_ShowAxis) SceneGraph::RenderAxes();
 	glEnable(GL_DEPTH_TEST);
 	glColorMask(true,true,true,true);
 	

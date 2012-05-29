@@ -94,6 +94,9 @@ public:
 	unsigned int GetNumRendered() { return m_NumRendered; }
 	unsigned int GetHighWater() { return m_HighWater; }
 
+	/// Render origin
+	static void RenderAxes();
+
 private:
 	void RenderWalk(SceneNode *node, int depth, unsigned int cameracode, ShadowVolumeGen *shadowgen, Mode rendermode);
 	void GetBoundingBox(SceneNode *node, dMatrix mat, dBoundingBox &result);
@@ -104,7 +107,7 @@ private:
 	DepthSorter m_DepthSorter;
 	dMatrix m_TopTransform;
 	dPlane m_FrustumPlanes[6];
-	
+
 	unsigned int m_NumRendered;
 	unsigned int m_HighWater;
 };
