@@ -306,15 +306,15 @@ if not GetOption('clean'):
 	if static_modules:
 		# in static mode, we want to embed all of plt we need
 		# using popen as it's crossplatform 
-		raco_status = os.popen("raco ctool --c-mods src/base.c \
-			++lib racket/base  \
-			++lib racket/base/lang/reader  \
-			++lib xml/xml \
-			++lib compiler \
-			++lib mzscheme \
-			++lib mzlib/string \
-			++lib setup   \
-			++lib config").close()
+		raco_status = subprocess.call(['raco', 'ctool', '--c-mods', 'src/base.c',
+			'++lib', 'racket/base',
+			'++lib', 'racket/base/lang/reader',
+			'++lib', 'xml/xml',
+			'++lib', 'compiler',
+			'++lib', 'mzscheme',
+			'++lib', 'mzlib/string',
+			'++lib', 'setup',
+			'++lib', 'config'])
 	else:
 		raco_status = subprocess.call(['raco', 'ctool', '--c-mods', 'src/base.c', '++lib', 'racket/base'])
 
