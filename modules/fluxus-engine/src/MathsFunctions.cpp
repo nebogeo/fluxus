@@ -379,7 +379,7 @@ Scheme_Object *vdot(int argc, Scheme_Object **argv)
 // Retour: nombre-resultant
 // Description:
 // Retourne la magnitude, ou longueur du vecteur.
-// Example:
+// Exemple:
 // (vmag (vector 0 1 1))
 // EndFunctionDoc
 
@@ -953,7 +953,7 @@ Scheme_Object *minverse(int argc, Scheme_Object **argv)
 // Description:
 // Retourne une matrice représentant une rotation cible de facon à ce que l'axe X pointe en bas la direction ciblée,
 // et l'axe Y pointe en haut du vecteur-haut. Souffre probablement de Gimbal 
-// Example:
+// Exemple:
 // (maim (vector 0 0 1) (vector 0 1 0))
 // EndFunctionDoc
 

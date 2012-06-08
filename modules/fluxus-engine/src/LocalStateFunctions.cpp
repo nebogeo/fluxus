@@ -742,7 +742,7 @@ Scheme_Object *wire_colour(int argc, Scheme_Object **argv)
 // Description:
 // Fixe la couleur des normales de l'état courant de rendu, ou de la primitive en cours.
 // Visible avec (hint-normal) sur la plupart des primitives.
-// Example:
+// Exemple:
 // (normal-colour (vector 1 1 0)) ; fixe à jaune la couleur des normales
 // (hint-normal)
 // (define mycube (build-cube)) ; fabrique un cube aux normales jaunes
@@ -2960,6 +2960,7 @@ Scheme_Object *hint_cast_shadow(int argc, Scheme_Object **argv)
 // Les indications de rendu changent la façon dont les primitives sont rendues,
 // mais peuvent avoir différents effets - ou aucun effet - sur certains types
 // de primitives, d'où l'appellation indication (hint).
+// Exemple:
 // (hint-depth-sort)
 // (build-sphere 10 10)
 // EndFunctionDoc
@@ -3489,7 +3490,7 @@ Scheme_Object *camera_hide(int argc, Scheme_Object **argv)
 // Retour: vide
 // Description:
 // Indique si la primitive peut être sélectionnées grâce à la commande (select).
-// Example:
+// Exemple:
 // (define obj (build-cube))
 // (grab obj)
 // (selectable 0) ; le cube ne sera pas détecté par la commande (select)
