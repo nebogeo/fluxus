@@ -27,8 +27,6 @@ using namespace Fluxus;
 // StartSectionDoc-en
 // ffgl
 // NOTE: section document is in modules/scheme/ffgl.ss
-// EndSectionDoc-en
-
 // FreeFrame is a cross platform real-time video effects plugin system.
 // Fluxus supports FreeFrame 1.5 also known as FreeFrameGL or FFGL. FF CPU
 // software rendering plugins are not supported at the moment.

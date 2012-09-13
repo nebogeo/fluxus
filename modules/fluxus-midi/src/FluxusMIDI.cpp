@@ -67,6 +67,28 @@ static MIDIOut *midiout = NULL;
 // (every-frame (midi-test))
 // EndSectionDoc
 
+// StartSectionDoc-fr
+// midi
+// MIDI signifie Musical Instrument Digital Interface, et se permet
+// aux instruments électroniques, aux ordianteurs et autres équipements
+// de communiquer, controler, et se synchroniser entre eux.
+// Fluxus peut envoyer et recevoir les messages Midi Control Change,
+// et Notes.
+// Exemple:
+// (display (midi-info))(newline)
+//
+// (midi-init 1)
+//
+// (define (midi-test)
+//     (with-state
+//         (scale (vector (+ 1 (midi-ccn 0 1))
+//                        (+ 1 (midi-ccn 0 2))
+//                        (+ 1 (midi-ccn 0 3))))
+//         (draw-cube)))
+//
+// (every-frame (midi-test))
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // midi-info
 // Returns: a list of two lists of (midi-port-number . midi-port-name-string) pairs
@@ -82,6 +104,15 @@ static MIDIOut *midiout = NULL;
 // Descrição:
 // Retorna informação sobre portas de entrada MIDI disponíveis.
 // Exemplo:
+// (midi-info)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-info
+// Retour: une liste de deux listes de pairs de (numéro-de-port-midi . nom-du-port-midi)
+// Description:
+// Retourne les information disponibles sur les port MIDI d'entrées et de sorties.
+// Exemple:
 // (midi-info)
 // EndFunctionDoc
 
@@ -175,6 +206,15 @@ Scheme_Object *midi_info(int argc, Scheme_Object **argv)
 // (midiin-open 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midiin-open numero-de-port
+// Retour: vide
+// Description:
+// Ouvre le port MIDI d'entrée spécifié.
+// Exemple:
+// (midiin-open 1)
+// EndFunctionDoc
+
 Scheme_Object *midiin_open(int argc, Scheme_Object **argv)
 {
 	MZ_GC_DECL_REG(1);
@@ -205,6 +245,15 @@ Scheme_Object *midiin_open(int argc, Scheme_Object **argv)
 // Description:
 // Opens the specified MIDI output port.
 // Example:
+// (midiout-open 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midiout-open numéro-de-port
+// Retour: vide
+// Description:
+// Ouvre le port MIDI de sortie spécifié.
+// Exemple:
 // (midiout-open 1)
 // EndFunctionDoc
 
@@ -241,6 +290,15 @@ Scheme_Object *midiout_open(int argc, Scheme_Object **argv)
 // (midiin-close)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midiin-close
+// Retour: vide
+// Description:
+// Ferme le port Midi ouvert.
+// Exemple:
+// (midiin-close)
+// EndFunctionDoc
+
 Scheme_Object *midiin_close(int argc, Scheme_Object **argv)
 {
 	if (midilistener != NULL)
@@ -257,6 +315,15 @@ Scheme_Object *midiin_close(int argc, Scheme_Object **argv)
 // Description:
 // Closes the MIDI outpu port opened.
 // Example:
+// (midiout-close)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midiout-close
+// Retour: vide
+// Description:
+// Ferme le port MIDI de sortie ouvert.
+// Exemple:
 // (midiout-close)
 // EndFunctionDoc
 
@@ -277,6 +344,16 @@ Scheme_Object *midiout_close(int argc, Scheme_Object **argv)
 // Sets the controller encoder mode. The mode can be 'absolute, 'doepfer or 'ableton.
 // The default is 'absolute. 'doepfer and 'ableton are incremental encoding modes.
 // Example:
+// (midi-set-cc-mode 'ableton)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-set-cc-mode mode-symbol
+// Retour: vide
+// Description:
+// Règle le mode des controlleurs encodeur. Le mode peut être 'absolute, 'doepfer or 'ableton.
+// 'absolute est le mode par défaut. 'doepfer et 'ableton sont des modes d'encodage incrémental.
+// Exemple:
 // (midi-set-cc-mode 'ableton)
 // EndFunctionDoc
 
@@ -333,6 +410,14 @@ Scheme_Object *midi_set_cc_mode(int argc, Scheme_Object **argv)
 // (define cc-mode (midi-get-cc-mode))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-get-cc-mode
+// Retour: mode-symbol
+// Description:
+// Retourne le mode des controlleurs encodeurs. Le mode peut être 'absolute, 'doepfer or 'ableton.
+// Exemple:
+// (define cc-mode (midi-get-cc-mode))
+// EndFunctionDoc
 Scheme_Object *midi_get_cc_mode(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -385,6 +470,15 @@ Scheme_Object *midi_get_cc_mode(int argc, Scheme_Object **argv)
 // (midi-cc 0 1)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-cc canal-nombre controlleur-nombre
+// Retour: controlleur-valeur-nombre
+// Description:
+// Retourne la valeur du controlleur.
+// Exemple:
+// (midi-cc 0 1)
+// EndFunctionDoc
+
 Scheme_Object *midi_cc(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -430,6 +524,15 @@ Scheme_Object *midi_cc(int argc, Scheme_Object **argv)
 // Descrição:
 // Retorna o valor normalisado do controle no intervalo (0, 1).
 // Exemplo:
+// (midi-ccn 0 1)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-ccn canal-nombre controlleur-nombre
+// Retour: controlleur-valeur-nombre
+// Description:
+// Retourne la valeur du controlleur normalisée entre (0, 1).
+// Exemple:
 // (midi-ccn 0 1)
 // EndFunctionDoc
 
@@ -482,6 +585,16 @@ Scheme_Object *midi_ccn(int argc, Scheme_Object **argv)
 // (midi-note)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-note
+// Retour: #(on-off-symbol canal note velocité) ou #f
+// Description:
+// Retourne l'évenement suivant dans la file d'attent des évenements MIDI Note ou
+// #f lorqsque la file est vide.
+// Exemple:
+// (midi-note)
+// EndFunctionDoc
+
 Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -520,6 +633,15 @@ Scheme_Object *midi_note(int argc, Scheme_Object **argv)
 // (midi-program 0)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-program canal-nombre
+// Retour: program-valeur-nombre
+// Description:
+// Retourne la valeur du Program MIDI.
+// Exemple:
+// (midi-program 0)
+// EndFunctionDoc
+
 Scheme_Object *midi_program(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -550,8 +672,17 @@ Scheme_Object *midi_program(int argc, Scheme_Object **argv)
 // midi-cc-event
 // Returns: #(channel controller value) or #f
 // Description:
-// Returns the next event from the MIDI note event queue or #f if the queue is empty.
+// Returns the next event from the MIDI Control Change event queue or #f if the queue is empty.
 // Example:
+// (midi-cc-event)
+// EndFunctionDoc
+
+// midi-cc-event
+// Retour: #(canal controlleur valeur) ou #f
+// Description:
+// Retourne le prochain évenement de la file d'attente d'évenement MIDI Control Change ou
+// #f lorsque la file est vide.
+// Exemple:
 // (midi-cc-event)
 // EndFunctionDoc
 
@@ -599,6 +730,16 @@ Scheme_Object *midi_cc_event(int argc, Scheme_Object **argv)
 // (display (midi-peek))(newline)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-peek
+// Retour: msg-chaine-de-caractère
+// Description:
+// Retourne le nom, le type d'évenement et les bits de paramètre du dernier
+// évenement MIDI en chaîne de caractère pour débugage.
+// Exemple:
+// (display (midi-peek))(newline)
+// EndFunctionDoc
+
 Scheme_Object *midi_peek(int argc, Scheme_Object **argv)
 {
 	if (midilistener != NULL)
@@ -617,6 +758,19 @@ Scheme_Object *midi_peek(int argc, Scheme_Object **argv)
 // Description:
 // Immediately send a single message out an open MIDI output port.
 // Example:
+// (midiout-open 0)
+// (midi-send 144 64 90)
+// (sleep 1)
+// (midi-send 128 64 40)
+// (midiout-close)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-send
+// Retour: vide
+// Description:
+// Envoie immédiatement un message unique au port MIDI de sortie.
+// Exemple:
 // (midiout-open 0)
 // (midi-send 144 64 90)
 // (sleep 1)
@@ -665,6 +819,17 @@ Scheme_Object *midi_send(int argc, Scheme_Object **argv)
 // (midiin-close)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-position
+// Retour: #(mesure beat ticks)
+// Description:
+// Retourne la position donnée par l'horloge MIDI.
+// Example:
+// (midiin-open 0)
+// (midi-position)
+// (midiin-close)
+// EndFunctionDoc
+
 Scheme_Object *midi_position(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -697,6 +862,15 @@ Scheme_Object *midi_position(int argc, Scheme_Object **argv)
 // (midi-clocks-per-beat)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// midi-clocks-per-beat
+// Retour: horloge-par-beat-valeur-nombre
+// Description:
+// Retourne le nombre d'horloge MIDI par beat, dépendant de la signature de temps.
+// Exemple:
+// (midi-clocks-per-beat)
+// EndFunctionDoc
+
 Scheme_Object *midi_clocks_per_beat(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *ret = NULL;
@@ -723,6 +897,15 @@ Scheme_Object *midi_clocks_per_beat(int argc, Scheme_Object **argv)
 // Description:
 // Returns the number of beats per bar, depending on the time signature.
 // Example:
+// (midi-beats-per-bar)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-beats-per-bar
+// Retour: beats-par-mesure-valeur-nombre
+// Description:
+// Retourne le nombre de beat par mesure, dépendant de la signature de temps.
+// Exemple:
 // (midi-beats-per-bar)
 // EndFunctionDoc
 
@@ -754,6 +937,17 @@ Scheme_Object *midi_beats_per_bar(int argc, Scheme_Object **argv)
 // Calling this function resets the song position.
 // Example:
 // ;set the signature to 3/4
+// (midi-set-signature 3 4)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// midi-set-signature
+// Retour: vide
+// Description:
+// Règle la signature de temps.
+// Appeller cette fonction réinitialisde la MIDI position.
+// Exemple:
+// ;fixer la signature à 3/4
 // (midi-set-signature 3 4)
 // EndFunctionDoc
 
