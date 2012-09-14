@@ -45,6 +45,7 @@ void Client::Send(const string &msg, const vector<OSCData*> &args)
 			case 's': lo_message_add_string(oscmsg,static_cast<OSCString*>(*i)->Value.c_str()); break;
 			case 'f': lo_message_add_float(oscmsg,static_cast<OSCFloat*>(*i)->Value); break;
 			case 'i': lo_message_add_int32(oscmsg,static_cast<OSCInt*>(*i)->Value); break;
+			case 'l': lo_message_add_int64(oscmsg,static_cast<OSCLong*>(*i)->Value); break;
 			default: break;
 		}
 	} 
@@ -148,9 +149,9 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 			}
 			break;
 			case 'h': 
-			{
-				argsdata.push_back(new OSCLong(argv[i]->i)); 
-				snprintf(buf,256,"%l",argv[i]->i);
+			{ 
+				argsdata.push_back(new OSCLong(argv[i]->h)); 
+				snprintf(buf,256,"%ld",argv[i]->h);
 				m_LastMsg+=string(buf)+" "; 			
 			}
 			break;

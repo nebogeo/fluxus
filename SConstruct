@@ -388,8 +388,6 @@ if not GetOption('clean') and static_modules:
 		app_env.Append(LIBS = ["asound"])
 		app_env.Append(LIBS = ["ode"])
 
-app_env.Append(LIBS = ["avformat"])
-
 app_env.Program(source = Source, target = Target)
 
 ################################################################################
