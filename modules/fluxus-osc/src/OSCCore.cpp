@@ -41,6 +41,7 @@ void OSCMsgData::Copy(const vector<OSCData*> &other)
 			case 's': m_Data.push_back(new OSCString(static_cast<OSCString*>(*i)->Value)); break;
 			case 'f': m_Data.push_back(new OSCFloat(static_cast<OSCFloat*>(*i)->Value)); break;
 			case 'i': m_Data.push_back(new OSCInt(static_cast<OSCInt*>(*i)->Value)); break;
+			case 'l': m_Data.push_back(new OSCLong(static_cast<OSCInt*>(*i)->Value)); break;
 		}
 	}
 }
@@ -65,6 +66,7 @@ ostream &fluxus::operator<<(ostream &os, const OSCMsgData &msg)
 			case 's': os<<static_cast<OSCString*>(*i)->Value<<" "; break;
 			case 'f': os<<static_cast<OSCFloat*>(*i)->Value<<" "; break;
 			case 'i': os<<static_cast<OSCInt*>(*i)->Value<<" "; break;
+			case 'l': os<<static_cast<OSCLong*>(*i)->Value<<" "; break;
 			default: break;
 		}
 	} 
@@ -102,6 +104,13 @@ istream &fluxus::operator>>(istream &is, OSCMsgData &msg)
 				int value; 
 				is>>value; 
 				msg.m_Data.push_back(new OSCInt(value)); 
+			}
+			break;
+			case 'l':
+			{
+				long int value; 
+				is>>value; 
+				msg.m_Data.push_back(new OSCLong(value)); 
 			}
 			break;
 			default: break;

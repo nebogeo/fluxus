@@ -225,7 +225,7 @@
 
 (define (draw-profile index profile offset)
     (cond ((not (null? profile))
-            (pdata-set! "p" index (vadd (car profile) offset))
+            (pdata-set! "p" (inexact->exact (floor index)) (vadd (car profile) offset))
             (draw-profile (+ index 1) (cdr profile) offset))))
 
 (define (transform-profile profile m)
@@ -382,7 +382,7 @@
     (define (collapse-front t)
         (let ((start (* (floor t) (length profile))))
             (for ((i (in-range (+ start (* (length profile) 1)) (pdata-size))))
-                (pdata-set! "p" i (pdata-ref "p" start)))))
+                (pdata-set! "p" (inexact->exact (floor i)) (pdata-ref "p" (inexact->exact (floor start)))))))
     
     (define (scale-front t)
         (when (> t 1)
@@ -391,8 +391,9 @@
                     (to (list-ref path (+ (inexact->exact (floor t)) 0))))
                 
                 (for ((i (in-range start (+ start (length profile)))))
-                         (pdata-set! "p" i (vmix (pdata-ref "p" i)
-                   		     (vmix to from (- t (floor t))) (- t (floor t))))))))
+                     (pdata-set! "p" (inexact->exact (floor i)) (vmix (vmix from to (- t (floor t)))
+                                                                      (pdata-ref "p" (inexact->exact (floor i)))
+                                                                      (- t (floor t))))))))
 
     (define (_ t v g)
         (cond 

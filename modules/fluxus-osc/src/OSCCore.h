@@ -40,6 +40,15 @@ class OSCInt : public OSCData
 	int Value;
 };
 
+class OSCLong : public OSCData
+{
+	public:
+	OSCLong(int s) { Value=s; }
+	virtual ~OSCLong() {}
+	virtual char Type() { return 'l'; }
+	long int Value;
+};
+
 class OSCFloat : public OSCData
 {
 	public:

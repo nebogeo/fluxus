@@ -56,7 +56,7 @@ void Camera::DoProjection()
 	}
 	else if (m_Ortho)
 	{
-		glOrtho(m_Right*m_OrthZoom,m_Left*m_OrthZoom,m_Top*m_OrthZoom,m_Bottom*m_OrthZoom,m_Front,m_Back);
+	  glOrtho(m_Left*m_OrthZoom,m_Right*m_OrthZoom,m_Bottom*m_OrthZoom,m_Top*m_OrthZoom,m_Front,m_Back);
 	}
 	else
 	{

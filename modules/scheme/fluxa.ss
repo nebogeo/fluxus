@@ -1024,8 +1024,8 @@
 
 ; figures out the offset to the nearest tick
 (define (calc-offset timenow synctime tick)
-  (let ((p (/ (- synctime timenow) tick)))
-    (let ((f (- p (floor p))))
+  (let ((p (/ (- synctime timenow) tick))) ; difference in terms of tempo
+    (let ((f (- p (floor p))))             
       (if (< f 0.5)
           (* f tick)
           (- (* (- 1 f) tick))))))
@@ -1052,10 +1052,10 @@
   (cond ((> (time-now) logical-time)
        ; todo: fall back on last thunk if there is an error
      (with-handlers ([(lambda (x) #t) fluxa-error-handler])
-           (set! tempo (proc (+ logical-time (* bpb tempo)) clock)))
-         (set! logical-time (+ logical-time tempo))
-         (set! clock (+ clock 1))
-         (set! sync-clock (+ sync-clock 1))))
+                    (set! tempo (proc (+ logical-time (* bpb tempo)) clock)))
+     (set! logical-time (+ logical-time tempo))
+     (set! clock (+ clock 1))
+     (set! sync-clock (+ sync-clock 1))))
 
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)

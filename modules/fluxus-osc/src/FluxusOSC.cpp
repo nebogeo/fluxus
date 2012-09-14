@@ -242,6 +242,7 @@ Scheme_Object *osc(int argc, Scheme_Object **argv)
 		
 			if (type=='f') ret=scheme_make_double(static_cast<OSCFloat*>(args[index])->Value);
 			else if (type=='i') ret=scheme_make_integer_value_from_unsigned(static_cast<OSCInt*>(args[index])->Value);
+			else if (type=='l') ret=scheme_make_integer_value_from_long_long(static_cast<OSCLong*>(args[index])->Value);
 			else if (type=='s') 
 			{
 				string value=static_cast<OSCString*>(args[index])->Value;

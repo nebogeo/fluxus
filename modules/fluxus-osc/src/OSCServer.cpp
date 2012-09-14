@@ -147,8 +147,18 @@ int Server::DefaultHandler(const char *path, const char *types, lo_arg **argv,
 				m_LastMsg+=string(buf)+" "; 			
 			}
 			break;
+			case 'h': 
+			{
+				argsdata.push_back(new OSCLong(argv[i]->i)); 
+				snprintf(buf,256,"%l",argv[i]->i);
+				m_LastMsg+=string(buf)+" "; 			
+			}
+			break;
 			case 's': argsdata.push_back(new OSCString(&argv[i]->s)); m_LastMsg+=string(&argv[i]->s)+" "; break;
-			default : argsdata.push_back(new OSCData); break; // put in a null data type
+			default :
+                //cerr<<types[i]<<" not supported"<<endl;
+                argsdata.push_back(new OSCData); break; // put in a null data type
+                break;
 		}
 	}
 	

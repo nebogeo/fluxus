@@ -299,7 +299,7 @@
 (define (set-auto-indent-tab s)
 	(set! fluxus-auto-tab-size s))
 	
-(define camera-update #t)
+(define camera-update-a #t)
 
 ;; StartFunctionDoc-en
 ;; set-camera-update #t/#f
@@ -314,7 +314,7 @@
 ;; EndFunctionDoc 
 
 (define (set-camera-update s)
-    (set! camera-update s))
+    (set! camera-update-a s))
 		
 (define (do-render)
 	 (with-state (run-tasks))
@@ -374,7 +374,7 @@
   (cond 
     ((eq? (get-stereo-mode) 'no-stereo)
      (draw-buffer 'back)
-     (when camera-update (set-camera (get-camera-transform)))
+     (when camera-update-a (set-camera (get-camera-transform)))
      (framedump-update)
      (do-render)
      (when physics-debug (render-physics)))

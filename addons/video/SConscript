@@ -33,7 +33,7 @@ if venv['PLATFORM'] == 'darwin':
 
 elif venv['PLATFORM'] == 'posix':
 	for pkg in ['gstreamer-0.10', 'gstreamer-video-0.10', 'glib-2.0', 'libunicap',
-			'libavformat', 'libswscale', 'gstreamer-app-0.10']:
+			'libavformat', 'libavcodec', 'libswscale', 'gstreamer-app-0.10']:
 		try:
 			venv.MergeFlags('!pkg-config --cflags --libs %s' % pkg)
 		except:
