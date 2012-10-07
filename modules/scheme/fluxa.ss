@@ -21,7 +21,7 @@
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
 		crush distort klip echo ks xfade s&h t&h reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-		set-bpm-mult logical-time inter pick set-scale)
+		set-bpm-mult logical-time inter pick set-scale in)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
@@ -836,7 +836,7 @@
 (define flx-scale '(1 1 1 1 1 1 1 1 1 1 1))
 
 (define (note n)
-  (list-ref scale-lut (modulo (inter flx-scale n) (length scale-lut))))
+  (list-ref scale-lut (modulo (inter flx-scale (abs (inexact->exact (round n)))) (length scale-lut))))
 
 ;; StartFunctionDoc-en
 ;; reset
@@ -1002,6 +1002,56 @@
     0))
 
 ;---------------------------------------
+; temporal recursion
+
+(define (make-ping t thunk)
+  (list t thunk))
+
+(define (ping-t p) (list-ref p 0))
+(define (ping-thunk p) (list-ref p 1))
+
+(define max-pings 6)
+
+(define (clip-list l c)
+  (cond
+   ((null? l) l)
+   ((zero? c) '())
+   (else (cons (car l) (clip-list (cdr l) (- c 1))))))
+  
+; (1 2 3 4) -> (0 1 2 3)
+(define (limit-cons v l max)
+  (clip-list (cons v l) max))
+
+(define (pings-add pings p)
+  (limit-cons p pings max-pings))
+
+;---------------------------------------------
+
+(define pings '())
+
+(define (pings-run t)  
+  ;;(display (length pings))(newline)
+  (for-each
+   (lambda (p)
+     (when (>= t (ping-t p)) 
+       (apply (car (ping-thunk p)) 
+              (cons 
+               (ping-t p) 
+               (cdr (ping-thunk p))))))
+   pings)
+  (set! pings 
+        (filter
+         (lambda (p)
+           (< t (ping-t p)))
+         pings)))
+
+(define (in . args)
+  (set! pings (pings-add pings 
+                         (make-ping
+                          (+ (car args) (cadr args))
+                          (cddr args)))))
+
+;---------------------------------------
 ; fluxus implementation
 
 (define logical-time (time-now))
@@ -1060,7 +1110,9 @@
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)
          (osc-send "/loadqueue" "" '())
-         (set! next-load-queue (+ next-load-queue 5)))))
+         (set! next-load-queue (+ next-load-queue 5))))
+  
+  (pings-run (time-now)))
 
 (fluxa-init)
 
