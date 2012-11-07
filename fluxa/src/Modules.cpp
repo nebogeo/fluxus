@@ -1024,7 +1024,7 @@ void KS::Process(unsigned int BufSize, Sample &Out)
 	for (unsigned int n=0; n<BufSize; n++)
 	{
         m_Buffer[m_Position]=m_Filter.ProcessSingle(m_Buffer[m_Position]);        
-		Out[n]=m_Buffer[m_Position];
+		Out[n]=m_Buffer[m_Position]*3.0f;
 		m_Position=(m_Position+1)%delay;
 	}
 }

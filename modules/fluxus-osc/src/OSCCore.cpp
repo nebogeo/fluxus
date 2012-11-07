@@ -108,7 +108,7 @@ istream &fluxus::operator>>(istream &is, OSCMsgData &msg)
 			break;
 			case 'l':
 			{
-				long int value; 
+				long value; 
 				is>>value; 
 				msg.m_Data.push_back(new OSCLong(value)); 
 			}

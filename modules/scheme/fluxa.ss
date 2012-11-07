@@ -21,7 +21,7 @@
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
 		crush distort klip echo ks xfade s&h t&h reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-		set-bpm-mult logical-time inter pick set-scale in)
+		set-bpm-mult logical-time inter pick set-scale in synced-in clear-pings!)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
@@ -999,7 +999,7 @@
 
 (define proc
   (lambda (time clock)
-    0))
+    sync-tempo))
 
 ;---------------------------------------
 ; temporal recursion
@@ -1028,27 +1028,51 @@
 ;---------------------------------------------
 
 (define pings '())
+(define synced '())
+(define safety-margin 0.1) ; seconds to get to synth and play
+(define (clear-pings!) 
+  (display "clear pings")(newline)
+  (set! pings '()) 
+  ;(set! synced '())
+  )
 
 (define (pings-run t)  
-  ;;(display (length pings))(newline)
-  (for-each
-   (lambda (p)
-     (when (>= t (ping-t p)) 
-       (apply (car (ping-thunk p)) 
-              (cons 
-               (ping-t p) 
-               (cdr (ping-thunk p))))))
-   pings)
-  (set! pings 
-        (filter
-         (lambda (p)
-           (< t (ping-t p)))
-         pings)))
+  (let ((t (+ t safety-margin))) ; push forward in time
+    (when (and (null? pings) (not (null? synced))) 
+          (display "resetting temp rec!")(newline)
+          (apply synced-in (cons t synced)))
+    ;;    (display (length pings))(newline)
+    (for-each
+     (lambda (p)
+       (when (>= t (ping-t p))
+             (with-handlers ([(lambda (x) #t) fluxa-error-handler]) 
+                            (apply (car (ping-thunk p)) 
+                                   (cons 
+                                    ;; add the safety for triggering plays
+                                    ;; and further temporal calls
+                                    (ping-t p) 
+                                    (cdr (ping-thunk p)))))))
+     pings)
+    (set! pings 
+          (filter
+           (lambda (p)
+             (< t (ping-t p)))
+           pings))))
+
+(define (synced-in . args)
+    (set! synced (cdr args))
+    (set! pings (pings-add pings 
+                           (make-ping
+                            ;; snap time to next beat
+                            (snap-time-to-sync 
+                             (+ (car args) sync-tempo)) ;; remove safety
+                            (cdr args)))))
 
 (define (in . args)
   (set! pings (pings-add pings 
                          (make-ping
-                          (+ (car args) (cadr args))
+                          (+ (car args) 
+                             (* (cadr args) sync-tempo))
                           (cddr args)))))
 
 ;---------------------------------------
@@ -1062,6 +1086,7 @@
 (define sync-clock 0)
 (define bpb 4)
 (define on-sync #f)
+(define last-sync-time (time-now))
 
 (define (set-on-sync s)
   (set! on-sync s))
@@ -1072,30 +1097,47 @@
 (define (set-bpm-mult s)
   (set! bpm-mult s))
 
-; figures out the offset to the nearest tick
-(define (calc-offset timenow synctime tick)
-  (let ((p (/ (- synctime timenow) tick))) ; difference in terms of tempo
-    (let ((f (- p (floor p))))             
-      (if (< f 0.5)
-          (* f tick)
-          (- (* (- 1 f) tick))))))
+(define (snap-time-to-sync time)
+  (+ time (calc-offset time last-sync-time sync-tempo))) 
 
+; figures out the offset to the nearest tick
+(define (calc-offset time-now sync-time beat-dur)
+  ;; find the difference in terms of tempo
+  (let* ((diff (/ (- sync-time time-now) beat-dur))
+         ;; get the fractional remainder (doesn't matter how
+         ;; far in the past or future the synctime is)
+         (fract (- diff (floor diff))))
+    ;; do the snapping
+    (if (< fract 0.5) 
+        ;; need to jump forwards - convert back into seconds
+        (* fract beat-dur) 
+        ;; the beat is behind us, so go backwards
+        (- (* (- 1 fract) beat-dur)))))
+ 
 (define (fluxa-error-handler n)
   (printf "fluxa error:~a~n" n))
 
 (define (go-flux)
   ; check for sync messages
   (cond ((osc-msg "/sync")
-         (set! sync-tempo (* (/ 1 (* (osc 3) bpm-mult)) 60))
+         (let ((new-tempo (* (/ 1 (* (osc 3) bpm-mult)) 60)))
+           (when (> (abs (- new-tempo sync-tempo)) 0.0001)
+                 ;; reset the ping list when the temp changes,
+                 ;; forces re-init to last synced, and everything
+                 ;; resets...
+                 (clear-pings!))
+           (set! sync-tempo new-tempo))
          (set! bpb (osc 2))
          (let* ((sync-time (+ sync-offset (timestamp->time (vector (osc 0) (osc 1)))))
                 (offset (calc-offset logical-time sync-time sync-tempo)))
            (printf "time offset: ~a~n" offset)
+           (set! last-sync-time sync-time)
            (set! logical-time (+ logical-time offset))
            (set! sync-clock 0)
        (when on-sync (on-sync)))))
 
   (cond ((> (- (time-now) logical-time) 3)
+         (printf "catchup~n")
          (set! logical-time (time-now))))
 
   ; time for an update?

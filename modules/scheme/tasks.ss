@@ -185,8 +185,8 @@
                           (lambda (e)
                             (printf "Error in Task '~a - Task removed.~%"
                                     (car task))
-                            (rm-task (car task))						
 							(print-error e)
+                            (rm-task (car task))						
                             (out #t))])
                      (call-with-exception-handler task-error
                                                   (lambda ()
