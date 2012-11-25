@@ -41,7 +41,7 @@ void OSCMsgData::Copy(const vector<OSCData*> &other)
 			case 's': m_Data.push_back(new OSCString(static_cast<OSCString*>(*i)->Value)); break;
 			case 'f': m_Data.push_back(new OSCFloat(static_cast<OSCFloat*>(*i)->Value)); break;
 			case 'i': m_Data.push_back(new OSCInt(static_cast<OSCInt*>(*i)->Value)); break;
-			case 'l': m_Data.push_back(new OSCLong(static_cast<OSCInt*>(*i)->Value)); break;
+			case 'l': m_Data.push_back(new OSCLong(static_cast<OSCLong*>(*i)->Value)); break;
 		}
 	}
 }
