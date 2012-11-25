@@ -91,38 +91,35 @@ MacPorts (http://www.macports.org/).
 Put the bin directory of Racket and MacPorts to your path by adding
 the following line to the .bash_profile file in your home directory:
 
-PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.2.1/bin/
+PATH=$PATH:/opt/local/bin:/Applications/Racket\ v5.3.1/bin/
 
 Also add this line to .bash_profile, which is necessary for fluxus to
 find the Racket framework:
 
-export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.2.1/lib/
+export DYLD_FRAMEWORK_PATH=/Applications/Racket\ v5.3.1/lib/
 
 You might need to change the Racket version number according to
 the binary package you have installed.
 
-Install dependencies from MacPorts in OS X 10.5:
+In OS X 10.8 install the library dependencies as universal:
 
-sudo port install fftw-3 glew freetype jack jpeg liblo libpng libsndfile ode scons tiff zlib
-
-In OS X 10.6 install the library dependencies as universal:
-
-sudo port install fftw-3 +universal glew +universal freetype +universal jack +universal \
-	jpeg +universal liblo +universal libpng +universal libsndfile +universal ode +universal \
+sudo port install fftw-3 +universal glew +universal freetype +universal jpeg +universal \
+	liblo +universal libpng +universal libsndfile +universal ode +universal \
 	tiff +universal zlib +universal scons
+
+Install JackOSX 0.90+ on OS X 10.8 (http://www.jackosx.com/) instead of
+MacPorts jack.
 
 To build and install, type:
 
-scons
-sudo scons install
+scons ADDONS=0
+sudo scons ADDONS=0 install
 
 It is also possible to build an OSX application of Fluxus.
-The application is built using JackOSX (http://www.jackosx.com/) instead of
-MacPorts jack. Make sure to install it before building the application.
 
 To build, type:
 
-scons --app
+scons --app ADDONS=0
 ./packages/macos/osx_app-postbuild.sh
 
 

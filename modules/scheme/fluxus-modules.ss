@@ -10,8 +10,8 @@
          "fluxus-audio.ss"
          "fluxus-osc.ss"
          "fluxus-midi.ss"
-	 "fluxus-openal.ss"
-         "fluxus-video.ss"
+         "fluxus-openal.ss"
+         ;"fluxus-video.ss"
 )
 		 	 
 (provide 
@@ -20,7 +20,7 @@
  (all-from-out "fluxus-osc.ss")
  (all-from-out "fluxus-midi.ss")
  (all-from-out "fluxus-openal.ss")
- (all-from-out "fluxus-video.ss")
+ ;(all-from-out "fluxus-video.ss")
 
 )
 
