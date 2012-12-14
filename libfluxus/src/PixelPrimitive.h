@@ -69,6 +69,9 @@ public:
 	/// Get the uploaded texture ID - call Upload() first.
 	unsigned int GetTexture(unsigned i = 0) { return m_Textures[i % m_MaxTextures]; }
 
+	/// Get the depth texture ID
+	unsigned int GetDepthTexture() { return m_DepthTexture; }
+
 	/// Set the texture ID used when rendering the primitive
 	void SetDisplayTexture(unsigned id) { m_DisplayTexture = id; }
 
@@ -121,6 +124,7 @@ protected:
 	unsigned GetTextureIndex(unsigned id);
 
 	unsigned m_DepthBuffer;
+	unsigned m_DepthTexture;
 	unsigned m_FBO;
 
 	unsigned m_Width;

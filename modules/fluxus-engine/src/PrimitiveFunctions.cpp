@@ -1765,6 +1765,51 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
+// pixels->depth pixelprimitiveid-number
+// Returns: textureid-number
+// Description:
+// Returns the depth texture of the pixel primitive.
+// Example:
+// (clear)
+// (define p (build-pixels 256 256 #t))
+// (with-state
+//    (hint-unlit)
+//    (translate #(1.1 0 0))
+//    (texture (pixels->depth p))
+//    (build-plane))
+//
+// (every-frame
+//    (with-pixels-renderer p
+//        (random-seed 0)
+//        (for ([i (in-range 55)])
+//            (with-state
+//                (translate (vmul (srndvec) 8))
+//                (draw-cube)))))
+// EndFunctionDoc
+
+Scheme_Object *pixels2depth(int argc, Scheme_Object **argv)
+{
+	DECL_ARGV();
+
+	ArgCheck("pixels->depth", "i", argc, argv);
+	Primitive *Prim=Engine::Get()->Renderer()->GetPrimitive(IntFromScheme(argv[0]));
+	if (Prim)
+	{
+		// only if this is a pixel primitive
+		PixelPrimitive *pp = dynamic_cast<PixelPrimitive *>(Prim);
+		if (pp)
+		{
+			MZ_GC_UNREG();
+			return scheme_make_integer_value(pp->GetDepthTexture());
+		}
+	}
+
+	Trace::Stream<<"pixels->depth can only be called on a pixelprimitive"<<endl;
+	MZ_GC_UNREG();
+	return scheme_void;
+}
+
+// StartFunctionDoc-en
 // pixels-width
 // Returns: width-number
 // Description:
@@ -3445,6 +3490,7 @@ void PrimitiveFunctions::AddGlobals(Scheme_Env *env)
 	scheme_add_global("pixels-render-to", scheme_make_prim_w_arity(pixels_render_to, "pixels-render-to", 1, 1), env);
 	scheme_add_global("pixels-display", scheme_make_prim_w_arity(pixels_display, "pixels-display", 1, 1), env);
 	scheme_add_global("pixels->texture", scheme_make_prim_w_arity(pixels2texture, "pixels->texture", 1, 2), env);
+	scheme_add_global("pixels->depth", scheme_make_prim_w_arity(pixels2depth, "pixels->depth", 1, 1), env);
 	scheme_add_global("pixels-renderer-activate", scheme_make_prim_w_arity(pixels_renderer_activate, "pixels-renderer-activate", 1, 1), env);
 	scheme_add_global("voxels->blobby", scheme_make_prim_w_arity(voxels2blobby, "voxels->blobby", 1, 1), env);
 	scheme_add_global("voxels->poly", scheme_make_prim_w_arity(voxels2poly, "voxels->poly", 1, 2), env);
