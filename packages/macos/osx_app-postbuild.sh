@@ -13,8 +13,8 @@ RacketPrefix = pipe.read()[:-5]
 pipe.close()
 
 # copy plt collects path manually preserving original dates
-print 'copying required racket v5.0 modules...'
-for m in ['compiler', 'config', 'defaults', 'frtime', 'lang', \
+print 'copying required racket v5.1.3 modules...'
+for m in ['compiler', 'config', 'data', 'defaults', 'frtime', 'lang', \
 		  'mzlib', 'mzscheme', 'planet', 'racket', 'scheme', 'setup', 'srfi', \
 		  'syntax', 'unstable', 'xml']:
 	print '\t', m
