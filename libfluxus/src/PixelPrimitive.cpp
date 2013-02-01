@@ -29,6 +29,7 @@
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
 #define DEPTH_BUFFER_AS_TEXTURE
+//#define DEPTH_TEXTURE_MIPMAPPING // does not work on some cards
 
 using namespace Fluxus;
 
@@ -307,12 +308,15 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24,
 					m_FBOWidth, m_FBOHeight, 0, GL_DEPTH_COMPONENT,
 					GL_FLOAT, NULL );
+			CHECK_GL_ERRORS("DepthTexture glTexImage2D");
 			glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifdef DEPTH_TEXTURE_MIPMAPPING
 			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+#endif
 			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
 					GL_TEXTURE_2D, m_DepthTexture, 0 );
 #ifdef DEBUG_GL
@@ -405,7 +409,7 @@ void PixelPrimitive::Unbind()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
-#ifdef DEPTH_BUFFER_AS_TEXTURE
+#if defined(DEPTH_BUFFER_AS_TEXTURE) && defined(DEPTH_TEXTURE_MIPMAPPING)
 	glBindTexture(GL_TEXTURE_2D, m_DepthTexture);
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
 #endif
