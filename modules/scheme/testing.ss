@@ -12,7 +12,7 @@
 ;; Um conjunto de estruturas de alto nível para manipular objetos e
 ;; estado no fluxus de uma forma mais limpa e segura.
 ;; Exemplo:
-;; EndFunctionDoc
+;; EndSectionDoc
 
 
 #lang racket/base

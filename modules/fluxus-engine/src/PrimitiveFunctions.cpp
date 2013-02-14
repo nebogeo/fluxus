@@ -53,6 +53,13 @@ using namespace SchemeHelper;
 // Exemplo:
 // EndSectionDoc
 
+// StartSectionDoc-FR
+// primitives
+// Les primitives sont les objets qui peuvent être générés. Il n'y a quasiment rien d'autre dans une scène
+// fluxus excepté les lumières, une caméra, et beaucoup de primitives.
+// Exemple:
+// EndSectionDoc
+
 // StartFunctionDoc-en
 // build-cube
 // Returns: primitiveid-number
@@ -68,6 +75,15 @@ using namespace SchemeHelper;
 // Descrição:
 // Um simples cubo, mapeamento de textura por face.
 // Exemplo:
+// (define mynewcube (build-cube))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-cube
+// Retour: primitiveid-nombre
+// Description:
+// Un simple cube, le mapping texture par face.
+// Exemple:
 // (define mynewcube (build-cube))
 // EndFunctionDoc
 
@@ -120,6 +136,17 @@ Scheme_Object *build_nurbs(int argc, Scheme_Object **argv)
 // (define mynewshape (build-polygons 100 'triangle-strip))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-polygons verts-nombre type-symbol
+// Retour: primitiveid-nombre
+// Description:
+// Construit une primitive polygon brut avec le nombre de sommet défini (tout est initialisé à zéro).
+// Type est un symbol qui réfère à la façon dont sont interprétés les sommet pour construire les polygones,
+// et peut être un des suivant: triangle-strip quad-list triangle-list triangle-fan polygon
+// Exemple:
+// (define mynewshape (build-polygons 100 'triangle-strip))
+// EndFunctionDoc
+
 Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -167,6 +194,15 @@ Scheme_Object *build_polygons(int argc, Scheme_Object **argv)
 // (define mynewshape (build-sphere 10 10))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-sphere tranches-nombre rayons-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Une sphère avec la résolution spécifiée, mapping texture en style normal "world map".
+// Exemple:
+// (define mynewshape (build-sphere 10 10))
+// EndFunctionDoc
+
 Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -191,6 +227,15 @@ Scheme_Object *build_sphere(int argc, Scheme_Object **argv)
 // Description:
 // Build sphere by recursively subdividing an icosahedron.
 // Example:
+// (define mynewshape (build-icosphere 1))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-icosphere niveau-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Construit une sphère en subdivisant récursivement un icosahedron.
+// Exemple:
 // (define mynewshape (build-icosphere 1))
 // EndFunctionDoc
 
@@ -223,6 +268,17 @@ Scheme_Object *build_icosphere(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-teapot
+// Retour: primitiveid-nombre
+// Description:
+// Construit une théière. Noter que la téière n'as pas encore de coordonnées de textures.
+// Exemple:
+// (define (render)
+//     (draw-teapot))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *build_teapot(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *TeapotPrim = new PolyPrimitive(*Engine::StaticTeapot);
@@ -246,6 +302,16 @@ Scheme_Object *build_teapot(int argc, Scheme_Object **argv)
 // Um torus com a resolução especificada, controle o tamanho e a
 // grossura da "rosquinha" com o raio inferior e exterior.
 // Exemplo:
+// (define mynewshape (build-torus 0.5 1 12 12))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-torus rayon-interne-nombre rayon-externe-nombre tranches-nombre rayons-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Un tore avec la résolution spécifiée, contrôlé la taille et l'épaisseur l'anneau avec
+// les rayons internes et externes.
+// Exemple:
 // (define mynewshape (build-torus 0.5 1 12 12))
 // EndFunctionDoc
 
@@ -285,6 +351,15 @@ Scheme_Object *build_torus(int argc, Scheme_Object **argv)
 // (define mynewshape (build-plane))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-plane
+// Retour: primitiveid-nombre
+// Description:
+// Un unique plan quadratique, mapping de texture de 0->1 dans les deux dimensions.
+// Exemple:
+// (define mynewshape (build-plane))
+// EndFunctionDoc
+
 Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 {
 	PolyPrimitive *PlanePrim = new PolyPrimitive(PolyPrimitive::QUADS);
@@ -307,6 +382,15 @@ Scheme_Object *build_plane(int argc, Scheme_Object **argv)
 // Descrição:
 // Um plano poligonal tesselado, mapeado de 0->1 em ambas dimensões.
 // Exemplo:
+// (define mynewshape (build-plane))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-seg-plane sommetsX-nombre sommetsY-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Un plan en mosaïque de polygones, mapping texture de 0->1 dans les deux dimensions.
+// Exemple:
 // (define mynewshape (build-plane))
 // EndFunctionDoc
 
@@ -347,6 +431,15 @@ Scheme_Object *build_seg_plane(int argc, Scheme_Object **argv)
 // (define mynewshape (build-cylinder 10 10))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-cylinder hsegments rsegments
+// Retour: primitiveid-nombre
+// Description:
+// Un cylindre couvert, mapping texture enroulé autour, et mal projeté aux extremités.
+// Exemple:
+// (define mynewshape (build-cylinder 10 10))
+// EndFunctionDoc
+
 Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -371,7 +464,7 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // Description:
 // Builds a ribbon consisting of numpoints points. The geometry is constantly camera facing and
 // is texture mapped so the texture is stretched along the ribbon from start to finish. You use
-// the pdata functions to edit the postions and widths of the segments. If used lit, the normals
+// the pdata functions to edit the positions and widths of the segments. If used lit, the normals
 // are faked to approximate a circular cross section. Additionally, if solid rendering is
 // cleared with (hint-none) and (hint-wire) is activated, a faster constant width line will be
 // drawn - width specified by the (line-width) command.
@@ -392,6 +485,20 @@ Scheme_Object *build_cylinder(int argc, Scheme_Object **argv)
 // (hint-none) e (hint-wire) ativado, uma rápida linha constante vai
 // ser desenhada - largura específicada pelo comando (line-width).
 // Exemplo:
+// (define mynewshape (build-ribbon 10))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-ribbon numpoints-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Construit un ruban comprenant numpoints points. La géométrie est constament orientée vers la caméra
+// et le mapping texture est étiré le long du ruban, du départ à l'arrivé. Il faut utiliser les fonctions pdata
+// pour éditer les positions et épaisseurs des segments. En cas d'éclairage, les normales sont simulées
+// de façon à s'approcher d'une section circulaire. De plus, si le rendu en solid est annulé par (hint-none),
+// et (hint-wire) est activé, une ligne constante et rapide sera dessinée - l'épaisseur est
+// déterminée par la commande (line-width).
+// Exemple:
 // (define mynewshape (build-ribbon 10))
 // EndFunctionDoc
 
@@ -439,6 +546,19 @@ Scheme_Object *build_ribbon(int argc, Scheme_Object **argv)
 // (define mynewshape (build-text "hello"))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-text text-chaine-caractères
+// Retour: primitiveid-nombre
+// Description:
+// Construi une séquence de plans, mapping de texture en sorte qu'une texture de police est
+// utilisée pour affiché le texte. Peut être aussi utile pour des choses abstraites. La police
+// est considérée non-proportionnelle - un exemple est fournis dans fluxus.
+// Ok, ce n'est pas une excellente texture de police :)
+// Exemple:
+// (texture (load-texture "font.png"))
+// (define mynewshape (build-text "hello"))
+// EndFunctionDoc
+
 Scheme_Object *build_text(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -469,6 +589,31 @@ Scheme_Object *build_text(int argc, Scheme_Object **argv)
 //     (type->poly t)))
 //
 // ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-type ttf-nom-fichier text-chaine-caractères
+// Retour: primitiveid-nombre
+// Description:
+// Construit une primitive géométrique à partir d'une police ttf et d'un texte.
+// Exemple:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; cette police devrait être par défaut dans le chemin fluxus (comme la police de l'éditeur)
+// (define t (build-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!"))
+//
+// ; faire une primitive polygone à partir du type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+//
+// ; affecter des coordonnées de textures sur la primitive poly et y charger une texture.
 // (with-primitive p
 //     (pdata-map!
 //         (lambda (t p)
@@ -514,6 +659,31 @@ Scheme_Object *build_type(int argc, Scheme_Object **argv)
 //     (type->poly t)))
 //
 // ; set some texture coords on the poly prim and load a texture onto it
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-extruded-type ttf-nom-fichier text-chaine-caractères profondeur-extrusion
+// Retour: primitiveid-nombre
+// Description:
+// Fabrique une primitive type extrudée à partir d'une police ttf et de texte.
+// Exemple:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; cette police devrait être par défaut dans le chemin fluxus (comme la police de l'éditeur)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+//
+// ; faire une primitive polygone à partir du type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+//
+// ; affecter des coordonnées de textures sur la primitive poly et y charger une texture.
 // (with-primitive p
 //     (pdata-map!
 //         (lambda (t p)
@@ -569,6 +739,33 @@ Scheme_Object *build_extruded_type(int argc, Scheme_Object **argv)
 //     (texture (load-texture "refmap.png")))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// type->poly typeprimitiveid-nombre
+// Retour: polyprimid-nombre
+// Description:
+// Convertis le maillage d'un primitive type, en primitive polygon de triangle. La primitive poly
+// sera un peu plus lente à rendre, mais il sera possible de tout faire avec la primitive poly,
+// comme ajouter des textures et la déformer.
+// Exemple:
+// (clear)
+// (wire-colour (vector 0 0 1))
+// ; cette police devrait être par défaut dans le chemin fluxus (comme la police de l'éditeur)
+// (define t (build-extruded-type "Bitstream-Vera-Sans-Mono.ttf" "fluxus rocks!!" 1))
+//
+// ; faire une primitive polygone à partir du type
+// (define p (with-state
+//     (translate (vector 0 4 0))
+//     (type->poly t)))
+//
+// ; affecter des coordonnées de textures sur la primitive poly et y charger une texture.
+// (with-primitive p
+//     (pdata-map!
+//         (lambda (t p)
+//             (vmul p 0.5))
+//         "t" "p")
+//     (texture (load-texture "refmap.png")))
+// EndFunctionDoc
+
 Scheme_Object *type2poly(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -603,6 +800,15 @@ Scheme_Object *type2poly(int argc, Scheme_Object **argv)
 // ; don't use me!
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// text-params largeur-nombre hauteur-nombre écart-nombre enveloppe-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Assignes les paramètres pour faire les polices à partir de mapping texture. Defaults: 16/256 16/256 16 0
+// Exemple:
+// ; ne pas utiliser!
+// EndFunctionDoc
+
 Scheme_Object *text_params(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -633,6 +839,17 @@ Scheme_Object *text_params(int argc, Scheme_Object **argv)
 // Description:
 // Inverts the automatically generated ribbon normals
 // Example:
+// (define mynewshape (build-ribbon 10))
+// (with-primitive mynewshape
+//     (ribbon-inverse-normals 1))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// ribbon-inverse-normals 1/0
+// Retour: vide
+// Description:
+// Inverse automatiquement les normales générées du ruban.
+// Exemple:
 // (define mynewshape (build-ribbon 10))
 // (with-primitive mynewshape
 //     (ribbon-inverse-normals 1))
@@ -678,6 +895,17 @@ Scheme_Object *ribbon_inverse_normals(int argc, Scheme_Object **argv)
 // (define mynewshape (build-nurbs-sphere 10 10))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-nurbs-sphere hsegments rsegments
+// Retour: primitiveid-nombre
+// Description:
+// Fabrique une sphere Nurbs en mosaïque, mapping texture dans le même style qu'une sphère poly.
+// En raison des points de controls supplémentaires utilisés par les sphères nurbs, les données
+// de la primitive peut être calculé par (hsegments + 3) * rsegments.
+// Exemple:
+// (define mynewshape (build-nurbs-sphere 10 10))
+// EndFunctionDoc
+
 Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -716,6 +944,17 @@ Scheme_Object *build_nurbs_sphere(int argc, Scheme_Object **argv)
 // (define mynewshape (build-nurbs-plane 10 10))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-nurbs-plane xsegments ysegments
+// Retour: primitiveid-nombre
+// Description:
+// Construit un plan Nurbs en mosaïque, mapping texture en direction uv.
+// En raison des points de controls supplémentaires utilisés par les sphères nurbs, les données
+// de la primitive peut être calculé par (xsegments + 1) * (ysegments + 1).
+// Exemple:
+// (define mynewshape (build-nurbs-plane 10 10))
+// EndFunctionDoc
+
 Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -739,7 +978,7 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // Returns: primitiveid-number
 // Description:
 // Builds a particles primitive containing num points, all initially set to the  origin. You
-// use the pdata functions to edit the postions, colours and sizes. Particles come in two
+// use the pdata functions to edit the positions, colours and sizes. Particles come in two
 // flavors, camera facing sprites, which are the default, can be textured and individually
 // scaled; and points (when hint-points is set), which cannot be textured but are much faster
 // to render, as they are hardware supported gl points. By default these point particles are
@@ -762,6 +1001,20 @@ Scheme_Object *build_nurbs_plane(int argc, Scheme_Object **argv)
 // suportados pelo hardware. Por defeito essas partículas pontuais são
 // quadradas, ligue hint-anti-alias para faze-las circulares.
 // Exemplo:
+// (define mynewshape (build-particles 100))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-particles compte-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Fabrique une primitive à paricules contenant le compte de points, tous initialement à l'origine.
+// Il faut utiliser les fonctions pdata pour changer leurs positions, couleurs et tailles.
+// Il y a deux sortes de particules, images orientées face caméra, qui sont par défaut,
+// peuvent être texturées et individuellement mises à l'échelle, et les points
+// (lorsque (hint-points) est activé), qui ne peuvent être texturés mais bien plus rapides à afficher.
+// Par défaut, ces points sont carrés, activer hint-anti-alias les rendront circulaires.
+// Exemple:
 // (define mynewshape (build-particles 100))
 // EndFunctionDoc
 
@@ -793,6 +1046,17 @@ Scheme_Object *build_particles(int argc, Scheme_Object **argv)
 // Coordinate defines the location of the image from the upper-left corner. Size
 // specifies the image display resolution in pixels.
 // Example:
+// (define img (build-image (load-texture "test.png") (vector 0 0) (get-screen-size)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-image texture-nombre coordonnées-vecteur taille-vecteur
+// Retour: primitiveid-nombre
+// Description:
+// Construit une image, affichée à l'écran en projection orthographique.
+// Les coordonnées définissent la position de l'image au coin supérieur-gauche.
+// La taille spécifie la résolution de l'image en pixels.
+// Exemple:
 // (define img (build-image (load-texture "test.png") (vector 0 0) (get-screen-size)))
 // EndFunctionDoc
 
@@ -835,6 +1099,17 @@ Scheme_Object *build_image(int argc, Scheme_Object **argv)
 // Example:
 // (define vox (build-voxels 10 10 10))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-voxels largeur-nombre hauteur-nombre profondeur-nombre 
+// Retour: primitiveid-nombre
+// Description:
+// Construit une primitive voxel, simiaire aux primitives pixel,
+// excepté qu'elles incluent une troisiême diemension.
+// Exemple:
+// (define vox (build-voxels 10 10 10))
+// EndFunctionDoc
+
 Scheme_Object *build_voxels(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -858,6 +1133,17 @@ Scheme_Object *build_voxels(int argc, Scheme_Object **argv)
 // Example:
 //
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels->blobby voxelsprimitiveid-nombre
+// Retour: blobbyprimid-nombre
+// Description:
+// Convertis les voxels d'une primitive voxels en blobby primitive, ce n'est vraiment utile
+// que pour les convertir en primitive polygone. Le blobby est juste une étape intermédiaire.
+// Exemple:
+//
+// EndFunctionDoc
+
 Scheme_Object *voxels2blobby(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -886,6 +1172,24 @@ Scheme_Object *voxels2blobby(int argc, Scheme_Object **argv)
 // Description:
 // Converts the voxels from a voxels primitive into a triangle list polygon primitive.
 // Example:
+// (clear)
+// (define vx (build-voxels 16 16 16))
+// (with-primitive vx
+//    (voxels-sphere-influence (vector 0 0 0) (vector 1 1 1 .1) .5)
+//    (voxels-calc-gradient)
+//    (voxels-point-light (vector .5 .5 .5) (vector 1 0 1)))
+// (define pb (voxels->poly vx))
+// (with-primitive pb
+//    (recalc-normals 0)
+//    (translate #(1.1 0 0)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels->poly voxelsprimitiveid-nombre [iso-niveau-seuil-nombre]
+// Retour: polyprimid-nombre
+// Description:
+// Convertis les voxels d'une primitive voxels en primitive poly de liste de triangle.
+// Exemple:
 // (clear)
 // (define vx (build-voxels 16 16 16))
 // (with-primitive vx
@@ -943,6 +1247,18 @@ Scheme_Object *voxels2poly(int argc, Scheme_Object **argv)
 // (with-primitive mynewshape
 //     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-width
+// Retour: largeur-nombre
+// Description:
+// Retourne la largeur de la primitive voxels courante.
+// Exemple:
+// (define mynewshape (build-voxels 10 10 10))
+// (with-primitive mynewshape
+//     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
+// EndFunctionDoc
+
 Scheme_Object *voxels_width(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -973,6 +1289,18 @@ Scheme_Object *voxels_width(int argc, Scheme_Object **argv)
 // (with-primitive mynewshape
 //     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-height
+// Retour: hauteur-nombre
+// Description:
+// Retourne la hauteur de la primitive voxels courante.
+// Exemple:
+// (define mynewshape (build-voxels 10 10 10))
+// (with-primitive mynewshape
+//     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
+// EndFunctionDoc
+
 Scheme_Object *voxels_height(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1003,6 +1331,18 @@ Scheme_Object *voxels_height(int argc, Scheme_Object **argv)
 // (with-primitive mynewshape
 //     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-depth
+// Retour: profondeur-nombre
+// Description:
+// Retourne la profondeur de la primitive voxels courante.
+// Exemple:
+// (define mynewshape (build-voxels 10 10 10))
+// (with-primitive mynewshape
+//     (display (vector (voxels-width) (voxels-height) (voxels-depth)))(newline))
+// EndFunctionDoc
+
 Scheme_Object *voxels_depth(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1050,6 +1390,35 @@ Scheme_Object *voxels_depth(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-calc-gradient
+// Retour: void
+// Description:
+// Remplis le tableau pdata "g" avec le gradient des intensités de voxels.
+// Ceci est la première dérivée, le changement en intensité en directions x, y et z
+// a travers les voxels. Ceci peut être utilisé pour s'approcher des normales,
+// principalement utilisé pour éclairé les voxels.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p 
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
 {		
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -1092,6 +1461,33 @@ Scheme_Object *voxels_calc_gradient(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-sphere-influence pos-vecteur couleur-vecteur force
+// Retour: vide
+// Description:
+// Ajoute une influence sphérique colorée aux valeurs des voxels
+// à partir de la position de centre.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1141,6 +1537,32 @@ Scheme_Object *voxels_sphere_influence(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-sphere-solid pos-vecteur couleur-vecteur rayon
+// Retour: vide
+// Description:
+// Affecte une solide sphère de voxels colorés.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1190,6 +1612,32 @@ Scheme_Object *voxels_sphere_solid(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-sphere-cube haut-gauche-vecteur bas-droit-vecteur couleur
+// Retour: vide
+// Description:
+// Affecte un solid cube de voxel colorés.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1242,6 +1690,32 @@ Scheme_Object *voxels_box_solid(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-threshold seuil-nombre
+// Retour: vide
+// Description:
+// Seuil de voxels et de couleur, au dessus du seuil en blanc, et en dessous en noir.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5) 
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1288,6 +1762,33 @@ Scheme_Object *voxels_threshold(int argc, Scheme_Object **argv)
 //     (voxels-calc-gradient)
 //     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// voxels-point-light pos-vecteur couleur-vecteur
+// Retour: vide
+// Description:
+// Utilise un tableau pdata de gradient pour éclairer les voxels depuis
+// la source de lumière.
+// Exemple:
+// (clear)
+// (blend-mode 'src-alpha 'one)
+// (hint-nozwrite)
+// (texture (load-texture "splat.png"))
+// (define p (build-voxels 30 30 30))
+// (define t 0)
+//
+// (every-frame (with-primitive p
+//     (set! t (+ t 0.02))
+//     (for ((i (in-range 0 10)))
+//         (voxels-sphere-solid (vector (+ 0.5 (* 0.5 (sin (+ (* i 0.1) t)))) 0.5 0.5)
+//             (if (odd? i) (vector 0 0 0) (vmul (vector 1 0.1 0.1) (* i 0.05)))
+//             (- 1 (/ i 10))))
+//
+//     (voxels-box-solid (vector 0.5 0.5 -0.1) (vector 1.1 1.1 1.1) (vector 0 0 0))
+//     (voxels-calc-gradient)
+//     (voxels-point-light (vector 0 50 0) (vmul (vector 1 1 1) 0.05))))
+// EndFunctionDoc
+
 Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1312,6 +1813,7 @@ Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
 	Trace::Stream<<"voxels-point-light can only be called while a voxels primitive is grabbed"<<endl;
     return scheme_void;
 }
+
 // StartFunctionDoc-en
 // build-locator
 // Returns: primitiveid-number
@@ -1335,6 +1837,16 @@ Scheme_Object *voxels_point_light(int argc, Scheme_Object **argv)
 // (define mynewshape (build-locator))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// build-locator
+// Retour: primitiveid-nombre
+// Description:
+// Un locator est une primitive vide, utile pour parenté (lorsque la primitive parente doit être invisible)
+// Cette primitive ne peut être vu en activant (hint-origin) pour afficher ses transformations locales.
+// Exemple:
+// (define mynewshape (build-locator))
+// EndFunctionDoc
+
 Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 {
 	LocatorPrimitive *Prim = new LocatorPrimitive();
@@ -1342,12 +1854,22 @@ Scheme_Object *build_locator(int argc, Scheme_Object **argv)
 }
 
 // StartFunctionDoc-en
-// locator-bounding-radius
 // locator-bounding-radius size-number
 // Returns: void
 // Description:
 // Sets the bounding box radius for the locator
 // Example:
+// (define mylocator (build-locator))
+// (with-primitive mylocator
+//     (locator-bounding-radius 23.4))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// locator-bounding-radius taille-nombre
+// Retour: vide
+// Description:
+// Fixe le rayon de rebon d'un locator.
+// Exemple:
 // (define mylocator (build-locator))
 // (with-primitive mylocator
 //     (locator-bounding-radius 23.4))
@@ -1392,6 +1914,15 @@ Scheme_Object *locator_bounding_radius(int argc, Scheme_Object **argv)
 // (define mynewshape (load-primitive "octopus.obj"))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// load-primitive
+// Retour: primitiveid-nombre
+// Description:
+// Charge une primitive à partir du disque.
+// Exemple:
+// (define mynewshape (load-primitive "octopus.obj"))
+// EndFunctionDoc
+
 Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1420,6 +1951,15 @@ Scheme_Object *load_primitive(int argc, Scheme_Object **argv)
 // Retorna: número-id-primitiva
 // Descrição:
 // Exemplo:
+// (clear-geometry-cache)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// clear-geometry-cache
+// Retour: vide
+// Description:
+// Efface le cache de géométries, et charge ultérieuremnt avec le disque.
+// Example:
 // (clear-geometry-cache)
 // EndFunctionDoc
 
@@ -1460,6 +2000,30 @@ Scheme_Object *clear_geometry_cache(int argc, Scheme_Object **argv)
 // Exemplo:
 // (with-primitive (build-sphere 10 10)
 //     (save-primitive "mymesh.obj"))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// save-primitive
+// Retour: vide
+// Description:
+// Sauvegarde la primitive en court sur le disque. Les primitives pixels
+// sont sauvegardées en fichiers PNG.
+// Les primitives polygones sont sauvegardées en fichiers Wavefront OBJ
+// avec les informations de matériaux. Les enfants de ces primitives sont
+// également enregistrées comme différents objets dans le fichier.
+// De nouveux groupes sont générés pour chaque locator dans la hiérarchie.
+// Exemple:
+// (define l (build-locator))
+// (with-primitive (build-sphere 10 10)
+//    (colour #(1 0 0))
+//    (parent l))
+// (translate (vector 3 2 0))
+// (rotate (vector 15 60 70))
+// (with-primitive (build-torus 1 2 10 10)
+//    (colour #(0 1 0))
+//    (parent l))
+// (with-primitive l
+//    (save-primitive "p.obj"))
 // EndFunctionDoc
 
 Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
@@ -1523,6 +2087,35 @@ Scheme_Object *save_primitive(int argc, Scheme_Object **argv)
 //             (rndvec))
 //         "c")
 //     (pixels-upload)) ; call pixels upload to see the results
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-pixels largeur-nombre hauteur-nombre renderer-active-booléen
+// Retour: primitiveid-nombre
+// Description:
+// Fabrique une nouvelle pixels primitive. Une pixel primitive est utilisée pour faire des
+// texture procédurales, qui peuvent être appiquées à d'autres primitives. Pour cette raison
+// pixel primitives ne seront pas beaucoup affichées, mais vous pouvez les prévisualiser en
+// texture sur une face plane.
+// Les objets peuvent être rendu dans des primitive pixels. Le renderer des primitives pixels
+// est désactivé par défaut. Pour l'activer, utiliser le paramètre booléen optionel renderer-activate.
+// Exemple:
+// (clear)
+// (define p1 (build-pixels 16 16))
+// (with-primitive p1
+//    (pdata-map!
+//        (lambda (c)
+//            (rndvec))
+//        "c")
+//    (pixels-upload)) ; appeller pixels-upload pour voir le résultat
+//
+// (translate (vector 1.5 0 0))
+// (define p2 (build-pixels 256 256 #t)) ; cible de rendu
+// (with-pixels-renderer p2 ; rendre un cube dans la primitive pixels
+//    (clear-colour (vector .37 .5 .59))
+//    (scale 5)
+//    (rotate (vector -5 60 140))
+//    (build-cube))
 // EndFunctionDoc
 
 Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
@@ -1592,6 +2185,22 @@ Scheme_Object *build_pixels(int argc, Scheme_Object **argv)
 //     (pixels-upload)) ; call pixels upload to see the results
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pixels-upload
+// Retour: vide
+// Description:
+// Transfert le données de texture, vous devez appeller cette fonction
+// lorsque vous avezfinis d'écrir dans la primitive pixels, et lorsqu'elle est courante.
+// Exemple:
+// (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload)) ; appeller pixels-upload pour voir le résultat
+// EndFunctionDoc
+
 Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 {
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -1644,6 +2253,42 @@ Scheme_Object *pixels_upload(int argc, Scheme_Object **argv)
 //         (with-primitive q
 //             (rotate (vector 1 0.2 0))))))
 // EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pixels-download [texture-id]
+// Retour: vide
+// Description:
+// Transfert les données de texture du GPU dans le tableau pdata.
+// Un id texture optionnel peut être transmis pour spécifier la
+// texture de la primitive pixels de laquelle télécharger.
+// Exemple:
+// (clear)
+//
+// (define p (build-pixels 256 256 #t))
+//
+// (define q (with-pixels-renderer p
+//         (clear-colour (vector 1 1 1))
+//         (scale 3)
+//         (colour (vector 0 0 1))
+//         (build-torus 0.2 2 10 20)))
+//
+// (define i (with-state
+//         (translate (vector 0.5 0.5 0))
+//         (scale 0.2)
+//         (build-cube)))
+//
+// (every-frame
+//     (begin
+//     (with-primitive p
+//         (pixels-download)
+//         ; peindre le cube avec la couleur du pixel en dessous.
+//         (let ((c (pdata-ref "c" (pixels-index (vector 0.5 0.5 0)))))
+//             (with-primitive i (colour c))))
+//     (with-pixels-renderer p
+//         (with-primitive q
+//             (rotate (vector 1 0.2 0))))))
+// EndFunctionDoc
+
 Scheme_Object *pixels_download(int argc, Scheme_Object **argv)
 {
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -1733,6 +2378,25 @@ Scheme_Object *pixels_load(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 10 10))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pixels->texture pixelprimitiveid-nombre [textureindex-nombre]
+// Retour: textureid-nombre
+// Description:
+// Reourne une texture que vous pouvez utiliser comme les autres.
+// Exemple:
+// (define mypixels (build-pixels 100 100))
+// (with-primitive mypixels
+//     (pdata-map!
+//         (lambda (c)
+//             (rndvec))
+//         "c")
+//     (pixels-upload))
+//
+// (with-state
+//     (texture (pixels->texture mypixels))
+//     (build-torus 1 2 10 10))
+// EndFunctionDoc
+
 Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1787,6 +2451,29 @@ Scheme_Object *pixels2texture(int argc, Scheme_Object **argv)
 //                (draw-cube)))))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pixels->depth pixelprimitiveid-nombre
+// Retour: textureid-nombre
+// Description:
+// Retourne la texture de profondeur de la pixel primitive.
+// Exemple:
+// (clear)
+// (define p (build-pixels 256 256 #t))
+// (with-state
+//    (hint-unlit)
+//    (translate #(1.1 0 0))
+//    (texture (pixels->depth p))
+//    (build-plane))
+//
+// (every-frame
+//    (with-pixels-renderer p
+//        (random-seed 0)
+//        (for ([i (in-range 55)])
+//            (with-state
+//                (translate (vmul (srndvec) 8))
+//                (draw-cube)))))
+// EndFunctionDoc
+
 Scheme_Object *pixels2depth(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1820,6 +2507,17 @@ Scheme_Object *pixels2depth(int argc, Scheme_Object **argv)
 //     (display (vector (pixels-width) (pixels-height)))(newline))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// pixels-width
+// Retour: largeur-nombre
+// Description:
+// Retourne la largeur de la primitive pixel courante.
+// Exemple:
+// (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (display (vector (pixels-width) (pixels-height)))(newline))
+// EndFunctionDoc
+
 Scheme_Object *pixels_width(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -1846,6 +2544,17 @@ Scheme_Object *pixels_width(int argc, Scheme_Object **argv)
 // Description:
 // Returns the height of the current pixel primitive.
 // Example:
+// (define mynewshape (build-pixels 100 100))
+// (with-primitive mynewshape
+//     (display (vector (pixels-width) (pixels-height)))(newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pixels-height
+// Retour: hauteur-nombre
+// Description:
+// Retourne la hauteur de la primitive pixel courante.
+// Exemple:
 // (define mynewshape (build-pixels 100 100))
 // (with-primitive mynewshape
 //     (display (vector (pixels-width) (pixels-height)))(newline))
@@ -1921,6 +2630,25 @@ Scheme_Object *pixels_display(int argc, Scheme_Object **argv)
 // Description:
 // Activates/deactivates the pixel primitive renderer.
 // Example:
+// (clear)
+// (define p (build-pixels 256 256))
+//
+// (with-primitive p
+//     (pixels-renderer-activate #t))
+//
+// (define cube (with-pixels-renderer p
+//                    (clear-colour (vector .2 .4 .8))
+//                    (rotate #(30 50 80))
+//                    (scale 5)
+//                    (build-cube)))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// pixels-renderer-activate booléen
+// Retour: vide
+// Description:
+// Active/désactive le rendu dans la primitive pixel.
+// Exemple:
 // (clear)
 // (define p (build-pixels 256 256))
 //
@@ -2015,6 +2743,46 @@ Scheme_Object *pixels_renderer_activate(int argc, Scheme_Object **argv)
 // malha não vai ser calculada fora desta área limite. Influências de
 // cores e posições precisam ser ajustadas usando pdata-set.
 // Exemplo:
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// build-blobby numinfluences subdivisionsvec boundingvec
+// Retour: primitiveid-nombre
+// Description:
+// Les primitives blobby sont la représentation implicite de surfaces de haut niveaux qui
+// sont définies dans fluxus par leur influences dans l'espace tri-dimensionel. Ces influences
+// sont ensuite ajoutées ensemble, et une valeur particulière est "maillée"
+// (avec l'algorythme de défilement de cubes) pour former une surface lissée. L'influence peut
+// être animée et la surface lisse bouge et se déforme en s'adaptant,
+// donnant ainsi son nom à la primitive : blobby.
+// build-blobby retourne une nouvel primitive blobby. Numinfluences est le nombre de "blobs".
+// Subdivisions permet de controler la résolution de la surce dans chaque dimensions,
+// pendant que boundingvec affecte la zone d'influence de la primitive dans l'espace loac de l'objet.
+// Le maille ne sera pas calculé au de là de cette zone.
+// Les positions d'influence et les couleurs doivent être affectées par pdata-set!.
+// Exemple:
 // (clear)
 // (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
 // 
@@ -2136,6 +2904,43 @@ Scheme_Object *build_blobby(int argc, Scheme_Object **argv)
 //     (blobby->poly b)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// blobby->poly blobbyprimitiveid-nombre
+// Retour: polyprimid-nombre
+// Description:
+// Convertis un maillage de primitive blobby en primitive polygones de liste de triangle.
+// Ceci est util car les primitive polygones sont bien plus rapides à rendre, lais ne peuvent plus
+// être déformées à la manière des blobby. Celà ne convertis malheureusement pas non plus
+// les couleurs des sommets pour le moment.
+// Exemple:
+// (clear)
+// (define b (build-blobby 5 (vector 30 30 30) (vector 1 1 1)))
+// 
+// (with-primitive b
+//     (shinyness 100)
+//     (specular (vector 1 1 1))
+//     (hint-vertcols)
+//     (pdata-set "p" 0 (vector 0.75 0.25 0.5))
+//     (pdata-set "c" 0 (vector 0.01 0 0))
+//     (pdata-set "s" 0 0.01)
+//     (pdata-set "p" 1 (vector 0.25 0.75 0.5))
+//     (pdata-set "c" 1 (vector 0 0.01 0))
+//     (pdata-set "s" 1 0.01)
+//     (pdata-set "p" 2 (vector 0.75 0.75 0.5))
+//     (pdata-set "c" 2 (vector 0 0 0.01))
+//     (pdata-set "s" 2 0.01)
+//     (pdata-set "p" 3 (vector 0.25 0.25 0.5))
+//     (pdata-set "c" 3 (vector 0.01 0.01 0))
+//     (pdata-set "s" 3 0.01)
+//     (pdata-set "p" 4 (vector 0.5 0.5 0.5))
+//     (pdata-set "c" 4 (vector 0.01 0.01 0.01))
+//     (pdata-set "s" 4 0.025))
+// 
+// (define p (with-state
+//     (translate (vector 1 0 0))
+//     (blobby->poly b)))
+// EndFunctionDoc
+
 Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 {		
 	DECL_ARGV();
@@ -2183,6 +2988,18 @@ Scheme_Object *blobby2poly(int argc, Scheme_Object **argv)
 // (draw-instance mynewshape) ; draws a copy of mynewshape
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// draw-instance primitiveid-nombre
+// Retour: vide
+// Description:
+// Copie une primitive en mode maintenu et la dessine dans sont état courant,
+// en primitive mode immédiat.
+// Exemple:
+// (define mynewshape (build-cube))
+// (colour (vector 1 0 0))
+// (draw-instance mynewshape) ; dessine une copie de mynewshape
+// EndFunctionDoc
+
 Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -2223,6 +3040,17 @@ Scheme_Object *draw_instance(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// draw-cube
+// Retour: vide
+// Description:
+// Dessine un cube dans l'état courant en mode immédiat.
+// Exemple:
+// (define (render)
+//     (draw-cube))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_cube(int argc, Scheme_Object **argv)
 {
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticCube);
@@ -2247,6 +3075,17 @@ Scheme_Object *draw_cube(int argc, Scheme_Object **argv)
 // Descrição:
 // Desenha um plano no estado corrente em modo imediato
 // Exemplo:
+// (define (render)
+//     (draw-plane))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// draw-plane
+// Retour: vide
+// Description:
+// Dessine un plan dans l'état courant en mode immédiat.
+// Exemple:
 // (define (render)
 //     (draw-plane))
 // (every-frame (render))
@@ -2281,6 +3120,17 @@ Scheme_Object *draw_plane(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// draw-sphere
+// Retour: vide
+// Description:
+// Dessine une sphère dans l'état courant en mode immédiat.
+// Exemple:
+// (define (render)
+//     (draw-sphere))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_sphere(int argc, Scheme_Object **argv)
 {    	
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticSphere);
@@ -2305,6 +3155,17 @@ Scheme_Object *draw_sphere(int argc, Scheme_Object **argv)
 // Descrição:
 // Desenha um cilindro no estado corrente em modo imediato.
 // Exemplo:
+// (define (render)
+//     (draw-cylinder))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// draw-cylinder
+// Retour: vide
+// Description:
+// Dessine un cylindre dans l'état courant en mode immédiat.
+// Exemple:
 // (define (render)
 //     (draw-cylinder))
 // (every-frame (render))
@@ -2339,6 +3200,18 @@ Scheme_Object *draw_cylinder(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// draw-torus 
+// Retour: vide
+// Description:
+// Dessine un tore dans l'état courant en mode immédiat.
+// primitive.
+// Exemple:
+// (define (render)
+//     (draw-torus))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
 {
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTorus);
@@ -2357,6 +3230,18 @@ Scheme_Object *draw_torus(int argc, Scheme_Object **argv)
 // (every-frame (render))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// draw-teapot
+// Retour: vide
+// Description:
+// Dessine une téière dans l'état courant en mode immédiat.
+// Noter  que la téière n'as pas encore de coordonnées de texture.
+// Exemple:
+// (define (render)
+//     (draw-teapot))
+// (every-frame (render))
+// EndFunctionDoc
+
 Scheme_Object *draw_teapot(int argc, Scheme_Object **argv)
 {
     Engine::Get()->Renderer()->RenderPrimitive(Engine::StaticTeapot);
@@ -2368,7 +3253,17 @@ Scheme_Object *draw_teapot(int argc, Scheme_Object **argv)
 // Returns: void
 // Description:
 // Draws a line in the current state in immediate mode.
-// primitive.
+// Example:
+// (define (render)
+//     (draw-line (vector 0 0 0) (vector 2 1 0)))
+// (every-frame (render))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// draw-line point-vecteur point-vecteur
+// Retour: vide
+// Description:
+// Dessine une ligne dans l'état courant en mode immédiat.
 // Example:
 // (define (render)
 //     (draw-line (vector 0 0 0) (vector 2 1 0)))
@@ -2418,6 +3313,16 @@ Scheme_Object *draw_line(int argc, Scheme_Object **argv)
 // (destroy mynewshape)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// destroy primitiveid-nombre
+// Retour: vide
+// Description:
+// Supprime une primitive du moteur de rendu.
+// Example:
+// (define mynewshape (build-sphere 10 10))
+// (destroy mynewshape)
+// EndFunctionDoc
+
 Scheme_Object *destroy(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -2432,10 +3337,20 @@ Scheme_Object *destroy(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // primitive-type-name
-// Returns: void
+// Returns: type-name-string
 // Description:
-// Returns the name of the primtive, as a string.
+// Returns the name of the primitive, as a string.
 // Example:
+// (define p (build-cube))
+// (display (with-primitive p (primitive-type-name)))(newline)
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// primitive-type-name
+// Retour: type-nom-chaine-caractères
+// Description:
+// Retourne le nom de la primitive en chaîne de caractères.
+// Exemple:
 // (define p (build-cube))
 // (display (with-primitive p (primitive-type-name)))(newline)
 // EndFunctionDoc
@@ -2462,10 +3377,23 @@ Scheme_Object *primitive_type_name(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // poly-indices
-// Returns: void
+// Returns: list-indices-numbers
 // Description:
 // Gets the vertex indices from this primitive.
 // Example:
+// (define p (build-cube))
+//
+// (with-primitive p
+//     (poly-convert-to-indexed)
+//     (display (poly-indices))(newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// poly-indices
+// Retour: liste-indices-nombre
+// Description:
+// Récupère les indices des sommets de la primitive courante.
+// Exemple:
 // (define p (build-cube))
 //
 // (with-primitive p
@@ -2506,14 +3434,30 @@ Scheme_Object *poly_indices(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // poly-type-enum
-// Returns: void
+// Returns: number
 // Description:
 // Returns the enum value representing the type of the current polygon primitive.
 // This is needed as I can't get my scheme scripts to recognise symbols returned from here.
 // Use (poly-type) instead of this directly.
-// primitive.
 // Example:
 // (define (poly-type)	
+//   (let ((t (poly-type-enum)))
+//     (cond
+//       ((eq? t 0) 'triangle-strip)
+//       ((eq? t 1) 'quad-list)
+//       ((eq? t 2) 'triangle-list)
+//       ((eq? t 3) 'triangle-fan)
+//       ((eq? t 4) 'polygon))))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// poly-type-enum
+// Retour: nombre
+// Description:
+// Retourne la valeur représentant le type de la primitive polygones courante.
+// Utiliser plutôt (poly-type).
+// Exemple:
+// (define (poly-type)  
 //   (let ((t (poly-type-enum)))
 //     (cond
 //       ((eq? t 0) 'triangle-strip)
@@ -2551,11 +3495,22 @@ Scheme_Object *poly_type_enum(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // poly-indexed?
-// Returns: void
+// Returns: boolean
 // Description:
 // Returns true if the current polygon primitive is in indexed mode.
-// primitive.
 // Example:
+// (define p (build-polygons 3 'triangle-strip))
+// (with-primitive p
+//     (poly-convert-to-indexed)
+//     (display (poly-indexed?))(newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// poly-indexed?
+// Retour: booléen
+// Description:
+// Retourne true si le primitive polygones courante est en mode indexé.
+// Exemple:
 // (define p (build-polygons 3 'triangle-strip))
 // (with-primitive p
 //     (poly-convert-to-indexed)
@@ -2595,7 +3550,6 @@ Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
 // Description:
 // Switches the primitive to indexed mode, and uses the 
 // list as the index values for this primitive.
-// primitive.
 // Example:
 // (clear)
 // ; lets build our own cube primitive...
@@ -2670,6 +3624,46 @@ Scheme_Object *poly_indexed(int argc, Scheme_Object **argv)
 //             3 7 4 0  6 7 3 2)))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// poly-set-index index-liste
+// Retour: vide
+// Description:
+// Bascule la primitive en mode indexé, et utilise la
+// liste comme valeur d'index pour cette primitive.
+// Exemple:
+// (clear)
+// , Fabriquons notre propre primitive cube...
+// (define p (build-polygons 8 'quad-list))
+// 
+// (with-primitive p
+//     ; fixe les données des sommets
+//     (pdata-set "p" 0 (vector -1 -1 -1))
+//     (pdata-set "p" 1 (vector  1 -1 -1))
+//     (pdata-set "p" 2 (vector  1 -1  1))
+//     (pdata-set "p" 3 (vector -1 -1  1))
+//     (pdata-set "p" 4 (vector -1  1 -1))
+//     (pdata-set "p" 5 (vector  1  1 -1))
+//     (pdata-set "p" 6 (vector  1  1  1))
+//     (pdata-set "p" 7 (vector -1  1  1))
+//     (pdata-set "c" 0 (vector  0  0  0))
+//     (pdata-set "c" 1 (vector  0  0  1))
+//     (pdata-set "c" 2 (vector  0  1  0))
+//     (pdata-set "c" 3 (vector  0  1  1))
+//     (pdata-set "c" 4 (vector  1  0  0))
+//     (pdata-set "c" 5 (vector  1  0  1))
+//     (pdata-set "c" 6 (vector  1  1  0))
+//     (pdata-set "c" 7 (vector  1  1  1))
+//     
+//     (hint-wire)
+//     (hint-unlit)
+//     (hint-vertcols)
+//     
+//     ; connecte les sommets ensemble en faces
+//     (poly-set-index (list 7 6 5 4  5 6 2 1 
+//             4 5 1 0  1 2 3 0
+//             3 7 4 0  6 7 3 2)))
+// EndFunctionDoc
+
 Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
 {	
 	Scheme_Object *indexvec = NULL;
@@ -2737,6 +3731,21 @@ Scheme_Object *poly_set_index(int argc, Scheme_Object **argv)
 // (ungrab)
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// poly-convert-to-indexed
+// Retour: vide
+// Description:
+// Convertis la primitive polygone en cours a partir des données
+// brutes des sommets en tableau indexé. Ceci supprime les
+// sommets dupliqués du polygone, faisant ainsi le tableau
+// pdata plus court, racoursissant ainsi les temps de calculs.
+// Exemple:
+// (define mynewshape (build-sphere 10 10))
+// (grab mynewshape)
+// (poly-convert-to-indexed)
+// (ungrab)
+// EndFunctionDoc
+
 Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
 {		
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -2774,7 +3783,17 @@ Scheme_Object *poly_convert_to_indexed(int argc, Scheme_Object **argv)
 // (define mynewshape (build-sphere 10 10))
 // (define myothernewshape (build-copy mynewshape))
 // EndFunctionDoc
-	
+
+// StartFunctionDoc-fr
+// build-copy src-primitive-nombre
+// Retour: primitiveid-nombre
+// Description:
+// Retoune une copy de la primitive source.
+// Exemple:
+// (define mynewshape (build-sphere 10 10))
+// (define myothernewshape (build-copy mynewshape))
+// EndFunctionDoc
+
 Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -2875,7 +3894,50 @@ Scheme_Object *build_copy(int argc, Scheme_Object **argv)
 // Exemplo:
 // (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
-	
+
+// StartFunctionDoc-fr
+// make-pfunc nom-chaine-caractères
+// Retour: pfuncid-nombre
+// Description:
+// Construit une nouvelle foinction de primitive. L'étendue des pfuncs permet des opérations
+// compexes et spécialisées que vous pouvez appliquer sur des primitives. Toutes les pfuncs
+// partagent la même interface pour les controller et les manipuler.
+// pfunc-set! Tous les types et arguments des pfuncs sont les suivants :
+//
+// arithmetic 
+//     Pour appliquer une arithmetic sur n(importe quel tableau de pdata
+//
+//     operator string : one of add sub mul div
+//     src string : nom de tableau pdata
+//     other string : nom de tableau pdata (optional)
+//     constant float : valeur constante (optional)
+//     dst string : nom de tableau pdata
+//
+// genskinweights 
+//     Génère des pondérences de skinning
+//       ajoute les pdatas floatant appellés "s1" -> "sn"
+//       où n est le nombre de noeuds dans le squelette - 1
+//
+//     skeleton-root primid-number : la racine de la pose du squelette pour le skinning
+//     sharpness float : control la netteté des angles dans les plis lors du skinning
+//
+// skinweights->vertcols
+//     Un outil pour visualiser les poids de skinning pour débuggage.
+//     Aucun arguments
+//
+// skinning 
+//     Applique une peau à la primitive - la déforme pour suivre les mouvements du squelette.
+//     Des données pdata supplémentaires sont nécessaire pour l'apliquer sur les primitives.
+//        La copie des positions d'origine des sommets appellée "pref" et idem pour les normals,
+//        si les normals sont à "skinner", appeller les "nref".
+//     skeleton-root primid-number : le primitive racine pour animer le suelette
+//     bindpose-root primid-number : la primitive racine pour les poses du squelette
+//     skin-normals number : selon si les normals sont aussi à "skinner"
+//
+// Exemple:
+// (define mypfunc (make-pfunc 'arithmetic))
+// EndFunctionDoc
+
 Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -2911,7 +3973,20 @@ Scheme_Object *make_pfunc(int argc, Scheme_Object **argv)
 //                           'const 0.4
 //                           'dst "p"))
 // EndFunctionDoc
-	
+
+// StartFunctionDoc-fr
+// pfunc-set! pfuncid-nombre argument-liste
+// Retour: vide
+// Description:
+// Fixe les arguments de la fonction de primitive. Voir la doc make-pfunc pour tous les arguments.
+// Exemple:
+// (define mypfunc (make-pfunc 'arithmetic))
+// (pfunc-set! mypfunc (list 'operator "add"
+//                           'src "p"
+//                           'const 0.4
+//                           'dst "p"))
+// EndFunctionDoc
+
 Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 {
 	Scheme_Object *paramvec = NULL;
@@ -3023,7 +4098,16 @@ Scheme_Object *pfunc_set(int argc, Scheme_Object **argv)
 // Exemplo:
 // (define mypfunc (make-pfunc 'arithmetic))
 // EndFunctionDoc
-	
+
+// StartFunctionDoc-fr
+// pfunc-run id-nombre
+// Retour: vide
+// Description:
+// Applique une fonction de primitive sur la primitive actuellement accrochée.
+// Exemple:
+// (define mypfunc (make-pfunc 'arithmetic))
+// EndFunctionDoc
+
 Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -3095,8 +4179,45 @@ Scheme_Object *pfunc_run(int argc, Scheme_Object **argv)
 // (define (check a b)
 //     (with-primitive s
 //         (for-each
-//             (lambda (intersection)                    
+//             (lambda (intersection)
 //                 (with-state ; draw a sphere at the intersection point
+//                     (translate (cdr (assoc "p" intersection)))
+//                     (colour (vector 0 1 0))
+//                     (scale (vector 0.3 0.3 0.3))
+//                     (draw-sphere)))
+//         (geo/line-intersect a b))))
+// 
+// (every-frame
+//     (with-primitive l
+//         (pdata-set "p" 0 (vector 0 -5 0))
+//         (pdata-set "p" 1 (vector (* 5 (sin (time))) 5 0))
+//         (check (pdata-ref "p" 0) (pdata-ref "p" 1))))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// geo/line-intersect start-vec end-vec
+// Retour: vide
+// Description:
+// Retourne une liste de valeur pdata à chaque point d'intersection
+// de la ligne spécifiée. La ligne est en espace local, pour vérifier
+// en espace global, vous devez transformer le point avec l'inverse
+// de la transformation de la primitive.
+// Exemple:
+// (clear)
+// (define s (with-state
+//         (build-torus 1 2 10 10)))
+// 
+// (define l (with-state
+//         (hint-none)
+//         (hint-unlit)
+//         (hint-wire)
+//         (build-line 2)))
+// 
+// (define (check a b)
+//     (with-primitive s
+//         (for-each
+//             (lambda (intersection)
+//                 (with-state ; dessine une sphère au point d'intersection
 //                     (translate (cdr (assoc "p" intersection)))
 //                     (colour (vector 0 1 0))
 //                     (scale (vector 0.3 0.3 0.3))
@@ -3186,6 +4307,22 @@ Scheme_Object *geo_line_intersect(int argc, Scheme_Object **argv)
 //   (recalc-bb))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// recalc-bb
+// Retour: vide
+// Description:
+// Cet appel regénère les boîtes de détection (bounding box).
+// Comme cet appel peut être couteux, c'est à vous de savoir quand l'appeller
+// Seulement si les pdata ont changées et juste avant les opération qui utilisent les bounding box
+// (comme bb/bb-intersect) est la meilleur politique.
+// Exemple:
+// (define myprim (build-cube))
+// (with-primitive myprim
+//   (hint-box)
+//   (pdata-set! "p" 0 (vector -10 0 0))
+//   (recalc-bb))
+// EndFunctionDoc
+
 Scheme_Object *recalc_bb(int argc, Scheme_Object **argv)
 {
 	if (Engine::Get()->Grabbed()) 
@@ -3199,11 +4336,37 @@ Scheme_Object *recalc_bb(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // bb/bb-intersect? prim thresh
-// Returns: void
+// Returns: boolean
 // Description:
 // Returns #t if the current primitive bounding box intersects with the supplied one, 
 // with an additional expanding threshold.
 // Example:
+// (clear)
+// 
+// (define a (with-state
+//      (build-sphere 10 10)))
+// 
+// (define b (with-state
+//      (translate (vector 2 0 0))
+//      (build-sphere 10 10)))
+// 
+// (every-frame
+//     (begin
+//         (with-primitive b
+//             (translate (vector (* -0.1 (sin (time))) 0 0))
+//             (recalc-bb))
+//         (with-primitive a
+//             (when (bb/bb-intersect? b 0)
+//                 (colour (rndvec))))))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// bb/bb-intersect? prim seuil
+// Retour: vide
+// Description:
+// Retourne #t si la bounding box de la primitive courante coupe celle
+// de la primitive en paramètre avec le seuil additionel.
+// Exemple:
 // (clear)
 // 
 // (define a (with-state
@@ -3246,7 +4409,7 @@ Scheme_Object *bb_bb_intersect(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // bb/point-intersect? point thresh
-// Returns: void
+// Returns: boolean
 // Description:
 // Returns #t if the current primitive bounding box intersects with point supplied, 
 // with an additional expanding threshold (so you can do check intersections with spheres). 
@@ -3276,6 +4439,38 @@ Scheme_Object *bb_bb_intersect(int argc, Scheme_Object **argv)
 //                 (colour (rndvec))))))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// bb/point-intersect? point seuil
+// Retour: booléen
+// Description:
+// Retourne #t si la bounding box de la primitive courante coupe le point
+// en paramètre avec le seuil additionel
+// (pouvant ainsi vérifiier les intersection avec les sphères).
+// Le point est en espace global. Vous devez appeller (recalc-bb) avant d'utiliser
+// cette fonction, di la primitive a bougé, ou ses pdata ont chagées.
+// Exemple:
+// (clear)
+// 
+// (define a (with-state
+//      (build-sphere 10 10)))
+// 
+// (define b (with-state
+//      (translate (vector 2 0 0))
+//      (build-sphere 10 10)))
+// 
+// (every-frame
+//     (begin
+//         (with-primitive b
+//             (translate (vector (* -0.1 (sin (time))) 0 0))
+//                         (recalc-bb))
+//         (with-primitive a
+//             ; vérifie le point central et donne le rayon
+//             , cette méthode est plus rapide que bb/bb
+//             (when (bb/point-intersect? (vtransform (vector 0 0 0)
+//                     (with-primitive b (get-transform))) 1)
+//                 (colour (rndvec))))))
+// EndFunctionDoc
+
 Scheme_Object *bb_point_intersect(int argc, Scheme_Object **argv)
 {
 	DECL_ARGV();
@@ -3299,7 +4494,7 @@ Scheme_Object *bb_point_intersect(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-en
 // get-children 
-// Returns: void
+// Returns: list-numbers
 // Description:
 // Gets a list of primitives parented to this one.
 // Example:
@@ -3311,13 +4506,46 @@ Scheme_Object *bb_point_intersect(int argc, Scheme_Object **argv)
 //                         (scale 0.9)
 //                         (build-cube))))
 //             (when (> depth 0)
-//                 (parent p)            
+//                 (parent p)
 //                 (for ((i (in-range 0 5)))
 //                     (when (zero? (random 3))
 //                         (rotate (vector 0 0 (* 45 (crndf))))
 //                         (build-heir (- depth 1))))))))
 // 
 // ; navigate the scene graph and print it out
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// get-children 
+// Retour: liste-nombre
+// Description:
+// Récupère la liste des primitives parentées à celle-ci.
+// Exemple:
+// ; fabriquer une structure hiérarchique aléatoire
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// ; naviguer dans le graph de scène et l'afficher
 // (define (print-heir children)
 //     (for-each
 //         (lambda (child)
@@ -3400,6 +4628,40 @@ Scheme_Object *get_children(int argc, Scheme_Object **argv)
 // (print-heir (get-children))
 // EndFunctionDoc
 
+// StartFunctionDoc-fr
+// get-parent 
+// Retour: vide
+// Description:
+// Récupère le parent de cet élément. 1 est le noeud racine.
+// Exemple:
+// ; fabriquer une structure hiérarchique aléatoire
+// (define (build-heir depth)
+//     (with-state
+//         (let ((p (with-state
+//                         (translate (vector 2 0 0))
+//                         (scale 0.9)
+//                         (build-cube))))
+//             (when (> depth 0)
+//                 (parent p)            
+//                 (for ((i (in-range 0 5)))
+//                     (when (zero? (random 3))
+//                         (rotate (vector 0 0 (* 45 (crndf))))
+//                         (build-heir (- depth 1))))))))
+// 
+// ; naviguer dans le graph de scène et l'afficher
+// (define (print-heir children)
+//     (for-each
+//         (lambda (child)
+//             (with-primitive child
+//                 (printf "id: ~a parent: ~a children: ~a~n" child (get-parent) (get-children))
+//                 (print-heir (get-children))))
+//         children))
+// 
+// (clear)
+// (build-heir 5)
+// (print-heir (get-children))
+// EndFunctionDoc
+
 Scheme_Object *get_parent(int argc, Scheme_Object **argv)
 {
 	Primitive *Grabbed=Engine::Get()->Renderer()->Grabbed();
@@ -3416,10 +4678,26 @@ Scheme_Object *get_parent(int argc, Scheme_Object **argv)
 // get-bb
 // Returns: bounding-box
 // Description:
-// Gets the bounding box this primitive in object space. A bounding box is
+// Gets the bounding box of this primitive in object space. A bounding box is
 // returned as a list of two vectors, the minimum (closest to the origin)
 // and maximum (furthest) corner.
 // Example:
+// (with-primitive (build-sphere 10 10)
+//     (scale (vector 3 1 0.3))
+//     (rotate (vector 30 25 45))
+//     (apply-transform)
+//     (display (get-bb))(newline))
+// EndFunctionDoc
+
+// StartFunctionDoc-fr
+// get-bb
+// Retour: bounding-box
+// Description:
+// Récupère la bounding box de la primitive en espace objet.
+// Une bounding box retournée est une list de deux vecteurs,
+// le minimum (le plus proche de l'origine) et le coin maximum
+// (le plus éloigné).
+// Exemple:
 // (with-primitive (build-sphere 10 10)
 //     (scale (vector 3 1 0.3))
 //     (rotate (vector 30 25 45))

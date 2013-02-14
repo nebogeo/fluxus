@@ -35,6 +35,7 @@ FluxAudio *Audio = NULL;
 // openal
 // Openal é uma biblioteca de audio multi-plataforma feita para ser
 // usada junto com aplicativos 3D.
+// Exemplo:
 // EndSectionDoc
 
 void FloatsFromScheme(Scheme_Object *src, float *dst, unsigned int size)
