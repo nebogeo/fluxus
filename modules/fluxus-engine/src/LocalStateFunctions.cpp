@@ -534,8 +534,8 @@ Scheme_Object *colour(int argc, Scheme_Object **argv)
 
 // StartFunctionDoc-pt
 // colour-mode modo
-// Returns: void
-// Description:
+// Retorna: void
+// Descrição:
 // Muda a forma como Fluxus interpreta dados de cor para o estado de
 // desenho ou da primitiva atual.
 // Os simbolos dos modos de cor são: rgb hsv

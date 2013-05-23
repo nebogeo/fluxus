@@ -567,21 +567,21 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // Note: Si le mipmapping est tourné sur off, et qu'une selue texture est spécifiée, elle devrait être attribuée au nivau mip 0,
 // et les réglages es filtres min et mag devront petre mis à linear ou nearest (voir texture-params).  
 // Exemple:
-// ; simple usage:
+// ; usage simple :
 // (texture (load-texture "mytexture.png"))
-// (build-cube) ; the cube will be texture mapped with the image
+// (build-cube) ; le cube est texturé avec l'image
 //
-// ; complex usages:
+// ; usages complexe :
 //
-// ; the options list can contain the following keys and values:
-// ; id: texture-id-number (for adding images to existing textures - for mipmapping and cubemapping)
+// ; La liste d'options peut contenir les clés et valeurs suivantes:
+// ; id: texture-id-nombre (pour ajouter des images aux textures existantes - pour le mipmapping et cubemapping)
 // ; type: [texture-2d cube-map-positive-x cube-map-negative-x cube-map-positive-y
 // ;         cube-map-negative-y cube-map-positive-z cube-map-negative-z]
-// ; generate-mipmaps : exact integer, 0 or 1
-// ; mip-level : exact integer
-// ; border : exact integer
+// ; generate-mipmaps : entier exact, 0 or 1
+// ; mip-level : entier exact
+// ; bordure : entier exact
 //
-// ; setup an environment cube map
+// ; définir un environnement de cubemap
 // (define t (load-texture "cube-left.png" (list 'type 'cube-map-positive-x)))
 // (load-texture "cube-right.png" (list 'id t 'type 'cube-map-negative-x))
 // (load-texture "cube-top.png" (list 'id t 'type 'cube-map-positive-y))
@@ -590,9 +590,9 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 // (load-texture "cube-back.png" (list 'id t 'type 'cube-map-negative-z))
 // (texture t)
 //
-// ; setup a mipmapped texture with our own images
-// ; you need as many levels as it takes you to get to 1X1 pixels from your
-// ; level 0 texture size
+// ; définfir une texture mipmap avec ses propres images
+// ; vous avez besoin d'autant de niveaux qu'ils en faut pour 1X1 pixels
+// ; a partir de la taille de texture du niveau 0 (level 0)
 // (define t2 (load-texture "m0.png" (list 'generate-mipmaps 0 'mip-level 0)))
 // (load-texture "m1.png" (list 'id t2 'generate-mipmaps 0 'mip-level 1))
 // (load-texture "m2.png" (list 'id t2 'generate-mipmaps 0 'mip-level 2))
@@ -602,7 +602,7 @@ Scheme_Object *camera_lag(int argc, Scheme_Object **argv)
 //          'generate-mipmaps 0  ; turn mipmapping off
 //              'border 2)))          ; add a border to the texture
 //
-// (build-cube) ; the cube will be texture mapped with the image
+// (build-cube) ; le cube sera texturé en accord avec l'image.
 // EndFunctionDoc
 
 Scheme_Object *load_texture(int argc, Scheme_Object **argv)
@@ -1265,7 +1265,7 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 //
 // (define cam3 (build-camera))
 // (current-camera cam3)
-// (set-camera (mmul (mtranslate (vector 0 0 -5))
+// (set-camera (mmul (mtranslate (vector 0 0 -5)hide in all)
 //         (mrotate (vector 0 45 0))))
 // (viewport 0 0 0.5 0.5)
 //
@@ -1329,8 +1329,8 @@ Scheme_Object *clear_accum(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 10 10)))
 //
 // (with-primitive t
-//     (hide 1) ; hide in all
-//     (camera-hide 0)) ; unhide in current camera
+//     (hide 1) ; cahcer
+//     (camera-hide 0)) ; révéler dans la caméra courante
 //
 //
 // (current-camera 0)
@@ -1388,7 +1388,7 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 //
 // (with-primitive t
 //     (hide 1) ; hide in all
-//     (camera-hide 0)) ; unhide in current camera
+//     (camera-hide 0)) ; révéler dans la caméra courante
 //
 //
 // (current-camera 0)
@@ -1483,7 +1483,7 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 //         (mrotate (vector 0 45 0))))
 // (viewport 0 0 0.5 0.5)
 //
-// ; render a primitive in one view only
+// ; afficher une primitive dans une vue uniquement
 // (define t (with-state
 //     (translate (vector 3 0 0))
 //     (scale 0.3)
@@ -1491,8 +1491,8 @@ Scheme_Object *build_camera(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 10 10)))
 //
 // (with-primitive t
-//     (hide 1) ; hide in all
-//     (camera-hide 0)) ; unhide in current camera
+//     (hide 1) ; cacher
+//     (camera-hide 0)) ; révéler dans la caméra courante
 //
 //
 // (current-camera 0)
@@ -1660,8 +1660,8 @@ Scheme_Object *current_camera(int argc, Scheme_Object **argv)
 //     (build-torus 1 2 10 10)))
 //
 // (with-primitive t
-//     (hide 1) ; hide in all
-//     (camera-hide 0)) ; unhide in current camera
+//     (hide 1) ; cacher
+//     (camera-hide 0)) ; révéler dans la caméra courante
 //
 //
 // (current-camera 0)
@@ -2094,7 +2094,7 @@ Scheme_Object *select_all(int argc, Scheme_Object **argv)
 // Ceci donne une limit supérieur sur le taux de fps qui ne correspond pas encore aavec le nombre donné,
 // mais le travail est en cours. 
 // Exemple:
-// (desiredfps 100000) ; makes fluxus render as fast as it can, and take 100% cpu.
+// (desiredfps 100000) ; rendre le moteur de rendu fluxus aussi rapide que possible, et prendre 100% du cpu.
 // EndFunctionDoc
 
 Scheme_Object *desiredfps(int argc, Scheme_Object **argv)
