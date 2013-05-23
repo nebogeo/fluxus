@@ -33,14 +33,14 @@ class Fluxa
 public:
 	Fluxa(OSCServer *server, JackClient* jack, const string &leftport, const string &rightport);
 	~Fluxa() {}
-	
+
 private:
 	static void Run(void *RunContext, unsigned int BufSize);
 	void Process(unsigned int BufSize);
 	void ProcessCommands();
-	
+
 	unsigned int m_SampleRate;
-		
+
 	Graph m_Graph;
 	Sampler m_Sampler;
 	Sample m_LeftBuffer;
@@ -54,10 +54,11 @@ private:
 	float m_GlobalVolume;
 	float m_Pan;
 	bool m_Debug;
-	
+
 	Eq m_LeftEq;
     Eq m_RightEq;
-	Compressor m_Comp;
+	Compressor m_LeftComp;
+	Compressor m_RightComp;
 };
 
 #endif

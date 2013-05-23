@@ -15,7 +15,7 @@
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 #include "ModuleNodes.h"
-	
+
 TerminalNode::TerminalNode(float Value):
 GraphNode(0),
 m_Value(Value)
@@ -35,7 +35,7 @@ void OscNode::Trigger(float time)
 	TriggerChildren(time);
 
 	float freq=440;
-	if (ChildExists(0) && GetChild(0)->IsTerminal()) 
+	if (ChildExists(0) && GetChild(0)->IsTerminal())
 	{
 		freq=GetChild(0)->GetValue();
 	}
@@ -49,7 +49,7 @@ void OscNode::Process(unsigned int bufsize)
 		m_Output.Allocate(bufsize);
 	}
 	ProcessChildren(bufsize);
-	
+
 	if (ChildExists(0) && !GetChild(0)->IsTerminal())
 	{
 		m_WaveTable.ProcessFM(bufsize, m_Output, GetInput(0));
@@ -69,12 +69,12 @@ m_Envelope(SampleRate)
 void ADSRNode::Trigger(float time)
 {
 	TriggerChildren(time);
-	
+
 	if (ChildExists(0)) m_Envelope.SetAttack(GetChild(0)->GetCVValue());
 	if (ChildExists(1)) m_Envelope.SetDecay(GetChild(1)->GetCVValue());
 	if (ChildExists(2)) m_Envelope.SetSustain(GetChild(2)->GetCVValue());
 	if (ChildExists(3)) m_Envelope.SetRelease(GetChild(3)->GetCVValue());
-	
+
 	m_Envelope.Trigger(time, 0, 1);
 }
 
@@ -84,7 +84,7 @@ void ADSRNode::Process(unsigned int bufsize)
 	{
 		m_Output.Allocate(bufsize);
 	}
-	
+
 	ProcessChildren(bufsize);
 	m_Envelope.Process(bufsize, m_Output);
 }
@@ -106,9 +106,9 @@ void MathNode::Process(unsigned int bufsize)
 	{
 		m_Output.Allocate(bufsize);
 	}
-	
+
 	ProcessChildren(bufsize);
-	
+
 	if (ChildExists(0) && ChildExists(1))
 	{
 		if (GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
@@ -116,7 +116,7 @@ void MathNode::Process(unsigned int bufsize)
 			float value=0;
 			float v0 = GetChild(0)->GetValue();
 			float v1 = GetChild(1)->GetValue();
-			
+
 			switch(m_Type)
 			{
 				case ADD: value=v0+v1; break;
@@ -125,22 +125,22 @@ void MathNode::Process(unsigned int bufsize)
 				case DIV: if (v1!=0) value=v0/v1; break;
 				case POW: if (v0!=0 || v1>0) value=powf(v0,v1); break;
 			};
-			
+
 			for (unsigned int n=0; n<bufsize; n++) m_Output[n]=value;
 		}
 		else if (GetChild(0)->IsTerminal() && !GetChild(1)->IsTerminal())
 		{
 			float v0 = GetChild(0)->GetValue();
-			
+
 			switch(m_Type)
 			{
 				case ADD: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=v0+GetChild(1)->GetOutput()[n]; break;
 				case SUB: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=v0-GetChild(1)->GetOutput()[n]; break;
 				case MUL: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=v0*GetChild(1)->GetOutput()[n]; break;
-				case DIV: 
+				case DIV:
 				{
-					for (unsigned int n=0; n<bufsize; n++) 
-					{	
+					for (unsigned int n=0; n<bufsize; n++)
+					{
 						if (GetChild(1)->GetOutput()[n]!=0)
 						{
 							m_Output[n]=v0/GetChild(1)->GetOutput()[n];
@@ -148,12 +148,12 @@ void MathNode::Process(unsigned int bufsize)
 					}
 				}
 				break;
-				case POW: 
-					for (unsigned int n=0; n<bufsize; n++) 
+				case POW:
+					for (unsigned int n=0; n<bufsize; n++)
 					{
 						if (v0!=0 && GetChild(1)->GetOutput()[n]>0)
-						{	
-							m_Output[n]=powf(v0,GetChild(1)->GetOutput()[n]); 
+						{
+							m_Output[n]=powf(v0,GetChild(1)->GetOutput()[n]);
 						}
 					}
 				break;
@@ -162,63 +162,63 @@ void MathNode::Process(unsigned int bufsize)
 		else if (!GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
 		{
 			float v1 = GetChild(1)->GetValue();
-			
+
 			switch(m_Type)
 			{
 				case ADD: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=GetChild(0)->GetOutput()[n]+v1; break;
 				case SUB: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=GetChild(0)->GetOutput()[n]-v1; break;
 				case MUL: for (unsigned int n=0; n<bufsize; n++) m_Output[n]=GetChild(0)->GetOutput()[n]*v1; break;
-				case DIV: 
+				case DIV:
 				{
 					if (v1!=0)
 					{
-						for (unsigned int n=0; n<bufsize; n++) 
+						for (unsigned int n=0; n<bufsize; n++)
 						{
 							m_Output[n]=GetChild(0)->GetOutput()[n]/v1;
 						}
 					}
 				}
 				break;
-				case POW: 						
-					for (unsigned int n=0; n<bufsize; n++) 
+				case POW:
+					for (unsigned int n=0; n<bufsize; n++)
 					{
 						if (GetChild(0)->GetOutput()[n]!=0 && v1>0)
 						{
-							m_Output[n]=powf(GetChild(0)->GetOutput()[n],v1); 
+							m_Output[n]=powf(GetChild(0)->GetOutput()[n],v1);
 						}
 					}
 				break;
 			};
 		}
-		else 
-		{			
+		else
+		{
 			switch(m_Type)
 			{
-				case ADD:  
+				case ADD:
 				{
-					for (unsigned int n=0; n<bufsize; n++) 
+					for (unsigned int n=0; n<bufsize; n++)
 					{
-						m_Output[n]=GetChild(0)->GetOutput()[n]+GetChild(1)->GetOutput()[n]; 				
+						m_Output[n]=GetChild(0)->GetOutput()[n]+GetChild(1)->GetOutput()[n];
 					}
-					
+
 				} break;
-				case SUB: 
+				case SUB:
 				{
-					for (unsigned int n=0; n<bufsize; n++) 
+					for (unsigned int n=0; n<bufsize; n++)
 					{
-						m_Output[n]=GetChild(0)->GetOutput()[n]-GetChild(1)->GetOutput()[n]; 
-					}
-				} break;
-				case MUL: 
-				{
-					for (unsigned int n=0; n<bufsize; n++) 
-					{
-						m_Output[n]=GetChild(0)->GetOutput()[n]*GetChild(1)->GetOutput()[n]; 
+						m_Output[n]=GetChild(0)->GetOutput()[n]-GetChild(1)->GetOutput()[n];
 					}
 				} break;
-				case DIV: 
+				case MUL:
 				{
-					for (unsigned int n=0; n<bufsize; n++) 
+					for (unsigned int n=0; n<bufsize; n++)
+					{
+						m_Output[n]=GetChild(0)->GetOutput()[n]*GetChild(1)->GetOutput()[n];
+					}
+				} break;
+				case DIV:
+				{
+					for (unsigned int n=0; n<bufsize; n++)
 					{
 						if (GetChild(1)->GetOutput()[n]!=0)
 						{
@@ -227,19 +227,19 @@ void MathNode::Process(unsigned int bufsize)
 					}
 				}
 				break;
-				case POW: 
+				case POW:
 				{
-					for (unsigned int n=0; n<bufsize; n++) 
+					for (unsigned int n=0; n<bufsize; n++)
 					{
 						if (GetChild(0)->GetOutput()[n]!=0 && GetChild(1)->GetOutput()[n]>0)
 						{
-							m_Output[n]=powf(GetChild(0)->GetOutput()[n],GetChild(1)->GetOutput()[n]); 
+							m_Output[n]=powf(GetChild(0)->GetOutput()[n],GetChild(1)->GetOutput()[n]);
 						}
 					}
 				} break;
 			};
 		}
-	}	
+	}
 }
 
 FilterNode::FilterNode(Type t, unsigned int samplerate):
@@ -249,10 +249,10 @@ m_Filter(samplerate)
 {
 	switch(m_Type)
 	{
-		case MOOGLP: m_Filter.SetType(FilterWrapper::MOOG_LO); break; 
-		case MOOGBP: m_Filter.SetType(FilterWrapper::MOOG_BAND); break; 
-		case MOOGHP: m_Filter.SetType(FilterWrapper::MOOG_HI); break; 
-		case FORMANT: m_Filter.SetType(FilterWrapper::FORMANT); break; 
+		case MOOGLP: m_Filter.SetType(FilterWrapper::MOOG_LO); break;
+		case MOOGBP: m_Filter.SetType(FilterWrapper::MOOG_BAND); break;
+		case MOOGHP: m_Filter.SetType(FilterWrapper::MOOG_HI); break;
+		case FORMANT: m_Filter.SetType(FilterWrapper::FORMANT); break;
 	};
 }
 
@@ -267,19 +267,19 @@ void FilterNode::Process(unsigned int bufsize)
 	{
 		m_Output.Allocate(bufsize);
 	}
-	
+
 	ProcessChildren(bufsize);
-	
+
 	if (ChildExists(0) && !GetChild(0)->IsTerminal() && ChildExists(1) && ChildExists(2))
-	{		
+	{
 		float r=GetChild(2)->GetValue();
 		if (r>=0 && r<0.5) m_Filter.SetResonance(r);
-		
+
 		if (GetChild(1)->IsTerminal())
 		{
-			float c=GetChild(1)->GetValue();			
+			float c=GetChild(1)->GetValue();
 			if (c>=0 && c<1) m_Filter.SetCutoff(c);
-			
+
 			m_Filter.Process(bufsize, GetInput(0), m_Output);
 		}
 		else
@@ -299,7 +299,7 @@ m_Sampler(samplerate)
 void SampleNode::Trigger(float time)
 {
 	TriggerChildren(time);
-	
+
 	if (ChildExists(0))
 	{
 		Event e;
@@ -316,7 +316,7 @@ void SampleNode::Process(unsigned int bufsize)
 		m_Output.Allocate(bufsize);
 		m_Temp.Allocate(bufsize);
 	}
-	
+
 	ProcessChildren(bufsize);
 	m_Output.Zero();
 	m_Sampler.Process(bufsize, m_Output, m_Temp);
@@ -340,7 +340,7 @@ void EffectNode::Process(unsigned int bufsize)
 	{
 		m_Output.Allocate(bufsize);
 	}
-	
+
 	ProcessChildren(bufsize);
 
     if (ChildExists(0) && !GetChild(0)->IsTerminal() && ChildExists(1))
@@ -399,11 +399,11 @@ void KSNode::Trigger(float time)
 	TriggerChildren(time);
 
 	float freq=440;
-	if (ChildExists(0) && GetChild(0)->IsTerminal()) 
+	if (ChildExists(0) && GetChild(0)->IsTerminal())
 	{
 		freq=GetChild(0)->GetValue();
 	}
-	//if (ChildExists(1) && GetChild(0)->IsTerminal()) 
+	//if (ChildExists(1) && GetChild(0)->IsTerminal())
 	//{
 	//	freq=GetChild(1)->GetValue();
 	//}
@@ -420,10 +420,10 @@ void KSNode::Process(unsigned int bufsize)
 	ProcessChildren(bufsize);
 
 	if (ChildExists(1) && ChildExists(2))
-	{		
+	{
 		if (GetChild(1)->IsTerminal())
 		{
-			float c=GetChild(1)->GetValue();			
+			float c=GetChild(1)->GetValue();
 			if (c>=0 && c<1) m_KS.SetCutoff(c);
 		}
         if (GetChild(2)->IsTerminal())
@@ -432,7 +432,7 @@ void KSNode::Process(unsigned int bufsize)
             if (r>=0 && r<0.5) m_KS.SetResonance(r);
 		}
 	}
-	
+
 	m_KS.Process(bufsize, m_Output);
 }
 
@@ -455,7 +455,7 @@ void XFadeNode::Process(unsigned int bufsize)
 	ProcessChildren(bufsize);
 
 	if (ChildExists(0) && ChildExists(1) && ChildExists(2))
-	{		
+	{
 		if (GetChild(0)->IsTerminal())
 		{
 			if (GetChild(1)->IsTerminal())
@@ -470,21 +470,21 @@ void XFadeNode::Process(unsigned int bufsize)
 					else if (mix > 1) mix = 1;
 					mix = (0.5 + (mix * 0.5));
 					value = (v0 * (1 - mix)) + (v1 * mix);
-			
+
 					for (unsigned int n=0; n<bufsize; n++) m_Output[n]=value;
 				}
 				else
 				{
 					float v0 = GetChild(0)->GetValue();
 					float v1 = GetChild(1)->GetValue();
-					
+
 					for (unsigned int n=0; n<bufsize; n++)
 					{
-						float mix = GetChild(2)->GetOutput()[n];	
+						float mix = GetChild(2)->GetOutput()[n];
 						if (mix < -1) mix = -1;
 						else if (mix > 1) mix = 1;
 						mix = (0.5 + (mix * 0.5));
-						
+
 						m_Output[n]=(v0 * (1 - mix)) + (v1 * mix);
 					}
 				}
@@ -498,24 +498,24 @@ void XFadeNode::Process(unsigned int bufsize)
 					if (mix < -1) mix = -1;
 					else if (mix > 1) mix = 1;
 					mix = (0.5 + (mix * 0.5));
-				
+
 					for (unsigned int n=0; n<bufsize; n++)
 					{
-						
+
 						m_Output[n]=(v0 * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
 					}
 				}
 				else
 				{
 					float v0 = GetChild(0)->GetValue();
-					
+
 					for (unsigned int n=0; n<bufsize; n++)
 					{
 						float mix = GetChild(2)->GetOutput()[n];
 						if (mix < -1) mix = -1;
 						else if (mix > 1) mix = 1;
 						mix = (0.5 + (mix * 0.5));
-						
+
 						m_Output[n]=(v0 * (1 - mix)) + (GetChild(1)->GetOutput()[n] * mix);
 					}
 				}
@@ -532,17 +532,17 @@ void XFadeNode::Process(unsigned int bufsize)
 					if (mix < -1) mix = -1;
 					else if (mix > 1) mix = 1;
 					mix = (0.5 + (mix * 0.5));
-					
+
 					for (unsigned int n=0; n<bufsize; n++)
 					{
-						
+
 						m_Output[n]=(GetChild(0)->GetOutput()[n] * (1 - mix)) + (v1 * mix);
 					}
 				}
 				else
 				{
 					float v1 = GetChild(1)->GetValue();
-					
+
 					for (unsigned int n=0; n<bufsize; n++)
 					{
 						float mix = GetChild(2)->GetOutput()[n];
@@ -580,13 +580,13 @@ void XFadeNode::Process(unsigned int bufsize)
 			}
 		}
 	}
-	
+
 }
 
 HoldNode::HoldNode(Type t):
 GraphNode(2),
 m_Type(t),
-m_heldValue(0), 
+m_heldValue(0),
 m_lastCtrlVal(0)
 {
 }
@@ -610,7 +610,7 @@ void HoldNode::Process(unsigned int bufsize)
 		{
 			if (GetChild(1)->GetValue() > 0) m_heldValue=GetChild(0)->GetValue();
 			for (unsigned int n=0; n<bufsize; n++) m_Output[n]=m_heldValue;
-		}			
+		}
 		else if (!GetChild(0)->IsTerminal() && GetChild(1)->IsTerminal())
 		{
 			if (GetChild(1)->GetValue() <= 0)
@@ -630,10 +630,10 @@ void HoldNode::Process(unsigned int bufsize)
 							m_Output[n]=m_heldValue;
 						}
 						break;
-					} 
+					}
 					case TRACK:
 					{
-						for (unsigned int n=0; n<bufsize; n++) 
+						for (unsigned int n=0; n<bufsize; n++)
 						{
 							m_Output[n] = GetChild(0)->GetOutput()[n];
 						}
@@ -651,9 +651,9 @@ void HoldNode::Process(unsigned int bufsize)
 					m_heldValue = GetChild(0)->GetValue();
 				}
 				m_Output[n] = m_heldValue;
-			}					
+			}
 		}
-		else 
+		else
 		{
 			switch (m_Type)
 			{
@@ -666,8 +666,8 @@ void HoldNode::Process(unsigned int bufsize)
 						m_Output[n] = m_heldValue;
 					}
 					break;
-				} 
-				case TRACK: 
+				}
+				case TRACK:
 				{
 					for (unsigned int n=0; n<bufsize; n++)
 					{
@@ -679,4 +679,80 @@ void HoldNode::Process(unsigned int bufsize)
 			}
 		}
 	}
+}
+
+PadNode::PadNode(unsigned int SampleRate):
+    GraphNode(4),
+    m_Pad(SampleRate)
+{
+}
+
+void PadNode::Trigger(float time)
+{
+	TriggerChildren(time);
+
+	float freq=440;
+	if (ChildExists(0) && GetChild(0)->IsTerminal())
+	{
+		freq=GetChild(0)->GetValue();
+	}
+
+	if (ChildExists(1) && GetChild(1)->IsTerminal())
+	{
+		m_Pad.SetGap(GetChild(1)->GetValue());
+	}
+
+	if (ChildExists(2) && GetChild(2)->IsTerminal())
+	{
+        cerr<<"hello"<<endl;
+		m_Pad.SetCutoff(GetChild(2)->GetValue());
+	}
+
+	if (ChildExists(3) && GetChild(3)->IsTerminal())
+	{
+		m_Pad.SetResonance(GetChild(3)->GetValue());
+	}
+
+	m_Pad.Trigger(time, freq, freq, 1);
+}
+
+void PadNode::Process(unsigned int bufsize)
+{
+	if (bufsize>(unsigned int)m_Output.GetLength())
+	{
+		m_Output.Allocate(bufsize);
+	}
+	ProcessChildren(bufsize);
+
+    bool HaveFreqCV = false;
+    bool HaveGapCV = false;
+
+    // if frequency cv exists
+	HaveFreqCV=ChildExists(0) && !GetChild(0)->IsTerminal();
+	HaveGapCV=ChildExists(1) && !GetChild(1)->IsTerminal();
+
+/*    if (HaveFreqCV)
+    {
+        if (HaveGapCV)
+        {
+            m_Pad.Process(bufsize, m_Output,
+                          GetChild(0)->GetOutput(),
+                          GetChild(1)->GetOutput());
+        }
+        else
+        {
+            m_Pad.ProcessFM(bufsize, m_Output, GetChild(0)->GetOutput());
+        }
+    }
+    else
+    {
+        if (HaveGapCV)
+        {
+            m_Pad.Process(bufsize, m_Output, GetChild(1)->GetOutput());
+        }
+        else
+        {*/
+            m_Pad.Process(bufsize, m_Output);
+            // }
+            //}
 }

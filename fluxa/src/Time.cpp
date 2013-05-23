@@ -32,12 +32,12 @@ unsigned int usec2ntp(unsigned int usec)
 	unsigned int t = (usec * 1825) >> 5;
 	return ((usec << 12) + (usec << 8) - t);
 }
-  
+
 Time::Time() :
 Seconds(0),
 Fraction(0)
-{	
-	
+{
+
 }
 
 void Time::SetToNow()
@@ -47,10 +47,10 @@ void Time::SetToNow()
 	SetFromPosix(tv);
 }
 
-void Time::SetFromPosix(timeval tv) 
+void Time::SetFromPosix(timeval tv)
 {
 	// gettimeofday epoch is 00:00:00 UTC, January 1, 1970
-	// ntp (what we're basing time on for OSC compat) epoch is 
+	// ntp (what we're basing time on for OSC compat) epoch is
 	// 00:00:00 UTC, January 1, 1900, so we need to convert...
 	Seconds = (unsigned int)tv.tv_sec + GETTIMEOFDAY_TO_NTP_OFFSET;
 	Fraction = usec2ntp(tv.tv_usec);
@@ -67,7 +67,7 @@ Time &Time::operator+=(double s)
 	Seconds += Secs;
 	double Frac = s-Secs;
 	// overflow? (must do this better)
-	if (Frac+Fraction*ONE_OVER_UINT_MAX>1.0f) Seconds++;	
+	if (Frac+Fraction*ONE_OVER_UINT_MAX>1.0f) Seconds++;
 	Fraction += (unsigned int)(Frac*UINT_MAX);
 	return *this;
 }
@@ -118,4 +118,3 @@ void Time::Print() const
 {
 	cerr<<Seconds<<":"<<GetFraction()<<" ("<<Fraction<<")"<<endl;
 }
-
