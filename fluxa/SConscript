@@ -8,7 +8,7 @@ Import("env", "BinInstall", "Prefix")
 
 Target       = "fluxa"
 Install      = BinInstall
-Libs = Split("m sndfile jack lo pthread dl")
+Libs = Split("m sndfile jack lo pthread dl crypto")
 Frameworks = []
 
 Source = Split("src/Sample.cpp \
@@ -29,7 +29,7 @@ Source = Split("src/Sample.cpp \
 				src/GraphNode.cpp \
 				src/ModuleNodes.cpp \
 				src/Graph.cpp \
-				src/main.cpp")					
+				src/main.cpp")
 
 if env['PLATFORM'] == 'darwin':
 	Frameworks = Split("GLUT OpenGL CoreAudio")
@@ -51,4 +51,3 @@ if env['PLATFORM'] == 'darwin' and GetOption('app'):
 env.Program(source = Source, target = Target, LIBS = Libs, FRAMEWORKS = Frameworks)
 env.Install(Install, Target)
 env.Alias('install', Install)
-

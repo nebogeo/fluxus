@@ -17,6 +17,8 @@
 #include "Modules.h"
 #include <stdlib.h>
 #include <math.h>
+#include <openssl/evp.h>
+#include <openssl/aes.h>
 
 using namespace std;
 
@@ -94,6 +96,53 @@ void MovingHardClip(Sample &buf, const Sample &level)
 		buf[i]*=1/l;
 	}
 }
+
+EVP_CIPHER_CTX e_ctx;
+
+void CryptoInit()
+{
+    cerr<<"cryptoinit"<<endl;
+    string salt_data("salt");
+    string key_data("key");
+    unsigned char key[32], iv[32];
+
+    EVP_BytesToKey(EVP_aes_256_cbc(), EVP_sha1(),
+                   (unsigned char*)salt_data.c_str(),
+                   (unsigned char*)key_data.c_str(), key_data.length(), 1,
+                   key,
+                   iv);
+    cerr<<1<<endl;
+    EVP_CIPHER_CTX_init(&e_ctx);
+    cerr<<2<<endl;
+    EVP_EncryptInit_ex(&e_ctx, EVP_aes_256_ecb(), NULL, key, iv);
+    cerr<<"cryptoinit done"<<endl;
+}
+
+char enc_dati[4096];
+char enc_dato[4096];
+
+void CryptoDistort(Sample &buf)
+{
+    unsigned int byteslen = buf.GetLength();
+
+    for (unsigned int i=0; i<buf.GetLength(); i++)
+    {
+        enc_dati[i]=buf[i]*127;
+    }
+
+    int c_len=byteslen+AES_BLOCK_SIZE;
+    EVP_EncryptUpdate(&e_ctx,(unsigned char*)enc_dato, &c_len,
+                             (unsigned char*)enc_dati, byteslen);
+    int f_len = 0;
+    EVP_EncryptFinal_ex(&e_ctx,(unsigned char*)enc_dato+c_len, &f_len);
+
+    for (unsigned int i=0; i<buf.GetLength(); i++)
+    {
+        buf[i]=enc_dato[i]/127.0f;
+    }
+
+}
+
 
 ///////////////////////////////////////////////////////////////////////////
 

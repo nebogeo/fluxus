@@ -36,6 +36,8 @@ void Distort(Sample &buf, float amount);
 void MovingDistort(Sample &buf, const Sample &amount);
 void HardClip(Sample &buf, float level);
 void MovingHardClip(Sample &buf, const Sample &level);
+void CryptoDistort(Sample &buf);
+void CryptoInit();
 
 class Module
 {

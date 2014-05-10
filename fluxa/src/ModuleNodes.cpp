@@ -369,6 +369,11 @@ void EffectNode::Process(unsigned int bufsize)
                 MovingDistort(m_Output, GetInput(1));
             }
         }
+        else if (m_Type==CRYPTODISTORT)
+        {
+            m_Output=GetInput(0);
+            CryptoDistort(m_Output);
+        }
         else if (ChildExists(2))
         {
             switch (m_Type)

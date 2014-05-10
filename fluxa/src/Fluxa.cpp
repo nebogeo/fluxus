@@ -37,6 +37,8 @@ m_LeftComp(jack->GetSamplerate()),
 m_RightComp(jack->GetSamplerate())
 {
 	WaveTable::WriteWaves();
+    CryptoInit();
+
  	jack->SetCallback(Run,(void*)this);
 
 	//PortAudioClient* Audio=PortAudioClient::Get();

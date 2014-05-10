@@ -155,7 +155,7 @@ private:
 class EffectNode : public GraphNode
 {
 public:
-	enum Type{CRUSH,DISTORT,CLIP,DELAY};
+	enum Type{CRUSH,DISTORT,CLIP,DELAY,CRYPTODISTORT};
 
 	EffectNode(Type type, unsigned int samplerate);
 	virtual void Trigger(float time);

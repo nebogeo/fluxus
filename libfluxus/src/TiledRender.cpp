@@ -13,7 +13,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- 
+
 #include "TiledRender.h"
 #include "Utils.h"
 
@@ -27,7 +27,7 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 
 	unsigned int tilesx=1;
 	unsigned int tilewidth=width;
-	while (tilewidth>(unsigned int)scrw) 
+	while (tilewidth>(unsigned int)scrw)
 	{
 		tilewidth/=2;
 		tilesx*=2;
@@ -35,16 +35,16 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 
 	unsigned int tilesy=1;
 	unsigned int tileheight=height;
-	while (tileheight>(unsigned int)scrh) 
+	while (tileheight>(unsigned int)scrh)
 	{
 		tileheight/=2;
 		tilesy*=2;
 	}
 	renderer->SetResolution(tilewidth,tileheight);
-	
+
 	float tilevpwidth = 1/(float)tilesx;
 	float tilevpheight = 1/(float)tilesy;
-	
+
 	// assume just main camera
 	Camera* camera = &(*renderer->GetCameraVec().begin());
 	float left = camera->GetLeft();
@@ -64,7 +64,7 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 		for (unsigned int x=0; x<tilesx; x++)
 		{
 			float frstl=left+(x/(float)tilesx)*frstwidth;
-			float frstr=frstl+frsttilewidth;			
+			float frstr=frstl+frsttilewidth;
 			float frstb=bottom+(y/(float)tilesy)*frstheight;
 			float frstt=frstb+frsttileheight;
 			camera->SetFrustum(frstl,frstr,frstb,frstt);
@@ -73,7 +73,7 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 			tile++;
 		}
 	}
-	
+
 	// put things back as we found them...
 	camera->SetFrustum(left,right,bottom,top);
 	renderer->SetResolution(scrw,scrh);
@@ -88,7 +88,7 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 		unsigned int yorg=(tile/tilesx)*tileheight;
 
 		for (unsigned int x=0; x<tilewidth; x++)
-		{	
+		{
 			for (unsigned int y=0; y<tileheight; y++)
 			{
 				unsigned int dst=(y+yorg)*width+(x+xorg);
@@ -97,9 +97,9 @@ unsigned char *TiledRender(Renderer *renderer, int width, int height)
 				final[dst*3+2]=tiles[tile][(y*tilewidth+x)*3+2];
 			}
 		}
-		delete[] tiles[tile];	
+		delete[] tiles[tile];
 	}
-	delete[] tiles;	
+	delete[] tiles;
 	return final;
 }
 

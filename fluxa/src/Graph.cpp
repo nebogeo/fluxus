@@ -69,6 +69,7 @@ void Graph::Init()
 				case SAMPLER : nodedesc->m_Node = new SampleNode(m_SampleRate); break;
 				case CRUSH : nodedesc->m_Node = new EffectNode(EffectNode::CRUSH,m_SampleRate); break;
 				case DISTORT : nodedesc->m_Node = new EffectNode(EffectNode::DISTORT,m_SampleRate); break;
+				case CRYPTODISTORT : nodedesc->m_Node = new EffectNode(EffectNode::CRYPTODISTORT,m_SampleRate); break;
 				case CLIP : nodedesc->m_Node = new EffectNode(EffectNode::CLIP,m_SampleRate); break;
 				case DELAY : nodedesc->m_Node = new EffectNode(EffectNode::DELAY,m_SampleRate); break;
 				case KS : nodedesc->m_Node = new KSNode(m_SampleRate); break;

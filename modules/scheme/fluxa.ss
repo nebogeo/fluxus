@@ -20,8 +20,8 @@
 (provide
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
-		crush distort klip echo ks xfade s&h t&h reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-		set-bpm-mult logical-time inter pick set-scale in synced-in clear-pings! bootstrap pad mass)
+		crush distort klip echo ks xfade s&h t&h reload zmod modeq? sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+		set-bpm-mult logical-time inter pick set-scale in synced-in clear-pings! bootstrap pad mass cryptodistort bpb)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
@@ -33,7 +33,7 @@
 (define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14)
 (define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18)
 (define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22) (define XFADE 23)
-(define SAMPNHOLD 24) (define TRACKNHOLD 25) (define PAD 26)
+(define SAMPNHOLD 24) (define TRACKNHOLD 25) (define PAD 26) (define CRYPTODISTORT 27)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -510,6 +510,9 @@
 (define (distort in amount)
   (operator DISTORT (list in amount)))
 
+(define (cryptodistort in amount)
+  (operator CRYPTODISTORT (list in amount)))
+
 ;; StartFunctionDoc-en
 ;; klip signal-node amount-number-or-node
 ;; Returns: node-id-number
@@ -971,6 +974,10 @@
 ;;         (play time (mul (adsr 0 0.1 0 0) (sine (note nt)))))))
 ;; EndFunctionDoc
 
+(define (modeq? clock n)
+  (eq? (modulo clock n) (- n 1)))
+
+
 (define (zmod clock n)
   (zero? (modulo clock n)))
 
@@ -1083,13 +1090,13 @@
 
 (define (zop time clock zap) 0)
 
-(define (bootstrap fn beats)
+(define (bootstrap fn)
   (define (_ time clock zap)
-    (synced-in time _ (+ clock 1) zap)
-    (when (zmod clock beats)
-          (in time 1 (fn) clock zap)))
+    (synced-in time _ sync-clock zap)
+    (when (zmod sync-clock bpb)
+          (in time 1 (fn) 0 zap)))
   (reset)
-  (synced-in (time-now) _ 0 0))
+  (synced-in (time-now) _ sync-clock 0))
 
 ;---------------------------------------
 ; fluxus implementation
@@ -1149,7 +1156,7 @@
            (printf "time offset: ~a~n" offset)
            (set! last-sync-time sync-time)
            (set! logical-time (+ logical-time offset))
-           (set! sync-clock 0)
+           (set! sync-clock 1)
        (when on-sync (on-sync)))))
 
   (cond ((> (- (time-now) logical-time) 3)
@@ -1163,7 +1170,7 @@
                     (set! tempo (proc (+ logical-time (* bpb tempo)) clock)))
      (set! logical-time (+ logical-time tempo))
      (set! clock (+ clock 1))
-     (set! sync-clock (+ sync-clock 1))))
+     (set! sync-clock (modulo (+ sync-clock 1) bpb))))
 
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)
