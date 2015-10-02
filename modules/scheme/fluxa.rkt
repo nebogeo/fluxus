@@ -11,12 +11,12 @@
 ;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-017/fluxa).
 ;; Example:
 ;; EndSectionDoc
-#lang racket/base
+(module fluxus racket
 
 (require "scratchpad.ss"
 		"tasks.ss"
 		"fluxus-modules.ss"
-		scheme/list)
+        racket/list)
 (provide
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
@@ -1222,3 +1222,5 @@
    ((eq? (length l) 1) (car l))
    ((eq? (length l) 2) (p (car l) (cadr l)))
    (else (p (car l) (proc-list p (cdr l))))))
+
+)

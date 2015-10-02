@@ -18,7 +18,8 @@
 ;; Exemple:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require racket/list)
 (require "fluxus-modules.ss")
 (require "tasks.ss")
@@ -916,3 +917,4 @@
 							   [arg kw-args])
 						(list (keyword->string kw) arg))))))))
 
+)

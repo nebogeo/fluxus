@@ -6,9 +6,9 @@
 ;; scheme-utils
 ;; High level fluxus commands written in Scheme.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
@@ -16,34 +16,34 @@
 (provide (all-defined-out))
 
 ;; StartFunctionDoc-en
-;; rndf 
+;; rndf
 ;; Returns: number
 ;; Description:
 ;; Returns a random number in the range 0->1
 ;; Example:
 ;; (display (rndf))(newline)
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (rndf)
   (* (random 10000) 0.0001))
 
 ;; StartFunctionDoc-en
-;; crndf 
+;; crndf
 ;; Returns: number
 ;; Description:
 ;; Returns a random number in the range -1->1 (centred on zero)
 ;; Example:
 ;; (display (crndf))(newline)
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (crndf)
   (* (- (rndf) 0.5) 2))
 
 ;; StartFunctionDoc-en
-;; rndvec 
+;; rndvec
 ;; Returns: vector
 ;; Description:
-;; Returns a random 3 element vector with each element in the range 0->1. If 
+;; Returns a random 3 element vector with each element in the range 0->1. If
 ;; you visualise a lot of these as points, they will fill the unit cube
 ;; (see the example).
 ;; Example:
@@ -52,28 +52,28 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (rndvec))
 ;;         "p"))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (rndvec)
   (vector (rndf) (rndf) (rndf)))
 
 ;; StartFunctionDoc-en
-;; crndvec 
+;; crndvec
 ;; Returns: vector
 ;; Description:
-;; Returns a random 3 element vector with each element in the range -1->1. If 
+;; Returns a random 3 element vector with each element in the range -1->1. If
 ;; you visualise a lot of these as points, they will fill a cube centred
 ;; on the origin (see the example).
 ;; Example:
@@ -82,28 +82,28 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (crndvec))
 ;;         "p"))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (crndvec)
   (vector (crndf) (crndf) (crndf)))
 
 ;; StartFunctionDoc-en
-;; srndvec 
+;; srndvec
 ;; Returns: vector
 ;; Description:
-;; Returns a random 3 element vector. If you visualise a lot of these as 
+;; Returns a random 3 element vector. If you visualise a lot of these as
 ;; points, they will fill a sphere centred on the origin (see the example).
 ;; Example:
 ;; (clear)
@@ -111,19 +111,19 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (srndvec))
 ;;         "p"))
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
 (define (srndvec)
   (let loop ((v (crndvec)))
@@ -132,11 +132,11 @@
         v)))
 
 ;; StartFunctionDoc-en
-;; hsrndvec 
+;; hsrndvec
 ;; Returns: vector
 ;; Description:
-;; Returns a random 3 element vector. If you visualise a lot of these as 
-;; points, they will cover the surface of a sphere centred on the origin 
+;; Returns a random 3 element vector. If you visualise a lot of these as
+;; points, they will cover the surface of a sphere centred on the origin
 ;; (see the example). The name stands for "hollow sphere".
 ;; Example:
 ;; (clear)
@@ -144,19 +144,19 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (hsrndvec))
 ;;         "p"))
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
 (define (hsrndvec)
   (let loop ((v (crndvec)))
@@ -167,13 +167,13 @@
 
 
 ;; StartFunctionDoc-en
-;; grndf 
+;; grndf
 ;; Returns: number
 ;; Description:
 ;; Returns a gaussian random number in the range centred on zero, with a variance of 1
 ;; Example:
 ;; (display (grndf))(newline)
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; gaussian
 (define (grndf)
@@ -184,31 +184,31 @@
           (* (sqrt (/ (* -2 (log l)) l)) x)))))
 
 ;; StartFunctionDoc-en
-;; grndvec 
+;; grndvec
 ;; Returns: vector
 ;; Description:
-;; Returns a gaussian random 3 element vector. If you visualise a lot of 
-;; these as points, you will see a normal distribution centred on the origin. 
-;; (see the example). 
+;; Returns a gaussian random 3 element vector. If you visualise a lot of
+;; these as points, you will see a normal distribution centred on the origin.
+;; (see the example).
 ;; Example:
 ;; (clear)
 ;; (hint-none)
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (grndvec))
 ;;         "p"))
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
 (define (grndvec)
   (vector (grndf) (grndf) (grndf)))
@@ -217,14 +217,14 @@
 ;; rndbary
 ;; Returns: vector
 ;; Description:
-;; Returns a vector representing a uniformly distributed triangular 
+;; Returns a vector representing a uniformly distributed triangular
 ;; barycentric coordinate (wip - doesn't seem to be very uniform to me...)
 ;; Example:
 ;; (rndbary)
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
 (define (rndbary)
-	(let* 
+	(let*
 		((a (- 1.0 (sqrt (rndf))))
 		 (b (* (rndf) (- 1.0 a)))
 		 (c (- 1.0 (+ a b))))
@@ -241,28 +241,28 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (rndhemi (vector 0 1 0)))
 ;;         "p"))
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
-; return a line on the hemisphere 
+; return a line on the hemisphere
 (define (rndhemi n)
   (let loop ((v (srndvec)))
     (if (> (vdot n v) 0)
         v
         (loop (srndvec)))))
-		
-		
+
+
 ;; StartFunctionDoc-en
 ;; hrndbary normal
 ;; Returns: vector
@@ -274,25 +274,26 @@
 ;; (hint-points)
 ;; (point-width 4)
 ;; (define p (build-particles 1000))
-;; 
+;;
 ;; (show-axis 1)
-;; 
+;;
 ;; (with-primitive p
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (vector 1 1 1))
 ;;         "c")
-;;     (pdata-map! 
+;;     (pdata-map!
 ;;         (lambda (p)
 ;;             (hrndhemi (vector 0 1 0)))
 ;;         "p"))
-;; EndFunctionDoc 	
+;; EndFunctionDoc
 
-; return a line on the hemisphere 
+; return a line on the hemisphere
 (define (hrndhemi n)
   (let loop ((v (hsrndvec)))
     (if (> (vdot n v) 0)
         v
         (loop (hsrndvec)))))
-		
-		
+
+
+)

@@ -88,13 +88,14 @@
 ;; (every-frame (anim))
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require "fluxus-modules.ss")
 (require "tasks.ss")
-(provide 
+(provide
 	with-ffgl
 	ffgl-set-parameter!)
- 
+
 ;; StartFunctionDoc-en
 ;; with-ffgl ffgl-pluginid expression ...
 ;; Returns: result of last expression
@@ -169,3 +170,4 @@
 						   [arg kw-args])
 					(list (string->symbol (keyword->string kw)) arg)))))))
 
+)

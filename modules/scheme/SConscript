@@ -3,35 +3,35 @@
 #
 # Should be ok for cross platform
 
-import os	 
+import os
 Import("env", "CollectsInstall")
 
-Scripts    = ["boot.scm", 
-			  "fluxus.ss", 
-			  "fluxus-modules.ss", 
-			  "scratchpad.ss", 
-			  "help.ss",
-			  "input.ss",
-			  "camera.ss",
-			  "collada-import.ss",
-			  "building-blocks.ss",
-			  "drflux.ss",
-			  "randomness.ss",
-			  "frisbee.ss",
-			  "fluxa.ss",
-			  "tasks.ss",
-			  "time.ss",
-			  "gui.ss",
-			  "joylisten.ss",
-			  "tricks.ss",
-			  "poly-tools.ss",
-			  "pixels-tools.ss",
-              "voxels-tools.ss",
-			  "maths.ss",
-			  "testing.ss",
-			  "planetarium.ss",
-			  "shapes.ss",
-              "ffgl.ss" ]
+Scripts    = ["boot.rkt",
+			  "fluxus.rkt",
+			  "fluxus-modules.rkt",
+			  "scratchpad.rkt",
+			  "help.rkt",
+			  "input.rkt",
+			  "camera.rkt",
+			  "collada-import.rkt",
+			  "building-blocks.rkt",
+			  "drflux.rkt",
+			  "randomness.rkt",
+			  "frisbee.rkt",
+			  "fluxa.rkt",
+			  "tasks.rkt",
+			  "time.rkt",
+			  "gui.rkt",
+			  "joylisten.rkt",
+			  "tricks.rkt",
+			  "poly-tools.rkt",
+			  "pixels-tools.rkt",
+              "voxels-tools.rkt",
+			  "maths.rkt",
+			  "testing.rkt",
+			  "planetarium.rkt",
+			  "shapes.rkt",
+              "ffgl.rkt" ]
 
 Install        = CollectsInstall
 
