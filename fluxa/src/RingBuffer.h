@@ -17,8 +17,6 @@
 // ringbuffer for processing commands between asycronous threads, either may be
 // realtime and non blocking, so all code should be realtime capable
 
-static const int RING_BUFFER_SIZE = 1024;
-
 class RingBuffer
 {
 public:

@@ -36,13 +36,15 @@ void Distort(Sample &buf, float amount);
 void MovingDistort(Sample &buf, const Sample &amount);
 void HardClip(Sample &buf, float level);
 void MovingHardClip(Sample &buf, const Sample &level);
+void CryptoDistort(Sample &buf);
+void CryptoInit();
 
 class Module
 {
 public:
 	Module(int SampleRate) : m_SampleRate(SampleRate) {}
 	virtual ~Module() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In) {}
 	virtual void Trigger(float time, float pitch, float vol) {}
 	virtual void Reset() {}
@@ -56,7 +58,7 @@ class WaveTable : public Module
 public:
 	WaveTable(int SampleRate);
 	~WaveTable() {}
-	
+
 	typedef char Type;
 	enum {SINE,SQUARE,SAW,REVSAW,TRIANGLE,PULSE1,PULSE2,NOISE,PINKNOISE};
 
@@ -67,15 +69,15 @@ public:
 	virtual void Reset();
 
 	static void WriteWaves();
-	
+
 	void SetVolume(float s)   { m_Volume=s; }
 	void SetType(Type s)      { m_Type=s; }
 	void SetOctave(int s)     { m_Octave=s; }
 	void SetFineFreq(float s) { m_FineFreq=s; }
 	void SetSlideLength(float s) { m_SlideLength=s; }
-	
+
 private:
-	
+
 	float m_Pitch;
 	float m_TargetPitch;
 	float m_Volume;
@@ -88,7 +90,7 @@ private:
 	float m_SlideLength;
 	float m_TimePerSample;
 	float m_TablePerSample;
-		
+
 	static Sample m_Table[NUM_TABLES];
 	static unsigned int m_TableLength;
 };
@@ -98,25 +100,25 @@ class SimpleWave : public Module
 public:
 	SimpleWave(int SampleRate);
 	~SimpleWave() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In);
 	virtual void Trigger(float time, float pitch, float slidepitch, float vol);
 	virtual void Reset();
-	
+
 	void WriteWaves();
-	
+
 	void SetVolume(float s)   { m_Volume=s; }
 	void SetFineFreq(float s) { m_FineFreq=s; }
-	
+
 private:
-	
+
 	float m_Pitch;
 	float m_SlidePitch;
 	float m_Volume;
 	int   m_Note;
 	float m_CyclePos;
 	float m_FineFreq;
-	
+
 	//\todo make these static??!!
 	Sample m_Table;
 	unsigned int m_TableLength;
@@ -127,7 +129,7 @@ class Envelope : public Module
 public:
 	Envelope(int SampleRate);
 	virtual ~Envelope() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &CV, bool Smooth=true);
 	virtual void Trigger(float time, float pitch, float vol);
 	virtual void Reset();
@@ -145,7 +147,7 @@ protected:
 	float m_Decay;
 	float m_Sustain;
 	float m_Release;
-	float m_Volume;	
+	float m_Volume;
 	float m_SampleTime;
 	float m_Current;
 
@@ -156,7 +158,7 @@ class SimpleEnvelope : public Module
 public:
 	SimpleEnvelope(int SampleRate);
 	virtual ~SimpleEnvelope() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In, Sample &CV, bool Smooth=true);
 	virtual void Trigger(float time, float pitch, float vol);
 	virtual void Reset();
@@ -168,7 +170,7 @@ protected:
 	bool  m_Trigger;
 	float m_t;
 	float m_Decay;
-	float m_Volume;	
+	float m_Volume;
 	float m_SampleTime;
 	float m_Current;
 };
@@ -178,7 +180,7 @@ class MoogFilter : public Module
 public:
 	MoogFilter(int SampleRate);
 	virtual ~MoogFilter() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In, Sample *CutoffCV, Sample *LPFOut, Sample *BPFOut, Sample *HPFOut);
 	virtual void Reset();
 
@@ -189,44 +191,44 @@ public:
     inline float ProcessSingle(float in)
     {
         float Q=0;
-        fc = Cutoff; 
+        fc = Cutoff;
         fc*=0.25;
         if (fc<0) fc=0;
         else if (fc>1) fc=1;
-        
+
         q = 1.0f - fc;
         p = fc + 0.8f * fc * q;
         f = p + p - 1.0f;
         Q = Resonance*6-3;
         q = Q + (1.0f + 0.5f * q * (1.0f - q + 5.6f * q * q));
-        
+
         // say no to denormalisation!
-        in+=(rand()%1000)*0.000000001;	
-        
+        in+=(rand()%1000)*0.000000001;
+
         in -= q * b4;
-		
+
         if (in>1) in=1;
         if (in<-1) in=-1;
-        
+
         t1 = b1; b1 = (in + b0) * p - b1 * f;
         t2 = b2; b2 = (b1 + t1) * p - b2 * f;
-        t1 = b3; b3 = (b2 + t2) * p - b3 * f;		
-        b4 = (b3 + t1) * p - b4 * f;	
+        t1 = b3; b3 = (b2 + t2) * p - b3 * f;
+        b4 = (b3 + t1) * p - b4 * f;
         b4 = b4 - b4 * b4 * b4 * 0.166667f;
-        
+
         b0 = in;
-        
-        return b4;	 
+
+        return b4;
     }
-    
+
 protected:
 	float Cutoff, Resonance;
-	
+
 	float fs, fc;
 	float f,p,q;
 	float b0,b1,b2,b3,b4;
 	float t1,t2;
-	
+
 	float in1,in2,in3,in4,out1,out2,out3,out4;
 };
 
@@ -252,9 +254,9 @@ class FilterWrapper : public Module
 public:
 	FilterWrapper(int SampleRate);
 	virtual ~FilterWrapper() {}
-	
+
 	enum Type {MOOG_LO,MOOG_BAND,MOOG_HI,FORMANT};
-	
+
 	void SetType(Type s) { m_Type=s; }
 	void SetCutoff(float s) { m_MoogFilter.SetCutoff(s); m_FormantFilter.SetCutoff(s); }
 	void SetResonance(float s) { m_MoogFilter.SetResonance(s); m_FormantFilter.SetResonance(s); }
@@ -274,14 +276,14 @@ class Delay : public Module
 public:
 	Delay(int SampleRate);
 	virtual ~Delay() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In, Sample &DelayCV, Sample &FeedbackCV, Sample &Out);
 	virtual void Process(unsigned int BufSize, Sample &In, Sample &Out);
 	virtual void Reset();
 
 	void SetDelay(float s) { m_Delay=s; }
 	void SetFeedback(float s) { m_Feedback=s; }
-	
+
 protected:
 	float m_Delay, m_Feedback;
 	unsigned int m_Position;
@@ -293,18 +295,18 @@ class Eq : public Module
 public:
 	Eq(int SampleRate);
 	virtual ~Eq() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &In);
 
 	void SetLow(float s) { m_Low=s; }
 	void SetMid(float s) { m_Mid=s; }
 	void SetHigh(float s) { m_High=s; }
-	
+
 protected:
 	// Filter #1 (Low band)
 	float  lf;       // Frequency
 	float  f1p0;     // Poles ...
-	float  f1p1;    
+	float  f1p1;
 	float  f1p2;
 	float  f1p3;
 
@@ -323,7 +325,7 @@ protected:
 	float m_Low;
 	float m_Mid;
 	float m_High;
-	
+
 };
 
 
@@ -332,38 +334,62 @@ class Compressor : public Module
 public:
 	Compressor(int SampleRate);
 	virtual ~Compressor() {}
-	
+
+	virtual void Process(unsigned int BufSize, Sample &In);
+
+	void SetAttack(float s) {  }
+	void SetRelease(float s) {  }
+	void SetThreshold(float s) { }
+	void SetSlope(float s) { }
+
+protected:
+
+	float m_Threshold;
+	float m_Speed;
+    float m_Env;
+};
+
+/*
+class Compressor : public Module
+{
+public:
+	Compressor(int SampleRate);
+	virtual ~Compressor() {}
+
 	virtual void Process(unsigned int BufSize, Sample &In);
 
 	void SetAttack(float s) { tatt=s*1e-3; }
 	void SetRelease(float s) { trel=s*1e-3; }
 	void SetThreshold(float s) { threshold=s; }
 	void SetSlope(float s) { slope=s; }
-	
+
 protected:
 
-	float threshold;  // threshold (percents)    
+	float threshold;  // threshold (percents)
 	float slope;      // slope angle (percents)
     int   sr;         // sample rate (smp/sec)
     float tla;        // lookahead  (ms)
     float twnd;       // window time (ms)
     float tatt;       // attack time  (ms)
     float trel;       // release time (ms)
+    float env;
 };
+
+*/
 
 class KS : public Module
 {
 public:
 	KS(int SampleRate);
 	virtual ~KS() {}
-	
+
 	virtual void Process(unsigned int BufSize, Sample &Out);
 	virtual void Trigger(float time, float pitch, float slidepitch, float vol);
 	virtual void Reset();
 
-    void SetCutoff(float s) { m_Filter.SetCutoff(s); }    
+    void SetCutoff(float s) { m_Filter.SetCutoff(s); }
     void SetResonance(float s) { m_Filter.SetResonance(s); }
-	
+
 protected:
 	float m_Delay, m_Feedback;
 	unsigned int m_Position;
@@ -371,5 +397,76 @@ protected:
     MoogFilter m_Filter;
 };
 
+class Pad : public Module
+{
+public:
+	Pad(int SampleRate);
+	~Pad() {}
+
+	virtual void Process(unsigned int BufSize, Sample &In);
+	virtual void Trigger(float time, float pitch, float slidepitch, float vol);
+	virtual void Reset();
+
+	void WriteWaves();
+
+	void SetVolume(float s)   { m_Volume=s; }
+	void SetGap(float s)   { m_Gap=s; }
+    void SetCutoff(float s) { m_Filter.SetCutoff(s); }
+    void SetResonance(float s) { m_Filter.SetResonance(s); }
+
+private:
+
+    MoogFilter m_Filter;
+    float m_Gap;
+    float m_State;
+    float m_TablePerSample;
+	float m_Pitch;
+	float m_Volume;
+	int   m_Note;
+	float m_CyclePos;
+    unsigned int m_WritePos;
+	Sample m_Table;
+	unsigned int m_TableLength;
+};
+
+/*
+
+class Pad : public Module
+{
+public:
+	Pad(int SampleRate);
+	~Pad() {}
+
+	virtual void Process(unsigned int BufSize, Sample &In);
+    void ProcessFM(unsigned int BufSize, Sample &In, Sample &Pitch);
+    void Process(unsigned int BufSize, Sample &In, Sample &Gap);
+    void Process(unsigned int BufSize, Sample &In, Sample &Pitch, Sample &Gap);
+	virtual void Trigger(float time, float pitch, float slidepitch, float vol);
+	virtual void Reset();
+
+	void WriteWaves();
+
+	void SetVolume(float s)   { m_Volume=s; }
+	void SetFineFreq(float s) { m_FineFreq=s; }
+	void SetGap(float s)   { m_Gap=s; }
+
+private:
+
+    float m_TablePerSample;
+	float m_Pitch;
+	float m_SlidePitch;
+	float m_Volume;
+	float m_Vol;
+	int   m_Note;
+	float *m_CyclePos;
+	float m_FineFreq;
+	float m_Gap;
+    unsigned int m_NumHarmonics;
+
+	//\todo make these static??!!
+	Sample m_Table;
+	unsigned int m_TableLength;
+};
+*/
 
 #endif

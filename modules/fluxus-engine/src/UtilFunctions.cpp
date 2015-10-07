@@ -55,7 +55,7 @@ using namespace Fluxus;
 // StartFunctionDoc-pt
 // time
 // Retorna: numero do tempo(transcorrido, passado)
-// Descriﾃｧﾃ｣o:
+// Descrição:
 // Retorna o numero de segundos (+ fracao) desde meia noite do dia 1 de janeiro de 1970.
 // Essa e a forma mais simples de animacao para seus scripts
 // Exemplo:

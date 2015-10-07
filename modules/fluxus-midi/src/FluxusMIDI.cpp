@@ -52,7 +52,7 @@ static MIDIOut *midiout = NULL;
 // instrumentos musicais eletronicos, computadores, e outros
 // equipamentos comunicar, controlar e sincronizar entre si. Fluxus
 // pode receber controles e mensagens de notas MIDI.
-// Example:
+// Exemplo:
 // (display (midi-info))(newline)
 //
 // (midi-init 1)
@@ -824,7 +824,7 @@ Scheme_Object *midi_send(int argc, Scheme_Object **argv)
 // Retour: #(mesure beat ticks)
 // Description:
 // Retourne la position donnée par l'horloge MIDI.
-// Example:
+// Exemple:
 // (midiin-open 0)
 // (midi-position)
 // (midiin-close)

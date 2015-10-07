@@ -4,7 +4,7 @@
 ;; scratchpad
 ;; Functions available as part of the fluxus scratchpad.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 ;; StartSectionDoc-pt
 ;; scratchpad
@@ -12,7 +12,7 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 
 (require "fluxus-modules.ss"
 		 "input.ss"
@@ -20,13 +20,13 @@
 		 "camera.ss"
 		 "building-blocks.ss"
 		 "tasks.ss")
-		 
-(provide 
+
+(provide
  fluxus-auto-indent
  set-auto-indent-tab
  set-camera-update
- fluxus-reshape-callback 
- fluxus-input-callback 
+ fluxus-reshape-callback
+ fluxus-input-callback
  fluxus-input-release-callback
  fluxus-frame-callback
  override-frame-callback
@@ -41,7 +41,7 @@
  )
 
 ;-------------------------------------------------
-; every frame stuff   
+; every frame stuff
 
 ;; StartFunctionDoc-en
 ;; every-frame callback-function
@@ -53,8 +53,8 @@
 ;;     (colour (rndvec))
 ;;     (draw-torus))
 ;;
-;; (every-frame (myfunc)) 
-;; EndFunctionDoc    
+;; (every-frame (myfunc))
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; every-frame função-callback
@@ -67,7 +67,7 @@
 ;;     (colour (rndvec))
 ;;     (draw-torus))
 ;;
-;; (every-frame (myfunc)) 
+;; (every-frame (myfunc))
 ;; EndFunctionDoc
 
 ; define the every-frame syntax
@@ -87,8 +87,8 @@
 ;; beginning of scripts to make sure everything is cleared out each time you execute.
 ;; Example:
 ;; (clear) ; without this we would accumulate a new cube every time F5 was pressed
-;; (build-cube) 
-;; EndFunctionDoc    
+;; (build-cube)
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; clear
@@ -101,7 +101,7 @@
 ;; que você chamar a execução.
 ;; Exemplo:
 ;; (clear) ; sem isso a gente ia acumular um novo cubo toda vez que F5 fosse pressionado
-;; (build-cube) 
+;; (build-cube)
 ;; EndFunctionDoc
 
 (define (clear)
@@ -123,11 +123,11 @@
 ;; start-framedump name-string type-string
 ;; Returns: void
 ;; Description:
-;; Starts saving frames to disk. Type can be one of "tif", "jpg" or "ppm". 
+;; Starts saving frames to disk. Type can be one of "tif", "jpg" or "ppm".
 ;; Filenames are built with the frame number added, padded to 5 zeros.
 ;; Example:
-;; (start-framedump "frame" "jpg") 
-;; EndFunctionDoc    
+;; (start-framedump "frame" "jpg")
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; start-framedump string-nome string-tipo
@@ -146,13 +146,13 @@
   (set! framedump-type type))
 
 ;; StartFunctionDoc-en
-;; end-framedump 
+;; end-framedump
 ;; Returns: void
 ;; Description:
-;; Stops saving frames to disk. 
+;; Stops saving frames to disk.
 ;; Example:
-;; (end-framedump) 
-;; EndFunctionDoc    
+;; (end-framedump)
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; end-framedump
@@ -165,15 +165,15 @@
 
 (define (end-framedump)
   (set! framedump-frame -1))
-   
+
  (define (string-pad b)
    (substring (number->string (+ b 100000)) 1 6))
 
 (define (framedump-update)
-  (cond 
+  (cond
     ((>= framedump-frame 0)
-     (let ((filename (string-append framedump-filename 
-                                    (string-pad framedump-frame) 
+     (let ((filename (string-append framedump-filename
+                                    (string-pad framedump-frame)
                                     "." framedump-type)))
        ;(display "saving frame: ")(display filename)(newline)
        (framedump filename)
@@ -185,8 +185,8 @@
 ;; Description:
 ;; Call with #t to turn on debug rendering for the physics.
 ;; Example:
-;; (set-physics-debug #t) 
-;; EndFunctionDoc    
+;; (set-physics-debug #t)
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; set-physics-debug boolean
@@ -205,50 +205,50 @@
 
 (define eye-separation 0.3)
 (define (get-eye-separation) eye-separation)
-(define (set-eye-separation val) (set! eye-separation val))    
+(define (set-eye-separation val) (set! eye-separation val))
 
 (define (stereo-render)
   (let ((stereo-mode (get-stereo-mode))
         (half_sep (/ (get-eye-separation) 2))
         (left-eye-colour-mask #(#t #f #f #t))
         (right-eye-colour-mask #(#f #f #t #t)))
-    (cond 
+    (cond
       ((eq? stereo-mode 'crystal-eyes)
        ; draw for left eye
        (draw-buffer 'back-left)
-       (set-camera 
-        (mmul 
+       (set-camera
+        (mmul
          (mtranslate (vector (- half_sep) 0 0))
          (get-camera-transform)))
        (do-render)
-       
+
        ; draw for right eye
        (draw-buffer 'back-right)
-       (set-camera 
-        (mmul 
+       (set-camera
+        (mmul
          (mtranslate (vector half_sep 0 0))
          (get-camera-transform)))
        (do-render)
-       
+
        ; reset for other drawing
        (draw-buffer 'back))
-      
+
       ((eq? stereo-mode 'colour)
        ;left
        (set-colour-mask left-eye-colour-mask)
        (clear-frame 1)
-       (set-camera 
-        (mmul 
+       (set-camera
+        (mmul
          (mtranslate (vector (- half_sep) 0 0))
          (get-camera-transform)
          ))
        (do-render)
-       
+
        ;right
        (set-colour-mask right-eye-colour-mask)
        (clear-frame 0)
-       (set-camera 
-        (mmul 
+       (set-camera
+        (mmul
          (mtranslate (vector half_sep 0 0))
          (get-camera-transform)
          ))
@@ -267,9 +267,9 @@
 ;; Allows you to override the frame callback, to control
 ;; the rendering loop of fluxus in a more detailed way.
 ;; Example:
-;; (override-frame-callback myfunc) 
+;; (override-frame-callback myfunc)
 ;; (override-frame-callback default-fluxus-frame-callback) ; set it back again...
-;; EndFunctionDoc    
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; override-frame-callback função-callback
@@ -292,13 +292,13 @@
 ;; Sets the tabs size for the prettification auto indent on ctrl-p. Defaults to 2.
 ;; Example:
 ;; (set-auto-indent-tab 2)
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define fluxus-auto-tab-size 4)
 
 (define (set-auto-indent-tab s)
 	(set! fluxus-auto-tab-size s))
-	
+
 (define camera-update-a #t)
 
 ;; StartFunctionDoc-en
@@ -306,20 +306,20 @@
 ;; Returns: void
 ;; Description:
 ;; Turns off camera update - allowing you to use (set-camera) - otherwise it gets
-;; written over by the mouse camera update. The reason for needing this is that 
+;; written over by the mouse camera update. The reason for needing this is that
 ;; (set-camera-transform) doesn't work with multiple cameras - need to fix.
 ;; Example:
 ;; (set-camera-update #f)
 ;; (set-camera-update #t)
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (set-camera-update s)
     (set! camera-update-a s))
-		
+
 (define (do-render)
 	 (with-state (run-tasks))
      (fluxus-render))
-	 
+
 ;-------------------------------------------------
 ; callbacks - these are called directly from the
 ; fluxus application
@@ -333,10 +333,10 @@
         (prewhite #f))
     (for ((i (in-range 0 (string-length text))))
          (let ((c (string-ref text i)))
-           (cond 
-             ((char=? c #\newline) 
+           (cond
+             ((char=? c #\newline)
               (set! newline #t)
-              (set! out (string-append out (string #\newline) 
+              (set! out (string-append out (string #\newline)
 			  	(make-string (* d fluxus-auto-tab-size)#\ ))))
              (else
               (cond
@@ -348,7 +348,7 @@
                 ((char=? c #\}) (when (> d 0) (set! d (- d 1)))))
               (when (and newline (not (char-whitespace? c)))
                   (set! newline #f))
-              (when (not newline) 
+              (when (not newline)
                 (set! out (string-append out (string c))))))))
     out))
 
@@ -370,8 +370,8 @@
 
 ; the main callback every frame
 
-(define (default-fluxus-frame-callback) 
-  (cond 
+(define (default-fluxus-frame-callback)
+  (cond
     ((eq? (get-stereo-mode) 'no-stereo)
      (draw-buffer 'back)
      (when camera-update-a (set-camera (get-camera-transform)))
@@ -387,3 +387,5 @@
   (display (fluxus-error-log)))
 
 (define fluxus-frame-callback default-fluxus-frame-callback)
+
+)

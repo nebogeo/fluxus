@@ -4,7 +4,7 @@
 ;; voxels-utils
 ;; High level fluxus commands written in Scheme.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 ;; StartSeciontDoc-pt
 ;; voxels-utils
@@ -12,23 +12,25 @@
 ;; Exemplo:
 ;; EndFunctionDoc
 
-#lang racket/base
+
+(module fluxus racket
+
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (require "maths.ss")
-(provide 
+(provide
 	voxels-index
     voxels-pos)
-		
+
 ;; StartFunctionDoc-en
 ;; voxel-index position-vector
 ;; Returns: index-number
 ;; Description:
 ;; Returns the pdata index for the voxel position
-;; Example:  
+;; Example:
 ;; (with-primitive (build-voxels 10 10 10)
 ;;     (display (voxels-index (vector 5 5 5)))(newline))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; voxel-index vetor-posição
@@ -48,7 +50,7 @@
 ;; Returns: position-vector
 ;; Description:
 ;; Returns the voxel position for the given pdata index
-;; Example:  
+;; Example:
 ;; (with-primitive (build-voxels 10 10 10)
 ;;     (display (voxels-pos 200))(newline))
 ;; EndFunctionDoc
@@ -67,4 +69,5 @@
     (vector (modulo i (voxels-width))
             (modulo (quotient i (voxels-width)) (voxels-height))
             (quotient i (* (voxels-width) (voxels-height)))))
- 
+
+)

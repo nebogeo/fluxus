@@ -39,14 +39,17 @@ using namespace fluxus;
 
 static const int LOG_SIZE=256;
 
-static const string STARTUP_SCRIPT="(define plt-collects-location \"%s\") " \
-								"(define fluxus-collects-location \"%s\") " \
-								"(define fluxus-version \"%d%d\") " \
-								"(define fluxus-data-location \"%s\") " \
-								"(define static-link \"%s\") "\
-								"(define fluxus-platform '%s) "\
-								"(load (string-append fluxus-collects-location \"/fluxus-\" " \
-                                      "fluxus-version \"/boot.scm\")) ";
+static const string STARTUP_SCRIPT=\
+  "(define plt-collects-location \"%s\")\n" \
+  "(display (find-system-path 'collects-dir))(newline)\n" \
+  "(define fluxus-collects-location \"%s\")\n" \
+  "(define fluxus-version \"%d%d\")\n"         \
+  "(define fluxus-data-location \"%s\")\n"     \
+  "(define static-link \"%s\")\n"              \
+  "(define fluxus-platform '%s)\n"             \
+  "(load \"/usr/local/lib/fluxus-018/boot.rkt\")\n" \
+  "(load (string-append fluxus-collects-location \"/fluxus-\" " \
+  "fluxus-version \"/boot.rkt\"))";
 
 Scheme_Env *Interpreter::m_Scheme=NULL;
 Repl *Interpreter::m_Repl=NULL;
@@ -92,6 +95,13 @@ void Interpreter::Initialise()
 	declare_modules(m_Scheme);
     v = scheme_intern_symbol("racket/base");
     scheme_namespace_require(v);
+
+    scheme_set_collects_path(scheme_make_path(RACKET_COLLECTS_LOCATION));
+
+    Scheme_Object *vec = scheme_make_vector(2, scheme_void);
+    SCHEME_VEC_ELS(vec)[0] = scheme_make_path(RACKET_COLLECTS_LOCATION);
+    SCHEME_VEC_ELS(vec)[1] = scheme_make_path(FLUXUS_COLLECTS_LOCATION);
+    scheme_init_collection_paths(m_Scheme,scheme_vector_to_list(vec));
 
 	// figure out what we are running on
 	#ifdef WIN32
@@ -267,4 +277,3 @@ bool Interpreter::Interpret(const wstring &str, Scheme_Object **ret, bool abort)
 	MZ_GC_UNREG();
 	return true;
 }
-

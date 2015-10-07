@@ -11,17 +11,17 @@
 ;; anything. Also, fluxa is not in the default namespace, so use eg (require fluxus-017/fluxa).
 ;; Example:
 ;; EndSectionDoc
-#lang racket/base
+(module fluxus racket
 
 (require "scratchpad.ss"
 		"tasks.ss"
 		"fluxus-modules.ss"
-		scheme/list)
+        racket/list)
 (provide
 		play play-now seq clock-map clock-split volume pan max-synths note searchpath reset eq comp
 		sine saw tri squ white pink adsr add sub mul div pow mooglp moogbp mooghp formant sample
-		crush distort klip echo ks xfade s&h t&h reload zmod sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
-		set-bpm-mult logical-time inter pick set-scale)
+		crush distort klip echo ks xfade s&h t&h reload zmod modeq? sync-tempo sync-clock fluxa-init fluxa-debug set-global-offset
+		set-bpm-mult logical-time inter pick set-scale in synced-in clear-pings! bootstrap pad mass cryptodistort bpb)
 
 (define time-offset 0.0)
 (define sync-offset 0.0)
@@ -33,7 +33,7 @@
 (define MUL 10) (define DIV 11) (define POW 12) (define MOOGLP 13) (define MOOGBP 14)
 (define MOOGHP 15) (define FORMANT 16) (define SAMPLE 17) (define CRUSH 18)
 (define DISTORT 19) (define CLIP 20) (define ECHO 21) (define KS 22) (define XFADE 23)
-(define SAMPNHOLD 24) (define TRACKNHOLD 25)
+(define SAMPNHOLD 24) (define TRACKNHOLD 25) (define PAD 26) (define CRYPTODISTORT 27)
 
 (define (fluxa-init)
   (osc-destination "osc.udp://127.0.0.1:4004")
@@ -510,6 +510,9 @@
 (define (distort in amount)
   (operator DISTORT (list in amount)))
 
+(define (cryptodistort in amount)
+  (operator CRYPTODISTORT (list in amount)))
+
 ;; StartFunctionDoc-en
 ;; klip signal-node amount-number-or-node
 ;; Returns: node-id-number
@@ -556,8 +559,8 @@
 ;; ks freq cutoff resonance
 ;; Returns: node-id-number
 ;; Description:
-;; Karplus strong "ocillator" node. Plucks virtual strings by filtering white 
-;; noise in a feedback delay loop set resonate at the desired frequency. 
+;; Karplus strong "ocillator" node. Plucks virtual strings by filtering white
+;; noise in a feedback delay loop set resonate at the desired frequency.
 ;; Example:
 ;; (play-now (ks (random 1000) 0.9 0.1))
 ;; EndFunctionDoc
@@ -569,7 +572,7 @@
 ;; xfade signal1-number-or-node signal2-number-or-node mix-number-or-node
 ;; Returns: node-id-number
 ;; Description:
-;; Crossfader. Linearly crossfades between two signals or values 
+;; Crossfader. Linearly crossfades between two signals or values
 ;; "mix" ranges from -1 t0 1.
 ;; Example:
 ;; (play-now (xfade (sine 200) (saw 100) (sine 4))
@@ -579,7 +582,7 @@
   (operator XFADE (list s0 s1 mix)))
 
 ;; StartFunctionDoc-en
-;; s&h signal1-number-or-node CV-number-or-node 
+;; s&h signal1-number-or-node CV-number-or-node
 ;; Returns: node-id-number
 ;; Description:
 ;; Sample&Hold. Samples the input at positive zero crossings of the CV signal
@@ -591,7 +594,7 @@
   (operator SAMPNHOLD (list sig cv)))
 
 ;; StartFunctionDoc-en
-;; t&h signal1-number-or-node CV-number-or-node 
+;; t&h signal1-number-or-node CV-number-or-node
 ;; Returns: node-id-number
 ;; Description:
 ;; Track&Hold. Like s&h, except it samples at any positive CV value
@@ -601,6 +604,9 @@
 
 (define (t&h sig cv)
   (operator TRACKNHOLD (list sig cv)))
+
+(define (pad a g c r)
+  (operator PAD (list a g c r)))
 
 
 ;; StartFunctionDoc-en
@@ -649,7 +655,10 @@
 ;; EndFunctionDoc
 
 (define (play-now node (pan 0))
-  (osc-send "/play" "iiif" (list 0 0 (node-id node) pan)))
+  (let ((time (time->timestamp (+ (time-now) 0.1))))
+    (osc-send "/play" "iiif" (list (vector-ref time 0)
+                                   (vector-ref time 1)
+                                   (node-id node) pan))))
 
 ;------------------------------
 ; global controls
@@ -831,12 +840,12 @@
 ;; (note 35)
 ;; EndFunctionDoc
 
-(define (set-scale s) (set! flx-scale s)) 
+(define (set-scale s) (set! flx-scale s))
 
 (define flx-scale '(1 1 1 1 1 1 1 1 1 1 1))
 
 (define (note n)
-  (list-ref scale-lut (modulo (inter flx-scale n) (length scale-lut))))
+  (list-ref scale-lut (modulo (inter flx-scale (abs (inexact->exact (round n)))) (length scale-lut))))
 
 ;; StartFunctionDoc-en
 ;; reset
@@ -965,6 +974,10 @@
 ;;         (play time (mul (adsr 0 0.1 0 0) (sine (note nt)))))))
 ;; EndFunctionDoc
 
+(define (modeq? clock n)
+  (eq? (modulo clock n) (- n 1)))
+
+
 (define (zmod clock n)
   (zero? (modulo clock n)))
 
@@ -999,7 +1012,91 @@
 
 (define proc
   (lambda (time clock)
-    0))
+    sync-tempo))
+
+;---------------------------------------
+; temporal recursion
+
+(define (make-ping t thunk)
+  (list t thunk))
+
+(define (ping-t p) (list-ref p 0))
+(define (ping-thunk p) (list-ref p 1))
+
+(define max-pings 6)
+
+(define (clip-list l c)
+  (cond
+   ((null? l) l)
+   ((zero? c) '())
+   (else (cons (car l) (clip-list (cdr l) (- c 1))))))
+
+; (1 2 3 4) -> (0 1 2 3)
+(define (limit-cons v l max)
+  (clip-list (cons v l) max))
+
+(define (pings-add pings p)
+  (limit-cons p pings max-pings))
+
+;---------------------------------------------
+
+(define pings '())
+(define synced '())
+(define safety-margin 0.1) ; seconds to get to synth and play
+(define (clear-pings!)
+  (display "clear pings")(newline)
+  (set! pings '())
+  ;(set! synced '())
+  )
+
+(define (pings-run t)
+  (let ((t (+ t safety-margin))) ; push forward in time
+    (when (and (null? pings) (not (null? synced)))
+          (display "resetting temp rec!")(newline)
+          (apply synced-in (cons t synced)))
+    ;;    (display (length pings))(newline)
+    (for-each
+     (lambda (p)
+       (when (>= t (ping-t p))
+             (with-handlers ([(lambda (x) #t) fluxa-error-handler])
+                            (apply (car (ping-thunk p))
+                                   (cons
+                                    ;; add the safety for triggering plays
+                                    ;; and further temporal calls
+                                    (ping-t p)
+                                    (cdr (ping-thunk p)))))))
+     pings)
+    (set! pings
+          (filter
+           (lambda (p)
+             (< t (ping-t p)))
+           pings))))
+
+(define (synced-in . args)
+  (set! synced (cdr args))
+  (set! pings (pings-add pings
+                         (make-ping
+                          ;; snap time to next beat
+                          (snap-time-to-sync
+                           (+ (car args) sync-tempo)) ;; remove safety
+                          (cdr args)))))
+
+(define (in . args)
+  (set! pings (pings-add pings
+                         (make-ping
+                          (+ (car args)
+                             (* (cadr args) sync-tempo))
+                          (cddr args)))))
+
+(define (zop time clock zap) 0)
+
+(define (bootstrap fn)
+  (define (_ time clock zap)
+    (synced-in time _ sync-clock zap)
+    (when (zmod sync-clock bpb)
+          (in time 1 (fn) 0 zap)))
+  (reset)
+  (synced-in (time-now) _ sync-clock 0))
 
 ;---------------------------------------
 ; fluxus implementation
@@ -1012,6 +1109,7 @@
 (define sync-clock 0)
 (define bpb 4)
 (define on-sync #f)
+(define last-sync-time (time-now))
 
 (define (set-on-sync s)
   (set! on-sync s))
@@ -1022,13 +1120,22 @@
 (define (set-bpm-mult s)
   (set! bpm-mult s))
 
+(define (snap-time-to-sync time)
+  (+ time (calc-offset time last-sync-time sync-tempo)))
+
 ; figures out the offset to the nearest tick
-(define (calc-offset timenow synctime tick)
-  (let ((p (/ (- synctime timenow) tick))) ; difference in terms of tempo
-    (let ((f (- p (floor p))))             
-      (if (< f 0.5)
-          (* f tick)
-          (- (* (- 1 f) tick))))))
+(define (calc-offset time-now sync-time beat-dur)
+  ;; find the difference in terms of tempo
+  (let* ((diff (/ (- sync-time time-now) beat-dur))
+         ;; get the fractional remainder (doesn't matter how
+         ;; far in the past or future the synctime is)
+         (fract (- diff (floor diff))))
+    ;; do the snapping
+    (if (< fract 0.5)
+        ;; need to jump forwards - convert back into seconds
+        (* fract beat-dur)
+        ;; the beat is behind us, so go backwards
+        (- (* (- 1 fract) beat-dur)))))
 
 (define (fluxa-error-handler n)
   (printf "fluxa error:~a~n" n))
@@ -1036,16 +1143,24 @@
 (define (go-flux)
   ; check for sync messages
   (cond ((osc-msg "/sync")
-         (set! sync-tempo (* (/ 1 (* (osc 3) bpm-mult)) 60))
+         (let ((new-tempo (* (/ 1 (* (osc 3) bpm-mult)) 60)))
+           (when (> (abs (- new-tempo sync-tempo)) 0.0001)
+                 ;; reset the ping list when the temp changes,
+                 ;; forces re-init to last synced, and everything
+                 ;; resets...
+                 (clear-pings!))
+           (set! sync-tempo new-tempo))
          (set! bpb (osc 2))
          (let* ((sync-time (+ sync-offset (timestamp->time (vector (osc 0) (osc 1)))))
                 (offset (calc-offset logical-time sync-time sync-tempo)))
            (printf "time offset: ~a~n" offset)
+           (set! last-sync-time sync-time)
            (set! logical-time (+ logical-time offset))
-           (set! sync-clock 0)
+           (set! sync-clock 1)
        (when on-sync (on-sync)))))
 
   (cond ((> (- (time-now) logical-time) 3)
+         (printf "catchup~n")
          (set! logical-time (time-now))))
 
   ; time for an update?
@@ -1055,12 +1170,14 @@
                     (set! tempo (proc (+ logical-time (* bpb tempo)) clock)))
      (set! logical-time (+ logical-time tempo))
      (set! clock (+ clock 1))
-     (set! sync-clock (+ sync-clock 1))))
+     (set! sync-clock (modulo (+ sync-clock 1) bpb))))
 
   ; send a loadqueue request every 5 seconds
   (cond ((> (time-now) next-load-queue)
          (osc-send "/loadqueue" "" '())
-         (set! next-load-queue (+ next-load-queue 5)))))
+         (set! next-load-queue (+ next-load-queue 5))))
+
+  (pings-run (time-now)))
 
 (fluxa-init)
 
@@ -1095,3 +1212,15 @@
 
 (define (pick l c)
   (list-ref l (modulo c (length l))))
+
+(define (mass fn n l)
+  (proc-list add (map (lambda (f) (fn (* n f))) l)))
+
+
+(define (proc-list p l)
+  (cond
+   ((eq? (length l) 1) (car l))
+   ((eq? (length l) 2) (p (car l) (cadr l)))
+   (else (p (car l) (proc-list p (cdr l))))))
+
+)

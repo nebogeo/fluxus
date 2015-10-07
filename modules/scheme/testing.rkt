@@ -12,14 +12,15 @@
 ;; Um conjunto de estruturas de alto nível para manipular objetos e
 ;; estado no fluxus de uma forma mais limpa e segura.
 ;; Exemplo:
-;; EndFunctionDoc
+;; EndSectionDoc
 
 
-#lang racket/base
+(module fluxus racket
+
 (require "scratchpad.ss")
 (require "help.ss")
 (require "camera.ss")
-(require mzlib/string)
+;(require mzlib/string)
 
 (provide
   self-test
@@ -71,21 +72,21 @@
   (when do-log
      (fprintf log "testing: ~a~n" name))
 
-  (cond
-    ((string=? code "")
-      (set! errors (+ errors 1))
-      (set! error-list (cons name error-list)))
-    (else
-      (eval-string
-             code
-             (lambda (s)
-               (when do-log
-                     (fprintf log "--------------------~n")
-                     (fprintf log "~a~n" name)
-                     (fprintf log "~a~n" code)
-                     (fprintf log "~a~n" s))
-               (set! errors (+ errors 1))
-               (set! error-list (cons name error-list))))))
+  ;; (cond
+  ;;   ((string=? code "")
+  ;;     (set! errors (+ errors 1))
+  ;;     (set! error-list (cons name error-list)))
+  ;;   (else
+  ;;     (eval-string
+  ;;            code
+  ;;            (lambda (s)
+  ;;              (when do-log
+  ;;                    (fprintf log "--------------------~n")
+  ;;                    (fprintf log "~a~n" name)
+  ;;                    (fprintf log "~a~n" code)
+  ;;                    (fprintf log "~a~n" s))
+  ;;              (set! errors (+ errors 1))
+  ;;              (set! error-list (cons name error-list))))))
     (sleep 0.1))
 
 (define (go)
@@ -178,3 +179,4 @@
    (thread run-all))
 
 
+)

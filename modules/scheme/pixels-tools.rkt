@@ -4,19 +4,19 @@
 ;; scheme-utils
 ;; High level fluxus commands written in Scheme.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 ;; StartSectionDoc-fr
 ;; scheme-utils
 ;; Commandes fluxus haut-niveau écrites en Scheme.
 ;; Exemple:
-;; EndSectionDoc 
+;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (require "maths.ss")
-(provide 
+(provide
 	pixels-circle
 	pixels-blend-circle
 	pixels-dodge
@@ -24,17 +24,17 @@
 	pixels-clear
     pixels-index
     pixels-texcoord)
-		
+
 ;; StartFunctionDoc-en
 ;; pixels-circle pos radius colour
 ;; Returns: void
 ;; Description:
 ;; Draws a circle into a pixels primitive
-;; Example:  
+;; Example:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-circle (vector 50 50 0) 30 (vector 1 0 0 1))
 ;;     (pixels-upload))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-circle pos rayon couleur
@@ -45,13 +45,13 @@
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-circle (vector 50 50 0) 30 (vector 1 0 0 1))
 ;;     (pixels-upload))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (pixels-circle pos radius colour)
 	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
-            (let ((p (vector (modulo i (pixels-width)) 
+            (let ((p (vector (modulo i (pixels-width))
                              (quotient i (pixels-height)) 0)))
                 (if (< (vdist-sq p pos) radius)
                     colour
@@ -63,28 +63,28 @@
 ;; Returns: void
 ;; Description:
 ;; Draws a blended circle into a pixels primitive
-;; Example: 
+;; Example:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-blend-circle (vector 50 50 0) 30 (vector 1 0 0 1))
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-blend-circle pos rayon couleur
 ;; Retour: vide
 ;; Description:
 ;; Dessine un cercle mélangé à la primitive pixels.
-;; Exemple: 
+;; Exemple:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-blend-circle (vector 50 50 0) 30 (vector 1 0 0 1))
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 (define (pixels-blend-circle pos radius colour)
   (let ((radius (* radius radius)))
     (pdata-index-map!
      (lambda (i c)
-       (let* ((p (vector (modulo i (pixels-width)) 
+       (let* ((p (vector (modulo i (pixels-width))
                          (quotient i (pixels-height)) 0))
               (d (vdist-sq p pos)))
          (if (< d radius)
@@ -97,12 +97,12 @@
 ;; Returns: void
 ;; Description:
 ;; Lightens a circular area of a pixels primitive
-;; Example: 
+;; Example:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-clear (vector 0 0 0))
 ;;     (pixels-dodge (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-dodge pos rayon force
@@ -114,13 +114,13 @@
 ;;     (pixels-clear (vector 0 0 0))
 ;;     (pixels-dodge (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 (define (pixels-dodge pos radius strength)
 	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
-            (let* ((p (vector (modulo i (pixels-width)) 
+            (let* ((p (vector (modulo i (pixels-width))
                               (quotient i (pixels-height)) 0))
                   (d (vdist-sq p pos)))
                 (if (< d radius)
@@ -135,11 +135,11 @@
 ;; Returns: void
 ;; Description:
 ;; Darkens a circular area of a pixels primitive
-;; Example: 
+;; Example:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-burn (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-burn pos rayon force
@@ -150,13 +150,13 @@
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-burn (vector 50 50 0) 30 .5)
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 (define (pixels-burn pos radius strength)
 	(let ((radius (* radius radius)))
     (pdata-index-map!
         (lambda (i c)
-            (let* ((p (vector (modulo i (pixels-width)) 
+            (let* ((p (vector (modulo i (pixels-width))
                               (quotient i (pixels-height)) 0))
                   (d (vdist-sq p pos)))
                 (if (< d radius)
@@ -165,17 +165,17 @@
                                   (/ d radius)))
                     c)))
         "c")))
-		
+
 ;; StartFunctionDoc-en
 ;; pixels-clear col
 ;; Returns: void
 ;; Description:
 ;; Sets all of the pixels to the supplied colour
-;; Example: 
+;; Example:
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-clear (vector 1 0 0))
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-clear couleur-vecteur
@@ -186,7 +186,7 @@
 ;; (with-primitive (build-pixels 100 100)
 ;;     (pixels-clear (vector 1 0 0))
 ;;     (pixels-upload))
-;; EndFunctionDoc  
+;; EndFunctionDoc
 
 (define (pixels-clear col)
     (pdata-map!
@@ -199,20 +199,20 @@
 ;; Returns: index-number
 ;; Description:
 ;; Returns the pdata index for the given texture coordinate
-;; Example:  
+;; Example:
 ;; (with-primitive (build-pixels 10 10)
 ;;     (display (pixels-index (vector 0.5 0.5 0)))(newline))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; pixels-index position-vecteur
 ;; Retour: index-nombre
 ;; Description:
 ;; Retourne l'index pdata pour les coordonnées de texture fournies.
-;; Exemple: 
+;; Exemple:
 ;; (with-primitive (build-pixels 10 10)
 ;;     (display (pixels-index (vector 0.5 0.5 0)))(newline))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (pixels-index v)
   (+ (inexact->exact (floor (* (vx v) (pixels-width))))
@@ -223,7 +223,7 @@
 ;; Returns: position-vector
 ;; Description:
 ;; Returns the texture coordinate for the given pdata index
-;; Example:  
+;; Example:
 ;; (with-primitive (build-pixels 10 10)
 ;;     (display (pixels-texcoord 25))(newline))
 ;; EndFunctionDoc
@@ -242,3 +242,5 @@
     (vector (/ (modulo i (pixels-width)) (pixels-width))
             (/ (quotient i (pixels-width)) (pixels-width))
             0))
+
+)

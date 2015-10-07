@@ -4,18 +4,19 @@
 ;; scheme-utils
 ;; High level fluxus commands written in Scheme.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 ;; StartSectionDoc-fr
 ;; scheme-utils
 ;; Commandes fluxus haut-niveau écrites en Scheme.
 ;; Exemple:
-;; EndSectionDoc 
+;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
-(provide 
+(provide
 	vmix
 	vclamp
 	vsquash
@@ -31,7 +32,7 @@
 ;; Returns: vector
 ;; Description:
 ;; Linearly interpolates the two vectors together by t
-;; Example:  
+;; Example:
 ;; ; mix red and blue together
 ;; (colour (vmix (vector 1 0 0) (vector 0 0 1) 0.5))
 ;; EndFunctionDoc
@@ -48,16 +49,16 @@
 
 (define (vmix a b t)
     (vlerp a b t))
-	
+
 ;; StartFunctionDoc-en
 ;; vclamp a
 ;; Returns: vector
 ;; Description:
 ;; Clamp the vector so the elements are all between 0 and 1
-;; Example:  
+;; Example:
 ;; ; make a valid colour from any old vector
 ;; (colour (vclamp (vector 2 400 -123)))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; vclamp a
@@ -68,7 +69,7 @@
 ;; Exemple:
 ;; ; produit un vecteur valide de couleur à partir de n'importe quel ancien vecteur
 ;; (colour (vclamp (vector 2 400 -123)))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (vclamp a)
 	(define (clamp v)
@@ -81,23 +82,23 @@
 ;; vsquash a
 ;; Returns: vector
 ;; Description:
-;; Normalise the vector so all the elements are between 0 and 1 but 
+;; Normalise the vector so all the elements are between 0 and 1 but
 ;; maintain the same ratio between them.
-;; Example:  
+;; Example:
 ;; ; make a valid colour from any old vector
 ;; (colour (vsquash (vector 2 400 -123)))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-fr
 ;; vsquash a
 ;; Retour: vecteur
 ;; Description:
 ;; Normalise le vecteur de facon à ce que tout les éléments soient
-;; entre 0 et 1 mais conserve le ratio entre eux. 
+;; entre 0 et 1 mais conserve le ratio entre eux.
 ;; Exemple:
 ;; ; produit un vecteur valide de couleur à partir de n'importe quel ancien vecteur
 ;; (colour (vsquash (vector 2 400 -123)))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (vsquash v)
 	(let ((t (+ (vx v) (vy v) (vz v))))
@@ -109,19 +110,19 @@
     (define (h1 s)
         (+ (- (* 2 (expt s 3))
                 (* 3 (expt s 2))) 1))
-    
+
     (define (h2 s)
         (+ (* -2 (expt s 3))
             (* 3 (expt s 2))))
-    
+
     (define (h3 s)
         (+ (- (expt s 3) (* 2 (expt s 2))) s))
-    
+
     (define (h4 s)
         (- (expt s 3) (expt s 2)))
-    
+
     (vadd
-        (vadd 
+        (vadd
             (vmul p1 (h1 s))
             (vmul p2 (h2 s)))
         (vadd
@@ -154,7 +155,7 @@
 
 (define (lerp p1 p2 t)
 	(+ p1 (* (- p2 p1) t)))
-	
+
 ;; StartFunctionDoc-en
 ;; clamp t [low 0] [high 1]
 ;; Returns: number
@@ -221,3 +222,4 @@
 
 (define mlerp vlerp)
 
+)

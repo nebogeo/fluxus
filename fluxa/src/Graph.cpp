@@ -38,15 +38,15 @@ void Graph::Init()
 	for (unsigned int type=0; type<NUMTYPES; type++)
 	{
 		NodeDescVec *descvec = new NodeDescVec;
-		
+
 		unsigned int count=m_NumNodes;
-		
+
 		if (type==TERMINAL) count=2000;
-		
+
 		for(unsigned int n=0; n<count; n++)
 		{
 			NodeDesc *nodedesc = new NodeDesc;
-			
+
 			switch(type)
 			{
 				case TERMINAL : nodedesc->m_Node = new TerminalNode(0); break;
@@ -69,18 +69,20 @@ void Graph::Init()
 				case SAMPLER : nodedesc->m_Node = new SampleNode(m_SampleRate); break;
 				case CRUSH : nodedesc->m_Node = new EffectNode(EffectNode::CRUSH,m_SampleRate); break;
 				case DISTORT : nodedesc->m_Node = new EffectNode(EffectNode::DISTORT,m_SampleRate); break;
+				case CRYPTODISTORT : nodedesc->m_Node = new EffectNode(EffectNode::CRYPTODISTORT,m_SampleRate); break;
 				case CLIP : nodedesc->m_Node = new EffectNode(EffectNode::CLIP,m_SampleRate); break;
-				case DELAY : nodedesc->m_Node = new EffectNode(EffectNode::DELAY,m_SampleRate); break;				
+				case DELAY : nodedesc->m_Node = new EffectNode(EffectNode::DELAY,m_SampleRate); break;
 				case KS : nodedesc->m_Node = new KSNode(m_SampleRate); break;
 				case XFADE : nodedesc->m_Node = new XFadeNode(); break;
 				case SAMPNHOLD : nodedesc->m_Node = new HoldNode(HoldNode::SAMP); break;
 				case TRACKNHOLD : nodedesc->m_Node = new HoldNode(HoldNode::TRACK); break;
+				case PAD : nodedesc->m_Node = new PadNode(m_SampleRate); break;
 				default: assert(0); break;
 			}
-			
+
 			descvec->m_Vec.push_back(nodedesc);
 		}
-		
+
 		m_NodeDescMap[(Type)type] = descvec;
 	}
 }
@@ -89,8 +91,8 @@ void Graph::Clear()
 {
 	m_RootNodes.clear();
 	m_NodeMap.clear();
-	
-	for (map<Type,NodeDescVec*>::iterator i=m_NodeDescMap.begin(); 
+
+	for (map<Type,NodeDescVec*>::iterator i=m_NodeDescMap.begin();
 		i!=m_NodeDescMap.end(); ++i)
 	{
 		for (vector<NodeDesc*>::iterator ni=i->second->m_Vec.begin();
@@ -100,8 +102,8 @@ void Graph::Clear()
 		}
 		i->second->m_Vec.clear();
 	}
-	
-	m_NodeDescMap.clear();	
+
+	m_NodeDescMap.clear();
 }
 
 void Graph::Create(unsigned int id, Type t, float v)
@@ -110,27 +112,27 @@ void Graph::Create(unsigned int id, Type t, float v)
 	unsigned int oldid=m_NodeDescMap[t]->m_Vec[index]->m_ID;
 
 //cerr<<"create id:"<<id<<" index:"<<index<<" type:"<<t<<" value:"<<v<<endl;
-	
+
 	map<unsigned int,GraphNode*>::iterator i=m_NodeMap.find(oldid);
 	if (i!=m_NodeMap.end()) m_NodeMap.erase(i);
-	
+
 	list<pair<unsigned int,float> >::iterator remove;
 	bool found=false;
 	for (list<pair<unsigned int,float> >::iterator ri=m_RootNodes.begin();
 		ri!=m_RootNodes.end(); ++ri)
 	{
-		if (ri->first==oldid) 
+		if (ri->first==oldid)
 		{
 			remove=ri;
 			found=true;
 		}
 	}
 	if (found) m_RootNodes.erase(remove);
-	
+
 	m_NodeDescMap[t]->m_Vec[index]->m_ID=id;
 	m_NodeDescMap[t]->m_Vec[index]->m_Node->Clear();
 	m_NodeMap[id]=m_NodeDescMap[t]->m_Vec[index]->m_Node;
-		
+
 	if (t==TERMINAL)
 	{
 		TerminalNode *terminal = dynamic_cast<TerminalNode*>(m_NodeMap[id]);
@@ -155,7 +157,7 @@ void Graph::Play(float time, unsigned int id, float pan)
 	{
 		m_NodeMap[id]->Trigger(time);
 		m_RootNodes.push_back(pair<unsigned int, float>(id,pan));
-		
+
 		while (m_RootNodes.size()>m_MaxPlaying)
 		{
 			m_RootNodes.erase(m_RootNodes.begin());
@@ -167,7 +169,7 @@ void Graph::Process(unsigned int bufsize, Sample &left, Sample &right)
 {
 	for(list<pair<unsigned int, float> >::iterator i=m_RootNodes.begin();
 		i!=m_RootNodes.end(); ++i)
-	{        
+	{
 		if (m_NodeMap[i->first]!=NULL)
 		{
 			m_NodeMap[i->first]->Process(bufsize);
@@ -177,7 +179,7 @@ void Graph::Process(unsigned int bufsize, Sample &left, Sample &right)
             float leftpan=1,rightpan=1;
             if (pan<0) leftpan=1-pan;
             else rightpan=1+pan;
-	
+
 			left.MulMix(m_NodeMap[i->first]->GetOutput(),0.1*leftpan);
             right.MulMix(m_NodeMap[i->first]->GetOutput(),0.1*rightpan);
 		}

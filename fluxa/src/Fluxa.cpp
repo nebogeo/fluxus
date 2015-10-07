@@ -33,9 +33,12 @@ m_Pan(0.0f),
 m_Debug(false),
 m_LeftEq(jack->GetSamplerate()),
 m_RightEq(jack->GetSamplerate()),
-m_Comp(jack->GetSamplerate())
-{		
+m_LeftComp(jack->GetSamplerate()),
+m_RightComp(jack->GetSamplerate())
+{
 	WaveTable::WriteWaves();
+    CryptoInit();
+
  	jack->SetCallback(Run,(void*)this);
 
 	//PortAudioClient* Audio=PortAudioClient::Get();
@@ -44,37 +47,37 @@ m_Comp(jack->GetSamplerate())
 	//Options.Samplerate=m_SampleRate;
 	//Options.NumBuffers=2;
 	//Options.BufferSize=512;
-	//Audio->Attach("Fluxa",Options);	
-	
+	//Audio->Attach("Fluxa",Options);
+
 	m_LeftBuffer.Allocate(1024);
 	m_RightBuffer.Allocate(1024);
 	m_LeftBuffer.Zero();
 	m_RightBuffer.Zero();
-	
+
 	if (jack->IsAttached())
-	{	
+	{
 		//Audio->SetOutputs(m_LeftBuffer.GetNonConstBuffer(),m_RightBuffer.GetNonConstBuffer());
-		
+
 		m_LeftJack = jack->AddOutputPort();
  		jack->SetOutputBuf(m_LeftJack, m_LeftBuffer.GetNonConstBuffer());
  	    jack->ConnectOutput(m_LeftJack,leftport);
   	    m_RightJack = jack->AddOutputPort();
  		jack->SetOutputBuf(m_RightJack, m_RightBuffer.GetNonConstBuffer());
-  	    jack->ConnectOutput(m_RightJack,rightport); 	
+  	    jack->ConnectOutput(m_RightJack,rightport);
  		m_Running=true;
 	}
 	//Sample::SetAllocator(new RealtimeAllocator(1024*1024*40));
-	
+
 	Time Now;
 	Now.SetToNow();
 	m_CurrentTime.Seconds=Now.Seconds;
 	m_CurrentTime.Fraction=Now.Fraction;
-	
+
 	cerr<<"fluxa server ready... "<<endl;
 }
 
 void Fluxa::Run(void *RunContext, unsigned int BufSize)
-{ 
+{
 	((Fluxa*)RunContext)->ProcessCommands();
 	((Fluxa*)RunContext)->Process(BufSize);
 }
@@ -85,30 +88,30 @@ void Fluxa::ProcessCommands()
 	while (m_Server->Get(cmd))
 	{
 		string name = cmd.Name;
-		//cerr<<name<<endl;		
-		
-		if (name=="/setclock")	
-		{ 
+		//cerr<<name<<endl;
+
+		if (name=="/setclock")
+		{
 			// baddddd :P
 			Time Now;
 			Now.SetToNow();
 			m_CurrentTime.Seconds=Now.Seconds;
-			m_CurrentTime.Fraction=Now.Fraction;		
+			m_CurrentTime.Fraction=Now.Fraction;
 		}
-		else if (name=="/create")	
-		{ 		
+		else if (name=="/create")
+		{
 			unsigned int pos=0;
 			while (pos<cmd.Size())
 			{
-				if (cmd.Size()<pos+1) 
+				if (cmd.Size()<pos+1)
 				{
 					cerr<<"/create - malformed arguments..."<<endl;
 				}
 				else
 				{
 					Graph::Type type=(Graph::Type)cmd.GetInt(pos+1);
-				
-					if (type==Graph::TERMINAL) 
+
+					if (type==Graph::TERMINAL)
 					{
 						m_Graph.Create(cmd.GetInt(pos),type,cmd.GetFloat(pos+2));
 						pos+=3;
@@ -121,11 +124,11 @@ void Fluxa::ProcessCommands()
 				}
 			}
 		}
-		else if (name=="/connect")	
-		{ 		
+		else if (name=="/connect")
+		{
 			for (unsigned int n=0; n<cmd.Size(); n+=3)
 			{
-				if (cmd.Size()<n+1) 
+				if (cmd.Size()<n+1)
 				{
 					cerr<<"/connect - malformed arguments..."<<endl;
 				}
@@ -135,61 +138,61 @@ void Fluxa::ProcessCommands()
 				}
 			}
 		}
-		else if (name=="/play")	
+		else if (name=="/play")
 		{
 			Event e;
 			e.TimeStamp.Seconds=(unsigned int)cmd.GetInt(0);
 			e.TimeStamp.Fraction=(unsigned int)cmd.GetInt(1);
 			e.ID=cmd.GetInt(2);
             e.Pan=cmd.GetFloat(3);
-			
+
 			if (e.TimeStamp.Seconds==0 && e.TimeStamp.Fraction==0)
 			{
 				e.TimeStamp=m_CurrentTime;
 				e.TimeStamp+=0.1;
 			}
-			if (e.TimeStamp>=m_CurrentTime) 
+			if (e.TimeStamp>=m_CurrentTime)
 			{
 				m_EventQueue.Add(e);
 
 				if (e.TimeStamp.GetDifference(m_CurrentTime)>30)
 				{
 					Trace(RED,YELLOW,"Reset clock? Event far in future %f seconds",e.TimeStamp.GetDifference(m_CurrentTime));
-				} 			
+				}
 			}
-			else 
+			else
 			{
-				Trace(RED,YELLOW,"Event arrived too late [%f secs], playing now anyway!",m_CurrentTime.GetDifference(e.TimeStamp));
-				e.TimeStamp=m_CurrentTime;
-				e.TimeStamp+=0.1;
-				m_EventQueue.Add(e);
+				Trace(RED,YELLOW,"Event arrived too late [%f secs], ignoring ",m_CurrentTime.GetDifference(e.TimeStamp));
+//				e.TimeStamp=m_CurrentTime;
+//				e.TimeStamp+=0.1;
+//				m_EventQueue.Add(e);
 			}
-			
+
 			if (m_Debug)
 			{
 				Trace(RED,YELLOW,"/play received ID=%d secs=%d frac=%d",e.ID,(unsigned int)e.TimeStamp.Seconds,
 																			 (unsigned int)e.TimeStamp.Fraction);
 			}
 		}
-		else if (name=="/maxsynths")	
-		{ 		
+		else if (name=="/maxsynths")
+		{
 			m_Graph.SetMaxPlaying(cmd.GetInt(0));
 		}
-		else if (name=="/reset")	
-		{ 		
+		else if (name=="/reset")
+		{
 			m_Graph.Clear();
 			m_Graph.Init();
 		}
-		else if (name=="/globalvolume")	
-		{ 		
+		else if (name=="/globalvolume")
+		{
 			m_GlobalVolume=cmd.GetFloat(0);
 		}
-		else if (name=="/pan")	
-		{ 		
+		else if (name=="/pan")
+		{
 			m_Pan=cmd.GetFloat(0);
 		}
-		else if (name=="/eq")	
-		{ 		
+		else if (name=="/eq")
+		{
 			m_LeftEq.SetLow(cmd.GetFloat(0));
             m_LeftEq.SetMid(cmd.GetFloat(1));
 			m_LeftEq.SetHigh(cmd.GetFloat(2));
@@ -197,12 +200,17 @@ void Fluxa::ProcessCommands()
 			m_RightEq.SetMid(cmd.GetFloat(1));
 			m_RightEq.SetHigh(cmd.GetFloat(2));
 		}
-		else if (name=="/comp")	
-		{ 		
-			m_Comp.SetAttack(cmd.GetFloat(0));
-			m_Comp.SetRelease(cmd.GetFloat(1));
-			m_Comp.SetThreshold(cmd.GetFloat(2));
-			m_Comp.SetSlope(cmd.GetFloat(3));
+		else if (name=="/comp")
+		{
+			m_LeftComp.SetAttack(cmd.GetFloat(0));
+			m_LeftComp.SetRelease(cmd.GetFloat(1));
+			m_LeftComp.SetThreshold(cmd.GetFloat(2));
+			m_LeftComp.SetSlope(cmd.GetFloat(3));
+
+			m_RightComp.SetAttack(cmd.GetFloat(0));
+			m_RightComp.SetRelease(cmd.GetFloat(1));
+			m_RightComp.SetThreshold(cmd.GetFloat(2));
+			m_RightComp.SetSlope(cmd.GetFloat(3));
 		}
 		else if (name=="/addtoqueue")
 		{
@@ -228,11 +236,11 @@ void Fluxa::ProcessCommands()
 		{
 			SearchPaths::Get()->AddPath(cmd.GetString(0));
 		}
-	}	
+	}
 }
 
 void Fluxa::Process(unsigned int BufSize)
-{	
+{
 	if (BufSize==0)
 	{
 		cerr<<"BufSize is "<<BufSize<<" ??"<<endl;
@@ -247,19 +255,19 @@ void Fluxa::Process(unsigned int BufSize)
  		JackClient::Get()->SetOutputBuf(m_LeftJack, m_LeftBuffer.GetNonConstBuffer());
  		JackClient::Get()->SetOutputBuf(m_RightJack, m_RightBuffer.GetNonConstBuffer());
 	}
-	
+
 	m_LeftBuffer.Zero();
 	m_RightBuffer.Zero();
-	
+
 	Time LastTime = m_CurrentTime;
 	m_CurrentTime.IncBySample(BufSize,m_SampleRate);
-	
+
 	Event e;
 	while (m_EventQueue.Get(LastTime, m_CurrentTime, e))
 	{
 		float t = LastTime.GetDifference(e.TimeStamp);
 		// hack to get round bug with GetDifference throwing big numbers
-		if (t<=0) 
+		if (t<=0)
 		{
 			m_Graph.Play(t,e.ID,e.Pan);
 		}
@@ -271,28 +279,32 @@ void Fluxa::Process(unsigned int BufSize)
 			e.TimeStamp.Print();
 		}
 	}
-	
+
 	m_Graph.Process(BufSize,m_LeftBuffer,m_RightBuffer);
 	m_LeftEq.Process(BufSize,m_LeftBuffer);
 	m_RightEq.Process(BufSize,m_RightBuffer);
-	//m_Comp.Process(BufSize,m_LeftBuffer);
-		
+
 	// panning
 	float leftpan=1,rightpan=1;
 	if (m_Pan<0) leftpan=1-m_Pan;
 	else rightpan=1+m_Pan;
-	
+
 	// global volume + clip
-	bool clip=false;
+/*	bool clip=false;
 	for (unsigned int i=0; i<BufSize; i++)
 	{
 		m_LeftBuffer[i]*=m_GlobalVolume*leftpan;
 		m_RightBuffer[i]*=m_GlobalVolume*rightpan;
-		
+
 		if (m_LeftBuffer[i]<-1) { m_LeftBuffer[i]=-1; clip=true; }
 		if (m_LeftBuffer[i]>1) { m_LeftBuffer[i]=1; clip=true; }
 		if (m_RightBuffer[i]<-1) { m_RightBuffer[i]=-1; clip=true; }
-		if (m_RightBuffer[i]>1) { m_RightBuffer[i]=1; clip=true; }		
+		if (m_RightBuffer[i]>1) { m_RightBuffer[i]=1; clip=true; }
 	}
-	//if (clip) cerr<<"clip!"<<endl;
+	if (clip) cerr<<"clip!"<<endl;
+*/
+	m_LeftComp.Process(BufSize,m_LeftBuffer);
+	m_RightComp.Process(BufSize,m_RightBuffer);
+
+
 }

@@ -18,22 +18,14 @@
 ; this script loads all the modules and sets things up so the
 ; fluxus application works without having to worry about setup
 
-
 ; setup where to find the library module collections
 
-(current-library-collection-paths
-	(path-list-string->path-list
-         (string-append
-		   (or (getenv "PLTCOLLECTS") plt-collects-location)
-		   (if (eq? fluxus-platform 'win32) ";" ":")
-		   fluxus-collects-location)
-         (current-library-collection-paths)))
+; now require everything
+(require racket/pretty)
+
+(require fluxus-018/fluxus)
 
 (define fluxus-name (string-append "fluxus-" fluxus-version))
-
-; now require everything
-(require scheme/pretty)
-(require fluxus-018/fluxus)
 
 ; load the helpmap
 (init-help (string-append fluxus-collects-location "/" fluxus-name "/helpmap.scm"))
@@ -132,4 +124,3 @@
 	(let ((user-script (string-append (getenv "HOME") "/.fluxus.scm")))
 		(when (file-exists? user-script)
 	  		(load user-script))))
-

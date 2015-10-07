@@ -12,9 +12,10 @@
 ;; Exemple:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require "fluxus-modules.ss")
-(provide 
+(provide
  key-pressed
  keys-down
  key-special-pressed
@@ -47,17 +48,17 @@
       '()
       (if (eq? (car l) a)
           (set-remove a (cdr l))
-          (cons (car l) (set-remove a (cdr l))))))		  
+          (cons (car l) (set-remove a (cdr l))))))
 
 (define (set-add a l)
   (if (not (memq a l))
       (cons a l)
-      l))			  
+      l))
 
 (define (set-contains a l)
   (if (not (memq a l))
       #f
-      #t))		  
+      #t))
 
 (define (clear-down)
   (set! keys '()))
@@ -80,7 +81,7 @@
 				 #:when (> (bitwise-and mod bitmask) 0))
 			bitsym))
   (cond ; mouse
-    ((and (eq? key 0) (eq? special -1)) 
+    ((and (eq? key 0) (eq? special -1))
 	 (when (eq? button 3) (set! mouse-wheel-v 1))
 	 (when (eq? button 4) (set! mouse-wheel-v -1))
      (when (and (eq? state 0)
@@ -100,12 +101,12 @@
 
 ;; StartFunctionDoc-en
 ;; key-pressed key-string
-;; Returns: boolean 
+;; Returns: boolean
 ;; Description:
 ;; Returns true if the specified key is currently pressed down.
 ;; Example:
 ;; (when (key-pressed "q") (display "q pressed!"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; key-pressed string-tecla
@@ -123,14 +124,14 @@
 ;; Retourne vrai si la touche spécifiée est actuellement appuyée.
 ;; Exemple:
 ;; (when (key-pressed "q") (display "appui sur q!"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (key-pressed s)
   (set-contains (car (string->list s)) keys))
 
 ;; StartFunctionDoc-en
 ;; keys-down
-;; Returns: keys-list 
+;; Returns: keys-list
 ;; Description:
 ;; Returns a list of keys pressed down
 ;; Example:
@@ -160,18 +161,18 @@
 
 ;; StartFunctionDoc-en
 ;; key-special-pressed key-number
-;; Returns: boolean 
+;; Returns: boolean
 ;; Description:
 ;; Returns true if the specified special key is currently pressed down. Special
 ;; keys are ones which do not map to ascii values. The easiest way of finding
 ;; what they are is to print out the result of key-special-pressed while holding
 ;; down the key you are after.
-;; Example: 
+;; Example:
 ;; (when (key-special-pressed 100) (display "left cursor pressed"))
 ;; (when (key-special-pressed 102) (display "right cursor pressed"))
 ;; (when (key-special-pressed 101) (display "up cursor pressed"))
 ;; (when (key-special-pressed 103) (display "down cursor pressed"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; key-special-pressed número-tecla
@@ -197,24 +198,24 @@
 ;; Les touches spéciales sont celles ne correspondant pas aux valeurs ascii.
 ;; La facon la plus facile de les trouver est d'afficher le résultat de key-special-pressed
 ;; en appuyant la touche désirée.
-;; Exemple: 
+;; Exemple:
 ;; (when (key-special-pressed 100) (display "appui curseur gauche"))
 ;; (when (key-special-pressed 102) (display "appui curseur droit"))
 ;; (when (key-special-pressed 101) (display "appui curseur haut"))
 ;; (when (key-special-pressed 103) (display "appui curseur bas"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (key-special-pressed k)
   (set-contains k special-keys))
 
 ;; StartFunctionDoc-en
 ;; keys-special-down
-;; Returns: keys-list 
+;; Returns: keys-list
 ;; Description:
 ;; Returns a list of special keys pressed down
 ;; Example:
 ;; (display (keys-special-down))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; keys-special-down
@@ -262,12 +263,12 @@
 
 ;; StartFunctionDoc-en
 ;; key-pressed-this-frame key-string
-;; Returns: boolean 
+;; Returns: boolean
 ;; Description:
 ;; Returns true if the specified key was first pressed down this frame.
 ;; Example:
 ;; (when (key-pressed-this-frame "q") (display "q pressed!"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; key-pressed-this-frame string-tecla
@@ -286,19 +287,19 @@
 ;; lors de cette image.
 ;; Exemple:
 ;; (when (key-pressed-this-frame "q") (display "appui sur q!"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (key-pressed-this-frame s)
   (set-contains (car (string->list s)) keys-this-frame))
 
 ;; StartFunctionDoc-en
 ;; key-special-pressed-this-frame key-number
-;; Returns: boolean 
+;; Returns: boolean
 ;; Description:
 ;; Returns true if the specified special key was first pressed down this frame.
 ;; Example:
 ;; (when (key-special-pressed 102) (display "right cursor pressed"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; key-special-pressed-this-frame número-tecla
@@ -317,19 +318,19 @@
 ;; lors de cette image.
 ;; Exemple:
 ;; (when (key-special-pressed-this-frame 102) (display "appui curseur droit!"))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (key-special-pressed-this-frame s)
   (set-contains s special-keys-this-frame))
-  
+
 ;; StartFunctionDoc-en
 ;; mouse-x
-;; Returns: coord-number 
+;; Returns: coord-number
 ;; Description:
 ;; Returns the x position of the mouse
 ;; Example:
 ;; (display (mouse-x))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; mouse-x
@@ -347,19 +348,19 @@
 ;; Retourne la position x de la souris
 ;; Exemple:
 ;; (display (mouse-x))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (mouse-x)
   (vector-ref mouse 0))
 
 ;; StartFunctionDoc-en
 ;; mouse-y
-;; Returns: coord-number 
+;; Returns: coord-number
 ;; Description:
 ;; Returns the y position of the mouse
 ;; Example:
 ;; (display (mouse-y))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; mouse-y
@@ -377,7 +378,7 @@
 ;; Retourne la position y de la souris
 ;; Exemple:
 ;; (display (mouse-y))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (mouse-y)
   (vector-ref mouse 1))
@@ -390,7 +391,7 @@
 ;; counting from 1 with the left mouse button.
 ;; Example:
 ;; (display (mouse-button 1))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; mouse-button número-botão
@@ -410,12 +411,12 @@
 ;; démarre le compte à 1 avec le bouton gauche de la souris.
 ;; Exemple:
 ;; (display (mouse-button 1))
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (mouse-button n)
   (and (<= 1 n (vector-length mouse-buttons))
 	   (vector-ref mouse-buttons (- n 1))))
-  
+
 ;; StartFunctionDoc-en
 ;; mouse-wheel
 ;; Returns: boolean
@@ -459,7 +460,7 @@
 ;; (grab (mouse-over))
 ;; (colour (vector 1 0 0)) ; paints objects the mouse is over red
 ;; (ungrab)
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 ;; StartFunctionDoc-pt
 ;; mouse-over
@@ -481,9 +482,10 @@
 ;; (grab (mouse-over))
 ;; (colour (vector 1 0 0)) ; paint l'objet sous la souris en rouge
 ;; (ungrab)
-;; EndFunctionDoc	
+;; EndFunctionDoc
 
 (define (mouse-over)
   (select (vector-ref mouse 0) (vector-ref mouse 1) 3))
 
 
+)

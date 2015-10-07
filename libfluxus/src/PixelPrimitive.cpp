@@ -28,6 +28,8 @@
 
 //#define RENDER_NORMALS
 //#define RENDER_BBOX
+#define DEPTH_BUFFER_AS_TEXTURE
+//#define DEPTH_TEXTURE_MIPMAPPING // does not work on some cards
 
 using namespace Fluxus;
 
@@ -173,10 +175,14 @@ PixelPrimitive::~PixelPrimitive()
 	if (m_FBOSupported)
 	{
 		glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
+		#ifndef DEPTH_BUFFER_AS_TEXTURE
 		if (m_DepthBuffer != 0)
 		{
 			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
 		}
+		#else
+		glDeleteTextures(1, (GLuint *)&m_DepthTexture);
+		#endif
 	}
 	#endif
 
@@ -206,8 +212,12 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 		}
 		if (m_FBO != 0)
 			glDeleteFramebuffersEXT(1, (GLuint *)&m_FBO);
+		#ifndef DEPTH_BUFFER_AS_TEXTURE
 		if (m_DepthBuffer != 0)
 			glDeleteRenderbuffersEXT(1, (GLuint *)&m_DepthBuffer);
+		#else
+		glDeleteTextures(1, (GLuint *)&m_DepthTexture);
+		#endif
 
 		glGenTextures(m_MaxTextures, (GLuint*)m_Textures);
 
@@ -251,6 +261,20 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
+		/* attach the textures to the FBO */
+		for (unsigned i = 0; i < m_MaxTextures; i++)
+		{
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+					GL_COLOR_ATTACHMENT0_EXT + i,
+					GL_TEXTURE_2D, (GLuint)m_Textures[i], 0);
+		}
+
+#ifdef DEBUG_GL
+		check_fbo_errors();
+#endif
+
+
+		#ifndef DEPTH_BUFFER_AS_TEXTURE
 		/* create the depth buffer */
 		if (m_State.Hints & HINT_IGNORE_DEPTH)
 		{
@@ -269,18 +293,37 @@ void PixelPrimitive::ResizeFBO(int w, int h)
 			glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
 					GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT,
 					(GLuint)m_DepthBuffer);
+		#else
 
-		/* attach the textures to the FBO */
-		for (unsigned i = 0; i < m_MaxTextures; i++)
+		/* depth buffer as texture */
+
+		if (m_State.Hints & HINT_IGNORE_DEPTH)
 		{
-			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-					GL_COLOR_ATTACHMENT0_EXT + i,
-					GL_TEXTURE_2D, (GLuint)m_Textures[i], 0);
+			m_DepthTexture = 0;
 		}
-
-#ifdef DEBUG_GL
-		check_fbo_errors();
+		else
+		{
+			glGenTextures(1, &m_DepthTexture);
+			glBindTexture(GL_TEXTURE_2D, m_DepthTexture);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24,
+					m_FBOWidth, m_FBOHeight, 0, GL_DEPTH_COMPONENT,
+					GL_FLOAT, NULL );
+			CHECK_GL_ERRORS("DepthTexture glTexImage2D");
+			glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_LUMINANCE);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#ifdef DEPTH_TEXTURE_MIPMAPPING
+			glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
 #endif
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT,
+					GL_TEXTURE_2D, m_DepthTexture, 0 );
+#ifdef DEBUG_GL
+			check_fbo_errors();
+#endif
+		}
+		#endif
 
 		/* unbind the fbo */
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -355,7 +398,7 @@ void PixelPrimitive::Bind(int textureIndex /* = -1*/)
 
 void PixelPrimitive::Unbind()
 {
-	#ifndef DISABLE_RENDER_TO_TEXTURE
+#ifndef DISABLE_RENDER_TO_TEXTURE
 	if (!m_FBOSupported)
 		return;
 
@@ -366,10 +409,13 @@ void PixelPrimitive::Unbind()
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, m_RenderTexture);
 	glGenerateMipmapEXT(GL_TEXTURE_2D);
+#if defined(DEPTH_BUFFER_AS_TEXTURE) && defined(DEPTH_TEXTURE_MIPMAPPING)
+	glBindTexture(GL_TEXTURE_2D, m_DepthTexture);
+	glGenerateMipmapEXT(GL_TEXTURE_2D);
+#endif
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_TEXTURE_2D);
-	//cout << "pix " << "unbound " << hex << this << endl;
-	#endif
+#endif
 }
 
 void PixelPrimitive::Render()

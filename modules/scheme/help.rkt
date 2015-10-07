@@ -6,7 +6,7 @@
 ;; Example:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 
 (provide
  init-help
@@ -240,3 +240,4 @@
            (let ((al (filter (lambda (l) (regexp-match s l)) apropos-list)))
              al))])
    (apropos-regex (string-append ".*" s ".*"))))
+)

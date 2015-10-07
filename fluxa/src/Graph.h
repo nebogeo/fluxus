@@ -30,11 +30,11 @@ class Graph
 public:
 	Graph(unsigned int NumNodes, unsigned int SampleRate);
 	~Graph();
-	
+
 	enum Type{TERMINAL,SINOSC,SAWOSC,TRIOSC,SQUOSC,WHITEOSC,PINKOSC,ADSR,ADD,SUB,MUL,DIV,POW,
 		      MOOGLP,MOOGBP,MOOGHP,FORMANT,SAMPLER,CRUSH,DISTORT,CLIP,DELAY,KS,XFADE,SAMPNHOLD,
-			  TRACKNHOLD,NUMTYPES};
-	
+			  TRACKNHOLD,PAD,CRYPTODISTORT,NUMTYPES};
+
 	void Init();
 	void Clear();
 	void Create(unsigned int id, Type t, float v);
@@ -42,7 +42,7 @@ public:
 	void Play(float time, unsigned int id, float pan);
 	void Process(unsigned int bufsize, Sample &left, Sample &right);
 	void SetMaxPlaying(int s) { m_MaxPlaying=s; }
-	
+
 private:
 	class NodeDesc
 	{
@@ -51,26 +51,26 @@ private:
 		GraphNode *m_Node;
 		unsigned int m_ID;
 	};
-	
+
 	class NodeDescVec
 	{
 	public:
 		unsigned int NewIndex()
 		{
 			m_Current++;
-			if (m_Current>=m_Vec.size()) 
+			if (m_Current>=m_Vec.size())
 			{
 				//cerr<<"going round..."<<endl;
 				m_Current=0;
 			}
 			return m_Current;
 		}
-		
+
 		NodeDescVec(): m_Current(0) {}
 		unsigned int m_Current;
 		vector<NodeDesc*> m_Vec;
 	};
-	
+
 	unsigned int m_MaxPlaying;
 	list<pair<unsigned int, float> > m_RootNodes;
 	map<unsigned int,GraphNode*> m_NodeMap;

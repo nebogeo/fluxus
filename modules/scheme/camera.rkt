@@ -17,7 +17,7 @@
 ;; Exemple:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 
 (require "fluxus-modules.ss")
 (require "input.ss")
@@ -241,3 +241,4 @@
 (update-camera)
 
 
+)

@@ -42,9 +42,12 @@ bool RingBuffer::Write(char *src, unsigned int size)
 {
 	//cerr<<"write pos: "<<m_WritePos<<endl;
 	unsigned int space=WriteSpace();
-	if (space<size) return false;
-	
-	//cerr<<size<<" "<<space<<endl;
+
+	if (space<size) 
+    {
+        cerr<<"ringbuffer ran out of space, needed: "<<size<<" have: "<<space<<endl;
+        return false;
+    }
 	
 	if (size<m_Size-m_WritePos)
 	{

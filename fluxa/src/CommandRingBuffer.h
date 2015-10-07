@@ -16,7 +16,7 @@
 
 #include "RingBuffer.h"
 
-static const unsigned int COMMAND_DATA_SIZE = 4096;
+static const unsigned int COMMAND_DATA_SIZE = 128;
 
 class CommandRingBuffer : public RingBuffer
 {

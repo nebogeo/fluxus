@@ -43,10 +43,10 @@ class OSCInt : public OSCData
 class OSCLong : public OSCData
 {
 	public:
-	OSCLong(int s) { Value=s; }
+	OSCLong(long s) { Value=s; }
 	virtual ~OSCLong() {}
 	virtual char Type() { return 'l'; }
-	long int Value;
+	long Value;
 };
 
 class OSCFloat : public OSCData

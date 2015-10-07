@@ -51,7 +51,7 @@ using namespace Fluxus;
 // StartSectionDoc-fr
 // maths
 // Ces fonctions sont optimisées pour les graphiques 3D, et la collision entre science informatique et mathématique est ici évidente.
-// Donc les vecteurs Scheme représentant les vecteurs informatiques contiennent dans ce contexte 3 éléments, quaternions sont des vecteurs
+// Donc les vecteurs Scheme représentant les vecteurs informatiques contiennent dans ce contexte 3 éléments, les quaternions sont des vecteurs
 // de 4 éléments, et les matrices, des vecteurs de 16 éléments. 
 // Exemple:
 // EndSectionDoc
@@ -80,7 +80,7 @@ using namespace Fluxus;
 // Retour: vecteur-resultant
 // Description:
 // Multiplie un vecteur par un nombre.
-// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Version C dépréciée, la version Scheme est plus rapide et flexible.
 // Exemple:
 // (vmulc (vector 1 2 3) 2)
 // EndFunctionDoc
@@ -118,7 +118,7 @@ Scheme_Object *vmulc(int argc, Scheme_Object **argv)
 // Retour: vecteur-resultant
 // Description:
 // Additionne deux vecteurs ensemble.
-// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Version C dépréciée, la version Scheme est plus rapide et flexible.
 // Exemple:
 // (vaddc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
@@ -156,7 +156,7 @@ Scheme_Object *vaddc(int argc, Scheme_Object **argv)
 // Retour: vecteur-resultant
 // Description:
 // Soustrait un vecteur par un autre.
-// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Version C dépréciée, la version Scheme est plus rapide et flexible.
 // Exemple:
 // (vsubc (vector 1 2 3) (vector 1 2 3))
 // EndFunctionDoc
@@ -194,7 +194,7 @@ Scheme_Object *vsubc(int argc, Scheme_Object **argv)
 // Retour: vecteur-resultant
 // Description:
 // Divise un vecteur par un nombre.
-// Vesrion C dépréciée, la version Scheme est plus rapide et flexible.
+// Version C dépréciée, la version Scheme est plus rapide et flexible.
 // Exemple:
 // (vdivc (vector 1 2 3) 2)
 // EndFunctionDoc
@@ -1139,7 +1139,7 @@ Scheme_Object *qnormalise(int argc, Scheme_Object **argv)
 // qtomatrix quaternion-vecteur
 // Retour: matrice-vecteur
 // Description:
-// Convertis un quaternion en un matrice de rotation.
+// Convertis un quaternion en une matrice de rotation.
 // Exemple:
 // (qtomatrix (qaxisangle (vector 0 1 0) 45))
 // EndFunctionDoc
@@ -1214,7 +1214,7 @@ Scheme_Object *qconjugate(int argc, Scheme_Object **argv)
 // fmod numerateur-nombre denominateur-nombre
 // Retour: réel-nombre
 // Description:
-// Retourne le reste en nombre flottant de numerateur/denominateur.
+// Retourne le reste en nombre flottant de numérateur/denominateur.
 // Exemple:
 // (fmod 14.4 10)
 // EndFunctionDoc

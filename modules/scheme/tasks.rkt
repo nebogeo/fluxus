@@ -22,7 +22,7 @@
 ;; scratchpad
 ;; Functions available as part of the fluxus scratchpad.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
 ;; StartSectionDoc-pt
 ;; scratchpad
@@ -30,7 +30,8 @@
 ;; Exemplo:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require "time.ss")
 
 (provide spawn-task ls-tasks ls-timed-tasks rm-task rm-all-tasks run-tasks
@@ -53,7 +54,7 @@
 ;; Example:
 ;; (spawn-task (lambda () (draw-torus)) 'torus-task)
 ;; (rm-task 'torus-task)
-;; EndFunctionDoc    
+;; EndFunctionDoc
 
 (define (spawn-task thunk . args)
   (let ([name (if (null? args) (string->symbol (symbol->string (gensym))) (car args))])
@@ -70,7 +71,7 @@
 ;; Example:
 ;; (spawn-task (lambda () (draw-torus)) 'torus-task) ; add a task
 ;; (rm-task 'torus-task) ; remove it again
-;; EndFunctionDoc    
+;; EndFunctionDoc
 
 (define (rm-task name)
   (set! task-list (remove name task-list (lambda (a b) (eq? a (car b))))))
@@ -81,8 +82,8 @@
 ;; Description:
 ;; Removes all task from the tasklist, including the every-frame task.
 ;; Example:
-;; (rm-all-tasks) 
-;; EndFunctionDoc    
+;; (rm-all-tasks)
+;; EndFunctionDoc
 
 (define (rm-all-tasks)
   (set! task-list '())
@@ -153,29 +154,29 @@
 ;; spawn-timed-task time thunk
 ;; Returns: void
 ;; Description:
-;; Launches a new timed task, which will happen in the future, 
+;; Launches a new timed task, which will happen in the future,
 ;; on the frame that the time specifies. Use (time-now) rather than (time) to
 ;; obtain the time. I need to sort that out.
 ;; Example:
 ;; (spawn-timed-task (+ (time-now) 10) ; schedule a task 10 seconds from now
 ;;     (lambda () (display "hello future!") (newline)))
-;; EndFunctionDoc    
+;; EndFunctionDoc
 
 (define (spawn-timed-task time thunk)
 	(set! timed-task-list (cons (make-timed-task time thunk) timed-task-list)))
 
 (define (print-error e)
 	(printf "~a ~n" (exn-message e))
-    (when (exn? e) 
+    (when (exn? e)
       (printf "call stack:~n")
-      (for-each 
+      (for-each
         (lambda (c)
           (printf "~a " (car c))
 		  (when (cdr c)
 		  	(printf "line ~a in ~a~n" (srcloc-line (cdr c)) (srcloc-source (cdr c)))))
         (continuation-mark-set->context
           (exn-continuation-marks e)))))
-		  
+
 (define (run-tasks)
         (for-each
          (lambda (task)
@@ -185,8 +186,8 @@
                           (lambda (e)
                             (printf "Error in Task '~a - Task removed.~%"
                                     (car task))
-                            (rm-task (car task))						
 							(print-error e)
+                            (rm-task (car task))
                             (out #t))])
                      (call-with-exception-handler task-error
                                                   (lambda ()
@@ -195,7 +196,7 @@
                      ))
            )
          task-list)
-		 
+
 		 ; do the timed tasks, and update the list
 	 	(set! timed-task-list
 			(filter
@@ -213,5 +214,7 @@
                                                     (call-task (timed-task-thunk timed-task))))
                      ))
 					 #f)
-					 (else #t))) 
+					 (else #t)))
 				timed-task-list)))
+
+)

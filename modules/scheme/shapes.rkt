@@ -4,9 +4,10 @@
 ;; scheme-utils
 ;; High level fluxus commands written in Scheme.
 ;; Example:
-;; EndSectionDoc 
+;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
+
 (require "fluxus-modules.ss")
 (require "building-blocks.ss")
 (require "maths.ss")
@@ -17,11 +18,11 @@
 ;; build-circle-points num-points radius
 ;; Returns: primitive-id
 ;; Description:
-;; Returns a list of vectors describing a circle. 
+;; Returns a list of vectors describing a circle.
 ;; Useful for generating circles for the extrusion generator.
-;; Example:  
+;; Example:
 ;; (clear)
-;; (build-extrusion 
+;; (build-extrusion
 ;;     (build-circle-points 20 0.3)
 ;;     (list
 ;;         (vector 0 0 0)
@@ -29,13 +30,15 @@
 ;;         (vector 0 -1 4)
 ;;         (vector 0 0 6))
 ;;     (list 0 1 1 0) 1 (vector 0 1 0))
-;; EndFunctionDoc 
+;; EndFunctionDoc
 
 (define (build-circle-points n r)
     (define (_ n c l)
         (cond ((zero? c) l)
             (else
-                (let ((a (* (/ c n) (* 2 3.141))))                 
-                    (_ n (- c 1) 
+                (let ((a (* (/ c n) (* 2 3.141))))
+                    (_ n (- c 1)
                         (cons (vmul (vector (sin a) (cos a) 0) r) l))))))
     (_ n n '()))
+
+)

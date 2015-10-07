@@ -6,7 +6,7 @@
 ;; Example:
 ;; EndSectionDoc
 
-#lang racket/base
+(module fluxus racket
 (require scheme/class)
 (require "fluxus.ss")
 
@@ -167,3 +167,4 @@
                                            (pdata-set! "c" (+ tu (* tv w)) v))
                                          (pixels-upload))))
                      samples-per-face))))
+)
